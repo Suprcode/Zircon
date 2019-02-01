@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CDB4E695-FED9-481D-B636-ADA5106AD844}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Library</RootNamespace>
+    <AssemblyName>Library</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Debug\Library\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Release\Library\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConfigReader.cs" />
+    <Compile Include="Enum.cs" />
+    <Compile Include="FrameSet.cs" />
+    <Compile Include="Functions.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="Libraries.cs" />
+    <Compile Include="MirDB\ADBCollection.cs" />
+    <Compile Include="MirDB\Attributes.cs" />
+    <Compile Include="MirDB\DBBindingList.cs" />
+    <Compile Include="MirDB\DBCollection.cs" />
+    <Compile Include="MirDB\DBMapping.cs" />
+    <Compile Include="MirDB\DBObject.cs" />
+    <Compile Include="MirDB\DBRelationship.cs" />
+    <Compile Include="MirDB\DBValue.cs" />
+    <Compile Include="MirDB\Session.cs" />
+    <Compile Include="Network\BaseConnection.cs" />
+    <Compile Include="Network\ClientPackets.cs" />
+    <Compile Include="Network\GeneralPackets.cs" />
+    <Compile Include="Network\Packet.cs" />
+    <Compile Include="Network\ServerPackets.cs" />
+    <Compile Include="Stat.cs" />
+    <Compile Include="SystemModels\BaseStat.cs" />
+    <Compile Include="SystemModels\CastleInfo.cs" />
+    <Compile Include="SystemModels\EventInfo.cs" />
+    <Compile Include="SystemModels\CompanionInfo.cs" />
+    <Compile Include="SystemModels\CompanionLevelInfo.cs" />
+    <Compile Include="SystemModels\CompanionSkillInfo.cs" />
+    <Compile Include="SystemModels\DropInfo.cs" />
+    <Compile Include="SystemModels\GuardInfo.cs" />
+    <Compile Include="SystemModels\ItemInfo.cs" />
+    <Compile Include="SystemModels\ItemInfoStat.cs" />
+    <Compile Include="SystemModels\MagicInfo.cs" />
+    <Compile Include="SystemModels\MapInfo.cs" />
+    <Compile Include="SystemModels\MapRegion.cs" />
+    <Compile Include="SystemModels\MineInfo.cs" />
+    <Compile Include="SystemModels\MonsterInfo.cs" />
+    <Compile Include="SystemModels\MonsterInfoStat.cs" />
+    <Compile Include="SystemModels\MovementInfo.cs" />
+    <Compile Include="SystemModels\NPCInfo.cs" />
+    <Compile Include="SystemModels\QuestInfo.cs" />
+    <Compile Include="SystemModels\RespawnInfo.cs" />
+    <Compile Include="SystemModels\SafeZoneInfo.cs" />
+    <Compile Include="SystemModels\SetInfo.cs" />
+    <Compile Include="SystemModels\SetInfoStat.cs" />
+    <Compile Include="SystemModels\StoreInfo.cs" />
+    <Compile Include="SystemModels\WeaponCraftStatsInfo.cs" />
+    <Compile Include="Time.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

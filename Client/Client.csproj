@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{96CA9837-F7B2-4835-BCF9-40D8C8D4981E}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Client</RootNamespace>
+    <AssemblyName>Zircon</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>D:\Legend of Mir\Mir3 Zircon\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Release\Client\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Zircon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\DXInputWindow.cs" />
+    <Compile Include="Controls\DXItemAmountWindow.cs" />
+    <Compile Include="Controls\DXAnimatedControl.cs" />
+    <Compile Include="Controls\DXButton.cs" />
+    <Compile Include="Controls\DXCheckBox.cs" />
+    <Compile Include="Controls\DXColourControl.cs" />
+    <Compile Include="Controls\DXComboBox.cs" />
+    <Compile Include="Controls\DXConfigWindow.cs" />
+    <Compile Include="Controls\DXControl.cs" />
+    <Compile Include="Controls\DXKeyBindWindow.cs" />
+    <Compile Include="Controls\DXListBox.cs" />
+    <Compile Include="Controls\DXNumberTextBox.cs" />
+    <Compile Include="Controls\DXVScrollBar.cs" />
+    <Compile Include="Envir\CConnection.cs" />
+    <Compile Include="Envir\CEnvir.cs" />
+    <Compile Include="Envir\Config.cs" />
+    <Compile Include="Envir\DXManager.cs" />
+    <Compile Include="Envir\DXSound.cs" />
+    <Compile Include="Envir\DXSoundManager.cs" />
+    <Compile Include="Envir\Translations\ChineseMessages.cs" />
+    <Compile Include="Envir\Translations\EnglishMessages.cs" />
+    <Compile Include="Envir\Translations\StringMessages.cs" />
+    <Compile Include="Models\MirLibrary.cs" />
+    <Compile Include="Models\DamageInfo.cs" />
+    <Compile Include="Models\ItemObject.cs" />
+    <Compile Include="Models\MapObject.cs" />
+    <Compile Include="Models\MirEffect.cs" />
+    <Compile Include="Models\MirProjectile.cs" />
+    <Compile Include="Models\MonsterObject.cs" />
+    <Compile Include="Models\NPCObject.cs" />
+    <Compile Include="Models\ObjectAction.cs" />
+    <Compile Include="Models\PlayerObject.cs" />
+    <Compile Include="Models\SpellObject.cs" />
+    <Compile Include="Models\UserObject.cs" />
+    <Compile Include="Controls\DXImageControl.cs" />
+    <Compile Include="Controls\DXItemCell.cs" />
+    <Compile Include="Controls\DXItemGrid.cs" />
+    <Compile Include="Controls\DXLabel.cs" />
+    <Compile Include="Controls\DXMessageBox.cs" />
+    <Compile Include="Controls\DXNumberBox.cs" />
+    <Compile Include="Controls\DXScene.cs" />
+    <Compile Include="Controls\DXTabControl.cs" />
+    <Compile Include="Controls\DXTextBox.cs" />
+    <Compile Include="Controls\DXWindow.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Scenes\GameScene.cs" />
+    <Compile Include="Scenes\LoginScene.cs" />
+    <Compile Include="Scenes\SelectScene.cs" />
+    <Compile Include="Scenes\Views\AutoPotionDialog.cs" />
+    <Compile Include="Scenes\Views\BeltDialog.cs" />
+    <Compile Include="Scenes\Views\BigMapDialog.cs" />
+    <Compile Include="Scenes\Views\BuffDialog.cs" />
+    <Compile Include="Scenes\Views\CharacterDialog.cs" />
+    <Compile Include="Scenes\Views\ChatOptionsDialog.cs" />
+    <Compile Include="Scenes\Views\ChatTextBox.cs" />
+    <Compile Include="Scenes\Views\ChatTab.cs" />
+    <Compile Include="Scenes\Views\CompanionDialog.cs" />
+    <Compile Include="Scenes\Views\BlockDialog.cs" />
+    <Compile Include="Scenes\Views\EditCharacterDialog.cs" />
+    <Compile Include="Scenes\Views\FortuneCheckerDialog.cs" />
+    <Compile Include="Scenes\Views\GuildDialog.cs" />
+    <Compile Include="Scenes\Views\MagicBarDialog.cs" />
+    <Compile Include="Scenes\Views\MailDialog.cs" />
+    <Compile Include="Scenes\Views\MarketPlaceDialog.cs" />
+    <Compile Include="Scenes\Views\GroupDialog.cs" />
+    <Compile Include="Scenes\Views\InspectDialog.cs" />
+    <Compile Include="Scenes\Views\InventoryDialog.cs" />
+    <Compile Include="Scenes\Views\ExitDialog.cs" />
+    <Compile Include="Scenes\Views\MagicDialog.cs" />
+    <Compile Include="Scenes\Views\MainPanel.cs" />
+    <Compile Include="Scenes\Views\MapControl.cs" />
+    <Compile Include="Scenes\Views\MiniMapDialog.cs" />
+    <Compile Include="Scenes\Views\MonsterDialog.cs" />
+    <Compile Include="Scenes\Views\NPCDialog.cs" />
+    <Compile Include="Scenes\Views\QuestDialog.cs" />
+    <Compile Include="Scenes\Views\QuestTrackerDialog.cs" />
+    <Compile Include="Scenes\Views\RankingDialog.cs" />
+    <Compile Include="Scenes\Views\StorageDialog.cs" />
+    <Compile Include="Scenes\Views\TradeDialog.cs" />
+    <Compile Include="TargetForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserModels\ChatTabControlSetting.cs" />
+    <Compile Include="UserModels\ChatTabPageSetting.cs" />
+    <Compile Include="UserModels\WindowSetting.cs" />
+    <Compile Include="UserModels\KeyBindInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TargetForm.resx">
+      <DependentUpon>TargetForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Library\Library.csproj">
+      <Project>{cdb4e695-fed9-481d-b636-ada5106ad844}</Project>
+      <Name>Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Zircon.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

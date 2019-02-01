@@ -1,0 +1,5 @@
+<html>
+<body>
+Failed to buy GameGold. Character Not Found.
+</body>
+</html>

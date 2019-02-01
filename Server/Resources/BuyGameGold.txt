@@ -1,0 +1,29 @@
+<html>
+<body>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="custom" value="$CHARACTERNAME$">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="S8QAMCYTGM4SC">
+<table>
+<tr><td><input type="hidden" name="on0" value="Game Gold Quantity">Game Gold Quantity</td></tr><tr><td><select name="os0">
+	<option value="500 Gold">500 Gold £5.00 GBP</option>
+	<option value="1030 Gold (+3%)">1030 Gold (+3%) £10.00 GBP</option>
+	<option value="1590 Gold (+6%)">1590 Gold (+6%) £15.00 GBP</option>
+	<option value="2180 Gold (+9%)">2180 Gold (+9%) £20.00 GBP</option>
+	<option value="3360 Gold (+12%)">3360 Gold (+12%) £30.00 GBP</option>
+	<option value="5750 Gold (+15%)">5750 Gold (+15%) £50.00 GBP</option>
+	<option value="12000 Gold (+20%)">12000 Gold (+20%) £100.00 GBP</option>
+</select> </td></tr>
+</table>
+<input type="hidden" name="currency_code" value="GBP">
+<input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+
+<br></br>If you are unble to see the Pay Now button, try and disable your AD-Blocker (If you have one).
+
+<br></br><br></br>If you want to pay by a Cryto Currency Please get in contact with me.
+</body>
+</html>
