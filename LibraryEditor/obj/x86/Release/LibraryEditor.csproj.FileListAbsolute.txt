@@ -1,0 +1,9 @@
+E:\Mir Sources\Crystal\Library\LibraryEditor.exe.config
+E:\Mir Sources\Crystal\Library\LibraryEditor.exe
+E:\Mir Sources\Crystal\Library\LibraryEditor.pdb
+E:\Mir Sources\Crystal\mir2-master\LibraryEditor\obj\x86\Release\LibraryEditor.LMain.resources
+E:\Mir Sources\Crystal\mir2-master\LibraryEditor\obj\x86\Release\Library_Editor.Properties.Resources.resources
+E:\Mir Sources\Crystal\mir2-master\LibraryEditor\obj\x86\Release\LibraryEditor.csproj.GenerateResource.Cache
+E:\Mir Sources\Crystal\mir2-master\LibraryEditor\obj\x86\Release\LibraryEditor.exe
+E:\Mir Sources\Crystal\mir2-master\LibraryEditor\obj\x86\Release\LibraryEditor.pdb
+E:\Mir Sources\Crystal\mir2-master\LibraryEditor\obj\x86\Release\LibraryEditor.csprojResolveAssemblyReference.cache
