@@ -9,3 +9,5 @@
 /LibraryEditor/obj
 /LibraryEditor/bin
 /Build/LibraryEditor/Exported
+/Build/LibraryEditor
+/packages/Ionic.Zlib.1.9.1.5
