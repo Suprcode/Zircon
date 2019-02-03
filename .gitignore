@@ -10,3 +10,6 @@
 /LibraryEditor/bin
 /Build/LibraryEditor/Exported
 /.vs/Zircon Server/v15/*.suo
+/Build/LibraryEditor
+
+/packages/Ionic.Zlib.1.9.1.5

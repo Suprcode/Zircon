@@ -326,8 +326,8 @@ namespace Client.Scenes.Views
                         bool blend = false;
                         if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
                         {
-                            index += Animation % (cell.FrontAnimationFrame & 0x4F);
-                            blend = (cell.MiddleAnimationFrame & 0x50) > 0;
+                            index += Animation % (cell.FrontAnimationFrame & 0x7F);
+                            blend = (cell.FrontAnimationFrame & 0x80) > 0;
                         }
                     
                         Size s = library.GetSize(index);
