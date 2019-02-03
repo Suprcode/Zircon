@@ -6,3 +6,6 @@
 /Patcher/obj/Debug
 /Server/obj/Debug
 /.vs/Zircon Server/v15/Server/sqlite3
+/LibraryEditor/obj
+/LibraryEditor/bin
+/Build/LibraryEditor/Exported
