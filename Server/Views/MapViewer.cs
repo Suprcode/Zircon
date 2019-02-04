@@ -248,6 +248,8 @@ namespace Server.Views
         private void DXPanel_MouseMove(object sender, MouseEventArgs e)
         {
             Map.MouseMove(e);
+            
+            CoordsLabel.Caption = "X: " + Map.MouseLocation.X + " - Y: " + Map.MouseLocation.Y;
         }
 
         private void DXPanel_MouseUp(object sender, MouseEventArgs e)
