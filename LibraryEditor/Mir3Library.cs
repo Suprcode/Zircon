@@ -235,16 +235,16 @@ namespace LibraryEditor
 
                 foreach (Mir3Image image in Images)
                 {
-                    writer.Write(image != null || image?.FBytes.Length > 0);
+                    writer.Write(image != null && image.FBytes.Length > 0);
 
-                    if (image == null || image.FBytes?.Length == 0) continue;
+                    if (image == null || image.FBytes.Length == 0) continue;
 
                     image.SaveHeader(writer);
                 }
 
                 foreach (Mir3Image image in Images)
                 {
-                    if (image == null || image.FBytes?.Length == 0) continue;
+                    if (image == null || image.FBytes.Length == 0) continue;
 
                     if (image.FBytes != null)
                         writer.Write(image.FBytes);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LibraryEditor
@@ -97,11 +98,10 @@ namespace LibraryEditor
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
-            Mir3Library library = new Mir3Library(fileName) { Images = new List<Mir3Library.Mir3Image>(Images.Length) };
+            Mir3Library library = new Mir3Library(fileName) { Images = new List<Mir3Library.Mir3Image>() };
             //library.Save();
 
-            for (int i = 0; i < Images.Length; i++)
-                library.Images.Add(null);
+            library.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(), Images.Length));
 
             ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
 
