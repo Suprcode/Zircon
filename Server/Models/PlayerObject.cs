@@ -1621,6 +1621,29 @@ namespace Server.Models
                             Level15 = Companion.UserCompanion.Level15
                         });
                         break;
+                    case "MONSTER":
+                        if (!Character.Account.TempAdmin)
+                            return;
+
+                        if (parts.Length < 2)
+                            return;
+
+                        var monsterInfo = SEnvir.GetMonsterInfo(parts[1]);
+                        
+                        if (monsterInfo == null)
+                            return;
+
+                        if (parts.Length < 3 || !int.TryParse(parts[2], out value) || value == 0)
+                            value = 1;
+
+                        while (value > 0)
+                        {
+                            var monster = MonsterObject.GetMonster(monsterInfo);
+                            
+                            monster.Spawn(CurrentMap.Info, Functions.Move(CurrentLocation, Direction));
+                            value -= 1;
+                        }
+                        break;
                     case "MAKE":
                         if (!Character.Account.TempAdmin) return;
 

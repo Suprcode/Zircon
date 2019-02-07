@@ -1790,6 +1790,13 @@ namespace Server.Envir
 
             return null;
         }
+        
+        public static MonsterInfo GetMonsterInfo(string name)
+        {
+            return MonsterInfoList.Binding.FirstOrDefault
+            (monster => string.Compare(monster.MonsterName.Replace(" ", ""), name, 
+                            StringComparison.OrdinalIgnoreCase) == 0);
+        }
 
 
         public static MonsterInfo GetMonsterInfo(Dictionary<MonsterInfo, int> list)
