@@ -1,3 +1,5 @@
+.idea/*
+*.user
 /Client/obj/Debug
 /ImageManager/obj/Debug
 /Launcher/obj/Debug

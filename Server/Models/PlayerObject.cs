@@ -1621,6 +1621,29 @@ namespace Server.Models
                             Level15 = Companion.UserCompanion.Level15
                         });
                         break;
+                    case "MONSTER":
+                        if (!Character.Account.TempAdmin)
+                            return;
+
+                        if (parts.Length < 2)
+                            return;
+
+                        var monsterInfo = SEnvir.GetMonsterInfo(parts[1]);
+                        
+                        if (monsterInfo == null)
+                            return;
+
+                        if (parts.Length < 3 || !int.TryParse(parts[2], out value) || value == 0)
+                            value = 1;
+
+                        while (value > 0)
+                        {
+                            var monster = MonsterObject.GetMonster(monsterInfo);
+                            
+                            monster.Spawn(CurrentMap.Info, Functions.Move(CurrentLocation, Direction));
+                            value -= 1;
+                        }
+                        break;
                     case "MAKE":
                         if (!Character.Account.TempAdmin) return;
 
@@ -1914,6 +1937,50 @@ namespace Server.Models
                             user.ApplyCastleBuff();
 
                         break;
+                    case "CREATEGUILD":
+                        if (!Character.Account.TempAdmin) 
+                            return;
+
+                        if (parts.Length < 2)
+                            return;
+                        
+                        character = parts.Length < 3 ? Character : SEnvir.GetCharacter(parts[1]);
+
+                        if (character == null) 
+                            return;
+                        
+                        if (Character.Account.GuildMember != null) 
+                            return;
+
+                        var guildName = parts.Length < 3 ? parts[1] : parts[2];
+                        
+                        if (!Globals.GuildNameRegex.IsMatch(guildName))
+                            return;
+                        
+                        var guildInfo = SEnvir.GuildInfoList.Binding.FirstOrDefault(
+                            x => string.Compare(x.GuildName, guildName, StringComparison.OrdinalIgnoreCase) == 0);
+
+                        if (guildInfo != null)
+                            return;
+                        
+                        guildInfo = SEnvir.GuildInfoList.CreateNewObject();
+                        
+                        guildInfo.GuildName = guildName;
+                        guildInfo.MemberLimit = 10;
+                        guildInfo.StorageSize = 10;
+                        guildInfo.GuildLevel = 1;
+
+                        var memberInfo = SEnvir.GuildMemberInfoList.CreateNewObject();
+
+                        memberInfo.Account = character.Account;
+                        memberInfo.Guild = guildInfo;
+                        memberInfo.Rank = "Guild Leader";
+                        memberInfo.JoinDate = SEnvir.Now;
+                        memberInfo.Permission = GuildPermission.Leader;
+                        
+                        SendGuildInfo();
+                        break;
+                    
                 }
 
             }
