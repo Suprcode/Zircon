@@ -436,7 +436,7 @@ namespace Client.Models
                             }
                             else if (ShieldShape >= 0)
                             { 
-                                if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
+                                if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
                                 CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             }
                             break;
