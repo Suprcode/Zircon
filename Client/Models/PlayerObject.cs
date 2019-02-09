@@ -407,13 +407,10 @@ namespace Client.Models
                                 if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
                                 CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             }
-                            else
+                            else if (ShieldShape >= 0)
                             {
-                                if (ShieldShape >= 0)
-                                {
-                                    if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
-                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
-                                }
+                                if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
+                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             }
                             break;
                         case MirGender.Female:
@@ -437,13 +434,10 @@ namespace Client.Models
                                 if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
                                 CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             }
-                            else
-                            {
-                                if (ShieldShape >= 0)
-                                {
-                                    if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
-                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
-                                }
+                            else if (ShieldShape >= 0)
+                            { 
+                                if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
+                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             }
                             break;
                     }
