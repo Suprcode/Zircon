@@ -865,7 +865,8 @@ namespace Client.Envir
                 player.ArmourColour = p.ArmourColour;
                 player.HelmetShape = p.Helmet;
                 player.HorseShape = p.HorseArmour;
-                player. ArmourImage = p.ArmourImage;
+                player.ArmourImage = p.ArmourImage;
+                player.ShieldShape = p.Shield;
 
                 player.Light = p.Light;
                 if (player == MapObject.User)

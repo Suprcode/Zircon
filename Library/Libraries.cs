@@ -74,6 +74,11 @@ namespace Library
             [LibraryFile.HorseDark] = @"Data\Horse_Dark.Zl",
             [LibraryFile.HorseDarkEffect] = @"Data\Horse_DarkEffect.Zl",
 
+            [LibraryFile.M_Shield1] = @"Data\M-Shield1.Zl",
+            [LibraryFile.M_Shield2] = @"Data\M-Shield2.Zl",
+            [LibraryFile.WM_Shield1] = @"Data\WM-Shield1.Zl",
+            [LibraryFile.WM_Shield2] = @"Data\WM-Shield2.Zl",
+
             [LibraryFile.M_Weapon1] = @"Data\M-Weapon1.Zl",
             [LibraryFile.M_Weapon2] = @"Data\M-Weapon2.Zl",
             [LibraryFile.M_Weapon3] = @"Data\M-Weapon3.Zl",
@@ -531,6 +536,12 @@ namespace Library
         WM_WeaponAOH4,
         WM_WeaponAOH5,
         WM_WeaponAOH6,
+
+        M_Shield1,
+        M_Shield2,
+
+        WM_Shield1,
+        WM_Shield2,
 
         M_Helmet1,
         M_Helmet2,

@@ -23,7 +23,17 @@ namespace Client.Models
 
         public const int FemaleOffSet = 5000, AssassinOffSet = 50000, RightHandOffSet = 50;
 
-        #region Weaopon Librarys
+        #region Shield Librarys
+        public Dictionary<int, LibraryFile> ShieldList = new Dictionary<int, LibraryFile>
+        {
+            [0] = LibraryFile.M_Shield1,
+            [1] = LibraryFile.M_Shield2,
+            [0 + FemaleOffSet] = LibraryFile.WM_Shield1,
+            [1 + FemaleOffSet] = LibraryFile.WM_Shield2
+        };
+        #endregion
+
+            #region Weapon Librarys
         public Dictionary<int, LibraryFile> WeaponList = new Dictionary<int, LibraryFile>
         {
             [0] = LibraryFile.M_Weapon1,
@@ -194,6 +204,9 @@ namespace Client.Models
         public int WeaponShapeOffSet;
         public int WeaponShape, LibraryWeaponShape;
         public int WeaponFrame => DrawFrame + (WeaponShape % 10) * WeaponShapeOffSet;
+        
+        public int ShieldShape;
+        public int ShieldFrame => DrawFrame + (ShieldShape % 10) * WeaponShapeOffSet;
 
         public MirLibrary BodyLibrary;
         public int ArmourShapeOffSet;
@@ -204,7 +217,7 @@ namespace Client.Models
 
         public MirLibrary HorseLibrary, HorseShapeLibrary, HorseShapeLibrary2;
         public int HorseShape;
-        public int HorseFrame => DrawFrame + ((int) Horse - 1)*5000;
+        public int HorseFrame => DrawFrame + ((int) Horse - 1) * 5000;
         public HorseType Horse;
 
         public int ArmourImage;
@@ -248,6 +261,7 @@ namespace Client.Models
             LibraryWeaponShape = info.Weapon;
             HorseShape = info.HorseShape;
             HelmetShape = info.Helmet;
+            ShieldShape = info.Shield;
 
             ArmourImage = info.ArmourImage;
 
@@ -327,13 +341,17 @@ namespace Client.Models
 
                             CEnvir.LibraryList.TryGetValue(LibraryFile.M_Hair, out HairLibrary);
 
-
                             if (!HelmetList.TryGetValue(HelmetShape / 10, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out HelmetLibrary);
 
-
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
+
+                            if (ShieldShape >= 0)
+                            {
+                                if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
+                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            }
                             break;
                         case MirGender.Female:
                             if (!ArmourList.TryGetValue(ArmourShape / 11 + FemaleOffSet, out file))
@@ -350,8 +368,13 @@ namespace Client.Models
                             CEnvir.LibraryList.TryGetValue(file, out HelmetLibrary);
 
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
-
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
+
+                            if (ShieldShape >= 0)
+                            {
+                                if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
+                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            }
                             break;
                     }
                     break;
@@ -377,14 +400,21 @@ namespace Client.Models
                             CEnvir.LibraryList.TryGetValue(file, out HelmetLibrary);
 
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10, out file)) file = LibraryFile.None;
-
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (LibraryWeaponShape < 1200) break;
-
-                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
-
-                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            if (LibraryWeaponShape >= 1200)
+                            {
+                                if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
+                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            }
+                            else
+                            {
+                                if (ShieldShape >= 0)
+                                {
+                                    if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                }
+                            }
                             break;
                         case MirGender.Female:
                             if (!ArmourList.TryGetValue(ArmourShape / 11 + AssassinOffSet + FemaleOffSet, out file))
@@ -400,14 +430,21 @@ namespace Client.Models
                             CEnvir.LibraryList.TryGetValue(file, out HelmetLibrary);
 
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
-
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (LibraryWeaponShape < 1200) break;
-
-                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
-
-                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            if (LibraryWeaponShape >= 1200)
+                            {
+                                if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
+                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            }
+                            else
+                            {
+                                if (ShieldShape >= 0)
+                                {
+                                    if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                }
+                            }
                             break;
                     }
                     break;
@@ -763,10 +800,13 @@ namespace Client.Models
                     break;
                 default:
                     if (!DrawWeapon) break;
-                    image = WeaponLibrary2?.GetImage(WeaponFrame);
+
+                    var frame = ShieldShape >= 0 ? ShieldFrame : WeaponFrame;
+                    image = WeaponLibrary2?.GetImage(frame);
+
                     if (image == null) break;
 
-                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                    WeaponLibrary2.Draw(frame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
                     l = Math.Min(l, DrawX + image.OffSetX);
                     t = Math.Min(t, DrawY + image.OffSetY);
@@ -837,10 +877,13 @@ namespace Client.Models
                     break;
                 default:
                     if (!DrawWeapon) break;
-                    image = WeaponLibrary2?.GetImage(WeaponFrame);
+
+                    var frame = ShieldShape >= 0 ? ShieldFrame : WeaponFrame;
+                    image = WeaponLibrary2?.GetImage(frame);
+
                     if (image == null) break;
 
-                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                    WeaponLibrary2.Draw(frame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
                     l = Math.Min(l, DrawX + image.OffSetX);
                     t = Math.Min(t, DrawY + image.OffSetY);
