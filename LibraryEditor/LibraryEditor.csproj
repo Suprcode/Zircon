@@ -6,7 +6,7 @@
     <ProjectGuid>{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>LibraryEditor</AssemblyName>
+    <AssemblyName>Mir3LibraryEditor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

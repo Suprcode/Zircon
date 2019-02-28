@@ -29,6 +29,25 @@ namespace LibraryEditor
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
             this.DragDrop += new DragEventHandler(Form1_DragDrop);
+            if (Program.openFileWith.Length > 0 &&
+                File.Exists(Program.openFileWith))
+            {
+                OpenLibraryDialog.FileName = Program.openFileWith;
+                _library = new Mir3Library(OpenLibraryDialog.FileName);
+                PreviewListView.VirtualListSize = _library.Images.Count;
+
+                // Show .Lib path in application title.
+                this.Text = OpenLibraryDialog.FileName.ToString();
+
+                PreviewListView.SelectedIndices.Clear();
+
+                if (PreviewListView.Items.Count > 0)
+                    PreviewListView.Items[0].Selected = true;
+
+                radioButtonImage.Enabled = true;
+                radioButtonShadow.Enabled = true;
+                radioButtonOverlay.Enabled = true;
+            }
         }
 
         private void Form1_DragDrop(object sender, DragEventArgs e)
@@ -260,7 +279,7 @@ namespace LibraryEditor
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenLibraryDialog.ShowDialog() != DialogResult.OK) return;
-
+            MessageBox.Show(OpenLibraryDialog.FileName);
             ClearInterface();
             ImageList.Images.Clear();
             PreviewListView.Items.Clear();
@@ -554,6 +573,7 @@ namespace LibraryEditor
             _indexList.Clear();
             PreviewListView.VirtualListSize = _library.Images.Count;
             toolStripProgressBar.Value = 0;
+            _library.Save(_library._fileName);
         }
 
         private void safeToolStripMenuItem_Click(object sender, EventArgs e)
