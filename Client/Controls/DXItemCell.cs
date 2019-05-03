@@ -1347,6 +1347,58 @@ namespace Client.Controls
                 case GridType.WeaponCraftYellow:
                     if (Item.Info.Effect != ItemEffect.YellowSlot) return false;
                     break;
+                case GridType.RefineCorundumOre:
+                    if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
+                    if (Item.Info.Effect != ItemEffect.Corundum || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    break;
+                case GridType.AccessoryRefineCombTarget:
+                    if ((Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+
+                    if (GridType != GridType.Inventory && GridType != GridType.Equipment && GridType != GridType.CompanionInventory && GridType != GridType.Storage) return false;
+
+                    switch (Item.Info.ItemType)
+                    {
+                        case ItemType.Necklace:
+                        case ItemType.Bracelet:
+                        case ItemType.Ring:
+                            break;
+                        default:
+                            return false;
+                    }
+
+                    if ((Item.Flags & UserItemFlags.Refinable) == UserItemFlags.Refinable) return false;
+
+                    if (Item.Level > 1) return false;
+
+                    break;
+                case GridType.AccessoryRefineCombItems:
+                    if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
+                    if ((Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+
+                    if ((Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return false;
+                    if (Item.Level > 1) return false;
+
+                    if (GridType != GridType.Inventory && GridType != GridType.CompanionInventory && GridType != GridType.Storage) return false;
+
+                    switch (Item.Info.ItemType)
+                    {
+                        case ItemType.Necklace:
+                        case ItemType.Bracelet:
+                        case ItemType.Ring:
+                            break;
+                        default:
+                            return false;
+                    }
+
+                    if (GameScene.Game.NPCAccessoryRefineBox.TargetCell.Grid[0].Link?.Item?.Info != Item.Info) return false;
+                    if ((Item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound && (GameScene.Game.NPCAccessoryRefineBox.TargetCell.Grid[0].Link.Item.Flags & UserItemFlags.Bound) != UserItemFlags.Bound) return false;
+                    if (GameScene.Game.NPCAccessoryRefineBox.TargetCell.Grid[0].Link?.Item?.AddedStats.Count != Item.AddedStats.Count) return false; //if material has different amount of added stats to target dont refine
+
+                    if (Item.AddedStats.Count >= 1) //if target has added stats loop through to check material has same stats
+                    {
+                        if (!Item.AddedStats.Compare(GameScene.Game.NPCAccessoryRefineBox.TargetCell.Grid[0].Link?.Item?.AddedStats)) return false;
+                    }
+                    break;
             }
 
             return true;
@@ -1840,6 +1892,34 @@ namespace Client.Controls
                                 return;
                             }
 
+                            if (GameScene.Game.NPCAccessoryRefineBox.IsVisible)
+                            {
+                                if (Item.Level > 1)
+                                {
+                                    GameScene.Game.ReceiveChat($"Unable to refine {Item.Info.ItemName} because it has been levelled.", MessageType.System);
+                                }
+                                else
+                                {
+                                    if (Item.Info.ItemType == ItemType.Ore)
+                                    {
+                                        if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.OreTargetCell))
+                                            GameScene.Game.ReceiveChat($"You cannot use {Item.Info.ItemName}, you must use Corundum Ore.", MessageType.System);
+                                    }
+                                    else
+                                    {
+                                        if (GameScene.Game.NPCAccessoryRefineBox.TargetCell.Grid[0].Link == null)
+                                        {
+
+                                            if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.TargetCell))
+                                                GameScene.Game.ReceiveChat($"Unable to refine {Item.Info.ItemName}.", MessageType.System);
+                                        }
+                                        else if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.Grid))
+                                            GameScene.Game.ReceiveChat($"{Item.Info.ItemName} doesnt have the same stats as the main accessory.", MessageType.System);
+                                    }
+                                }
+                                return;
+                            }
+
                             if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
                             {
                                 MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
@@ -2094,6 +2174,35 @@ namespace Client.Controls
                                 GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to refine.", MessageType.System);
                                 return;
                             }
+
+                            if (GameScene.Game.NPCAccessoryRefineBox.IsVisible)
+                            {
+                                if (Item.Level > 1)
+                                {
+                                    GameScene.Game.ReceiveChat($"Unable to refine {Item.Info.ItemName} because it has been levelled.", MessageType.System);
+                                }
+                                else
+                                {
+                                    if (Item.Info.ItemType == ItemType.Ore)
+                                    {
+                                        if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.OreTargetCell))
+                                            GameScene.Game.ReceiveChat($"You cannot use {Item.Info.ItemName}, you must use Corundum Ore.", MessageType.System);
+                                    }
+                                    else
+                                    {
+                                        if (GameScene.Game.NPCAccessoryRefineBox.TargetCell.Grid[0].Link == null)
+                                        {
+
+                                            if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.TargetCell))
+                                                GameScene.Game.ReceiveChat($"Unable to refine {Item.Info.ItemName}.", MessageType.System);
+                                        }
+                                        else if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.Grid))
+                                            GameScene.Game.ReceiveChat($"{Item.Info.ItemName} doesnt have the same stats as the main accessory.", MessageType.System);
+                                    }
+                                }
+                                return;
+                            }
+
                             if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
                             {
                                 MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
