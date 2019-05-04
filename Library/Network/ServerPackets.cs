@@ -1218,5 +1218,21 @@ namespace Library.Network.ServerPackets
 
         public bool Success { get; set; }
     }
+
+    public sealed class NPCAccessoryRefine : Packet
+    {
+        public CellLinkInfo Target { get; set; }
+        public CellLinkInfo OreTarget { get; set; }
+        public List<CellLinkInfo> Links { get; set; }
+        public RefineType RefineType { get; set; }
+        public bool Success { get; set; }
+    }
+
+    public sealed class ItemAcessoryRefined : Packet
+    {
+        public GridType GridType { get; set; }
+        public int Slot { get; set; }
+        public Stats NewStats { get; set; }
+    }
 }
 

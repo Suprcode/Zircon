@@ -621,4 +621,11 @@ namespace Library.Network.ClientPackets
         public CellLinkInfo Green { get; set; }
         public CellLinkInfo Grey { get; set; }
     }
+    public sealed class NPCAccessoryRefine : Packet
+    {
+        public CellLinkInfo Target { get; set; }
+        public CellLinkInfo OreTarget { get; set; }
+        public List<CellLinkInfo> Links { get; set; }
+        public RefineType RefineType { get; set; }
+    }
 }

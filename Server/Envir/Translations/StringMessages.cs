@@ -288,6 +288,8 @@ namespace Server.Envir
         public abstract string NPCRefineFailed { get; set; }
         public abstract string NPCMasterRefineGold { get; set; }
         public abstract string NPCMasterRefineChance { get; set; }
+        public abstract string AccessoryRefineSuccess { get; set; }
+        public abstract string AccessoryRefineFailed { get; set; }
 
 
         [ConfigSection("Skills")]
