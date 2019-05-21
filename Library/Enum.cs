@@ -166,6 +166,7 @@ namespace Library
         RefineCorundumOre,
         AccessoryRefineCombTarget,
         AccessoryRefineCombItems,
+        PartsStorage,
     }
 
     public enum BuffType

@@ -632,8 +632,14 @@ namespace Client.Controls
                 {
                     Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
                     area.Offset((Size.Width - image.Width)/2, (Size.Height - image.Height)/2);
-
-                    PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
+                    ItemInfo info = Item.Info;
+                    if (info.Effect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
+                    {
+                        info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
+                        PresentTexture(image.Image, this, area, Item.Count >= info.PartCount ? Color.White : Color.Gray, this);
+                    }
+                    else
+                        PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
                 }
             }
 
@@ -771,6 +777,9 @@ namespace Client.Controls
 
             switch (GridType) //To Grid
             {
+                case GridType.PartsStorage:
+                    if (SelectedCell.Item.Info.Effect != ItemEffect.ItemPart) return;
+                    break;
                 case GridType.Equipment:
                     if (!Functions.CorrectSlot(SelectedCell.Item.Info.ItemType, (EquipmentSlot)Slot) || SelectedCell.GridType == GridType.Belt) return;
 
@@ -928,6 +937,8 @@ namespace Client.Controls
                 if (Selected) SelectedCell = null;
                 return;
             }
+
+            if (GridType == GridType.PartsStorage && toCell.Item != null && toCell.Item.Info.Effect != ItemEffect.ItemPart) return;
 
             if (toCell.Linked)
             {
@@ -1121,6 +1132,13 @@ namespace Client.Controls
                         return false;
                     break;
 
+                case GridType.PartsStorage:
+                    if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
+                    if (!MapObject.User.InSafeZone) return false;
+                    if (GridType != GridType.Inventory) return false;
+                    if (Item.Info.Effect != ItemEffect.ItemPart) return false;
+                    break;
+
                 case GridType.Storage:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
                     if (!MapObject.User.InSafeZone) return false;
@@ -1194,7 +1212,7 @@ namespace Client.Controls
                     break;
                 case GridType.Consign:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (GridType != GridType.Inventory && GridType != GridType.Storage) return false;
+                    if (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.PartsStorage) return false;
                     if (GridType == GridType.Inventory && !MapObject.User.InSafeZone) return false;
                     if ((Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
 
@@ -1203,19 +1221,19 @@ namespace Client.Controls
                     break;
                 case GridType.SendMail:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (GridType != GridType.Inventory && GridType != GridType.Storage) return false;
+                    if (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.PartsStorage) return false;
                     if (GridType == GridType.Inventory && !MapObject.User.InSafeZone) return false;
                     break;
                 case GridType.TradeUser:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.Equipment) return false;
+                    if (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.PartsStorage && GridType != GridType.Equipment) return false;
 
                     break;
                 case GridType.GuildStorage:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
                     if (!Item.Info.CanTrade) return false;
                     if ((Item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return false;
-                    if (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.Equipment) return false;
+                    if (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.PartsStorage && GridType != GridType.Equipment) return false;
 
                     break;
                 case GridType.WeddingRing:
@@ -1493,7 +1511,7 @@ namespace Client.Controls
                 case ItemType.CompanionFood:
                 case ItemType.ItemPart:
                     if (!GameScene.Game.CanUseItem(Item) || 
-                        GridType != GridType.Inventory && GridType != GridType.CompanionEquipment && GridType != GridType.CompanionInventory) return false;
+                        GridType != GridType.Inventory && GridType != GridType.PartsStorage && GridType != GridType.CompanionEquipment && GridType != GridType.CompanionInventory) return false;
 
                     if ((CEnvir.Now < GameScene.Game.UseItemTime && Item.Info.Effect != ItemEffect.ElixirOfPurification) || MapObject.User.Horse != HorseType.None) return false;
 
@@ -1679,7 +1697,7 @@ namespace Client.Controls
                     }
                     if (CEnvir.Shift)
                     {
-                        if (Item == null || (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.GuildStorage && GridType != GridType.CompanionInventory) || Item.Count <= 1) return;
+                        if (Item == null || (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.PartsStorage && GridType != GridType.GuildStorage && GridType != GridType.CompanionInventory) || Item.Count <= 1) return;
 
                         DXItemAmountWindow window = new DXItemAmountWindow("Item Split", Item);
                         
@@ -1935,8 +1953,11 @@ namespace Client.Controls
 
                             if (GameScene.Game.StorageBox.IsVisible)
                             {
-                                if (!MoveItem(GameScene.Game.StorageBox.Grid))
-                                    GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
+                                if (Item.Info.Effect == ItemEffect.ItemPart)
+                                    MoveItem(GameScene.Game.StorageBox.PartGrid);
+                                else if (!MoveItem(GameScene.Game.StorageBox.Grid))
+                                        GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
+                                
                                 return;
                             }
 
@@ -2087,9 +2108,10 @@ namespace Client.Controls
 
                             if (GameScene.Game.StorageBox.IsVisible)
                             {
-                                if (!MoveItem(GameScene.Game.StorageBox.Grid))
+                                if (Item.Info.Effect == ItemEffect.ItemPart)
+                                    MoveItem(GameScene.Game.StorageBox.PartGrid);
+                                else if (!MoveItem(GameScene.Game.StorageBox.Grid))
                                     GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
-                                return;
                             }
 
                             if (GameScene.Game.TradeBox.IsVisible)
@@ -2111,6 +2133,11 @@ namespace Client.Controls
 
 
                             break;
+                        case GridType.PartsStorage:
+                            if (Item == null) return;
+
+                            MoveItem(GameScene.Game.InventoryBox.Grid, true);
+                            return;
                         case GridType.Storage:
                             if (Item == null) return;
 
@@ -2328,6 +2355,7 @@ namespace Client.Controls
                     return;
                     
                 case GridType.Storage:
+                case GridType.PartsStorage:
                     
                     UseItem();
                     return;

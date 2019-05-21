@@ -380,6 +380,7 @@ namespace Library
                          EquipmentSize = 16,
                          CompanionInventorySize = 40,
                          CompanionEquipmentSize = 4,
+                         PartsStorageOffset = 2000,
                          EquipmentOffSet = 1000,
                          StorageSize = 100;
 
