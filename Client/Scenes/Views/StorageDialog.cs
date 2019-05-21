@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
+using System.Linq;
+using Library.SystemModels;
 using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
@@ -13,7 +15,7 @@ namespace Client.Scenes.Views
     public sealed class StorageDialog : DXWindow
     {
         #region Properties
-        public DXItemGrid Grid;
+        public DXItemGrid Grid, PartGrid;
         
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -33,18 +35,19 @@ namespace Client.Scenes.Views
         public override bool AutomaticVisiblity => true;
 
         #endregion
-        
+        private DXTabControl TabControl;
+        private DXTab StorageTab, PartsTab;
         public DXTextBox ItemNameTextBox;
         public DXComboBox ItemTypeComboBox;
         public DXButton ClearButton;
-        public DXVScrollBar StorageScrollBar;
+        public DXVScrollBar StorageScrollBar, PartsScrollBar;
         public ClientUserItem[] GuildStorage = new ClientUserItem[1000];
 
         public StorageDialog()
         {
             TitleLabel.Text = "Storage";
 
-            SetClientSize(new Size(473, 380));
+            SetClientSize(new Size(483, 411));
 
             DXControl filterPanel = new DXControl
             {
@@ -53,6 +56,13 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.Location.X, ClientArea.Location.Y),
                 Border = true,
                 BorderColour = Color.FromArgb(198, 166, 99)
+            };
+
+            TabControl = new DXTabControl
+            {
+                Parent = this,
+                Location = new Point(filterPanel.Location.X, filterPanel.Location.Y + filterPanel.Size.Height),
+                Size = new Size(ClientArea.Width, 390),
             };
 
             DXLabel label = new DXLabel
@@ -128,33 +138,71 @@ namespace Client.Scenes.Views
                 ItemNameTextBox.TextBox.Text = string.Empty;
             };
 
+            StorageTab = new DXTab
+            {
+                Parent = TabControl,
+                Border = true,
+                TabButton = { Label = { Text = "Storage" } },
+                Visible = true,
+            };
+
+            PartsTab = new DXTab
+            {
+                Parent = TabControl,
+                Border = true,
+                TabButton = { Label = { Text = "Parts" } },
+                Visible = false,
+            };
+
             Grid = new DXItemGrid
             {
-                Parent = this,
+                Parent = StorageTab,
                 GridSize = new Size(1, 1),
-                Location = new Point(ClientArea.Location.X, ClientArea.Location.Y + 30),
+                Location = new Point(5, 10),
                 GridType = GridType.Storage,
                 ItemGrid = CEnvir.Storage,
                 VisibleHeight = 10,
             };
 
             Grid.GridSizeChanged += StorageGrid_GridSizeChanged;
-            
 
+            PartGrid = new DXItemGrid
+            {
+                Parent = PartsTab,
+                GridSize = new Size(13, 76),
+                Location = new Point(5, 10),
+                GridType = GridType.PartsStorage,
+                ItemGrid = CEnvir.PartsStorage,
+                VisibleHeight = 10,
+            };
 
             StorageScrollBar = new DXVScrollBar
             {
-                Parent = this,
-                Location = new Point(ClientArea.Right - 14, ClientArea.Location.Y + 31),
+                Parent = StorageTab,
+                Location = new Point(Grid.Location.X + PartGrid.Size.Width, Grid.Location.Y),
                 Size = new Size(14, 349),
                 VisibleSize = 10,
                 Change = 1,
             };
             StorageScrollBar.ValueChanged += StorageScrollBar_ValueChanged;
 
+            PartsScrollBar = new DXVScrollBar
+            {
+                Parent = PartsTab,
+                Location = new Point(PartGrid.Location.X+PartGrid.Size.Width, PartGrid.Location.Y),
+                Size = new Size(14, 349),
+                VisibleSize = 10,
+                Change = 1,
+            };
+            PartsScrollBar.ValueChanged += PartsScrollBar_ValueChanged;
+            PartsScrollBar.MaxValue = PartGrid.GridSize.Height;
+
 
             foreach (DXItemCell cell in Grid.Grid)
                 cell.MouseWheel += StorageScrollBar.DoMouseWheel;
+
+            foreach (DXItemCell cell in PartGrid.Grid)
+                cell.MouseWheel += PartsScrollBar.DoMouseWheel;
 
 
         }
@@ -178,10 +226,16 @@ namespace Client.Scenes.Views
                 cell.MouseWheel += StorageScrollBar.DoMouseWheel;
         }
 
+
         public void ApplyStorageFilter()
         {
-            foreach (DXItemCell cell in Grid.Grid)
-                FilterCell(cell);
+            
+                foreach (DXItemCell cell in Grid.Grid)
+                    FilterCell(cell);
+            
+                foreach (DXItemCell cell in PartGrid.Grid)
+                    FilterPartsCell(cell);
+            
         }
         public void FilterCell(DXItemCell cell)
         {
@@ -215,10 +269,48 @@ namespace Client.Scenes.Views
             cell.Enabled = true;
         }
 
+        public void FilterPartsCell(DXItemCell cell)
+        {
+            
+            if (cell.Item == null && (ItemTypeComboBox.SelectedItem != null || !string.IsNullOrEmpty(ItemNameTextBox.TextBox.Text)))
+            {
+                cell.Enabled = false;
+                return;
+            }
+
+
+            if (ItemTypeComboBox.SelectedItem != null && cell.Item != null && cell.Item.Info.ItemType != (ItemType)ItemTypeComboBox.SelectedItem)
+            {
+                cell.Enabled = false;
+                return;
+            }
+
+            if (cell.Item != null)
+            {
+                ItemInfo info = Globals.ItemInfoList.Binding.First(x => x.Index == cell.Item.AddedStats[Stat.ItemIndex]);
+
+                if (!string.IsNullOrEmpty(ItemNameTextBox.TextBox.Text) && info.ItemName.IndexOf(ItemNameTextBox.TextBox.Text, StringComparison.OrdinalIgnoreCase) < 0)
+                {
+                    cell.Enabled = false;
+                    return;
+                }
+            }
+
+            if (cell.Item != null && (cell.Item.Info.PartCount <= cell.Item.Count))
+                cell.Opacity = 0.8f;
+
+
+            cell.Enabled = true;
+        }
 
         private void StorageScrollBar_ValueChanged(object sender, EventArgs e)
         {
             Grid.ScrollValue = StorageScrollBar.Value;
+        }
+
+        private void PartsScrollBar_ValueChanged(object sender, EventArgs e)
+        {
+            PartGrid.ScrollValue = PartsScrollBar.Value;
         }
 
         #region IDisposable

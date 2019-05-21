@@ -47,7 +47,7 @@ namespace Client.Envir
 
         public static Dictionary<LibraryFile, MirLibrary> LibraryList = new Dictionary<LibraryFile, MirLibrary>();
 
-        public static ClientUserItem[] Storage, MainStorage;
+        public static ClientUserItem[] Storage, MainStorage, PartsStorage, MainPartsStorage;
         
         public static List<ClientBlockInfo> BlockList = new List<ClientBlockInfo>();
         public static DBCollection<KeyBindInfo> KeyBinds;
@@ -373,13 +373,20 @@ namespace Client.Envir
         public static void FillStorage(List<ClientUserItem> items, bool observer)
         {
             Storage = new ClientUserItem[1000];
+            PartsStorage = new ClientUserItem[1000];
 
             if (!observer)
+            {
                 MainStorage = Storage;
+                MainPartsStorage = PartsStorage;
+            }
 
 
             foreach (ClientUserItem item in items)
-                Storage[item.Slot] = item;
+                if (item.Slot >= 2000)
+                    PartsStorage[item.Slot - Globals.PartsStorageOffset] = item;
+                else
+                    Storage[item.Slot] = item;
         }
         public static void Enqueue(Packet packet)
         {

@@ -126,7 +126,8 @@ namespace Server.Models
 
         public UserItem[] Inventory = new UserItem[Globals.InventorySize],
             Equipment = new UserItem[Globals.EquipmentSize],
-            Storage = new UserItem[1000];
+            Storage = new UserItem[1000],
+            PartsStorage = new UserItem[1000];
 
         public Companion Companion;
 
@@ -161,7 +162,12 @@ namespace Server.Models
             Character.LastStats = Stats = new Stats();
 
             foreach (UserItem item in Character.Account.Items)
-                Storage[item.Slot] = item;
+                if(item.Slot >= 2000)
+                {
+                    PartsStorage[item.Slot - Globals.PartsStorageOffset] = item;
+                }
+                else
+                    Storage[item.Slot] = item;
 
             foreach (UserItem item in Character.Items)
             {
@@ -1103,6 +1109,7 @@ namespace Server.Models
 
             Inventory = null;
             Equipment = null;
+            PartsStorage = null;
             Storage = null;
 
             Companion = null;
@@ -3755,6 +3762,9 @@ namespace Server.Models
                         }
                         fromArray = Inventory;
                         break;
+                    case GridType.PartsStorage:
+                        fromArray = PartsStorage;
+                        break;
                     case GridType.Storage:
                         fromArray = Storage;
                         break;
@@ -3811,6 +3821,9 @@ namespace Server.Models
                 {
                     case GridType.Inventory:
                         fromArray = Inventory;
+                        break;
+                    case GridType.PartsStorage:
+                        fromArray = PartsStorage;
                         break;
                     case GridType.Storage:
                         fromArray = Storage;
@@ -3881,6 +3894,9 @@ namespace Server.Models
                         Connection.ReceiveChat(Connection.Language.ConsignSafeZone, MessageType.System);
                         return;
                     }
+                    break;
+                case GridType.PartsStorage:
+                    array = PartsStorage;
                     break;
                 case GridType.Storage:
                     array = Storage;
@@ -5535,6 +5551,9 @@ namespace Server.Models
                 case GridType.Inventory:
                     fromArray = Inventory;
                     break;
+                case GridType.PartsStorage:
+                    fromArray = PartsStorage;
+                    break;
                 case GridType.CompanionInventory:
                     if (Companion == null) return;
 
@@ -6638,6 +6657,18 @@ namespace Server.Models
                 case GridType.Equipment:
                     fromArray = Equipment;
                     break;
+                case GridType.PartsStorage:
+                    if (!InSafeZone && !Character.Account.TempAdmin)
+                    {
+                        Connection.ReceiveChat(Connection.Language.StorageSafeZone, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.StorageSafeZone, MessageType.System);
+                        return;
+                    }
+
+                    fromArray = PartsStorage;
+                    break;
                 case GridType.Storage:
                     if (!InSafeZone && !Character.Account.TempAdmin)
                     {
@@ -6661,7 +6692,7 @@ namespace Server.Models
                         return;
                     }
 
-                    if (!InSafeZone && p.ToGrid != GridType.Storage)
+                    if (!InSafeZone && (p.ToGrid != GridType.Storage || p.ToGrid != GridType.PartsStorage))
                     {
                         Connection.ReceiveChat(Connection.Language.GuildStorageSafeZone, MessageType.System);
                         return;
@@ -6701,6 +6732,20 @@ namespace Server.Models
                     break;
                 case GridType.Equipment:
                     toArray = Equipment;
+                    break;
+                case GridType.PartsStorage:
+
+                    if (!InSafeZone && !Character.Account.TempAdmin)
+                    {
+                        Connection.ReceiveChat(Connection.Language.StorageSafeZone, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.StorageSafeZone, MessageType.System);
+                        return;
+                    }
+
+                    toArray = PartsStorage;
+                    
                     break;
                 case GridType.Storage:
 
@@ -7007,6 +7052,12 @@ namespace Server.Models
                     sendCompanionShape = true;
                     if (toItem == null) break;
                     throw new Exception("Shitty Move Item Logic");
+                case GridType.PartsStorage:
+                    if (toItem == null) break;
+
+                    toItem.Slot = p.FromSlot;
+                    toItem.Account = Character.Account;
+                    break;
                 case GridType.Storage:
                     if (toItem == null) break;
 
@@ -7087,6 +7138,10 @@ namespace Server.Models
                     sendCompanionShape = true;
                     fromItem.Slot = p.ToSlot + Globals.EquipmentOffSet;
                     fromItem.Companion = Companion.UserCompanion;
+                    break;
+                case GridType.PartsStorage:
+                    fromItem.Slot = p.ToSlot + Globals.PartsStorageOffset;
+                    fromItem.Account = Character.Account;
                     break;
                 case GridType.Storage:
                     fromItem.Slot = p.ToSlot;
@@ -7231,6 +7286,9 @@ namespace Server.Models
                 case GridType.Equipment:
                     itemArray = Equipment;
                     break;
+                case GridType.PartsStorage:
+                    itemArray = PartsStorage;
+                    break;
                 case GridType.Storage:
                     itemArray = Storage;
                     break;
@@ -7291,6 +7349,9 @@ namespace Server.Models
                 case GridType.Inventory:
                     array = Inventory;
                     break;
+                case GridType.PartsStorage:
+                    array = PartsStorage;
+                    break;
                 case GridType.Storage:
                     array = Storage;
                     break;
@@ -7345,6 +7406,9 @@ namespace Server.Models
                 {
                     case GridType.Inventory:
                         newItem.Character = Character;
+                        break;
+                    case GridType.PartsStorage:
+                        newItem.Account = Character.Account;
                         break;
                     case GridType.Storage:
                         newItem.Account = Character.Account;
@@ -8677,6 +8741,19 @@ namespace Server.Models
 
                     fromArray = Companion.Inventory;
                     break;
+                case GridType.PartsStorage:
+                    if (!InSafeZone && !Character.Account.TempAdmin)
+                    {
+                        Connection.ReceiveChat(Connection.Language.StorageSafeZone, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.StorageSafeZone, MessageType.System);
+
+                        return;
+                    }
+
+                    fromArray = PartsStorage;
+                    break;
                 case GridType.Storage:
                     if (!InSafeZone && !Character.Account.TempAdmin)
                     {
@@ -8823,6 +8900,9 @@ namespace Server.Models
                     case GridType.Equipment:
                         fromArray = Equipment;
                         break;
+                    case GridType.PartsStorage:
+                        fromArray = PartsStorage;
+                        break;
                     case GridType.Storage:
                         fromArray = Storage;
                         break;
@@ -8918,6 +8998,9 @@ namespace Server.Models
                         break;
                     case GridType.Equipment:
                         fromArray = TradePartner.Equipment;
+                        break;
+                    case GridType.PartsStorage:
+                        fromArray = TradePartner.PartsStorage;
                         break;
                     case GridType.Storage:
                         fromArray = TradePartner.Storage;
@@ -9030,6 +9113,9 @@ namespace Server.Models
                     case GridType.Equipment:
                         fromArray = Equipment;
                         break;
+                    case GridType.PartsStorage:
+                        fromArray = PartsStorage;
+                        break;
                     case GridType.Storage:
                         fromArray = Storage;
                         break;
@@ -9068,6 +9154,9 @@ namespace Server.Models
                         break;
                     case GridType.Equipment:
                         fromArray = TradePartner.Equipment;
+                        break;
+                    case GridType.PartsStorage:
+                        fromArray = TradePartner.PartsStorage;
                         break;
                     case GridType.Storage:
                         fromArray = TradePartner.Storage;
