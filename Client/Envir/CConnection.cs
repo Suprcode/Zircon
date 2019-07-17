@@ -599,7 +599,7 @@ namespace Client.Envir
             };
 
             CEnvir.Storage = CEnvir.MainStorage;
-            CEnvir.PartsStorage = CEnvir.MainPartStorage;
+            CEnvir.PartsStorage = CEnvir.MainPartsStorage;
 
             scene.SelectBox.UpdateCharacters();
         }
