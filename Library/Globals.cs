@@ -918,6 +918,7 @@ namespace Library
         public MirClass Class { get; set; }
         public int Level { get; set; }
         public decimal Experience { get; set; }
+        public decimal MaxExperience { get; set; }
         public bool Online { get; set; }
         public bool Observable { get; set; }
     }
