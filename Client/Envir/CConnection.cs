@@ -1557,6 +1557,10 @@ namespace Client.Envir
                 return;
             }
         }
+        public void Process(S.InformMaxExperience p)
+        {
+            MapObject.User.MaxExperience = p.MaxExperience;
+        } 
         public void Process(S.LevelChanged p)
         {
             MapObject.User.Level = p.Level;
