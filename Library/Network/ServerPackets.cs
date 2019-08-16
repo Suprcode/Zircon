@@ -376,6 +376,7 @@ namespace Library.Network.ServerPackets
     {
         public int Level { get; set; }
         public decimal Experience { get; set; }
+        public decimal MaxExperience { get; set; }
     }
     public sealed class ObjectLeveled : Packet
     {
