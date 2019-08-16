@@ -1561,6 +1561,7 @@ namespace Client.Envir
         {
             MapObject.User.Level = p.Level;
             MapObject.User.Experience = p.Experience;
+            MapObject.User.MaxExperience = p.MaxExperience;
 
             GameScene.Game.ReceiveChat("Level Increased", MessageType.System);
         }
