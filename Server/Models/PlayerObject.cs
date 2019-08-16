@@ -698,6 +698,7 @@ namespace Server.Models
                     Dead = true;
                     TownRevive();
                 }
+                Enqueue(new S.MaxExperience { MaxExperience = MaxExperience });
             }
 
             if (Character.Account.GuildMember != null)
