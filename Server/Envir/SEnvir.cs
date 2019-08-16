@@ -622,6 +622,40 @@ namespace Server.Envir
             EnvirThread = new Thread(EnvirLoop) { IsBackground = true };
             EnvirThread.Start();
         }
+        
+        public static void LoadExperienceList()
+        {
+            string path = @".\Config\ExperienceList.txt";
+            if (!File.Exists(path))
+            {
+                if (!Directory.Exists(@".\Config")) Directory.CreateDirectory(@".\Config");
+                using (StreamWriter file = new StreamWriter(path))
+                {
+                    for (int i = 0; i < Globals.ExperienceList.Count; i++)
+                    {
+                        file.WriteLine(Globals.ExperienceList[i] + i == 0 ? : " //needed for lvl0" : "");
+                    }
+                }
+            }
+            else 
+            {
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        if (lines[i] == string.Empty) continue; //ignore empty line
+                        if (lines[i].StartsWith("//")) continue; //ignore comment
+                        try
+                        {
+                            decimal exp = decimal.Parse(lines[i].Split('/')[0]); //remove comment
+                            Globals.ExperienceList.Add(exp);
+                        }
+                        catch (Exception e)
+                        {
+                            Log(string.Format("ExperienceList: Error parsing line {0} - {1}", i, lines[i]));
+                        }
+                    }
+            }
+            Log("Experience List Loaded.");
+        }
 
         private static void LoadDatabase()
         {
@@ -821,6 +855,7 @@ namespace Server.Envir
         private static void StartEnvir()
         {
             LoadDatabase();
+            LoadExperienceList();
 
             #region Load Files
             for (int i = 0; i < MapInfoList.Count; i++)
