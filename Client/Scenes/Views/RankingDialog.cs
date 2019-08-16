@@ -524,10 +524,8 @@ namespace Client.Scenes.Views
                 ObseverButton.Enabled = Rank.Online && Rank.Observable;
 
                 decimal percent = 0;
-
-                if (Rank.Level < Globals.ExperienceList.Count)
-                    percent = Math.Min(1, Math.Max(0, Globals.ExperienceList[Rank.Level] > 0 ? Rank.Experience/Globals.ExperienceList[Rank.Level] : 0));
-
+                percent = Math.Min(1, Math.Max(0, Rank.MaxExperience > 0 ? Rank.Experience / Rank.MaxExperience : 0));
+                
                 LevelLabel.Text = $"{Rank.Level} - {percent:0.##%}";
             }
 
