@@ -371,6 +371,10 @@ namespace Library.Network.ServerPackets
         public float DayTime { get; set; }
     }
 
+    public sealed class InformMaxExperience : Packet
+    {
+        public decimal MaxExperience { get; set; }
+    }
 
     public sealed class LevelChanged : Packet
     {
