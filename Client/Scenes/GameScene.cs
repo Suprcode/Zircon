@@ -3518,7 +3518,7 @@ namespace Client.Scenes
         {
             if (User == null) return;
 
-            User.MaxExperience = User.Level < Globals.ExperienceList.Count ? Globals.ExperienceList[User.Level] : 0;
+            //User.MaxExperience = User.Level < Globals.ExperienceList.Count ? Globals.ExperienceList[User.Level] : 0;
             MainPanel.LevelLabel.Text = User.Level.ToString();
 
             foreach (NPCGoodsCell cell in NPCGoodsBox.Cells)

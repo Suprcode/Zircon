@@ -704,6 +704,7 @@ namespace Server.Models
                     Dead = true;
                     TownRevive();
                 }
+                Enqueue(new S.InformMaxExperience { MaxExperience = MaxExperience });
             }
 
             if (Character.Account.GuildMember != null)
@@ -2316,7 +2317,7 @@ namespace Server.Models
             SetHP(Stats[Stat.Health]);
             SetMP(Stats[Stat.Mana]);
 
-            Enqueue(new S.LevelChanged { Level = Level, Experience = Experience });
+            Enqueue(new S.LevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
             Broadcast(new S.ObjectLeveled { ObjectID = ObjectID });
 
             SEnvir.RankingSort(Character);
@@ -11082,7 +11083,7 @@ namespace Server.Models
             Level = 1;
             Experience = Experience / 200;
 
-            Enqueue(new S.LevelChanged { Level = Level, Experience = Experience });
+            Enqueue(new S.LevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
             Broadcast(new S.ObjectLeveled { ObjectID = ObjectID });
 
             Character.Rebirth++;

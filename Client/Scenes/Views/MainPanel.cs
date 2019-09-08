@@ -35,11 +35,8 @@ namespace Client.Scenes.Views
             {
                 if (ExperienceBar.Library == null) return;
 
-                if (MapObject.User.Level >= Globals.ExperienceList.Count) return;
-
-                decimal MaxExperience = Globals.ExperienceList[MapObject.User.Level];
-
-                if (MaxExperience == 0) return;
+                decimal MaxExperience = MapObject.User.MaxExperience;
+                if (MaxExperience <= 0) return;
 
                 //Get percent.
                 MirImage image = ExperienceBar.Library.CreateImage(56, ImageType.Image);
