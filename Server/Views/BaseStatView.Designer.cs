@@ -70,7 +70,7 @@
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(631, 144);
+            this.ribbon.Size = new System.Drawing.Size(631, 143);
             // 
             // SaveButton
             // 
@@ -100,11 +100,11 @@
             // BaseStatGridControl
             // 
             this.BaseStatGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.BaseStatGridControl.Location = new System.Drawing.Point(0, 144);
+            this.BaseStatGridControl.Location = new System.Drawing.Point(0, 143);
             this.BaseStatGridControl.MainView = this.BaseStatGridView;
             this.BaseStatGridControl.MenuManager = this.ribbon;
             this.BaseStatGridControl.Name = "BaseStatGridControl";
-            this.BaseStatGridControl.Size = new System.Drawing.Size(631, 290);
+            this.BaseStatGridControl.Size = new System.Drawing.Size(631, 291);
             this.BaseStatGridControl.TabIndex = 2;
             this.BaseStatGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.BaseStatGridView});
@@ -132,14 +132,12 @@
             this.gridColumn18,
             this.gridColumn19});
             this.BaseStatGridView.GridControl = this.BaseStatGridControl;
-            this.BaseStatGridView.GroupCount = 1;
             this.BaseStatGridView.Name = "BaseStatGridView";
             this.BaseStatGridView.OptionsView.EnableAppearanceEvenRow = true;
             this.BaseStatGridView.OptionsView.EnableAppearanceOddRow = true;
             this.BaseStatGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
             this.BaseStatGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            this.BaseStatGridView.SortInfo.AddRange(new DevExpress.XtraGrid.Columns.GridColumnSortInfo[] {
-            new DevExpress.XtraGrid.Columns.GridColumnSortInfo(this.gridColumn1, DevExpress.Data.ColumnSortOrder.Ascending)});
+            this.BaseStatGridView.OptionsView.ShowGroupPanel = false;
             // 
             // gridColumn1
             // 
@@ -153,126 +151,126 @@
             this.gridColumn2.FieldName = "Level";
             this.gridColumn2.Name = "gridColumn2";
             this.gridColumn2.Visible = true;
-            this.gridColumn2.VisibleIndex = 0;
+            this.gridColumn2.VisibleIndex = 1;
             // 
             // gridColumn3
             // 
             this.gridColumn3.FieldName = "Health";
             this.gridColumn3.Name = "gridColumn3";
             this.gridColumn3.Visible = true;
-            this.gridColumn3.VisibleIndex = 1;
+            this.gridColumn3.VisibleIndex = 2;
             // 
             // gridColumn4
             // 
             this.gridColumn4.FieldName = "Mana";
             this.gridColumn4.Name = "gridColumn4";
             this.gridColumn4.Visible = true;
-            this.gridColumn4.VisibleIndex = 2;
+            this.gridColumn4.VisibleIndex = 3;
             // 
             // gridColumn5
             // 
             this.gridColumn5.FieldName = "BagWeight";
             this.gridColumn5.Name = "gridColumn5";
             this.gridColumn5.Visible = true;
-            this.gridColumn5.VisibleIndex = 3;
+            this.gridColumn5.VisibleIndex = 4;
             // 
             // gridColumn6
             // 
             this.gridColumn6.FieldName = "WearWeight";
             this.gridColumn6.Name = "gridColumn6";
             this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 4;
+            this.gridColumn6.VisibleIndex = 5;
             // 
             // gridColumn7
             // 
             this.gridColumn7.FieldName = "HandWeight";
             this.gridColumn7.Name = "gridColumn7";
             this.gridColumn7.Visible = true;
-            this.gridColumn7.VisibleIndex = 5;
+            this.gridColumn7.VisibleIndex = 6;
             // 
             // gridColumn8
             // 
             this.gridColumn8.FieldName = "Accuracy";
             this.gridColumn8.Name = "gridColumn8";
             this.gridColumn8.Visible = true;
-            this.gridColumn8.VisibleIndex = 6;
+            this.gridColumn8.VisibleIndex = 7;
             // 
             // gridColumn9
             // 
             this.gridColumn9.FieldName = "Agility";
             this.gridColumn9.Name = "gridColumn9";
             this.gridColumn9.Visible = true;
-            this.gridColumn9.VisibleIndex = 7;
+            this.gridColumn9.VisibleIndex = 8;
             // 
             // gridColumn10
             // 
             this.gridColumn10.FieldName = "MinAC";
             this.gridColumn10.Name = "gridColumn10";
             this.gridColumn10.Visible = true;
-            this.gridColumn10.VisibleIndex = 8;
+            this.gridColumn10.VisibleIndex = 9;
             // 
             // gridColumn11
             // 
             this.gridColumn11.FieldName = "MaxAC";
             this.gridColumn11.Name = "gridColumn11";
             this.gridColumn11.Visible = true;
-            this.gridColumn11.VisibleIndex = 9;
+            this.gridColumn11.VisibleIndex = 10;
             // 
             // gridColumn12
             // 
             this.gridColumn12.FieldName = "MinMR";
             this.gridColumn12.Name = "gridColumn12";
             this.gridColumn12.Visible = true;
-            this.gridColumn12.VisibleIndex = 10;
+            this.gridColumn12.VisibleIndex = 11;
             // 
             // gridColumn13
             // 
             this.gridColumn13.FieldName = "MaxMR";
             this.gridColumn13.Name = "gridColumn13";
             this.gridColumn13.Visible = true;
-            this.gridColumn13.VisibleIndex = 11;
+            this.gridColumn13.VisibleIndex = 12;
             // 
             // gridColumn14
             // 
             this.gridColumn14.FieldName = "MinDC";
             this.gridColumn14.Name = "gridColumn14";
             this.gridColumn14.Visible = true;
-            this.gridColumn14.VisibleIndex = 12;
+            this.gridColumn14.VisibleIndex = 13;
             // 
             // gridColumn15
             // 
             this.gridColumn15.FieldName = "MaxDC";
             this.gridColumn15.Name = "gridColumn15";
             this.gridColumn15.Visible = true;
-            this.gridColumn15.VisibleIndex = 13;
+            this.gridColumn15.VisibleIndex = 14;
             // 
             // gridColumn16
             // 
             this.gridColumn16.FieldName = "MinMC";
             this.gridColumn16.Name = "gridColumn16";
             this.gridColumn16.Visible = true;
-            this.gridColumn16.VisibleIndex = 14;
+            this.gridColumn16.VisibleIndex = 15;
             // 
             // gridColumn17
             // 
             this.gridColumn17.FieldName = "MaxMC";
             this.gridColumn17.Name = "gridColumn17";
             this.gridColumn17.Visible = true;
-            this.gridColumn17.VisibleIndex = 15;
+            this.gridColumn17.VisibleIndex = 16;
             // 
             // gridColumn18
             // 
             this.gridColumn18.FieldName = "MinSC";
             this.gridColumn18.Name = "gridColumn18";
             this.gridColumn18.Visible = true;
-            this.gridColumn18.VisibleIndex = 16;
+            this.gridColumn18.VisibleIndex = 17;
             // 
             // gridColumn19
             // 
             this.gridColumn19.FieldName = "MaxSC";
             this.gridColumn19.Name = "gridColumn19";
             this.gridColumn19.Visible = true;
-            this.gridColumn19.VisibleIndex = 17;
+            this.gridColumn19.VisibleIndex = 18;
             // 
             // BaseStatView
             // 
