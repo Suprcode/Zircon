@@ -639,6 +639,7 @@ namespace Server.Envir
             }
             else 
             {
+                    var lines = File.ReadAllLines(path);
                     for (int i = 0; i < lines.Length; i++)
                     {
                         if (lines[i] == string.Empty) continue; //ignore empty line
