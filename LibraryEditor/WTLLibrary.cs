@@ -1,6 +1,7 @@
 ﻿using Library_Editor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -97,10 +98,20 @@ namespace LibraryEditor
             if (image == null)
             {
                 _fStream.Seek(_indexList[index], SeekOrigin.Begin);
-                image = new WTLImage(IsNewVersion, _bReader);
+                image = new WTLImage(index, IsNewVersion, _bReader, GetNextOffset(index) - 1);
                 Images[index] = image;
                 image.CreateTexture(_bReader);
             }
+        }
+
+        private int GetNextOffset(int index)
+        {
+            for (var i = index + 1; i < _indexList.Length; i++)
+            {
+                if (_indexList[i] > 0)
+                    return _indexList[i];
+            }
+            return (int)_fStream.Length - (4 * _count);
         }
 
         public void ToMLibrary()
@@ -172,7 +183,7 @@ namespace LibraryEditor
             _MaskfBytes = new byte[0];
         }
 
-        public WTLImage(bool isNewVersion, BinaryReader bReader)
+        public WTLImage(int index, bool isNewVersion, BinaryReader bReader, int endOffset)
         {
             IsNewVersion = isNewVersion;
             Width = bReader.ReadInt16();
@@ -184,7 +195,10 @@ namespace LibraryEditor
 
             if (IsNewVersion)
             {
-                var u1 = bReader.ReadBytes(4);
+                var u1 = bReader.ReadUInt16(); // any related with main image
+                var u2 = bReader.ReadUInt16(); // any related with mask image
+
+                Debug.WriteLine($"Image Index: {index}: image {u1}, mask: {u2}");
 
                 Length = bReader.ReadByte() | bReader.ReadByte() << 8 | bReader.ReadByte() << 16;
                 Shadow = bReader.ReadByte();
@@ -221,7 +235,7 @@ namespace LibraryEditor
         public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
         {
             if (IsNewVersion)
-                throw new NotSupportedException();
+                return null;
 
             const int size = 8;
             int offset = 0, blockOffSet = 0;
