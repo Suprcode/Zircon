@@ -200,9 +200,8 @@ namespace LibraryEditor
 
                 Debug.WriteLine($"Image Index: {index}: image {u1}, mask: {u2}");
 
-                Length = bReader.ReadByte() | bReader.ReadByte() << 8 | bReader.ReadByte() << 16;
-                Shadow = bReader.ReadByte();
-                HasMask = ((Shadow >> 7) == 1) ? true : false;
+                Length = bReader.ReadInt32() ;
+                Length += (4 - Length % 4);
             }
             else
             {
