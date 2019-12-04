@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Library_Editor;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,6 +23,8 @@ namespace LibraryEditor
         private bool _initialized;
 
         WTLLibrary shadowLibrary;
+
+        public bool IsNewVersion { get; private set; }
 
         public WTLLibrary(string filename)
         {
@@ -51,11 +55,19 @@ namespace LibraryEditor
 
         private void LoadImageInfo()
         {
-            _fStream.Seek(28, SeekOrigin.Begin);
+            _fStream.Seek(2, SeekOrigin.Begin);
+            var version = System.Text.Encoding.UTF8.GetString(_bReader.ReadBytes(20)).TrimEnd('\0');
+            IsNewVersion = version == "ILIB v2.0-WEMADE";
 
+            _fStream.Seek(28, SeekOrigin.Begin);
             _count = _bReader.ReadInt32();
-            Images = new WTLImage[_count];
             _indexList = new int[_count];
+            Images = new WTLImage[_count];
+
+            if (IsNewVersion)
+            {
+                _bReader.BaseStream.Seek(_fStream.Length - _count * 4, SeekOrigin.Begin);
+            }
 
             for (int i = 0; i < _count; i++)
                 _indexList[i] = _bReader.ReadInt32();
@@ -77,7 +89,7 @@ namespace LibraryEditor
             if (index < 0 || index >= Images.Length) return;
             if (_indexList[index] == 0)
             {
-                Images[index] = new WTLImage();
+                Images[index] = new WTLImage(IsNewVersion);
                 return;
             }
             WTLImage image = Images[index];
@@ -85,7 +97,7 @@ namespace LibraryEditor
             if (image == null)
             {
                 _fStream.Seek(_indexList[index], SeekOrigin.Begin);
-                image = new WTLImage(_bReader);
+                image = new WTLImage(IsNewVersion, _bReader);
                 Images[index] = image;
                 image.CreateTexture(_bReader);
             }
@@ -141,6 +153,9 @@ namespace LibraryEditor
         public readonly short Width, Height, X, Y, ShadowX, ShadowY;
         public readonly int Length;
         public readonly byte Shadow;
+
+        public bool IsNewVersion { get; }
+
         private byte[] _fBytes;
         public Bitmap Image;
 
@@ -150,23 +165,37 @@ namespace LibraryEditor
         private byte[] _MaskfBytes;
         public Bitmap MaskImage;
 
-        public WTLImage()
+        public WTLImage(bool isNewVersion)
         {
+            IsNewVersion = isNewVersion;
             _fBytes = new byte[0];
             _MaskfBytes = new byte[0];
         }
 
-        public WTLImage(BinaryReader bReader)
+        public WTLImage(bool isNewVersion, BinaryReader bReader)
         {
+            IsNewVersion = isNewVersion;
             Width = bReader.ReadInt16();
             Height = bReader.ReadInt16();
             X = bReader.ReadInt16();
             Y = bReader.ReadInt16();
             ShadowX = bReader.ReadInt16();
             ShadowY = bReader.ReadInt16();
-            Length = bReader.ReadByte() | bReader.ReadByte() << 8 | bReader.ReadByte() << 16;
-            Shadow = bReader.ReadByte();
-            HasMask = ((Shadow >> 7) == 1) ? true : false;
+
+            if (IsNewVersion)
+            {
+                var u1 = bReader.ReadBytes(4);
+
+                Length = bReader.ReadByte() | bReader.ReadByte() << 8 | bReader.ReadByte() << 16;
+                Shadow = bReader.ReadByte();
+                HasMask = ((Shadow >> 7) == 1) ? true : false;
+            }
+            else
+            {
+                Length = bReader.ReadByte() | bReader.ReadByte() << 8 | bReader.ReadByte() << 16;
+                Shadow = bReader.ReadByte();
+                HasMask = ((Shadow >> 7) == 1) ? true : false;
+            }
         }
 
         public unsafe void CreateTexture(BinaryReader bReader)
@@ -191,6 +220,9 @@ namespace LibraryEditor
 
         public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
         {
+            if (IsNewVersion)
+                throw new NotSupportedException();
+
             const int size = 8;
             int offset = 0, blockOffSet = 0;
             List<byte> countList = new List<byte>();
