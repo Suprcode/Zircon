@@ -1,15 +1,5 @@
 .idea/*
 *.user
-/Client/obj/Debug
-/ImageManager/obj/Debug
-/Launcher/obj/Debug
-/Library/obj/Debug
-/PatchManager/obj/Debug
-/Patcher/obj/Debug
-/Server/obj/Debug
-/.vs/Zircon Server/v15/Server/sqlite3
-/LibraryEditor/obj
-/LibraryEditor/bin
 /Build/LibraryEditor/Exported
 /.vs/Zircon Server/v15/*.suo
 /Build/LibraryEditor
@@ -18,3 +8,6 @@
 *.csproj
 Components/SlimDX.dll
 PatchManager/PatchManager.csproj
+.vs/
+[Oo]bj/
+[Bb]in/
