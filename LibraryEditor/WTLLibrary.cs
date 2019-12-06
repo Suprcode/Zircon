@@ -195,12 +195,10 @@ namespace LibraryEditor
 
             if (IsNewVersion)
             {
-                var u1 = bReader.ReadUInt16(); // any related with main image
-                var u2 = bReader.ReadUInt16(); // any related with mask image
-
-                Debug.WriteLine($"Image Index: {index}: image {u1}, mask: {u2}");
-
-                Length = bReader.ReadInt32() ;
+                var u1 = bReader.ReadUInt16(); // something related to the main image
+                var u2 = bReader.ReadUInt16(); // something related to the mask image
+                HasMask = u2 > 0;
+                Length = bReader.ReadInt32();
                 Length += (4 - Length % 4);
             }
             else
@@ -231,11 +229,8 @@ namespace LibraryEditor
             }
         }
 
-        public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
+        private unsafe Bitmap DecompressV1Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
         {
-            if (IsNewVersion)
-                return null;
-
             const int size = 8;
             int offset = 0, blockOffSet = 0;
             List<byte> countList = new List<byte>();
@@ -327,6 +322,19 @@ namespace LibraryEditor
 
             output.UnlockBits(data);
             return output;
+        }
+
+        private Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
+        {
+            var data = bReader.ReadBytes(imageLength);
+            return null;
+        }
+
+        public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
+        {
+            return IsNewVersion
+                ? DecompressV2Texture(bReader, imageLength, outputWidth, outputHeight)
+                : DecompressV1Texture(bReader, imageLength, outputWidth, outputHeight);
         }
 
         private static void DecompressBlock(IList<byte> newPixels, byte[] block)
