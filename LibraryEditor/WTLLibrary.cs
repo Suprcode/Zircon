@@ -154,6 +154,9 @@ namespace LibraryEditor
     {
         public readonly short Width, Height, X, Y, ShadowX, ShadowY;
         public readonly int Length;
+
+        public int DataOffset { get; }
+
         public readonly byte Shadow;
 
         public int Index { get; }
@@ -189,11 +192,18 @@ namespace LibraryEditor
 
             if (IsNewVersion)
             {
-                var u1 = bReader.ReadUInt16(); // something related to the main image
-                var u2 = bReader.ReadUInt16(); // something related to the mask image
-                HasMask = u2 > 0;
+                var m1 = bReader.ReadByte(); // something related to the main image
+                var m2 = bReader.ReadByte();
+
+                var ma1 = bReader.ReadByte(); // something related to the mask image
+                var ma2 = bReader.ReadByte();
+
+                HasMask = ma1 > 0;
                 Length = bReader.ReadInt32();
-                Length += (4 - Length % 4);
+                if (Length % 4 > 0) Length += 4 - (Length % 4);
+                var t = BitConverter.GetBytes(Length);
+                var x = BitConverter.ToString(t);
+                DataOffset = (int)bReader.BaseStream.Position;
             }
             else
             {
@@ -208,7 +218,18 @@ namespace LibraryEditor
             Image = ReadImage(bReader, Length, Width, Height);
             if (HasMask)
             {
-                if (HasMask)
+                if (IsNewVersion)
+                {
+                    //    var buff = bReader.ReadBytes(10);
+                    //    var str = BitConverter.ToString(buff);
+                    //    bReader.BaseStream.Seek(bReader.BaseStream.Position - 10, SeekOrigin.Begin);
+                    MaskWidth = Width;
+                    MaskHeight = Height;
+                    MaskX = X;
+                    MaskY = Y;
+                    MaskLength = bReader.ReadInt32();
+                }
+                else
                 {
                     MaskWidth = bReader.ReadInt16();
                     MaskHeight = bReader.ReadInt16();
@@ -219,6 +240,7 @@ namespace LibraryEditor
                     MaskLength = bReader.ReadByte() | bReader.ReadByte() << 8 | bReader.ReadByte() << 16;
                     bReader.ReadByte(); //mask shadow
                 }
+
                 MaskImage = ReadImage(bReader, MaskLength, MaskWidth, MaskHeight);
             }
         }
@@ -318,18 +340,26 @@ namespace LibraryEditor
             return output;
         }
 
-
-
         private unsafe Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
         {
             var buffer = bReader.ReadBytes(imageLength);
-            var ooo = DeflateCompression.Decompress(buffer);
-            var hex = BitConverter.ToString(ooo).Replace("-", " ");
-            var bm = new Bitmap(outputWidth, outputHeight);
+            var decompressedBuffer = DeflateCompression.Decompress(buffer);
 
-            BitmapData data = bm.LockBits(new Rectangle(0, 0, outputWidth, outputHeight), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            int w = Width + (4 - Width % 4) % 4;
+            int h = Height + (4 - Height % 4) % 4;
+            int e = w * h / 2;
 
-            fixed (byte* source = ooo)
+            var is32bits = e < decompressedBuffer.Length;
+          
+            var bitmap = new Bitmap(outputWidth, outputHeight);
+
+            BitmapData data = bitmap.LockBits(
+                new Rectangle(0, 0, outputWidth, outputHeight),
+                ImageLockMode.WriteOnly,
+                PixelFormat.Format32bppArgb
+            );
+
+            fixed (byte* source = decompressedBuffer)
                 Squish.DecompressImage(data.Scan0, outputWidth, outputHeight, (IntPtr)source, SquishFlags.Dxt1);
 
             byte* dest = (byte*)data.Scan0;
@@ -342,9 +372,9 @@ namespace LibraryEditor
                 dest[i + 2] = b;
             }
 
-            bm.UnlockBits(data);
+            bitmap.UnlockBits(data);
 
-            return bm;
+            return bitmap;
         }
 
         public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
