@@ -91,7 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Astc.cs" />
-    <Compile Include="DeflateCompression.cs" />
     <Compile Include="FixedListView.cs">
       <SubType>Component</SubType>
     </Compile>

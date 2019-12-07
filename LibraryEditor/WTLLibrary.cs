@@ -201,8 +201,6 @@ namespace LibraryEditor
                 HasMask = ma1 > 0;
                 Length = bReader.ReadInt32();
                 if (Length % 4 > 0) Length += 4 - (Length % 4);
-                var t = BitConverter.GetBytes(Length);
-                var x = BitConverter.ToString(t);
                 DataOffset = (int)bReader.BaseStream.Position;
             }
             else
@@ -343,14 +341,14 @@ namespace LibraryEditor
         private unsafe Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
         {
             var buffer = bReader.ReadBytes(imageLength);
-            var decompressedBuffer = DeflateCompression.Decompress(buffer);
+            var decompressedBuffer = Ionic.Zlib.DeflateStream.UncompressBuffer(buffer);
 
             int w = Width + (4 - Width % 4) % 4;
             int h = Height + (4 - Height % 4) % 4;
             int e = w * h / 2;
 
             var is32bits = e < decompressedBuffer.Length;
-          
+
             var bitmap = new Bitmap(outputWidth, outputHeight);
 
             BitmapData data = bitmap.LockBits(
