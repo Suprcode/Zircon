@@ -1,4 +1,5 @@
 ﻿using Library_Editor;
+using ManagedSquish;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -90,7 +91,7 @@ namespace LibraryEditor
             if (index < 0 || index >= Images.Length) return;
             if (_indexList[index] == 0)
             {
-                Images[index] = new WTLImage(IsNewVersion);
+                Images[index] = new WTLImage(index, IsNewVersion);
                 return;
             }
             WTLImage image = Images[index];
@@ -98,20 +99,10 @@ namespace LibraryEditor
             if (image == null)
             {
                 _fStream.Seek(_indexList[index], SeekOrigin.Begin);
-                image = new WTLImage(index, IsNewVersion, _bReader, GetNextOffset(index) - 1);
+                image = new WTLImage(index, IsNewVersion, _bReader);
                 Images[index] = image;
                 image.CreateTexture(_bReader);
             }
-        }
-
-        private int GetNextOffset(int index)
-        {
-            for (var i = index + 1; i < _indexList.Length; i++)
-            {
-                if (_indexList[i] > 0)
-                    return _indexList[i];
-            }
-            return (int)_fStream.Length - (4 * _count);
         }
 
         public void ToMLibrary()
@@ -165,6 +156,7 @@ namespace LibraryEditor
         public readonly int Length;
         public readonly byte Shadow;
 
+        public int Index { get; }
         public bool IsNewVersion { get; }
 
         private byte[] _fBytes;
@@ -176,15 +168,17 @@ namespace LibraryEditor
         private byte[] _MaskfBytes;
         public Bitmap MaskImage;
 
-        public WTLImage(bool isNewVersion)
+        public WTLImage(int index, bool isNewVersion)
         {
+            Index = index;
             IsNewVersion = isNewVersion;
             _fBytes = new byte[0];
             _MaskfBytes = new byte[0];
         }
 
-        public WTLImage(int index, bool isNewVersion, BinaryReader bReader, int endOffset)
+        public WTLImage(int index, bool isNewVersion, BinaryReader bReader)
         {
+            Index = index;
             IsNewVersion = isNewVersion;
             Width = bReader.ReadInt16();
             Height = bReader.ReadInt16();
@@ -324,10 +318,33 @@ namespace LibraryEditor
             return output;
         }
 
-        private Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
+
+
+        private unsafe Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
         {
-            var data = bReader.ReadBytes(imageLength);
-            return null;
+            var buffer = bReader.ReadBytes(imageLength);
+            var ooo = DeflateCompression.Decompress(buffer);
+            var hex = BitConverter.ToString(ooo).Replace("-", " ");
+            var bm = new Bitmap(outputWidth, outputHeight);
+
+            BitmapData data = bm.LockBits(new Rectangle(0, 0, outputWidth, outputHeight), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+            fixed (byte* source = ooo)
+                Squish.DecompressImage(data.Scan0, outputWidth, outputHeight, (IntPtr)source, SquishFlags.Dxt1);
+
+            byte* dest = (byte*)data.Scan0;
+
+            for (int i = 0; i < outputHeight * outputWidth * 4; i += 4)
+            {
+                //Reverse Red/Blue
+                byte b = dest[i];
+                dest[i] = dest[i + 2];
+                dest[i + 2] = b;
+            }
+
+            bm.UnlockBits(data);
+
+            return bm;
         }
 
         public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
