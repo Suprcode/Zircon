@@ -633,7 +633,7 @@ namespace Server.Envir
                 {
                     for (int i = 0; i < Globals.ExperienceList.Count; i++)
                     {
-                        file.WriteLine(Globals.ExperienceList[i] + i == 0 ? : " //needed for lvl0" : "");
+                        file.WriteLine(Globals.ExperienceList[i] + i == 0 ? " //needed for lvl0" : "");
                     }
                 }
             }

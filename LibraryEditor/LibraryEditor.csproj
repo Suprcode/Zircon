@@ -90,6 +90,7 @@
     <None Include="Properties\Settings.settings" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Astc.cs" />
     <Compile Include="FixedListView.cs">
       <SubType>Component</SubType>
     </Compile>
