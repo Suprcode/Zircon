@@ -1,6 +1,7 @@
 ﻿using Library_Editor;
 using ManagedSquish;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -8,6 +9,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace LibraryEditor
@@ -161,6 +163,8 @@ namespace LibraryEditor
 
         public int Index { get; }
         public bool IsNewVersion { get; }
+        public byte ImageTextureType { get; }
+        public byte MaskTextureType { get; }
 
         private byte[] _fBytes;
         public Bitmap Image;
@@ -192,13 +196,12 @@ namespace LibraryEditor
 
             if (IsNewVersion)
             {
-                var m1 = bReader.ReadByte(); // something related to the main image
-                var m2 = bReader.ReadByte();
+                var imageU1 = bReader.ReadByte();
+                ImageTextureType = bReader.ReadByte();
+                var maskU1 = bReader.ReadByte();
+                MaskTextureType = bReader.ReadByte();
 
-                var ma1 = bReader.ReadByte(); // something related to the mask image
-                var ma2 = bReader.ReadByte();
-
-                HasMask = ma1 > 0;
+                HasMask = MaskTextureType > 0;
                 Length = bReader.ReadInt32();
                 if (Length % 4 > 0) Length += 4 - (Length % 4);
                 DataOffset = (int)bReader.BaseStream.Position;
@@ -213,14 +216,11 @@ namespace LibraryEditor
 
         public unsafe void CreateTexture(BinaryReader bReader)
         {
-            Image = ReadImage(bReader, Length, Width, Height);
+            Image = ReadImage(bReader, Length, Width, Height, ImageTextureType);
             if (HasMask)
             {
                 if (IsNewVersion)
                 {
-                    //    var buff = bReader.ReadBytes(10);
-                    //    var str = BitConverter.ToString(buff);
-                    //    bReader.BaseStream.Seek(bReader.BaseStream.Position - 10, SeekOrigin.Begin);
                     MaskWidth = Width;
                     MaskHeight = Height;
                     MaskX = X;
@@ -239,7 +239,7 @@ namespace LibraryEditor
                     bReader.ReadByte(); //mask shadow
                 }
 
-                MaskImage = ReadImage(bReader, MaskLength, MaskWidth, MaskHeight);
+                MaskImage = ReadImage(bReader, MaskLength, MaskWidth, MaskHeight, MaskTextureType);
             }
         }
 
@@ -338,31 +338,59 @@ namespace LibraryEditor
             return output;
         }
 
-        private unsafe Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
+
+        private unsafe Bitmap DecompressV2Texture(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight, byte textureType)
         {
             var buffer = bReader.ReadBytes(imageLength);
-            var decompressedBuffer = Ionic.Zlib.DeflateStream.UncompressBuffer(buffer);
 
             int w = Width + (4 - Width % 4) % 4;
+            int a = 1;
+            while (true)
+            {
+                a *= 2;
+                if (a >= w)
+                {
+                    w = a;
+                    break;
+                }
+            }
             int h = Height + (4 - Height % 4) % 4;
             int e = w * h / 2;
 
-            var is32bits = e < decompressedBuffer.Length;
+            SquishFlags type;
+            switch (textureType)
+            {
+                case 0:
+                case 1:
+                    type = SquishFlags.Dxt1;
+                    break;
+                case 3:
+                    type = SquishFlags.Dxt3;
+                    break;
+                case 5:
+                    type = SquishFlags.Dxt5;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
 
-            var bitmap = new Bitmap(outputWidth, outputHeight);
+
+            var decompressedBuffer = Ionic.Zlib.DeflateStream.UncompressBuffer(buffer);
+
+            var bitmap = new Bitmap(w, h);
 
             BitmapData data = bitmap.LockBits(
-                new Rectangle(0, 0, outputWidth, outputHeight),
+                new Rectangle(0, 0, w, h),
                 ImageLockMode.WriteOnly,
-                PixelFormat.Format32bppArgb
+                PixelFormat.Format32bppRgb
             );
 
             fixed (byte* source = decompressedBuffer)
-                Squish.DecompressImage(data.Scan0, outputWidth, outputHeight, (IntPtr)source, SquishFlags.Dxt1);
+                Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, type);
 
             byte* dest = (byte*)data.Scan0;
 
-            for (int i = 0; i < outputHeight * outputWidth * 4; i += 4)
+            for (int i = 0; i < w * h * 4; i += 4)
             {
                 //Reverse Red/Blue
                 byte b = dest[i];
@@ -372,13 +400,17 @@ namespace LibraryEditor
 
             bitmap.UnlockBits(data);
 
-            return bitmap;
+            Rectangle cloneRect = new Rectangle(0, 0, outputWidth, outputHeight);
+            PixelFormat format = bitmap.PixelFormat;
+            Bitmap cloneBitmap = bitmap.Clone(cloneRect, format);
+
+            return cloneBitmap;
         }
 
-        public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight)
+        public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight, byte textureType)
         {
             return IsNewVersion
-                ? DecompressV2Texture(bReader, imageLength, outputWidth, outputHeight)
+                ? DecompressV2Texture(bReader, imageLength, outputWidth, outputHeight, textureType)
                 : DecompressV1Texture(bReader, imageLength, outputWidth, outputHeight);
         }
 
