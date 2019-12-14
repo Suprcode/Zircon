@@ -2926,6 +2926,38 @@ namespace Server.Envir
                 con.Enqueue(new S.NewAccount { Result = NewAccountResult.BadRealName });
                 return;
             }
+            var list = AccountInfoList.Binding.Where(e => e.CreationIP == con.IPAddress).ToList();
+            int nowcount = 0;
+            int todaycount = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                AccountInfo info = list[i];
+                if (info == null) continue;
+
+                if (info.CreationDate.AddSeconds(1) > Now)
+                {
+                    nowcount++;
+                    if (nowcount > 2)
+                        break;
+                }
+                if (info.CreationDate.AddDays(1) > Now)
+                {
+                    todaycount++;
+                    if (todaycount > 5)
+                        break;
+                }
+            }
+            if (nowcount > 2 || todaycount > 5)
+            {
+                IPBlocks[con.IPAddress] = Now.AddDays(7);
+
+                for (int i = Connections.Count - 1; i >= 0; i--)
+                    if (Connections[i].IPAddress == con.IPAddress)
+                        Connections[i].TryDisconnect();
+
+                Log($"{con.IPAddress} Disconnected and banned for trying too many accounts");
+                return;
+            }
 
             for (int i = 0; i < AccountInfoList.Count; i++)
                 if (string.Compare(AccountInfoList[i].EMailAddress, p.EMailAddress, StringComparison.OrdinalIgnoreCase) == 0)
