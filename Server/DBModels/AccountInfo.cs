@@ -674,7 +674,9 @@ namespace Server.DBModels
             if (StorageSize == 0)
                 StorageSize = Globals.StorageSize;
 
-            Buffs.First(x => x.Type == BuffType.HuntGold).Stats = new Stats { [Stat.AvailableHuntGoldCap] = 15 };
+            BuffInfo buff = Buffs.FirstOrDefault(x => x.Type == BuffType.HuntGold);
+            if (buff != null)
+                buff.Stats = new Stats { [Stat.AvailableHuntGoldCap] = 15 };
         }
 
         public int HightestLevel()
