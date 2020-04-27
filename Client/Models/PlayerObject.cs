@@ -33,7 +33,7 @@ namespace Client.Models
         };
         #endregion
 
-            #region Weapon Librarys
+        #region Weapon Librarys
         public Dictionary<int, LibraryFile> WeaponList = new Dictionary<int, LibraryFile>
         {
             [0] = LibraryFile.M_Weapon1,
@@ -123,7 +123,7 @@ namespace Client.Models
             [11 + FemaleOffSet] = LibraryFile.WM_Helmet12,
             [12 + FemaleOffSet] = LibraryFile.WM_Helmet13,
             [13 + FemaleOffSet] = LibraryFile.WM_Helmet14,
-            
+
             [0 + AssassinOffSet] = LibraryFile.M_HelmetA1,
             [1 + AssassinOffSet] = LibraryFile.M_HelmetA2,
             [2 + AssassinOffSet] = LibraryFile.M_HelmetA3,
@@ -165,7 +165,7 @@ namespace Client.Models
             [1 + AssassinOffSet] = LibraryFile.M_HumAEx1,
             [2 + AssassinOffSet] = LibraryFile.M_HumAEx2,
             [3 + AssassinOffSet] = LibraryFile.M_HumAEx3,
-            
+
             [0 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HumA,
             [1 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HumAEx1,
             [2 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HumAEx2,
@@ -204,7 +204,7 @@ namespace Client.Models
         public int WeaponShapeOffSet;
         public int WeaponShape, LibraryWeaponShape;
         public int WeaponFrame => DrawFrame + (WeaponShape % 10) * WeaponShapeOffSet;
-        
+
         public int ShieldShape;
         public int ShieldFrame => DrawFrame + (ShieldShape % 10) * WeaponShapeOffSet;
 
@@ -217,10 +217,14 @@ namespace Client.Models
 
         public MirLibrary HorseLibrary, HorseShapeLibrary, HorseShapeLibrary2;
         public int HorseShape;
-        public int HorseFrame => DrawFrame + ((int) Horse - 1) * 5000;
+        public int HorseFrame => DrawFrame + ((int)Horse - 1) * 5000;
         public HorseType Horse;
 
         public int ArmourImage;
+
+        public int EmblemShape;
+
+        public int WingsShape;
 
         public bool DrawWeapon;
 
@@ -229,7 +233,7 @@ namespace Client.Models
 
         public PlayerObject()
         {
-            
+
         }
         public PlayerObject(S.ObjectPlayer info)
         {
@@ -252,7 +256,7 @@ namespace Client.Models
 
             CurrentLocation = info.Location;
             Direction = info.Direction;
-            
+
             HairType = info.HairType;
             HairColour = info.HairColour;
 
@@ -264,7 +268,8 @@ namespace Client.Models
             ShieldShape = info.Shield;
 
             ArmourImage = info.ArmourImage;
-
+            EmblemShape = info.EmblemShape;
+            WingsShape = info.Wings;
 
             Light = info.Light;
 
@@ -272,7 +277,7 @@ namespace Client.Models
             Horse = info.Horse;
 
             UpdateLibraries();
-            
+
             SetFrame(new ObjectAction(!Dead ? MirAction.Standing : MirAction.Dead, MirDirection.Up, CurrentLocation));
 
             GameScene.Game.MapControl.AddObject(this);
@@ -316,7 +321,7 @@ namespace Client.Models
                     CEnvir.LibraryList.TryGetValue(LibraryFile.HorseDarkEffect, out HorseShapeLibrary2);
                     break;
             }
-            
+
 
             switch (Class)
             {
@@ -435,7 +440,7 @@ namespace Client.Models
                                 CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             }
                             else if (ShieldShape >= 0)
-                            { 
+                            {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
                                 CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             }
@@ -443,7 +448,7 @@ namespace Client.Models
                     }
                     break;
             }
-            
+
         }
 
         public override void SetAnimation(ObjectAction action)
@@ -474,7 +479,7 @@ namespace Client.Models
                     break;
                 case MirAction.Moving:
                     //if(VisibleBuffs.Contains(BuffType.Stealth))
-                  
+
                     animation = MirAnimation.Walking;
 
                     if (Horse != HorseType.None)
@@ -482,9 +487,9 @@ namespace Client.Models
 
                     if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault)
                         animation = MirAnimation.Combat8;
-                    else if(VisibleBuffs.Contains(BuffType.Cloak))
+                    else if (VisibleBuffs.Contains(BuffType.Cloak))
                         animation = VisibleBuffs.Contains(BuffType.GhostWalk) ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow;
-                    else if ((int) action.Extra[0] >= 2)
+                    else if ((int)action.Extra[0] >= 2)
                     {
                         animation = MirAnimation.Running;
                         if (Horse != HorseType.None)
@@ -505,18 +510,18 @@ namespace Client.Models
                     animation = MirAnimation.Combat1;
                     break;
                 case MirAction.Spell:
-                    type = (MagicType) action.Extra[0];
-                    
+                    type = (MagicType)action.Extra[0];
+
                     animation = Functions.GetMagicAnimation(type);
 
                     if (type == MagicType.PoisonousCloud)
                         DrawWeapon = false;
                     break;
-                    // case MirAction.Struck:
-                    //    animation = MirAnimation.Struck;
-                    // if (Horse != HorseType.None)
-                    //    animation = MirAnimation.HorseStruck;
-                    //break;
+                // case MirAction.Struck:
+                //    animation = MirAnimation.Struck;
+                // if (Horse != HorseType.None)
+                //    animation = MirAnimation.HorseStruck;
+                //break;
                 case MirAction.Die:
                     animation = MirAnimation.Die;
                     break;
@@ -696,9 +701,9 @@ namespace Client.Models
 
             }
         }
-        
 
-        
+
+
         public override void Draw()
         {
             if (BodyLibrary == null) return;
@@ -760,12 +765,12 @@ namespace Client.Models
             DXManager.SetBlend(true, 0.60F);
 
             DrawBody(false);
-            DXManager.SetBlend(false); 
+            DXManager.SetBlend(false);
         }
 
         public void DrawBody(bool shadow)
         {
-            
+
             Surface oldSurface = DXManager.CurrentSurface;
             DXManager.SetSurface(DXManager.ScratchSurface);
             DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
@@ -888,7 +893,7 @@ namespace Client.Models
 
             DXManager.SetSurface(oldSurface);
             float oldOpacity = DXManager.Opacity;
-            
+
             if (shadow)
             {
                 switch (CurrentAnimation)
@@ -930,7 +935,7 @@ namespace Client.Models
                             break;
                         case 5:
                             HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
-                            if(shadow)
+                            if (shadow)
                                 HorseShapeLibrary2?.DrawBlend(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
 
@@ -945,20 +950,20 @@ namespace Client.Models
             CEnvir.DPSCounter++;
             if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(oldOpacity);
 
-            }
+        }
         public void DrawShadow2(int l, int t, int r, int b)
         {
             MirImage image = BodyLibrary?.GetImage(ArmourFrame);
 
             if (image == null) return;
-            
+
             int w = (DrawX + image.OffSetX) - l;
             int h = (DrawY + image.OffSetY) - t;
 
             Matrix m = Matrix.Scaling(1F, 0.5f, 0);
 
             m.M21 = -0.50F;
-            DXManager.Sprite.Transform = m * Matrix.Translation(DrawX + image.ShadowOffSetX - w + (image.Height)/2 + h / 2, DrawY + image.ShadowOffSetY  - h /2, 0);
+            DXManager.Sprite.Transform = m * Matrix.Translation(DrawX + image.ShadowOffSetX - w + (image.Height) / 2 + h / 2, DrawY + image.ShadowOffSetY - h / 2, 0);
 
             DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
 
@@ -1023,64 +1028,128 @@ namespace Client.Models
 
         private void DrawWings()
         {
-            if (!Config.DrawEffects) return;
-
-            switch (CurrentAction)
+            if (!Config.DrawEffects)
             {
-                case MirAction.Die:
-                case MirAction.Dead:
+                return;
+            }
+            MirAction currentAction = CurrentAction;
+            MirAction mirAction = currentAction;
+            if (mirAction - 7 <= MirAction.Moving || !CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out MirLibrary library))
+            {
+                return;
+            }
+            switch (ArmourImage)
+            {
+                case 962:
+                case 972:
+                    library.DrawBlend(820 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
                     break;
-                default:
-                    MirLibrary library;
-
-                    if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out library)) return;
-
-                    switch (ArmourImage)
-                    {
-                        //All
-                        case 962:
-                        case 972:
-                            library.DrawBlend(820 + (GameScene.Game.MapControl.Animation / 2) % 13, DrawX, DrawY, Color.White, true, 0.7f, ImageType.Image);
-                            //820 ~ 832
-                            break;
-
-                        //War
-                        case 963:
-                        case 973:
-                            library.DrawBlend(400 + (GameScene.Game.MapControl.Animation / 2) % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, true, 1f, ImageType.Image);
-                            // 400 - 414 // 420 ....
-                            break;
-
-                        //Wiz
-                        case 964:
-                        case 974:
-                            library.DrawBlend(200 + (GameScene.Game.MapControl.Animation / 2) % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, true, 1f, ImageType.Image);
-                            // 200 - 214 // 220 ....
-                            break;
-
-                        //Tao
-                        case 965:
-                        case 975:
-                            library.DrawBlend(0 + (GameScene.Game.MapControl.Animation / 2) % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, true, 1f, ImageType.Image);
-                            // 000 - 014 // 020 ....
-                            break;
-
-                        //Ass
-                        case 2007:
-                        case 2017:
-                            library.DrawBlend(600 + (GameScene.Game.MapControl.Animation / 2) % 13 + (int)Direction * 20, DrawX, DrawY, Color.White, true, 1f, ImageType.Image);
-                            // 600 - 614 // 620 ....
-                            break;
-
-                    }
-
-
+                case 963:
+                case 973:
+                    library.DrawBlend(400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                     break;
+                case 9057:
+                case 9058:
+                    library.DrawBlend(2830 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 964:
+                case 974:
+                    library.DrawBlend(200 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 965:
+                case 975:
+                    library.DrawBlend(GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 2007:
+                case 2017:
+                    library.DrawBlend(600 + GameScene.Game.MapControl.Animation / 2 % 13 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 9177:
+                case 9178:
+                    library.DrawBlend(4874 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    library.DrawBlend(4898 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+            }
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out library))
+            {
+                return;
+            }
+            switch (WingsShape)
+            {
+                case 1:
+                    library.DrawBlend(2830 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 2:
+                    library.DrawBlend(2942 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 3:
+                    library.DrawBlend(3054 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 4:
+                    library.DrawBlend(3166 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 5:
+                    library.DrawBlend(3278 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 6:
+                    library.DrawBlend(3390 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 7:
+                    library.DrawBlend(3502 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 8:
+                    library.DrawBlend(3614 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 9:
+                    library.DrawBlend(3726 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 10:
+                    library.DrawBlend(3838 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 11:
+                    library.DrawBlend(3950 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 12:
+                    library.DrawBlend(4454 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 13:
+                    library.DrawBlend(4566 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 14:
+                    library.DrawBlend(4062 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 15:
+                    library.DrawBlend(4258 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case 16:
+                    library.DrawBlend(4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+            }
 
+            if (CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx26, out library))
+            {
+                switch (EmblemShape)
+                {
+                    case 1:
+                        library.DrawBlend(90 + GameScene.Game.MapControl.Animation / 2 % 24, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        library.DrawBlend(140 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                    case 2:
+                        library.DrawBlend(220 + GameScene.Game.MapControl.Animation / 2 % 25, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        library.DrawBlend(180 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                    case 3:
+                        library.DrawBlend(330 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        library.DrawBlend(270 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                    case 4:
+                        library.DrawBlend(360 + GameScene.Game.MapControl.Animation / 2 % 10, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                }
             }
 
         }
-        
+
         public override bool MouseOver(Point p)
         {
             if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
@@ -1113,7 +1182,7 @@ namespace Client.Models
 
             return false;
         }
-        
+
         public override void PlayStruckSound()
         {
             DXSoundManager.Play(Gender == MirGender.Male ? SoundIndex.MaleStruck : SoundIndex.FemaleStruck);

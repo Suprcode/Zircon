@@ -590,6 +590,7 @@ namespace Library
         MonMagicEx21,
         MonMagicEx22,
         MonMagicEx23,
+        MonMagicEx26,
 
         Mon_1,
         Mon_2,

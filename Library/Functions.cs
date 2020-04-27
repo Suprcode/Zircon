@@ -456,10 +456,13 @@ namespace Library
                     return type == ItemType.HorseArmour;
                 case EquipmentSlot.Shield:
                     return type == ItemType.Shield;
+                case EquipmentSlot.Wings:
+                    return type == ItemType.Wings;
                 default:
                     return false;
             }
         }
+
         public static bool CorrectSlot(ItemType type, CompanionSlot slot)
         {
             switch (slot)
@@ -476,6 +479,7 @@ namespace Library
                     return false;
             }
         }
+
         public static int Direction16(Point source, Point destination)
         {
             PointF c = new PointF(source.X, source.Y);
