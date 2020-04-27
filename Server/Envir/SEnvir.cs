@@ -3916,6 +3916,7 @@ namespace Server.Envir
                     Name = info.CharacterName,
                     Online = info.Player != null,
                     Observable = info.Observable || isGM,
+                    Rebirth = info.Rebirth
                 });
             }
 
