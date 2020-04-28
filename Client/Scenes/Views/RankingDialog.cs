@@ -465,6 +465,7 @@ namespace Client.Scenes.Views
             NameLabel.Text = "Name";
             ClassLabel.Text = "Class";
             LevelLabel.Text = "Level";
+            RebirthLabel.Text = "Rebirth";
 
             DrawTexture = false;
 
@@ -472,6 +473,7 @@ namespace Client.Scenes.Views
             NameLabel.ForeColour = Color.FromArgb(198, 166, 99);
             ClassLabel.ForeColour = Color.FromArgb(198, 166, 99);
             LevelLabel.ForeColour = Color.FromArgb(198, 166, 99);
+            RebirthLabel.ForeColour = Color.FromArgb(198, 166, 99);
 
             OnlineImage.Visible = false;
 
@@ -515,10 +517,14 @@ namespace Client.Scenes.Views
                 RankLabel.Text = Rank.Rank.ToString();
                 NameLabel.Text = Rank.Name;
                 ClassLabel.Text = Rank.Class.ToString();
+                RebirthLabel.Text = Rank.Rebirth.ToString();
+
                 RankLabel.ForeColour = Color.Silver;
                 NameLabel.ForeColour = Color.Silver;
                 ClassLabel.ForeColour = Color.Silver;
                 LevelLabel.ForeColour = Color.Silver;
+                RebirthLabel.ForeColour = Color.Silver;
+
                 OnlineImage.Index = Rank.Online ? 3625 : 3624;
 
                 ObseverButton.Enabled = Rank.Online && Rank.Observable;
@@ -574,7 +580,7 @@ namespace Client.Scenes.Views
 
         #endregion
 
-        public DXLabel RankLabel, NameLabel, ClassLabel, LevelLabel;
+        public DXLabel RankLabel, NameLabel, ClassLabel, LevelLabel, RebirthLabel;
         public DXButton ObseverButton;
         public DXImageControl OnlineImage;
 
@@ -613,7 +619,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 AutoSize = false,
                 Location = new Point(RankLabel.Location.X + RankLabel.Size.Width + 1, 0),
-                Size = new Size(100, 18),
+                Size = new Size(70, 18),
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 IsControl = false,
@@ -624,7 +630,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 AutoSize = false,
                 Location = new Point(NameLabel.Location.X + NameLabel.Size.Width + 1, 0),
-                Size = new Size(50, 18),
+                Size = new Size(40, 18),
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 IsControl = false,
@@ -635,7 +641,18 @@ namespace Client.Scenes.Views
                 Parent = this,
                 AutoSize = false,
                 Location = new Point(ClassLabel.Location.X + ClassLabel.Size.Width + 1, 0),
-                Size = new Size(70, 18),
+                Size = new Size(40, 18),
+                ForeColour = Color.White,
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                IsControl = false,
+            };
+
+            RebirthLabel = new DXLabel
+            {
+                Parent = this,
+                AutoSize = false,
+                Location = new Point(LevelLabel.Location.X + LevelLabel.Size.Width + 1, 0),
+                Size = new Size(40, 18),
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 IsControl = false,
@@ -644,7 +661,7 @@ namespace Client.Scenes.Views
             ObseverButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(LevelLabel.Location.X + LevelLabel.Size.Width + 5, 1),
+                Location = new Point(RebirthLabel.Location.X + RebirthLabel.Size.Width + 5, 1),
                 ButtonType = ButtonType.SmallButton,
                 Label = { Text = "Observe" },
                 Enabled = false,

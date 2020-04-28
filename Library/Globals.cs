@@ -31,7 +31,7 @@ namespace Library
         public static DBCollection<CompanionLevelInfo> CompanionLevelInfoList;
 
 
-        public static Random Random  = new Random();
+        public static Random Random = new Random();
 
         public static readonly Regex EMailRegex = new Regex(@"\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*", RegexOptions.Compiled);
         public static readonly Regex PasswordRegex = new Regex(@"^[\S]{" + MinPasswordLength + "," + MaxPasswordLength + "}$", RegexOptions.Compiled);
@@ -470,7 +470,7 @@ namespace Library
 
         public List<ClientUserMagic> Magics { get; set; }
         public List<ClientBuffInfo> Buffs { get; set; }
-        
+
         public PoisonType Poison { get; set; }
 
         public bool InSafeZone { get; set; }
@@ -501,7 +501,7 @@ namespace Library
                 AvailableCompanions.Add(Globals.CompanionInfoList.Binding.First(x => x.Index == index));
         }
     }
-    
+
     public sealed class ClientUserItem
     {
         public ItemInfo Info;
@@ -513,7 +513,7 @@ namespace Library
         public int MaxDurability { get; set; }
 
         public long Count { get; set; }
-        
+
         public int Slot { get; set; }
 
         public int Level { get; set; }
@@ -544,7 +544,7 @@ namespace Library
                     case ItemType.Amulet:
                         return Info.Weight;
                     default:
-                        return (int) Math.Min(int.MaxValue, Info.Weight * Count);
+                        return (int)Math.Min(int.MaxValue, Info.Weight * Count);
                 }
             }
         }
@@ -580,7 +580,7 @@ namespace Library
             MaxDurability = item.MaxDurability;
 
             Count = count;
-            
+
             Slot = item.Slot;
 
             Level = item.Level;
@@ -595,7 +595,7 @@ namespace Library
 
             New = item.New;
             NextSpecialRepair = item.NextSpecialRepair;
-            
+
             AddedStats = new Stats(item.AddedStats);
         }
 
@@ -636,11 +636,11 @@ namespace Library
             if (Info.Durability == 0 || CurrentDurability >= MaxDurability) return 0;
 
             int rate = special ? 2 : 1;
-            
-            decimal p = Math.Floor(MaxDurability*(Info.Price/2M/Info.Durability) + Info.Price/2M);
-            p = p*(AddedStats.Count*0.1M + 1M);
 
-            return (int) (p*Count - Price(Count))*rate;
+            decimal p = Math.Floor(MaxDurability * (Info.Price / 2M / Info.Durability) + Info.Price / 2M);
+            p = p * (AddedStats.Count * 0.1M + 1M);
+
+            return (int)(p * Count - Price(Count)) * rate;
 
 
         }
@@ -704,12 +704,12 @@ namespace Library
                         case ItemType.Ring:
                         case ItemType.Shoes:
                             return Info.RequiredAmount * 10000 / 9;
-                       /* case ItemType.Helmet:
-                        case ItemType.Necklace:
-                        case ItemType.Bracelet:
-                        case ItemType.Ring:
-                        case ItemType.Shoes:
-                            return Info.RequiredAmount * 7000 / 9;*/
+                        /* case ItemType.Helmet:
+                         case ItemType.Necklace:
+                         case ItemType.Bracelet:
+                         case ItemType.Ring:
+                         case ItemType.Shoes:
+                             return Info.RequiredAmount * 7000 / 9;*/
                         default:
                             return 0;
                     }
@@ -724,12 +724,12 @@ namespace Library
                         case ItemType.Ring:
                         case ItemType.Shoes:
                             return Info.RequiredAmount * 10000 / 2;
-                      /*  case ItemType.Helmet:
-                        case ItemType.Necklace:
-                        case ItemType.Bracelet:
-                        case ItemType.Ring:
-                        case ItemType.Shoes:
-                            return Info.RequiredAmount * 10000 / 10;*/
+                        /*  case ItemType.Helmet:
+                          case ItemType.Necklace:
+                          case ItemType.Bracelet:
+                          case ItemType.Ring:
+                          case ItemType.Shoes:
+                              return Info.RequiredAmount * 10000 / 10;*/
                         default:
                             return 0;
                     }
@@ -769,16 +769,16 @@ namespace Library
                         case ItemType.Ring:
                         case ItemType.Shoes:
                             return Math.Max(1, Info.RequiredAmount / 2 + 5);
-                      /*  case ItemType.Helmet:
-                            return Math.Max(1, (Info.RequiredAmount - 30) / 6);
-                        case ItemType.Necklace:
-                            return Math.Max(1, Info.RequiredAmount / 8);
-                        case ItemType.Bracelet:
-                            return Math.Max(1, Info.RequiredAmount / 15);
-                        case ItemType.Ring:
-                            return Math.Max(1, Info.RequiredAmount / 9);
-                        case ItemType.Shoes:
-                            return Math.Max(1, (Info.RequiredAmount - 35) / 6);*/
+                        /*  case ItemType.Helmet:
+                              return Math.Max(1, (Info.RequiredAmount - 30) / 6);
+                          case ItemType.Necklace:
+                              return Math.Max(1, Info.RequiredAmount / 8);
+                          case ItemType.Bracelet:
+                              return Math.Max(1, Info.RequiredAmount / 15);
+                          case ItemType.Ring:
+                              return Math.Max(1, Info.RequiredAmount / 9);
+                          case ItemType.Shoes:
+                              return Math.Max(1, (Info.RequiredAmount - 35) / 6);*/
                         default:
                             return 0;
                     }
@@ -793,16 +793,16 @@ namespace Library
                         case ItemType.Ring:
                         case ItemType.Shoes:
                             return Math.Max(1, Info.RequiredAmount / 2 + 5);
-                      /*  case ItemType.Helmet:
-                            return Math.Max(1, (Info.RequiredAmount - 30) / 6);
-                        case ItemType.Necklace:
-                            return Math.Max(1, Info.RequiredAmount / 10);
-                        case ItemType.Bracelet:
-                            return Math.Max(1, Info.RequiredAmount / 15);
-                        case ItemType.Ring:
-                            return Math.Max(1, Info.RequiredAmount / 10);
-                        case ItemType.Shoes:
-                            return Math.Max(1, (Info.RequiredAmount - 35) / 6);*/
+                        /*  case ItemType.Helmet:
+                              return Math.Max(1, (Info.RequiredAmount - 30) / 6);
+                          case ItemType.Necklace:
+                              return Math.Max(1, Info.RequiredAmount / 10);
+                          case ItemType.Bracelet:
+                              return Math.Max(1, Info.RequiredAmount / 15);
+                          case ItemType.Ring:
+                              return Math.Max(1, Info.RequiredAmount / 10);
+                          case ItemType.Shoes:
+                              return Math.Max(1, (Info.RequiredAmount - 35) / 6);*/
                         default:
                             return 0;
                     }
@@ -828,7 +828,7 @@ namespace Library
             }
         }
     }
-    
+
     public sealed class ClientBeltLink
     {
         public int Slot { get; set; }
@@ -844,7 +844,7 @@ namespace Library
         public int Mana { get; set; }
         public bool Enabled { get; set; }
     }
-    
+
     public class ClientUserMagic
     {
         public int Index { get; set; }
@@ -862,7 +862,7 @@ namespace Library
         public TimeSpan Cooldown { get; set; }
 
         public DateTime NextCast;
-        
+
 
         [IgnorePropertyPacket]
         public int Cost => Info.BaseCost + Level * Info.LevelCost / 3;
@@ -882,7 +882,7 @@ namespace Library
         public int Slot { get; set; }
         public long Count { get; set; }
     }
-    
+
     public class ClientBuffInfo
     {
         public int Index { get; set; }
@@ -925,13 +925,14 @@ namespace Library
         public decimal MaxExperience { get; set; }
         public bool Online { get; set; }
         public bool Observable { get; set; }
+        public int Rebirth { get; set; }
     }
-    
+
     public class ClientMarketPlaceInfo
     {
         public int Index { get; set; }
         public ClientUserItem Item { get; set; }
-        
+
         public int Price { get; set; }
 
         public string Seller { get; set; }
@@ -966,7 +967,7 @@ namespace Library
 
         public long GuildFunds { get; set; }
         public long DailyGrowth { get; set; }
-        
+
         public long TotalContribution { get; set; }
         public long DailyContribution { get; set; }
 
@@ -1074,7 +1075,7 @@ namespace Library
 
         public int CompanionIndex { get; set; }
         public CompanionInfo CompanionInfo;
-        
+
         public int Level { get; set; }
         public int Hunger { get; set; }
         public int Experience { get; set; }
@@ -1112,7 +1113,7 @@ namespace Library
 
     }
 
-    public class ClientPlayerInfo 
+    public class ClientPlayerInfo
     {
         public uint ObjectID { get; set; }
 
