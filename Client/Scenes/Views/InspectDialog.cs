@@ -279,6 +279,19 @@ namespace Client.Scenes.Views
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 104);
 
+            Grid[(int)EquipmentSlot.Emblem] = cell = new DXItemCell
+            {
+                Location = new Point(15, 300),
+                Parent = CharacterTab,
+                FixedBorder = true,
+                Border = true,
+                Slot = (int)EquipmentSlot.Wings,
+                ItemGrid = Equipment,
+                GridType = GridType.Inspect,
+                ReadOnly = true,
+            };
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
+
             Grid[(int)EquipmentSlot.Shoes] = cell = new DXItemCell
             {
                 Location = new Point(95, 300),

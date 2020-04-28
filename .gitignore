@@ -11,3 +11,4 @@ PatchManager/PatchManager.csproj
 .vs/
 [Oo]bj/
 [Bb]in/
+packages/
