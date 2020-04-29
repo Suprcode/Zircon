@@ -30,7 +30,7 @@ namespace Client.Envir
         public CConnection(TcpClient client)
             : base(client)
         {
-            OnException += (o, e) => CEnvir.SaveError(e.ToString());
+            OnException += (o, e) => CEnvir.SaveException(e);
 
             UpdateTimeOut();
 

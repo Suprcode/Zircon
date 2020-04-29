@@ -1889,9 +1889,14 @@ namespace Server.Models
                         break;
                     case "REBIRTH":
                         if (!Character.Account.TempAdmin) return;
-                        if (parts.Length < 2) return;
+                        if (parts.Length < 3) return;
 
-                        this.NPCRebirth();
+                        player = SEnvir.GetPlayerByCharacter(parts[1]);
+                        if (player == null) return;
+
+                        if (!int.TryParse(parts[2], out value)) return;
+                        player.AdjustRebirth(value);
+
                         break;
                     case "TAKECASTLE":
                         if (!Character.Account.TempAdmin) return;
@@ -11086,14 +11091,18 @@ namespace Server.Models
 
         public void NPCRebirth()
         {
+            AdjustRebirth(Character.Rebirth + 1);
+        }
+
+        public void AdjustRebirth(int rebirth)
+        {
             Level = 1;
             Experience = Experience / 200;
 
             Enqueue(new S.LevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
             Broadcast(new S.ObjectLeveled { ObjectID = ObjectID });
 
-            Character.Rebirth++;
-
+            Character.Rebirth = rebirth;
             Character.SpentPoints = 0;
             Character.HermitStats.Clear();
 

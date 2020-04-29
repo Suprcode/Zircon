@@ -63,7 +63,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         protected override void OnMouseDown(MouseEventArgs e)
@@ -81,7 +81,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         protected override void OnMouseUp(MouseEventArgs e)
@@ -96,7 +96,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         protected override void OnMouseClick(MouseEventArgs e)
@@ -107,7 +107,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         protected override void OnMouseDoubleClick(MouseEventArgs e)
@@ -118,7 +118,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         protected override void OnMouseWheel(MouseEventArgs e)
@@ -129,7 +129,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
 
@@ -154,7 +154,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         protected override void OnKeyUp(KeyEventArgs e)
@@ -173,7 +173,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         protected override void OnKeyPress(KeyPressEventArgs e)
@@ -185,7 +185,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         

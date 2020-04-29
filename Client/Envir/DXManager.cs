@@ -464,7 +464,7 @@ namespace Client.Envir
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
         }
         public static void AttemptRecovery()

@@ -936,7 +936,7 @@ namespace Client.Envir
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
                 Error = true;
             }
         }
