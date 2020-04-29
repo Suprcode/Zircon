@@ -443,7 +443,7 @@ namespace Client.Scenes.Views
             }
             catch (Exception ex)
             {
-                CEnvir.SaveError(ex.ToString());
+                CEnvir.SaveException(ex);
             }
 
             foreach (MapObject ob in Objects)
