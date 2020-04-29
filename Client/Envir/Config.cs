@@ -12,7 +12,7 @@ namespace Client.Envir
     public static class Config
     {
         public static readonly Size IntroSceneSize = new Size(1024, 768);
-        
+
         public const string DefaultIPAddress = "145.239.204.13";
         public const int DefaultPort = 7100;
 
@@ -21,6 +21,10 @@ namespace Client.Envir
         public static string IPAddress { get; set; } = DefaultIPAddress;
         public static int Port { get; set; } = DefaultPort;
         public static TimeSpan TimeOutDuration { get; set; } = TimeSpan.FromSeconds(15);
+
+        [ConfigSection("Audit")]
+        public static bool SentryEnabled { get; set; } = false;
+        public static string SentryDSN { get; set; } = "";
 
 
         [ConfigSection("Graphics")]

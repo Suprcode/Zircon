@@ -8,6 +8,7 @@ using Client.Controls;
 using Client.Envir;
 using Client.Scenes;
 using Library;
+using Sentry;
 using SlimDX.Windows;
 
 namespace Client
@@ -20,6 +21,23 @@ namespace Client
         [STAThread]
         static void Main()
         {
+            ConfigReader.Load();
+
+            if (Config.SentryEnabled && !string.IsNullOrEmpty(Config.SentryDSN))
+            {
+                using (SentrySdk.Init(Config.SentryDSN))
+                    Init();
+            }
+            else
+            {
+                Init();
+            }
+
+            ConfigReader.Save();
+        }
+
+        static void Init()
+        {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -30,20 +48,17 @@ namespace Client
                 CEnvir.LibraryList[pair.Key] = new MirLibrary(@".\" + pair.Value);
             }
 
-
-            ConfigReader.Load();
-            
             CEnvir.LoadDatabase();
 
             CEnvir.Target = new TargetForm();
             DXManager.Create();
             DXSoundManager.Create();
-            
+
             DXControl.ActiveScene = new LoginScene(Config.IntroSceneSize);
 
             MessagePump.Run(CEnvir.Target, CEnvir.GameLoop);
 
-            ConfigReader.Save();
+
 
             CEnvir.Session?.Save(true);
             CEnvir.Unload();
