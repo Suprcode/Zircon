@@ -279,7 +279,7 @@ namespace Client.Scenes.Views
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 104);
 
-            Grid[(int)EquipmentSlot.Emblem] = cell = new DXItemCell
+            Grid[(int)EquipmentSlot.Wings] = cell = new DXItemCell
             {
                 Location = new Point(15, 300),
                 Parent = CharacterTab,
