@@ -6,6 +6,7 @@ using DevExpress.Skins;
 using DevExpress.LookAndFeel;
 using Library;
 using Server.Envir;
+using Autofac;
 
 namespace Server
 {
@@ -29,9 +30,21 @@ namespace Server
             SkinManager.EnableFormSkins();
             UserLookAndFeel.Default.SetSkinStyle("DevExpress Style");
 
-            Application.Run(new SMain());
+            var container = BuildContainer();
+            var form = container.Resolve<SMain>();
+
+            Application.Run(form);
 
             ConfigReader.Save();
+        }
+
+        static IContainer BuildContainer()
+        {
+            var builder = new ContainerBuilder();
+
+            builder.RegisterType<SMain>().SingleInstance();
+
+            return builder.Build();
         }
     }
 }
