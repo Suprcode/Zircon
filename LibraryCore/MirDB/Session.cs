@@ -44,12 +44,12 @@ namespace MirDB
             if (string.IsNullOrEmpty(connectionString))
                 throw new ArgumentNullException(nameof(connectionString), "Database:DBConnStr is empty");
 
-            var args = connectionString.Split(';').Select(x => x.Split(new char[] { '=' }, 1)).ToDictionary(x => x[0].ToUpperInvariant(), x => x[1]);
+            var args = connectionString.Split(';').Select(x => x.Split(new char[] { '=' }, 2)).ToDictionary(x => x[0].ToUpperInvariant(), x => x[1]);
 
             if (!args.ContainsKey("MODE") || !args.ContainsKey("ROOT") || !args.ContainsKey("BACKUP"))
                 throw new ArgumentException($"Connection string is not valid");
 
-            if (!Enum.TryParse<SessionMode>(args["MODE"], out SessionMode mode))
+            if (!Enum.TryParse(args["MODE"], out SessionMode mode))
                 throw new ArgumentException($"{args["MODE"]} is not valid option for Mode");
 
             if (args.ContainsKey("BACKUPDELAY"))
@@ -62,8 +62,6 @@ namespace MirDB
             Root = args["ROOT"];
             BackupRoot = args["BACKUP"];
             Mode = mode;
-
-            Initialize();
         }
 
         public Session(SessionMode mode, string root = @".\Database\", string backup = @".\Backup\")
@@ -71,20 +69,19 @@ namespace MirDB
             Root = root;
             BackupRoot = backup;
             Mode = mode;
-
-            Initialize();
         }
-        private void Initialize()
+
+        public void Initialize(params Assembly[] assemblies)
         {
             if (!Directory.Exists(Root))
                 Directory.CreateDirectory(Root);
 
             Collections = new Dictionary<Type, ADBCollection>();
 
-            List<Type> types = new List<Type>();
-            types.AddRange(Assembly.GetEntryAssembly().GetTypes());
-            types.AddRange(Assembly.GetExecutingAssembly().GetTypes());
-            types.AddRange(Assembly.GetCallingAssembly().GetTypes());
+            List<Type> types = assemblies
+                .Select(x => x.GetTypes())
+                .SelectMany(x => x)
+                .ToList();
 
             Type collectionType = typeof(DBCollection<>);
 
@@ -103,7 +100,7 @@ namespace MirDB
             Parallel.ForEach(Relationships, x => x.Value.ConsumeKeys(this));
 
             Relationships = null;
-       
+
             foreach (KeyValuePair<Type, ADBCollection> pair in Collections)
                 pair.Value.OnLoaded();
         }

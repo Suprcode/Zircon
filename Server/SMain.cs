@@ -24,25 +24,7 @@ namespace Server
     {
         public List<Control> Windows = new List<Control>();
         public static Session Session;
-        /*
-        public static DBCollection<MapInfo> MapInfoList;
-        public static DBCollection<MovementInfo> MovementInfoList;
-        public static DBCollection<GuardInfo> GuardInfoList;
-        public static DBCollection<SafeZoneInfo> SafeZoneInfoList;
-        public static DBCollection<RespawnInfo> RespawnInfoList;
-
-        public static DBCollection<ItemInfo> ItemInfoList;
-        public static DBCollection<ItemInfoStat> ItemInfoStatList;
-        public static DBCollection<MonsterInfo> MonsterInfoList;
-        public static DBCollection<MonsterInfo> MonsterInfoList;
-        public static DBCollection<NPCInfo> NPCInfoList;
-        public static DBCollection<NPCPage> NPCPageList;
-        public static DBCollection<MagicInfo> MagicInfoList;
-        public static DBCollection<SetInfo> SetInfoList; 
-        public static DBCollection<StoreInfo> StoreInfoList; 
-        public static DBCollection<BaseStat> BaseStatList;
-        public static DBCollection<MapRegion> MapRegionList;*/
-
+       
         public SMain()
         {
             InitializeComponent();

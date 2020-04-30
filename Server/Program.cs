@@ -7,6 +7,9 @@ using DevExpress.LookAndFeel;
 using Library;
 using Server.Envir;
 using Autofac;
+using Server.Repository;
+using Npgsql;
+using System.Reflection;
 
 namespace Server
 {
@@ -18,7 +21,9 @@ namespace Server
         [STAThread]
         static void Main()
         {
-            ConfigReader.Load();
+            var assembly = Assembly.GetAssembly(typeof(Config));
+            ConfigReader.Load(assembly);
+
             Config.LoadVersion();
 
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
@@ -30,21 +35,10 @@ namespace Server
             SkinManager.EnableFormSkins();
             UserLookAndFeel.Default.SetSkinStyle("DevExpress Style");
 
-            var container = BuildContainer();
-            var form = container.Resolve<SMain>();
-
-            Application.Run(form);
+            Application.Run(new SMain());
 
             ConfigReader.Save();
         }
 
-        static IContainer BuildContainer()
-        {
-            var builder = new ContainerBuilder();
-
-            builder.RegisterType<SMain>().SingleInstance();
-
-            return builder.Build();
-        }
     }
 }

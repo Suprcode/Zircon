@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
@@ -21,7 +22,7 @@ namespace Client
         [STAThread]
         static void Main()
         {
-            ConfigReader.Load();
+            ConfigReader.Load(Assembly.GetAssembly(typeof(Config)));
 
             if (Config.SentryEnabled && !string.IsNullOrEmpty(Config.SentryDSN))
             {
