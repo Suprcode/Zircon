@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
@@ -42,6 +43,11 @@ namespace Server
             {
                 BackUpDelay = 60
             };
+
+            Session.Initialize(
+                Assembly.GetAssembly(typeof(ItemInfo)), // returns assembly LibraryCore
+                Assembly.GetAssembly(typeof(AccountInfo)) // returns assembly ServerLibrary
+            );
 
 
             /*
