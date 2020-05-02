@@ -102,9 +102,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library\Library.csproj">
-      <Project>{CDB4E695-FED9-481D-B636-ADA5106AD844}</Project>
-      <Name>Library</Name>
+    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj">
+      <Project>{c47f32fa-4c04-4143-b4fe-623d4b014d0d}</Project>
+      <Name>LibraryCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

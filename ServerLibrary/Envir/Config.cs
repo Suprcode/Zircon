@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using Library;
+using Server.Repository;
 
 namespace Server.Envir
 {
@@ -17,11 +18,16 @@ namespace Server.Envir
         public static int MaxPacket { get; set; } = 50;
         public static TimeSpan PacketBanTime { get; set; } = TimeSpan.FromMinutes(5);
 
+        [ConfigSection("Database")]
+        public static int DBProvider { get; set; } = (int)DatabaseProvider.File;
+        public static string DBConnStr { get; set; } = @"Mode=Both;Root=.\Database\;Backup=.\Backup\;BackUpDelay=60";
+        public static TimeSpan DBSaveDelay { get; set; } = TimeSpan.FromMinutes(5);
+
 
         [ConfigSection("System")]
         public static bool CheckVersion { get; set; } = true;
         public static string VersionPath { get; set; } = @".\Zircon.exe";
-        public static TimeSpan DBSaveDelay { get; set; } = TimeSpan.FromMinutes(5);
+
         public static string MapPath { get; set; } = @".\Map\";
         public static byte[] ClientHash;
         public static string MasterPassword { get; set; } = @"REDACTED";

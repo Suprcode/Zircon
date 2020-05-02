@@ -6,6 +6,7 @@ using DevExpress.UserSkins;
 using DevExpress.Skins;
 using DevExpress.LookAndFeel;
 using Library;
+using System.Reflection;
 
 namespace PatchManager
 {
@@ -17,7 +18,7 @@ namespace PatchManager
         [STAThread]
         static void Main()
         {
-            ConfigReader.Load();
+            ConfigReader.Load(Assembly.GetAssembly(typeof(Config)));
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

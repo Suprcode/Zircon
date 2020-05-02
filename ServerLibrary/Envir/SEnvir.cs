@@ -21,6 +21,7 @@ using Server.Models;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
+using Autofac;
 
 namespace Server.Envir
 {
@@ -44,17 +45,26 @@ namespace Server.Envir
 
         public static ConcurrentQueue<string> DisplayLogs = new ConcurrentQueue<string>();
         public static ConcurrentQueue<string> Logs = new ConcurrentQueue<string>();
+        public static bool UseLogConsole = false;
+
         public static void Log(string log, bool hardLog = true)
         {
             log = string.Format("[{0:F}]: {1}", Time.Now, log);
 
-            if (DisplayLogs.Count < 100)
-                DisplayLogs.Enqueue(log);
+            if (UseLogConsole)
+            {
+                Console.WriteLine(log);
+            }
+            else
+            {
+                if (DisplayLogs.Count < 100)
+                    DisplayLogs.Enqueue(log);
 
-            if (hardLog && Logs.Count < 1000)
-                Logs.Enqueue(log);
+                if (hardLog && Logs.Count < 1000)
+                    Logs.Enqueue(log);
+            }
         }
-        
+
         public static ConcurrentQueue<string> DisplayChatLogs = new ConcurrentQueue<string>();
         public static ConcurrentQueue<string> ChatLogs = new ConcurrentQueue<string>();
         public static void LogChat(string log)
@@ -94,7 +104,7 @@ namespace Server.Envir
                 _userCountListener.BeginAcceptTcpClient(CountConnection, null);
 
                 NetworkStarted = true;
-                if (log) Log("Network Started.");
+                if (log) Log($"Network Started. Listen: {Config.IPAddress}:{Config.Port}");
             }
             catch (Exception ex)
             {
@@ -177,7 +187,7 @@ namespace Server.Envir
 
                 client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, CountConnectionEnd, client);
             }
-            catch {}
+            catch { }
             finally
             {
                 if (_userCountListener != null && _userCountListener.Server.IsBound)
@@ -196,7 +206,7 @@ namespace Server.Envir
 
                 client.Client.Dispose();
             }
-            catch {}
+            catch { }
         }
 
         #endregion
@@ -285,14 +295,14 @@ namespace Server.Envir
             BuyListener = null;
             HttpListener expiredIPNListener = IPNListener;
             IPNListener = null;
-            
+
 
             WebServerStarted = false;
             expiredWebListener?.Stop();
             expiredBuyListener?.Stop();
             expiredIPNListener?.Stop();
 
-            if (log) Log("Web Server Stopped.");            
+            if (log) Log("Web Server Stopped.");
         }
 
         private static void WebConnection(IAsyncResult result)
@@ -504,6 +514,7 @@ namespace Server.Envir
         public static bool NetworkStarted { get; set; }
         public static bool WebServerStarted { get; set; }
         public static bool Saving { get; private set; }
+        public static IContainer Container { get; private set; }
         public static Thread EnvirThread { get; private set; }
 
         public static DateTime Now, StartTime, LastWarTime;
@@ -536,7 +547,7 @@ namespace Server.Envir
         public static DBCollection<UserItemStat> UserItemStatsList;
         public static DBCollection<UserMagic> UserMagicList;
         public static DBCollection<BuffInfo> BuffInfoList;
-        public static DBCollection<MonsterInfo> MonsterInfoList;    
+        public static DBCollection<MonsterInfo> MonsterInfoList;
         public static DBCollection<SetInfo> SetInfoList;
         public static DBCollection<AuctionInfo> AuctionInfoList;
         public static DBCollection<MailInfo> MailInfoList;
@@ -563,8 +574,8 @@ namespace Server.Envir
         public static DBCollection<GameStoreSale> GameStoreSaleList;
         public static DBCollection<GuildWarInfo> GuildWarInfoList;
         public static DBCollection<UserConquestStats> UserConquestStatsList;
-        public static DBCollection<UserFortuneInfo> UserFortuneInfoList; 
-        public static DBCollection<WeaponCraftStatInfo> WeaponCraftStatInfoList; 
+        public static DBCollection<UserFortuneInfo> UserFortuneInfoList;
+        public static DBCollection<WeaponCraftStatInfo> WeaponCraftStatInfoList;
 
         public static ItemInfo GoldInfo, RefinementStoneInfo, FragmentInfo, Fragment2Info, Fragment3Info, FortuneCheckerInfo, ItemPartInfo;
 
@@ -583,7 +594,7 @@ namespace Server.Envir
         public static ConcurrentQueue<WebCommand> WebCommandQueue;
 
         public static Dictionary<MapInfo, Map> Maps = new Dictionary<MapInfo, Map>();
-        
+
         private static long _ObjectID;
         public static uint ObjectID => (uint)Interlocked.Increment(ref _ObjectID);
 
@@ -619,10 +630,14 @@ namespace Server.Envir
         {
             if (Started || EnvirThread != null) return;
 
-            EnvirThread = new Thread(EnvirLoop) { IsBackground = true };
+            var builder = new ContainerBuilder();
+            builder.RegisterDatabase();
+            Container = builder.Build();
+
+            EnvirThread = new Thread(() => EnvirLoop()) { IsBackground = true };
             EnvirThread.Start();
         }
-        
+
         public static void LoadExperienceList()
         {
             string path = @".\Config\ExperienceList.txt";
@@ -637,23 +652,23 @@ namespace Server.Envir
                     }
                 }
             }
-            else 
+            else
             {
-                    var lines = File.ReadAllLines(path);
-                    for (int i = 0; i < lines.Length; i++)
+                var lines = File.ReadAllLines(path);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    if (lines[i] == string.Empty) continue; //ignore empty line
+                    if (lines[i].TrimStart().StartsWith("//")) continue; //ignore comment
+                    try
                     {
-                        if (lines[i] == string.Empty) continue; //ignore empty line
-                        if (lines[i].StartsWith("//")) continue; //ignore comment
-                        try
-                        {
-                            decimal exp = decimal.Parse(lines[i].Split('/')[0]); //remove comment
-                            Globals.ExperienceList.Add(exp);
-                        }
-                        catch (Exception e)
-                        {
-                            Log(string.Format("ExperienceList: Error parsing line {0} - {1}", i, lines[i]));
-                        }
+                        decimal exp = decimal.Parse(lines[i].Split('/')[0]); //remove comment
+                        Globals.ExperienceList.Add(exp);
                     }
+                    catch (Exception e)
+                    {
+                        Log(string.Format("ExperienceList: Error parsing line {0} - {1}", i, lines[i]));
+                    }
+                }
             }
             Log("Experience List Loaded.");
         }
@@ -662,10 +677,12 @@ namespace Server.Envir
         {
             Random = new Random();
 
-            Session = new Session(SessionMode.Users)
-            {
-                BackUpDelay = 60,
-            };
+            Session = Container.Resolve<Session>();
+
+            //Session = new Session(SessionMode.Users)
+            //{
+            //    BackUpDelay = 60,
+            //};
 
             MapInfoList = Session.GetCollection<MapInfo>();
             SafeZoneInfoList = Session.GetCollection<SafeZoneInfo>();
@@ -711,9 +728,9 @@ namespace Server.Envir
             GuildWarInfoList = Session.GetCollection<GuildWarInfo>();
             UserConquestStatsList = Session.GetCollection<UserConquestStats>();
             UserFortuneInfoList = Session.GetCollection<UserFortuneInfo>();
-            WeaponCraftStatInfoList = Session.GetCollection<WeaponCraftStatInfo>(); 
+            WeaponCraftStatInfoList = Session.GetCollection<WeaponCraftStatInfo>();
 
-             GoldInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Gold);
+            GoldInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Gold);
             RefinementStoneInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.RefinementStone);
             FragmentInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment1);
             Fragment2Info = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment2);
@@ -723,7 +740,7 @@ namespace Server.Envir
             FortuneCheckerInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.FortuneChecker);
 
 
-            MysteryShipMapRegion = MapRegionList.Binding.FirstOrDefault(x=> x.Index == Config.MysteryShipRegionIndex);
+            MysteryShipMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.MysteryShipRegionIndex);
             LairMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.LairRegionIndex);
             StarterGuild = GuildInfoList.Binding.FirstOrDefault(x => x.StarterGuild);
 
@@ -802,7 +819,7 @@ namespace Server.Envir
         public static void UpdateLead()
         {
             HashSet<CharacterInfo> newTopRankings = new HashSet<CharacterInfo>();
-            
+
             int war = 5, wiz = 5, tao = 5, ass = 5;
 
             foreach (CharacterInfo cInfo in Rankings)
@@ -878,7 +895,7 @@ namespace Server.Envir
 
                 x.CreatePoints(map.Width);
             });
-            
+
             CreateSafeZones();
 
             CreateMovements();
@@ -900,7 +917,7 @@ namespace Server.Envir
                     Log($"[Movement] Bad Source Map, Source: {movement.SourceRegion.ServerDescription}");
                     continue;
                 }
-                
+
                 if (movement.DestinationRegion == null)
                 {
                     Log($"[Movement] No Destinaton Region, Source: {movement.SourceRegion.ServerDescription}");
@@ -938,7 +955,7 @@ namespace Server.Envir
             foreach (NPCInfo info in NPCInfoList.Binding)
             {
                 if (info.Region == null) continue;
-                
+
                 Map map = GetMap(info.Region.Map);
 
                 if (map == null)
@@ -970,7 +987,7 @@ namespace Server.Envir
                     Log($"[Safe Zone] Bad Map, Map: {info.Region.ServerDescription}");
                     continue;
                 }
-                
+
                 HashSet<Point> edges = new HashSet<Point>();
 
                 foreach (Point point in info.Region.PointList)
@@ -985,10 +1002,10 @@ namespace Server.Envir
                     }
 
                     cell.SafeZone = info;
-                    
+
                     for (int i = 0; i < 8; i++)
                     {
-                        Point test = Functions.Move(point, (MirDirection) i);
+                        Point test = Functions.Move(point, (MirDirection)i);
 
                         if (info.Region.PointList.Contains(test)) continue;
 
@@ -1023,7 +1040,7 @@ namespace Server.Envir
                     Log($"[Safe Zone] Bad Bind Map, Map: {info.Region.ServerDescription}");
                     continue;
                 }
-                
+
                 foreach (Point point in info.BindRegion.PointList)
                 {
                     Cell cell = map.GetCell(point);
@@ -1054,7 +1071,7 @@ namespace Server.Envir
                     Log(string.Format("[Respawn] Bad Map, Map: {0}", info.Region.ServerDescription));
                     continue;
                 }
-                
+
                 Spawns.Add(new SpawnInfo(info));
 
             }
@@ -1117,7 +1134,7 @@ namespace Server.Envir
             StartWebServer();
 
             Started = NetworkStarted;
-            
+
             int count = 0, loopCount = 0;
             DateTime nextCount = Now.AddSeconds(1), UserCountTime = Now.AddMinutes(5), saveTime;
             long previousTotalSent = 0, previousTotalReceived = 0;
@@ -1180,7 +1197,7 @@ namespace Server.Envir
                         ServerBuffChanged = false;
                     }
 
-                   DateTime  loopTime = Time.Now.AddMilliseconds(1);
+                    DateTime loopTime = Time.Now.AddMilliseconds(1);
 
                     if (lastindex < 0) lastindex = ActiveObjects.Count;
 
@@ -1361,14 +1378,14 @@ namespace Server.Envir
 
             StopEnvir();
         }
-        
+
         private static void Save()
         {
             if (Session == null) return;
 
             Saving = true;
             Session.Save(false);
-            
+
             HandledPayments.AddRange(PaymentList);
 
             Thread saveThread = new Thread(CommitChanges) { IsBackground = true };
@@ -1437,7 +1454,7 @@ namespace Server.Envir
             File.AppendAllLines(@".\Chat Logs.txt", lines);
 
             lines.Clear();
-            
+
             /*
             while (!GamePlayLogs.IsEmpty)
             {
@@ -1644,7 +1661,7 @@ namespace Server.Envir
 
                     participants.Add(conquest.Guild);
                 }
-                
+
                 if (participants.Count == 0) return;
 
                 foreach (GuildInfo guild in GuildInfoList.Binding)
@@ -1704,7 +1721,7 @@ namespace Server.Envir
         public static UserItem CreateFreshItem(ItemCheck check)
         {
             UserItem item = check.Item != null ? CreateFreshItem(check.Item) : CreateFreshItem(check.Info);
-            
+
             item.Flags = check.Flags;
             item.ExpireTime = check.ExpireTime;
 
@@ -1712,7 +1729,7 @@ namespace Server.Envir
                 item.Count = check.Count;
             else
                 item.Count = Math.Min(check.Info.StackSize, check.Count);
-            
+
             check.Count -= item.Count;
 
             return item;
@@ -1726,7 +1743,7 @@ namespace Server.Envir
             item.Info = info;
             item.CurrentDurability = info.Durability;
             item.MaxDurability = info.Durability;
-            
+
             return item;
         }
         public static UserItem CreateDropItem(ItemCheck check, int chance = 15)
@@ -1826,11 +1843,11 @@ namespace Server.Envir
 
             return null;
         }
-        
+
         public static MonsterInfo GetMonsterInfo(string name)
         {
             return MonsterInfoList.Binding.FirstOrDefault
-            (monster => string.Compare(monster.MonsterName.Replace(" ", ""), name, 
+            (monster => string.Compare(monster.MonsterName.Replace(" ", ""), name,
                             StringComparison.OrdinalIgnoreCase) == 0);
         }
 
@@ -1841,7 +1858,7 @@ namespace Server.Envir
 
             foreach (KeyValuePair<MonsterInfo, int> pair in list)
                 total += pair.Value;
-            
+
             int value = Random.Next(total);
 
             foreach (KeyValuePair<MonsterInfo, int> pair in list)
@@ -1985,7 +2002,7 @@ namespace Server.Envir
 
                 if (Random.Next(250) == 0)
                     value += 1;
-                
+
                 item.AddStat(Stat.EvasionChance, value, StatSource.Added);
             }
 
@@ -1998,7 +2015,7 @@ namespace Server.Envir
 
                 if (Random.Next(250) == 0)
                     value += 1;
-                
+
                 item.AddStat(Stat.PoisonResistance, value, StatSource.Added);
             }
 
@@ -2122,7 +2139,7 @@ namespace Server.Envir
                 Stat.HolyResistance, Stat.DarkResistance,
                 Stat.PhantomResistance, Stat.PhysicalResistance,
             };
-            
+
             if (Random.Next(10) == 0)
             {
                 Stat element = Elements[Random.Next(Elements.Count)];
@@ -2356,7 +2373,7 @@ namespace Server.Envir
                 if (item.Info.Stats[Stat.MinSC] > 0 || item.Info.Stats[Stat.MaxSC] > 0)
                     item.AddStat(Stat.MaxSC, value, StatSource.Added);
             }
-            
+
 
             if (Random.Next(5) == 0)
             {
@@ -2626,7 +2643,7 @@ namespace Server.Envir
                 if (item.Info.Stats[Stat.MinSC] > 0 || item.Info.Stats[Stat.MaxSC] > 0)
                     item.AddStat(Stat.MaxSC, value, StatSource.Added);
             }
-            
+
             if (Random.Next(3) == 0)
             {
                 int value = 1;
@@ -2686,7 +2703,7 @@ namespace Server.Envir
 
                 item.AddStat(Stat.MaxMR, value, StatSource.Added);
             }
-            
+
             if (Random.Next(5) == 0)
             {
                 int value = 1;
@@ -2786,7 +2803,7 @@ namespace Server.Envir
                 item.AddStat(element, -1, StatSource.Added);
             }
         }
-        
+
         public static void Login(C.Login p, SConnection con)
         {
             AccountInfo account = null;
@@ -2933,7 +2950,7 @@ namespace Server.Envir
 
                 TestServer = Config.TestServer,
             });
-            
+
             account.LastLogin = Now;
 
             if (!admin)
@@ -3010,7 +3027,7 @@ namespace Server.Envir
                 }
 
             AccountInfo refferal = null;
-            
+
             if (!string.IsNullOrEmpty(p.Referral))
             {
                 if (!Globals.EMailRegex.IsMatch(p.Referral))
@@ -3142,7 +3159,7 @@ namespace Server.Envir
                 con.Enqueue(new S.ChangePassword { Result = ChangePasswordResult.WrongPassword });
                 return;
             }
-            
+
             account.Password = CreateHash(p.NewPassword);
             SendChangePasswordEmail(account, con.IPAddress);
             con.Enqueue(new S.ChangePassword { Result = ChangePasswordResult.Success });
@@ -3162,7 +3179,7 @@ namespace Server.Envir
                 con.Enqueue(new S.RequestPasswordReset { Result = RequestPasswordResetResult.BadEMail });
                 return;
             }
-            
+
             AccountInfo account = null;
             for (int i = 0; i < AccountInfoList.Count; i++)
                 if (string.Compare(AccountInfoList[i].EMailAddress, p.EMailAddress, StringComparison.OrdinalIgnoreCase) == 0)
@@ -3201,13 +3218,13 @@ namespace Server.Envir
                 con.Enqueue(new S.ResetPassword { Result = ResetPasswordResult.Disabled });
                 return;
             }
-            
+
             if (!Globals.PasswordRegex.IsMatch(p.NewPassword))
             {
                 con.Enqueue(new S.ResetPassword { Result = ResetPasswordResult.BadNewPassword });
                 return;
             }
-            
+
             AccountInfo account = null;
             for (int i = 0; i < AccountInfoList.Count; i++)
                 if (string.Compare(AccountInfoList[i].ResetKey, p.ResetKey, StringComparison.OrdinalIgnoreCase) == 0)
@@ -3215,7 +3232,7 @@ namespace Server.Envir
                     account = AccountInfoList[i];
                     break;
                 }
-            
+
             if (account == null)
             {
                 con.Enqueue(new S.ResetPassword { Result = ResetPasswordResult.AccountNotFound });
@@ -3227,7 +3244,7 @@ namespace Server.Envir
                 con.Enqueue(new S.ResetPassword { Result = ResetPasswordResult.KeyExpired });
                 return;
             }
-            
+
             account.ResetKey = string.Empty;
             account.Password = CreateHash(p.NewPassword);
             account.WrongPasswordCount = 0;
@@ -3244,7 +3261,7 @@ namespace Server.Envir
                 con.Enqueue(new S.Activation { Result = ActivationResult.Disabled });
                 return;
             }
-            
+
             AccountInfo account = null;
             for (int i = 0; i < AccountInfoList.Count; i++)
                 if (string.Compare(AccountInfoList[i].ActivationKey, p.ActivationKey, StringComparison.OrdinalIgnoreCase) == 0)
@@ -3261,7 +3278,7 @@ namespace Server.Envir
 
             account.ActivationKey = null;
             account.Activated = true;
-            
+
             con.Enqueue(new S.Activation { Result = ActivationResult.Success });
 
             Log($"[Activation] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
@@ -3317,7 +3334,7 @@ namespace Server.Envir
                 con.Enqueue(new S.NewCharacter { Result = NewCharacterResult.Disabled });
                 return;
             }
-            
+
             if (!Globals.CharacterReg.IsMatch(p.CharacterName))
             {
                 con.Enqueue(new S.NewCharacter { Result = NewCharacterResult.BadCharacterName });
@@ -3364,7 +3381,7 @@ namespace Server.Envir
                     if (Config.AllowWarrior) break;
 
                     con.Enqueue(new S.NewCharacter { Result = NewCharacterResult.ClassDisabled });
-                    
+
                     return;
                 case MirClass.Wizard:
                     if (p.HairType > (p.Gender == MirGender.Male ? 10 : 11))
@@ -3444,7 +3461,7 @@ namespace Server.Envir
                     con.Enqueue(new S.NewCharacter { Result = NewCharacterResult.AlreadyExists });
                     return;
                 }
-            
+
             CharacterInfo cInfo = CharacterInfoList.CreateNewObject();
 
             cInfo.CharacterName = p.CharacterName;
@@ -3511,7 +3528,7 @@ namespace Server.Envir
                     con.Enqueue(new S.StartGame { Result = StartGameResult.Deleted });
                     return;
                 }
-                
+
                 TimeSpan duration = Now - character.LastLogin;
 
                 if (duration < Config.RelogDelay)
@@ -3545,7 +3562,7 @@ namespace Server.Envir
 
         private static void SendActivationEmail(AccountInfo account)
         {
-            account.ActivationKey = Functions.RandomString(Random,20);
+            account.ActivationKey = Functions.RandomString(Random, 20);
             account.ActivationTime = Now.AddMinutes(5);
             EMailsSent++;
 
@@ -3553,12 +3570,12 @@ namespace Server.Envir
             {
                 try
                 {
-                    
+
                     SmtpClient client = new SmtpClient(Config.MailServer, Config.MailPort)
                     {
                         EnableSsl = Config.MailUseSSL,
                         UseDefaultCredentials = false,
-                        
+
                         Credentials = new NetworkCredential(Config.MailAccount, Config.MailPassword),
                     };
 
@@ -3579,7 +3596,7 @@ namespace Server.Envir
                                $"We'll see you in game<br>" +
                                $"<a href=\"http://www.zirconserver.com\">Zircon Server</a>"
                     };
-                    
+
                     client.Send(message);
 
                     message.Dispose();
@@ -3595,7 +3612,7 @@ namespace Server.Envir
         private static void ResendActivationEmail(AccountInfo account)
         {
             if (string.IsNullOrEmpty(account.ActivationKey))
-                account.ActivationKey = Functions.RandomString(Random,20);
+                account.ActivationKey = Functions.RandomString(Random, 20);
 
             account.ActivationTime = Now.AddMinutes(15);
             EMailsSent++;
@@ -3669,7 +3686,7 @@ namespace Server.Envir
                                $"IP Address: {ipAddress}<br><br>" +
                                $"If you did not make this change please contact an administrator immediately.<br><br>" +
                                $"We'll see you in game<br>" +
-                               $"<a href=\"http://www.zirconserver.com\">Zircon Server</a>" 
+                               $"<a href=\"http://www.zirconserver.com\">Zircon Server</a>"
                     };
 
                     client.Send(message);
@@ -3686,7 +3703,7 @@ namespace Server.Envir
         }
         private static void SendResetPasswordRequestEmail(AccountInfo account, string ipAddress)
         {
-            account.ResetKey = Functions.RandomString(Random,20);
+            account.ResetKey = Functions.RandomString(Random, 20);
             account.ResetTime = Now.AddMinutes(5);
             EMailsSent++;
 
@@ -3732,7 +3749,7 @@ namespace Server.Envir
         }
         private static void SendResetPasswordEmail(AccountInfo account, string password)
         {
-            account.ResetKey = Functions.RandomString(Random,20);
+            account.ResetKey = Functions.RandomString(Random, 20);
             account.ResetTime = Now.AddMinutes(5);
             EMailsSent++;
 
@@ -3803,7 +3820,7 @@ namespace Server.Envir
         {
             byte[] salt = new byte[SaltSize];
             Buffer.BlockCopy(totalHash, 0, salt, 0, SaltSize);
-            
+
             using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, salt, Iterations))
             {
                 byte[] hash = rfc.GetBytes(hashSize);
@@ -3875,7 +3892,7 @@ namespace Server.Envir
                 Ranks = new List<RankInfo>(),
                 ObserverPacket = false,
             };
-            
+
             int total = 0;
             int rank = 0;
             foreach (CharacterInfo info in Rankings)

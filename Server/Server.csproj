@@ -36,6 +36,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=5.1.4.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.5.1.4\lib\net461\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.0.35\lib\net461\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.BonusSkins.v18.2">
       <Private>True</Private>
       <HintPath>..\..\DevExpress Components RUNTIME\DevExpress.BonusSkins.v18.2.dll</HintPath>
@@ -71,145 +77,46 @@
       <Private>True</Private>
       <HintPath>..\..\DevExpress Components RUNTIME\DevExpress.XtraNavBar.v18.2.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=4.1.3.1, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.4.1.3.1\lib\net461\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64" />
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.6.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.4.6.0\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBModels\AccountInfo.cs" />
-    <Compile Include="DBModels\AuctionHistoryInfo.cs" />
-    <Compile Include="DBModels\AutoPotionLink.cs" />
-    <Compile Include="DBModels\BlockInfo.cs" />
-    <Compile Include="DBModels\BuffInfo.cs" />
-    <Compile Include="DBModels\CharacterBeltLink.cs" />
-    <Compile Include="DBModels\CharacterInfo.cs" />
-    <Compile Include="DBModels\AuctionInfo.cs" />
-    <Compile Include="DBModels\GameGoldPayment.cs" />
-    <Compile Include="DBModels\GameStoreSale.cs" />
-    <Compile Include="DBModels\GuildInfo.cs" />
-    <Compile Include="DBModels\GuildMemberInfo.cs" />
-    <Compile Include="DBModels\GuildWarInfo.cs" />
-    <Compile Include="DBModels\MailInfo.cs" />
-    <Compile Include="DBModels\RefineInfo.cs" />
-    <Compile Include="DBModels\UserCompanionUnlock.cs" />
-    <Compile Include="DBModels\UserCompanion.cs" />
-    <Compile Include="DBModels\UserConquest.cs" />
-    <Compile Include="DBModels\UserConquestStats.cs" />
-    <Compile Include="DBModels\UserDrop.cs" />
-    <Compile Include="DBModels\UserFortuneInfo.cs" />
-    <Compile Include="DBModels\UserItem.cs" />
-    <Compile Include="DBModels\UserItemStat.cs" />
-    <Compile Include="DBModels\UserMagic.cs" />
-    <Compile Include="DBModels\UserQuest.cs" />
-    <Compile Include="Envir\Config.cs" />
-    <Compile Include="Envir\Translations\ChineseMessages.cs" />
-    <Compile Include="Envir\Translations\EnglishMessages.cs" />
-    <Compile Include="Envir\Translations\StringMessages.cs" />
-    <Compile Include="Envir\SConnection.cs" />
-    <Compile Include="Envir\SEnvir.cs" />
-    <Compile Include="Models\ConquestWar.cs" />
-    <Compile Include="Models\DelayedAction.cs" />
-    <Compile Include="Models\ItemCheck.cs" />
-    <Compile Include="Models\ItemObject.cs" />
-    <Compile Include="Models\Map.cs" />
-    <Compile Include="Models\MapObject.cs" />
-    <Compile Include="Models\MonsterObject.cs" />
-    <Compile Include="Models\Monsters\ArachnidGrazer.cs" />
-    <Compile Include="Models\Monsters\ArchLichTaedu.cs" />
-    <Compile Include="Models\Monsters\BanyaLeftGuard.cs" />
-    <Compile Include="Models\Monsters\BanyoCaptain.cs" />
-    <Compile Include="Models\Monsters\BanyoLordGuzak.cs" />
-    <Compile Include="Models\Monsters\ChristmasMonster.cs" />
-    <Compile Include="Models\Monsters\DoomClaw.cs" />
-    <Compile Include="Models\Monsters\DragonLord.cs" />
-    <Compile Include="Models\Monsters\DragonQueen.cs" />
-    <Compile Include="Models\Monsters\EscortCommander.cs" />
-    <Compile Include="Models\Monsters\FerociousIceTiger.cs" />
-    <Compile Include="Models\Monsters\FrostLordHwa.cs" />
-    <Compile Include="Models\Monsters\HalloweenMonster.cs" />
-    <Compile Include="Models\Monsters\JinhwanSpirit.cs" />
-    <Compile Include="Models\Monsters\Affliction.cs" />
-    <Compile Include="Models\Monsters\MonasteryBoss.cs" />
-    <Compile Include="Models\Monsters\OmaMage.cs" />
-    <Compile Include="Models\Monsters\PinkBat.cs" />
-    <Compile Include="Models\Monsters\QuartzTree.cs" />
-    <Compile Include="Models\Monsters\QuartzTurtleSub.cs" />
-    <Compile Include="Models\Monsters\QueenOfDawn.cs" />
-    <Compile Include="Models\Monsters\BanyoWarrior.cs" />
-    <Compile Include="Models\Monsters\CarnivorousPlant.cs" />
-    <Compile Include="Models\Monsters\CastleLord.cs" />
-    <Compile Include="Models\Monsters\ChaosKnight.cs" />
-    <Compile Include="Models\Monsters\Companion.cs" />
-    <Compile Include="Models\Monsters\CorrosivePoisonSpitter.cs" />
-    <Compile Include="Models\Monsters\CrimsonNecromancer.cs" />
-    <Compile Include="Models\Monsters\DepartedMonster.cs" />
-    <Compile Include="Models\Monsters\EmperorSaWoo.cs" />
-    <Compile Include="Models\Monsters\EnragedArchLichTaedu.cs" />
-    <Compile Include="Models\Monsters\EnragedLordNiJae.cs" />
-    <Compile Include="Models\Monsters\EvilElephant.cs" />
-    <Compile Include="Models\Monsters\FieryDancer.cs" />
-    <Compile Include="Models\Monsters\FlameDemon.cs" />
-    <Compile Include="Models\Monsters\GhostMage.cs" />
-    <Compile Include="Models\Monsters\GhostSorcerer.cs" />
-    <Compile Include="Models\Monsters\GiantLizard.cs" />
-    <Compile Include="Models\Monsters\GoruArcher.cs" />
-    <Compile Include="Models\Monsters\GoruSpearman.cs" />
-    <Compile Include="Models\Monsters\Guard.cs" />
-    <Compile Include="Models\Monsters\HealerAnt.cs" />
-    <Compile Include="Models\Monsters\IcyGoddess.cs" />
-    <Compile Include="Models\Monsters\IcySpiritGeneral.cs" />
-    <Compile Include="Models\Monsters\IcySpiritWarrior.cs" />
-    <Compile Include="Models\Monsters\JinamStoneGate.cs" />
-    <Compile Include="Models\Monsters\JinchonDevil.cs" />
-    <Compile Include="Models\Monsters\Larva.cs" />
-    <Compile Include="Models\Monsters\LordNiJae.cs" />
-    <Compile Include="Models\Monsters\MirrorImage.cs" />
-    <Compile Include="Models\Monsters\Monkey.cs" />
-    <Compile Include="Models\Monsters\MoonFeralWarrior.cs" />
-    <Compile Include="Models\Monsters\NetherworldGate.cs" />
-    <Compile Include="Models\Monsters\NumaHighMage.cs" />
-    <Compile Include="Models\Monsters\NumaMage.cs" />
-    <Compile Include="Models\Monsters\NumaStoneThrower.cs" />
-    <Compile Include="Models\Monsters\OmaWarlord.cs" />
-    <Compile Include="Models\Monsters\OxFeralGeneral.cs" />
-    <Compile Include="Models\Monsters\PachontheChaosbringer.cs" />
-    <Compile Include="Models\Monsters\Puppet.cs" />
-    <Compile Include="Models\Monsters\RazorTusk.cs" />
-    <Compile Include="Models\Monsters\RedMoonTheFallen.cs" />
-    <Compile Include="Models\Monsters\SamaBlue.cs" />
-    <Compile Include="Models\Monsters\SamaBlack.cs" />
-    <Compile Include="Models\Monsters\SamaPhoenix.cs" />
-    <Compile Include="Models\Monsters\SamaProphet.cs" />
-    <Compile Include="Models\Monsters\SamaScorcer.cs" />
-    <Compile Include="Models\Monsters\SamaWhite.cs" />
-    <Compile Include="Models\Monsters\SamaWindGuardian.cs" />
-    <Compile Include="Models\Monsters\SamaLightningGuardian.cs" />
-    <Compile Include="Models\Monsters\SamaIceGuardian.cs" />
-    <Compile Include="Models\Monsters\SamaFireGuardian.cs" />
-    <Compile Include="Models\Monsters\Shinsu.cs" />
-    <Compile Include="Models\Monsters\SonicLizard.cs" />
-    <Compile Include="Models\Monsters\Stomper.cs" />
-    <Compile Include="Models\Monsters\SunFeralWarrior.cs" />
-    <Compile Include="Models\Monsters\Warewolf.cs" />
-    <Compile Include="Models\Monsters\WedgeMothLarva.cs" />
-    <Compile Include="Models\Monsters\WhiteBone.cs" />
-    <Compile Include="Models\Monsters\WindfurySorcerer.cs" />
-    <Compile Include="Models\Monsters\SkeletonAxeThrower.cs" />
-    <Compile Include="Models\Monsters\SpittingSpider.cs" />
-    <Compile Include="Models\Monsters\TreeMonster.cs" />
-    <Compile Include="Models\Monsters\UmaKing.cs" />
-    <Compile Include="Models\Monsters\VoraciousGhost.cs" />
-    <Compile Include="Models\Monsters\WingedHorror.cs" />
-    <Compile Include="Models\Monsters\YumgonWitch.cs" />
-    <Compile Include="Models\Monsters\ZumaGuardian.cs" />
-    <Compile Include="Models\Monsters\ZumaKing.cs" />
-    <Compile Include="Models\NPCObject.cs" />
-    <Compile Include="Models\PlayerObject.cs" />
-    <Compile Include="Models\PlayerSets.cs" />
-    <Compile Include="Models\SpellObject.cs" />
     <Compile Include="SMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -420,16 +327,6 @@
     <EmbeddedResource Include="SMain.resx">
       <DependentUpon>SMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="Views\GameStoreSaleView.resx">
       <DependentUpon>GameStoreSaleView.cs</DependentUpon>
     </EmbeddedResource>
@@ -530,27 +427,17 @@
       <DependentUpon>UserDropView.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library\Library.csproj">
-      <Project>{cdb4e695-fed9-481d-b636-ada5106ad844}</Project>
-      <Name>Library</Name>
+    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj">
+      <Project>{c47f32fa-4c04-4143-b4fe-623d4b014d0d}</Project>
+      <Name>LibraryCore</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BuyGameGold.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CharacterNotFound.txt" />
+    <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj">
+      <Project>{42e44f8e-c98b-4008-958a-5c8cb3d02b8d}</Project>
+      <Name>ServerLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -194,12 +194,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library\Library.csproj">
-      <Project>{cdb4e695-fed9-481d-b636-ada5106ad844}</Project>
-      <Name>Library</Name>
+    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj">
+      <Project>{c47f32fa-4c04-4143-b4fe-623d4b014d0d}</Project>
+      <Name>LibraryCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="Zircon.ico" />
   </ItemGroup>
