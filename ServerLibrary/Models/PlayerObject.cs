@@ -3172,9 +3172,17 @@ namespace Server.Models
         }
         public void MarriageTeleport()
         {
-            if (Character.Partner == null) return; // Not Married
+            if (Character.Partner == null)
+            {
+                Connection.ReceiveChat("You are not married", MessageType.System);
+                return;
+            }
 
-            if (Equipment[(int)EquipmentSlot.RingL] == null || (Equipment[(int)EquipmentSlot.RingL].Flags & UserItemFlags.Marriage) != UserItemFlags.Marriage) return;
+            if (Equipment[(int)EquipmentSlot.RingL] == null || (Equipment[(int)EquipmentSlot.RingL].Flags & UserItemFlags.Marriage) != UserItemFlags.Marriage)
+            {
+                Connection.ReceiveChat("Your ring is not married ring", MessageType.System);
+                return;
+            }
 
             if (Dead)
             {
