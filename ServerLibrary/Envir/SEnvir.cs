@@ -22,6 +22,7 @@ using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
 using Autofac;
+using System.Reflection;
 
 namespace Server.Envir
 {
@@ -677,12 +678,15 @@ namespace Server.Envir
         {
             Random = new Random();
 
-            Session = Container.Resolve<Session>();
+            Session = new Session(SessionMode.Users)
+            {
+                BackUpDelay = 60,
+            };
 
-            //Session = new Session(SessionMode.Users)
-            //{
-            //    BackUpDelay = 60,
-            //};
+            Session.Initialize(
+                Assembly.GetAssembly(typeof(ItemInfo)), // returns assembly LibraryCore
+                Assembly.GetAssembly(typeof(AccountInfo)) // returns assembly ServerLibrary
+            );
 
             MapInfoList = Session.GetCollection<MapInfo>();
             SafeZoneInfoList = Session.GetCollection<SafeZoneInfo>();
