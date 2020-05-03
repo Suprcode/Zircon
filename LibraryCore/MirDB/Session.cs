@@ -32,6 +32,9 @@ namespace MirDB
 
         private string UsersPath => Root + "Users" + Extention;
         private string UsersBackupPath => BackupRoot + @"Users\";
+
+        public Assembly[] Assemblies { get; private set; }
+
         private byte[] UsersHeader;
 
         //internal ConcurrentQueue<DBObject> KeyedObjects = new ConcurrentQueue<DBObject>();
@@ -73,6 +76,8 @@ namespace MirDB
 
         public void Initialize(params Assembly[] assemblies)
         {
+            Assemblies = assemblies;
+
             if (!Directory.Exists(Root))
                 Directory.CreateDirectory(Root);
 
@@ -137,7 +142,7 @@ namespace MirDB
                 int count = reader.ReadInt32();
 
                 for (int i = 0; i < count; i++)
-                    mappings.Add(new DBMapping(reader));
+                    mappings.Add(new DBMapping(Assemblies, reader));
 
                 List<Task> loadingTasks = new List<Task>();
                 foreach (DBMapping mapping in mappings)
@@ -183,7 +188,7 @@ namespace MirDB
                 int count = reader.ReadInt32();
 
                 for (int i = 0; i < count; i++)
-                    mappings.Add(new DBMapping(reader));
+                    mappings.Add(new DBMapping(Assemblies, reader));
 
                 List<Task> loadingTasks = new List<Task>();
                 foreach (DBMapping mapping in mappings)

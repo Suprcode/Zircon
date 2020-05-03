@@ -1,13 +1,6 @@
 .idea/*
 *.user
-/Build/LibraryEditor/Exported
-/.vs/Zircon Server/v15/*.suo
-/Build/LibraryEditor
-
-/packages/Ionic.Zlib.1.9.1.5
-*.csproj
-Components/SlimDX.dll
-PatchManager/PatchManager.csproj
+Build/
 .vs/
 [Oo]bj/
 [Bb]in/

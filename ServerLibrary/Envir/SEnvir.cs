@@ -21,7 +21,7 @@ using Server.Models;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
-using Autofac;
+using System.Reflection;
 
 namespace Server.Envir
 {
@@ -514,7 +514,6 @@ namespace Server.Envir
         public static bool NetworkStarted { get; set; }
         public static bool WebServerStarted { get; set; }
         public static bool Saving { get; private set; }
-        public static IContainer Container { get; private set; }
         public static Thread EnvirThread { get; private set; }
 
         public static DateTime Now, StartTime, LastWarTime;
@@ -630,10 +629,6 @@ namespace Server.Envir
         {
             if (Started || EnvirThread != null) return;
 
-            var builder = new ContainerBuilder();
-            builder.RegisterDatabase();
-            Container = builder.Build();
-
             EnvirThread = new Thread(() => EnvirLoop()) { IsBackground = true };
             EnvirThread.Start();
         }
@@ -677,12 +672,15 @@ namespace Server.Envir
         {
             Random = new Random();
 
-            Session = Container.Resolve<Session>();
+            Session = new Session(SessionMode.Users)
+            {
+                BackUpDelay = 60,
+            };
 
-            //Session = new Session(SessionMode.Users)
-            //{
-            //    BackUpDelay = 60,
-            //};
+            Session.Initialize(
+                Assembly.GetAssembly(typeof(ItemInfo)), // returns assembly LibraryCore
+                Assembly.GetAssembly(typeof(AccountInfo)) // returns assembly ServerLibrary
+            );
 
             MapInfoList = Session.GetCollection<MapInfo>();
             SafeZoneInfoList = Session.GetCollection<SafeZoneInfo>();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
@@ -24,7 +25,6 @@ namespace Server
     {
         public List<Control> Windows = new List<Control>();
         public static Session Session;
-       
         public SMain()
         {
             InitializeComponent();
@@ -42,6 +42,11 @@ namespace Server
             {
                 BackUpDelay = 60
             };
+
+            Session.Initialize(
+                Assembly.GetAssembly(typeof(ItemInfo)), // returns assembly LibraryCore
+                Assembly.GetAssembly(typeof(AccountInfo)) // returns assembly ServerLibrary
+            );
 
 
             /*
@@ -98,7 +103,7 @@ namespace Server
             Session?.Save(true);
 
             if (SEnvir.EnvirThread == null) return;
-            
+
             SEnvir.Started = false;
 
             while (SEnvir.EnvirThread != null) Thread.Sleep(1);
@@ -195,9 +200,16 @@ namespace Server
 
         private void StartServerButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            InterfaceTimer.Enabled = true;
-            SEnvir.StartServer();
-            UpdateInterface();
+            try
+            {
+                InterfaceTimer.Enabled = true;
+                SEnvir.StartServer();
+                UpdateInterface();
+            }
+            catch (Exception ex)
+            {
+                SEnvir.Log($"Exception: " + ex.ToString(), true);
+            }
         }
 
         private void StopServerButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -375,7 +387,7 @@ namespace Server
         {
             ShowView(typeof(MovementInfoView));
         }
-        
+
 
         private void ItemInfoStatButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
@@ -439,7 +451,7 @@ namespace Server
         }
 
         private void RespawnInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
-        { 
+        {
             ShowView(typeof(RespawnInfoView));
         }
 

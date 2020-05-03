@@ -24,6 +24,7 @@ using System.Security.Permissions;
 using System.Security.Cryptography.X509Certificates;
 using Client.Envir.Translations;
 using Sentry;
+using System.Reflection;
 
 namespace Client.Envir
 {
@@ -299,6 +300,11 @@ namespace Client.Envir
             Task.Run(() =>
             {
                 Session = new Session(SessionMode.Users, @".\Data\") { BackUp = false };
+
+                Session.Initialize(
+                    Assembly.GetAssembly(typeof(ItemInfo)),
+                    Assembly.GetAssembly(typeof(WindowSetting))
+                );
 
                 Globals.ItemInfoList = Session.GetCollection<ItemInfo>();
                 Globals.MagicInfoList = Session.GetCollection<MagicInfo>();

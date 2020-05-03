@@ -26,7 +26,7 @@ namespace MirDB
         public DBCollection(Session session)
         {
             Type = typeof(T);
-            Mapping = new DBMapping(Type);
+            Mapping = new DBMapping(session.Assemblies, Type);
 
             IsSystemData = Type.GetCustomAttribute<UserObject>() == null;
 

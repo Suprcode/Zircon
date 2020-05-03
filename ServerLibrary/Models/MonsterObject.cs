@@ -17,10 +17,10 @@ namespace Server.Models
     public class MonsterObject : MapObject
     {
         public override ObjectType Race => ObjectType.Monster;
-        
+
         public sealed override MirDirection Direction { get; set; }
 
-        public DateTime SearchTime,  RoamTime, EXPOwnerTime, DeadTime, RageTime, TameTime;
+        public DateTime SearchTime, RoamTime, EXPOwnerTime, DeadTime, RageTime, TameTime;
 
         public TimeSpan SearchDelay = TimeSpan.FromSeconds(3),
                         RoamDelay = TimeSpan.FromSeconds(2),
@@ -50,7 +50,7 @@ namespace Server.Models
 
         public Dictionary<MonsterInfo, int> SpawnList = new Dictionary<MonsterInfo, int>();
         public bool Skeleton;
-        
+
         #region EXPOwner
 
         public PlayerObject EXPOwner
@@ -282,10 +282,15 @@ namespace Server.Models
                 case 66:
                     return new IcySpiritWarrior { MonsterInfo = monsterInfo, PoisonType = PoisonType.Paralysis, PoisonTicks = 1, PoisonFrequency = 5, PoisonRate = 25 };
                 case 67:
-                    return new IcySpiritGeneral { MonsterInfo = monsterInfo, IgnoreShield = true,
+                    return new IcySpiritGeneral
+                    {
+                        MonsterInfo = monsterInfo,
+                        IgnoreShield = true,
                     };
                 case 68:
-                    return new Warewolf { MonsterInfo = monsterInfo,
+                    return new Warewolf
+                    {
+                        MonsterInfo = monsterInfo,
                         IgnoreShield = true,
                     };
                 case 69:
@@ -464,13 +469,13 @@ namespace Server.Models
                     {
                         MonsterInfo = monsterInfo,
                     };
-                 case 101:
-                     return new DragonQueen
-                     {
-                         MonsterInfo = monsterInfo,
-                         DragonLordInfo = SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.DragonLord),
+                case 101:
+                    return new DragonQueen
+                    {
+                        MonsterInfo = monsterInfo,
+                        DragonLordInfo = SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.DragonLord),
 
-                         SpawnList =
+                        SpawnList =
                          {
                              [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.OYoungBeast)] = 2,
                              [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.YumgonWitch)] = 2,
@@ -481,10 +486,12 @@ namespace Server.Models
                              [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.OyoungGeneral)] = 2,
                              [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.YumgonGeneral)] = 2,
                          }
-                     };
-                 case 102:
-                     return new DragonLord { MonsterInfo = monsterInfo,
-                         SpawnList =
+                    };
+                case 102:
+                    return new DragonLord
+                    {
+                        MonsterInfo = monsterInfo,
+                        SpawnList =
                          {
                              [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.OYoungBeast)] = 10000,
                              [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.YumgonWitch)] = 10000,
@@ -497,7 +504,7 @@ namespace Server.Models
 
                              [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.DragonLord)] = 1,
                          }
-                     };
+                    };
                 case 103:
                     return new GiantLizard { MonsterInfo = monsterInfo, AttackRange = 5 };
                 case 104:
@@ -599,7 +606,7 @@ namespace Server.Models
                         }
                     };
                 case 127:
-                    return new JinchonDevil {MonsterInfo = monsterInfo, CastDelay = TimeSpan.FromSeconds(8), DeathCloudDurationMin =  2000, DeathCloudDurationRandom = 5000};
+                    return new JinchonDevil { MonsterInfo = monsterInfo, CastDelay = TimeSpan.FromSeconds(8), DeathCloudDurationMin = 2000, DeathCloudDurationRandom = 5000 };
                 default:
                     return new MonsterObject { MonsterInfo = monsterInfo };
             }
@@ -609,11 +616,11 @@ namespace Server.Models
             Stats = new Stats();
             Direction = (MirDirection)SEnvir.Random.Next(8);
         }
-         
+
         protected override void OnSpawned()
         {
             base.OnSpawned();
-            
+
             if (SpawnInfo != null && SpawnInfo.Info.EasterEventChance > 0 && SEnvir.Now < Config.EasterEventEnd)
                 EasterEventMob = SEnvir.Random.Next(SpawnInfo.Info.EasterEventChance) == 0;
 
@@ -639,7 +646,7 @@ namespace Server.Models
             RefreshStats();
             CurrentHP = Stats[Stat.Health];
             DisplayHP = CurrentHP;
-                
+
             RegenTime = SEnvir.Now.AddMilliseconds(SEnvir.Random.Next((int)RegenDelay.TotalMilliseconds));
             SearchTime = SEnvir.Now.AddMilliseconds(SEnvir.Random.Next((int)SearchDelay.TotalMilliseconds));
             RoamTime = SEnvir.Now.AddMilliseconds(SEnvir.Random.Next((int)RoamDelay.TotalMilliseconds));
@@ -669,28 +676,28 @@ namespace Server.Models
 
             if (SummonLevel > 0)
             {
-                Stats[Stat.Health] += Stats[Stat.Health]*SummonLevel/10;
+                Stats[Stat.Health] += Stats[Stat.Health] * SummonLevel / 10;
 
-                Stats[Stat.MinAC] += Stats[Stat.MinAC]*SummonLevel/10;
-                Stats[Stat.MaxAC] += Stats[Stat.MaxAC]*SummonLevel/10;
+                Stats[Stat.MinAC] += Stats[Stat.MinAC] * SummonLevel / 10;
+                Stats[Stat.MaxAC] += Stats[Stat.MaxAC] * SummonLevel / 10;
 
-                Stats[Stat.MinMR] += Stats[Stat.MinMR]*SummonLevel/10;
-                Stats[Stat.MaxMR] += Stats[Stat.MaxMR]*SummonLevel/10;
+                Stats[Stat.MinMR] += Stats[Stat.MinMR] * SummonLevel / 10;
+                Stats[Stat.MaxMR] += Stats[Stat.MaxMR] * SummonLevel / 10;
 
-                Stats[Stat.MinDC] += Stats[Stat.MinDC]*SummonLevel/10;
-                Stats[Stat.MaxDC] += Stats[Stat.MaxDC]*SummonLevel/10;
+                Stats[Stat.MinDC] += Stats[Stat.MinDC] * SummonLevel / 10;
+                Stats[Stat.MaxDC] += Stats[Stat.MaxDC] * SummonLevel / 10;
 
-                Stats[Stat.MinMC] += Stats[Stat.MinMC]*SummonLevel/10;
-                Stats[Stat.MaxMC] += Stats[Stat.MaxMC]*SummonLevel/10;
+                Stats[Stat.MinMC] += Stats[Stat.MinMC] * SummonLevel / 10;
+                Stats[Stat.MaxMC] += Stats[Stat.MaxMC] * SummonLevel / 10;
 
-                Stats[Stat.MinSC] += Stats[Stat.MinSC]*SummonLevel/10;
-                Stats[Stat.MaxSC] += Stats[Stat.MaxSC]*SummonLevel/10;
+                Stats[Stat.MinSC] += Stats[Stat.MinSC] * SummonLevel / 10;
+                Stats[Stat.MaxSC] += Stats[Stat.MaxSC] * SummonLevel / 10;
 
-                Stats[Stat.Accuracy] += Stats[Stat.Accuracy]*SummonLevel/10;
-                Stats[Stat.Agility] += Stats[Stat.Agility]*SummonLevel/10;
+                Stats[Stat.Accuracy] += Stats[Stat.Accuracy] * SummonLevel / 10;
+                Stats[Stat.Agility] += Stats[Stat.Agility] * SummonLevel / 10;
             }
-            
-            
+
+
             Stats[Stat.CriticalChance] = 1;
 
             if (Buffs.Any(x => x.Type == BuffType.MagicWeakness))
@@ -723,7 +730,7 @@ namespace Server.Models
             }
 
 
-           
+
 
             /*
             Stats[Stat.FireResistance] = Math.Min(5, Stats[Stat.FireResistance]);
@@ -781,7 +788,7 @@ namespace Server.Models
             if (ChristmasEventMob)
                 Stats[Stat.Health] = 10;
 
-            S.DataObjectMaxHealthMana p = new S.DataObjectMaxHealthMana { ObjectID = ObjectID, Stats = Stats};
+            S.DataObjectMaxHealthMana p = new S.DataObjectMaxHealthMana { ObjectID = ObjectID, Stats = Stats };
 
             foreach (PlayerObject player in DataSeenByPlayers)
                 player.Enqueue(p);
@@ -792,13 +799,13 @@ namespace Server.Models
         }
         public virtual void ApplyBonusStats()
         {
-            
+
         }
 
         public override void CleanUp()
         {
             base.CleanUp();
-            
+
             _Target = null;
 
             SpawnList?.Clear();
@@ -807,7 +814,7 @@ namespace Server.Models
             _EXPOwner = null;
 
             Drops?.Clear();
-            
+
 
             Magics?.Clear();
         }
@@ -839,10 +846,10 @@ namespace Server.Models
             switch (action.Type)
             {
                 case ActionType.DelayAttack:
-                    Attack((MapObject) action.Data[0], (int) action.Data[1], (Element) action.Data[2]);
+                    Attack((MapObject)action.Data[0], (int)action.Data[1], (Element)action.Data[2]);
                     return;
                 case ActionType.DelayMagic:
-                    switch ((MagicType) action.Data[0])
+                    switch ((MagicType)action.Data[0])
                     {
                         case MagicType.FireWall:
                             FireWallEnd((Cell)action.Data[1]);
@@ -851,7 +858,7 @@ namespace Server.Models
                             DragonRepulseEnd((MapObject)action.Data[1]);
                             break;
                         case MagicType.Purification:
-                            Purify((MapObject) action.Data[1]);
+                            Purify((MapObject)action.Data[1]);
                             break;
                         case MagicType.MonsterDeathCloud:
                             DeathCloudEnd((Cell)action.Data[1], (bool)action.Data[2], (Point)action.Data[3]);
@@ -865,7 +872,7 @@ namespace Server.Models
         public override void Process()
         {
             base.Process();
-                        
+
             if (Dead)
             {
                 Target = null;
@@ -888,11 +895,11 @@ namespace Server.Models
                 Target = null;
 
             ProcessAI();
-        } 
+        }
         public override void ProcessNameColour()
         {
             NameColour = Color.White;
-            
+
             if (SEnvir.Now < ShockTime)
                 NameColour = Color.Peru;
             else if (SEnvir.Now < RageTime)
@@ -902,7 +909,7 @@ namespace Server.Models
         public virtual void ProcessAI()
         {
             if (Dead) return;
-            
+
             if (PetOwner?.Node != null)
             {
                 if (Target != null)
@@ -927,7 +934,7 @@ namespace Server.Models
         public override void OnSafeDespawn()
         {
             base.OnSafeDespawn();
-            
+
             Master?.MinionList.Remove(this);
             Master = null;
 
@@ -964,7 +971,7 @@ namespace Server.Models
             SummonLevel = 0;
             RefreshStats();
 
-            SetHP(Math.Min(CurrentHP, Stats[Stat.Health]/10));
+            SetHP(Math.Min(CurrentHP, Stats[Stat.Health] / 10));
 
             Broadcast(new S.ObjectPetOwnerChanged { ObjectID = ObjectID });
         }
@@ -985,7 +992,7 @@ namespace Server.Models
 
             if (CurrentHP >= Stats[Stat.Health]) return;
 
-            int regen = (int) Math.Max(1, Stats[Stat.Health]*0.02F); //2% every 10 seconds aprox
+            int regen = (int)Math.Max(1, Stats[Stat.Health] * 0.02F); //2% every 10 seconds aprox
 
             ChangeHP(regen);
         }
@@ -1104,7 +1111,7 @@ namespace Server.Models
         public virtual void ProcessRoam()
         {
             if (!CanMove) return;
-            
+
             if (PetOwner != null)
             {
                 if (Target == null)
@@ -1132,13 +1139,13 @@ namespace Server.Models
                 }
                 return;
             }
-            
+
             if (Target != null || SEnvir.Random.Next(10) > 0) return;
 
             if (SEnvir.Random.Next(3) > 0)
                 Walk(Direction);
             else
-                Turn((MirDirection) SEnvir.Random.Next(8));
+                Turn((MirDirection)SEnvir.Random.Next(8));
         }
         public virtual void ProcessTarget()
         {
@@ -1172,11 +1179,11 @@ namespace Server.Models
         public void SpawnMinions(int fixedCount, int randomCount, MapObject target)
         {
             int count = Math.Min(MaxMinions - MinionList.Count, SEnvir.Random.Next(randomCount + 1) + fixedCount);
-            
+
             for (int i = 0; i < count; i++)
             {
                 MonsterInfo info = SEnvir.GetMonsterInfo(SpawnList);
-                
+
                 if (info == null) continue;
 
                 MonsterObject mob = GetMonster(info);
@@ -1216,7 +1223,7 @@ namespace Server.Models
                 case ObjectType.Spell:
                     return false;
             }
-            
+
             switch (ob.Race)
             {
                 case ObjectType.Player:
@@ -1303,7 +1310,7 @@ namespace Server.Models
                                 return false;
                             break;
                     }
-                    
+
                     return true;
                 default:
                     throw new NotImplementedException();
@@ -1392,7 +1399,8 @@ namespace Server.Models
                 case ObjectType.Spell:
                     return false;
             }
-            
+
+
             if (ob.Buffs.Any(x => x.Type == BuffType.Invisibility) && !CoolEye) return false;
 
             if (ob.Buffs.Any(x => x.Type == BuffType.Cloak) && Stats[Stat.IgnoreStealth] == 0)
@@ -1409,7 +1417,9 @@ namespace Server.Models
                 case ObjectType.Player:
                     PlayerObject player = (PlayerObject)ob;
                     if (player.GameMaster) return false;
-                    
+
+                    if (player.Stats[Stat.ClearRing] > 0) return false;
+
                     if (PetOwner == null) return true;
                     if (PetOwner == player) return false;
 
@@ -1441,7 +1451,7 @@ namespace Server.Models
                     }
 
                     //Are any Pets attacking target or any player's pets attacking pets
-                    
+
                     if (PetOwner.Pets.Any(x =>
                     {
                         if (x.Target == null) return false;
@@ -1474,7 +1484,7 @@ namespace Server.Models
 
                     return false;
                 case ObjectType.Monster:
-                    MonsterObject mob = (MonsterObject) ob;
+                    MonsterObject mob = (MonsterObject)ob;
 
                     if (PetOwner == null)
                     {
@@ -1508,9 +1518,9 @@ namespace Server.Models
                         PlayerObject mobTarget;
 
                         if (mob.Target.Race == ObjectType.Monster)
-                            mobTarget = ((MonsterObject) mob.Target).PetOwner;
+                            mobTarget = ((MonsterObject)mob.Target).PetOwner;
                         else
-                            mobTarget = (PlayerObject) mob.Target;
+                            mobTarget = (PlayerObject)mob.Target;
 
                         if (mobTarget?.Node == null) return false;
 
@@ -1583,7 +1593,7 @@ namespace Server.Models
         {
             Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
             Broadcast(new S.ObjectAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
-            
+
             UpdateAttackTime();
 
             ActionList.Add(new DelayedAction(
@@ -1645,7 +1655,7 @@ namespace Server.Models
 
             if (LifeSteal > 1)
             {
-                int heal = (int) Math.Floor(LifeSteal);
+                int heal = (int)Math.Floor(LifeSteal);
                 LifeSteal -= heal;
                 ChangeHP(heal);
             }
@@ -1860,7 +1870,7 @@ namespace Server.Models
             List<Point> locations = new List<Point>();
 
             Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, CurrentLocation = CurrentLocation, Cast = true, Type = MagicType.FireWall, Targets = targetIDs, Locations = locations });
-            
+
             UpdateAttackTime();
 
             List<MapObject> targets = GetTargets(CurrentMap, CurrentLocation, 20);
@@ -1949,12 +1959,12 @@ namespace Server.Models
         public void DeathCloudEnd(Cell cell, bool visible, Point displaylocation)
         {
             if (cell == null) return;
-            
+
             SpellObject ob = new SpellObject
             {
                 DisplayLocation = displaylocation,
                 TickCount = 1,
-                TickTime =  SEnvir.Now.AddMilliseconds(DeathCloudDurationMin + SEnvir.Random.Next(DeathCloudDurationRandom)),
+                TickTime = SEnvir.Now.AddMilliseconds(DeathCloudDurationMin + SEnvir.Random.Next(DeathCloudDurationRandom)),
                 Owner = this,
                 Effect = SpellEffect.MonsterDeathCloud,
                 Visible = visible,
@@ -1993,7 +2003,7 @@ namespace Server.Models
                 targetIDs.Add(ob.ObjectID);
 
                 ActionList.Add(new DelayedAction(
-                    SEnvir.Now.AddMilliseconds(500 + Functions.Distance(ob.CurrentLocation, CurrentLocation)*48),
+                    SEnvir.Now.AddMilliseconds(500 + Functions.Distance(ob.CurrentLocation, CurrentLocation) * 48),
                     ActionType.DelayAttack,
                     ob,
                     GetDC(),
@@ -2039,21 +2049,21 @@ namespace Server.Models
                 }
             }
         }
-       /* public void ThunderBolt(int damage)
-        {
-            Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
-            
-            Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, CurrentLocation = CurrentLocation, Cast = true, Type = MagicType.ThunderBolt, Targets = new List<uint> { Target.ObjectID } });
+        /* public void ThunderBolt(int damage)
+         {
+             Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
 
-            UpdateAttackTime();
+             Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, CurrentLocation = CurrentLocation, Cast = true, Type = MagicType.ThunderBolt, Targets = new List<uint> { Target.ObjectID } });
 
-            ActionList.Add(new DelayedAction(
-                SEnvir.Now.AddMilliseconds(500),
-                ActionType.DelayAttack,
-                Target,
-                GetDC(),
-                Element.Lightning));
-        }*/
+             UpdateAttackTime();
+
+             ActionList.Add(new DelayedAction(
+                 SEnvir.Now.AddMilliseconds(500),
+                 ActionType.DelayAttack,
+                 Target,
+                 GetDC(),
+                 Element.Lightning));
+         }*/
         public void MonsterThunderStorm(int damage)
         {
             Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
@@ -2155,30 +2165,30 @@ namespace Server.Models
                 }
             }
         }
-/*
-        public void MonsterIceStorm()
-        {
-            Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
+        /*
+                public void MonsterIceStorm()
+                {
+                    Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
 
-            List<uint> targetIDs = new List<uint>();
-            List<Point> locations = new List<Point> { Target.CurrentLocation };
+                    List<uint> targetIDs = new List<uint>();
+                    List<Point> locations = new List<Point> { Target.CurrentLocation };
 
-            Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, CurrentLocation = CurrentLocation, Cast = true, Type = MagicType.MonsterIceStorm, Targets = targetIDs, Locations = locations });
+                    Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, CurrentLocation = CurrentLocation, Cast = true, Type = MagicType.MonsterIceStorm, Targets = targetIDs, Locations = locations });
 
-            UpdateAttackTime();
+                    UpdateAttackTime();
 
-            List<MapObject> targets = GetTargets(CurrentMap, Target.CurrentLocation, 1);
+                    List<MapObject> targets = GetTargets(CurrentMap, Target.CurrentLocation, 1);
 
-            foreach (MapObject target in targets)
-            {
-                ActionList.Add(new DelayedAction(
-                    SEnvir.Now.AddMilliseconds(500),
-                    ActionType.DelayAttack,
-                    target,
-                    GetDC(),
-                    Element.Ice));
-            }
-        }*/
+                    foreach (MapObject target in targets)
+                    {
+                        ActionList.Add(new DelayedAction(
+                            SEnvir.Now.AddMilliseconds(500),
+                            ActionType.DelayAttack,
+                            target,
+                            GetDC(),
+                            Element.Ice));
+                    }
+                }*/
 
 
         public void PoisonousCloud()
@@ -2222,7 +2232,7 @@ namespace Server.Models
             Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, CurrentLocation = CurrentLocation, Cast = true, Type = MagicType.DragonRepulse, Targets = targetIDs, Locations = locations });
 
             UpdateAttackTime();
-            
+
             BuffInfo buff = BuffAdd(BuffType.DragonRepulse, TimeSpan.FromSeconds(6), null, true, false, TimeSpan.FromSeconds(1));
             buff.TickTime = TimeSpan.FromMilliseconds(500);
         }
@@ -2237,8 +2247,8 @@ namespace Server.Models
 
                     for (int i = 1; i < 2; i++)
                     {
-                        if (ob.Pushed(Functions.ShiftDirection(dir, i*rotation), 1) > 0) break;
-                        if (ob.Pushed(Functions.ShiftDirection(dir, i*-rotation), 1) > 0) break;
+                        if (ob.Pushed(Functions.ShiftDirection(dir, i * rotation), 1) > 0) break;
+                        if (ob.Pushed(Functions.ShiftDirection(dir, i * -rotation), 1) > 0) break;
                     }
                 }
             }
@@ -2246,7 +2256,7 @@ namespace Server.Models
 
         }
         #endregion
-        
+
         public void UpdateAttackTime()
         {
             AttackTime = SEnvir.Now.AddMilliseconds(AttackDelay);
@@ -2278,16 +2288,16 @@ namespace Server.Models
 
             PlayerObject player;
 
-            
+
 
             switch (attacker.Race)
             {
                 case ObjectType.Player:
                     PlayerTagged = true;
-                    player = (PlayerObject) attacker;
+                    player = (PlayerObject)attacker;
                     break;
                 case ObjectType.Monster:
-                    player = ((MonsterObject) attacker).PetOwner;
+                    player = ((MonsterObject)attacker).PetOwner;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -2332,13 +2342,13 @@ namespace Server.Models
 
 
             ChangeHP(-power);
-            
+
 
 
 
             if (Dead) return power;
-            
-            if (CanAttackTarget(attacker)&& PetOwner == null || Target == null)
+
+            if (CanAttackTarget(attacker) && PetOwner == null || Target == null)
                 Target = attacker;
 
 
@@ -2347,7 +2357,7 @@ namespace Server.Models
         public override bool ApplyPoison(Poison p)
         {
             bool res = base.ApplyPoison(p);
-            
+
             if (res && CanAttackTarget(p.Owner) && Target == null)
                 Target = p.Owner;
 
@@ -2374,12 +2384,12 @@ namespace Server.Models
                 MinionList[i].Master = null;
 
             MinionList.Clear();
-            
+
             DeadTime = SEnvir.Now + Config.DeadDuration;
 
             if (Drops != null)
                 DeadTime += Config.HarvestDuration;
-            
+
             if (SpawnInfo != null)
                 SpawnInfo.AliveCount--;
 
@@ -2402,7 +2412,7 @@ namespace Server.Models
                 int end = Math.Min(target.Event.MaxValue, Math.Max(0, start + target.Value));
 
                 target.Event.CurrentValue = end;
-                
+
                 foreach (EventAction action in target.Event.Actions)
                 {
                     if (start >= action.TriggerValue || end < action.TriggerValue) continue;
@@ -2550,7 +2560,7 @@ namespace Server.Models
 
             if (PetOwner == null && CurrentMap != null)
                 eRate *= 1 + MapExperienceRate / 100M;
-            
+
             decimal exp = Math.Min(Experience * eRate, 500000000);
 
             if (ePlayers.Count == 0)
@@ -2637,7 +2647,7 @@ namespace Server.Models
                 {
                     chance = (long)(int.MaxValue / (drop.Chance * players) * rate);
                 }
-                
+
 
                 UserDrop userDrop = owner.Character.Account.UserDrops.FirstOrDefault(x => x.Item == drop.Item);
 
@@ -2648,7 +2658,7 @@ namespace Server.Models
                     userDrop.Account = owner.Character.Account;
                 }
 
-                decimal progress = chance/(decimal) int.MaxValue;
+                decimal progress = chance / (decimal)int.MaxValue;
 
                 progress *= amount;
 
@@ -2658,7 +2668,7 @@ namespace Server.Models
                 if (drop.PartOnly ||
                     ((SEnvir.Random.Next() > chance ||
                       (drop.Item.Effect != ItemEffect.Gold && owner.Character.Account.ItemBot)) &&
-                     ((long) userDrop.Progress <= userDrop.DropCount || drop.Item.Effect == ItemEffect.Gold)))
+                     ((long)userDrop.Progress <= userDrop.DropCount || drop.Item.Effect == ItemEffect.Gold)))
                 {
                     if (drop.Item.PartCount <= 1) continue;
 
@@ -2846,7 +2856,7 @@ namespace Server.Models
                             {
                                 if (drops == null)
                                     drops = new List<UserItem>();
-                                
+
                                 drops.Add(item);
                                 continue;
                             }
@@ -2893,13 +2903,13 @@ namespace Server.Models
                 owner.Companion.SearchTime = DateTime.MinValue;
 
             if (!NeedHarvest) return;
-            
+
             if (Drops == null)
                 Drops = new Dictionary<AccountInfo, List<UserItem>>();
 
             Drops[owner.Character.Account] = drops;
         }
-        
+
         public virtual void Turn(MirDirection direction)
         {
             if (!CanMove) return;
@@ -2924,7 +2934,7 @@ namespace Server.Models
                 foreach (MapObject ob in cell.Objects)
                 {
                     if (ob.Race != ObjectType.Spell) continue;
-                    SpellObject spell = (SpellObject) ob;
+                    SpellObject spell = (SpellObject)ob;
 
                     switch (spell.Effect)
                     {
@@ -2937,7 +2947,7 @@ namespace Server.Models
                     }
 
                     if (spell.Owner == null || !spell.Owner.CanAttackTarget(this)) continue;
-                    
+
                     return false;
                 }
             }
@@ -2954,7 +2964,7 @@ namespace Server.Models
             PreventSpellCheck = true;
             CurrentCell = cell; //.GetMovement(this);
             PreventSpellCheck = false;
-            
+
             RemoveAllObjects();
             AddAllObjects();
 
@@ -2972,7 +2982,7 @@ namespace Server.Models
 
                 if (cell == null || cell.IsBlocking(this, false)) return;
             }
-            
+
             MirDirection direction = Functions.DirectionFromPoint(CurrentLocation, target);
 
             int rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
