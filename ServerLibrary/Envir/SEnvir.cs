@@ -21,7 +21,6 @@ using Server.Models;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
-using Autofac;
 using System.Reflection;
 
 namespace Server.Envir
@@ -515,7 +514,6 @@ namespace Server.Envir
         public static bool NetworkStarted { get; set; }
         public static bool WebServerStarted { get; set; }
         public static bool Saving { get; private set; }
-        public static IContainer Container { get; private set; }
         public static Thread EnvirThread { get; private set; }
 
         public static DateTime Now, StartTime, LastWarTime;

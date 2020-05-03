@@ -25,7 +25,6 @@ namespace Server
     {
         public List<Control> Windows = new List<Control>();
         public static Session Session;
-
         public SMain()
         {
             InitializeComponent();

@@ -6,8 +6,6 @@ using DevExpress.Skins;
 using DevExpress.LookAndFeel;
 using Library;
 using Server.Envir;
-using Autofac;
-using Npgsql;
 using System.Reflection;
 
 namespace Server
