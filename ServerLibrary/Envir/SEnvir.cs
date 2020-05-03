@@ -631,10 +631,6 @@ namespace Server.Envir
         {
             if (Started || EnvirThread != null) return;
 
-            var builder = new ContainerBuilder();
-            builder.RegisterDatabase();
-            Container = builder.Build();
-
             EnvirThread = new Thread(() => EnvirLoop()) { IsBackground = true };
             EnvirThread.Start();
         }

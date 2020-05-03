@@ -7,7 +7,6 @@ using DevExpress.LookAndFeel;
 using Library;
 using Server.Envir;
 using Autofac;
-using Server.Repository;
 using Npgsql;
 using System.Reflection;
 

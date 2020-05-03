@@ -2,7 +2,6 @@
 using System.IO;
 using System.Security.Cryptography;
 using Library;
-using Server.Repository;
 
 namespace Server.Envir
 {
@@ -18,12 +17,6 @@ namespace Server.Envir
         public static int MaxPacket { get; set; } = 50;
         public static TimeSpan PacketBanTime { get; set; } = TimeSpan.FromMinutes(5);
 
-        [ConfigSection("Database")]
-        public static int DBProvider { get; set; } = (int)DatabaseProvider.File;
-        public static string DBConnStr { get; set; } = @"Mode=Both;Root=.\Database\;Backup=.\Backup\;BackUpDelay=60";
-        public static TimeSpan DBSaveDelay { get; set; } = TimeSpan.FromMinutes(5);
-
-
         [ConfigSection("System")]
         public static bool CheckVersion { get; set; } = true;
         public static string VersionPath { get; set; } = @".\Zircon.exe";
@@ -38,7 +31,7 @@ namespace Server.Envir
         public static DateTime EasterEventEnd { get; set; } = new DateTime(2018, 04, 09, 00, 00, 00, DateTimeKind.Utc);
         public static DateTime HalloweenEventEnd { get; set; } = new DateTime(2018, 11, 07, 00, 00, 00, DateTimeKind.Utc);
         public static DateTime ChristmasEventEnd { get; set; } = new DateTime(2019, 01, 03, 00, 00, 00, DateTimeKind.Utc);
-
+        public static TimeSpan DBSaveDelay { get; set; } = TimeSpan.FromMinutes(5);
 
         [ConfigSection("Control")]
         public static bool AllowLogin { get; set; } = true;
