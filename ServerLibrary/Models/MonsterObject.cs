@@ -1418,12 +1418,12 @@ namespace Server.Models
                     PlayerObject player = (PlayerObject)ob;
                     if (player.GameMaster) return false;
 
+                    if (player.Stats[Stat.ClearRing] > 0) return false;
+
                     if (PetOwner == null) return true;
                     if (PetOwner == player) return false;
 
                     if (InSafeZone || player.InSafeZone) return false;
-
-                    if (player.Stats[Stat.ClearRing] > 0) return false;
 
                     switch (PetOwner.PetMode)
                     {
