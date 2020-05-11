@@ -9,7 +9,7 @@ using Server.Models.Monsters;
 
 namespace Server.Models
 {
- public sealed class ItemObject : MapObject
+    public sealed class ItemObject : MapObject
     {
         public override ObjectType Race => ObjectType.Item;
         public override bool Blocking => false;
@@ -18,7 +18,7 @@ namespace Server.Models
 
         public UserItem Item { get; set; }
         public AccountInfo Account { get; set; } //Use account instead of playerobject incase disconnection
-        
+
         public bool MonsterDrop { get; set; }
 
         public override void Process()
@@ -175,9 +175,11 @@ namespace Server.Models
 
         public override bool CanBeSeenBy(PlayerObject ob)
         {
-            if (Account != null && ob.Character.Account != Account) return false;
-
-            if (Item.UserTask != null && Item.UserTask.Quest.Character != ob.Character) return false;
+            if (!Config.DropVisibleOtherPlayers)
+            {
+                if (Account != null && ob.Character.Account != Account) return false;
+                if (Item.UserTask != null && Item.UserTask.Quest.Character != ob.Character) return false;
+            }
 
             return base.CanBeSeenBy(ob);
         }
@@ -208,7 +210,7 @@ namespace Server.Models
         {
             return new S.ObjectItem
             {
-                ObjectID = ObjectID,  
+                ObjectID = ObjectID,
                 Item = Item.ToClientInfo(),
                 Location = CurrentLocation,
             };
@@ -221,7 +223,7 @@ namespace Server.Models
 
                 MapIndex = CurrentMap.Info.Index,
                 CurrentLocation = CurrentLocation,
-                 
+
                 ItemIndex = Item.Info.Index,
             };
         }
