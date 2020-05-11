@@ -23,7 +23,7 @@ namespace Server.Models
         public bool HasSafeZone { get; set; }
 
         public Cell[,] Cells { get; private set; }
-        public List<Cell>ValidCells { get; } = new List<Cell>();
+        public List<Cell> ValidCells { get; } = new List<Cell>();
 
         public List<MapObject> Objects { get; } = new List<MapObject>();
         public List<PlayerObject> Players { get; } = new List<PlayerObject>();
@@ -106,12 +106,12 @@ namespace Server.Models
             switch (ob.Race)
             {
                 case ObjectType.Player:
-                    Players.Add((PlayerObject) ob);
+                    Players.Add((PlayerObject)ob);
                     break;
                 case ObjectType.Item:
                     break;
                 case ObjectType.NPC:
-                    NPCs.Add((NPCObject) ob);
+                    NPCs.Add((NPCObject)ob);
                     break;
                 case ObjectType.Spell:
                     break;
@@ -159,7 +159,7 @@ namespace Server.Models
         public List<Cell> GetCells(Point location, int minRadius, int maxRadius)
         {
             List<Cell> cells = new List<Cell>();
-            
+
             for (int d = 0; d <= maxRadius; d++)
             {
                 for (int y = location.Y - d; y <= location.Y + d; y++)
@@ -167,7 +167,7 @@ namespace Server.Models
                     if (y < 0) continue;
                     if (y >= Height) break;
 
-                    for (int x = location.X - d; x <= location.X + d; x += Math.Abs(y - location.Y) == d ? 1 : d*2)
+                    for (int x = location.X - d; x <= location.X + d; x += Math.Abs(y - location.Y) == d ? 1 : d * 2)
                     {
                         if (x < 0) continue;
                         if (x >= Width) break;
@@ -214,7 +214,7 @@ namespace Server.Models
             {
                 Point test = new Point(SEnvir.Random.Next(minX, maxX), SEnvir.Random.Next(minY, maxY));
 
-                if (GetCell(test) !=null)
+                if (GetCell(test) != null)
                     return test;
             }
 
@@ -245,7 +245,7 @@ namespace Server.Models
         public int AliveCount;
 
         public DateTime LastCheck;
-        
+
         public SpawnInfo(RespawnInfo info)
         {
             Info = info;
@@ -289,12 +289,12 @@ namespace Server.Models
                 {
                     if (SEnvir.Now > CurrentMap.HalloweenEventTime && SEnvir.Now <= Config.HalloweenEventEnd)
                     {
-                        mob = new HalloweenMonster {MonsterInfo = Info.Monster, HalloweenEventMob = true};
+                        mob = new HalloweenMonster { MonsterInfo = Info.Monster, HalloweenEventMob = true };
                         CurrentMap.HalloweenEventTime = SEnvir.Now.AddHours(1);
                     }
                     else if (SEnvir.Now > CurrentMap.ChristmasEventTime && SEnvir.Now <= Config.ChristmasEventEnd)
                     {
-                        mob = new ChristmasMonster { MonsterInfo = Info.Monster, ChristmasEventMob = true};
+                        mob = new ChristmasMonster { MonsterInfo = Info.Monster, ChristmasEventMob = true };
                         CurrentMap.ChristmasEventTime = SEnvir.Now.AddMinutes(20);
                     }
                 }
@@ -321,7 +321,7 @@ namespace Server.Models
                             con.ReceiveChat(string.Format(con.Language.BossSpawn, CurrentMap.Info.Description), MessageType.System);
                     }
                 }
-                
+
                 mob.DropSet = Info.DropSet;
                 AliveCount++;
             }
@@ -353,7 +353,7 @@ namespace Server.Models
                 Objects = new List<MapObject>();
 
             Objects.Add(ob);
-            
+
             ob.CurrentMap = Map;
             ob.CurrentLocation = Location;
 
@@ -365,10 +365,10 @@ namespace Server.Models
 
             if (Objects.Count == 0)
                 Objects = null;
-            
+
             Map.OrderedObjects[Location.X].Remove(ob);
         }
-        public bool IsBlocking(MapObject checker,bool cellTime)
+        public bool IsBlocking(MapObject checker, bool cellTime)
         {
             if (Objects == null) return false;
 
@@ -390,15 +390,15 @@ namespace Server.Models
 
         public Cell GetMovement(MapObject ob)
         {
-            if (Movements == null || Movements.Count == 0) 
+            if (Movements == null || Movements.Count == 0)
                 return this;
-            
+
             for (int i = 0; i < 5; i++) //20 Attempts to get movement;
             {
                 MovementInfo movement = Movements[SEnvir.Random.Next(Movements.Count)];
-                
+
                 Map map = SEnvir.GetMap(movement.DestinationRegion.Map);
-                
+
 
                 Cell cell = map.GetCell(movement.DestinationRegion.PointList[SEnvir.Random.Next(movement.DestinationRegion.PointList.Count)]);
 
@@ -406,6 +406,7 @@ namespace Server.Models
 
                 if (ob.Race == ObjectType.Player)
                 {
+                    bool allowed = true;
                     PlayerObject player = (PlayerObject)ob;
 
                     if (movement.DestinationRegion.Map.MinimumLevel > ob.Level && !player.Character.Account.TempAdmin)
@@ -427,6 +428,40 @@ namespace Server.Models
                         break;
                     }
 
+                    if (movement.DestinationRegion.Map.RequiredClass != RequiredClass.None && movement.DestinationRegion.Map.RequiredClass != RequiredClass.All)
+                    {
+                        switch (player.Class)
+                        {
+                            case MirClass.Warrior:
+                                if ((movement.DestinationRegion.Map.RequiredClass & RequiredClass.Warrior) != RequiredClass.Warrior)
+                                    allowed = false;
+                                break;
+                            case MirClass.Wizard:
+                                if ((movement.DestinationRegion.Map.RequiredClass & RequiredClass.Wizard) != RequiredClass.Wizard)
+                                    allowed = false;
+                                break;
+                            case MirClass.Taoist:
+                                if ((movement.DestinationRegion.Map.RequiredClass & RequiredClass.Taoist) != RequiredClass.Taoist)
+                                    allowed = false;
+                                break;
+                            case MirClass.Assassin:
+                                if ((movement.DestinationRegion.Map.RequiredClass & RequiredClass.Assassin) != RequiredClass.Assassin)
+                                    allowed = false;
+                                break;
+                        }
+
+                        if (!allowed)
+                        {
+                            var message = string.Format(player.Connection.Language.NeedClass, movement.DestinationRegion.Map.RequiredClass.ToString());
+                            player.Connection.ReceiveChat(message, MessageType.System);
+
+                            foreach (SConnection con in player.Connection.Observers)
+                                con.ReceiveChat(message, MessageType.System);
+
+                            break;
+                        }
+                    }
+
                     if (movement.NeedSpawn != null)
                     {
                         SpawnInfo spawn = SEnvir.Spawns.FirstOrDefault(x => x.Info == movement.NeedSpawn);
@@ -440,7 +475,7 @@ namespace Server.Models
 
                             foreach (SConnection con in player.Connection.Observers)
                                 con.ReceiveChat(con.Language.NeedMonster, MessageType.System);
-                            
+
                             break;
                         }
 

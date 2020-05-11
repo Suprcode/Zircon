@@ -61,6 +61,7 @@
             this.colLight = new DevExpress.XtraGrid.Columns.GridColumn();
             this.LightComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colRequiredClass = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colAllowRT = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn15 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -91,6 +92,7 @@
             this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.StartClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.RequiredClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.GuardsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DirectionImageComboBox)).BeginInit();
@@ -105,6 +107,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartClassImageComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RequiredClassImageComboBox)).BeginInit();
             this.SuspendLayout();
             // 
             // GuardsGridView
@@ -200,6 +203,7 @@
             this.MapInfoLookUpEdit,
             this.MapIconImageComboBox,
             this.StartClassImageComboBox,
+            this.RequiredClassImageComboBox,
             this.EditButtonEdit,
             this.ItemLookUpEdit});
             this.MapInfoGridControl.ShowOnlyPredefinedDetails = true;
@@ -309,6 +313,7 @@
             this.colMiniMap,
             this.colLight,
             this.gridColumn12,
+            this.colRequiredClass,
             this.colAllowRT,
             this.gridColumn13,
             this.gridColumn15,
@@ -387,6 +392,15 @@
             this.gridColumn12.VisibleIndex = 4;
             this.gridColumn12.Width = 32;
             // 
+            // gridColumn12
+            // 
+            this.colRequiredClass.Caption = "Required Class";
+            this.colRequiredClass.FieldName = "RequiredClass";
+            this.colRequiredClass.Name = "colRequiredClass";
+            this.colRequiredClass.Visible = true;
+            this.colRequiredClass.VisibleIndex = 4;
+            this.colRequiredClass.Width = 32;
+            // 
             // colAllowRT
             // 
             this.colAllowRT.FieldName = "AllowRT";
@@ -457,13 +471,14 @@
             this.gridColumn24.Visible = true;
             this.gridColumn24.VisibleIndex = 11;
             this.gridColumn24.Width = 32;
+
             // 
             // gridColumn6
             // 
             this.gridColumn6.FieldName = "CanMine";
             this.gridColumn6.Name = "gridColumn6";
             this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 12;
+            this.gridColumn6.VisibleIndex = 13;
             this.gridColumn6.Width = 32;
             // 
             // gridColumn9
@@ -471,7 +486,7 @@
             this.gridColumn9.FieldName = "Music";
             this.gridColumn9.Name = "gridColumn9";
             this.gridColumn9.Visible = true;
-            this.gridColumn9.VisibleIndex = 13;
+            this.gridColumn9.VisibleIndex = 14;
             this.gridColumn9.Width = 32;
             // 
             // gridColumn10
@@ -479,7 +494,7 @@
             this.gridColumn10.FieldName = "CanMarriageRecall";
             this.gridColumn10.Name = "gridColumn10";
             this.gridColumn10.Visible = true;
-            this.gridColumn10.VisibleIndex = 14;
+            this.gridColumn10.VisibleIndex = 15;
             this.gridColumn10.Width = 32;
             // 
             // gridColumn22
@@ -488,7 +503,7 @@
             this.gridColumn22.FieldName = "MonsterHealth";
             this.gridColumn22.Name = "gridColumn22";
             this.gridColumn22.Visible = true;
-            this.gridColumn22.VisibleIndex = 15;
+            this.gridColumn22.VisibleIndex = 16;
             this.gridColumn22.Width = 32;
             // 
             // gridColumn25
@@ -497,7 +512,7 @@
             this.gridColumn25.FieldName = "MaxMonsterHealth";
             this.gridColumn25.Name = "gridColumn25";
             this.gridColumn25.Visible = true;
-            this.gridColumn25.VisibleIndex = 16;
+            this.gridColumn25.VisibleIndex = 17;
             this.gridColumn25.Width = 32;
             // 
             // gridColumn23
@@ -506,7 +521,7 @@
             this.gridColumn23.FieldName = "MonsterDamage";
             this.gridColumn23.Name = "gridColumn23";
             this.gridColumn23.Visible = true;
-            this.gridColumn23.VisibleIndex = 17;
+            this.gridColumn23.VisibleIndex = 18;
             this.gridColumn23.Width = 32;
             // 
             // gridColumn26
@@ -515,7 +530,7 @@
             this.gridColumn26.FieldName = "MaxMonsterDamage";
             this.gridColumn26.Name = "gridColumn26";
             this.gridColumn26.Visible = true;
-            this.gridColumn26.VisibleIndex = 18;
+            this.gridColumn26.VisibleIndex = 19;
             this.gridColumn26.Width = 32;
             // 
             // gridColumn11
@@ -524,7 +539,7 @@
             this.gridColumn11.FieldName = "ExperienceRate";
             this.gridColumn11.Name = "gridColumn11";
             this.gridColumn11.Visible = true;
-            this.gridColumn11.VisibleIndex = 19;
+            this.gridColumn11.VisibleIndex = 20;
             this.gridColumn11.Width = 32;
             // 
             // gridColumn27
@@ -533,7 +548,7 @@
             this.gridColumn27.FieldName = "MaxExperienceRate";
             this.gridColumn27.Name = "gridColumn27";
             this.gridColumn27.Visible = true;
-            this.gridColumn27.VisibleIndex = 20;
+            this.gridColumn27.VisibleIndex = 21;
             this.gridColumn27.Width = 32;
             // 
             // gridColumn14
@@ -542,7 +557,7 @@
             this.gridColumn14.FieldName = "DropRate";
             this.gridColumn14.Name = "gridColumn14";
             this.gridColumn14.Visible = true;
-            this.gridColumn14.VisibleIndex = 21;
+            this.gridColumn14.VisibleIndex = 22;
             this.gridColumn14.Width = 32;
             // 
             // gridColumn28
@@ -551,7 +566,7 @@
             this.gridColumn28.FieldName = "MaxDropRate";
             this.gridColumn28.Name = "gridColumn28";
             this.gridColumn28.Visible = true;
-            this.gridColumn28.VisibleIndex = 22;
+            this.gridColumn28.VisibleIndex = 23;
             this.gridColumn28.Width = 39;
             // 
             // gridColumn21
@@ -560,7 +575,7 @@
             this.gridColumn21.FieldName = "GoldRate";
             this.gridColumn21.Name = "gridColumn21";
             this.gridColumn21.Visible = true;
-            this.gridColumn21.VisibleIndex = 23;
+            this.gridColumn21.VisibleIndex = 24;
             this.gridColumn21.Width = 32;
             // 
             // gridColumn29
@@ -569,7 +584,7 @@
             this.gridColumn29.FieldName = "MaxGoldRate";
             this.gridColumn29.Name = "gridColumn29";
             this.gridColumn29.Visible = true;
-            this.gridColumn29.VisibleIndex = 24;
+            this.gridColumn29.VisibleIndex = 25;
             this.gridColumn29.Width = 43;
             // 
             // ribbon
@@ -658,6 +673,15 @@
             this.StartClassImageComboBox.ContextImageOptions.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
             this.StartClassImageComboBox.Name = "StartClassImageComboBox";
             // 
+            // RequiredClassImageComboBox
+            // 
+            this.RequiredClassImageComboBox.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
+            this.RequiredClassImageComboBox.AutoHeight = false;
+            this.RequiredClassImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.RequiredClassImageComboBox.ContextImageOptions.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
+            this.RequiredClassImageComboBox.Name = "RequiredClassImageComboBox";
+            // 
             // MapInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -683,6 +707,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartClassImageComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RequiredClassImageComboBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -712,10 +737,12 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit MapInfoLookUpEdit;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox MapIconImageComboBox;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox StartClassImageComboBox;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox RequiredClassImageComboBox;
         private DevExpress.XtraBars.BarButtonItem ClearMapsButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
         private DevExpress.XtraBars.BarButtonItem RenameMiniMapButton;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn12;
+        private DevExpress.XtraGrid.Columns.GridColumn colRequiredClass;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn13;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn15;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn16;

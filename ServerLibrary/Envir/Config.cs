@@ -121,6 +121,7 @@ namespace Server.Envir
         public static int MaxStrength { get; set; } = 5;
         public static int StrengthAddRate { get; set; } = 10;
         public static int StrengthLossRate { get; set; } = 20;
+        public static bool DropVisibleOtherPlayers { get; set; } = false;
 
         [ConfigSection("Rates")]
         public static int ExperienceRate { get; set; } = 0;
@@ -128,7 +129,6 @@ namespace Server.Envir
         public static int GoldRate { get; set; } = 0;
         public static int SkillRate { get; set; } = 0;
         public static int CompanionRate { get; set; } = 0;
-
 
         public static void LoadVersion()
         {
