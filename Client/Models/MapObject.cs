@@ -393,7 +393,7 @@ namespace Client.Models
 					InfectionEnd();
 			}
 
-			if (VisibleBuffs.Contains(BuffType.Invisibility) || VisibleBuffs.Contains(BuffType.Cloak) || VisibleBuffs.Contains(BuffType.Transparency))
+			if (Stats?[Stat.ClearRing] > 0 || VisibleBuffs.Contains(BuffType.Invisibility) || VisibleBuffs.Contains(BuffType.Cloak) || VisibleBuffs.Contains(BuffType.Transparency))
 				Opacity = 0.5f;
 			else
 				Opacity = 1f;
