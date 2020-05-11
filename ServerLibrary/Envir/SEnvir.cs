@@ -22,6 +22,7 @@ using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
 using System.Reflection;
+using System.Globalization;
 
 namespace Server.Envir
 {
@@ -643,7 +644,7 @@ namespace Server.Envir
                 {
                     for (int i = 0; i < Globals.ExperienceList.Count; i++)
                     {
-                        file.WriteLine(Globals.ExperienceList[i] + i == 0 ? " //needed for lvl0" : "");
+                        file.WriteLine(i == 0 ? "//needed for lvl0" : (Globals.ExperienceList[i].ToString(CultureInfo.InvariantCulture) + " // level " + i));
                     }
                 }
             }
@@ -656,8 +657,11 @@ namespace Server.Envir
                     if (lines[i].TrimStart().StartsWith("//")) continue; //ignore comment
                     try
                     {
-                        decimal exp = decimal.Parse(lines[i].Split('/')[0]); //remove comment
-                        Globals.ExperienceList.Add(exp);
+                        decimal exp = decimal.Parse(lines[i].Split('/')[0].Trim()); //remove comment
+                        if (Globals.ExperienceList.Count > i)
+                            Globals.ExperienceList.Add(exp);
+                        else
+                            Globals.ExperienceList[i] = exp;
                     }
                     catch (Exception e)
                     {

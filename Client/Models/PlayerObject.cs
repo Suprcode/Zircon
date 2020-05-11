@@ -732,8 +732,8 @@ namespace Client.Models
                     }
                     break;
             }
-            DrawBody(true);
 
+            DrawBody(true);
 
             switch (Direction)
             {
@@ -763,14 +763,12 @@ namespace Client.Models
             if (BodyLibrary == null) return;
 
             DXManager.SetBlend(true, 0.60F);
-
             DrawBody(false);
             DXManager.SetBlend(false);
         }
 
         public void DrawBody(bool shadow)
         {
-
             Surface oldSurface = DXManager.CurrentSurface;
             DXManager.SetSurface(DXManager.ScratchSurface);
             DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
