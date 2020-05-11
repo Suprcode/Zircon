@@ -2,7 +2,7 @@
 
 namespace Server.Envir
 {
-    
+
     public abstract class StringMessages
     {
         [ConfigSection("Account")]
@@ -18,7 +18,7 @@ namespace Server.Envir
         public abstract string GameGoldRefund { get; set; }
         public abstract string HuntGoldRefund { get; set; }
 
-        
+
         [ConfigSection("System")]
         public abstract string Welcome { get; set; }
         public abstract string WelcomeObserver { get; set; }
@@ -57,6 +57,7 @@ namespace Server.Envir
         public abstract string NeedMaxLevel { get; set; }
         public abstract string NeedItem { get; set; }
         public abstract string NeedMonster { get; set; }
+        public abstract string NeedClass { get; set; }
 
 
         [ConfigSection("Conquest")]
@@ -163,7 +164,7 @@ namespace Server.Envir
         public abstract string StoreNeedSpace { get; set; }
         public abstract string StoreCost { get; set; }
 
-        
+
         [ConfigSection("Guild")]
         public abstract string GuildNeedHorn { get; set; }
         public abstract string GuildNeedGold { get; set; }
@@ -213,7 +214,7 @@ namespace Server.Envir
         public abstract string GuildLeave { get; set; }
         public abstract string GuildMemberLeave { get; set; }
         public abstract string GuildWarDeath { get; set; }
-        
+
         [ConfigSection("Group")]
         public abstract string GroupNoGroup { get; set; }
         public abstract string GroupNotLeader { get; set; }
@@ -229,7 +230,7 @@ namespace Server.Envir
         public abstract string GroupRecallMemberNotAllowed { get; set; }
         public abstract string GroupRecallFromMap { get; set; }
         public abstract string GroupRecallMemberFromMap { get; set; }
-        
+
 
         [ConfigSection("Trade")]
         public abstract string TradeAlreadyTrading { get; set; }

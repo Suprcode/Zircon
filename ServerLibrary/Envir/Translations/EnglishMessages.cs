@@ -53,6 +53,7 @@ namespace Server.Envir.Translations
         public override string NeedLevel { get; set; } = "You need to be level {0} to proceed.";
         public override string NeedItem { get; set; } = "You require a '{0}' to proceed.";
         public override string NeedMonster { get; set; } = "The way is blocked...";
+        public override string NeedClass { get; set; } = "You need to be class {0} to proceed.";
 
 
         public override string ConquestStarted { get; set; } = "{0} Conquest has started.";

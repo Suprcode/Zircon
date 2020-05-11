@@ -25,7 +25,7 @@ namespace Server.Views
             DirectionImageComboBox.Items.AddEnum<MirDirection>();
             MapIconImageComboBox.Items.AddEnum<MapIcon>();
             StartClassImageComboBox.Items.AddEnum<RequiredClass>();
-
+            RequiredClassImageComboBox.Items.AddEnum<RequiredClass>();
         }
         
         

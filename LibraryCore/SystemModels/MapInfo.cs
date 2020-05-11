@@ -93,7 +93,7 @@ namespace Library.SystemModels
             }
         }
         private bool _AllowRT;
-        
+
         public int SkillDelay
         {
             get { return _SkillDelay; }
@@ -183,9 +183,9 @@ namespace Library.SystemModels
             }
         }
         private bool _AllowRecall;
-        
-        
-        public int MinimumLevel{
+
+        public int MinimumLevel
+        {
             get { return _MinimumLevel; }
             set
             {
@@ -213,7 +213,7 @@ namespace Library.SystemModels
             }
         }
         private int _MaximumLevel;
-        
+
         public MapInfo ReconnectMap
         {
             get { return _ReconnectMap; }
@@ -396,14 +396,25 @@ namespace Library.SystemModels
             }
         }
         private int _MaxGoldRate;
-        
-        
 
-        
+
+        public RequiredClass RequiredClass
+        {
+            get => _requiredClass;
+            set
+            {
+                if (_requiredClass == value) return;
+                var oldValue = _requiredClass;
+                _requiredClass = value;
+                OnChanged(oldValue, value, nameof(RequiredClass));
+            }
+        }
+        private RequiredClass _requiredClass;
+
         [Association("Guards", true)]
         public DBBindingList<GuardInfo> Guards { get; set; }
 
-        [Association("Regions",true)]
+        [Association("Regions", true)]
         public DBBindingList<MapRegion> Regions { get; set; }
 
         [Association("Mining", true)]
