@@ -38,7 +38,7 @@ namespace Server.Models
             }
         }
         private Cell _CurrentCell;
-        
+
         public Map CurrentMap
         {
             get { return _CurrentMap; }
@@ -53,7 +53,7 @@ namespace Server.Models
             }
         }
         private Map _CurrentMap;
-        
+
         public virtual Point CurrentLocation { get; set; }
         public virtual MirDirection Direction { get; set; }
 
@@ -61,10 +61,10 @@ namespace Server.Models
 
         public int DisplayHP;
         public int DisplayMP;
-        
+
         public virtual int CurrentHP { get; set; }
         public virtual int CurrentMP { get; set; }
-        
+
         public bool Spawned, Dead, CoolEye, Activated;
         public bool InSafeZone;
 
@@ -114,7 +114,7 @@ namespace Server.Models
             PoisonList = new List<Poison>();
             DataSeenByPlayers = new List<PlayerObject>();
         }
-        
+
         public void StartProcess()
         {
             DeActivate();
@@ -132,7 +132,7 @@ namespace Server.Models
             ProcessBuff();
             ProcessPoison();
             Process();
-            
+
             ProcessHPMP();
 
             Color oldColour = NameColour;
@@ -145,7 +145,7 @@ namespace Server.Models
 
         public virtual void Process()
         {
-            
+
         }
 
         public virtual void ProcessHPMP()
@@ -180,7 +180,7 @@ namespace Server.Models
             }
 
             if (!changed) return;
-            
+
             S.DataObjectHealthMana p = new S.DataObjectHealthMana { ObjectID = ObjectID, Health = DisplayHP, Mana = DisplayMP, Dead = Dead };
 
             foreach (PlayerObject player in DataSeenByPlayers)
@@ -219,7 +219,7 @@ namespace Server.Models
                         ChangeMP(-poison.Value);
 
                         if (poison.Extra != null)
-                            poison.Owner.ChangeMP(poison.Value * (((UserMagic) poison.Extra).Level + 1));
+                            poison.Owner.ChangeMP(poison.Value * (((UserMagic)poison.Extra).Level + 1));
                         break;
                     case PoisonType.HellFire:
                         damage += poison.Value;
@@ -234,7 +234,7 @@ namespace Server.Models
                             for (int x = 0; x < poison.Owner.Stats[Stat.Rebirth]; x++)
                                 damage = (int)(damage * 1.5F);
                         }
-                        
+
                         infection = true;
 
                         if (Race == ObjectType.Monster && poison.Owner.Race == ObjectType.Player)
@@ -242,15 +242,15 @@ namespace Server.Models
                             mob = (MonsterObject)this;
 
                             if (mob.EXPOwner == null)
-                                mob.EXPOwner = (PlayerObject) poison.Owner;
+                                mob.EXPOwner = (PlayerObject)poison.Owner;
                         }
-                        
+
                         if (poison.TickCount <= 0) break;
 
                         foreach (MapObject ob in poison.Owner.GetTargets(CurrentMap, CurrentLocation, 1))
                         {
                             //if (ob.Race != ObjectType.Monster) continue;
-                            
+
 
                             if (ob.Race == ObjectType.Monster && ((MonsterObject)ob).MonsterInfo.IsBoss) continue;
 
@@ -271,7 +271,7 @@ namespace Server.Models
 
                 if (damage > 0)
                 {
-                    if (Race == ObjectType.Monster && ((MonsterObject) this).MonsterInfo.IsBoss)
+                    if (Race == ObjectType.Monster && ((MonsterObject)this).MonsterInfo.IsBoss)
                         damage = 0;
                     else if (!infection)
                         damage = Math.Min(CurrentHP - 1, damage);
@@ -346,7 +346,7 @@ namespace Server.Models
                                 break;
                         }
                         #endregion
-                        
+
                         ChangeHP(-damage);
                     }
 
@@ -356,7 +356,7 @@ namespace Server.Models
                     ShockTime = DateTime.MinValue;
                 }
             }
-            
+
             if (current == Poison) return;
 
             Poison = current;
@@ -403,7 +403,7 @@ namespace Server.Models
 
                             player.Companion.UserCompanion.Experience += highest + Stats[Stat.CompanionRate];
 
-                            
+
 
                             if (player.Companion.UserCompanion.Experience >= player.Companion.LevelInfo.MaxExperience)
                             {
@@ -481,7 +481,7 @@ namespace Server.Models
                         }
 
                         ChangeMP(-amount);
-                        ChangeHP(amount*2);
+                        ChangeHP(amount * 2);
                         if (Race != ObjectType.Player) break;
 
                         player = (PlayerObject)this;
@@ -507,7 +507,7 @@ namespace Server.Models
                         else
                         {
                             if (Race == ObjectType.Player)
-                                ((PlayerObject) this).Enqueue(new S.BuffChanged { Index = buff.Index, Stats = buff.Stats });
+                                ((PlayerObject)this).Enqueue(new S.BuffChanged { Index = buff.Index, Stats = buff.Stats });
                         }
                         break;
                     case BuffType.HuntGold:
@@ -516,10 +516,10 @@ namespace Server.Models
                         if (buff.TickTime > TimeSpan.Zero) continue;
 
                         buff.TickTime += buff.TickFrequency;
-                        
+
                         player = this as PlayerObject;
 
-                        
+
                         if (player != null)
                         {
                             if (SEnvir.ConquestWars.Any(war => war.Map == CurrentMap))
@@ -559,7 +559,7 @@ namespace Server.Models
                         switch (Race)
                         {
                             case ObjectType.Player:
-                                player = (PlayerObject) this;
+                                player = (PlayerObject)this;
 
                                 if (!player.Magics.TryGetValue(MagicType.DragonRepulse, out magic)) break;
                                 player.LevelMagic(magic);
@@ -579,7 +579,7 @@ namespace Server.Models
 
 
                                         ActionList.Add(new DelayedAction(
-                                            SEnvir.Now.AddMilliseconds(SEnvir.Random.Next(200) + Functions.Distance(CurrentLocation, ob.CurrentLocation)*20),
+                                            SEnvir.Now.AddMilliseconds(SEnvir.Random.Next(200) + Functions.Distance(CurrentLocation, ob.CurrentLocation) * 20),
                                             ActionType.DelayMagic,
                                             new List<UserMagic> { magic },
                                             ob));
@@ -685,9 +685,9 @@ namespace Server.Models
             if (region == null) return false;
 
             Map map = SEnvir.GetMap(region.Map);
-            
+
             if (map == null) return false;
-            
+
             if (region.PointList.Count == 0) return false;
 
             for (int i = 0; i < 20; i++)
@@ -711,6 +711,28 @@ namespace Server.Models
 
             if (Race == ObjectType.Player && info.MinimumLevel > Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
             if (Race == ObjectType.Player && info.MaximumLevel > 0 && info.MaximumLevel < Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
+            if (Race == ObjectType.Player && info.RequiredClass != RequiredClass.None && info.RequiredClass != RequiredClass.All && !((PlayerObject)this).Character.Account.TempAdmin)
+            {
+                switch (((PlayerObject)this).Class)
+                {
+                    case MirClass.Warrior:
+                        if ((info.RequiredClass & RequiredClass.Warrior) != RequiredClass.Warrior)
+                            return false;
+                        break;
+                    case MirClass.Wizard:
+                        if ((info.RequiredClass & RequiredClass.Wizard) != RequiredClass.Wizard)
+                            return false;
+                        break;
+                    case MirClass.Taoist:
+                        if ((info.RequiredClass & RequiredClass.Taoist) != RequiredClass.Taoist)
+                            return false;
+                        break;
+                    case MirClass.Assassin:
+                        if ((info.RequiredClass & RequiredClass.Assassin) != RequiredClass.Assassin)
+                            return false;
+                        break;
+                }
+            }
 
             Cell cell = map.GetCell(location);
 
@@ -765,7 +787,7 @@ namespace Server.Models
                 if (Dead) break;
                 if (ob.Race != ObjectType.Spell) continue;
 
-                ((SpellObject) ob).ProcessSpell(this);
+                ((SpellObject)ob).ProcessSpell(this);
 
                 if (cell != CurrentCell) break; //Tempest could repel this 
             }
@@ -776,7 +798,7 @@ namespace Server.Models
         public void TeleportNearby(int minDistance, int maxDistance)
         {
             List<Cell> cells = CurrentMap.GetCells(CurrentLocation, minDistance, maxDistance);
-            
+
             if (cells.Count == 0) return;
 
             Teleport(CurrentMap, cells[SEnvir.Random.Next(cells.Count)].Location);
@@ -786,7 +808,7 @@ namespace Server.Models
             Map map = SEnvir.GetMap(region.Map);
 
             Point point = region.PointList.Count > 0 ? region.PointList[SEnvir.Random.Next(region.PointList.Count)] : map.GetRandomLocation();
-            
+
             return Teleport(map, point, leaveEffect);
         }
         public virtual bool Teleport(Map map, Point location, bool leaveEffect = true)
@@ -864,7 +886,7 @@ namespace Server.Models
             if (!Activated) return;
 
             if (NearByPlayers.Count > 0 && ActionList.Count == 0) return;
-            
+
             Activated = false;
             SEnvir.ActiveObjects.Remove(this);
         }
@@ -872,7 +894,7 @@ namespace Server.Models
         public virtual bool CanDataBeSeenBy(PlayerObject ob)
         {
             if (ob == this) return true;
-            
+
             if (CurrentMap == null || ob.CurrentMap == null) return false;
 
             switch (Race)
@@ -882,17 +904,17 @@ namespace Server.Models
                     if (player.Observer) return false;
 
                     if (InGroup(ob)) return true;
-                    
+
                     if (player.InGuild(ob)) return true;
 
                     if (player.Character?.Partner?.Player == ob) return true;
-                    
+
                     if (ob.CurrentMap == CurrentMap && ob.Stats[Stat.PlayerTracker] > 0) return true;
 
                     break;
                 case ObjectType.Monster:
 
-                    MonsterObject mob = (MonsterObject) this;
+                    MonsterObject mob = (MonsterObject)this;
 
                     if (ob.CurrentMap == CurrentMap && mob.MonsterInfo.IsBoss && ob.Stats[Stat.BossTracker] > 0) return true;
                     break;
@@ -906,15 +928,15 @@ namespace Server.Models
 
             if (CurrentMap != ob.CurrentMap)
                 return false;
-            
+
             if (!Functions.InRange(CurrentLocation, ob.CurrentLocation, Config.MaxViewRange))
                 return false;
 
-            if (Race == ObjectType.Player && ((PlayerObject) this).Observer) return false;
+            if (Race == ObjectType.Player && ((PlayerObject)this).Observer) return false;
 
             if (ob.Character.Account.TempAdmin)
                 return true;
-            
+
             if (Buffs.Any(x => x.Type == BuffType.Cloak || x.Type == BuffType.Transparency))
             {
                 if (InGroup(ob))
@@ -923,7 +945,7 @@ namespace Server.Models
                 if (Race == ObjectType.Player)
                 {
                     PlayerObject player = (PlayerObject)this;
-                    
+
                     if (player.Observer) return false;
 
                     if (player.InGuild(ob)) return true;
@@ -941,7 +963,7 @@ namespace Server.Models
         public virtual bool IsNearBy(PlayerObject ob)
         {
             if (ob == this) return true;
-            
+
             return CurrentMap == ob.CurrentMap && Functions.InRange(CurrentLocation, ob.CurrentLocation, Config.MaxViewRange);
         }
 
@@ -949,7 +971,7 @@ namespace Server.Models
         {
             if (Node == null)
                 throw new InvalidOperationException("Node is null, Object already Despawned");
-            
+
             CurrentMap = null;
             CurrentCell = null;
 
@@ -959,7 +981,7 @@ namespace Server.Models
 
             Node.List.Remove(Node);
             Node = null;
-            
+
             if (Activated)
             {
                 Activated = false;
@@ -1065,7 +1087,7 @@ namespace Server.Models
 
                         if (blocking) continue;
 
-                        if (count == 0)  return cell;
+                        if (count == 0) return cell;
 
                         if (bestCell != null && count >= layers) continue;
 
@@ -1125,7 +1147,7 @@ namespace Server.Models
 
             if (CurrentHP + amount > Stats[Stat.Health])
                 amount = Stats[Stat.Health] - CurrentHP;
-            
+
             CurrentHP += amount;
 
             if (CurrentHP <= 0 && !Dead)
@@ -1334,7 +1356,7 @@ namespace Server.Models
             if (info.Visible)
                 Broadcast(new S.ObjectBuffRemove { ObjectID = ObjectID, Type = info.Type });
 
-            Buffs.Remove(info); 
+            Buffs.Remove(info);
 
             if (info.Stats != null && info.Stats.Count > 0)
                 RefreshStats();
@@ -1370,7 +1392,7 @@ namespace Server.Models
                     {
                         if (mapOb.Race != ObjectType.Monster) continue;
 
-                        MonsterObject mob = (MonsterObject) mapOb;
+                        MonsterObject mob = (MonsterObject)mapOb;
 
                         mob.SearchTime = DateTime.MinValue;
                     }
@@ -1449,7 +1471,7 @@ namespace Server.Models
         {
             return false;
         }
-        
+
         public virtual void Dodged()
         {
             DisplayMiss = true;
@@ -1485,7 +1507,7 @@ namespace Server.Models
 
             return true;
         }
-        
+
         public virtual void Die()
         {
             Dead = true;
@@ -1494,7 +1516,7 @@ namespace Server.Models
             BuffRemove(BuffType.DragonRepulse);
 
             PoisonList.Clear();
-            
+
             Broadcast(new S.ObjectDied { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
         }
 
@@ -1530,19 +1552,19 @@ namespace Server.Models
 
                 RemoveAllObjects();
                 AddAllObjects();
-                Broadcast(new S.ObjectPushed { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation});
+                Broadcast(new S.ObjectPushed { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
 
                 count++;
             }
             PreventSpellCheck = false;
 
-        /*    if (count > 0 && checkSpells)
-                CheckSpellObjects();*/
+            /*    if (count > 0 && checkSpells)
+                    CheckSpellObjects();*/
             return count;
         }
 
         public bool InGroup(MapObject ob)
-        { 
+        {
             //Ob can be Null
             return ob?.GroupMembers != null && ob.GroupMembers == GroupMembers;
         }
@@ -1668,5 +1690,5 @@ namespace Server.Models
         public DateTime TickTime;
         public object Extra;
     }
-   
+
 }
