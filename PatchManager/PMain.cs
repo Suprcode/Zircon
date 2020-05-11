@@ -58,7 +58,7 @@ namespace PatchManager
             }
 
             if (Directory.Exists(ClientPath + "Patch\\"))
-                Directory.Delete(ClientPath + "Patch\\");
+                Directory.Delete(ClientPath + "Patch\\", true);
 
             InterfaceLock(true);
 
