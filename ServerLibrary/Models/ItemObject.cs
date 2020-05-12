@@ -14,6 +14,7 @@ namespace Server.Models
         public override ObjectType Race => ObjectType.Item;
         public override bool Blocking => false;
 
+        public DateTime SpawnTime { get; set; }
         public DateTime ExpireTime { get; set; }
 
         public UserItem Item { get; set; }
@@ -64,9 +65,31 @@ namespace Server.Models
             Account = null;
         }
 
+        public bool CanPickUpItem(PlayerObject ob)
+        {
+            var owner = Account.Connection?.Player;
+
+            if (Account != null && Account != ob.Character.Account)
+            {
+                var spawnElapsed = (SpawnTime - SEnvir.Now).TotalMinutes;
+
+                if (spawnElapsed >= 10)
+                    return true;
+                else if ((Account.GuildMember?.Guild == ob.Character.Account.GuildMember?.Guild) && spawnElapsed >= 5)
+                    return true;
+                else if (owner.GroupMembers?.Any(x => x == ob) ?? false && spawnElapsed >= 2)
+                    return true;
+
+                return false;
+            }
+
+            return true;
+        }
+
         public bool PickUpItem(PlayerObject ob)
         {
-            if (Account != null && Account != ob.Character.Account) return false;
+            if (!CanPickUpItem(ob))
+                return false;
 
             long amount = 0;
 
@@ -113,7 +136,8 @@ namespace Server.Models
         }
         public void PickUpItem(Companion ob)
         {
-            if (Account != null && Account != ob.CompanionOwner.Character.Account) return;
+            if (!CanPickUpItem(ob.CompanionOwner))
+                return;
 
             long amount = 0;
 
@@ -200,6 +224,7 @@ namespace Server.Models
         {
             base.OnSpawned();
 
+            SpawnTime = SEnvir.Now;
             ExpireTime = SEnvir.Now + Config.DropDuration;
 
             AddAllObjects();
