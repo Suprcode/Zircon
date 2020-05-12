@@ -14,7 +14,6 @@ namespace Server.Models
         public override ObjectType Race => ObjectType.Item;
         public override bool Blocking => false;
 
-        public DateTime SpawnTime { get; set; }
         public DateTime ExpireTime { get; set; }
 
         public UserItem Item { get; set; }
@@ -224,7 +223,6 @@ namespace Server.Models
         {
             base.OnSpawned();
 
-            SpawnTime = SEnvir.Now;
             ExpireTime = SEnvir.Now + Config.DropDuration;
 
             AddAllObjects();

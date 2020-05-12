@@ -17,6 +17,8 @@ namespace Server.Models
         public uint ObjectID { get; }
         public LinkedListNode<MapObject> Node;
 
+
+        public DateTime SpawnTime { get; set; }
         public abstract ObjectType Race { get; }
 
         public virtual bool Blocking => !Dead;
@@ -793,7 +795,10 @@ namespace Server.Models
             }
         }
         protected virtual void OnMapChanged() { }
-        protected virtual void OnSpawned() { }
+        protected virtual void OnSpawned()
+        {
+            SpawnTime = SEnvir.Now;
+        }
 
         public void TeleportNearby(int minDistance, int maxDistance)
         {
