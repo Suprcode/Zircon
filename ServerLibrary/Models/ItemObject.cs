@@ -74,11 +74,11 @@ namespace Server.Models
 
                 if (spawnElapsed >= 10)
                     return true;
-                else if ((Account.GuildMember?.Guild == ob.Character.Account.GuildMember?.Guild) && spawnElapsed >= 5)
+                else if (owner != null && owner.InGuild(ob) && spawnElapsed >= 5)
                     return true;
                 else if (owner != null && owner.InGroup(ob) && spawnElapsed >= 2)
                     return true;
-
+                
                 return false;
             }
 
