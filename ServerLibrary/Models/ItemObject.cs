@@ -70,13 +70,13 @@ namespace Server.Models
 
             if (Account != null && Account != ob.Character.Account)
             {
-                var spawnElapsed = (SpawnTime - SEnvir.Now).TotalMinutes;
+                var spawnElapsed = (int)Math.Floor((SEnvir.Now - SpawnTime).TotalMinutes);
 
                 if (spawnElapsed >= 10)
                     return true;
                 else if ((Account.GuildMember?.Guild == ob.Character.Account.GuildMember?.Guild) && spawnElapsed >= 5)
                     return true;
-                else if (owner.GroupMembers?.Any(x => x == ob) ?? false && spawnElapsed >= 2)
+                else if (owner != null && owner.InGroup(ob) && spawnElapsed >= 2)
                     return true;
 
                 return false;
