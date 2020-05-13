@@ -351,7 +351,7 @@ namespace Server.Envir
                         webCommand.Account.Password = SEnvir.CreateHash(password);
                         webCommand.Account.ResetKey = string.Empty;
                         webCommand.Account.WrongPasswordCount = 0;
-                        SEnvir.SendResetPasswordEmail(webCommand.Account, password);
+                        EmailService.SendResetPasswordEmail(webCommand.Account, password);
                         break;
                     case CommandType.AccountDelete:
                         if (webCommand.Account.Activated) continue;

@@ -151,7 +151,7 @@ namespace Server
             ObjectLabel.Caption = string.Format(@"Objects: {0} of {1:#,##0}", SEnvir.ActiveObjects.Count, SEnvir.Objects.Count);
             ProcessLabel.Caption = string.Format(@"Process Count: {0:#,##0}", SEnvir.ProcessObjectCount);
             LoopLabel.Caption = string.Format(@"Loop Count: {0:#,##0}", SEnvir.LoopCount);
-            EMailsSentLabel.Caption = string.Format(@"E-Mails Sent: {0:#,##0}", SEnvir.EMailsSent);
+            EMailsSentLabel.Caption = string.Format(@"E-Mails Sent: {0:#,##0}", EmailService.EMailsSent);
 
             ConDelay.Caption = string.Format(@"Con Delay: {0:#,##0}ms", SEnvir.ConDelay);
             SaveDelay.Caption = string.Format(@"Save Delay: {0:#,##0}ms", SEnvir.SaveDelay);
