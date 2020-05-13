@@ -16,8 +16,8 @@ namespace Server.Envir
         public static ushort UserCountPort { get; set; } = 3000;
         public static int MaxPacket { get; set; } = 50;
         public static TimeSpan PacketBanTime { get; set; } = TimeSpan.FromMinutes(5);
-
-
+        public static string SyncRemotePreffix { get; set; } = "http://127.0.0.1:80/Command/";
+     
         [ConfigSection("System")]
         public static bool CheckVersion { get; set; } = true;
         public static string VersionPath { get; set; } = @".\Zircon.exe";
@@ -25,6 +25,7 @@ namespace Server.Envir
         public static string MapPath { get; set; } = @".\Map\";
         public static byte[] ClientHash;
         public static string MasterPassword { get; set; } = @"REDACTED";
+        public static string SyncKey { get; set; } = "REDACTED";
         public static string ClientPath { get; set; }
         public static DateTime ReleaseDate { get; set; } = new DateTime(2017, 12, 22, 18, 00, 00, DateTimeKind.Utc);
         public static bool TestServer { get; set; } = false;

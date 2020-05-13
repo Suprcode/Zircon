@@ -165,46 +165,76 @@ namespace Server.Envir
 
         private static void SystemDBSync(HttpListenerContext context)
         {
-            if (!Config.AllowSystemDBSync)
-                return;
-
-            if (context.Request.HttpMethod != "POST" || !context.Request.HasEntityBody)
-                return;
-
-            if (context.Request.ContentLength64 > 1024 * 1024 * 10)
-                return;
-
-            var masterPassword = context.Request.QueryString["mp"];
-            if (string.IsNullOrEmpty(masterPassword) || !masterPassword.Equals(Config.MasterPassword))
-                return;
-
-            var buffer = new byte[context.Request.ContentLength64];
-            context.Request.InputStream.Read(buffer, 0, buffer.Length);
-
-            var tmpPath = SEnvir.Session.SystemPath + Session.TempExtension;
-
-            using (var ms = new MemoryStream(buffer))
-            using (var oms = File.Create(tmpPath))
-            using (GZipStream compress = new GZipStream(oms, CompressionMode.Decompress))
-                ms.CopyTo(compress);
-
-            if (SEnvir.Session.BackUp && !Directory.Exists(SEnvir.Session.SystemBackupPath))
-                Directory.CreateDirectory(SEnvir.Session.SystemBackupPath);
-
-            if (File.Exists(SEnvir.Session.SystemPath))
+            try
             {
-                if (SEnvir.Session.BackUp)
+                if (!Config.AllowSystemDBSync)
                 {
-                    using (FileStream sourceStream = File.OpenRead(SEnvir.Session.SystemPath))
-                    using (FileStream destStream = File.Create(SEnvir.Session.SystemBackupPath + "System " + SEnvir.Session.ToBackUpFileName(DateTime.UtcNow) + Session.Extension + Session.CompressExtension))
-                    using (GZipStream compress = new GZipStream(destStream, CompressionMode.Compress))
-                        sourceStream.CopyTo(compress);
+                    SEnvir.Log($"Trying sync but not enabled");
+                    context.Response.StatusCode = 401;
+                    return;
                 }
 
-                File.Delete(SEnvir.Session.SystemPath);
-            }
+                if (context.Request.HttpMethod != "POST" || !context.Request.HasEntityBody)
+                {
+                    SEnvir.Log($"Trying sync but method is not post or not have body");
+                    context.Response.StatusCode = 401;
+                    return;
+                }
 
-            File.Move(tmpPath, SEnvir.Session.SystemPath);
+                if (context.Request.ContentLength64 > 1024 * 1024 * 10)
+                {
+                    SEnvir.Log($"Trying sync but exceeded SystemDB size");
+                    context.Response.StatusCode = 400;
+                    return;
+                }
+
+                var masterPassword = context.Request.QueryString["Key"];
+                if (string.IsNullOrEmpty(masterPassword) || !masterPassword.Equals(Config.SyncKey))
+                {
+                    SEnvir.Log($"Trying sync but key received is not valid");
+                    context.Response.StatusCode = 400;
+                    return;
+                }
+
+                SEnvir.Log($"Starting remote syncronization...");
+
+                var buffer = new byte[context.Request.ContentLength64];
+                context.Request.InputStream.Read(buffer, 0, buffer.Length);
+
+                if (SEnvir.Session.BackUp && !Directory.Exists(SEnvir.Session.SystemBackupPath))
+                    Directory.CreateDirectory(SEnvir.Session.SystemBackupPath);
+
+                if (File.Exists(SEnvir.Session.SystemPath))
+                {
+                    if (SEnvir.Session.BackUp)
+                    {
+                        using (FileStream sourceStream = File.OpenRead(SEnvir.Session.SystemPath))
+                        using (FileStream destStream = File.Create(SEnvir.Session.SystemBackupPath + "System " + SEnvir.Session.ToBackUpFileName(DateTime.UtcNow) + Session.Extension + Session.CompressExtension))
+                        using (GZipStream compress = new GZipStream(destStream, CompressionMode.Compress))
+                            sourceStream.CopyTo(compress);
+                    }
+
+                    File.Delete(SEnvir.Session.SystemPath);
+                }
+
+                File.WriteAllBytes(SEnvir.Session.SystemPath, buffer);
+
+                context.Response.StatusCode = 200;
+
+                SEnvir.Log($"Syncronization completed...");
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = 500;
+                context.Response.ContentType = "text/plain";
+                var message = Encoding.UTF8.GetBytes(ex.ToString());
+                context.Response.OutputStream.Write(message, 0, message.Length);
+                SEnvir.Log("Syncronization exception: " + ex.ToString());
+            }
+            finally
+            {
+                context.Response.Close();
+            }
         }
 
         private static void Activation(HttpListenerContext context)

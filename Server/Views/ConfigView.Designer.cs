@@ -36,6 +36,11 @@
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.xtraTabControl1 = new DevExpress.XtraTab.XtraTabControl();
             this.xtraTabPage1 = new DevExpress.XtraTab.XtraTabPage();
+            this.PacketBanTimeEdit = new DevExpress.XtraEditors.TimeSpanEdit();
+            this.SyncronizeButton = new DevExpress.XtraEditors.SimpleButton();
+            this.labelControl86 = new DevExpress.XtraEditors.LabelControl();
+            this.labelControl87 = new DevExpress.XtraEditors.LabelControl();
+            this.MaxPacketEdit = new DevExpress.XtraEditors.TextEdit();
             this.labelControl51 = new DevExpress.XtraEditors.LabelControl();
             this.UserCountPortEdit = new DevExpress.XtraEditors.TextEdit();
             this.labelControl6 = new DevExpress.XtraEditors.LabelControl();
@@ -221,20 +226,16 @@
             this.labelControl55 = new DevExpress.XtraEditors.LabelControl();
             this.OpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.FolderDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.PacketBanTimeEdit = new DevExpress.XtraEditors.TimeSpanEdit();
-            this.labelControl86 = new DevExpress.XtraEditors.LabelControl();
-            this.labelControl87 = new DevExpress.XtraEditors.LabelControl();
-            this.MaxPacketEdit = new DevExpress.XtraEditors.TextEdit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
             this.xtraTabControl1.SuspendLayout();
-            this.xtraTabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PacketBanTimeEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MaxPacketEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.UserCountPortEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PingDelayEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TimeOutEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.IPAddressEdit.Properties)).BeginInit();
-            this.xtraTabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AllowRequestActivationEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AllowWebActivationEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AllowManualActivationEdit.Properties)).BeginInit();
@@ -253,7 +254,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.AllowLoginEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AllowChangePasswordEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AllowNewAccountEdit.Properties)).BeginInit();
-            this.xtraTabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RabbitEventEndEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ReleaseDateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ClientPathEdit.Properties)).BeginInit();
@@ -262,7 +262,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.DBSaveDelayEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.VersionPathEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CheckVersionEdit.Properties)).BeginInit();
-            this.xtraTabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MailDisplayNameEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailFromEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailPasswordEdit.Properties)).BeginInit();
@@ -270,7 +269,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.MailUseSSLEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailPortEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailServerEdit.Properties)).BeginInit();
-            this.xtraTabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AllowBuyGammeGoldEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ProcessGameGoldEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ReceiverEMailEdit.Properties)).BeginInit();
@@ -285,7 +283,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.ActivationSuccessLinkEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WebCommandLinkEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WebPrefixEdit.Properties)).BeginInit();
-            this.xtraTabPage6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AutoReviveDelayEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PvPCurseRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PvPCurseDurationEdit.Properties)).BeginInit();
@@ -300,12 +297,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.GlobalDelayEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ShoutDelayEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxViewRangeEdit.Properties)).BeginInit();
-            this.xtraTabPage7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LairRegionIndexEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MysteryShipRegionIndexEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HarvestDurationEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DeadDurationEdit.Properties)).BeginInit();
-            this.xtraTabPage8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StrengthLossRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StrengthAddRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxStrengthEdit.Properties)).BeginInit();
@@ -318,17 +313,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.DropLayersEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DropDistanceEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DropDurationEdit.Properties)).BeginInit();
-            this.xtraTabPage9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SkillRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GoldRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DropRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ExperienceRateEdit.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PacketBanTimeEdit.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MaxPacketEdit.Properties)).BeginInit();
             this.SuspendLayout();
             // 
             // ribbon
+            // 
+            // 
+            // 
             // 
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
@@ -340,7 +335,7 @@
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(775, 143);
+            this.ribbon.Size = new System.Drawing.Size(775, 144);
             // 
             // SaveButton
             // 
@@ -370,8 +365,6 @@
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
-            this.ribbonPageGroup1.ItemLinks.Add(this.ReloadButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Actions";
@@ -379,10 +372,10 @@
             // xtraTabControl1
             // 
             this.xtraTabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.xtraTabControl1.Location = new System.Drawing.Point(0, 143);
+            this.xtraTabControl1.Location = new System.Drawing.Point(0, 144);
             this.xtraTabControl1.Name = "xtraTabControl1";
             this.xtraTabControl1.SelectedTabPage = this.xtraTabPage1;
-            this.xtraTabControl1.Size = new System.Drawing.Size(775, 424);
+            this.xtraTabControl1.Size = new System.Drawing.Size(775, 423);
             this.xtraTabControl1.TabIndex = 2;
             this.xtraTabControl1.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
             this.xtraTabPage1,
@@ -398,6 +391,7 @@
             // xtraTabPage1
             // 
             this.xtraTabPage1.Controls.Add(this.PacketBanTimeEdit);
+            this.xtraTabPage1.Controls.Add(this.SyncronizeButton);
             this.xtraTabPage1.Controls.Add(this.labelControl86);
             this.xtraTabPage1.Controls.Add(this.labelControl87);
             this.xtraTabPage1.Controls.Add(this.MaxPacketEdit);
@@ -411,9 +405,62 @@
             this.xtraTabPage1.Controls.Add(this.PortEdit);
             this.xtraTabPage1.Controls.Add(this.IPAddressEdit);
             this.xtraTabPage1.Controls.Add(this.labelControl1);
+            this.xtraTabPage1.Enabled = true;
             this.xtraTabPage1.Name = "xtraTabPage1";
-            this.xtraTabPage1.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage1.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage1.Text = "Network";
+            // 
+            // PacketBanTimeEdit
+            // 
+            this.PacketBanTimeEdit.EditValue = System.TimeSpan.Parse("00:00:00");
+            this.PacketBanTimeEdit.Location = new System.Drawing.Point(108, 174);
+            this.PacketBanTimeEdit.MenuManager = this.ribbon;
+            this.PacketBanTimeEdit.Name = "PacketBanTimeEdit";
+            //
+            //
+            //
+            this.SyncronizeButton.Text = "Syncronize Remote DB";
+            this.SyncronizeButton.Location = new System.Drawing.Point(20, 200);
+            this.SyncronizeButton.Width = 200;
+            // 
+            // 
+            // 
+            this.PacketBanTimeEdit.Properties.AllowEditDays = false;
+            this.PacketBanTimeEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.PacketBanTimeEdit.Properties.Mask.EditMask = "HH:mm:ss";
+            this.PacketBanTimeEdit.TabIndex = 40;
+            // 
+            // labelControl86
+            // 
+            this.labelControl86.Location = new System.Drawing.Point(20, 177);
+            this.labelControl86.Name = "labelControl86";
+            this.labelControl86.Size = new System.Drawing.Size(82, 13);
+            this.labelControl86.TabIndex = 39;
+            this.labelControl86.Text = "Packet Ban Time:";
+            // 
+            // labelControl87
+            // 
+            this.labelControl87.Location = new System.Drawing.Point(38, 151);
+            this.labelControl87.Name = "labelControl87";
+            this.labelControl87.Size = new System.Drawing.Size(64, 13);
+            this.labelControl87.TabIndex = 38;
+            this.labelControl87.Text = "Max Packets:";
+            // 
+            // MaxPacketEdit
+            // 
+            this.MaxPacketEdit.Location = new System.Drawing.Point(108, 148);
+            this.MaxPacketEdit.MenuManager = this.ribbon;
+            this.MaxPacketEdit.Name = "MaxPacketEdit";
+            // 
+            // 
+            // 
+            this.MaxPacketEdit.Properties.Appearance.Options.UseTextOptions = true;
+            this.MaxPacketEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            this.MaxPacketEdit.Properties.Mask.EditMask = "n0";
+            this.MaxPacketEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
+            this.MaxPacketEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
+            this.MaxPacketEdit.TabIndex = 37;
             // 
             // labelControl51
             // 
@@ -428,12 +475,14 @@
             this.UserCountPortEdit.Location = new System.Drawing.Point(108, 122);
             this.UserCountPortEdit.MenuManager = this.ribbon;
             this.UserCountPortEdit.Name = "UserCountPortEdit";
+            // 
+            // 
+            // 
             this.UserCountPortEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.UserCountPortEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.UserCountPortEdit.Properties.Mask.EditMask = "n0";
             this.UserCountPortEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.UserCountPortEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.UserCountPortEdit.Size = new System.Drawing.Size(100, 20);
             this.UserCountPortEdit.TabIndex = 35;
             // 
             // labelControl6
@@ -450,11 +499,13 @@
             this.PingDelayEdit.Location = new System.Drawing.Point(108, 96);
             this.PingDelayEdit.MenuManager = this.ribbon;
             this.PingDelayEdit.Name = "PingDelayEdit";
+            // 
+            // 
+            // 
             this.PingDelayEdit.Properties.AllowEditDays = false;
             this.PingDelayEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.PingDelayEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.PingDelayEdit.Size = new System.Drawing.Size(100, 20);
             this.PingDelayEdit.TabIndex = 33;
             // 
             // TimeOutEdit
@@ -463,11 +514,13 @@
             this.TimeOutEdit.Location = new System.Drawing.Point(108, 70);
             this.TimeOutEdit.MenuManager = this.ribbon;
             this.TimeOutEdit.Name = "TimeOutEdit";
+            // 
+            // 
+            // 
             this.TimeOutEdit.Properties.AllowEditDays = false;
             this.TimeOutEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.TimeOutEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.TimeOutEdit.Size = new System.Drawing.Size(100, 20);
             this.TimeOutEdit.TabIndex = 32;
             // 
             // labelControl3
@@ -491,12 +544,14 @@
             this.PortEdit.Location = new System.Drawing.Point(108, 44);
             this.PortEdit.MenuManager = this.ribbon;
             this.PortEdit.Name = "PortEdit";
+            // 
+            // 
+            // 
             this.PortEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.PortEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.PortEdit.Properties.Mask.EditMask = "n0";
             this.PortEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.PortEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.PortEdit.Size = new System.Drawing.Size(100, 20);
             this.PortEdit.TabIndex = 29;
             // 
             // IPAddressEdit
@@ -504,9 +559,11 @@
             this.IPAddressEdit.Location = new System.Drawing.Point(108, 18);
             this.IPAddressEdit.MenuManager = this.ribbon;
             this.IPAddressEdit.Name = "IPAddressEdit";
+            // 
+            // 
+            // 
             this.IPAddressEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.IPAddressEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.IPAddressEdit.Size = new System.Drawing.Size(100, 20);
             this.IPAddressEdit.TabIndex = 27;
             // 
             // labelControl1
@@ -555,6 +612,7 @@
             this.xtraTabPage2.Controls.Add(this.AllowChangePasswordEdit);
             this.xtraTabPage2.Controls.Add(this.labelControl7);
             this.xtraTabPage2.Controls.Add(this.AllowNewAccountEdit);
+            this.xtraTabPage2.Enabled = true;
             this.xtraTabPage2.Name = "xtraTabPage2";
             this.xtraTabPage2.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage2.Text = "Control";
@@ -572,6 +630,9 @@
             this.AllowRequestActivationEdit.Location = new System.Drawing.Point(526, 164);
             this.AllowRequestActivationEdit.MenuManager = this.ribbon;
             this.AllowRequestActivationEdit.Name = "AllowRequestActivationEdit";
+            // 
+            // 
+            // 
             this.AllowRequestActivationEdit.Properties.Caption = "";
             this.AllowRequestActivationEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowRequestActivationEdit.TabIndex = 94;
@@ -589,6 +650,9 @@
             this.AllowWebActivationEdit.Location = new System.Drawing.Point(526, 139);
             this.AllowWebActivationEdit.MenuManager = this.ribbon;
             this.AllowWebActivationEdit.Name = "AllowWebActivationEdit";
+            // 
+            // 
+            // 
             this.AllowWebActivationEdit.Properties.Caption = "";
             this.AllowWebActivationEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowWebActivationEdit.TabIndex = 92;
@@ -606,6 +670,9 @@
             this.AllowManualActivationEdit.Location = new System.Drawing.Point(526, 114);
             this.AllowManualActivationEdit.MenuManager = this.ribbon;
             this.AllowManualActivationEdit.Name = "AllowManualActivationEdit";
+            // 
+            // 
+            // 
             this.AllowManualActivationEdit.Properties.Caption = "";
             this.AllowManualActivationEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowManualActivationEdit.TabIndex = 90;
@@ -623,6 +690,9 @@
             this.AllowDeleteAccountEdit.Location = new System.Drawing.Point(526, 89);
             this.AllowDeleteAccountEdit.MenuManager = this.ribbon;
             this.AllowDeleteAccountEdit.Name = "AllowDeleteAccountEdit";
+            // 
+            // 
+            // 
             this.AllowDeleteAccountEdit.Properties.Caption = "";
             this.AllowDeleteAccountEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowDeleteAccountEdit.TabIndex = 88;
@@ -640,6 +710,9 @@
             this.AllowManualResetPasswordEdit.Location = new System.Drawing.Point(526, 64);
             this.AllowManualResetPasswordEdit.MenuManager = this.ribbon;
             this.AllowManualResetPasswordEdit.Name = "AllowManualResetPasswordEdit";
+            // 
+            // 
+            // 
             this.AllowManualResetPasswordEdit.Properties.Caption = "";
             this.AllowManualResetPasswordEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowManualResetPasswordEdit.TabIndex = 86;
@@ -657,6 +730,9 @@
             this.AllowWebResetPasswordEdit.Location = new System.Drawing.Point(526, 39);
             this.AllowWebResetPasswordEdit.MenuManager = this.ribbon;
             this.AllowWebResetPasswordEdit.Name = "AllowWebResetPasswordEdit";
+            // 
+            // 
+            // 
             this.AllowWebResetPasswordEdit.Properties.Caption = "";
             this.AllowWebResetPasswordEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowWebResetPasswordEdit.TabIndex = 84;
@@ -674,6 +750,9 @@
             this.AllowRequestPasswordResetEdit.Location = new System.Drawing.Point(526, 14);
             this.AllowRequestPasswordResetEdit.MenuManager = this.ribbon;
             this.AllowRequestPasswordResetEdit.Name = "AllowRequestPasswordResetEdit";
+            // 
+            // 
+            // 
             this.AllowRequestPasswordResetEdit.Properties.Caption = "";
             this.AllowRequestPasswordResetEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowRequestPasswordResetEdit.TabIndex = 82;
@@ -691,6 +770,9 @@
             this.AllowWizardEdit.Location = new System.Drawing.Point(293, 39);
             this.AllowWizardEdit.MenuManager = this.ribbon;
             this.AllowWizardEdit.Name = "AllowWizardEdit";
+            // 
+            // 
+            // 
             this.AllowWizardEdit.Properties.Caption = "";
             this.AllowWizardEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowWizardEdit.TabIndex = 80;
@@ -708,6 +790,9 @@
             this.AllowTaoistEdit.Location = new System.Drawing.Point(293, 64);
             this.AllowTaoistEdit.MenuManager = this.ribbon;
             this.AllowTaoistEdit.Name = "AllowTaoistEdit";
+            // 
+            // 
+            // 
             this.AllowTaoistEdit.Properties.Caption = "";
             this.AllowTaoistEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowTaoistEdit.TabIndex = 78;
@@ -725,6 +810,9 @@
             this.AllowAssassinEdit.Location = new System.Drawing.Point(293, 89);
             this.AllowAssassinEdit.MenuManager = this.ribbon;
             this.AllowAssassinEdit.Name = "AllowAssassinEdit";
+            // 
+            // 
+            // 
             this.AllowAssassinEdit.Properties.Caption = "";
             this.AllowAssassinEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowAssassinEdit.TabIndex = 76;
@@ -742,6 +830,9 @@
             this.AllowWarriorEdit.Location = new System.Drawing.Point(293, 14);
             this.AllowWarriorEdit.MenuManager = this.ribbon;
             this.AllowWarriorEdit.Name = "AllowWarriorEdit";
+            // 
+            // 
+            // 
             this.AllowWarriorEdit.Properties.Caption = "";
             this.AllowWarriorEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowWarriorEdit.TabIndex = 72;
@@ -760,11 +851,13 @@
             this.RelogDelayEdit.Location = new System.Drawing.Point(108, 164);
             this.RelogDelayEdit.MenuManager = this.ribbon;
             this.RelogDelayEdit.Name = "RelogDelayEdit";
+            // 
+            // 
+            // 
             this.RelogDelayEdit.Properties.AllowEditDays = false;
             this.RelogDelayEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.RelogDelayEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.RelogDelayEdit.Size = new System.Drawing.Size(100, 20);
             this.RelogDelayEdit.TabIndex = 70;
             // 
             // labelControl14
@@ -780,6 +873,9 @@
             this.AllowStartGameEdit.Location = new System.Drawing.Point(108, 139);
             this.AllowStartGameEdit.MenuManager = this.ribbon;
             this.AllowStartGameEdit.Name = "AllowStartGameEdit";
+            // 
+            // 
+            // 
             this.AllowStartGameEdit.Properties.Caption = "";
             this.AllowStartGameEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowStartGameEdit.TabIndex = 68;
@@ -797,6 +893,9 @@
             this.AllowDeleteCharacterEdit.Location = new System.Drawing.Point(108, 114);
             this.AllowDeleteCharacterEdit.MenuManager = this.ribbon;
             this.AllowDeleteCharacterEdit.Name = "AllowDeleteCharacterEdit";
+            // 
+            // 
+            // 
             this.AllowDeleteCharacterEdit.Properties.Caption = "";
             this.AllowDeleteCharacterEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowDeleteCharacterEdit.TabIndex = 66;
@@ -814,6 +913,9 @@
             this.AllowNewCharacterEdit.Location = new System.Drawing.Point(108, 89);
             this.AllowNewCharacterEdit.MenuManager = this.ribbon;
             this.AllowNewCharacterEdit.Name = "AllowNewCharacterEdit";
+            // 
+            // 
+            // 
             this.AllowNewCharacterEdit.Properties.Caption = "";
             this.AllowNewCharacterEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowNewCharacterEdit.TabIndex = 64;
@@ -831,6 +933,9 @@
             this.AllowLoginEdit.Location = new System.Drawing.Point(108, 64);
             this.AllowLoginEdit.MenuManager = this.ribbon;
             this.AllowLoginEdit.Name = "AllowLoginEdit";
+            // 
+            // 
+            // 
             this.AllowLoginEdit.Properties.Caption = "";
             this.AllowLoginEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowLoginEdit.TabIndex = 62;
@@ -848,6 +953,9 @@
             this.AllowChangePasswordEdit.Location = new System.Drawing.Point(108, 39);
             this.AllowChangePasswordEdit.MenuManager = this.ribbon;
             this.AllowChangePasswordEdit.Name = "AllowChangePasswordEdit";
+            // 
+            // 
+            // 
             this.AllowChangePasswordEdit.Properties.Caption = "";
             this.AllowChangePasswordEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowChangePasswordEdit.TabIndex = 60;
@@ -865,6 +973,9 @@
             this.AllowNewAccountEdit.Location = new System.Drawing.Point(108, 14);
             this.AllowNewAccountEdit.MenuManager = this.ribbon;
             this.AllowNewAccountEdit.Name = "AllowNewAccountEdit";
+            // 
+            // 
+            // 
             this.AllowNewAccountEdit.Properties.Caption = "";
             this.AllowNewAccountEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowNewAccountEdit.TabIndex = 58;
@@ -888,6 +999,7 @@
             this.xtraTabPage3.Controls.Add(this.labelControl5);
             this.xtraTabPage3.Controls.Add(this.labelControl4);
             this.xtraTabPage3.Controls.Add(this.CheckVersionEdit);
+            this.xtraTabPage3.Enabled = true;
             this.xtraTabPage3.Name = "xtraTabPage3";
             this.xtraTabPage3.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage3.Text = "System";
@@ -897,6 +1009,9 @@
             this.RabbitEventEndEdit.Location = new System.Drawing.Point(103, 275);
             this.RabbitEventEndEdit.MenuManager = this.ribbon;
             this.RabbitEventEndEdit.Name = "RabbitEventEndEdit";
+            // 
+            // 
+            // 
             this.RabbitEventEndEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.RabbitEventEndEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.RabbitEventEndEdit.Properties.Mask.EditMask = "f";
@@ -918,6 +1033,9 @@
             this.ReleaseDateEdit.Location = new System.Drawing.Point(103, 249);
             this.ReleaseDateEdit.MenuManager = this.ribbon;
             this.ReleaseDateEdit.Name = "ReleaseDateEdit";
+            // 
+            // 
+            // 
             this.ReleaseDateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.ReleaseDateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.ReleaseDateEdit.Properties.Mask.EditMask = "f";
@@ -939,6 +1057,9 @@
             this.ClientPathEdit.Location = new System.Drawing.Point(103, 94);
             this.ClientPathEdit.MenuManager = this.ribbon;
             this.ClientPathEdit.Name = "ClientPathEdit";
+            // 
+            // 
+            // 
             this.ClientPathEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton()});
             this.ClientPathEdit.Size = new System.Drawing.Size(250, 20);
@@ -958,10 +1079,12 @@
             this.MasterPasswordEdit.Location = new System.Drawing.Point(103, 198);
             this.MasterPasswordEdit.MenuManager = this.ribbon;
             this.MasterPasswordEdit.Name = "MasterPasswordEdit";
+            // 
+            // 
+            // 
             this.MasterPasswordEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MasterPasswordEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.MasterPasswordEdit.Properties.PasswordChar = '*';
-            this.MasterPasswordEdit.Size = new System.Drawing.Size(100, 20);
             this.MasterPasswordEdit.TabIndex = 68;
             // 
             // labelControl67
@@ -977,6 +1100,9 @@
             this.MapPathEdit.Location = new System.Drawing.Point(103, 172);
             this.MapPathEdit.MenuManager = this.ribbon;
             this.MapPathEdit.Name = "MapPathEdit";
+            // 
+            // 
+            // 
             this.MapPathEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton()});
             this.MapPathEdit.Size = new System.Drawing.Size(250, 20);
@@ -1005,11 +1131,13 @@
             this.DBSaveDelayEdit.Location = new System.Drawing.Point(103, 146);
             this.DBSaveDelayEdit.MenuManager = this.ribbon;
             this.DBSaveDelayEdit.Name = "DBSaveDelayEdit";
+            // 
+            // 
+            // 
             this.DBSaveDelayEdit.Properties.AllowEditDays = false;
             this.DBSaveDelayEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.DBSaveDelayEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.DBSaveDelayEdit.Size = new System.Drawing.Size(100, 20);
             this.DBSaveDelayEdit.TabIndex = 27;
             // 
             // CheckVersionButton
@@ -1026,6 +1154,9 @@
             this.VersionPathEdit.Location = new System.Drawing.Point(103, 39);
             this.VersionPathEdit.MenuManager = this.ribbon;
             this.VersionPathEdit.Name = "VersionPathEdit";
+            // 
+            // 
+            // 
             this.VersionPathEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton()});
             this.VersionPathEdit.Size = new System.Drawing.Size(250, 20);
@@ -1053,6 +1184,9 @@
             this.CheckVersionEdit.Location = new System.Drawing.Point(103, 14);
             this.CheckVersionEdit.MenuManager = this.ribbon;
             this.CheckVersionEdit.Name = "CheckVersionEdit";
+            // 
+            // 
+            // 
             this.CheckVersionEdit.Properties.Caption = "";
             this.CheckVersionEdit.Size = new System.Drawing.Size(100, 19);
             this.CheckVersionEdit.TabIndex = 22;
@@ -1073,6 +1207,7 @@
             this.xtraTabPage4.Controls.Add(this.MailPortEdit);
             this.xtraTabPage4.Controls.Add(this.MailServerEdit);
             this.xtraTabPage4.Controls.Add(this.labelControl26);
+            this.xtraTabPage4.Enabled = true;
             this.xtraTabPage4.Name = "xtraTabPage4";
             this.xtraTabPage4.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage4.Text = "Mail";
@@ -1082,9 +1217,11 @@
             this.MailDisplayNameEdit.Location = new System.Drawing.Point(108, 173);
             this.MailDisplayNameEdit.MenuManager = this.ribbon;
             this.MailDisplayNameEdit.Name = "MailDisplayNameEdit";
+            // 
+            // 
+            // 
             this.MailDisplayNameEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MailDisplayNameEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.MailDisplayNameEdit.Size = new System.Drawing.Size(100, 20);
             this.MailDisplayNameEdit.TabIndex = 70;
             // 
             // labelControl31
@@ -1100,9 +1237,11 @@
             this.MailFromEdit.Location = new System.Drawing.Point(108, 147);
             this.MailFromEdit.MenuManager = this.ribbon;
             this.MailFromEdit.Name = "MailFromEdit";
+            // 
+            // 
+            // 
             this.MailFromEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MailFromEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.MailFromEdit.Size = new System.Drawing.Size(100, 20);
             this.MailFromEdit.TabIndex = 68;
             // 
             // labelControl30
@@ -1118,10 +1257,12 @@
             this.MailPasswordEdit.Location = new System.Drawing.Point(108, 121);
             this.MailPasswordEdit.MenuManager = this.ribbon;
             this.MailPasswordEdit.Name = "MailPasswordEdit";
+            // 
+            // 
+            // 
             this.MailPasswordEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MailPasswordEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.MailPasswordEdit.Properties.PasswordChar = '*';
-            this.MailPasswordEdit.Size = new System.Drawing.Size(100, 20);
             this.MailPasswordEdit.TabIndex = 66;
             // 
             // labelControl29
@@ -1137,9 +1278,11 @@
             this.MailAccountEdit.Location = new System.Drawing.Point(108, 95);
             this.MailAccountEdit.MenuManager = this.ribbon;
             this.MailAccountEdit.Name = "MailAccountEdit";
+            // 
+            // 
+            // 
             this.MailAccountEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MailAccountEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.MailAccountEdit.Size = new System.Drawing.Size(100, 20);
             this.MailAccountEdit.TabIndex = 64;
             // 
             // labelControl28
@@ -1163,6 +1306,9 @@
             this.MailUseSSLEdit.Location = new System.Drawing.Point(108, 70);
             this.MailUseSSLEdit.MenuManager = this.ribbon;
             this.MailUseSSLEdit.Name = "MailUseSSLEdit";
+            // 
+            // 
+            // 
             this.MailUseSSLEdit.Properties.Caption = "";
             this.MailUseSSLEdit.Size = new System.Drawing.Size(100, 19);
             this.MailUseSSLEdit.TabIndex = 62;
@@ -1180,12 +1326,14 @@
             this.MailPortEdit.Location = new System.Drawing.Point(108, 44);
             this.MailPortEdit.MenuManager = this.ribbon;
             this.MailPortEdit.Name = "MailPortEdit";
+            // 
+            // 
+            // 
             this.MailPortEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MailPortEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.MailPortEdit.Properties.Mask.EditMask = "n0";
             this.MailPortEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.MailPortEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.MailPortEdit.Size = new System.Drawing.Size(100, 20);
             this.MailPortEdit.TabIndex = 33;
             // 
             // MailServerEdit
@@ -1193,9 +1341,11 @@
             this.MailServerEdit.Location = new System.Drawing.Point(108, 18);
             this.MailServerEdit.MenuManager = this.ribbon;
             this.MailServerEdit.Name = "MailServerEdit";
+            // 
+            // 
+            // 
             this.MailServerEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MailServerEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.MailServerEdit.Size = new System.Drawing.Size(100, 20);
             this.MailServerEdit.TabIndex = 31;
             // 
             // labelControl26
@@ -1236,6 +1386,7 @@
             this.xtraTabPage5.Controls.Add(this.WebCommandLinkEdit);
             this.xtraTabPage5.Controls.Add(this.WebPrefixEdit);
             this.xtraTabPage5.Controls.Add(this.labelControl42);
+            this.xtraTabPage5.Enabled = true;
             this.xtraTabPage5.Name = "xtraTabPage5";
             this.xtraTabPage5.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage5.Text = "Web Server";
@@ -1253,6 +1404,9 @@
             this.AllowBuyGammeGoldEdit.Location = new System.Drawing.Point(485, 200);
             this.AllowBuyGammeGoldEdit.MenuManager = this.ribbon;
             this.AllowBuyGammeGoldEdit.Name = "AllowBuyGammeGoldEdit";
+            // 
+            // 
+            // 
             this.AllowBuyGammeGoldEdit.Properties.Caption = "";
             this.AllowBuyGammeGoldEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowBuyGammeGoldEdit.TabIndex = 100;
@@ -1270,6 +1424,9 @@
             this.ProcessGameGoldEdit.Location = new System.Drawing.Point(485, 174);
             this.ProcessGameGoldEdit.MenuManager = this.ribbon;
             this.ProcessGameGoldEdit.Name = "ProcessGameGoldEdit";
+            // 
+            // 
+            // 
             this.ProcessGameGoldEdit.Properties.Caption = "";
             this.ProcessGameGoldEdit.Size = new System.Drawing.Size(100, 19);
             this.ProcessGameGoldEdit.TabIndex = 98;
@@ -1279,6 +1436,9 @@
             this.ReceiverEMailEdit.Location = new System.Drawing.Point(485, 122);
             this.ReceiverEMailEdit.MenuManager = this.ribbon;
             this.ReceiverEMailEdit.Name = "ReceiverEMailEdit";
+            // 
+            // 
+            // 
             this.ReceiverEMailEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.ReceiverEMailEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.ReceiverEMailEdit.Size = new System.Drawing.Size(210, 20);
@@ -1297,6 +1457,9 @@
             this.IPNPrefixEdit.Location = new System.Drawing.Point(485, 96);
             this.IPNPrefixEdit.MenuManager = this.ribbon;
             this.IPNPrefixEdit.Name = "IPNPrefixEdit";
+            // 
+            // 
+            // 
             this.IPNPrefixEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.IPNPrefixEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.IPNPrefixEdit.Size = new System.Drawing.Size(210, 20);
@@ -1315,6 +1478,9 @@
             this.BuyAddressEdit.Location = new System.Drawing.Point(485, 44);
             this.BuyAddressEdit.MenuManager = this.ribbon;
             this.BuyAddressEdit.Name = "BuyAddressEdit";
+            // 
+            // 
+            // 
             this.BuyAddressEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.BuyAddressEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.BuyAddressEdit.Size = new System.Drawing.Size(210, 20);
@@ -1333,6 +1499,9 @@
             this.BuyPrefixEdit.Location = new System.Drawing.Point(485, 18);
             this.BuyPrefixEdit.MenuManager = this.ribbon;
             this.BuyPrefixEdit.Name = "BuyPrefixEdit";
+            // 
+            // 
+            // 
             this.BuyPrefixEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.BuyPrefixEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.BuyPrefixEdit.Size = new System.Drawing.Size(210, 20);
@@ -1351,6 +1520,9 @@
             this.DeleteFailLinkEdit.Location = new System.Drawing.Point(149, 278);
             this.DeleteFailLinkEdit.MenuManager = this.ribbon;
             this.DeleteFailLinkEdit.Name = "DeleteFailLinkEdit";
+            // 
+            // 
+            // 
             this.DeleteFailLinkEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.DeleteFailLinkEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.DeleteFailLinkEdit.Size = new System.Drawing.Size(210, 20);
@@ -1369,6 +1541,9 @@
             this.DeleteSuccessLinkEdit.Location = new System.Drawing.Point(149, 252);
             this.DeleteSuccessLinkEdit.MenuManager = this.ribbon;
             this.DeleteSuccessLinkEdit.Name = "DeleteSuccessLinkEdit";
+            // 
+            // 
+            // 
             this.DeleteSuccessLinkEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.DeleteSuccessLinkEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.DeleteSuccessLinkEdit.Size = new System.Drawing.Size(210, 20);
@@ -1387,6 +1562,9 @@
             this.ResetFailLinkEdit.Location = new System.Drawing.Point(149, 200);
             this.ResetFailLinkEdit.MenuManager = this.ribbon;
             this.ResetFailLinkEdit.Name = "ResetFailLinkEdit";
+            // 
+            // 
+            // 
             this.ResetFailLinkEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.ResetFailLinkEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.ResetFailLinkEdit.Size = new System.Drawing.Size(210, 20);
@@ -1405,6 +1583,9 @@
             this.ResetSuccessLinkEdit.Location = new System.Drawing.Point(149, 174);
             this.ResetSuccessLinkEdit.MenuManager = this.ribbon;
             this.ResetSuccessLinkEdit.Name = "ResetSuccessLinkEdit";
+            // 
+            // 
+            // 
             this.ResetSuccessLinkEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.ResetSuccessLinkEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.ResetSuccessLinkEdit.Size = new System.Drawing.Size(210, 20);
@@ -1423,6 +1604,9 @@
             this.ActivationFailLinkEdit.Location = new System.Drawing.Point(149, 122);
             this.ActivationFailLinkEdit.MenuManager = this.ribbon;
             this.ActivationFailLinkEdit.Name = "ActivationFailLinkEdit";
+            // 
+            // 
+            // 
             this.ActivationFailLinkEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.ActivationFailLinkEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.ActivationFailLinkEdit.Size = new System.Drawing.Size(210, 20);
@@ -1441,6 +1625,9 @@
             this.ActivationSuccessLinkEdit.Location = new System.Drawing.Point(149, 96);
             this.ActivationSuccessLinkEdit.MenuManager = this.ribbon;
             this.ActivationSuccessLinkEdit.Name = "ActivationSuccessLinkEdit";
+            // 
+            // 
+            // 
             this.ActivationSuccessLinkEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.ActivationSuccessLinkEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.ActivationSuccessLinkEdit.Size = new System.Drawing.Size(210, 20);
@@ -1467,6 +1654,9 @@
             this.WebCommandLinkEdit.Location = new System.Drawing.Point(149, 44);
             this.WebCommandLinkEdit.MenuManager = this.ribbon;
             this.WebCommandLinkEdit.Name = "WebCommandLinkEdit";
+            // 
+            // 
+            // 
             this.WebCommandLinkEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.WebCommandLinkEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.WebCommandLinkEdit.Properties.Mask.EditMask = "n0";
@@ -1480,6 +1670,9 @@
             this.WebPrefixEdit.Location = new System.Drawing.Point(149, 18);
             this.WebPrefixEdit.MenuManager = this.ribbon;
             this.WebPrefixEdit.Name = "WebPrefixEdit";
+            // 
+            // 
+            // 
             this.WebPrefixEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.WebPrefixEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.WebPrefixEdit.Size = new System.Drawing.Size(210, 20);
@@ -1523,6 +1716,7 @@
             this.xtraTabPage6.Controls.Add(this.ShoutDelayEdit);
             this.xtraTabPage6.Controls.Add(this.MaxViewRangeEdit);
             this.xtraTabPage6.Controls.Add(this.labelControl23);
+            this.xtraTabPage6.Enabled = true;
             this.xtraTabPage6.Name = "xtraTabPage6";
             this.xtraTabPage6.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage6.Text = "Players";
@@ -1541,11 +1735,13 @@
             this.AutoReviveDelayEdit.Location = new System.Drawing.Point(117, 199);
             this.AutoReviveDelayEdit.MenuManager = this.ribbon;
             this.AutoReviveDelayEdit.Name = "AutoReviveDelayEdit";
+            // 
+            // 
+            // 
             this.AutoReviveDelayEdit.Properties.AllowEditDays = false;
             this.AutoReviveDelayEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.AutoReviveDelayEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.AutoReviveDelayEdit.Size = new System.Drawing.Size(100, 20);
             this.AutoReviveDelayEdit.TabIndex = 125;
             // 
             // PvPCurseRateEdit
@@ -1553,12 +1749,14 @@
             this.PvPCurseRateEdit.Location = new System.Drawing.Point(429, 148);
             this.PvPCurseRateEdit.MenuManager = this.ribbon;
             this.PvPCurseRateEdit.Name = "PvPCurseRateEdit";
+            // 
+            // 
+            // 
             this.PvPCurseRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.PvPCurseRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.PvPCurseRateEdit.Properties.Mask.EditMask = "n0";
             this.PvPCurseRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.PvPCurseRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.PvPCurseRateEdit.Size = new System.Drawing.Size(100, 20);
             this.PvPCurseRateEdit.TabIndex = 124;
             // 
             // labelControl83
@@ -1583,11 +1781,13 @@
             this.PvPCurseDurationEdit.Location = new System.Drawing.Point(429, 122);
             this.PvPCurseDurationEdit.MenuManager = this.ribbon;
             this.PvPCurseDurationEdit.Name = "PvPCurseDurationEdit";
+            // 
+            // 
+            // 
             this.PvPCurseDurationEdit.Properties.AllowEditDays = false;
             this.PvPCurseDurationEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.PvPCurseDurationEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.PvPCurseDurationEdit.Size = new System.Drawing.Size(100, 20);
             this.PvPCurseDurationEdit.TabIndex = 121;
             // 
             // RedPointEdit
@@ -1595,12 +1795,14 @@
             this.RedPointEdit.Location = new System.Drawing.Point(429, 96);
             this.RedPointEdit.MenuManager = this.ribbon;
             this.RedPointEdit.Name = "RedPointEdit";
+            // 
+            // 
+            // 
             this.RedPointEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.RedPointEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.RedPointEdit.Properties.Mask.EditMask = "n0";
             this.RedPointEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.RedPointEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.RedPointEdit.Size = new System.Drawing.Size(100, 20);
             this.RedPointEdit.TabIndex = 112;
             // 
             // labelControl77
@@ -1625,11 +1827,13 @@
             this.PKPointTickRateEdit.Location = new System.Drawing.Point(429, 70);
             this.PKPointTickRateEdit.MenuManager = this.ribbon;
             this.PKPointTickRateEdit.Name = "PKPointTickRateEdit";
+            // 
+            // 
+            // 
             this.PKPointTickRateEdit.Properties.AllowEditDays = false;
             this.PKPointTickRateEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.PKPointTickRateEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.PKPointTickRateEdit.Size = new System.Drawing.Size(100, 20);
             this.PKPointTickRateEdit.TabIndex = 109;
             // 
             // PKPointRateEdit
@@ -1637,12 +1841,14 @@
             this.PKPointRateEdit.Location = new System.Drawing.Point(429, 44);
             this.PKPointRateEdit.MenuManager = this.ribbon;
             this.PKPointRateEdit.Name = "PKPointRateEdit";
+            // 
+            // 
+            // 
             this.PKPointRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.PKPointRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.PKPointRateEdit.Properties.Mask.EditMask = "n0";
             this.PKPointRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.PKPointRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.PKPointRateEdit.Size = new System.Drawing.Size(100, 20);
             this.PKPointRateEdit.TabIndex = 108;
             // 
             // labelControl76
@@ -1667,11 +1873,13 @@
             this.BrownDurationEdit.Location = new System.Drawing.Point(429, 18);
             this.BrownDurationEdit.MenuManager = this.ribbon;
             this.BrownDurationEdit.Name = "BrownDurationEdit";
+            // 
+            // 
+            // 
             this.BrownDurationEdit.Properties.AllowEditDays = false;
             this.BrownDurationEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.BrownDurationEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.BrownDurationEdit.Size = new System.Drawing.Size(100, 20);
             this.BrownDurationEdit.TabIndex = 105;
             // 
             // labelControl24
@@ -1687,6 +1895,9 @@
             this.AllowObservationEdit.Location = new System.Drawing.Point(117, 174);
             this.AllowObservationEdit.MenuManager = this.ribbon;
             this.AllowObservationEdit.Name = "AllowObservationEdit";
+            // 
+            // 
+            // 
             this.AllowObservationEdit.Properties.Caption = "";
             this.AllowObservationEdit.Size = new System.Drawing.Size(100, 19);
             this.AllowObservationEdit.TabIndex = 82;
@@ -1696,12 +1907,14 @@
             this.SkillExpEdit.Location = new System.Drawing.Point(117, 148);
             this.SkillExpEdit.MenuManager = this.ribbon;
             this.SkillExpEdit.Name = "SkillExpEdit";
+            // 
+            // 
+            // 
             this.SkillExpEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.SkillExpEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.SkillExpEdit.Properties.Mask.EditMask = "n0";
             this.SkillExpEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.SkillExpEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.SkillExpEdit.Size = new System.Drawing.Size(100, 20);
             this.SkillExpEdit.TabIndex = 81;
             // 
             // labelControl53
@@ -1717,12 +1930,14 @@
             this.DayCycleCountEdit.Location = new System.Drawing.Point(117, 122);
             this.DayCycleCountEdit.MenuManager = this.ribbon;
             this.DayCycleCountEdit.Name = "DayCycleCountEdit";
+            // 
+            // 
+            // 
             this.DayCycleCountEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.DayCycleCountEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.DayCycleCountEdit.Properties.Mask.EditMask = "n0";
             this.DayCycleCountEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.DayCycleCountEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.DayCycleCountEdit.Size = new System.Drawing.Size(100, 20);
             this.DayCycleCountEdit.TabIndex = 79;
             // 
             // labelControl52
@@ -1738,12 +1953,14 @@
             this.MaxLevelEdit.Location = new System.Drawing.Point(117, 96);
             this.MaxLevelEdit.MenuManager = this.ribbon;
             this.MaxLevelEdit.Name = "MaxLevelEdit";
+            // 
+            // 
+            // 
             this.MaxLevelEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MaxLevelEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.MaxLevelEdit.Properties.Mask.EditMask = "n0";
             this.MaxLevelEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.MaxLevelEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.MaxLevelEdit.Size = new System.Drawing.Size(100, 20);
             this.MaxLevelEdit.TabIndex = 77;
             // 
             // labelControl46
@@ -1768,11 +1985,13 @@
             this.GlobalDelayEdit.Location = new System.Drawing.Point(117, 70);
             this.GlobalDelayEdit.MenuManager = this.ribbon;
             this.GlobalDelayEdit.Name = "GlobalDelayEdit";
+            // 
+            // 
+            // 
             this.GlobalDelayEdit.Properties.AllowEditDays = false;
             this.GlobalDelayEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.GlobalDelayEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.GlobalDelayEdit.Size = new System.Drawing.Size(100, 20);
             this.GlobalDelayEdit.TabIndex = 74;
             // 
             // labelControl44
@@ -1789,11 +2008,13 @@
             this.ShoutDelayEdit.Location = new System.Drawing.Point(117, 44);
             this.ShoutDelayEdit.MenuManager = this.ribbon;
             this.ShoutDelayEdit.Name = "ShoutDelayEdit";
+            // 
+            // 
+            // 
             this.ShoutDelayEdit.Properties.AllowEditDays = false;
             this.ShoutDelayEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.ShoutDelayEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.ShoutDelayEdit.Size = new System.Drawing.Size(100, 20);
             this.ShoutDelayEdit.TabIndex = 72;
             // 
             // MaxViewRangeEdit
@@ -1801,12 +2022,14 @@
             this.MaxViewRangeEdit.Location = new System.Drawing.Point(117, 18);
             this.MaxViewRangeEdit.MenuManager = this.ribbon;
             this.MaxViewRangeEdit.Name = "MaxViewRangeEdit";
+            // 
+            // 
+            // 
             this.MaxViewRangeEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MaxViewRangeEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.MaxViewRangeEdit.Properties.Mask.EditMask = "n0";
             this.MaxViewRangeEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.MaxViewRangeEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.MaxViewRangeEdit.Size = new System.Drawing.Size(100, 20);
             this.MaxViewRangeEdit.TabIndex = 35;
             // 
             // labelControl23
@@ -1827,6 +2050,7 @@
             this.xtraTabPage7.Controls.Add(this.HarvestDurationEdit);
             this.xtraTabPage7.Controls.Add(this.labelControl47);
             this.xtraTabPage7.Controls.Add(this.DeadDurationEdit);
+            this.xtraTabPage7.Enabled = true;
             this.xtraTabPage7.Name = "xtraTabPage7";
             this.xtraTabPage7.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage7.Text = "Monsters";
@@ -1836,6 +2060,9 @@
             this.LairRegionIndexEdit.Location = new System.Drawing.Point(142, 96);
             this.LairRegionIndexEdit.MenuManager = this.ribbon;
             this.LairRegionIndexEdit.Name = "LairRegionIndexEdit";
+            // 
+            // 
+            // 
             this.LairRegionIndexEdit.Properties.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
             this.LairRegionIndexEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
@@ -1862,6 +2089,9 @@
             this.MysteryShipRegionIndexEdit.Location = new System.Drawing.Point(142, 70);
             this.MysteryShipRegionIndexEdit.MenuManager = this.ribbon;
             this.MysteryShipRegionIndexEdit.Name = "MysteryShipRegionIndexEdit";
+            // 
+            // 
+            // 
             this.MysteryShipRegionIndexEdit.Properties.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
             this.MysteryShipRegionIndexEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
@@ -1897,11 +2127,13 @@
             this.HarvestDurationEdit.Location = new System.Drawing.Point(142, 44);
             this.HarvestDurationEdit.MenuManager = this.ribbon;
             this.HarvestDurationEdit.Name = "HarvestDurationEdit";
+            // 
+            // 
+            // 
             this.HarvestDurationEdit.Properties.AllowEditDays = false;
             this.HarvestDurationEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.HarvestDurationEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.HarvestDurationEdit.Size = new System.Drawing.Size(100, 20);
             this.HarvestDurationEdit.TabIndex = 103;
             // 
             // labelControl47
@@ -1918,11 +2150,13 @@
             this.DeadDurationEdit.Location = new System.Drawing.Point(142, 18);
             this.DeadDurationEdit.MenuManager = this.ribbon;
             this.DeadDurationEdit.Name = "DeadDurationEdit";
+            // 
+            // 
+            // 
             this.DeadDurationEdit.Properties.AllowEditDays = false;
             this.DeadDurationEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.DeadDurationEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.DeadDurationEdit.Size = new System.Drawing.Size(100, 20);
             this.DeadDurationEdit.TabIndex = 74;
             // 
             // xtraTabPage8
@@ -1951,6 +2185,7 @@
             this.xtraTabPage8.Controls.Add(this.labelControl49);
             this.xtraTabPage8.Controls.Add(this.labelControl48);
             this.xtraTabPage8.Controls.Add(this.DropDurationEdit);
+            this.xtraTabPage8.Enabled = true;
             this.xtraTabPage8.Name = "xtraTabPage8";
             this.xtraTabPage8.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage8.Text = "Items";
@@ -1960,12 +2195,14 @@
             this.StrengthLossRateEdit.Location = new System.Drawing.Point(342, 205);
             this.StrengthLossRateEdit.MenuManager = this.ribbon;
             this.StrengthLossRateEdit.Name = "StrengthLossRateEdit";
+            // 
+            // 
+            // 
             this.StrengthLossRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.StrengthLossRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.StrengthLossRateEdit.Properties.Mask.EditMask = "n0";
             this.StrengthLossRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.StrengthLossRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.StrengthLossRateEdit.Size = new System.Drawing.Size(100, 20);
             this.StrengthLossRateEdit.TabIndex = 100;
             // 
             // labelControl64
@@ -1981,12 +2218,14 @@
             this.StrengthAddRateEdit.Location = new System.Drawing.Point(342, 179);
             this.StrengthAddRateEdit.MenuManager = this.ribbon;
             this.StrengthAddRateEdit.Name = "StrengthAddRateEdit";
+            // 
+            // 
+            // 
             this.StrengthAddRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.StrengthAddRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.StrengthAddRateEdit.Properties.Mask.EditMask = "n0";
             this.StrengthAddRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.StrengthAddRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.StrengthAddRateEdit.Size = new System.Drawing.Size(100, 20);
             this.StrengthAddRateEdit.TabIndex = 98;
             // 
             // labelControl65
@@ -2002,12 +2241,14 @@
             this.MaxStrengthEdit.Location = new System.Drawing.Point(342, 153);
             this.MaxStrengthEdit.MenuManager = this.ribbon;
             this.MaxStrengthEdit.Name = "MaxStrengthEdit";
+            // 
+            // 
+            // 
             this.MaxStrengthEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MaxStrengthEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.MaxStrengthEdit.Properties.Mask.EditMask = "n0";
             this.MaxStrengthEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.MaxStrengthEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.MaxStrengthEdit.Size = new System.Drawing.Size(100, 20);
             this.MaxStrengthEdit.TabIndex = 96;
             // 
             // labelControl66
@@ -2023,12 +2264,14 @@
             this.CurseRateEdit.Location = new System.Drawing.Point(121, 231);
             this.CurseRateEdit.MenuManager = this.ribbon;
             this.CurseRateEdit.Name = "CurseRateEdit";
+            // 
+            // 
+            // 
             this.CurseRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.CurseRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.CurseRateEdit.Properties.Mask.EditMask = "n0";
             this.CurseRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.CurseRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.CurseRateEdit.Size = new System.Drawing.Size(100, 20);
             this.CurseRateEdit.TabIndex = 94;
             // 
             // labelControl63
@@ -2044,12 +2287,14 @@
             this.MaxCurseEdit.Location = new System.Drawing.Point(121, 205);
             this.MaxCurseEdit.MenuManager = this.ribbon;
             this.MaxCurseEdit.Name = "MaxCurseEdit";
+            // 
+            // 
+            // 
             this.MaxCurseEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MaxCurseEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.MaxCurseEdit.Properties.Mask.EditMask = "n0";
             this.MaxCurseEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.MaxCurseEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.MaxCurseEdit.Size = new System.Drawing.Size(100, 20);
             this.MaxCurseEdit.TabIndex = 92;
             // 
             // labelControl62
@@ -2065,12 +2310,14 @@
             this.LuckRateEdit.Location = new System.Drawing.Point(121, 179);
             this.LuckRateEdit.MenuManager = this.ribbon;
             this.LuckRateEdit.Name = "LuckRateEdit";
+            // 
+            // 
+            // 
             this.LuckRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.LuckRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LuckRateEdit.Properties.Mask.EditMask = "n0";
             this.LuckRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.LuckRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.LuckRateEdit.Size = new System.Drawing.Size(100, 20);
             this.LuckRateEdit.TabIndex = 90;
             // 
             // labelControl61
@@ -2086,12 +2333,14 @@
             this.MaxLuckEdit.Location = new System.Drawing.Point(121, 153);
             this.MaxLuckEdit.MenuManager = this.ribbon;
             this.MaxLuckEdit.Name = "MaxLuckEdit";
+            // 
+            // 
+            // 
             this.MaxLuckEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.MaxLuckEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.MaxLuckEdit.Properties.Mask.EditMask = "n0";
             this.MaxLuckEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.MaxLuckEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.MaxLuckEdit.Size = new System.Drawing.Size(100, 20);
             this.MaxLuckEdit.TabIndex = 88;
             // 
             // labelControl60
@@ -2116,11 +2365,13 @@
             this.SpecialRepairDelayEdit.Location = new System.Drawing.Point(121, 127);
             this.SpecialRepairDelayEdit.MenuManager = this.ribbon;
             this.SpecialRepairDelayEdit.Name = "SpecialRepairDelayEdit";
+            // 
+            // 
+            // 
             this.SpecialRepairDelayEdit.Properties.AllowEditDays = false;
             this.SpecialRepairDelayEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.SpecialRepairDelayEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.SpecialRepairDelayEdit.Size = new System.Drawing.Size(100, 20);
             this.SpecialRepairDelayEdit.TabIndex = 85;
             // 
             // TorchRateEdit
@@ -2128,12 +2379,14 @@
             this.TorchRateEdit.Location = new System.Drawing.Point(121, 101);
             this.TorchRateEdit.MenuManager = this.ribbon;
             this.TorchRateEdit.Name = "TorchRateEdit";
+            // 
+            // 
+            // 
             this.TorchRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.TorchRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.TorchRateEdit.Properties.Mask.EditMask = "n0";
             this.TorchRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.TorchRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.TorchRateEdit.Size = new System.Drawing.Size(100, 20);
             this.TorchRateEdit.TabIndex = 84;
             // 
             // labelControl54
@@ -2149,12 +2402,14 @@
             this.DropLayersEdit.Location = new System.Drawing.Point(121, 75);
             this.DropLayersEdit.MenuManager = this.ribbon;
             this.DropLayersEdit.Name = "DropLayersEdit";
+            // 
+            // 
+            // 
             this.DropLayersEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.DropLayersEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.DropLayersEdit.Properties.Mask.EditMask = "n0";
             this.DropLayersEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.DropLayersEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.DropLayersEdit.Size = new System.Drawing.Size(100, 20);
             this.DropLayersEdit.TabIndex = 81;
             // 
             // labelControl50
@@ -2170,12 +2425,14 @@
             this.DropDistanceEdit.Location = new System.Drawing.Point(121, 49);
             this.DropDistanceEdit.MenuManager = this.ribbon;
             this.DropDistanceEdit.Name = "DropDistanceEdit";
+            // 
+            // 
+            // 
             this.DropDistanceEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.DropDistanceEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.DropDistanceEdit.Properties.Mask.EditMask = "n0";
             this.DropDistanceEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.DropDistanceEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.DropDistanceEdit.Size = new System.Drawing.Size(100, 20);
             this.DropDistanceEdit.TabIndex = 79;
             // 
             // labelControl49
@@ -2200,11 +2457,13 @@
             this.DropDurationEdit.Location = new System.Drawing.Point(121, 23);
             this.DropDurationEdit.MenuManager = this.ribbon;
             this.DropDurationEdit.Name = "DropDurationEdit";
+            // 
+            // 
+            // 
             this.DropDurationEdit.Properties.AllowEditDays = false;
             this.DropDurationEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.DropDurationEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.DropDurationEdit.Size = new System.Drawing.Size(100, 20);
             this.DropDurationEdit.TabIndex = 76;
             // 
             // xtraTabPage9
@@ -2219,6 +2478,7 @@
             this.xtraTabPage9.Controls.Add(this.labelControl56);
             this.xtraTabPage9.Controls.Add(this.ExperienceRateEdit);
             this.xtraTabPage9.Controls.Add(this.labelControl55);
+            this.xtraTabPage9.Enabled = true;
             this.xtraTabPage9.Name = "xtraTabPage9";
             this.xtraTabPage9.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage9.Text = "Rates";
@@ -2228,12 +2488,14 @@
             this.CompanionRateEdit.Location = new System.Drawing.Point(108, 125);
             this.CompanionRateEdit.MenuManager = this.ribbon;
             this.CompanionRateEdit.Name = "CompanionRateEdit";
+            // 
+            // 
+            // 
             this.CompanionRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.CompanionRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.CompanionRateEdit.Properties.Mask.EditMask = "n0";
             this.CompanionRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.CompanionRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.CompanionRateEdit.Size = new System.Drawing.Size(100, 20);
             this.CompanionRateEdit.TabIndex = 89;
             // 
             // labelControl68
@@ -2249,12 +2511,14 @@
             this.SkillRateEdit.Location = new System.Drawing.Point(108, 99);
             this.SkillRateEdit.MenuManager = this.ribbon;
             this.SkillRateEdit.Name = "SkillRateEdit";
+            // 
+            // 
+            // 
             this.SkillRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.SkillRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.SkillRateEdit.Properties.Mask.EditMask = "n0";
             this.SkillRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.SkillRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.SkillRateEdit.Size = new System.Drawing.Size(100, 20);
             this.SkillRateEdit.TabIndex = 87;
             // 
             // labelControl58
@@ -2270,12 +2534,14 @@
             this.GoldRateEdit.Location = new System.Drawing.Point(108, 73);
             this.GoldRateEdit.MenuManager = this.ribbon;
             this.GoldRateEdit.Name = "GoldRateEdit";
+            // 
+            // 
+            // 
             this.GoldRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.GoldRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.GoldRateEdit.Properties.Mask.EditMask = "n0";
             this.GoldRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.GoldRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.GoldRateEdit.Size = new System.Drawing.Size(100, 20);
             this.GoldRateEdit.TabIndex = 85;
             // 
             // labelControl57
@@ -2291,12 +2557,14 @@
             this.DropRateEdit.Location = new System.Drawing.Point(108, 47);
             this.DropRateEdit.MenuManager = this.ribbon;
             this.DropRateEdit.Name = "DropRateEdit";
+            // 
+            // 
+            // 
             this.DropRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.DropRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.DropRateEdit.Properties.Mask.EditMask = "n0";
             this.DropRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.DropRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.DropRateEdit.Size = new System.Drawing.Size(100, 20);
             this.DropRateEdit.TabIndex = 83;
             // 
             // labelControl56
@@ -2312,12 +2580,14 @@
             this.ExperienceRateEdit.Location = new System.Drawing.Point(108, 21);
             this.ExperienceRateEdit.MenuManager = this.ribbon;
             this.ExperienceRateEdit.Name = "ExperienceRateEdit";
+            // 
+            // 
+            // 
             this.ExperienceRateEdit.Properties.Appearance.Options.UseTextOptions = true;
             this.ExperienceRateEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.ExperienceRateEdit.Properties.Mask.EditMask = "n0";
             this.ExperienceRateEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.ExperienceRateEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.ExperienceRateEdit.Size = new System.Drawing.Size(100, 20);
             this.ExperienceRateEdit.TabIndex = 81;
             // 
             // labelControl55
@@ -2337,48 +2607,6 @@
             // 
             this.FolderDialog.SelectedPath = ".\\";
             // 
-            // PacketBanTimeEdit
-            // 
-            this.PacketBanTimeEdit.EditValue = System.TimeSpan.Parse("00:00:00");
-            this.PacketBanTimeEdit.Location = new System.Drawing.Point(108, 174);
-            this.PacketBanTimeEdit.MenuManager = this.ribbon;
-            this.PacketBanTimeEdit.Name = "PacketBanTimeEdit";
-            this.PacketBanTimeEdit.Properties.AllowEditDays = false;
-            this.PacketBanTimeEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.PacketBanTimeEdit.Properties.Mask.EditMask = "HH:mm:ss";
-            this.PacketBanTimeEdit.Size = new System.Drawing.Size(100, 20);
-            this.PacketBanTimeEdit.TabIndex = 40;
-            // 
-            // labelControl86
-            // 
-            this.labelControl86.Location = new System.Drawing.Point(20, 177);
-            this.labelControl86.Name = "labelControl86";
-            this.labelControl86.Size = new System.Drawing.Size(82, 13);
-            this.labelControl86.TabIndex = 39;
-            this.labelControl86.Text = "Packet Ban Time:";
-            // 
-            // labelControl87
-            // 
-            this.labelControl87.Location = new System.Drawing.Point(38, 151);
-            this.labelControl87.Name = "labelControl87";
-            this.labelControl87.Size = new System.Drawing.Size(64, 13);
-            this.labelControl87.TabIndex = 38;
-            this.labelControl87.Text = "Max Packets:";
-            // 
-            // MaxPacketsEdit
-            // 
-            this.MaxPacketEdit.Location = new System.Drawing.Point(108, 148);
-            this.MaxPacketEdit.MenuManager = this.ribbon;
-            this.MaxPacketEdit.Name = "MaxPacketEdit";
-            this.MaxPacketEdit.Properties.Appearance.Options.UseTextOptions = true;
-            this.MaxPacketEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.MaxPacketEdit.Properties.Mask.EditMask = "n0";
-            this.MaxPacketEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
-            this.MaxPacketEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
-            this.MaxPacketEdit.Size = new System.Drawing.Size(100, 20);
-            this.MaxPacketEdit.TabIndex = 37;
-            // 
             // ConfigView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2389,18 +2617,17 @@
             this.Name = "ConfigView";
             this.Ribbon = this.ribbon;
             this.Text = "Config View";
+            this.Load += new System.EventHandler(this.ConfigView_Load);
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).EndInit();
             this.xtraTabControl1.ResumeLayout(false);
-            this.xtraTabPage1.ResumeLayout(false);
-            this.xtraTabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PacketBanTimeEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MaxPacketEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.UserCountPortEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PingDelayEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TimeOutEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PortEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.IPAddressEdit.Properties)).EndInit();
-            this.xtraTabPage2.ResumeLayout(false);
-            this.xtraTabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AllowRequestActivationEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AllowWebActivationEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AllowManualActivationEdit.Properties)).EndInit();
@@ -2419,8 +2646,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.AllowLoginEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AllowChangePasswordEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AllowNewAccountEdit.Properties)).EndInit();
-            this.xtraTabPage3.ResumeLayout(false);
-            this.xtraTabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RabbitEventEndEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ReleaseDateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ClientPathEdit.Properties)).EndInit();
@@ -2429,8 +2654,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.DBSaveDelayEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VersionPathEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CheckVersionEdit.Properties)).EndInit();
-            this.xtraTabPage4.ResumeLayout(false);
-            this.xtraTabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MailDisplayNameEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailFromEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailPasswordEdit.Properties)).EndInit();
@@ -2438,8 +2661,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.MailUseSSLEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailPortEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailServerEdit.Properties)).EndInit();
-            this.xtraTabPage5.ResumeLayout(false);
-            this.xtraTabPage5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AllowBuyGammeGoldEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ProcessGameGoldEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ReceiverEMailEdit.Properties)).EndInit();
@@ -2454,8 +2675,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.ActivationSuccessLinkEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.WebCommandLinkEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.WebPrefixEdit.Properties)).EndInit();
-            this.xtraTabPage6.ResumeLayout(false);
-            this.xtraTabPage6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AutoReviveDelayEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PvPCurseRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PvPCurseDurationEdit.Properties)).EndInit();
@@ -2470,14 +2689,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.GlobalDelayEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ShoutDelayEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxViewRangeEdit.Properties)).EndInit();
-            this.xtraTabPage7.ResumeLayout(false);
-            this.xtraTabPage7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LairRegionIndexEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MysteryShipRegionIndexEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.HarvestDurationEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DeadDurationEdit.Properties)).EndInit();
-            this.xtraTabPage8.ResumeLayout(false);
-            this.xtraTabPage8.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StrengthLossRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StrengthAddRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxStrengthEdit.Properties)).EndInit();
@@ -2490,15 +2705,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.DropLayersEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DropDistanceEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DropDurationEdit.Properties)).EndInit();
-            this.xtraTabPage9.ResumeLayout(false);
-            this.xtraTabPage9.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SkillRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GoldRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DropRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ExperienceRateEdit.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PacketBanTimeEdit.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MaxPacketEdit.Properties)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2699,6 +2910,7 @@
         private DevExpress.XtraEditors.TextEdit RabbitEventEndEdit;
         private DevExpress.XtraEditors.LabelControl labelControl85;
         private DevExpress.XtraEditors.TimeSpanEdit PacketBanTimeEdit;
+        private DevExpress.XtraEditors.SimpleButton SyncronizeButton;
         private DevExpress.XtraEditors.LabelControl labelControl86;
         private DevExpress.XtraEditors.LabelControl labelControl87;
         private DevExpress.XtraEditors.TextEdit MaxPacketEdit;

@@ -84,6 +84,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
@@ -109,6 +110,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SMain.cs">
@@ -184,6 +186,12 @@
     </Compile>
     <Compile Include="Views\DiagnosticView.designer.cs">
       <DependentUpon>DiagnosticView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SyncForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\SyncForm.Designer.cs">
+      <DependentUpon>SyncForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\WeaponCraftStatInfoView.cs">
       <SubType>Form</SubType>
@@ -353,6 +361,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\DiagnosticView.resx">
       <DependentUpon>DiagnosticView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SyncForm.resx">
+      <DependentUpon>SyncForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\WeaponCraftStatInfoView.resx">
       <DependentUpon>WeaponCraftStatInfoView.cs</DependentUpon>
