@@ -66,10 +66,10 @@ namespace Server.Models
 
         public bool CanPickUpItem(PlayerObject ob)
         {
-            var owner = Account.Connection?.Player;
-
             if (Account != null && Account != ob.Character.Account)
             {
+                var owner = Account.Connection?.Player;
+
                 var spawnElapsed = (int)Math.Floor((SEnvir.Now - SpawnTime).TotalMinutes);
 
                 if (spawnElapsed >= 10)
