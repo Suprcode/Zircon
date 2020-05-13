@@ -16,6 +16,8 @@ namespace Server.Envir
         public static ushort UserCountPort { get; set; } = 3000;
         public static int MaxPacket { get; set; } = 50;
         public static TimeSpan PacketBanTime { get; set; } = TimeSpan.FromMinutes(5);
+        public static string AllowedIPSync { get; set; }
+
 
         [ConfigSection("System")]
         public static bool CheckVersion { get; set; } = true;
