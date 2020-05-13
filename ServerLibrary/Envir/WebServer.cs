@@ -199,7 +199,12 @@ namespace Server.Envir
                 SEnvir.Log($"Starting remote syncronization...");
 
                 var buffer = new byte[context.Request.ContentLength64];
-                context.Request.InputStream.Read(buffer, 0, buffer.Length);
+                var offset = 0;
+                var length = 0;
+                var bufferSize = 1024 * 16;
+
+                while ((length = context.Request.InputStream.Read(buffer, offset, offset + bufferSize > buffer.Length ? buffer.Length - offset : bufferSize)) > 0)
+                    offset += length;
 
                 if (SEnvir.Session.BackUp && !Directory.Exists(SEnvir.Session.SystemBackupPath))
                     Directory.CreateDirectory(SEnvir.Session.SystemBackupPath);
