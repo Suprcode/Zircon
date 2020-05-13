@@ -68,21 +68,24 @@ namespace Server.Models
         {
             if (Account != null && Account != ob.Character.Account)
             {
-                var isSameGuild = Account.GuildMember != null
-                    && ob.Character.Account.GuildMember != null
-                    && Account.GuildMember.Guild == ob.Character.Account.GuildMember.Guild;
+                if (Config.DropVisibleOtherPlayers)
+                {
+                    var isSameGuild = Account.GuildMember != null
+                        && ob.Character.Account.GuildMember != null
+                        && Account.GuildMember.Guild == ob.Character.Account.GuildMember.Guild;
 
-                var isSameGroup = ob.GroupMembers != null
-                    && Account.Connection?.Player.GroupMembers == ob.GroupMembers;
+                    var isSameGroup = ob.GroupMembers != null
+                        && Account.Connection?.Player.GroupMembers == ob.GroupMembers;
 
-                var spawnElapsed = (int)Math.Floor((SEnvir.Now - SpawnTime).TotalMinutes);
+                    var spawnElapsed = (int)Math.Floor((SEnvir.Now - SpawnTime).TotalMinutes);
 
-                if (spawnElapsed >= 10)
-                    return true;
-                else if (isSameGuild && spawnElapsed >= 5)
-                    return true;
-                else if (isSameGroup && spawnElapsed >= 2)
-                    return true;
+                    if (spawnElapsed >= 10)
+                        return true;
+                    else if (isSameGuild && spawnElapsed >= 5)
+                        return true;
+                    else if (isSameGroup && spawnElapsed >= 2)
+                        return true;
+                }
 
                 return false;
             }
