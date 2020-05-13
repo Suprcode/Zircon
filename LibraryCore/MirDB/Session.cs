@@ -14,28 +14,28 @@ namespace MirDB
 {
     public sealed class Session
     {
-        private const string Extention = @".db";
-        private const string TempExtention = @".TMP";
-        private const string CompressExtention = @".gz";
+        public const string Extension = @".db";
+        public const string TempExtension = @".TMP";
+        public const string CompressExtension = @".gz";
 
-        private string Root { get; }
-        internal SessionMode Mode { get; }
+        public string Root { get; }
+        public SessionMode Mode { get; }
 
         public bool BackUp { get; set; } = true;
         public int BackUpDelay { get; set; }
         private string BackupRoot { get; }
 
 
-        private string SystemPath => Root + "System" + Extention;
-        private string SystemBackupPath => BackupRoot + @"System\";
-        private byte[] SystemHeader;
+        public string SystemPath => Root + "System" + Extension;
+        public string SystemBackupPath => BackupRoot + @"System\";
+        public byte[] SystemHeader;
 
-        private string UsersPath => Root + "Users" + Extention;
-        private string UsersBackupPath => BackupRoot + @"Users\";
+        public string UsersPath => Root + "Users" + Extension;
+        public string UsersBackupPath => BackupRoot + @"Users\";
 
         public Assembly[] Assemblies { get; private set; }
 
-        private byte[] UsersHeader;
+        public byte[] UsersHeader;
 
         //internal ConcurrentQueue<DBObject> KeyedObjects = new ConcurrentQueue<DBObject>();
         internal Dictionary<Type, DBRelationship> Relationships = new Dictionary<Type, DBRelationship>();
@@ -226,7 +226,7 @@ namespace MirDB
             if (!Directory.Exists(Root))
                 Directory.CreateDirectory(Root);
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create(SystemPath + TempExtention)))
+            using (BinaryWriter writer = new BinaryWriter(File.Create(SystemPath + TempExtension)))
             {
                 writer.Write(SystemHeader);
 
@@ -248,7 +248,7 @@ namespace MirDB
                 if (BackUp)
                 {
                     using (FileStream sourceStream = File.OpenRead(SystemPath))
-                    using (FileStream destStream = File.Create(SystemBackupPath + "System " + ToBackUpFileName(DateTime.UtcNow) + Extention + CompressExtention))
+                    using (FileStream destStream = File.Create(SystemBackupPath + "System " + ToBackUpFileName(DateTime.UtcNow) + Extension + CompressExtension))
                     using (GZipStream compress = new GZipStream(destStream, CompressionMode.Compress))
                         sourceStream.CopyTo(compress);
                 }
@@ -256,7 +256,7 @@ namespace MirDB
                 File.Delete(SystemPath);
             }
 
-            File.Move(SystemPath + TempExtention, SystemPath);
+            File.Move(SystemPath + TempExtension, SystemPath);
         }
         private void SaveUsers()
         {
@@ -265,7 +265,7 @@ namespace MirDB
             if (!Directory.Exists(Root))
                 Directory.CreateDirectory(Root);
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create(UsersPath + TempExtention)))
+            using (BinaryWriter writer = new BinaryWriter(File.Create(UsersPath + TempExtension)))
             {
                 writer.Write(UsersHeader);
 
@@ -287,7 +287,7 @@ namespace MirDB
                 if (BackUp)
                 {
                     using (FileStream sourceStream = File.OpenRead(UsersPath))
-                    using (FileStream destStream = File.Create(UsersBackupPath + "Users " + ToBackUpFileName(DateTime.UtcNow) + Extention + CompressExtention))
+                    using (FileStream destStream = File.Create(UsersBackupPath + "Users " + ToBackUpFileName(DateTime.UtcNow) + Extension + CompressExtension))
                     using (GZipStream compress = new GZipStream(destStream, CompressionMode.Compress))
                         sourceStream.CopyTo(compress);
                 }
@@ -295,7 +295,7 @@ namespace MirDB
                 File.Delete(UsersPath);
             }
 
-            File.Move(UsersPath + TempExtention, UsersPath);
+            File.Move(UsersPath + TempExtension, UsersPath);
         }
 
         public DBCollection<T> GetCollection<T>() where T : DBObject, new()
@@ -324,7 +324,7 @@ namespace MirDB
         {
             return $"{time.Year:0000}-{time.Month:00}-{time.Day:00} {time.Hour:00}-{time.Minute:00}";
         }
-        private string ToBackUpFileName(DateTime time)
+        public string ToBackUpFileName(DateTime time)
         {
             if (BackUpDelay == 0)
                 return ToFileName(time);

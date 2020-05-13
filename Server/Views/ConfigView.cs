@@ -15,9 +15,15 @@ namespace Server.Views
         public ConfigView()
         {
             InitializeComponent();
-
+            this.SyncronizeButton.Click += SyncronizeButton_Click;
             MysteryShipRegionIndexEdit.Properties.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             LairRegionIndexEdit.Properties.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
+        }
+
+        private void SyncronizeButton_Click(object sender, EventArgs e)
+        {
+            var form = new SyncForm();
+            form.ShowDialog();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -43,6 +49,7 @@ namespace Server.Views
             UserCountPortEdit.EditValue = Config.UserCountPort;
             MaxPacketEdit.EditValue = Config.MaxPacket;
             PacketBanTimeEdit.EditValue = Config.PacketBanTime;
+
 
             //Control
             AllowNewAccountEdit.EditValue = Config.AllowNewAccount;
@@ -149,9 +156,9 @@ namespace Server.Views
         public void SaveSettings()
         {
             //Network
-            Config.IPAddress = (string) IPAddressEdit.EditValue;
-            Config.Port = (ushort) PortEdit.EditValue;
-            Config.TimeOut = (TimeSpan) TimeOutEdit.EditValue;
+            Config.IPAddress = (string)IPAddressEdit.EditValue;
+            Config.Port = (ushort)PortEdit.EditValue;
+            Config.TimeOut = (TimeSpan)TimeOutEdit.EditValue;
             Config.PingDelay = (TimeSpan)PingDelayEdit.EditValue;
             Config.UserCountPort = (ushort)UserCountPortEdit.EditValue;
             Config.MaxPacket = (int)MaxPacketEdit.EditValue;
@@ -159,24 +166,24 @@ namespace Server.Views
 
 
             //Control
-            Config.AllowNewAccount = (bool) AllowNewAccountEdit.EditValue;
-            Config.AllowChangePassword = (bool) AllowChangePasswordEdit.EditValue;
-            Config.AllowLogin = (bool) AllowLoginEdit.EditValue;
-            Config.AllowNewCharacter = (bool) AllowNewCharacterEdit.EditValue;
-            Config.AllowDeleteCharacter = (bool) AllowDeleteCharacterEdit.EditValue;
-            Config.AllowStartGame = (bool) AllowStartGameEdit.EditValue;
-            Config.AllowWarrior = (bool) AllowWarriorEdit.EditValue;
-            Config.AllowWizard = (bool) AllowWizardEdit.EditValue;
-            Config.AllowTaoist = (bool) AllowTaoistEdit.EditValue;
-            Config.AllowAssassin = (bool) AllowAssassinEdit.EditValue;
-            Config.RelogDelay = (TimeSpan) RelogDelayEdit.EditValue;
-            Config.AllowRequestPasswordReset = (bool) AllowRequestPasswordResetEdit.EditValue;
-            Config.AllowWebResetPassword = (bool) AllowWebResetPasswordEdit.EditValue;
-            Config.AllowManualResetPassword = (bool) AllowManualResetPasswordEdit.EditValue;
-            Config.AllowDeleteAccount = (bool) AllowDeleteAccountEdit.EditValue;
-            Config.AllowManualActivation = (bool) AllowManualActivationEdit.EditValue;
-            Config.AllowWebActivation = (bool) AllowWebActivationEdit.EditValue;
-            Config.AllowRequestActivation = (bool) AllowRequestActivationEdit.EditValue;
+            Config.AllowNewAccount = (bool)AllowNewAccountEdit.EditValue;
+            Config.AllowChangePassword = (bool)AllowChangePasswordEdit.EditValue;
+            Config.AllowLogin = (bool)AllowLoginEdit.EditValue;
+            Config.AllowNewCharacter = (bool)AllowNewCharacterEdit.EditValue;
+            Config.AllowDeleteCharacter = (bool)AllowDeleteCharacterEdit.EditValue;
+            Config.AllowStartGame = (bool)AllowStartGameEdit.EditValue;
+            Config.AllowWarrior = (bool)AllowWarriorEdit.EditValue;
+            Config.AllowWizard = (bool)AllowWizardEdit.EditValue;
+            Config.AllowTaoist = (bool)AllowTaoistEdit.EditValue;
+            Config.AllowAssassin = (bool)AllowAssassinEdit.EditValue;
+            Config.RelogDelay = (TimeSpan)RelogDelayEdit.EditValue;
+            Config.AllowRequestPasswordReset = (bool)AllowRequestPasswordResetEdit.EditValue;
+            Config.AllowWebResetPassword = (bool)AllowWebResetPasswordEdit.EditValue;
+            Config.AllowManualResetPassword = (bool)AllowManualResetPasswordEdit.EditValue;
+            Config.AllowDeleteAccount = (bool)AllowDeleteAccountEdit.EditValue;
+            Config.AllowManualActivation = (bool)AllowManualActivationEdit.EditValue;
+            Config.AllowWebActivation = (bool)AllowWebActivationEdit.EditValue;
+            Config.AllowRequestActivation = (bool)AllowRequestActivationEdit.EditValue;
 
             //System
             Config.CheckVersion = (bool)CheckVersionEdit.EditValue;
@@ -189,16 +196,16 @@ namespace Server.Views
             Config.EasterEventEnd = (DateTime)RabbitEventEndEdit.EditValue;
 
             //Mail
-            Config.MailServer = (string) MailServerEdit.EditValue;
-            Config.MailPort = (int) MailPortEdit.EditValue;
-            Config.MailUseSSL = (bool) MailUseSSLEdit.EditValue;
-            Config.MailAccount = (string) MailAccountEdit.EditValue;
-            Config.MailPassword = (string) MailPasswordEdit.EditValue;
-            Config.MailFrom = (string) MailFromEdit.EditValue;
-            Config.MailDisplayName = (string) MailDisplayNameEdit.EditValue;
+            Config.MailServer = (string)MailServerEdit.EditValue;
+            Config.MailPort = (int)MailPortEdit.EditValue;
+            Config.MailUseSSL = (bool)MailUseSSLEdit.EditValue;
+            Config.MailAccount = (string)MailAccountEdit.EditValue;
+            Config.MailPassword = (string)MailPasswordEdit.EditValue;
+            Config.MailFrom = (string)MailFromEdit.EditValue;
+            Config.MailDisplayName = (string)MailDisplayNameEdit.EditValue;
 
             //WebServer
-            Config.WebPrefix = (string) WebPrefixEdit.EditValue;
+            Config.WebPrefix = (string)WebPrefixEdit.EditValue;
             Config.WebCommandLink = (string)WebCommandLinkEdit.EditValue;
             Config.ActivationSuccessLink = (string)ActivationSuccessLinkEdit.EditValue;
             Config.ActivationFailLink = (string)ActivationFailLinkEdit.EditValue;
@@ -222,7 +229,7 @@ namespace Server.Views
             Config.MaxLevel = (int)MaxLevelEdit.EditValue;
             Config.DayCycleCount = (int)DayCycleCountEdit.EditValue;
             Config.SkillExp = (int)SkillExpEdit.EditValue;
-            Config.AllowObservation = (bool) AllowObservationEdit.EditValue;
+            Config.AllowObservation = (bool)AllowObservationEdit.EditValue;
             Config.BrownDuration = (TimeSpan)BrownDurationEdit.EditValue;
             Config.PKPointRate = (int)PKPointRateEdit.EditValue;
             Config.PKPointTickRate = (TimeSpan)PKPointTickRateEdit.EditValue;
@@ -310,6 +317,11 @@ namespace Server.Views
             if (FolderDialog.ShowDialog() != DialogResult.OK) return;
 
             ClientPathEdit.EditValue = FolderDialog.SelectedPath;
+        }
+
+        private void ConfigView_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

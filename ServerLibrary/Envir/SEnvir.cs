@@ -212,308 +212,10 @@ namespace Server.Envir
 
         #endregion
 
-        #region WebServer
-        private static HttpListener WebListener;
-        private const string ActivationCommand = "Activation", ResetCommand = "Reset", DeleteCommand = "Delete";
-        private const string ActivationKey = "ActivationKey", ResetKey = "ResetKey", DeleteKey = "DeleteKey";
-
-        private const string Completed = "Completed";
-        private const string Currency = "GBP";
-
-        private static Dictionary<decimal, int> GoldTable = new Dictionary<decimal, int>
-        {
-            [5M] = 500,
-            [10M] = 1030,
-            [15M] = 1590,
-            [20M] = 2180,
-            [30M] = 3360,
-            [50M] = 5750,
-            [100M] = 12000,
-        };
-
-        public const string VerifiedPath = @".\Database\Store\Verified\",
-            InvalidPath = @".\Database\Store\Invalid\",
-            CompletePath = @".\Database\Store\Complete\";
-
-        private static HttpListener BuyListener, IPNListener;
-        public static ConcurrentQueue<IPNMessage> Messages = new ConcurrentQueue<IPNMessage>();
-        public static List<IPNMessage> PaymentList = new List<IPNMessage>(), HandledPayments = new List<IPNMessage>();
-
-        public static void StartWebServer(bool log = true)
-        {
-            try
-            {
-                WebCommandQueue = new ConcurrentQueue<WebCommand>();
-
-                WebListener = new HttpListener();
-                WebListener.Prefixes.Add(Config.WebPrefix);
-
-                WebListener.Start();
-                WebListener.BeginGetContext(WebConnection, null);
-
-                BuyListener = new HttpListener();
-                BuyListener.Prefixes.Add(Config.BuyPrefix);
-
-                IPNListener = new HttpListener();
-                IPNListener.Prefixes.Add(Config.IPNPrefix);
-
-                BuyListener.Start();
-                BuyListener.BeginGetContext(BuyConnection, null);
-
-                IPNListener.Start();
-                IPNListener.BeginGetContext(IPNConnection, null);
-
-
-
-                WebServerStarted = true;
-
-                if (log) Log("Web Server Started.");
-            }
-            catch (Exception ex)
-            {
-                WebServerStarted = false;
-                Log(ex.ToString());
-
-                if (WebListener != null && WebListener.IsListening)
-                    WebListener?.Stop();
-                WebListener = null;
-
-                if (BuyListener != null && BuyListener.IsListening)
-                    BuyListener?.Stop();
-                BuyListener = null;
-
-                if (IPNListener != null && IPNListener.IsListening)
-                    IPNListener?.Stop();
-                IPNListener = null;
-            }
-        }
-        public static void StopWebServer(bool log = true)
-        {
-            HttpListener expiredWebListener = WebListener;
-            WebListener = null;
-
-            HttpListener expiredBuyListener = BuyListener;
-            BuyListener = null;
-            HttpListener expiredIPNListener = IPNListener;
-            IPNListener = null;
-
-
-            WebServerStarted = false;
-            expiredWebListener?.Stop();
-            expiredBuyListener?.Stop();
-            expiredIPNListener?.Stop();
-
-            if (log) Log("Web Server Stopped.");
-        }
-
-        private static void WebConnection(IAsyncResult result)
-        {
-            try
-            {
-                HttpListenerContext context = WebListener.EndGetContext(result);
-
-                string command = context.Request.QueryString["Type"];
-
-                switch (command)
-                {
-                    case ActivationCommand:
-                        Activation(context);
-                        break;
-                    case ResetCommand:
-                        ResetPassword(context);
-                        break;
-                    case DeleteCommand:
-                        DeleteAccount(context);
-                        break;
-                }
-            }
-            catch { }
-            finally
-            {
-                if (WebListener != null && WebListener.IsListening)
-                    WebListener.BeginGetContext(WebConnection, null);
-            }
-        }
-        private static void Activation(HttpListenerContext context)
-        {
-            string key = context.Request.QueryString[ActivationKey];
-
-            if (string.IsNullOrEmpty(key)) return;
-
-            AccountInfo account = null;
-            for (int i = 0; i < AccountInfoList.Count; i++)
-            {
-                AccountInfo temp = AccountInfoList[i]; //Different Threads, Caution must be taken to prevent errors
-                if (string.Compare(temp.ActivationKey, key, StringComparison.Ordinal) != 0) continue;
-
-                account = temp;
-                break;
-            }
-
-            if (Config.AllowWebActivation && account != null)
-            {
-                WebCommandQueue.Enqueue(new WebCommand(CommandType.Activation, account));
-                context.Response.Redirect(Config.ActivationSuccessLink);
-            }
-            else
-                context.Response.Redirect(Config.ActivationFailLink);
-
-            context.Response.Close();
-        }
-        private static void ResetPassword(HttpListenerContext context)
-        {
-            string key = context.Request.QueryString[ResetKey];
-
-            if (string.IsNullOrEmpty(key)) return;
-
-            AccountInfo account = null;
-            for (int i = 0; i < AccountInfoList.Count; i++)
-            {
-                AccountInfo temp = AccountInfoList[i]; //Different Threads, Caution must be taken to prevent errors
-                if (string.Compare(temp.ResetKey, key, StringComparison.Ordinal) != 0) continue;
-
-                account = temp;
-                break;
-            }
-
-            if (Config.AllowWebResetPassword && account != null && account.ResetTime.AddMinutes(25) > Now)
-            {
-                WebCommandQueue.Enqueue(new WebCommand(CommandType.PasswordReset, account));
-                context.Response.Redirect(Config.ResetSuccessLink);
-            }
-            else
-                context.Response.Redirect(Config.ResetFailLink);
-
-            context.Response.Close();
-        }
-        private static void DeleteAccount(HttpListenerContext context)
-        {
-            string key = context.Request.QueryString[DeleteKey];
-
-            AccountInfo account = null;
-            for (int i = 0; i < AccountInfoList.Count; i++)
-            {
-                AccountInfo temp = AccountInfoList[i]; //Different Threads, Caution must be taken to prevent errors
-                if (string.Compare(temp.ActivationKey, key, StringComparison.Ordinal) != 0) continue;
-
-                account = temp;
-                break;
-            }
-
-            if (Config.AllowDeleteAccount && account != null)
-            {
-                WebCommandQueue.Enqueue(new WebCommand(CommandType.AccountDelete, account));
-                context.Response.Redirect(Config.DeleteSuccessLink);
-            }
-            else
-                context.Response.Redirect(Config.DeleteFailLink);
-
-            context.Response.Close();
-        }
-
-        private static void BuyConnection(IAsyncResult result)
-        {
-            try
-            {
-                HttpListenerContext context = BuyListener.EndGetContext(result);
-
-                string characterName = context.Request.QueryString["Character"];
-
-                CharacterInfo character = null;
-                for (int i = 0; i < CharacterInfoList.Count; i++)
-                {
-                    if (string.Compare(CharacterInfoList[i].CharacterName, characterName, StringComparison.OrdinalIgnoreCase) != 0) continue;
-
-                    character = CharacterInfoList[i];
-                    break;
-                }
-
-                if (character?.Account.Key != context.Request.QueryString["Key"])
-                    character = null;
-
-                string response = character == null ? Properties.Resources.CharacterNotFound : Properties.Resources.BuyGameGold.Replace("$CHARACTERNAME$", character.CharacterName);
-
-                using (StreamWriter writer = new StreamWriter(context.Response.OutputStream, context.Request.ContentEncoding))
-                    writer.Write(response);
-            }
-            catch { }
-            finally
-            {
-                if (BuyListener != null && BuyListener.IsListening) //IsBound ?
-                    BuyListener.BeginGetContext(BuyConnection, null);
-            }
-
-        }
-        private static void IPNConnection(IAsyncResult result)
-        {
-            const string LiveURL = @"https://ipnpb.paypal.com/cgi-bin/webscr";
-
-            const string verified = "VERIFIED";
-
-            try
-            {
-                if (IPNListener == null || !IPNListener.IsListening) return;
-
-                HttpListenerContext context = IPNListener.EndGetContext(result);
-
-                string rawMessage;
-                using (StreamReader readStream = new StreamReader(context.Request.InputStream, Encoding.UTF8))
-                    rawMessage = readStream.ReadToEnd();
-
-
-                Task.Run(() =>
-                {
-                    string data = "cmd=_notify-validate&" + rawMessage;
-
-                    HttpWebRequest wRequest = (HttpWebRequest)WebRequest.Create(LiveURL);
-
-                    wRequest.Method = "POST";
-                    wRequest.ContentType = "application/x-www-form-urlencoded";
-                    wRequest.ContentLength = data.Length;
-
-                    using (StreamWriter writer = new StreamWriter(wRequest.GetRequestStream(), Encoding.ASCII))
-                        writer.Write(data);
-
-                    using (StreamReader reader = new StreamReader(wRequest.GetResponse().GetResponseStream()))
-                    {
-                        IPNMessage message = new IPNMessage { Message = rawMessage, Verified = reader.ReadToEnd() == verified };
-
-
-                        if (!Directory.Exists(VerifiedPath))
-                            Directory.CreateDirectory(VerifiedPath);
-
-                        if (!Directory.Exists(InvalidPath))
-                            Directory.CreateDirectory(InvalidPath);
-
-                        string path = (message.Verified ? VerifiedPath : InvalidPath) + Path.GetRandomFileName();
-
-                        File.WriteAllText(path, message.Message);
-
-                        message.FileName = path;
-
-
-                        Messages.Enqueue(message);
-                    }
-                });
-
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
-                context.Response.Close();
-            }
-            catch (Exception ex)
-            {
-                Log(ex.ToString());
-            }
-            finally
-            {
-                if (IPNListener != null && IPNListener.IsListening) //IsBound ?
-                    IPNListener.BeginGetContext(IPNConnection, null);
-            }
-        }
-        #endregion
+    
 
         public static bool Started { get; set; }
         public static bool NetworkStarted { get; set; }
-        public static bool WebServerStarted { get; set; }
         public static bool Saving { get; private set; }
         public static Thread EnvirThread { get; private set; }
 
@@ -524,13 +226,13 @@ namespace Server.Envir
         public static long DBytesSent, DBytesReceived;
         public static long TotalBytesSent, TotalBytesReceived;
         public static long DownloadSpeed, UploadSpeed;
-        public static int EMailsSent;
+        
 
         public static bool ServerBuffChanged;
 
         #region Database
 
-        private static Session Session;
+        public static Session Session;
 
         public static DBCollection<MapInfo> MapInfoList;
         public static DBCollection<SafeZoneInfo> SafeZoneInfoList;
@@ -590,8 +292,6 @@ namespace Server.Envir
         #region Game Variables
 
         public static Random Random;
-
-        public static ConcurrentQueue<WebCommand> WebCommandQueue;
 
         public static Dictionary<MapInfo, Map> Maps = new Dictionary<MapInfo, Map>();
 
@@ -781,19 +481,6 @@ namespace Server.Envir
                 BossList.Add(monster);
 
             }
-
-            Messages = new ConcurrentQueue<IPNMessage>();
-
-            PaymentList.Clear();
-
-            if (Directory.Exists(VerifiedPath))
-            {
-                string[] files = Directory.GetFiles(VerifiedPath);
-
-                foreach (string file in files)
-                    Messages.Enqueue(new IPNMessage { FileName = file, Message = File.ReadAllText(file), Verified = true });
-            }
-
         }
         //Only works on Increasing EXP, still need to do Rebirth or loss of exp ranking update.
         public static void RankingSort(CharacterInfo character, bool updateLead = true)
@@ -1133,7 +820,8 @@ namespace Server.Envir
 
             StartEnvir();
             StartNetwork();
-            StartWebServer();
+
+            WebServer.StartWebServer();
 
             Started = NetworkStarted;
 
@@ -1291,33 +979,7 @@ namespace Server.Envir
                         for (int i = ConquestWars.Count - 1; i >= 0; i--)
                             ConquestWars[i].Process();
 
-                        while (!WebCommandQueue.IsEmpty)
-                        {
-                            if (!WebCommandQueue.TryDequeue(out WebCommand webCommand)) continue;
-
-                            switch (webCommand.Command)
-                            {
-                                case CommandType.None:
-                                    break;
-                                case CommandType.Activation:
-                                    webCommand.Account.Activated = true;
-                                    webCommand.Account.ActivationKey = string.Empty;
-                                    break;
-                                case CommandType.PasswordReset:
-                                    string password = Functions.RandomString(Random, 10);
-
-                                    webCommand.Account.Password = CreateHash(password);
-                                    webCommand.Account.ResetKey = string.Empty;
-                                    webCommand.Account.WrongPasswordCount = 0;
-                                    SendResetPasswordEmail(webCommand.Account, password);
-                                    break;
-                                case CommandType.AccountDelete:
-                                    if (webCommand.Account.Activated) continue;
-
-                                    webCommand.Account.Delete();
-                                    break;
-                            }
-                        }
+                        WebServer.Process();
 
                         if (Config.ProcessGameGold)
                             ProcessGameGold();
@@ -1369,7 +1031,7 @@ namespace Server.Envir
                 }
             }
 
-            StopWebServer();
+            WebServer.StopWebServer();
             StopNetwork();
 
             while (Saving) Thread.Sleep(1);
@@ -1381,6 +1043,157 @@ namespace Server.Envir
             StopEnvir();
         }
 
+        public static void ProcessGameGold()
+        {
+            while (!WebServer.Messages.IsEmpty)
+            {
+                IPNMessage message;
+
+                if (!WebServer.Messages.TryDequeue(out message) || message == null) return;
+
+                WebServer.PaymentList.Add(message);
+
+                if (!message.Verified)
+                {
+                    SEnvir.Log("INVALID PAYPAL TRANSACTION " + message.Message);
+                    continue;
+                }
+
+                //Add message to another list for file moving
+
+                string[] data = message.Message.Split('&');
+
+                Dictionary<string, string> values = new Dictionary<string, string>();
+
+                for (int i = 0; i < data.Length; i++)
+                {
+                    string[] keypair = data[i].Split('=');
+
+                    values[keypair[0]] = keypair.Length > 1 ? keypair[1] : null;
+                }
+
+                bool error = false;
+                string tempString, paymentStatus, transactionID;
+                decimal tempDecimal;
+                int tempInt;
+
+                if (!values.TryGetValue("payment_status", out paymentStatus))
+                    error = true;
+
+                if (!values.TryGetValue("txn_id", out transactionID))
+                    error = true;
+
+
+                //Check that Txn_id has not been used
+                for (int i = 0; i < SEnvir.GameGoldPaymentList.Count; i++)
+                {
+                    if (SEnvir.GameGoldPaymentList[i].TransactionID != transactionID) continue;
+                    if (SEnvir.GameGoldPaymentList[i].Status != paymentStatus) continue;
+
+
+                    SEnvir.Log(string.Format("[Duplicated Transaction] ID:{0} Status:{1}.", transactionID, paymentStatus));
+                    message.Duplicate = true;
+                    return;
+                }
+
+                GameGoldPayment payment = SEnvir.GameGoldPaymentList.CreateNewObject();
+                payment.RawMessage = message.Message;
+                payment.Error = error;
+
+                if (values.TryGetValue("payment_date", out tempString))
+                    payment.PaymentDate = HttpUtility.UrlDecode(tempString);
+
+                if (values.TryGetValue("receiver_email", out tempString))
+                    payment.Receiver_EMail = HttpUtility.UrlDecode(tempString);
+                else
+                    payment.Error = true;
+
+                if (values.TryGetValue("mc_fee", out tempString) && decimal.TryParse(tempString, out tempDecimal))
+                    payment.Fee = tempDecimal;
+                else
+                    payment.Error = true;
+
+                if (values.TryGetValue("mc_gross", out tempString) && decimal.TryParse(tempString, out tempDecimal))
+                    payment.Price = tempDecimal;
+                else
+                    payment.Error = true;
+
+                if (values.TryGetValue("custom", out tempString))
+                    payment.CharacterName = tempString;
+                else
+                    payment.Error = true;
+
+                if (values.TryGetValue("mc_currency", out tempString))
+                    payment.Currency = tempString;
+                else
+                    payment.Error = true;
+
+                if (values.TryGetValue("txn_type", out tempString))
+                    payment.TransactionType = tempString;
+                else
+                    payment.Error = true;
+
+                if (values.TryGetValue("payer_email", out tempString))
+                    payment.Payer_EMail = HttpUtility.UrlDecode(tempString);
+
+                if (values.TryGetValue("payer_id", out tempString))
+                    payment.Payer_ID = tempString;
+
+                payment.Status = paymentStatus;
+                payment.TransactionID = transactionID;
+                //Check if Paymentstats == completed
+                switch (payment.Status)
+                {
+                    case "Completed":
+                        break;
+                }
+                if (payment.Status != WebServer.Completed) continue;
+
+                //check that receiver_email is my primary paypal email
+                if (string.Compare(payment.Receiver_EMail, Config.ReceiverEMail, StringComparison.OrdinalIgnoreCase) != 0)
+                    payment.Error = true;
+
+                //check that paymentamount/current are correct
+                if (payment.Currency != WebServer.Currency)
+                    payment.Error = true;
+
+                if (WebServer.GoldTable.TryGetValue(payment.Price, out tempInt))
+                    payment.GameGoldAmount = tempInt;
+                else
+                    payment.Error = true;
+
+                CharacterInfo character = SEnvir.GetCharacter(payment.CharacterName);
+
+                if (character == null || payment.Error)
+                {
+                    SEnvir.Log($"[Transaction Error] ID:{transactionID} Status:{paymentStatus}, Amount{payment.Price}.");
+                    continue;
+                }
+
+                payment.Account = character.Account;
+                payment.Account.GameGold += payment.GameGoldAmount;
+                character.Account.Connection?.ReceiveChat(string.Format(character.Account.Connection.Language.PaymentComplete, payment.GameGoldAmount), MessageType.System);
+                character.Player?.Enqueue(new S.GameGoldChanged { GameGold = payment.Account.GameGold });
+
+                AccountInfo referral = payment.Account.Referral;
+
+                if (referral != null)
+                {
+                    referral.HuntGold += payment.GameGoldAmount / 10;
+
+                    if (referral.Connection != null)
+                    {
+                        referral.Connection.ReceiveChat(string.Format(referral.Connection.Language.ReferralPaymentComplete, payment.GameGoldAmount / 10), MessageType.System);
+
+                        if (referral.Connection.Stage == GameStage.Game)
+                            referral.Connection.Player.Enqueue(new S.HuntGoldChanged { HuntGold = referral.GameGold });
+                    }
+                }
+
+                SEnvir.Log($"[Game Gold Purchase] Character: {character.CharacterName}, Amount: {payment.GameGoldAmount}.");
+            }
+        }
+
         private static void Save()
         {
             if (Session == null) return;
@@ -1388,8 +1201,8 @@ namespace Server.Envir
             Saving = true;
             Session.Save(false);
 
-            HandledPayments.AddRange(PaymentList);
-
+            WebServer.Save();
+            
             Thread saveThread = new Thread(CommitChanges) { IsBackground = true };
             saveThread.Start(Session);
         }
@@ -1398,22 +1211,7 @@ namespace Server.Envir
             Session session = (Session)data;
             session?.Commit();
 
-            foreach (IPNMessage message in HandledPayments)
-            {
-                if (message.Duplicate)
-                {
-                    File.Delete(message.FileName);
-                    continue;
-                }
-
-                if (!Directory.Exists(CompletePath))
-                    Directory.CreateDirectory(CompletePath);
-
-                File.Move(message.FileName, CompletePath + Path.GetFileName(message.FileName) + ".txt");
-                PaymentList.Remove(message);
-            }
-            HandledPayments.Clear();
-
+            WebServer.CommitChanges(data);
 
             Saving = false;
         }
@@ -1469,157 +1267,7 @@ namespace Server.Envir
 
             lines.Clear();
         }
-        private static void ProcessGameGold()
-        {
-            while (!Messages.IsEmpty)
-            {
-                IPNMessage message;
-
-                if (!Messages.TryDequeue(out message) || message == null) return;
-
-                PaymentList.Add(message);
-
-                if (!message.Verified)
-                {
-                    Log("INVALID PAYPAL TRANSACTION " + message.Message);
-                    continue;
-                }
-
-                //Add message to another list for file moving
-
-                string[] data = message.Message.Split('&');
-
-                Dictionary<string, string> values = new Dictionary<string, string>();
-
-                for (int i = 0; i < data.Length; i++)
-                {
-                    string[] keypair = data[i].Split('=');
-
-                    values[keypair[0]] = keypair.Length > 1 ? keypair[1] : null;
-                }
-
-                bool error = false;
-                string tempString, paymentStatus, transactionID;
-                decimal tempDecimal;
-                int tempInt;
-
-                if (!values.TryGetValue("payment_status", out paymentStatus))
-                    error = true;
-
-                if (!values.TryGetValue("txn_id", out transactionID))
-                    error = true;
-
-
-                //Check that Txn_id has not been used
-                for (int i = 0; i < GameGoldPaymentList.Count; i++)
-                {
-                    if (GameGoldPaymentList[i].TransactionID != transactionID) continue;
-                    if (GameGoldPaymentList[i].Status != paymentStatus) continue;
-
-
-                    Log(string.Format("[Duplicated Transaction] ID:{0} Status:{1}.", transactionID, paymentStatus));
-                    message.Duplicate = true;
-                    return;
-                }
-
-                GameGoldPayment payment = GameGoldPaymentList.CreateNewObject();
-                payment.RawMessage = message.Message;
-                payment.Error = error;
-
-                if (values.TryGetValue("payment_date", out tempString))
-                    payment.PaymentDate = HttpUtility.UrlDecode(tempString);
-
-                if (values.TryGetValue("receiver_email", out tempString))
-                    payment.Receiver_EMail = HttpUtility.UrlDecode(tempString);
-                else
-                    payment.Error = true;
-
-                if (values.TryGetValue("mc_fee", out tempString) && decimal.TryParse(tempString, out tempDecimal))
-                    payment.Fee = tempDecimal;
-                else
-                    payment.Error = true;
-
-                if (values.TryGetValue("mc_gross", out tempString) && decimal.TryParse(tempString, out tempDecimal))
-                    payment.Price = tempDecimal;
-                else
-                    payment.Error = true;
-
-                if (values.TryGetValue("custom", out tempString))
-                    payment.CharacterName = tempString;
-                else
-                    payment.Error = true;
-
-                if (values.TryGetValue("mc_currency", out tempString))
-                    payment.Currency = tempString;
-                else
-                    payment.Error = true;
-
-                if (values.TryGetValue("txn_type", out tempString))
-                    payment.TransactionType = tempString;
-                else
-                    payment.Error = true;
-
-                if (values.TryGetValue("payer_email", out tempString))
-                    payment.Payer_EMail = HttpUtility.UrlDecode(tempString);
-
-                if (values.TryGetValue("payer_id", out tempString))
-                    payment.Payer_ID = tempString;
-
-                payment.Status = paymentStatus;
-                payment.TransactionID = transactionID;
-                //Check if Paymentstats == completed
-                switch (payment.Status)
-                {
-                    case "Completed":
-                        break;
-                }
-                if (payment.Status != Completed) continue;
-
-                //check that receiver_email is my primary paypal email
-                if (string.Compare(payment.Receiver_EMail, Config.ReceiverEMail, StringComparison.OrdinalIgnoreCase) != 0)
-                    payment.Error = true;
-
-                //check that paymentamount/current are correct
-                if (payment.Currency != Currency)
-                    payment.Error = true;
-
-                if (GoldTable.TryGetValue(payment.Price, out tempInt))
-                    payment.GameGoldAmount = tempInt;
-                else
-                    payment.Error = true;
-
-                CharacterInfo character = GetCharacter(payment.CharacterName);
-
-                if (character == null || payment.Error)
-                {
-                    Log($"[Transaction Error] ID:{transactionID} Status:{paymentStatus}, Amount{payment.Price}.");
-                    continue;
-                }
-
-                payment.Account = character.Account;
-                payment.Account.GameGold += payment.GameGoldAmount;
-                character.Account.Connection?.ReceiveChat(string.Format(character.Account.Connection.Language.PaymentComplete, payment.GameGoldAmount), MessageType.System);
-                character.Player?.Enqueue(new S.GameGoldChanged { GameGold = payment.Account.GameGold });
-
-                AccountInfo referral = payment.Account.Referral;
-
-                if (referral != null)
-                {
-                    referral.HuntGold += payment.GameGoldAmount / 10;
-
-                    if (referral.Connection != null)
-                    {
-                        referral.Connection.ReceiveChat(string.Format(referral.Connection.Language.ReferralPaymentComplete, payment.GameGoldAmount / 10), MessageType.System);
-
-                        if (referral.Connection.Stage == GameStage.Game)
-                            referral.Connection.Player.Enqueue(new S.HuntGoldChanged { HuntGold = referral.GameGold });
-                    }
-                }
-
-                Log($"[Game Gold Purchase] Character: {character.CharacterName}, Amount: {payment.GameGoldAmount}.");
-            }
-        }
-
+       
         public static void CheckGuildWars()
         {
             TimeSpan change = Now - LastWarTime;
@@ -2919,7 +2567,7 @@ namespace Server.Envir
                     account.ResetKey = string.Empty;
                     account.WrongPasswordCount = 0;
 
-                    SendResetPasswordEmail(account, password);
+                    EmailService.SendResetPasswordEmail(account, password);
 
                     con.Enqueue(new S.Login { Result = LoginResult.AlreadyLoggedInPassword });
                     return;
@@ -3079,7 +2727,7 @@ namespace Server.Envir
 
 
 
-            SendActivationEmail(account);
+            EmailService.SendActivationEmail(account);
 
             con.Enqueue(new S.NewAccount { Result = NewAccountResult.Success });
 
@@ -3163,7 +2811,7 @@ namespace Server.Envir
             }
 
             account.Password = CreateHash(p.NewPassword);
-            SendChangePasswordEmail(account, con.IPAddress);
+            EmailService.SendChangePasswordEmail(account, con.IPAddress);
             con.Enqueue(new S.ChangePassword { Result = ChangePasswordResult.Success });
 
             Log($"[Password Changed] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
@@ -3208,7 +2856,7 @@ namespace Server.Envir
                 return;
             }
 
-            SendResetPasswordRequestEmail(account, con.IPAddress);
+            EmailService.SendResetPasswordRequestEmail(account, con.IPAddress);
             con.Enqueue(new S.RequestPasswordReset { Result = RequestPasswordResetResult.Success });
 
             Log($"[Request Password] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
@@ -3251,7 +2899,7 @@ namespace Server.Envir
             account.Password = CreateHash(p.NewPassword);
             account.WrongPasswordCount = 0;
 
-            SendChangePasswordEmail(account, con.IPAddress);
+            EmailService.SendChangePasswordEmail(account, con.IPAddress);
             con.Enqueue(new S.ResetPassword { Result = ResetPasswordResult.Success });
 
             Log($"[Reset Password] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
@@ -3324,7 +2972,7 @@ namespace Server.Envir
                 con.Enqueue(new S.RequestActivationKey { Result = RequestActivationKeyResult.RequestDelay, Duration = account.ActivationTime - Now });
                 return;
             }
-            ResendActivationEmail(account);
+            EmailService.ResendActivationEmail(account);
             con.Enqueue(new S.RequestActivationKey { Result = RequestActivationKeyResult.Success });
             Log($"[Request Activation] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
@@ -3562,243 +3210,14 @@ namespace Server.Envir
             return false;
         }
 
-        private static void SendActivationEmail(AccountInfo account)
-        {
-            account.ActivationKey = Functions.RandomString(Random, 20);
-            account.ActivationTime = Now.AddMinutes(5);
-            EMailsSent++;
-
-            Task.Run(() =>
-            {
-                try
-                {
-
-                    SmtpClient client = new SmtpClient(Config.MailServer, Config.MailPort)
-                    {
-                        EnableSsl = Config.MailUseSSL,
-                        UseDefaultCredentials = false,
-
-                        Credentials = new NetworkCredential(Config.MailAccount, Config.MailPassword),
-                    };
-
-                    MailMessage message = new MailMessage(new MailAddress(Config.MailFrom, Config.MailDisplayName), new MailAddress(account.EMailAddress))
-                    {
-                        Subject = "Zircon Account Activation",
-                        IsBodyHtml = true,
-
-                        Body = $"Dear {account.RealName}, <br><br>" +
-                               $"Thank you for registering a Zircon account, before you can log in to the game, you are required to activate your account.<br><br>" +
-                               $"To complete your registration and activate the account please visit the following link:<br>" +
-                               $"<a href=\"{Config.WebCommandLink}?Type={ActivationCommand}&{ActivationKey}={account.ActivationKey}\">Click here to Activate</a><br><br>" +
-                               $"If the above link does not work please use the following Activation Key when you next attempt to log in to your account<br>" +
-                               $"Activation Key: {account.ActivationKey}<br><br>" +
-                               (account.Referral != null ? $"You were referred by: {account.Referral.EMailAddress}<br><br>" : "") +
-                               $"If you did not create this account and want to cancel the registration to delete this account please visit the following link:<br>" +
-                               $"<a href=\"{Config.WebCommandLink}?Type={DeleteCommand}&{DeleteKey}={account.ActivationKey}\">Click here to Delete Account</a><br><br>" +
-                               $"We'll see you in game<br>" +
-                               $"<a href=\"http://www.zirconserver.com\">Zircon Server</a>"
-                    };
-
-                    client.Send(message);
-
-                    message.Dispose();
-                    client.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Log(ex.Message);
-                    Log(ex.StackTrace);
-                }
-            });
-        }
-        private static void ResendActivationEmail(AccountInfo account)
-        {
-            if (string.IsNullOrEmpty(account.ActivationKey))
-                account.ActivationKey = Functions.RandomString(Random, 20);
-
-            account.ActivationTime = Now.AddMinutes(15);
-            EMailsSent++;
-
-            Task.Run(() =>
-            {
-                try
-                {
-                    SmtpClient client = new SmtpClient(Config.MailServer, Config.MailPort)
-                    {
-                        EnableSsl = Config.MailUseSSL,
-                        UseDefaultCredentials = false,
-                        Credentials = new NetworkCredential(Config.MailAccount, Config.MailPassword),
-                    };
-
-                    MailMessage message = new MailMessage(new MailAddress(Config.MailFrom, Config.MailDisplayName), new MailAddress(account.EMailAddress))
-                    {
-                        Subject = "Zircon Account Activation",
-                        IsBodyHtml = false,
-
-                        Body = $"Dear {account.RealName}\n" +
-                               $"\n" +
-                               $"Thank you for registering a Zircon account, before you can log in to the game, you are required to activate your account.\n" +
-                               $"\n" +
-                               $"Please use the following Activation Key when you next attempt to log in to your account\n" +
-                               $"Activation Key: {account.ActivationKey}\n\n" +
-                               $"We'll see you in game\n" +
-                               $"Zircon Server\n" +
-                               $"\n" +
-                               $"This E-Mail has been sent without formatting to reduce failure",
-                    };
-
-                    client.Send(message);
-
-                    message.Dispose();
-                    client.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Log(ex.Message);
-                    Log(ex.StackTrace);
-                }
-            });
-        }
-        private static void SendChangePasswordEmail(AccountInfo account, string ipAddress)
-        {
-            if (Now < account.PasswordTime)
-                return;
-
-            account.PasswordTime = Time.Now.AddMinutes(60);
-
-            EMailsSent++;
-            Task.Run(() =>
-            {
-                try
-                {
-                    SmtpClient client = new SmtpClient(Config.MailServer, Config.MailPort)
-                    {
-                        EnableSsl = Config.MailUseSSL,
-                        UseDefaultCredentials = false,
-                        Credentials = new NetworkCredential(Config.MailAccount, Config.MailPassword),
-                    };
-
-                    MailMessage message = new MailMessage(new MailAddress(Config.MailFrom, Config.MailDisplayName), new MailAddress(account.EMailAddress))
-                    {
-                        Subject = "Zircon Password Changed",
-                        IsBodyHtml = true,
-
-                        Body = $"Dear {account.RealName}, <br><br>" +
-                               $"This is an E-Mail to inform you that your password for Zircon has been changed.<br>" +
-                               $"IP Address: {ipAddress}<br><br>" +
-                               $"If you did not make this change please contact an administrator immediately.<br><br>" +
-                               $"We'll see you in game<br>" +
-                               $"<a href=\"http://www.zirconserver.com\">Zircon Server</a>"
-                    };
-
-                    client.Send(message);
-
-                    message.Dispose();
-                    client.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Log(ex.Message);
-                    Log(ex.StackTrace);
-                }
-            });
-        }
-        private static void SendResetPasswordRequestEmail(AccountInfo account, string ipAddress)
-        {
-            account.ResetKey = Functions.RandomString(Random, 20);
-            account.ResetTime = Now.AddMinutes(5);
-            EMailsSent++;
-
-            Task.Run(() =>
-            {
-                try
-                {
-                    SmtpClient client = new SmtpClient(Config.MailServer, Config.MailPort)
-                    {
-                        EnableSsl = Config.MailUseSSL,
-                        UseDefaultCredentials = false,
-                        Credentials = new NetworkCredential(Config.MailAccount, Config.MailPassword),
-                    };
-
-                    MailMessage message = new MailMessage(new MailAddress(Config.MailFrom, Config.MailDisplayName), new MailAddress(account.EMailAddress))
-                    {
-                        Subject = "Zircon Password Reset",
-                        IsBodyHtml = true,
-
-                        Body = $"Dear {account.RealName}, <br><br>" +
-                               $"A request to reset your password has been made.<br>" +
-                               $"IP Address: {ipAddress}<br><br>" +
-                               $"To reset your password please click on the following link:<br>" +
-                               $"<a href=\"{Config.WebCommandLink}?Type={ResetCommand}&{ResetKey}={account.ResetKey}\">Reset Password</a><br><br>" +
-                               $"If the above link does not work please use the following Reset Key to reset your password<br>" +
-                               $"Reset Key: {account.ResetKey}<br><br>" +
-                               $"If you did not request this reset, please ignore this email as your password will not be changed.<br><br>" +
-                               $"We'll see you in game<br>" +
-                               $"<a href=\"http://www.zirconserver.com\">Zircon Server</a>"
-                    };
-
-                    client.Send(message);
-
-                    message.Dispose();
-                    client.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Log(ex.Message);
-                    Log(ex.StackTrace);
-                }
-            });
-        }
-        private static void SendResetPasswordEmail(AccountInfo account, string password)
-        {
-            account.ResetKey = Functions.RandomString(Random, 20);
-            account.ResetTime = Now.AddMinutes(5);
-            EMailsSent++;
-
-            Task.Run(() =>
-            {
-                try
-                {
-                    SmtpClient client = new SmtpClient(Config.MailServer, Config.MailPort)
-                    {
-                        EnableSsl = Config.MailUseSSL,
-                        UseDefaultCredentials = false,
-                        Credentials = new NetworkCredential(Config.MailAccount, Config.MailPassword),
-                    };
-
-                    MailMessage message = new MailMessage(new MailAddress(Config.MailFrom, Config.MailDisplayName), new MailAddress(account.EMailAddress))
-                    {
-                        Subject = "Zircon Password has been Reset.",
-                        IsBodyHtml = true,
-
-                        Body = $"Dear {account.RealName}, <br><br>" +
-                               $"This is an E-Mail to inform you that your password for Zircon has been reset.<br>" +
-                               $"Your new password: {password}<br><br>" +
-                               $"If you did not make this reset please contact an administrator immediately.<br><br>" +
-                               $"We'll see you in game<br>" +
-                               $"<a href=\"http://www.zirconserver.com\">Zircon Server</a>"
-                    };
-
-                    client.Send(message);
-
-                    message.Dispose();
-                    client.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Log(ex.Message);
-                    Log(ex.StackTrace);
-                }
-            });
-        }
-
+      
 
         #region Password Encryption
         private const int Iterations = 1354;
         private const int SaltSize = 16;
         private const int hashSize = 20;
 
-        private static byte[] CreateHash(string password)
+        public static byte[] CreateHash(string password)
         {
             using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
             {
