@@ -14041,7 +14041,7 @@ namespace Server.Models
                     {
                         magics.Add(augMagic);
                         power = augMagic.GetPower() + 1;
-                        possibleTargets = GetTargets(CurrentMap, p.Location, 4);
+                        possibleTargets = GetTargets(CurrentMap, p.Location, 3);
 
                         while (power >= realTargets.Count)
                         {
@@ -14053,7 +14053,15 @@ namespace Server.Models
 
                             if (!Functions.InRange(CurrentLocation, target.CurrentLocation, Globals.MagicRange)) continue;
 
-                            realTargets.Add(target);
+                            if (target is PlayerObject)
+                            {
+                                var player = (PlayerObject)target;
+                                if ((InGroup(player) || InGuild(player)) && target.Dead)
+                                {
+                                    realTargets.Add(target);
+                                }
+                            }
+
                         }
                     }
 

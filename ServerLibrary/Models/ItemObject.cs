@@ -64,9 +64,39 @@ namespace Server.Models
             Account = null;
         }
 
+        public bool CanPickUpItem(PlayerObject ob)
+        {
+            if (Account != null && Account != ob.Character.Account)
+            {
+                if (Config.DropVisibleOtherPlayers)
+                {
+                    var isSameGuild = Account.GuildMember != null
+                        && ob.Character.Account.GuildMember != null
+                        && Account.GuildMember.Guild == ob.Character.Account.GuildMember.Guild;
+
+                    var isSameGroup = ob.GroupMembers != null
+                        && Account.Connection?.Player.GroupMembers == ob.GroupMembers;
+
+                    var spawnElapsed = (int)Math.Floor((SEnvir.Now - SpawnTime).TotalMinutes);
+
+                    if (spawnElapsed >= 10)
+                        return true;
+                    else if (isSameGuild && spawnElapsed >= 5)
+                        return true;
+                    else if (isSameGroup && spawnElapsed >= 2)
+                        return true;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
         public bool PickUpItem(PlayerObject ob)
         {
-            if (Account != null && Account != ob.Character.Account) return false;
+            if (!CanPickUpItem(ob))
+                return false;
 
             long amount = 0;
 
@@ -113,7 +143,8 @@ namespace Server.Models
         }
         public void PickUpItem(Companion ob)
         {
-            if (Account != null && Account != ob.CompanionOwner.Character.Account) return;
+            if (!CanPickUpItem(ob.CompanionOwner))
+                return;
 
             long amount = 0;
 
