@@ -16,7 +16,6 @@ namespace Server.Envir
         public static ushort UserCountPort { get; set; } = 3000;
         public static int MaxPacket { get; set; } = 50;
         public static TimeSpan PacketBanTime { get; set; } = TimeSpan.FromMinutes(5);
-        public static string AllowedIPSync { get; set; }
 
 
         [ConfigSection("System")]
@@ -49,6 +48,7 @@ namespace Server.Envir
         public static bool AllowManualActivation { get; set; } = true;
         public static bool AllowWebActivation { get; set; } = true;
         public static bool AllowRequestActivation { get; set; } = true;
+        public static bool AllowSystemDBSync { get; set; } = false;
 
         public static bool AllowNewCharacter { get; set; } = true;
         public static bool AllowDeleteCharacter { get; set; } = true;

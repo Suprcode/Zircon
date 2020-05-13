@@ -232,7 +232,7 @@ namespace Server.Envir
 
         #region Database
 
-        private static Session Session;
+        public static Session Session;
 
         public static DBCollection<MapInfo> MapInfoList;
         public static DBCollection<SafeZoneInfo> SafeZoneInfoList;

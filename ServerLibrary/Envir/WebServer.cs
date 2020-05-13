@@ -11,6 +11,9 @@ using System.Web;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
+using System.Net.Http;
+using MirDB;
+using System.IO.Compression;
 
 namespace Server.Envir
 {
@@ -20,7 +23,8 @@ namespace Server.Envir
         public static bool WebServerStarted { get; set; }
 
         private static HttpListener WebListener;
-        public const string ActivationCommand = "Activation", ResetCommand = "Reset", DeleteCommand = "Delete";
+        public const string ActivationCommand = "Activation", ResetCommand = "Reset", DeleteCommand = "Delete",
+            SystemDBSyncCommand = "SystemDBSync";
         public const string ActivationKey = "ActivationKey", ResetKey = "ResetKey", DeleteKey = "DeleteKey";
 
         public const string Completed = "Completed";
@@ -146,6 +150,9 @@ namespace Server.Envir
                     case DeleteCommand:
                         DeleteAccount(context);
                         break;
+                    case SystemDBSyncCommand:
+                        SystemDBSync(context);
+                        break;
                 }
             }
             catch { }
@@ -155,6 +162,51 @@ namespace Server.Envir
                     WebListener.BeginGetContext(WebConnection, null);
             }
         }
+
+        private static void SystemDBSync(HttpListenerContext context)
+        {
+            if (!Config.AllowSystemDBSync)
+                return;
+
+            if (context.Request.HttpMethod != "POST" || !context.Request.HasEntityBody)
+                return;
+
+            if (context.Request.ContentLength64 > 1024 * 1024 * 10)
+                return;
+
+            var masterPassword = context.Request.QueryString["mp"];
+            if (string.IsNullOrEmpty(masterPassword) || !masterPassword.Equals(Config.MasterPassword))
+                return;
+
+            var buffer = new byte[context.Request.ContentLength64];
+            context.Request.InputStream.Read(buffer, 0, buffer.Length);
+
+            var tmpPath = SEnvir.Session.SystemPath + Session.TempExtension;
+
+            using (var ms = new MemoryStream(buffer))
+            using (var oms = File.Create(tmpPath))
+            using (GZipStream compress = new GZipStream(oms, CompressionMode.Decompress))
+                ms.CopyTo(compress);
+
+            if (SEnvir.Session.BackUp && !Directory.Exists(SEnvir.Session.SystemBackupPath))
+                Directory.CreateDirectory(SEnvir.Session.SystemBackupPath);
+
+            if (File.Exists(SEnvir.Session.SystemPath))
+            {
+                if (SEnvir.Session.BackUp)
+                {
+                    using (FileStream sourceStream = File.OpenRead(SEnvir.Session.SystemPath))
+                    using (FileStream destStream = File.Create(SEnvir.Session.SystemBackupPath + "System " + SEnvir.Session.ToBackUpFileName(DateTime.UtcNow) + Session.Extension + Session.CompressExtension))
+                    using (GZipStream compress = new GZipStream(destStream, CompressionMode.Compress))
+                        sourceStream.CopyTo(compress);
+                }
+
+                File.Delete(SEnvir.Session.SystemPath);
+            }
+
+            File.Move(tmpPath, SEnvir.Session.SystemPath);
+        }
+
         private static void Activation(HttpListenerContext context)
         {
             string key = context.Request.QueryString[ActivationKey];
