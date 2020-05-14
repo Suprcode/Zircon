@@ -28,7 +28,7 @@ namespace PatchManager
             UserLookAndFeel.Default.SetSkinStyle("DevExpress Style");
             Application.Run(new PMain());
 
-            ConfigReader.Save();
+            ConfigReader.Save(typeof(Config).Assembly);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Server
 
             }
 
-            ConfigReader.Save();
+            ConfigReader.Save(typeof(Config).Assembly);
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)

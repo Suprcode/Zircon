@@ -34,7 +34,7 @@ namespace Server
 
             Application.Run(new SMain());
 
-            ConfigReader.Save();
+            ConfigReader.Save(typeof(Config).Assembly);
         }
 
     }

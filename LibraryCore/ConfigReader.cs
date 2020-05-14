@@ -36,9 +36,9 @@ namespace Library
                 ReadConfig(type, config.Path, ob);
             }
         }
-        public static void Save()
+        public static void Save(Assembly assembly)
         {
-            Type[] types = Assembly.GetEntryAssembly().GetTypes();
+            Type[] types = assembly.GetTypes();
 
             foreach (Type type in types)
             {

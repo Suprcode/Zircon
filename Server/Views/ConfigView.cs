@@ -275,7 +275,7 @@ namespace Server.Views
 
 
 
-            ConfigReader.Save();
+            ConfigReader.Save(typeof(Config).Assembly);
         }
 
 
