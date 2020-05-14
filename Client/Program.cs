@@ -34,7 +34,7 @@ namespace Client
                 Init();
             }
 
-            ConfigReader.Save();
+            ConfigReader.Save(typeof(Config).Assembly);
         }
 
         static void Init()
