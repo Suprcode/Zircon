@@ -497,6 +497,73 @@ namespace LibraryEditor
                 image.OffSetY = temp;
             }
         }
+        
+        private void MergeButton_Click(object sender, EventArgs e)
+        {
+            if (_library == null) return;
+            if (_library.FileName == null) return;
+            _library.addTo1k();
+
+            if (OpenWeMadeDialog.ShowDialog() != DialogResult.OK) return;
+
+            toolStripProgressBar.Maximum = OpenWeMadeDialog.FileNames.Length;
+            toolStripProgressBar.Value = 0;
+
+            try
+            {
+                foreach (string file in OpenWeMadeDialog.FileNames)
+                {
+
+                    if (Path.GetExtension(file) == ".wtl")
+                    {
+                        WTLLibrary WTLlib = new WTLLibrary(file);
+                        WTLlib.MergeToMLibrary(_library);
+                    }
+                    else if (Path.GetExtension(file) == ".Lib")
+                    {
+                        FileStream stream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite);
+                        BinaryReader reader = new BinaryReader(stream);
+                        int CurrentVersion = reader.ReadInt32();
+                        stream.Close();
+                        stream.Dispose();
+                        reader.Dispose();
+                        if (CurrentVersion == 1)
+                        {
+                            MLibrary v1Lib = new MLibrary(file);
+                            v1Lib.MergeToMLibrary(_library);
+                        }
+                        else
+                        {
+                            MLibraryV2 v2Lib = new MLibraryV2(file);
+                            v2Lib.MergeToMLibrary(_library);
+                        }
+                    }
+                    else
+                    {
+                        WeMadeLibrary WILlib = new WeMadeLibrary(file);
+                        WILlib.MergeToMLibrary(_library);
+
+                    }
+                    toolStripProgressBar.Value++;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+            toolStripProgressBar.Value = 0;
+
+            MessageBox.Show(string.Format("Successfully merged {0} {1}",
+                (OpenWeMadeDialog.FileNames.Length).ToString(),
+                (OpenWeMadeDialog.FileNames.Length > 1) ? "libraries" : "library"));
+
+            ImageList.Images.Clear();
+            _indexList.Clear();
+            PreviewListView.VirtualListSize = _library.Images.Count;
+
+            _library.Save(_library.FileName);
+        }
 
         private void InsertImageButton_Click(object sender, EventArgs e)
         {
@@ -939,6 +1006,7 @@ namespace LibraryEditor
             DeleteButton.Enabled = true;
             buttonReplace.Enabled = true;
             InsertImageButton.Enabled = true;
+            mergeBtn.Enabled = true;
 
             PreviewListView.Items[index].Selected = true;
             PreviewListView.Items[index].EnsureVisible();
@@ -960,6 +1028,7 @@ namespace LibraryEditor
             DeleteButton.Enabled = false;
             buttonReplace.Enabled = false;
             InsertImageButton.Enabled = false;
+            mergeBtn.Enabled = false;
 
             PreviewListView.Items[index].Selected = true;
             PreviewListView.Items[index].EnsureVisible();
@@ -981,6 +1050,7 @@ namespace LibraryEditor
             DeleteButton.Enabled = false;
             buttonReplace.Enabled = false;
             InsertImageButton.Enabled = false;
+            mergeBtn.Enabled = false;
 
             PreviewListView.Items[index].Selected = true;
             PreviewListView.Items[index].EnsureVisible();

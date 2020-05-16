@@ -58,6 +58,7 @@
             this.ZoomTrackBar = new System.Windows.Forms.TrackBar();
             this.ExportButton = new System.Windows.Forms.Button();
             this.InsertImageButton = new System.Windows.Forms.Button();
+            this.mergeBtn = new System.Windows.Forms.Button();
             this.OffSetYTextBox = new System.Windows.Forms.TextBox();
             this.OffSetXTextBox = new System.Windows.Forms.TextBox();
             this.DeleteButton = new System.Windows.Forms.Button();
@@ -296,6 +297,7 @@
             this.splitContainer2.Panel1.Controls.Add(this.pictureBox);
             this.splitContainer2.Panel1.Controls.Add(this.ZoomTrackBar);
             this.splitContainer2.Panel1.Controls.Add(this.ExportButton);
+            this.splitContainer2.Panel1.Controls.Add(this.mergeBtn);
             this.splitContainer2.Panel1.Controls.Add(this.InsertImageButton);
             this.splitContainer2.Panel1.Controls.Add(this.OffSetYTextBox);
             this.splitContainer2.Panel1.Controls.Add(this.OffSetXTextBox);
@@ -447,6 +449,21 @@
             this.InsertImageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.InsertImageButton.UseVisualStyleBackColor = true;
             this.InsertImageButton.Click += new System.EventHandler(this.InsertImageButton_Click);
+            // 
+            // mergeBtn
+            // 
+            this.mergeBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.mergeBtn.Image = ((System.Drawing.Image)(resources.GetObject("InsertImageButton.Image")));
+            this.mergeBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.mergeBtn.Location = new System.Drawing.Point(10, 176);
+            this.mergeBtn.Name = "mergeBtn";
+            this.mergeBtn.Size = new System.Drawing.Size(105, 26);
+            this.mergeBtn.TabIndex = 22;
+            this.mergeBtn.Tag = "";
+            this.mergeBtn.Text = "Merge Libraries";
+            this.mergeBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.mergeBtn.UseVisualStyleBackColor = true;
+            this.mergeBtn.Click += new System.EventHandler(this.MergeButton_Click);
             // 
             // OffSetYTextBox
             // 
@@ -774,6 +791,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button InsertImageButton;
+        private System.Windows.Forms.Button mergeBtn;
         private System.Windows.Forms.ToolStripMenuItem safeToolStripMenuItem;
         private System.Windows.Forms.Button ExportButton;
         private System.Windows.Forms.ToolTip toolTip;

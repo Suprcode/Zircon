@@ -187,7 +187,32 @@ namespace LibraryEditor
 
             Images.Add(mImage);
         }
+        public void addTo1k()
+        {
+            int count = Images.Count;
+            int cap = 1000 - (count % 1000);
+            if (cap != 1000)
+            {
+                Bitmap image;
+                for (int i = cap - 1; i >= 0; i--)
+                {
+                    try
+                    {
+                        image = new Bitmap(1, 1);
+                    }
+                    catch
+                    {
+                        return;
+                    }
 
+                    short x = 0;
+                    short y = 0;
+
+
+                    AddImage(image, x, y);
+                }
+            }
+        }
         public void ReplaceImage(int Index, Bitmap image, short x, short y)
         {
             Mir3Image mImage = new Mir3Image(image) { OffSetX = x, OffSetY = y };
