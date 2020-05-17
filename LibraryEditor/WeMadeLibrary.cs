@@ -411,22 +411,28 @@ namespace LibraryEditor
                 }
                 int index = 0;
 
+                if (bytes.Length <= 1)
+                {
+                    Image.UnlockBits(data);
+                    Image.Dispose();
+                    Image = null;
+                    MaskImage.Dispose();
+                    return;
+                }
+
                 int* scan0 = (int*)data.Scan0;
                 {
-                    if (bytes.Length > 1)
+                    for (int y = Height - 1; y >= 0; y--)
                     {
-                        for (int y = Height - 1; y >= 0; y--)
+                        for (int x = 0; x < Width; x++)
                         {
-                            for (int x = 0; x < Width; x++)
-                            {
-                                if (bo16bit)
-                                    scan0[y * Width + x] = convert16bitTo32bit(bytes[index++] + (bytes[index++] << 8));
-                                else
-                                    scan0[y * Width + x] = palette[bytes[index++]];
-                            }
-                            if (((nType == 1) || (nType == 4)) & (Width % 4 > 0))
-                                index += WidthBytes(bo16bit ? 16 : 8, Width) - (Width * (bo16bit ? 2 : 1));
+                            if (bo16bit)
+                                scan0[y * Width + x] = convert16bitTo32bit(bytes[index++] + (bytes[index++] << 8));
+                            else
+                                scan0[y * Width + x] = palette[bytes[index++]];
                         }
+                        if (((nType == 1) || (nType == 4)) & (Width % 4 > 0))
+                            index += WidthBytes(bo16bit ? 16 : 8, Width) - (Width * (bo16bit ? 2 : 1));
                     }
                 }
                 Image.UnlockBits(data);

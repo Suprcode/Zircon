@@ -286,6 +286,7 @@
             this.navBarItem1.Caption = "Chat Log";
             this.navBarItem1.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem1.ImageOptions.SmallImage")));
             this.navBarItem1.Name = "navBarItem1";
+            this.navBarItem1.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ChatLogNavButton_LinkClicked);
             // 
             // navBarGroup2
             // 
