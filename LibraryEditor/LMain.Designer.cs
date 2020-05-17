@@ -57,8 +57,8 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.ZoomTrackBar = new System.Windows.Forms.TrackBar();
             this.ExportButton = new System.Windows.Forms.Button();
-            this.InsertImageButton = new System.Windows.Forms.Button();
             this.mergeBtn = new System.Windows.Forms.Button();
+            this.InsertImageButton = new System.Windows.Forms.Button();
             this.OffSetYTextBox = new System.Windows.Forms.TextBox();
             this.OffSetXTextBox = new System.Windows.Forms.TextBox();
             this.DeleteButton = new System.Windows.Forms.Button();
@@ -77,6 +77,7 @@
             this.SaveLibraryDialog = new System.Windows.Forms.SaveFileDialog();
             this.ImportImageDialog = new System.Windows.Forms.OpenFileDialog();
             this.OpenWeMadeDialog = new System.Windows.Forms.OpenFileDialog();
+            this.OpenMergeDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -85,6 +86,8 @@
             this.radioButtonOverlay = new System.Windows.Forms.RadioButton();
             this.radioButtonShadow = new System.Windows.Forms.RadioButton();
             this.radioButtonImage = new System.Windows.Forms.RadioButton();
+            this.AddBlankButton = new System.Windows.Forms.Button();
+            this.InsertBlankButton = new System.Windows.Forms.Button();
             this.MainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -288,6 +291,8 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.InsertBlankButton);
+            this.splitContainer2.Panel1.Controls.Add(this.AddBlankButton);
             this.splitContainer2.Panel1.Controls.Add(this.nudJump);
             this.splitContainer2.Panel1.Controls.Add(this.checkBoxPreventAntiAliasing);
             this.splitContainer2.Panel1.Controls.Add(this.checkBoxQuality);
@@ -321,7 +326,7 @@
             // 
             // nudJump
             // 
-            this.nudJump.Location = new System.Drawing.Point(77, 219);
+            this.nudJump.Location = new System.Drawing.Point(76, 246);
             this.nudJump.Maximum = new decimal(new int[] {
             650000,
             0,
@@ -336,7 +341,7 @@
             // checkBoxPreventAntiAliasing
             // 
             this.checkBoxPreventAntiAliasing.AutoSize = true;
-            this.checkBoxPreventAntiAliasing.Location = new System.Drawing.Point(95, 299);
+            this.checkBoxPreventAntiAliasing.Location = new System.Drawing.Point(94, 326);
             this.checkBoxPreventAntiAliasing.Name = "checkBoxPreventAntiAliasing";
             this.checkBoxPreventAntiAliasing.Size = new System.Drawing.Size(99, 17);
             this.checkBoxPreventAntiAliasing.TabIndex = 20;
@@ -347,7 +352,7 @@
             // checkBoxQuality
             // 
             this.checkBoxQuality.AutoSize = true;
-            this.checkBoxQuality.Location = new System.Drawing.Point(11, 299);
+            this.checkBoxQuality.Location = new System.Drawing.Point(10, 326);
             this.checkBoxQuality.Name = "checkBoxQuality";
             this.checkBoxQuality.Size = new System.Drawing.Size(78, 17);
             this.checkBoxQuality.TabIndex = 19;
@@ -359,7 +364,7 @@
             // 
             this.buttonSkipPrevious.ForeColor = System.Drawing.SystemColors.ControlText;
             this.buttonSkipPrevious.Image = ((System.Drawing.Image)(resources.GetObject("buttonSkipPrevious.Image")));
-            this.buttonSkipPrevious.Location = new System.Drawing.Point(42, 216);
+            this.buttonSkipPrevious.Location = new System.Drawing.Point(41, 243);
             this.buttonSkipPrevious.Name = "buttonSkipPrevious";
             this.buttonSkipPrevious.Size = new System.Drawing.Size(30, 26);
             this.buttonSkipPrevious.TabIndex = 17;
@@ -372,7 +377,7 @@
             // 
             this.buttonSkipNext.ForeColor = System.Drawing.SystemColors.ControlText;
             this.buttonSkipNext.Image = ((System.Drawing.Image)(resources.GetObject("buttonSkipNext.Image")));
-            this.buttonSkipNext.Location = new System.Drawing.Point(159, 216);
+            this.buttonSkipNext.Location = new System.Drawing.Point(158, 243);
             this.buttonSkipNext.Name = "buttonSkipNext";
             this.buttonSkipNext.Size = new System.Drawing.Size(30, 26);
             this.buttonSkipNext.TabIndex = 16;
@@ -411,7 +416,7 @@
             // ZoomTrackBar
             // 
             this.ZoomTrackBar.LargeChange = 1;
-            this.ZoomTrackBar.Location = new System.Drawing.Point(42, 248);
+            this.ZoomTrackBar.Location = new System.Drawing.Point(41, 275);
             this.ZoomTrackBar.Minimum = 1;
             this.ZoomTrackBar.Name = "ZoomTrackBar";
             this.ZoomTrackBar.Size = new System.Drawing.Size(147, 45);
@@ -435,6 +440,21 @@
             this.ExportButton.UseVisualStyleBackColor = true;
             this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
             // 
+            // mergeBtn
+            // 
+            this.mergeBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.mergeBtn.Image = ((System.Drawing.Image)(resources.GetObject("mergeBtn.Image")));
+            this.mergeBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.mergeBtn.Location = new System.Drawing.Point(10, 176);
+            this.mergeBtn.Name = "mergeBtn";
+            this.mergeBtn.Size = new System.Drawing.Size(105, 26);
+            this.mergeBtn.TabIndex = 22;
+            this.mergeBtn.Tag = "";
+            this.mergeBtn.Text = "Merge Libraries";
+            this.mergeBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.mergeBtn.UseVisualStyleBackColor = true;
+            this.mergeBtn.Click += new System.EventHandler(this.MergeButton_Click);
+            // 
             // InsertImageButton
             // 
             this.InsertImageButton.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -449,21 +469,6 @@
             this.InsertImageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.InsertImageButton.UseVisualStyleBackColor = true;
             this.InsertImageButton.Click += new System.EventHandler(this.InsertImageButton_Click);
-            // 
-            // mergeBtn
-            // 
-            this.mergeBtn.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.mergeBtn.Image = ((System.Drawing.Image)(resources.GetObject("InsertImageButton.Image")));
-            this.mergeBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.mergeBtn.Location = new System.Drawing.Point(10, 176);
-            this.mergeBtn.Name = "mergeBtn";
-            this.mergeBtn.Size = new System.Drawing.Size(105, 26);
-            this.mergeBtn.TabIndex = 22;
-            this.mergeBtn.Tag = "";
-            this.mergeBtn.Text = "Merge Libraries";
-            this.mergeBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.mergeBtn.UseVisualStyleBackColor = true;
-            this.mergeBtn.Click += new System.EventHandler(this.MergeButton_Click);
             // 
             // OffSetYTextBox
             // 
@@ -638,6 +643,11 @@
             this.OpenWeMadeDialog.Filter = "WeMade|*.Wil;*.Wtl|Shanda|*.Wzl;*.Miz|Lib|*.Lib";
             this.OpenWeMadeDialog.Multiselect = true;
             // 
+            // OpenWeMadeDialog
+            // 
+            this.OpenMergeDialog.Filter = "Zircon Library|*.Zl|WeMade|*.Wil;*.Wtl|Shanda|*.Wzl;*.Miz|Lib|*.Lib";
+            this.OpenMergeDialog.Multiselect = true;
+            // 
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -713,6 +723,36 @@
             this.radioButtonImage.UseVisualStyleBackColor = true;
             this.radioButtonImage.CheckedChanged += new System.EventHandler(this.radioButtonImage_CheckedChanged);
             // 
+            // AddBlankButton
+            // 
+            this.AddBlankButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.AddBlankButton.Image = ((System.Drawing.Image)(resources.GetObject("AddBlankButton.Image")));
+            this.AddBlankButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.AddBlankButton.Location = new System.Drawing.Point(10, 208);
+            this.AddBlankButton.Name = "AddBlankButton";
+            this.AddBlankButton.Size = new System.Drawing.Size(105, 26);
+            this.AddBlankButton.TabIndex = 23;
+            this.AddBlankButton.Tag = "";
+            this.AddBlankButton.Text = "Add Blanks";
+            this.AddBlankButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.AddBlankButton.UseVisualStyleBackColor = true;
+            this.AddBlankButton.Click += new System.EventHandler(this.AddBlanksButton_Click);
+            // 
+            // InsertBlankButton
+            // 
+            this.InsertBlankButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.InsertBlankButton.Image = ((System.Drawing.Image)(resources.GetObject("InsertBlankButton.Image")));
+            this.InsertBlankButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.InsertBlankButton.Location = new System.Drawing.Point(121, 211);
+            this.InsertBlankButton.Name = "InsertBlankButton";
+            this.InsertBlankButton.Size = new System.Drawing.Size(105, 26);
+            this.InsertBlankButton.TabIndex = 24;
+            this.InsertBlankButton.Tag = "";
+            this.InsertBlankButton.Text = "Insert Blanks";
+            this.InsertBlankButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.InsertBlankButton.UseVisualStyleBackColor = true;
+            this.InsertBlankButton.Click += new System.EventHandler(this.InsertBlanksButton_Click);
+            // 
             // LMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -781,6 +821,7 @@
         private System.Windows.Forms.OpenFileDialog ImportImageDialog;
         private System.Windows.Forms.Button DeleteButton;
         private System.Windows.Forms.OpenFileDialog OpenWeMadeDialog;
+        private System.Windows.Forms.OpenFileDialog OpenMergeDialog;
         private System.Windows.Forms.ToolStripMenuItem functionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyToToolStripMenuItem;
@@ -813,6 +854,8 @@
         private System.Windows.Forms.RadioButton radioButtonOverlay;
         private System.Windows.Forms.RadioButton radioButtonShadow;
         private System.Windows.Forms.RadioButton radioButtonImage;
+        private System.Windows.Forms.Button InsertBlankButton;
+        private System.Windows.Forms.Button AddBlankButton;
     }
 }
 

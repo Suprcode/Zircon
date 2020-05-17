@@ -134,7 +134,7 @@ namespace LibraryEditor
             //            System.Windows.Forms.MessageBoxIcon.Information,
             //                System.Windows.Forms.MessageBoxDefaultButton.Button1);
         }
-        public void MergeToMLibrary(Mir3Library lib)
+        public void MergeToMLibrary(Mir3Library lib, int newImages)
         {
             int offset = lib.Images.Count;
             for (int i = 0; i < Images.Length; i++)
@@ -154,7 +154,7 @@ namespace LibraryEditor
                     else
                         lib.Images[i+offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                 });
-                lib.addTo1k();
+                lib.AddBlanks(newImages);
             }
             catch (System.Exception)
             {

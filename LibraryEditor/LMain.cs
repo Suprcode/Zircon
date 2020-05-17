@@ -16,6 +16,7 @@ namespace LibraryEditor
         private Mir3Library _library;
         private Mir3Library.Mir3Image _selectedImage, _exportImage;
         private Image _originalImage;
+        public int newImages;
 
         [DllImport("user32.dll")]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
@@ -29,6 +30,51 @@ namespace LibraryEditor
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
             this.DragDrop += new DragEventHandler(Form1_DragDrop);
+        }
+        public static DialogResult InputBox(string title, string promptText, ref string value)
+        {
+            Form form = new Form();
+            Label label = new Label();
+            TextBox textBox = new TextBox();
+            Button buttonOk = new Button();
+            Button buttonCancel = new Button();
+
+            form.Text = title;
+            label.Text = promptText;
+            textBox.Text = value;
+
+            buttonOk.Text = "OK";
+            buttonCancel.Text = "Cancel";
+            buttonOk.DialogResult = DialogResult.OK;
+            buttonCancel.DialogResult = DialogResult.Cancel;
+
+            label.SetBounds(9, 20, 372, 13);
+            textBox.SetBounds(12, 36, 372, 20);
+            buttonOk.SetBounds(228, 72, 75, 23);
+            buttonCancel.SetBounds(309, 72, 75, 23);
+
+            label.AutoSize = true;
+            textBox.Anchor = textBox.Anchor | AnchorStyles.Right;
+            buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+            form.ClientSize = new Size(396, 107);
+            form.Controls.AddRange(new Control[] { label, textBox, buttonOk, buttonCancel });
+            form.ClientSize = new Size(Math.Max(300, label.Right + 10), form.ClientSize.Height);
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+            form.AcceptButton = buttonOk;
+            form.CancelButton = buttonCancel;
+
+            DialogResult dialogResult = form.ShowDialog();
+
+            value = textBox.Text;
+
+
+
+            return dialogResult;
         }
 
         private void Form1_DragDrop(object sender, DragEventArgs e)
@@ -194,7 +240,34 @@ namespace LibraryEditor
                 ImageList.Images.Add(_library.GetPreview(e.ItemIndex, ImageType.Overlay));
             e.Item = new ListViewItem { ImageIndex = index, Text = e.ItemIndex.ToString() };
         }
+        private void AddBlanksButton_Click(object sender, EventArgs e)
+        {
+            if (_library == null) return;
+            if (_library._fileName == null) return;
 
+            string value = "0";
+            int temp = 0;
+            if (InputBox("Add Blanks To End Of Library", "How Many Blank Images To Add:", ref value) == DialogResult.OK)
+            {
+                if (!int.TryParse(value, out temp))
+                {
+                    MessageBox.Show("Should be a numeric value");
+                    return;
+                }
+                if (temp <= 0)
+                {
+                    MessageBox.Show("Must be atleast 1");
+                    return;
+                }
+                newImages = temp;
+            }
+            for (int i = 0; i < newImages; i++)
+            {
+                Bitmap image = new Bitmap(1, 1);
+                _library.AddImage(image, 0, 0);
+            }
+            PreviewListView.VirtualListSize = _library.Images.Count;
+        }
         private void AddButton_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
@@ -502,22 +575,47 @@ namespace LibraryEditor
         {
             if (_library == null) return;
             if (_library.FileName == null) return;
-            _library.addTo1k();
 
-            if (OpenWeMadeDialog.ShowDialog() != DialogResult.OK) return;
+            string value = "1000";
+            int temp = 0;
+            if (InputBox("Merge Blanks", "How Many Images Per Object:", ref value) == DialogResult.OK)
+            {
+                if(!int.TryParse(value,out temp))
+                {
+                    MessageBox.Show("Should be a numeric value");
+                    return;
+                }
+                if(temp <= 0)
+                {
+                    MessageBox.Show("Must be atleast 1");
+                    return;
+                }
+                newImages = temp;
+            }
 
-            toolStripProgressBar.Maximum = OpenWeMadeDialog.FileNames.Length;
+            _library.AddBlanks(newImages);
+
+            if (OpenMergeDialog.ShowDialog() != DialogResult.OK) return;
+
+            toolStripProgressBar.Maximum = OpenMergeDialog.FileNames.Length;
             toolStripProgressBar.Value = 0;
 
             try
             {
-                foreach (string file in OpenWeMadeDialog.FileNames)
+                foreach (string file in OpenMergeDialog.FileNames)
                 {
-
-                    if (Path.GetExtension(file) == ".wtl")
+                    if (Path.GetExtension(file) == ".Zl")
+                    {
+                        Mir3Library newLib = new Mir3Library(file);
+                        foreach (Mir3Library.Mir3Image image in newLib.Images)
+                        {
+                            _library.AddImage(image.Image, image.OffSetX, image.OffSetY);
+                        }
+                    }
+                    else if (Path.GetExtension(file) == ".wtl")
                     {
                         WTLLibrary WTLlib = new WTLLibrary(file);
-                        WTLlib.MergeToMLibrary(_library);
+                        WTLlib.MergeToMLibrary(_library, newImages);
                     }
                     else if (Path.GetExtension(file) == ".Lib")
                     {
@@ -530,18 +628,18 @@ namespace LibraryEditor
                         if (CurrentVersion == 1)
                         {
                             MLibrary v1Lib = new MLibrary(file);
-                            v1Lib.MergeToMLibrary(_library);
+                            v1Lib.MergeToMLibrary(_library,newImages);
                         }
                         else
                         {
                             MLibraryV2 v2Lib = new MLibraryV2(file);
-                            v2Lib.MergeToMLibrary(_library);
+                            v2Lib.MergeToMLibrary(_library,newImages);
                         }
                     }
                     else
                     {
                         WeMadeLibrary WILlib = new WeMadeLibrary(file);
-                        WILlib.MergeToMLibrary(_library);
+                        WILlib.MergeToMLibrary(_library, newImages);
 
                     }
                     toolStripProgressBar.Value++;
@@ -555,8 +653,8 @@ namespace LibraryEditor
             toolStripProgressBar.Value = 0;
 
             MessageBox.Show(string.Format("Successfully merged {0} {1}",
-                (OpenWeMadeDialog.FileNames.Length).ToString(),
-                (OpenWeMadeDialog.FileNames.Length > 1) ? "libraries" : "library"));
+                (OpenMergeDialog.FileNames.Length).ToString(),
+                (OpenMergeDialog.FileNames.Length > 1) ? "libraries" : "library"));
 
             ImageList.Images.Clear();
             _indexList.Clear();
@@ -564,7 +662,39 @@ namespace LibraryEditor
 
             _library.Save(_library.FileName);
         }
+        private void InsertBlanksButton_Click(object sender, EventArgs e)
+        {
+            if (_library == null) return;
+            if (_library._fileName == null) return;
+            if (PreviewListView.SelectedIndices.Count == 0) return;
 
+            string value = "0";
+            int temp = 0;
+            if (InputBox("Insert Blank Images At Current Selected Position", "How Many Blank Images To Insert:", ref value) == DialogResult.OK)
+            {
+                if (!int.TryParse(value, out temp))
+                {
+                    MessageBox.Show("Should be a numeric value");
+                    return;
+                }
+                if (temp <= 0)
+                {
+                    MessageBox.Show("Must be atleast 1");
+                    return;
+                }
+                newImages = temp;
+            }
+            int index = PreviewListView.SelectedIndices[0];
+            for (int i = 0; i < newImages; i++)
+            {
+                Bitmap image = new Bitmap(1, 1);
+                _library.InsertImage(index, image, 0, 0);
+            }
+
+            ImageList.Images.Clear();
+            _indexList.Clear();
+            PreviewListView.VirtualListSize = _library.Images.Count;
+        }
         private void InsertImageButton_Click(object sender, EventArgs e)
         {
             if (_library == null) return;

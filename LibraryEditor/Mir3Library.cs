@@ -187,11 +187,15 @@ namespace LibraryEditor
 
             Images.Add(mImage);
         }
-        public void addTo1k()
+        public void AddBlanks(int newImages)
         {
-            int count = Images.Count;
-            int cap = 1000 - (count % 1000);
-            if (cap != 1000)
+            if (newImages == 0)
+                return;
+
+            int count = Images.Count;           
+
+            int cap = newImages - (count % newImages);
+            if (cap != newImages)
             {
                 Bitmap image;
                 for (int i = cap - 1; i >= 0; i--)
