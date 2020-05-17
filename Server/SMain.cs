@@ -224,6 +224,11 @@ namespace Server
             ShowView(typeof(SystemLogView));
         }
 
+        private void ChatLogNavButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(ChatLogView));
+        }
+
         private void ConfigButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(ConfigView));
