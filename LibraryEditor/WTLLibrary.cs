@@ -150,6 +150,33 @@ namespace LibraryEditor
             //            System.Windows.Forms.MessageBoxIcon.Information,
             //                System.Windows.Forms.MessageBoxDefaultButton.Button1);
         }
+        public void MergeToMLibrary(Mir3Library lib, int newImages)
+        {
+            int offset = lib.Images.Count;
+            for (int i = 0; i < Images.Length; i++)
+                lib.Images.Add(null);
+
+            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
+
+            try
+            {
+                Parallel.For(0, Images.Length, options, i =>
+                {
+                    WTLImage image = Images[i];
+                    WTLImage shadowimage = shadowLibrary != null ? shadowLibrary.Images[i] : null;
+
+                    if (shadowimage != null)
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                    else
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                });
+                lib.AddBlanks(newImages);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
     }
 
     public class WTLImage
