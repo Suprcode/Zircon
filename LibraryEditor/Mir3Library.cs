@@ -180,7 +180,36 @@ namespace LibraryEditor
 
             Images.RemoveAt(index);
         }
+        public void AddBlanks(int newImages)
+        {
+            if (newImages == 0)
+                return;
 
+            int count = Images.Count;
+
+            int cap = newImages - (count % newImages);
+            if (cap != newImages)
+            {
+                Bitmap image;
+                for (int i = cap - 1; i >= 0; i--)
+                {
+                    try
+                    {
+                        image = new Bitmap(1, 1);
+                    }
+                    catch
+                    {
+                        return;
+                    }
+
+                    short x = 0;
+                    short y = 0;
+
+
+                    AddImage(image, x, y);
+                }
+            }
+        }
         public void AddImage(Bitmap image, short x, short y)
         {
             Mir3Image mImage = new Mir3Image(image) { OffSetX = x, OffSetY = y };
