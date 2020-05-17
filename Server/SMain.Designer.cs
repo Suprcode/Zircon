@@ -48,6 +48,7 @@
             this.navBarItem1 = new DevExpress.XtraNavBar.NavBarItem();
             this.navBarGroup2 = new DevExpress.XtraNavBar.NavBarGroup();
             this.MapInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.InstanceInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.ItemInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MonsterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -226,6 +227,7 @@
             this.navBarItem1,
             this.ConfigButton,
             this.MapInfoButton,
+            this.InstanceInfoButton,
             this.MonsterInfoButton,
             this.ItemInfoButton,
             this.NPCInfoButton,
@@ -292,6 +294,7 @@
             this.navBarGroup2.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarGroup2.ImageOptions.SmallImage")));
             this.navBarGroup2.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] {
             new DevExpress.XtraNavBar.NavBarItemLink(this.MapInfoButton),
+            new DevExpress.XtraNavBar.NavBarItemLink(this.InstanceInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.ItemInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoStatButton),
@@ -321,6 +324,13 @@
             this.MapInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MapInfoButton.ImageOptions.SmallImage")));
             this.MapInfoButton.Name = "MapInfoButton";
             this.MapInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MapInfoButton_LinkClicked);
+            // 
+            // InstanceInfoButton
+            // 
+            this.InstanceInfoButton.Caption = "Instance Info";
+            this.InstanceInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("InstanceInfoButton.ImageOptions.SmallImage")));
+            this.InstanceInfoButton.Name = "InstanceInfoButton";
+            this.InstanceInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.InstanceInfoButton_LinkClicked);
             // 
             // ItemInfoButton
             // 
@@ -531,18 +541,24 @@
             // navBarItem2
             // 
             this.navBarItem2.Caption = "User Item";
+            this.navBarItem2.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("navBarItem2.ImageOptions.LargeImage")));
+            this.navBarItem2.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem2.ImageOptions.SmallImage")));
             this.navBarItem2.Name = "navBarItem2";
             this.navBarItem2.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem2_LinkClicked);
             // 
             // navBarItem3
             // 
             this.navBarItem3.Caption = "Conquest Stats";
+            this.navBarItem3.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("navBarItem3.ImageOptions.LargeImage")));
+            this.navBarItem3.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem3.ImageOptions.SmallImage")));
             this.navBarItem3.Name = "navBarItem3";
             this.navBarItem3.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem3_LinkClicked);
             // 
             // navBarItem4
             // 
             this.navBarItem4.Caption = "User Mail";
+            this.navBarItem4.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("navBarItem4.ImageOptions.LargeImage")));
+            this.navBarItem4.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem4.ImageOptions.SmallImage")));
             this.navBarItem4.Name = "navBarItem4";
             this.navBarItem4.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem4_LinkClicked);
             // 
@@ -768,6 +784,7 @@
         private DevExpress.XtraNavBar.NavBarItem ConfigButton;
         private DevExpress.XtraBars.BarStaticItem EMailsSentLabel;
         private DevExpress.XtraNavBar.NavBarItem MapInfoButton;
+        private DevExpress.XtraNavBar.NavBarItem InstanceInfoButton;
         private DevExpress.XtraNavBar.NavBarItem MonsterInfoButton;
         private DevExpress.XtraNavBar.NavBarItem ItemInfoButton;
         private DevExpress.XtraNavBar.NavBarItem NPCInfoButton;

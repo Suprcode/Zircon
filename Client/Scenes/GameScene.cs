@@ -179,6 +179,7 @@ namespace Client.Scenes
         public InspectDialog InspectBox;
         public RankingDialog RankingBox;
         public MarketPlaceDialog MarketPlaceBox;
+        public DungeonFinderDialog DungeonFinderBox;
         public MailDialog MailBox;
         public ReadMailDialog ReadMailBox;
         public SendMailDialog SendMailBox;
@@ -540,6 +541,11 @@ namespace Client.Scenes
                 Visible = false
             };
             MarketPlaceBox = new MarketPlaceDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+            DungeonFinderBox = new DungeonFinderDialog
             {
                 Parent = this,
                 Visible = false,
@@ -998,6 +1004,9 @@ namespace Client.Scenes
                             MarketPlaceBox.Visible = true;
                             MarketPlaceBox.StoreTab.TabButton.InvokeMouseClick();
                         }
+                        break;
+                    case KeyBindAction.DungeonFinderWindow:
+                        DungeonFinderBox.Visible = !DungeonFinderBox.Visible;
                         break;
                     case KeyBindAction.CompanionWindow:
                         CompanionBox.Visible = !CompanionBox.Visible;

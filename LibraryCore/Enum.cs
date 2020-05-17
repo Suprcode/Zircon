@@ -1033,6 +1033,15 @@ namespace Library
         Favourite
     }
 
+
+    public enum DungeonFinderSort
+    {
+        Name,
+        Level,
+        [Description("Player Count")]
+        PlayerCount,
+    }
+
     public enum RefineType : byte
     {
         None,

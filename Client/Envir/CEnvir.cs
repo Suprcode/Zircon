@@ -309,6 +309,7 @@ namespace Client.Envir
                 Globals.ItemInfoList = Session.GetCollection<ItemInfo>();
                 Globals.MagicInfoList = Session.GetCollection<MagicInfo>();
                 Globals.MapInfoList = Session.GetCollection<MapInfo>();
+                Globals.InstanceInfoList = Session.GetCollection<InstanceInfo>();
                 Globals.NPCPageList = Session.GetCollection<NPCPage>();
                 Globals.MonsterInfoList = Session.GetCollection<MonsterInfo>();
                 Globals.StoreInfoList = Session.GetCollection<StoreInfo>();
@@ -459,6 +460,11 @@ namespace Client.Envir
                 case KeyBindAction.GameStoreWindow:
                     bind.Category = "Windows";
                     bind.Key1 = Keys.Y;
+                    break;
+                case KeyBindAction.DungeonFinderWindow:
+                    bind.Category = "Windows";
+                    bind.Key1 = Keys.D;
+                    bind.Shift1 = true;
                     break;
                 case KeyBindAction.CompanionWindow:
                     bind.Category = "Windows";

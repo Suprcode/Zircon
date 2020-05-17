@@ -70,6 +70,7 @@ namespace Server.Envir
         public static string MailDisplayName { get; set; } = "Admin";
 
         [ConfigSection("WebServer")]
+        public static bool EnableWebServer { get; set; } = false;
         public static string WebPrefix { get; set; } = @"http://*:80/Command/";
         public static string WebCommandLink { get; set; } = @"https://www.zirconserver.com/Command";
 
@@ -85,7 +86,7 @@ namespace Server.Envir
         public static string IPNPrefix { get; set; } = @"http://*:80/IPN/";
         public static string ReceiverEMail { get; set; } = @"REDACTED";
         public static bool ProcessGameGold { get; set; } = true;
-        public static bool AllowBuyGammeGold { get; set; } = true;
+        public static bool AllowBuyGameGold { get; set; } = true;
 
 
         [ConfigSection("Players")]

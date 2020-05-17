@@ -747,6 +747,8 @@ namespace Client.Envir
                     DXControl.ActiveScene = scene;
 
                     scene.MapControl.MapInfo = Globals.MapInfoList.Binding.FirstOrDefault(x => x.Index == p.StartInformation.MapIndex);
+                    scene.MapControl.InstanceInfo = Globals.InstanceInfoList.Binding.FirstOrDefault(x => x.Index == p.StartInformation.InstanceIndex);
+
                     GameScene.Game.QuestLog = p.StartInformation.Quests;
 
                     GameScene.Game.NPCAdoptCompanionBox.AvailableCompanions = p.StartInformation.AvailableCompanions;
@@ -779,6 +781,8 @@ namespace Client.Envir
         public void Process(S.MapChanged p)
         {
             GameScene.Game.MapControl.MapInfo = Globals.MapInfoList.Binding.FirstOrDefault(x => x.Index == p.MapIndex);
+
+            GameScene.Game.MapControl.InstanceInfo = Globals.InstanceInfoList.Binding.FirstOrDefault(x => x.Index == p.InstanceIndex);
 
             MapObject.User.NameChanged();
         }
@@ -3033,6 +3037,8 @@ namespace Client.Envir
             GameScene.Game.Observer = true;
 
             scene.MapControl.MapInfo = Globals.MapInfoList.Binding.FirstOrDefault(x => x.Index == p.StartInformation.MapIndex);
+            scene.MapControl.InstanceInfo = Globals.InstanceInfoList.Binding.FirstOrDefault(x => x.Index == p.StartInformation.InstanceIndex);
+
             GameScene.Game.QuestLog = p.StartInformation.Quests;
 
             GameScene.Game.NPCAdoptCompanionBox.AvailableCompanions = p.StartInformation.AvailableCompanions;

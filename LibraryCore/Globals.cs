@@ -20,6 +20,7 @@ namespace Library
         public static DBCollection<ItemInfo> ItemInfoList;
         public static DBCollection<MagicInfo> MagicInfoList;
         public static DBCollection<MapInfo> MapInfoList;
+        public static DBCollection<InstanceInfo> InstanceInfoList;
         public static DBCollection<NPCPage> NPCPageList;
         public static DBCollection<MonsterInfo> MonsterInfoList;
         public static DBCollection<StoreInfo> StoreInfoList;
@@ -435,6 +436,7 @@ namespace Library
         public MirDirection Direction { get; set; }
 
         public int MapIndex { get; set; }
+        public int InstanceIndex { get; set; }
 
         public long Gold { get; set; }
         public int GameGold { get; set; }

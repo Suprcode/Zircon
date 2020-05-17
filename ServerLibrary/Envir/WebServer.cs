@@ -66,6 +66,8 @@ namespace Server.Envir
 
         public static void StartWebServer(bool log = true)
         {
+            if (!Config.EnableWebServer) return;
+
             try
             {
                 WebCommandQueue = new ConcurrentQueue<WebCommand>();
@@ -114,6 +116,8 @@ namespace Server.Envir
         }
         public static void StopWebServer(bool log = true)
         {
+            if (!Config.EnableWebServer) return;
+
             HttpListener expiredWebListener = WebListener;
             WebListener = null;
 

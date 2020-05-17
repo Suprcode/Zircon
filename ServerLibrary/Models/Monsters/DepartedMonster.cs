@@ -60,7 +60,7 @@ namespace Server.Models.Monsters
 
         public override bool SpawnMinion(MonsterObject mob)
         {
-            return mob.Spawn(CurrentMap.Info, CurrentLocation);
+            return mob.Spawn(CurrentMap, CurrentLocation);
         }
     }
 }

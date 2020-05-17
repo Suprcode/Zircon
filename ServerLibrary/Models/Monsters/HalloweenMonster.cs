@@ -161,7 +161,7 @@ namespace Server.Models.Monsters
 
                 MonsterObject mob = GetMonster(boss);
 
-                mob.Spawn(CurrentMap.Info, CurrentMap.GetRandomLocation(CurrentLocation, 2));
+                mob.Spawn(CurrentMap, CurrentMap.GetRandomLocation(CurrentLocation, 2));
             }
             else
             {

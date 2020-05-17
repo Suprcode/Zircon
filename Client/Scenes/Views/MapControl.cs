@@ -38,6 +38,25 @@ namespace Client.Scenes.Views
             }
         }
         private MapInfo _MapInfo;
+
+        public InstanceInfo InstanceInfo
+        {
+            get => _InstanceInfo;
+            set
+            {
+                if (_InstanceInfo == value) return;
+
+                InstanceInfo oldValue = _InstanceInfo;
+                _InstanceInfo = value;
+                OnInstanceInfoChanged(oldValue, value);
+            }
+        }
+        private InstanceInfo _InstanceInfo;
+        public void OnInstanceInfoChanged(InstanceInfo oValue, InstanceInfo nValue)
+        {
+            MapInfoChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         public event EventHandler<EventArgs> MapInfoChanged;
         public void OnMapInfoChanged(MapInfo oValue, MapInfo nValue)
         {
@@ -168,6 +187,8 @@ namespace Client.Scenes.Views
         protected override void OnClearTexture()
         {
             base.OnClearTexture();
+
+            if (!Visible) return;
 
             if (FLayer.TextureValid)
                 DXManager.Sprite.Draw(FLayer.ControlTexture, Color.White);
@@ -1438,10 +1459,16 @@ namespace Client.Scenes.Views
                         Visible = true;
                         break;
                     case LightSetting.Light:
-                        Visible = MapObject.User != null && (MapObject.User.Poison & PoisonType.Abyss) != PoisonType.Abyss;
+                        BackColour = Color.FromArgb(200, 200, 200);
+                        Visible = true;
                         break;
                 }
 
+                if (MapObject.User != null && (MapObject.User.Poison & PoisonType.Abyss) == PoisonType.Abyss)
+                {
+                    BackColour = Color.FromArgb(15, 15, 15);
+                    Visible = false;
+                }
             }
             protected override void DrawControl()
             {

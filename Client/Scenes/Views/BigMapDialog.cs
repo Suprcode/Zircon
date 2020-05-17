@@ -243,6 +243,9 @@ namespace Client.Scenes.Views
             if (ob.SourceRegion == null || ob.SourceRegion.Map != SelectedInfo) return;
             if (ob.DestinationRegion?.Map == null || ob.Icon == MapIcon.None) return;
 
+            if (GameScene.Game.MapControl.InstanceInfo != null && !GameScene.Game.MapControl.InstanceInfo.Maps.Any(m => m.Map == ob.SourceRegion.Map)) return;
+            if (GameScene.Game.MapControl.InstanceInfo != null && !GameScene.Game.MapControl.InstanceInfo.Maps.Any(m => m.Map == ob.DestinationRegion?.Map)) return;
+
             Size size = GetMapSize(SelectedInfo.FileName);
 
             if (ob.SourceRegion.PointList == null)

@@ -19,11 +19,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryEditor", "LibraryEdi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{C951172F-95CE-41EC-861A-E8A26A13B962}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerCore", "ServerCore\ServerCore.csproj", "{2A9C1B9A-20DE-4320-A5FA-0F5B1B72B1AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore", "ServerCore\ServerCore.csproj", "{2A9C1B9A-20DE-4320-A5FA-0F5B1B72B1AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerLibrary", "ServerLibrary\ServerLibrary.csproj", "{42E44F8E-C98B-4008-958A-5C8CB3D02B8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerLibrary", "ServerLibrary\ServerLibrary.csproj", "{42E44F8E-C98B-4008-958A-5C8CB3D02B8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryCore", "LibraryCore\LibraryCore.csproj", "{C47F32FA-4C04-4143-B4FE-623D4B014D0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryCore", "LibraryCore\LibraryCore.csproj", "{C47F32FA-4C04-4143-B4FE-623D4B014D0D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B8DD8844-BBCD-4781-9CD1-81888964AEF5}"
+	ProjectSection(SolutionItems) = preProject
+		Notes.txt = Notes.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

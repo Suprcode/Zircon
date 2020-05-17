@@ -233,6 +233,10 @@ namespace Server
         {
             ShowView(typeof(MapInfoView));
         }
+        private void InstanceInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(InstanceInfoView));
+        }
         private void MonsterInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(MonsterInfoView));

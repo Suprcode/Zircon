@@ -50,7 +50,7 @@ namespace Server.Models.Monsters
         }
         public override bool SpawnMinion(MonsterObject mob)
         {
-            return mob.Spawn(CurrentMap.Info, CurrentMap.GetRandomLocation(Functions.Move(CurrentLocation, MirDirection.DownLeft, 5), 4));
+            return mob.Spawn(CurrentMap, CurrentMap.GetRandomLocation(Functions.Move(CurrentLocation, MirDirection.DownLeft, 5), 4));
         }
 
         public override void ProcessTarget()

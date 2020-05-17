@@ -686,51 +686,60 @@ namespace Server.Models
         {
             if (region == null) return false;
 
-            Map map = SEnvir.GetMap(region.Map);
+            Map map = SEnvir.GetMap(region.Map, null, 0); //TODO - Instance
 
             if (map == null) return false;
 
             if (region.PointList.Count == 0) return false;
 
             for (int i = 0; i < 20; i++)
-                if (Spawn(region.Map, region.PointList[SEnvir.Random.Next(region.PointList.Count)])) break;
+                if (Spawn(map, region.PointList[SEnvir.Random.Next(region.PointList.Count)])) break;
 
 
             return true;
         }
 
+        public bool Spawn(MapInfo info, InstanceInfo instance, byte instanceIndex, Point location)
+        {
+            var map = SEnvir.GetMap(info, instance, instanceIndex);
 
-        public bool Spawn(MapInfo info, Point location)
+            if (map == null)
+            {
+                return false;
+            }
+
+            return Spawn(map, location);
+        }
+
+
+
+        public bool Spawn(Map map, Point location)
         {
             if (Node != null)
                 throw new InvalidOperationException("Node is not null, Object already spawned");
 
-            if (info == null) return false;
+            if (map == null || map.Info == null) return false;
 
-            Map map;
-
-            if (!SEnvir.Maps.TryGetValue(info, out map)) return false;
-
-            if (Race == ObjectType.Player && info.MinimumLevel > Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
-            if (Race == ObjectType.Player && info.MaximumLevel > 0 && info.MaximumLevel < Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
-            if (Race == ObjectType.Player && info.RequiredClass != RequiredClass.None && info.RequiredClass != RequiredClass.All && !((PlayerObject)this).Character.Account.TempAdmin)
+            if (Race == ObjectType.Player && map.Info.MinimumLevel > Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
+            if (Race == ObjectType.Player && map.Info.MaximumLevel > 0 && map.Info.MaximumLevel < Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
+            if (Race == ObjectType.Player && map.Info.RequiredClass != RequiredClass.None && map.Info.RequiredClass != RequiredClass.All && !((PlayerObject)this).Character.Account.TempAdmin)
             {
                 switch (((PlayerObject)this).Class)
                 {
                     case MirClass.Warrior:
-                        if ((info.RequiredClass & RequiredClass.Warrior) != RequiredClass.Warrior)
+                        if ((map.Info.RequiredClass & RequiredClass.Warrior) != RequiredClass.Warrior)
                             return false;
                         break;
                     case MirClass.Wizard:
-                        if ((info.RequiredClass & RequiredClass.Wizard) != RequiredClass.Wizard)
+                        if ((map.Info.RequiredClass & RequiredClass.Wizard) != RequiredClass.Wizard)
                             return false;
                         break;
                     case MirClass.Taoist:
-                        if ((info.RequiredClass & RequiredClass.Taoist) != RequiredClass.Taoist)
+                        if ((map.Info.RequiredClass & RequiredClass.Taoist) != RequiredClass.Taoist)
                             return false;
                         break;
                     case MirClass.Assassin:
-                        if ((info.RequiredClass & RequiredClass.Assassin) != RequiredClass.Assassin)
+                        if ((map.Info.RequiredClass & RequiredClass.Assassin) != RequiredClass.Assassin)
                             return false;
                         break;
                 }

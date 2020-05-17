@@ -599,7 +599,7 @@ namespace Server.Models
                 return;
             }
 
-            if (!Spawn(Character.CurrentMap, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion))
+            if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion)) //TODO - Instance
             {
                 SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
@@ -1038,7 +1038,8 @@ namespace Server.Models
 
             Enqueue(new S.MapChanged
             {
-                MapIndex = CurrentMap.Info.Index
+                MapIndex = CurrentMap.Info.Index,
+                InstanceIndex = CurrentMap.Instance?.Index ?? -1
             });
 
             if (!CurrentMap.Info.CanHorse)
@@ -1645,7 +1646,7 @@ namespace Server.Models
                         {
                             var monster = MonsterObject.GetMonster(monsterInfo);
 
-                            monster.Spawn(CurrentMap.Info, Functions.Move(CurrentLocation, Direction));
+                            monster.Spawn(CurrentMap, Functions.Move(CurrentLocation, Direction));
                             value -= 1;
                         }
                         break;
@@ -1844,7 +1845,34 @@ namespace Server.Models
 
                         MapInfo info = SEnvir.MapInfoList.Binding.FirstOrDefault(x => string.Compare(x.FileName, parts[1], StringComparison.OrdinalIgnoreCase) == 0);
 
-                        Map map = SEnvir.GetMap(info);
+                        InstanceInfo instance = null;
+                        byte? index = null;
+
+                        //Get chosen index
+                        if (parts.Length > 3)
+                        {
+                            if (byte.TryParse(parts[3], out byte tempIndex))
+                            {
+                                index = tempIndex;
+                            }
+                        }
+
+                        if (parts.Length > 2)
+                        {
+                            var instanceName = parts[2];
+
+                            instance = SEnvir.InstanceInfoList.Binding.FirstOrDefault(x => x.Name == instanceName);
+
+                            //Load new index
+                            if (instance != null && index == null)
+                            {
+                                index = SEnvir.LoadInstance(instance);
+                            }
+
+                            if (index == null) return;
+                        }
+
+                        Map map = SEnvir.GetMap(info, instance, index ?? 0);
 
                         if (map == null) return;
 
@@ -2979,7 +3007,12 @@ namespace Server.Models
                 TeleportTime = SEnvir.Now.AddSeconds(1);
             }
 
-            Map destMap = SEnvir.GetMap(destInfo);
+            Map destMap = SEnvir.GetMap(destInfo, CurrentMap.Instance, CurrentMap.InstanceIndex);
+
+            if (destMap == null)
+            {
+                destMap = SEnvir.GetMap(destInfo);
+            }
 
             if (!Teleport(destMap, destMap.GetRandomLocation(location, 10, 25))) return;
 
@@ -3424,7 +3457,7 @@ namespace Server.Models
             };
 
 
-            if (tempCompanion.Spawn(CurrentMap.Info, CurrentLocation))
+            if (tempCompanion.Spawn(CurrentMap, CurrentLocation))
             {
                 Companion = tempCompanion;
                 CompanionApplyBuff();
@@ -6079,7 +6112,7 @@ namespace Server.Models
 
                                 MonsterObject mob = MonsterObject.GetMonster(boss);
 
-                                if (mob.Spawn(CurrentMap.Info, CurrentMap.GetRandomLocation(CurrentLocation, 2)))
+                                if (mob.Spawn(CurrentMap, CurrentMap.GetRandomLocation(CurrentLocation, 2)))
                                 {
                                     if (SEnvir.Random.Next(item.Info.Stats[Stat.MapSummoning]) == 0)
                                     {
@@ -7542,7 +7575,7 @@ namespace Server.Models
             if ((fromItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
                 ob.Account = Character.Account;
 
-            ob.Spawn(CurrentMap.Info, cell.Location);
+            ob.Spawn(CurrentMap, cell.Location);
         }
         public void GoldDrop(C.GoldDrop p)
         {
@@ -7565,7 +7598,7 @@ namespace Server.Models
                 Item = dropItem,
             };
 
-            ob.Spawn(CurrentMap.Info, cell.Location);
+            ob.Spawn(CurrentMap, cell.Location);
         }
         public void BeltLinkChanged(C.BeltLinkChanged p)
         {
@@ -15219,7 +15252,7 @@ namespace Server.Models
                             Effect = SpellEffect.Rubble,
                         };
 
-                        ob.Spawn(CurrentMap.Info, CurrentLocation);
+                        ob.Spawn(CurrentMap, CurrentLocation);
 
                         PauseBuffs();
                     }
@@ -17194,7 +17227,7 @@ namespace Server.Models
                     Item = dropItem,
                 };
 
-                ob.Spawn(CurrentMap.Info, cell.Location);
+                ob.Spawn(CurrentMap, cell.Location);
 
                 Enqueue(new S.ItemChanged { Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = i, Count = count }, Success = true });
             }
@@ -17245,7 +17278,7 @@ namespace Server.Models
                         Item = dropItem,
                     };
 
-                    ob.Spawn(CurrentMap.Info, cell.Location);
+                    ob.Spawn(CurrentMap, cell.Location);
 
                     Enqueue(new S.ItemChanged { Link = new CellLinkInfo { GridType = GridType.CompanionInventory, Slot = i, Count = count }, Success = true });
                 }
@@ -17297,7 +17330,7 @@ namespace Server.Models
                             Item = dropItem,
                         };
 
-                        ob.Spawn(CurrentMap.Info, cell.Location);
+                        ob.Spawn(CurrentMap, cell.Location);
 
                         Enqueue(new S.ItemChanged { Link = new CellLinkInfo { GridType = GridType.Equipment, Slot = index, Count = 0 }, Success = true });
 
@@ -18065,7 +18098,7 @@ namespace Server.Models
                 Magic = magic,
             };
 
-            ob.Spawn(cell.Map.Info, cell.Location);
+            ob.Spawn(cell.Map, cell.Location);
 
             LevelMagic(magic);
         }
@@ -18210,7 +18243,7 @@ namespace Server.Models
                 Magic = magic,
             };
 
-            ob.Spawn(cell.Map.Info, cell.Location);
+            ob.Spawn(cell.Map, cell.Location);
 
             LevelMagic(magic);
         }
@@ -18648,7 +18681,7 @@ namespace Server.Models
                     Targets = trappedMonsters,
                 };
 
-                ob.Spawn(map.Info, point);
+                ob.Spawn(map, point);
             }
 
             DateTime shockTime = SEnvir.Now.AddSeconds(duration);
@@ -18715,8 +18748,8 @@ namespace Server.Models
 
             Cell cell = map.GetCell(location);
 
-            if (cell == null || cell.Movements != null || !ob.Spawn(map.Info, location))
-                ob.Spawn(CurrentMap.Info, CurrentLocation);
+            if (cell == null || cell.Movements != null || !ob.Spawn(map, location))
+                ob.Spawn(CurrentMap, CurrentLocation);
 
             ob.SetHP(ob.Stats[Stat.Health]);
 
@@ -18746,7 +18779,7 @@ namespace Server.Models
                     Power = 5,
                 };
 
-                ob.Spawn(CurrentMap.Info, cell.Location);
+                ob.Spawn(CurrentMap, cell.Location);
             }
 
             LevelMagic(magic);
@@ -18959,7 +18992,7 @@ namespace Server.Models
                 foreach (UserMagic m in magics)
                     mob.Magics.Add(m);
 
-                if (mob.Spawn(CurrentMap.Info, CurrentMap.GetRandomLocation(CurrentLocation, range)))
+                if (mob.Spawn(CurrentMap, CurrentMap.GetRandomLocation(CurrentLocation, range)))
                 {
                     Pets.Add(mob);
                     mob.PetOwner = this;
@@ -19148,6 +19181,7 @@ namespace Server.Models
                 Direction = Direction,
 
                 MapIndex = CurrentMap.Info.Index,
+                InstanceIndex = CurrentMap.Instance?.Index ?? -1,
 
                 Gold = Gold,
                 GameGold = 0,

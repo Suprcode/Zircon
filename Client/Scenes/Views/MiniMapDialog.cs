@@ -195,7 +195,10 @@ namespace Client.Scenes.Views
         {
             if (ob.SourceRegion == null || ob.SourceRegion.Map != GameScene.Game.MapControl.MapInfo) return;
             if (ob.DestinationRegion?.Map == null || ob.Icon == MapIcon.None) return;
-            
+
+            if (GameScene.Game.MapControl.InstanceInfo != null && !GameScene.Game.MapControl.InstanceInfo.Maps.Any(m => m.Map == ob.SourceRegion.Map)) return;
+            if (GameScene.Game.MapControl.InstanceInfo != null && !GameScene.Game.MapControl.InstanceInfo.Maps.Any(m => m.Map == ob.DestinationRegion?.Map)) return;
+
             if (ob.SourceRegion.PointList == null)
                 ob.SourceRegion.CreatePoints(GameScene.Game.MapControl.Width);
 

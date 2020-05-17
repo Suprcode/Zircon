@@ -105,7 +105,7 @@ namespace Server.Views
             IPNPrefixEdit.EditValue = Config.IPNPrefix;
             ReceiverEMailEdit.EditValue = Config.ReceiverEMail;
             ProcessGameGoldEdit.EditValue = Config.ProcessGameGold;
-            AllowBuyGammeGoldEdit.EditValue = Config.AllowBuyGammeGold;
+            AllowBuyGameGoldEdit.EditValue = Config.AllowBuyGameGold;
 
 
             //Players
@@ -219,7 +219,7 @@ namespace Server.Views
             Config.IPNPrefix = (string)IPNPrefixEdit.EditValue;
             Config.ReceiverEMail = (string)ReceiverEMailEdit.EditValue;
             Config.ProcessGameGold = (bool)ProcessGameGoldEdit.EditValue;
-            Config.AllowBuyGammeGold = (bool)AllowBuyGammeGoldEdit.EditValue;
+            Config.AllowBuyGameGold = (bool)AllowBuyGameGoldEdit.EditValue;
 
 
             //Players

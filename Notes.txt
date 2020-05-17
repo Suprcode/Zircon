@@ -1,0 +1,20 @@
+To Do
+--
+Add npcs on instances
+Add spawns on instances
+Add safezones on instances
+Add special mob types on instances
+
+Ideas
+--
+Certificate of X Title (Scroll, gives emblem, buy from Marriage NPC) - Copied from Zed
+
+
+Instances
+--
+IP (Instance Points)
+Instances for each dungeon
+Points for completing dungeon, points for repeating dungeon
+Repeats get better rates?
+Dungeon Finder window
+Set Idea requirement (2 x Wizard, 1 x Healer etc). Found "perfect" match. Found "good" match. etc

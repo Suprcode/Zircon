@@ -123,7 +123,7 @@
             this.labelControl26 = new DevExpress.XtraEditors.LabelControl();
             this.xtraTabPage5 = new DevExpress.XtraTab.XtraTabPage();
             this.labelControl81 = new DevExpress.XtraEditors.LabelControl();
-            this.AllowBuyGammeGoldEdit = new DevExpress.XtraEditors.CheckEdit();
+            this.AllowBuyGameGoldEdit = new DevExpress.XtraEditors.CheckEdit();
             this.labelControl80 = new DevExpress.XtraEditors.LabelControl();
             this.ProcessGameGoldEdit = new DevExpress.XtraEditors.CheckEdit();
             this.ReceiverEMailEdit = new DevExpress.XtraEditors.TextEdit();
@@ -269,7 +269,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.MailUseSSLEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailPortEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailServerEdit.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AllowBuyGammeGoldEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AllowBuyGameGoldEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ProcessGameGoldEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ReceiverEMailEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.IPNPrefixEdit.Properties)).BeginInit();
@@ -1361,7 +1361,7 @@
             // xtraTabPage5
             // 
             this.xtraTabPage5.Controls.Add(this.labelControl81);
-            this.xtraTabPage5.Controls.Add(this.AllowBuyGammeGoldEdit);
+            this.xtraTabPage5.Controls.Add(this.AllowBuyGameGoldEdit);
             this.xtraTabPage5.Controls.Add(this.labelControl80);
             this.xtraTabPage5.Controls.Add(this.ProcessGameGoldEdit);
             this.xtraTabPage5.Controls.Add(this.ReceiverEMailEdit);
@@ -1401,17 +1401,17 @@
             this.labelControl81.TabIndex = 101;
             this.labelControl81.Text = "Allow Buy Game Gold:";
             // 
-            // AllowBuyGammeGoldEdit
+            // AllowBuyGameGoldEdit
             // 
-            this.AllowBuyGammeGoldEdit.Location = new System.Drawing.Point(485, 200);
-            this.AllowBuyGammeGoldEdit.MenuManager = this.ribbon;
-            this.AllowBuyGammeGoldEdit.Name = "AllowBuyGammeGoldEdit";
+            this.AllowBuyGameGoldEdit.Location = new System.Drawing.Point(485, 200);
+            this.AllowBuyGameGoldEdit.MenuManager = this.ribbon;
+            this.AllowBuyGameGoldEdit.Name = "AllowBuyGameGoldEdit";
             // 
             // 
             // 
-            this.AllowBuyGammeGoldEdit.Properties.Caption = "";
-            this.AllowBuyGammeGoldEdit.Size = new System.Drawing.Size(100, 19);
-            this.AllowBuyGammeGoldEdit.TabIndex = 100;
+            this.AllowBuyGameGoldEdit.Properties.Caption = "";
+            this.AllowBuyGameGoldEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowBuyGameGoldEdit.TabIndex = 100;
             // 
             // labelControl80
             // 
@@ -2663,7 +2663,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.MailUseSSLEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailPortEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MailServerEdit.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AllowBuyGammeGoldEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AllowBuyGameGoldEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ProcessGameGoldEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ReceiverEMailEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.IPNPrefixEdit.Properties)).EndInit();
@@ -2898,7 +2898,7 @@
         private DevExpress.XtraEditors.TextEdit BuyPrefixEdit;
         private DevExpress.XtraEditors.LabelControl labelControl71;
         private DevExpress.XtraEditors.LabelControl labelControl81;
-        private DevExpress.XtraEditors.CheckEdit AllowBuyGammeGoldEdit;
+        private DevExpress.XtraEditors.CheckEdit AllowBuyGameGoldEdit;
         private DevExpress.XtraEditors.LabelControl labelControl80;
         private DevExpress.XtraEditors.CheckEdit ProcessGameGoldEdit;
         private DevExpress.XtraEditors.TextEdit ReceiverEMailEdit;

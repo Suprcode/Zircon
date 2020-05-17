@@ -34,6 +34,10 @@ namespace Library.SystemModels
         }
         private string _Description;
 
+        [IgnoreProperty]
+        public string ServerDescription => $"{FileName} - {Description}";
+
+
         public int MiniMap
         {
             get { return _MiniMap; }
@@ -397,6 +401,22 @@ namespace Library.SystemModels
         }
         private int _MaxGoldRate;
 
+
+        [Association("Maps")]
+        public InstanceInfo Instance
+        {
+            get { return _Instance; }
+            set
+            {
+                if (_Instance == value) return;
+
+                var oldValue = _Instance;
+                _Instance = value;
+
+                OnChanged(oldValue, value, "Instance");
+            }
+        }
+        private InstanceInfo _Instance;
 
         public RequiredClass RequiredClass
         {

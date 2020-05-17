@@ -182,6 +182,8 @@ namespace Client.UserModels
         RankingWindow,
         [Description("Game Store Window")]
         GameStoreWindow,
+        [Description("Dungeon Finder Window")]
+        DungeonFinderWindow,
         [Description("Companion Window")]
         CompanionWindow,
         [Description("Group Window")]

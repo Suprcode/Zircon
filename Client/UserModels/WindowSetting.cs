@@ -136,6 +136,7 @@ namespace Client.UserModels
         InspectBox,
         RankingBox,
         MarketPlaceBox,
+        DungeonFinderBox,
         MailBox,
         ReadMailBox,
         SendMailBox,

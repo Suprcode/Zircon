@@ -48,7 +48,7 @@ namespace Server.Models.Monsters
 
         public override bool SpawnMinion(MonsterObject mob)
         {
-            return mob.Spawn(CurrentMap.Info, Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, 3)));
+            return mob.Spawn(CurrentMap, Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, 3)));
         }
     }
 }
