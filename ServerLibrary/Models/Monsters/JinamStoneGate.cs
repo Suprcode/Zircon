@@ -59,7 +59,7 @@ namespace Server.Models.Monsters
             if (SEnvir.Now >= SearchTime && SEnvir.LairMapRegion != null && SEnvir.LairMapRegion.PointList.Count > 0)
             {
                 SearchTime = SEnvir.Now.AddSeconds(3);
-                Map map = SEnvir.GetMap(SEnvir.LairMapRegion.Map);
+                Map map = SEnvir.GetMap(SEnvir.LairMapRegion.Map, CurrentMap.Instance, CurrentMap.InstanceIndex);
 
                 if (map == null)
                 {

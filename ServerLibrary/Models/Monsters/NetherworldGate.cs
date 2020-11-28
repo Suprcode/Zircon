@@ -54,7 +54,7 @@ namespace Server.Models.Monsters
             if (SEnvir.Now >= SearchTime && SEnvir.MysteryShipMapRegion != null && SEnvir.MysteryShipMapRegion.PointList.Count > 0)
             {
                 SearchTime = SEnvir.Now.AddSeconds(3);
-                Map map = SEnvir.GetMap(SEnvir.MysteryShipMapRegion.Map);
+                Map map = SEnvir.GetMap(SEnvir.MysteryShipMapRegion.Map, CurrentMap.Instance, CurrentMap.InstanceIndex);
 
                 if (map == null)
                 {

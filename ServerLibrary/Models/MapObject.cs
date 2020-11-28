@@ -682,11 +682,11 @@ namespace Server.Models
             }
         }
 
-        public bool Spawn(MapRegion region)
+        public bool Spawn(MapRegion region, InstanceInfo instance, byte instanceIndex)
         {
             if (region == null) return false;
 
-            Map map = SEnvir.GetMap(region.Map, null, 0); //TODO - Instance
+            Map map = SEnvir.GetMap(region.Map, instance, instanceIndex);
 
             if (map == null) return false;
 
@@ -817,9 +817,14 @@ namespace Server.Models
 
             Teleport(CurrentMap, cells[SEnvir.Random.Next(cells.Count)].Location);
         }
-        public bool Teleport(MapRegion region, bool leaveEffect = true)
+        public bool Teleport(MapRegion region, InstanceInfo instance, byte instanceIndex, bool leaveEffect = true)
         {
-            Map map = SEnvir.GetMap(region.Map);
+            Map map = SEnvir.GetMap(region.Map, instance, instanceIndex);
+
+            if (map == null)
+            {
+                return false;
+            }
 
             Point point = region.PointList.Count > 0 ? region.PointList[SEnvir.Random.Next(region.PointList.Count)] : map.GetRandomLocation();
 

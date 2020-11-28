@@ -1215,6 +1215,13 @@ namespace Server.Envir
 
             Player.NPCAccessoryRefine(p);
         }
+
+        public void Process(C.JoinInstance p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.JoinInstance(p);
+        }
     }
 
 

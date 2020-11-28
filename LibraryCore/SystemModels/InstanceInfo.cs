@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace Library.SystemModels
 {
+    //TODO - 
+    //Add instance dialog button to rejoin instance after death (same button, join an existing instance??)
+    //Add conquest on instances
+    //Add teleporting(player, npc) on instances(figure how to teleport off instances but also through the same instances)
+
     public sealed class InstanceInfo : DBObject
     {
         [Association("Map", true)]
@@ -37,6 +42,21 @@ namespace Library.SystemModels
             }
         }
         private byte _MaxInstances;
+
+        public bool ShowOnDungeonFinder
+        {
+            get { return _ShowOnDungeonFinder; }
+            set
+            {
+                if (_ShowOnDungeonFinder == value) return;
+
+                var oldValue = _ShowOnDungeonFinder;
+                _ShowOnDungeonFinder = value;
+
+                OnChanged(oldValue, value, "ShowOnDungeonFinder");
+            }
+        }
+        private bool _ShowOnDungeonFinder;
 
         public byte MinPlayerLevel
         {
@@ -99,27 +119,37 @@ namespace Library.SystemModels
         }
         private byte _MaxPlayerCount;
 
-        public byte RecommendedPlayerCount
+        public MapRegion ConnectRegion
         {
-            get { return _RecommendedPlayerCount; }
+            get { return _ConnectRegion; }
             set
             {
-                if (_RecommendedPlayerCount == value) return;
+                if (_ConnectRegion == value) return;
 
-                var oldValue = _RecommendedPlayerCount;
-                _RecommendedPlayerCount = value;
+                var oldValue = _ConnectRegion;
+                _ConnectRegion = value;
 
-                OnChanged(oldValue, value, "RecommendedPlayerCount");
+                OnChanged(oldValue, value, "ConnectRegion");
             }
         }
-        private byte _RecommendedPlayerCount;
+        private MapRegion _ConnectRegion;
 
-        //TODO - Rewards
-        //TODO - Entry point
-        //TODO - Save Points on death??
-        //TODO - Reconnect map??
+
+        public MapRegion ReconnectRegion
+        {
+            get { return _ReconnectRegion; }
+            set
+            {
+                if (_ReconnectRegion == value) return;
+
+                var oldValue = _ReconnectRegion;
+                _ReconnectRegion = value;
+
+                OnChanged(oldValue, value, "ReconnectRegion");
+            }
+        }
+        private MapRegion _ReconnectRegion;
     }
-
 
     public class InstanceMapInfo : DBObject
     {

@@ -599,7 +599,12 @@ namespace Server.Models
                 return;
             }
 
-            if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion)) //TODO - Instance
+            if (Character.CurrentInstance != null && Spawn(Character.CurrentInstance.ReconnectRegion, null, 0))
+            {
+                return;
+            }
+
+            if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
             {
                 SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
@@ -607,8 +612,8 @@ namespace Server.Models
                 Character = null;
                 return;
             }
-
         }
+
         public void StopGame()
         {
             Character.LastLogin = SEnvir.Now;
@@ -1029,6 +1034,7 @@ namespace Server.Models
             if (CurrentMap == null) return;
 
             Character.CurrentMap = CurrentMap.Info;
+            Character.CurrentInstance = CurrentMap.Instance;
 
             if (!Spawned) return;
 
@@ -3011,7 +3017,7 @@ namespace Server.Models
 
             if (destMap == null)
             {
-                destMap = SEnvir.GetMap(destInfo);
+                return;
             }
 
             if (!Teleport(destMap, destMap.GetRandomLocation(location, 10, 25))) return;
@@ -5181,6 +5187,15 @@ namespace Server.Models
         {
             if (Character.Account.AllowGroup == allowGroup) return;
 
+            if (GroupMembers.Any(x => x.CurrentMap.Instance != null))
+            {
+                Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.NoActionOnInstance, MessageType.System);
+                return;
+            }
+
             Character.Account.AllowGroup = allowGroup;
 
             Enqueue(new S.GroupSwitch { Allow = Character.Account.AllowGroup });
@@ -5206,6 +5221,15 @@ namespace Server.Models
 
                 foreach (SConnection con in Connection.Observers)
                     con.ReceiveChat(con.Language.GroupNotLeader, MessageType.System);
+                return;
+            }
+
+            if (GroupMembers.Any(x => x.CurrentMap.Instance != null))
+            {
+                Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.NoActionOnInstance, MessageType.System);
                 return;
             }
 
@@ -5281,6 +5305,15 @@ namespace Server.Models
                 return;
             }
 
+            if (GroupMembers.Any(x => x.CurrentMap.Instance != null))
+            {
+                Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.NoActionOnInstance, MessageType.System);
+                return;
+            }
+
             player.GroupInvitation = this;
             player.Enqueue(new S.GroupInvite { Name = Name, ObserverPacket = false });
         }
@@ -5290,7 +5323,6 @@ namespace Server.Models
             if (GroupInvitation != null && GroupInvitation.Node == null) GroupInvitation = null;
 
             if (GroupInvitation == null || GroupMembers != null) return;
-
 
             if (GroupInvitation.GroupMembers == null)
             {
@@ -5312,6 +5344,15 @@ namespace Server.Models
 
                 foreach (SConnection con in Connection.Observers)
                     con.ReceiveChat(string.Format(con.Language.GroupMemberLimit, GroupInvitation.Name), MessageType.System);
+                return;
+            }
+
+            if (CurrentMap.Instance != null)
+            {
+                Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.NoActionOnInstance, MessageType.System);
                 return;
             }
 
@@ -5697,7 +5738,7 @@ namespace Server.Models
                             if (!ItemBuffAdd(item.Info)) return;
                             break;
                         case 2: //Town Teleport
-                            if (!CurrentMap.Info.AllowTT)
+                            if (!CurrentMap.Info.AllowTT || CurrentMap.Instance != null)
                             {
                                 Connection.ReceiveChat(Connection.Language.CannotTownTeleport, MessageType.System);
 
@@ -19689,7 +19730,83 @@ namespace Server.Models
         }
 
 
+        #region Instance / Dungeon Finder
 
+        public void JoinInstance(C.JoinInstance p)
+        {
+            var instance = SEnvir.InstanceInfoList.Binding.FirstOrDefault(x => x.Index == p.Index);
+
+            if (instance == null)
+            {
+                return;
+            }
+
+            if (CurrentMap.Instance != null)
+            {
+                //Cannot move from one instance to another
+                return;
+            }
+
+            S.JoinInstance result = new S.JoinInstance { Success = false };
+
+            if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
+            {
+                result.Result = InstanceResult.InsufficientLevel;
+                Enqueue(result);
+                return;
+            }
+            
+            if (instance.MinPlayerCount > 1 && (GroupMembers == null || GroupMembers.Count < instance.MinPlayerCount))
+            {
+                result.Result = InstanceResult.TooFewInGroup;
+                Enqueue(result);
+                return;
+            }
+            
+            if (instance.MaxPlayerCount > 1 && (GroupMembers != null && GroupMembers.Count > instance.MaxPlayerCount))
+            {
+                result.Result = InstanceResult.TooManyInGroup;
+                Enqueue(result);
+                return;
+            }
+
+            //Load up instance
+            var index = SEnvir.LoadInstance(instance);
+
+            if (index == null)
+            {
+                result.Result = InstanceResult.NoSlots;
+                Enqueue(result);
+                return;
+            }
+
+            //TODO - Prompt first before taking everyone to the instance??
+            //Offer teleport now or 5 minute delay.
+
+            if (!Teleport(instance.ConnectRegion, instance, index.Value))
+            {
+                result.Result = InstanceResult.NoMap;
+                Enqueue(result);
+                return;
+            }
+
+            if (GroupMembers != null)
+            {
+                foreach (var member in GroupMembers)
+                {
+                    if (member == this) continue;
+
+                    member.Teleport(instance.ConnectRegion, instance, index.Value);
+                }
+            }
+
+            result.Success = true;
+            result.Result = InstanceResult.Success;
+
+            Enqueue(result);
+        }
+
+        #endregion
     }
 
 }

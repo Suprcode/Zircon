@@ -32,7 +32,7 @@ namespace Server.Models
         public List<NPCObject> NPCs { get; } = new List<NPCObject>();
         public HashSet<MapObject>[] OrderedObjects;
 
-        public DateTime LastProcess;
+        public DateTime LastProcess, LastPlayer;
 
         public DateTime HalloweenEventTime, ChristmasEventTime;
 
@@ -84,6 +84,8 @@ namespace Server.Models
         public void Setup()
         {
             CreateGuards();
+
+            LastPlayer = DateTime.Now;
         }
 
         private void CreateGuards()
@@ -104,6 +106,10 @@ namespace Server.Models
 
         public void Process()
         {
+            if (LastPlayer.AddMinutes(1) < DateTime.Now && Players.Any())
+            {
+                LastPlayer = DateTime.Now;
+            }
         }
 
         public void AddObject(MapObject ob)
@@ -253,10 +259,10 @@ namespace Server.Models
 
         public DateTime LastCheck;
 
-        public SpawnInfo(RespawnInfo info)
+        public SpawnInfo(RespawnInfo info, InstanceInfo instance, byte index)
         {
             Info = info;
-            CurrentMap = SEnvir.GetMap(info.Region.Map);
+            CurrentMap = SEnvir.GetMap(info.Region.Map, instance, index);
             LastCheck = SEnvir.Now;
         }
 
@@ -309,7 +315,7 @@ namespace Server.Models
 
                 mob.SpawnInfo = this;
 
-                if (!mob.Spawn(Info.Region))
+                if (!mob.Spawn(Info.Region, CurrentMap.Instance, CurrentMap.InstanceIndex))
                 {
                     mob.SpawnInfo = null;
                     continue;

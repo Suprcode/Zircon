@@ -1449,6 +1449,17 @@ namespace Library
         Crashed
     }
 
+    public enum InstanceResult : byte
+    {
+        Invalid,
+        InsufficientLevel,
+        TooFewInGroup,
+        TooManyInGroup,
+        NoSlots,
+        NoMap,
+        Success
+    }
+
 
 
 

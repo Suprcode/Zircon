@@ -517,7 +517,23 @@ namespace Library.SystemModels
             }
         }
         private MapInfo _MapParameter1;
-        
+
+
+        public InstanceInfo InstanceParameter1
+        {
+            get { return _InstanceParameter1; }
+            set
+            {
+                if (_InstanceParameter1 == value) return;
+
+                var oldValue = _InstanceParameter1;
+                _InstanceParameter1 = value;
+
+                OnChanged(oldValue, value, "InstanceParameter1");
+            }
+        }
+        private InstanceInfo _InstanceParameter1;
+
         public Stat StatParameter1
         {
             get { return _StatParameter1; }

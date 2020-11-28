@@ -223,6 +223,21 @@ namespace Server.DBModels
         }
         private MapInfo _CurrentMap;
 
+        public InstanceInfo CurrentInstance
+        {
+            get { return _CurrentInstance; }
+            set
+            {
+                if (_CurrentInstance == value) return;
+
+                var oldValue = _CurrentInstance;
+                _CurrentInstance = value;
+
+                OnChanged(oldValue, value, "CurrentInstance");
+            }
+        }
+        private InstanceInfo _CurrentInstance;
+
         public MirDirection Direction
         {
             get { return _Direction; }

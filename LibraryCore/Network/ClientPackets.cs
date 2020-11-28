@@ -628,4 +628,8 @@ namespace Library.Network.ClientPackets
         public List<CellLinkInfo> Links { get; set; }
         public RefineType RefineType { get; set; }
     }
+    public sealed class JoinInstance : Packet
+    {
+        public int Index { get; set; }
+    }
 }

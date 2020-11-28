@@ -2448,23 +2448,23 @@ namespace Server.Models
                         case EventActionType.MovementSettings:
                             break;
                         case EventActionType.PlayerRecall:
-                            map = SEnvir.GetMap(action.MapParameter1);
+                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceIndex);
                             if (map == null) continue;
 
                             for (int i = map.Players.Count - 1; i >= 0; i--)
                             {
                                 PlayerObject player = map.Players[i];
-                                player.Teleport(action.RegionParameter1);
+                                player.Teleport(action.RegionParameter1, CurrentMap.Instance, CurrentMap.InstanceIndex);
                             }
                             break;
                         case EventActionType.PlayerEscape:
-                            map = SEnvir.GetMap(action.MapParameter1);
+                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceIndex);
                             if (map == null) continue;
 
                             for (int i = map.Players.Count - 1; i >= 0; i--)
                             {
                                 PlayerObject player = map.Players[i];
-                                player.Teleport(player.Character.BindPoint.BindRegion);
+                                player.Teleport(player.Character.BindPoint.BindRegion, CurrentMap.Instance, CurrentMap.InstanceIndex);
                             }
                             break;
                     }

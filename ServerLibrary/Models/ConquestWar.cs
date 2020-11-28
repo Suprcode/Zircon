@@ -31,7 +31,7 @@ namespace Server.Models
                 con.ReceiveChat(string.Format(con.Language.ConquestStarted, Castle.Name), MessageType.System);
             
 
-            Map = SEnvir.GetMap(Castle.Map);
+            Map = SEnvir.GetMap(Castle.Map); //TODO - Instance
 
             for (int i = Map.NPCs.Count - 1; i >= 0; i--)
             {
@@ -131,7 +131,7 @@ namespace Server.Models
 
                 if (player.Character.Account.GuildMember?.Guild?.Castle == Castle) continue;
 
-                player.Teleport(Castle.AttackSpawnRegion);
+                player.Teleport(Castle.AttackSpawnRegion, null, 0); //TODO
             }
         }
 
@@ -153,7 +153,7 @@ namespace Server.Models
                 War = this,
             };
 
-            CastleBoss.Spawn(Castle.CastleRegion);
+            CastleBoss.Spawn(Castle.CastleRegion, null, 0); //TODO - Instance
         }
 
         public UserConquestStats GetStat(CharacterInfo character)

@@ -332,7 +332,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(300, 20),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
 
             LevelLabel = new DXLabel
@@ -342,7 +343,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(300, 40),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
 
             ACLabel = new DXLabel
@@ -352,7 +354,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(385, 20),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
 
             MRLabel = new DXLabel
@@ -362,7 +365,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(470, 20),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
 
             DCLabel = new DXLabel
@@ -372,7 +376,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(385, 40),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
 
             MCLabel = new DXLabel
@@ -382,7 +387,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(470, 40),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
             MCLabel.VisibleChanged += (o, e) => MCLabelLabel.Visible = MCLabel.Visible;
 
@@ -393,7 +399,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(470, 40),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
             SCLabel.VisibleChanged += (o, e) => SCLabelLabel.Visible = SCLabel.Visible;
 
@@ -404,7 +411,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(567, 20),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
 
             AgilityLabel = new DXLabel
@@ -414,7 +422,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 Location = new Point(567, 40),
                 Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
             };
 
 

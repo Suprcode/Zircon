@@ -50,6 +50,7 @@ namespace Server.Envir
         public abstract string Died { get; set; }
         public abstract string GroupRecallEnabled { get; set; }
         public abstract string GroupRecallDisabled { get; set; }
+        public abstract string NoActionOnInstance { get; set; }
 
 
         [ConfigSection("Movement")]

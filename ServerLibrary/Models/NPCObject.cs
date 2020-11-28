@@ -64,14 +64,30 @@ namespace Server.Models
                 switch (action.ActionType)
                 {
                     case NPCActionType.Teleport:
-                        if (action.MapParameter1 == null) return;
+                        if (action.MapParameter1 == null && action.InstanceParameter1 == null) return;
 
-                        Map map = SEnvir.GetMap(action.MapParameter1);
+                        if (action.InstanceParameter1 != null)
+                        {
+                            if (ob.CurrentMap.Instance != null)
+                            {
+                                return;
+                            }
 
-                        if (action.IntParameter1 == 0 && action.IntParameter2 == 0)
-                            ob.Teleport(map, map.GetRandomLocation());
+                            var index = SEnvir.LoadInstance(action.InstanceParameter1);
+
+                            if (index == null) return;
+
+                            ob.Teleport(action.InstanceParameter1.ConnectRegion, action.InstanceParameter1, index.Value);
+                        }
                         else
-                            ob.Teleport(map, new Point(action.IntParameter1, action.IntParameter2));
+                        {
+                            Map map = SEnvir.GetMap(action.MapParameter1);
+
+                            if (action.IntParameter1 == 0 && action.IntParameter2 == 0)
+                                ob.Teleport(map, map.GetRandomLocation());
+                            else
+                                ob.Teleport(map, new Point(action.IntParameter1, action.IntParameter2));
+                        }
                         break;
                     case NPCActionType.TakeGold:
                         ob.Gold -= action.IntParameter1;

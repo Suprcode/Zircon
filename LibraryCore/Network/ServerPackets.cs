@@ -1243,5 +1243,11 @@ namespace Library.Network.ServerPackets
         public int Slot { get; set; }
         public Stats NewStats { get; set; }
     }
+
+    public sealed class JoinInstance : Packet
+    {
+        public InstanceResult Result { get; set; }
+        public bool Success { get; set; }
+    }
 }
 

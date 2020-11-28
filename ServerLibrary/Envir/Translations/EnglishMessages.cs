@@ -47,6 +47,7 @@ namespace Server.Envir.Translations
         public override string Died { get; set; } = "You have died in combat.";
         public override string GroupRecallEnabled { get; set; } = "Group Recall Enabled.";
         public override string GroupRecallDisabled { get; set; } = "Group Recall Disabled.";
+        public override string NoActionOnInstance { get; set; } = "Cannot perform this action whilst on an instance.";
 
 
         public override string NeedMaxLevel { get; set; } = "You need to be level {0} or lower to proceed.";

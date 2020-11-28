@@ -11,6 +11,7 @@ using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
+using Library.Network.ServerPackets;
 using Library.SystemModels;
 using C = Library.Network.ClientPackets;
 
@@ -24,12 +25,14 @@ namespace Client.Scenes.Views
 
         public DXTab DungeonTab, RaidTab;
         public DXTextBox DungeonNameBox;
-        public DXComboBox DungeonTypeBox, SortBox;
+        public DXComboBox SortBox;
         public DXButton SearchButton;
 
         public DXVScrollBar DungeonScrollBar;
         public DungeonRow[] DungeonRows;
         public List<InstanceInfo> DungeonSearchResults;
+
+        public DXButton JoinButton;
 
         #endregion
 
@@ -37,20 +40,20 @@ namespace Client.Scenes.Views
 
         public DungeonRow SelectedDungeonRow
         {
-            get => _SelectedStoreRow;
+            get => _SelectedDungeonRow;
             set
             {
-                if (_SelectedStoreRow == value) return;
+                if (_SelectedDungeonRow == value) return;
 
-                DungeonRow oldValue = _SelectedStoreRow;
-                _SelectedStoreRow = value;
+                DungeonRow oldValue = _SelectedDungeonRow;
+                _SelectedDungeonRow = value;
 
-                OnSelectedStoreRowChanged(oldValue, value);
+                OnSelectedDungeonRowChanged(oldValue, value);
             }
         }
-        private DungeonRow _SelectedStoreRow;
-        public event EventHandler<EventArgs> SelectedStoreRowChanged;
-        public void OnSelectedStoreRowChanged(DungeonRow oValue, DungeonRow nValue)
+        private DungeonRow _SelectedDungeonRow;
+        public event EventHandler<EventArgs> SelectedDungeonRowChanged;
+        public void OnSelectedDungeonRowChanged(DungeonRow oValue, DungeonRow nValue)
         {
             if (oValue != null)
                 oValue.Selected = false;
@@ -60,14 +63,15 @@ namespace Client.Scenes.Views
 
             if (nValue?.InstanceInfo == null)
             {
-
+                JoinButton.Visible = false;
             }
             else
             {
-
+                JoinButton.Visible = true;
             }
 
-            SelectedStoreRowChanged?.Invoke(this, EventArgs.Empty);
+
+            SelectedDungeonRowChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -79,7 +83,7 @@ namespace Client.Scenes.Views
         public DungeonFinderDialog()
         {
             TitleLabel.Text = "Dungeon Finder";
-            SetClientSize(new Size(740, 461));
+            SetClientSize(new Size(560, 461));
 
             TabControl = new DXTabControl
             {
@@ -137,28 +141,28 @@ namespace Client.Scenes.Views
 
 
 
-            DungeonTypeBox = new DXComboBox
-            {
-                Parent = filterPanel,
-                Location = new Point(label.Location.X + label.Size.Width + 5, label.Location.Y),
-                Size = new Size(95, DXComboBox.DefaultNormalHeight),
-                DropDownHeight = 198
-            };
+            //DungeonTypeBox = new DXComboBox
+            //{
+            //    Parent = filterPanel,
+            //    Location = new Point(label.Location.X + label.Size.Width + 5, label.Location.Y),
+            //    Size = new Size(95, DXComboBox.DefaultNormalHeight),
+            //    DropDownHeight = 198
+            //};
 
 
-            new DXListBoxItem
-            {
-                Parent = DungeonTypeBox.ListBox,
-                Label = { Text = $"All" },
-                Item = null
-            };
+            //new DXListBoxItem
+            //{
+            //    Parent = DungeonTypeBox.ListBox,
+            //    Label = { Text = $"All" },
+            //    Item = null
+            //};
 
-            label = new DXLabel
-            {
-                Parent = filterPanel,
-                Location = new Point(DungeonTypeBox.Location.X + DungeonTypeBox.Size.Width + 10, 5),
-                Text = "Sort:",
-            };
+            //label = new DXLabel
+            //{
+            //    Parent = filterPanel,
+            //    Location = new Point(DungeonTypeBox.Location.X + DungeonTypeBox.Size.Width + 10, 5),
+            //    Text = "Sort:",
+            //};
 
             SortBox = new DXComboBox
             {
@@ -194,20 +198,20 @@ namespace Client.Scenes.Views
             };
             SearchButton.MouseClick += (o, e) => DungeonSearch();
 
-            DXButton ClearButton = new DXButton
-            {
-                Size = new Size(50, SmallButtonHeight),
-                Location = new Point(SearchButton.Location.X + SearchButton.Size.Width + 40, label.Location.Y - 1),
-                Parent = filterPanel,
-                ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Clear" }
-            };
-            ClearButton.MouseClick += (o, e) =>
-            {
-                DungeonNameBox.TextBox.Text = "";
-                DungeonTypeBox.ListBox.SelectItem(null);
-                DungeonSearch();
-            };
+            //DXButton ClearButton = new DXButton
+            //{
+            //    Size = new Size(50, SmallButtonHeight),
+            //    Location = new Point(SearchButton.Location.X + SearchButton.Size.Width + 40, label.Location.Y - 1),
+            //    Parent = filterPanel,
+            //    ButtonType = ButtonType.SmallButton,
+            //    Label = { Text = "Clear" }
+            //};
+            //ClearButton.MouseClick += (o, e) =>
+            //{
+            //    DungeonNameBox.TextBox.Text = "";
+            //    //DungeonTypeBox.ListBox.SelectItem(null);
+            //    DungeonSearch();
+            //};
 
             DungeonRows = new DungeonRow[9];
 
@@ -219,7 +223,7 @@ namespace Client.Scenes.Views
                 VisibleSize = DungeonRows.Length,
                 Change = 3,
             };
-            DungeonScrollBar.ValueChanged += StoreScrollBar_ValueChanged;
+            DungeonScrollBar.ValueChanged += DungeonScrollBar_ValueChanged;
 
 
             for (int i = 0; i < DungeonRows.Length; i++)
@@ -233,6 +237,22 @@ namespace Client.Scenes.Views
                 DungeonRows[index].MouseClick += (o, e) => { SelectedDungeonRow = DungeonRows[index]; };
                 DungeonRows[index].MouseWheel += DungeonScrollBar.DoMouseWheel;
             }
+
+            #region Instance Details
+
+
+            JoinButton = new DXButton
+            {
+                Size = new Size(80, SmallButtonHeight),
+                Location = new Point(490, 35),
+                Parent = this,
+                ButtonType = ButtonType.SmallButton,
+                Label = { Text = "Join Instance" },
+                Visible = false
+            };
+            JoinButton.MouseClick += (o, e) => JoinInstance();
+
+            #endregion
         }
 
         #region Methods
@@ -262,7 +282,7 @@ namespace Client.Scenes.Views
                 DungeonSearch();
         }
 
-        private void StoreScrollBar_ValueChanged(object sender, EventArgs e)
+        private void DungeonScrollBar_ValueChanged(object sender, EventArgs e)
         {
             RefreshDungeonList();
         }
@@ -277,13 +297,13 @@ namespace Client.Scenes.Views
             foreach (DungeonRow row in DungeonRows)
                 row.Visible = true;
 
-            string filter = (string)DungeonTypeBox.SelectedItem;
+            //string filter = (string)DungeonTypeBox.SelectedItem;
 
             DungeonFinderSort sort = (DungeonFinderSort)SortBox.SelectedItem;
 
             foreach (InstanceInfo info in Globals.InstanceInfoList.Binding)
             {
-                if (info == null) continue;
+                if (info == null || !info.ShowOnDungeonFinder) continue;
 
                 //if (filter != null && !info.Filter.Contains(filter)) continue;
 
@@ -326,6 +346,43 @@ namespace Client.Scenes.Views
             }
 
         }
+
+        public void JoinInstance()
+        {
+            if (SelectedDungeonRow == null)
+            {
+                return;
+            }
+
+            if (GameScene.Game.MapControl.InstanceInfo != null)
+            {
+                GameScene.Game.ReceiveChat("You are already in an instance.", MessageType.System);
+                return;
+            }
+
+            var instance = SelectedDungeonRow.InstanceInfo;
+
+            if (instance.MinPlayerLevel > 0 && MapObject.User.Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && MapObject.User.Level > instance.MaxPlayerLevel)
+            {
+                GameScene.Game.ReceiveChat("You are not the correct level.", MessageType.System);
+                return;
+            }
+
+            if (instance.MinPlayerCount > 1 && ( GameScene.Game.GroupBox.Members.Count < instance.MinPlayerCount))
+            {
+                GameScene.Game.ReceiveChat("There are not enough people in your group.", MessageType.System);
+                return;
+            }
+
+            if (instance.MaxPlayerCount > 1 && (GameScene.Game.GroupBox.Members.Count > instance.MaxPlayerCount))
+            {
+                GameScene.Game.ReceiveChat("There are too many people in your group.", MessageType.System);
+                return;
+            }
+
+            CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
+        }
+
 
         #endregion
 
@@ -397,9 +454,9 @@ namespace Client.Scenes.Views
             Visible = true;
 
             NameLabel.Text = InstanceInfo.Name;
-            MinLevelLabel.Text = $"Min Level: {InstanceInfo.MinPlayerLevel}";
-            MinCountLabel.Text = $"Min Count: {InstanceInfo.MinPlayerCount}";
-            FreeSlotLabel.Text = $"Slots: 0 / {InstanceInfo.MaxInstances}";
+            LevelLabel.Text = $"Level: {GetLevel(InstanceInfo)}";
+            CountLabel.Text = $"Player Count: {GetPlayerCount(InstanceInfo)}";
+            //FreeSlotLabel.Text = $"Slots: 0 / {InstanceInfo.MaxInstances}";
 
             if (GameScene.Game.DungeonFinderBox.SelectedDungeonRow == this)
                 GameScene.Game.DungeonFinderBox.SelectedDungeonRow = null;
@@ -407,9 +464,29 @@ namespace Client.Scenes.Views
             StoreInfoChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        private string GetLevel(InstanceInfo instance)
+        {
+            if (instance.MaxPlayerLevel == 0)
+            {
+                return "Any";
+            }
+
+            return $"{InstanceInfo.MinPlayerLevel} - {InstanceInfo.MaxPlayerLevel}";
+        }
+
+        private string GetPlayerCount(InstanceInfo instance)
+        {
+            if (instance.MaxPlayerCount == 0)
+            {
+                return "Any";
+            }
+
+            return $"{InstanceInfo.MinPlayerCount} - {InstanceInfo.MaxPlayerCount}";
+        }
+
         #endregion
 
-        public DXLabel NameLabel, MinLevelLabel, MinCountLabel, FreeSlotLabel;
+        public DXLabel NameLabel, LevelLabel, CountLabel;
         public DXButton FavouriteImage;
 
         #endregion
@@ -428,26 +505,26 @@ namespace Client.Scenes.Views
                 IsControl = false,
             };
 
-            MinLevelLabel = new DXLabel
+            LevelLabel = new DXLabel
             {
                 Parent = this,
                 Location = new Point(150, 12),
                 IsControl = false,
             };
 
-            MinCountLabel = new DXLabel
+            CountLabel = new DXLabel
             {
                 Parent = this,
                 Location = new Point(250, 12),
                 IsControl = false,
             };
 
-            FreeSlotLabel = new DXLabel
-            {
-                Parent = this,
-                Location = new Point(350, 12),
-                IsControl = false,
-            };
+            //FreeSlotLabel = new DXLabel
+            //{
+            //    Parent = this,
+            //    Location = new Point(350, 12),
+            //    IsControl = false,
+            //};
 
             FavouriteImage = new DXButton
             {
@@ -484,13 +561,13 @@ namespace Client.Scenes.Views
                     NameLabel = null;
                 }
 
-                if (FreeSlotLabel != null)
-                {
-                    if (!FreeSlotLabel.IsDisposed)
-                        FreeSlotLabel.Dispose();
+                //if (FreeSlotLabel != null)
+                //{
+                //    if (!FreeSlotLabel.IsDisposed)
+                //        FreeSlotLabel.Dispose();
 
-                    FreeSlotLabel = null;
-                }
+                //    FreeSlotLabel = null;
+                //}
 
                 if (FavouriteImage != null)
                 {

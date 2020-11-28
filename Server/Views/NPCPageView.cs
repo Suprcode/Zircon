@@ -18,6 +18,7 @@ namespace Server.Views
             PageLookUpEdit.DataSource = SMain.Session.GetCollection<NPCPage>().Binding;
             ItemInfoLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
             MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
+            InstanceLookUpEdit.DataSource = SMain.Session.GetCollection<InstanceInfo>().Binding;
 
             DialogTypeImageComboBox.Items.AddEnum<NPCDialogType>();
             CheckTypeImageComboBox.Items.AddEnum<NPCCheckType>();

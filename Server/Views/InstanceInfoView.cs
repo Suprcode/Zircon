@@ -20,6 +20,7 @@ namespace Server.Views
 
             InstanceInfoGridControl.DataSource = SMain.Session.GetCollection<InstanceInfo>().Binding;
             MapInfoLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
+            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
         }
 
         protected override void OnLoad(EventArgs e)
