@@ -196,7 +196,31 @@ namespace LibraryEditor
             //            System.Windows.Forms.MessageBoxIcon.Information,
             //                System.Windows.Forms.MessageBoxDefaultButton.Button1);
         }
+        public void MergeToMLibrary(Mir3Library lib, int newImages)
+        {
+            int offset = lib.Images.Count;
+            for (int i = 0; i < Images.Length; i++)
+                lib.Images.Add(null);
 
+            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
+
+            try
+            {
+                Parallel.For(0, Images.Length, options, i =>
+                {
+                    WeMadeImage image = Images[i];
+                    //if (image.HasMask)
+                    //    library.Images[i] = new MLibraryV2.MImage(image.Image, image.MaskImage) { X = image.X, Y = image.Y, ShadowX = image.ShadowX, ShadowY = image.ShadowY, Shadow = image.boHasShadow ? (byte)1 : (byte)0, MaskX = image.X, MaskY = image.Y };
+                    // else
+                    lib.Images[i+offset] = new Mir3Library.Mir3Image(image.Image) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                });
+                lib.AddBlanks(newImages);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
         public class WeMadeImage
         {
             public readonly short Width, Height, X, Y, ShadowX, ShadowY;
@@ -433,7 +457,7 @@ namespace LibraryEditor
                         }
                         if (((nType == 1) || (nType == 4)) & (Width % 4 > 0))
                             index += WidthBytes(bo16bit ? 16 : 8, Width) - (Width * (bo16bit ? 2 : 1));
-                    }
+                    }                    
                 }
                 Image.UnlockBits(data);
                 index = 0;
