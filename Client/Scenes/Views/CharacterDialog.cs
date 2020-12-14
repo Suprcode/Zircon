@@ -16,7 +16,7 @@ namespace Client.Scenes.Views
     {
         #region Properties
         private DXTabControl TabControl;
-        private DXTab CharacterTab, StatsTab, HermitTab;
+        private DXTab CharacterTab, StatsTab, HermitTab, FilterDropTab;
         public DXLabel CharacterNameLabel, GuildNameLabel, GuildRankLabel;
 
         public DXImageControl MarriageIcon;
@@ -34,6 +34,7 @@ namespace Client.Scenes.Views
         public Dictionary<Stat, DXLabel> HermitDisplayStats = new Dictionary<Stat, DXLabel>();
         public Dictionary<Stat, DXLabel> HermitAttackStats = new Dictionary<Stat, DXLabel>();
         public DXLabel RemainingLabel;
+        public Dictionary<int, DXTextBox> DropFiltersMap = new Dictionary<int, DXTextBox>();
 
         public override WindowType Type => WindowType.CharacterBox;
         public override bool CustomSize => false;
@@ -71,6 +72,12 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 Border = true,
                 TabButton = { Label = { Text = "Hermit" } },
+            };
+            FilterDropTab = new DXTab
+            {
+                Parent = TabControl,
+                Border = true,
+                TabButton = { Label = { Text = "Filter Drop" } },
             };
             DXControl namePanel = new DXControl
             {
@@ -344,6 +351,44 @@ namespace Client.Scenes.Views
             {
                 CEnvir.Enqueue(new C.HelmetToggle{ HideHelmet = ShowHelmetBox.Checked});
             };
+
+            // start filter drop box
+            for (int i = 0; i < 10; i++)
+            {
+                DXLabel filterLabel = new DXLabel
+                {
+                    Parent = FilterDropTab,
+                    Text = "Item #" + (i + 1)
+                };
+                filterLabel.Location = new Point(20, 30 + (10 + filterLabel.Size.Height) * i);
+                DropFiltersMap[i] = new DXTextBox
+                {
+                    Parent = FilterDropTab,
+                    Border = true,
+                    BorderColour = Color.FromArgb(198, 166, 99),
+                    Location = new Point(90, filterLabel.Location.Y),
+                    Size = new Size(150, 18)
+                };
+            }
+
+            DXButton filterButton = new DXButton
+            {
+                Parent = FilterDropTab,
+                Label = { Text = "Save settings", },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(80, SmallButtonHeight)
+            };
+            filterButton.Location = new Point(100, FilterDropTab.Size.Height - 50);
+            filterButton.MouseClick += (o, e) =>
+            {
+                List<string> dropItems = new List<string>();
+                for (int i = 0; i < 10; i++)
+                {
+                    dropItems.Add(DropFiltersMap[i].TextBox.Text);
+                }
+                Config.HighlightedItems = String.Join(",", dropItems);
+            };
+            // end filter drop box
 
             int y = 0;
             DXLabel label = new DXLabel

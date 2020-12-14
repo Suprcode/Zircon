@@ -4150,6 +4150,19 @@ namespace Client.Models
                     y -= 13;
 
                 NameLabel.Location = new Point(x, y);
+                NameLabel.ForeColour = NameColour;
+                if (Config.HighlightedItems != string.Empty)
+                {
+                    string[] items = Config.HighlightedItems.Split(',');
+                    for (int i = 0; i < 10; i++)
+                    {
+                        if (items[i].ToLower() == Name.ToLower())
+                        {
+                            NameLabel.ForeColour = Color.OrangeRed;
+                            break;
+                        }
+                    }
+                }
                 NameLabel.Draw();
             }
 

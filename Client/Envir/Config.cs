@@ -77,6 +77,7 @@ namespace Client.Envir
 
         public static int RankingClass { get; set; } = (int)RequiredClass.All;
         public static bool RankingOnline { get; set; } = true;
+        public static string HighlightedItems { get; set; } = string.Empty;
 
         [ConfigSection("Colours")]
         public static Color LocalTextColour { get; set; } = Color.White;
