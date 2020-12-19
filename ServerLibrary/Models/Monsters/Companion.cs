@@ -462,6 +462,8 @@ namespace Server.Models.Monsters
 
         public bool FilterCompanionPicks(ItemCheck check)
         {
+            if (check.Info.ItemName == "Gold") return true;
+
             ItemType itemType;
             Rarity itemRarity;
             RequiredClass itemClass;
