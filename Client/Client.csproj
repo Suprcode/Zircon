@@ -132,6 +132,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Scenes\Views\CompanionFilterDialog.cs" />
     <Compile Include="Scenes\GameScene.cs" />
     <Compile Include="Scenes\LoginScene.cs" />
     <Compile Include="Scenes\SelectScene.cs" />

@@ -269,6 +269,7 @@ namespace Server.Envir
         public static DBCollection<CompanionInfo> CompanionInfoList;
         public static DBCollection<CompanionLevelInfo> CompanionLevelInfoList;
         public static DBCollection<UserCompanion> UserCompanionList;
+        public static DBCollection<CompanionFilters> CompanionFiltersList;
         public static DBCollection<UserCompanionUnlock> UserCompanionUnlockList;
         public static DBCollection<CompanionSkillInfo> CompanionSkillInfoList;
         public static DBCollection<BlockInfo> BlockInfoList;
@@ -425,6 +426,7 @@ namespace Server.Envir
             CompanionInfoList = Session.GetCollection<CompanionInfo>();
             CompanionLevelInfoList = Session.GetCollection<CompanionLevelInfo>();
             UserCompanionList = Session.GetCollection<UserCompanion>();
+            CompanionFiltersList = Session.GetCollection<CompanionFilters>();
             UserCompanionUnlockList = Session.GetCollection<UserCompanionUnlock>();
             BlockInfoList = Session.GetCollection<BlockInfo>();
             CastleInfoList = Session.GetCollection<CastleInfo>();

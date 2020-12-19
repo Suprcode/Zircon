@@ -231,6 +231,10 @@ namespace Client.Models
 
         public int CharacterIndex;
 
+        public string FiltersClass;
+        public string FiltersRarity;
+        public string FiltersItemType;
+
         public PlayerObject()
         {
 
@@ -275,6 +279,9 @@ namespace Client.Models
 
             Dead = info.Dead;
             Horse = info.Horse;
+            FiltersClass = info.FiltersClass;
+            FiltersItemType = info.FiltersItemType;
+            FiltersRarity = info.FiltersRarity;
 
             UpdateLibraries();
 

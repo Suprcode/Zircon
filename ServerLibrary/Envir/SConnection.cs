@@ -1222,6 +1222,12 @@ namespace Server.Envir
 
             Player.JoinInstance(p);
         }
+
+        public void Process(C.SendCompanionFilters p)
+        {
+            if (Stage != GameStage.Game) return;
+            Player.SetFilters(p);
+        }
     }
 
 

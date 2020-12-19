@@ -632,4 +632,12 @@ namespace Library.Network.ClientPackets
     {
         public int Index { get; set; }
     }
+
+    public sealed class SendCompanionFilters : Packet
+    {
+        public List<MirClass> FilterClass { get; set; }
+        public List<Rarity> FilterRarity { get; set; }
+        public List<ItemType> FilterItemType { get; set; }
+
+    }
 }

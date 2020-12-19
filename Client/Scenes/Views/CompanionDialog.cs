@@ -52,7 +52,7 @@ namespace Client.Scenes.Views
             DXItemCell cell;
             EquipmentGrid[(int)CompanionSlot.Bag] = cell = new DXItemCell
             {
-                Location = new Point(ClientArea.X + 196, ClientArea.Y + 5),
+                Location = new Point(ClientArea.X + 146, ClientArea.Y + 5),
                 Parent = this,
                 FixedBorder = true,
                 Border = true,
@@ -63,7 +63,7 @@ namespace Client.Scenes.Views
 
             EquipmentGrid[(int)CompanionSlot.Head] = cell = new DXItemCell
             {
-                Location = new Point(ClientArea.X + 236, ClientArea.Y + 5),
+                Location = new Point(ClientArea.X + 186, ClientArea.Y + 5),
                 Parent = this,
                 FixedBorder = true,
                 Border = true,
@@ -74,7 +74,7 @@ namespace Client.Scenes.Views
 
             EquipmentGrid[(int)CompanionSlot.Back] = cell = new DXItemCell
             {
-                Location = new Point(ClientArea.X + 276, ClientArea.Y + 5),
+                Location = new Point(ClientArea.X + 226, ClientArea.Y + 5),
                 Parent = this,
                 FixedBorder = true,
                 Border = true,
@@ -85,7 +85,7 @@ namespace Client.Scenes.Views
 
             EquipmentGrid[(int)CompanionSlot.Food] = cell = new DXItemCell
             {
-                Location = new Point(ClientArea.X + 316, ClientArea.Y + 5),
+                Location = new Point(ClientArea.X + 266, ClientArea.Y + 5),
                 Parent = this,
                 FixedBorder = true,
                 Border = true,
@@ -93,6 +93,21 @@ namespace Client.Scenes.Views
                 GridType = GridType.CompanionEquipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 102);
+
+            // start companion filter
+            DXButton CharacterButton = new DXButton
+            {
+                LibraryFile = LibraryFile.GameInter,
+                Index = 358,
+                Parent = this,
+                Location = new Point(ClientArea.X + 316, ClientArea.Y + 5),
+                Hint = "Filter Companion Pick"
+            };
+            CharacterButton.MouseClick += (o, e) =>
+            {
+                GameScene.Game.CompanionFilterBox.Visible = !GameScene.Game.CompanionFilterBox.Visible;
+            };
+            // end companion filter
 
             DXCheckBox PickUpCheckBox = new DXCheckBox
             {
@@ -486,6 +501,24 @@ namespace Client.Scenes.Views
             for (int i = 0; i < InventoryGrid.Grid.Length; i++)
                 InventoryGrid.Grid[i].Enabled = i < InventorySize;
         }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            GameScene.Game.CompanionFilterBox.Location = new Point(nValue.X + GameScene.Game.CompanionBox.Size.Width, nValue.Y);
+        }
+
+        public override void OnVisibleChanged(bool oValue, bool nValue)
+        {
+            base.OnVisibleChanged(oValue, nValue);
+
+            if (!IsVisible && GameScene.Game.CompanionFilterBox != null)
+            {
+                GameScene.Game.CompanionFilterBox.Visible = false;
+            }
+        }
+
         #endregion
 
         #region IDisposable
