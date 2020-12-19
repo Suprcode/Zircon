@@ -768,6 +768,7 @@ namespace Client.Envir
 
                         if (!string.IsNullOrEmpty(p.Message)) DXMessageBox.Show(p.Message, "Start Game");
 
+                        GameScene.Game.CompanionFilterBox.Refresh();
 
                         break;
                 }

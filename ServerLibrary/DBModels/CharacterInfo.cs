@@ -641,6 +641,51 @@ namespace Server.DBModels
         }
         private CharacterInfo _Partner;
 
+        public string FiltersClass
+        {
+            get { return _FiltersClass; }
+            set
+            {
+                if (_FiltersClass == value) return;
+
+                var oldValue = _FiltersClass;
+                _FiltersClass = value;
+
+                OnChanged(oldValue, value, "FiltersClass");
+            }
+        }
+        private string _FiltersClass;
+
+        public string FiltersRarity
+        {
+            get { return _FiltersRarity; }
+            set
+            {
+                if (_FiltersRarity == value) return;
+
+                var oldValue = _FiltersRarity;
+                _FiltersRarity = value;
+
+                OnChanged(oldValue, value, "FiltersRarity");
+            }
+        }
+        private string _FiltersRarity;
+
+        public string FiltersItemType
+        {
+            get { return _FiltersItemType; }
+            set
+            {
+                if (_FiltersItemType == value) return;
+
+                var oldValue = _FiltersItemType;
+                _FiltersItemType = value;
+
+                OnChanged(oldValue, value, "FiltersItemType");
+            }
+        }
+        private string _FiltersItemType;
+
 
         protected override void OnDeleted()
         {

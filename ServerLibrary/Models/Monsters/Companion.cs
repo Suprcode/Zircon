@@ -10,6 +10,7 @@ using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using S = Library.Network.ServerPackets;
+using C = Library.Network.ClientPackets;
 
 namespace Server.Models.Monsters
 {
@@ -28,6 +29,10 @@ namespace Server.Models.Monsters
 
         public UserItem[] Inventory;
         public UserItem[] Equipment;
+
+        public List<MirClass> FilterClass;
+        public List<Rarity> FilterRarity;
+        public List<ItemType> FilterItemType;
 
         private int HeadShape, BackShape;
 
@@ -77,6 +82,10 @@ namespace Server.Models.Monsters
 
                 Inventory[item.Slot] = item;
             }
+
+            FilterClass = new List<MirClass>();
+            FilterRarity = new List<Rarity>();
+            FilterItemType = new List<ItemType>();
         }
 
 
@@ -451,12 +460,53 @@ namespace Server.Models.Monsters
             return true;
         }
 
+        public bool FilterCompanionPicks(ItemCheck check)
+        {
+            ItemType itemType;
+            Rarity itemRarity;
+            RequiredClass itemClass;
+            List<string> listClass = CompanionOwner.FiltersClass.Split(',').ToList();
+            List<string> listRarity = CompanionOwner.FiltersRarity.Split(',').ToList();
+            List<string> listType = CompanionOwner.FiltersItemType.Split(',').ToList();
+            bool hasFilterType, hasRarity, hasClass;
+
+            hasFilterType = true;
+            hasClass = true;
+            hasRarity = true;
+
+            if (check.Info.Effect == ItemEffect.ItemPart && check.Item.Stats[Stat.ItemIndex] > 0)
+            {
+                itemType = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).ItemType;
+                itemRarity = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).Rarity;
+                itemClass = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).RequiredClass;
+            } else
+            {
+                itemType = check.Info.ItemType;
+                itemRarity = check.Info.Rarity;
+                itemClass = check.Info.RequiredClass;
+            }
+            if (listType.Count > 0)
+            {
+                hasFilterType = listType.Contains(itemType.ToString());
+            }
+            if (listRarity.Count > 0)
+            {
+                hasRarity = listRarity.Contains(itemRarity.ToString());
+            }
+            if (listClass.Count > 0)
+            {
+                hasClass = itemClass == RequiredClass.All || listClass.Contains(itemClass.ToString());
+            }
+            return hasFilterType && hasRarity && hasClass;
+        }
+
         public bool CanGainItems(bool checkWeight, params ItemCheck[] checks)
         {
             int index = 0;
             foreach (ItemCheck check in checks)
             {
                 if ((check.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
+                if (!FilterCompanionPicks(check)) return false;
 
                 long count = check.Count;
 

@@ -355,6 +355,9 @@ namespace Client.Models
             }
             
 
+            FiltersClass = info.FiltersClass;
+            FiltersRarity = info.FiltersRarity;
+            FiltersItemType = info.FiltersItemType;
 
             UpdateLibraries();
 

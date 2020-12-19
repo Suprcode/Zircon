@@ -496,6 +496,10 @@ namespace Library
 
         public int StorageSize { get; set; }
 
+        public string FiltersClass { get; set; }
+        public string FiltersRarity { get; set; }
+        public string FiltersItemType { get; set; }
+
         [CompleteObject]
         public void OnComplete()
         {
@@ -1171,6 +1175,13 @@ namespace Library
             CheckDate = Time.Now - CheckTime;
         }
     }
+    public class CompanionFiltersInfo
+    {
+        public string FilterClass { get; set; }
+        public string FilterRarity { get; set; }
+        public string FilterItemType { get; set; }
+    }
+
 }
 
 

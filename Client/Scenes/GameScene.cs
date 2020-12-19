@@ -189,6 +189,7 @@ namespace Client.Scenes
         public QuestDialog QuestBox;
         public QuestTrackerDialog QuestTrackerBox;
         public CompanionDialog CompanionBox;
+        public CompanionFilterDialog CompanionFilterBox;
         public BlockDialog BlockBox;
         public MonsterDialog MonsterBox;
         public MagicBarDialog MagicBarBox;
@@ -602,7 +603,11 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
             };
-
+            CompanionFilterBox = new CompanionFilterDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
             BlockBox = new BlockDialog
             {
                 Parent = this,

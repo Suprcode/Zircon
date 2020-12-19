@@ -280,6 +280,10 @@ namespace Library.Network.ServerPackets
         public int Helmet { get; set; }
 
         public int HorseShape { get; set; }
+
+        public string FiltersClass;
+        public string FiltersRarity;
+        public string FiltersItemType;
     }
     public sealed class ObjectMonster : Packet
     {
@@ -1248,6 +1252,14 @@ namespace Library.Network.ServerPackets
     {
         public InstanceResult Result { get; set; }
         public bool Success { get; set; }
+    }
+
+    public sealed class SendCompanionFilters : Packet
+    {
+        public List<MirClass> FilterClass { get; set; }
+        public List<Rarity> FilterRarity { get; set; }
+        public List<ItemType> FilterItemType { get; set; }
+
     }
 }
 

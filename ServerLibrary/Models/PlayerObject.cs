@@ -148,6 +148,10 @@ namespace Server.Models
 
         public decimal SwiftBladeLifeSteal, FlameSplashLifeSteal, DestructiveSurgeLifeSteal;
 
+        public string FiltersClass;
+        public string FiltersRarity;
+        public string FiltersItemType;
+
         public PlayerObject(CharacterInfo info, SConnection con)
         {
             Character = info;
@@ -195,6 +199,10 @@ namespace Server.Models
                 GameMaster = true;
                 Observer = true;
             }
+
+            FiltersClass = Character.FiltersClass;
+            FiltersItemType = Character.FiltersItemType;
+            FiltersRarity = Character.FiltersRarity;
         }
 
         public override void Process()
@@ -19282,6 +19290,10 @@ namespace Server.Models
                 Companion = Character.Companion?.Index ?? 0,
 
                 StorageSize = Character.Account.StorageSize,
+
+                FiltersClass = Character.FiltersClass,
+                FiltersRarity = Character.FiltersRarity,
+                FiltersItemType = Character.FiltersItemType,
             };
         }
 
@@ -19328,6 +19340,10 @@ namespace Server.Models
                 Helmet = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
+
+                FiltersClass = Character.FiltersClass,
+                FiltersItemType = Character.FiltersItemType,
+                FiltersRarity = Character.FiltersRarity,
             };
         }
         public override Packet GetDataPacket(PlayerObject ob)
@@ -19804,6 +19820,18 @@ namespace Server.Models
             result.Result = InstanceResult.Success;
 
             Enqueue(result);
+        }
+
+        public void SetFilters(C.SendCompanionFilters p)
+        {
+            Character.FiltersClass = String.Join(",", p.FilterClass);
+            Character.FiltersRarity = String.Join(",", p.FilterRarity);
+            Character.FiltersItemType = String.Join(",", p.FilterItemType);
+            FiltersClass = Character.FiltersClass;
+            FiltersItemType = Character.FiltersItemType;
+            FiltersRarity = Character.FiltersRarity;
+            Enqueue(new S.SendCompanionFilters { FilterClass = p.FilterClass, FilterRarity = p.FilterRarity, FilterItemType = p.FilterItemType });
+            Connection.ReceiveChat("Companion filters have been updated", MessageType.System);
         }
 
         #endregion
