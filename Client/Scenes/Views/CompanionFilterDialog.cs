@@ -83,7 +83,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(80, SmallButtonHeight)
             };
-            filterButton.Location = new Point(Size.Width/2 - filterButton.Size.Width/2, Size.Height - 30);
+            filterButton.Location = new Point(Size.Width / 2 - filterButton.Size.Width / 2, Size.Height - 30);
             filterButton.MouseClick += (o, e) =>
             {
                 List<MirClass> fClass = GetCheckedItemsClass();
@@ -108,7 +108,7 @@ namespace Client.Scenes.Views
         private List<MirClass> GetCheckedItemsClass()
         {
             List<MirClass> selected = new List<MirClass>();
-            foreach(KeyValuePair<MirClass, DXCheckBox> pair in FilterClass)
+            foreach (KeyValuePair<MirClass, DXCheckBox> pair in FilterClass)
             {
                 if (pair.Value.Checked)
                 {
@@ -163,7 +163,7 @@ namespace Client.Scenes.Views
                     Parent = this,
                     Hint = "Pick " + item.ToLower() + " items",
                 };
-                FilterType[itemType].Location = new Point(20  + (110 * index), 190 + (18 * row));
+                FilterType[itemType].Location = new Point(20 + (110 * index), 190 + (18 * row));
 
                 DXLabel label = new DXLabel
                 {
@@ -194,7 +194,7 @@ namespace Client.Scenes.Views
                     Parent = this,
                     Hint = "Pick " + mirClass.ToString().ToLower() + " items",
                 };
-                FilterClass[mirClass].Location = new Point(20 + (70*index), 70);
+                FilterClass[mirClass].Location = new Point(20 + (70 * index), 70);
 
                 DXLabel label = new DXLabel
                 {
@@ -205,7 +205,7 @@ namespace Client.Scenes.Views
                     IsControl = false,
                     Text = char.ToUpper(mirClass.ToString()[0]) + mirClass.ToString().Substring(1)
                 };
-                label.Location = new Point(35 + (70*index++), 70);
+                label.Location = new Point(35 + (70 * index++), 70);
             }
         }
 
@@ -222,7 +222,8 @@ namespace Client.Scenes.Views
                 };
                 FilterRarity[rarity].Location = new Point(20 + (70 * index), 130);
                 Color rarityLabelColor = Color.AntiqueWhite;
-                switch (rarity) {
+                switch (rarity)
+                {
                     case Rarity.Elite:
                         rarityLabelColor = Color.MediumPurple;
                         break;
