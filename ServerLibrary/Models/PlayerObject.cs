@@ -14135,14 +14135,17 @@ namespace Server.Models
 
                             if (!Functions.InRange(CurrentLocation, target.CurrentLocation, Globals.MagicRange)) continue;
 
-                            if (target is PlayerObject)
-                            {
-                                var player = (PlayerObject)target;
-                                if ((InGroup(player) || InGuild(player)) && target.Dead)
-                                {
-                                    realTargets.Add(target);
-                                }
-                            }
+                            realTargets.Add(target);
+
+                            //Unsure why code was changed to this
+                            //if (target is PlayerObject)
+                            //{
+                            //    var player = (PlayerObject)target;
+                            //    if ((InGroup(player) || InGuild(player)) && target.Dead)
+                            //    {
+                            //        realTargets.Add(target);
+                            //    }
+                            //}
 
                         }
                     }
