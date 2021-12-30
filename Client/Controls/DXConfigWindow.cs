@@ -30,7 +30,7 @@ namespace Client.Controls
 
         //Game 
         public DXTab GameTab;
-        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox, EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox;
+        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox, EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox, DrawParticlesCheckBox;
         public DXButton KeyBindButton;
 
         //Network
@@ -84,6 +84,7 @@ namespace Client.Controls
             MonsterBoxVisibleCheckBox.Checked = Config.MonsterBoxVisible;
             LogChatCheckBox.Checked = Config.LogChat;
             DrawEffectsCheckBox.Checked = Config.DrawEffects;
+            DrawParticlesCheckBox.Checked = Config.DrawParticles;
 
             LocalColourBox.BackColour = Config.LocalTextColour;
             GMWhisperInColourBox.BackColour = Config.GMWhisperInTextColour;
@@ -387,6 +388,12 @@ namespace Client.Controls
             };
             DamageNumbersCheckBox.Location = new Point(120 - DamageNumbersCheckBox.Size.Width, 135);
 
+            DrawParticlesCheckBox = new DXCheckBox
+            {
+                Label = { Text = "Draw Particles:" },
+                Parent = GameTab,
+            };
+            DrawParticlesCheckBox.Location = new Point(120 - DrawParticlesCheckBox.Size.Width, 160);
 
             EscapeCloseAllCheckBox = new DXCheckBox
             {
@@ -842,6 +849,7 @@ namespace Client.Controls
             Config.MonsterBoxVisible = MonsterBoxVisibleCheckBox.Checked;
             Config.LogChat = LogChatCheckBox.Checked;
             Config.DrawEffects = DrawEffectsCheckBox.Checked;
+            Config.DrawParticles = DrawParticlesCheckBox.Checked;
 
             if (volumeChanged)
                 DXSoundManager.AdjustVolume();

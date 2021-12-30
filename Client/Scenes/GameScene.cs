@@ -909,6 +909,9 @@ namespace Client.Scenes
             for (int i = MapControl.Effects.Count - 1; i >= 0; i--)
                 MapControl.Effects[i].Process();
 
+            for (int i = MapControl.ParticleEffects.Count - 1; i >= 0; i--)
+                MapControl.ParticleEffects[i].Process();
+
             if (ItemLabel != null && !ItemLabel.IsDisposed)
             {
                 int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;

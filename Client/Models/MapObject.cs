@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
+using Client.Models.Particles.Types;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
@@ -650,7 +651,7 @@ namespace Client.Models
                         case MagicType.FireBall:
                             foreach (Point point in MagicLocations)
                             {
-                                Effects.Add(spell = new MirProjectile(420, 5, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(420, 5, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation, typeof(Client.Models.Particles.FireballTrail))
                                 {
                                     Blend = true,
                                     MapTarget = point,
@@ -660,13 +661,13 @@ namespace Client.Models
 
                             foreach (MapObject attackTarget in AttackTargets)
                             {
-                                Effects.Add(spell = new MirProjectile(420, 5, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(420, 5, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation, typeof(Client.Models.Particles.FireballTrail))
                                 {
                                     Blend = true,
                                     Target = attackTarget,
                                 });
 
-                                spell.CompleteAction = () =>
+                                spell.CompleteAction += () =>
                                 {
                                     attackTarget.Effects.Add(spell = new MirEffect(580, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 10, 35, Globals.FireColour)
                                     {
@@ -735,7 +736,7 @@ namespace Client.Models
 
                             foreach (Point point in MagicLocations)
                             {
-                                Effects.Add(spell = new MirProjectile(2700, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.IceColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(2700, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.IceColour, CurrentLocation, typeof(IceBoltTrail))
                                 {
                                     Blend = true,
                                     MapTarget = point,
@@ -745,13 +746,13 @@ namespace Client.Models
 
                             foreach (MapObject attackTarget in AttackTargets)
                             {
-                                Effects.Add(spell = new MirProjectile(2700, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.IceColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(2700, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.IceColour, CurrentLocation, typeof(IceBoltTrail))
                                 {
                                     Blend = true,
                                     Target = attackTarget,
                                 });
 
-                                spell.CompleteAction = () =>
+                                spell.CompleteAction += () =>
                                 {
                                     attackTarget.Effects.Add(spell = new MirEffect(2860, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 10, 35, Globals.IceColour)
                                     {
@@ -777,7 +778,7 @@ namespace Client.Models
                         case MagicType.GustBlast:
                             foreach (Point point in MagicLocations)
                             {
-                                Effects.Add(spell = new MirProjectile(430, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 35, 35, Globals.WindColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(430, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 35, 35, Globals.WindColour, CurrentLocation, typeof(GustTrail))
                                 {
                                     Blend = true,
                                     MapTarget = point,
@@ -787,13 +788,13 @@ namespace Client.Models
 
                             foreach (MapObject attackTarget in AttackTargets)
                             {
-                                Effects.Add(spell = new MirProjectile(430, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 35, 35, Globals.WindColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(430, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 35, 35, Globals.WindColour, CurrentLocation, typeof(GustTrail))
                                 {
                                     Blend = true,
                                     Target = attackTarget,
                                 });
 
-                                spell.CompleteAction = () =>
+                                spell.CompleteAction += () =>
                                 {
                                     attackTarget.Effects.Add(spell = new MirEffect(590, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 35, Globals.WindColour)
                                     {
@@ -888,7 +889,7 @@ namespace Client.Models
                                  DXSoundManager.Play(SoundIndex.GreaterFireBallTravel);*/
                             foreach (Point point in MagicLocations)
                             {
-                                Effects.Add(spell = new MirProjectile(1640, 6, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(1640, 6, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation, typeof(Client.Models.Particles.FireballTrail))
                                 {
                                     Blend = true,
                                     MapTarget = point,
@@ -898,7 +899,7 @@ namespace Client.Models
 
                             foreach (MapObject attackTarget in AttackTargets)
                             {
-                                Effects.Add(spell = new MirProjectile(1640, 6, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(1640, 6, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation, typeof(Client.Models.Particles.FireballTrail))
                                 {
                                     Blend = true,
                                     Target = attackTarget,
@@ -906,7 +907,7 @@ namespace Client.Models
 
                                 //PARTICLE ?
 
-                                spell.CompleteAction = () =>
+                                spell.CompleteAction += () =>
                                 {
                                     attackTarget.Effects.Add(spell = new MirEffect(1800, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 10, 35, Globals.FireColour)
                                     {
@@ -961,7 +962,7 @@ namespace Client.Models
                         case MagicType.IceBlades:
                             foreach (Point point in MagicLocations)
                             {
-                                Effects.Add(spell = new MirProjectile(2960, 6, TimeSpan.FromMilliseconds(50), LibraryFile.Magic, 35, 35, Globals.IceColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(2960, 6, TimeSpan.FromMilliseconds(50), LibraryFile.Magic, 35, 35, Globals.IceColour, CurrentLocation, typeof(IceBladesTrail))
                                 {
                                     Blend = true,
                                     MapTarget = point,
@@ -973,7 +974,7 @@ namespace Client.Models
 
                             foreach (MapObject attackTarget in AttackTargets)
                             {
-                                Effects.Add(spell = new MirProjectile(2960, 6, TimeSpan.FromMilliseconds(50), LibraryFile.Magic, 35, 35, Globals.IceColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(2960, 6, TimeSpan.FromMilliseconds(50), LibraryFile.Magic, 35, 35, Globals.IceColour, CurrentLocation, typeof(IceBladesTrail))
                                 {
                                     Blend = true,
                                     Target = attackTarget,
@@ -981,7 +982,7 @@ namespace Client.Models
                                     BlendRate = 1F,
                                 });
 
-                                spell.CompleteAction = () =>
+                                spell.CompleteAction += () =>
                                 {
                                     attackTarget.Effects.Add(spell = new MirEffect(2970, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 10, 35, Globals.IceColour)
                                     {
@@ -2929,7 +2930,7 @@ namespace Client.Models
                         #region Ice Blades
 
                         case MagicType.IceBlades:
-                            Effects.Add(spell = new MirEffect(2880, 6, TimeSpan.FromMilliseconds(80), LibraryFile.Magic, 10, 35, Globals.IceColour)
+                            Effects.Add(spell = new MirEffect(2880, 6, TimeSpan.FromMilliseconds(115), LibraryFile.Magic, 10, 35, Globals.IceColour)
                             {
                                 Blend = true,
                                 Target = this,

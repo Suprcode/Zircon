@@ -993,6 +993,7 @@ namespace Client.Controls
             
             DXManager.SetSurface(previous);
             TextureValid = true;
+
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
         protected virtual void OnClearTexture()
@@ -1612,7 +1613,9 @@ namespace Client.Controls
         protected virtual void DrawChildControls()
         {
             foreach (DXControl control in Controls)
+            {
                 control.Draw();
+            }
         }
         protected virtual void DrawControl()
         {

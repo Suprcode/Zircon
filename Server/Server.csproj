@@ -113,6 +113,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Plugin\PluginLoader.cs" />
     <Compile Include="SMain.cs">
       <SubType>Form</SubType>
     </Compile>

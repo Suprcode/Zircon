@@ -112,6 +112,13 @@
     <Compile Include="Models\MonsterObject.cs" />
     <Compile Include="Models\NPCObject.cs" />
     <Compile Include="Models\ObjectAction.cs" />
+    <Compile Include="Models\Particles\Particle.cs" />
+    <Compile Include="Models\Particles\ParticleEmitter.cs" />
+    <Compile Include="Models\Particles\ParticleType.cs" />
+    <Compile Include="Models\Particles\Types\FireballTrail.cs" />
+    <Compile Include="Models\Particles\Types\GustTrail.cs" />
+    <Compile Include="Models\Particles\Types\IceBladesTrail.cs" />
+    <Compile Include="Models\Particles\Types\IceBoltTrail.cs" />
     <Compile Include="Models\PlayerObject.cs" />
     <Compile Include="Models\SpellObject.cs" />
     <Compile Include="Models\UserObject.cs" />

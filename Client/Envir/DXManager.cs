@@ -36,6 +36,7 @@ namespace Client.Envir
 
         public static bool Blending { get; private set; }
         public static float BlendRate { get; private set; } = 1F;
+        public static BlendMode BlendMode { get; private set; } = BlendMode.NORMAL;
 
         public static bool DeviceLost { get; set; }
         
@@ -383,22 +384,53 @@ namespace Client.Envir
             Opacity = opacity;
             Sprite.Flush();
         }
-        public static void SetBlend(bool value, float rate = 1F)
+        public static void SetBlend(bool value, float rate = 1F, BlendMode mode = BlendMode.NORMAL)
         {
-            if (value == Blending) return;
+            if (Blending == value && BlendRate == rate && BlendMode == mode) return;
 
             Blending = value;
-            BlendRate = 1F;
-            Sprite.Flush();
+            BlendRate = rate;
+            BlendMode = mode;
 
+            Sprite.Flush();
             Sprite.End();
+
             if (Blending)
             {
                 Sprite.Begin(SpriteFlags.DoNotSaveState);
                 Device.SetRenderState(RenderState.AlphaBlendEnable, true);
+                Device.SetTextureStageState(0, TextureStage.ColorOperation, TextureOperation.Modulate);
+                Device.SetTextureStageState(0, TextureStage.AlphaOperation, TextureOperation.Modulate);
 
-                Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
-                Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                switch (BlendMode)
+                {
+                    case BlendMode.INVLIGHT:
+                        Device.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
+                        Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceColor);
+                        break;
+                    case BlendMode.COLORFY:
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                        Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                        break;
+                    case BlendMode.MASK:
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.Zero);
+                        Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+                        break;
+                    case BlendMode.EFFECTMASK:
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.DestinationAlpha);
+                        Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                        break;
+                    case BlendMode.HIGHLIGHT:
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                        Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                        break;
+                    default:
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.InverseDestinationColor);
+                        Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                        break;
+                }
+
                 Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte) (255*rate), (byte) (255*rate), (byte) (255*rate), (byte) (255*rate)).ToArgb());
             }
             else
@@ -406,7 +438,6 @@ namespace Client.Envir
                 Sprite.Begin(SpriteFlags.AlphaBlend);
             }
             
-
             Device.SetRenderTarget(0, CurrentSurface);
         }
         public static void SetColour(int colour)
@@ -533,5 +564,22 @@ namespace Client.Envir
 
             graphics.TextContrast = 0;
         }
+    }
+
+    public enum BlendMode : sbyte
+    {
+        NONE = -1,
+        NORMAL = 0,
+        LIGHT = 1,
+        LIGHTINV = 2,
+        INVNORMAL = 3,
+        INVLIGHT = 4,
+        INVLIGHTINV = 5,
+        INVCOLOR = 6,
+        INVBACKGROUND = 7,
+        COLORFY = 8,
+        MASK = 9,
+        HIGHLIGHT = 10,
+        EFFECTMASK = 11
     }
 }

@@ -1455,6 +1455,7 @@ namespace Library
         InsufficientLevel,
         TooFewInGroup,
         TooManyInGroup,
+        ConnectRegionNotSet,
         NoSlots,
         NoMap,
         Success

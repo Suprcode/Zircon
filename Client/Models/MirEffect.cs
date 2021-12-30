@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Client.Envir;
+using Client.Models.Particles;
 using Client.Scenes;
 using Library;
 using SlimDX;
@@ -31,6 +32,8 @@ namespace Client.Models
         public float BlendRate = 0.7F;
         public bool UseOffSet = true;
         public bool Loop = false;
+
+        public ParticleEmitter _particleEmitter;
 
         public int DrawX
         {
@@ -60,17 +63,17 @@ namespace Client.Models
 
         public int DrawFrame
         {
-            get { return _DrawFrmae; }
+            get { return _DrawFrame; }
             set
             {
-                if (_DrawFrmae == value) return;
+                if (_DrawFrame == value) return;
                 
-                _DrawFrmae = value;
+                _DrawFrame = value;
                 GameScene.Game.MapControl.TextureValid = false;
                 FrameAction?.Invoke();
             }
         }
-        private int _DrawFrmae;
+        private int _DrawFrame;
 
         public DrawType DrawType = DrawType.Object;
 
@@ -214,6 +217,7 @@ namespace Client.Models
                 Library.DrawBlend(DrawFrame, DrawX, DrawY, DrawColour, UseOffSet, BlendRate, ImageType.Image);
             else
                 Library.Draw(DrawFrame, DrawX, DrawY, DrawColour, UseOffSet, Opacity, ImageType.Image);
+
         }
 
         public void Remove()

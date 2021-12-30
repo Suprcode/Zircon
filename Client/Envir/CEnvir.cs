@@ -146,7 +146,7 @@ namespace Client.Envir
             RenderGame();
 
             if (Config.LimitFPS)
-                Thread.Sleep(1); ;
+                Thread.Sleep(1);
         }
         private static void UpdateGame()
         {
@@ -164,7 +164,6 @@ namespace Client.Envir
             }
 
             Connection?.Process();
-            //  DXControl.ActiveScene?.Process();
             DXControl.ActiveScene?.Process();
 
             string debugText = $"FPS: {FPSCount}";
@@ -174,6 +173,8 @@ namespace Client.Envir
 
             if (DXControl.FocusControl != null)
                 debugText += $", Focus Control: {DXControl.FocusControl.GetType().Name}";
+            
+            debugText += $", Mouse: {CEnvir.MouseLocation}";
 
             if (GameScene.Game != null)
             {
@@ -186,7 +187,6 @@ namespace Client.Envir
                     debugText += $", Mouse Object: {MapObject.MouseObject.Name}";
             }
             debugText += $", DPS: {DPSCount}";
-
 
             DXControl.DebugLabel.Text = debugText;
 

@@ -13,7 +13,7 @@ namespace Server.Views
 
             MonsterInfoGridControl.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
 
-            MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
+            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
 
             MonsterImageComboBox.Items.AddEnum<MonsterImage>();

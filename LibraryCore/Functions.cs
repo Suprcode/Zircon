@@ -479,6 +479,11 @@ namespace Library
             }
         }
 
+        public static double DegreesToRadians(this double val)
+        {
+            return (Math.PI / 180) * val;
+        }
+
         public static int Direction16(Point source, Point destination)
         {
             PointF c = new PointF(source.X, source.Y);

@@ -607,9 +607,16 @@ namespace Server.Models
                 return;
             }
 
-            if (Character.CurrentInstance != null && Spawn(Character.CurrentInstance.ReconnectRegion, null, 0))
+            if (Character.CurrentInstance != null)
             {
-                return;
+                if (Character.CurrentInstance.ReconnectRegion != null && Spawn(Character.CurrentInstance.ReconnectRegion, null, 0))
+                {
+                    return;
+                }
+                else if (Spawn(Character.BindPoint.BindRegion, null, 0))
+                {
+                    return;
+                }
             }
 
             if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
@@ -19767,6 +19774,14 @@ namespace Server.Models
             }
 
             S.JoinInstance result = new S.JoinInstance { Success = false };
+
+
+            if (instance.ConnectRegion == null)
+            {
+                result.Result = InstanceResult.ConnectRegionNotSet;
+                Enqueue(result);
+                return;
+            }
 
             if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
             {

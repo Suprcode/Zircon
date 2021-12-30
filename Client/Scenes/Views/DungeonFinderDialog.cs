@@ -362,6 +362,11 @@ namespace Client.Scenes.Views
 
             var instance = SelectedDungeonRow.InstanceInfo;
 
+            if (instance.ConnectRegion == null)
+            {
+                GameScene.Game.ReceiveChat("Connect Region not configured for this instance.", MessageType.System);
+            }
+
             if (instance.MinPlayerLevel > 0 && MapObject.User.Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && MapObject.User.Level > instance.MaxPlayerLevel)
             {
                 GameScene.Game.ReceiveChat("You are not the correct level.", MessageType.System);

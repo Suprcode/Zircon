@@ -6,12 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Client.Envir;
 using Client.Scenes;
+using Client.Models.Particles;
 using Library;
+using SlimDX;
 
 namespace Client.Models
 {
    public  class MirProjectile : MirEffect
-    {
+   {
         public Point Origin { get; set; }
         public int Speed { get; set; }
         public bool Explode { get; set; }
@@ -19,13 +21,20 @@ namespace Client.Models
         public int Direction16 { get; set; }
         public bool Has16Directions { get; set; }
 
-        public MirProjectile(int startIndex, int frameCount, TimeSpan frameDelay, LibraryFile file, int startlight, int endlight, Color lightColour, Point origin) : base(startIndex, frameCount, frameDelay, file, startlight, endlight, lightColour)
+        public MirProjectile(int startIndex, int frameCount, TimeSpan frameDelay, LibraryFile file, int startlight, int endlight, Color lightColour, Point origin, Type particleEmitter = null) : base(startIndex, frameCount, frameDelay, file, startlight, endlight, lightColour)
         {
             Has16Directions = true;
 
             Origin = origin;
             Speed = 50;
             Explode = false;
+
+            if (Config.DrawParticles && particleEmitter != null)
+            {
+                _particleEmitter = (ParticleEmitter)Activator.CreateInstance(particleEmitter, this);
+
+                GameScene.Game.MapControl.ParticleEffects.Add(_particleEmitter);
+            }
         }
 
         public override void Process()
@@ -38,7 +47,6 @@ namespace Client.Models
                 Remove();
                 return;
             }
-
 
             int x = (Origin.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth - MapObject.User.MovingOffSet.X;
             int y = (Origin.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight - MapObject.User.MovingOffSet.Y;
@@ -77,6 +85,12 @@ namespace Client.Models
             DrawX = x + (int)(time.Ticks / (duration / x2)) + AdditionalOffSet.X;
             DrawY = y + (int)(time.Ticks / (duration / y2)) + AdditionalOffSet.Y;
 
+            if (_particleEmitter != null)
+            {
+                Point offset = Library.GetOffSet(DrawFrame);
+
+                _particleEmitter.SetLocation(Direction16, DrawX + offset.X, DrawY + offset.Y);
+            }
 
             if ((CEnvir.Now - StartTime).Ticks > duration)
             {
@@ -92,11 +106,10 @@ namespace Client.Models
                 Remove();
                 return;
             }
-
         }
+
         protected override int GetFrame()
         {
-
             TimeSpan enlapsed = CEnvir.Now - StartTime;
 
             enlapsed = TimeSpan.FromTicks(enlapsed.Ticks%TotalDuration.Ticks);

@@ -35,13 +35,11 @@
             this.skinRibbonGalleryBarItem1 = new DevExpress.XtraBars.SkinRibbonGalleryBarItem();
             this.StartServerButton = new DevExpress.XtraBars.BarButtonItem();
             this.StopServerButton = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPage3 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.navBarControl1 = new DevExpress.XtraNavBar.NavBarControl();
             this.navBarGroup1 = new DevExpress.XtraNavBar.NavBarGroup();
             this.LogNavButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -118,8 +116,7 @@
             this.ribbonControl1.ExpandCollapseItem,
             this.skinRibbonGalleryBarItem1,
             this.StartServerButton,
-            this.StopServerButton,
-            this.barButtonItem1});
+            this.StopServerButton});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
             this.ribbonControl1.MaxItemId = 9;
             this.ribbonControl1.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
@@ -162,15 +159,6 @@
             this.StopServerButton.Name = "StopServerButton";
             this.StopServerButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.StopServerButton_ItemClick);
             // 
-            // barButtonItem1
-            // 
-            this.barButtonItem1.Caption = "Map Viewer";
-            this.barButtonItem1.Id = 6;
-            this.barButtonItem1.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.Image")));
-            this.barButtonItem1.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.LargeImage")));
-            this.barButtonItem1.Name = "barButtonItem1";
-            this.barButtonItem1.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem1_ItemClick_1);
-            // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
@@ -201,18 +189,8 @@
             // 
             // ribbonPage3
             // 
-            this.ribbonPage3.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup3});
             this.ribbonPage3.Name = "ribbonPage3";
-            this.ribbonPage3.Text = "Commands";
-            // 
-            // ribbonPageGroup3
-            // 
-            this.ribbonPageGroup3.AllowTextClipping = false;
-            this.ribbonPageGroup3.ItemLinks.Add(this.barButtonItem1);
-            this.ribbonPageGroup3.Name = "ribbonPageGroup3";
-            this.ribbonPageGroup3.ShowCaptionButton = false;
-            this.ribbonPageGroup3.Text = "Testing";
+            this.ribbonPage3.Text = "Plugins";
             // 
             // navBarControl1
             // 
@@ -796,12 +774,10 @@
         private DevExpress.XtraNavBar.NavBarItem CharacterInfoButton;
         private DevExpress.XtraNavBar.NavBarItem MovementInfoButton;
         private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage3;
-        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
         private DevExpress.XtraNavBar.NavBarItem ItemInfoStatButton;
         private DevExpress.XtraNavBar.NavBarItem SetInfoButton;
         private DevExpress.XtraNavBar.NavBarItem StoreInfoButton;
         private DevExpress.XtraNavBar.NavBarItem BaseStatButton;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem1;
         private DevExpress.XtraNavBar.NavBarItem SafeZoneInfoButton;
         private DevExpress.XtraNavBar.NavBarItem RespawnInfoButton;
         private DevExpress.XtraNavBar.NavBarItem MapRegionButton;
