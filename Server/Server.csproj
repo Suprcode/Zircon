@@ -113,7 +113,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Plugin\PluginLoader.cs" />
     <Compile Include="SMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -460,6 +459,10 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj">
       <Project>{c47f32fa-4c04-4143-b4fe-623d4b014d0d}</Project>
       <Name>LibraryCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginCore\PluginCore.csproj">
+      <Project>{9ec9f47e-a443-471e-b0d5-1367772b2a0e}</Project>
+      <Name>PluginCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj">
       <Project>{42e44f8e-c98b-4008-958a-5c8cb3d02b8d}</Project>

@@ -15,6 +15,7 @@ using DevExpress.XtraGrid.Views.Grid;
 using Library;
 using Library.SystemModels;
 using MirDB;
+using PluginCore;
 using Server.DBModels;
 using Server.Envir;
 using Server.Views;
@@ -25,15 +26,31 @@ namespace Server
     {
         public List<Control> Windows = new List<Control>();
         public static Session Session;
+
+        public static PluginLoader Plugin;
+
         public SMain()
         {
             InitializeComponent();
-
-            PluginLoader.Load(this.ribbonPage3);
+            SetupPlugin();
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
                                                    SecurityProtocolType.Tls11 |
                                                    SecurityProtocolType.Tls12;
+        }
+
+        private void SetupPlugin()
+        {
+            Plugin = new PluginLoader(typeof(Config));
+
+            Plugin.Log += PluginLoader_Log;
+
+            Plugin.Load(this.ribbonPage3);
+        }
+
+        private void PluginLoader_Log(object sender, PluginCore.LogEventArgs e)
+        {
+            SEnvir.Log(e.Message);
         }
 
         private void SMain_Load(object sender, EventArgs e)

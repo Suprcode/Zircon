@@ -2314,7 +2314,7 @@ namespace Client.Models
                     case MonsterImage.JinamStoneGate:
                     return;
             }
-            DXManager.SetBlend(true, 0.60F);
+            DXManager.SetBlend(true, 0.60F, BlendMode.HIGHLIGHT);
             DrawBody(DrawX, y);
             DXManager.SetBlend(false);
         }

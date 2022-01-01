@@ -422,7 +422,7 @@ namespace Client.Envir
                         Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
                         break;
                     case BlendMode.HIGHLIGHT:
-                        Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                        Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
                         Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
                         break;
                     default:
