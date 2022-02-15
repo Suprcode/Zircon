@@ -2322,9 +2322,6 @@ namespace Server.Models
             if ((Poison & PoisonType.Red) == PoisonType.Red)
                 power = (int)(power * 1.2F);
 
-            for (int i = 0; i < attacker.Stats[Stat.Rebirth]; i++)
-                power = (int)(power * 1.5F);
-
 
             BuffInfo buff = Buffs.FirstOrDefault(x => x.Type == BuffType.MagicShield);
 

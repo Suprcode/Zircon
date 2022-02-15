@@ -179,7 +179,7 @@ namespace Server.Models
                         ob.NPCSpecialRefine(action.StatParameter1, action.IntParameter1);
                         break;
                     case NPCActionType.Rebirth:
-                        if (ob.Level >= 86 + ob.Character.Rebirth)
+                        if (Globals.RebirthDataList.Count > (ob.Character.Rebirth + 1) && ob.Level >= Globals.RebirthDataList[ob.Character.Rebirth + 1].RequiredLevel)
                             ob.NPCRebirth();
                         break;
                 }

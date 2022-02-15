@@ -2301,9 +2301,6 @@ namespace Server.Models
                 amount *= 1M + Stats[Stat.ExperienceRate] / 100M;
 
                 amount *= 1M + Stats[Stat.BaseExperienceRate] / 100M;
-
-                for (int i = 0; i < Character.Rebirth; i++)
-                    amount *= 0.5M;
             }
 
             /*
@@ -2692,8 +2689,10 @@ namespace Server.Models
 
             Stats[Stat.Rebirth] = Character.Rebirth;
 
-            Stats[Stat.DropRate] += 20 * Stats[Stat.Rebirth];
-            Stats[Stat.GoldRate] += 20 * Stats[Stat.Rebirth];
+            foreach(KeyValuePair<Stat, int> BonusStats in Globals.RebirthDataList[Character.Rebirth].BonusStatistics)
+            {
+                Stats[BonusStats.Key] += BonusStats.Value;
+            }
 
             Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Character.HermitStats, HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
 
@@ -11190,8 +11189,8 @@ namespace Server.Models
 
         public void AdjustRebirth(int rebirth)
         {
-            Level = 1;
-            Experience = Experience / 200;
+            Level -= Globals.RebirthDataList[rebirth].LevelLoss;
+            Experience = 0;
 
             Enqueue(new S.LevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
             Broadcast(new S.ObjectLeveled { ObjectID = ObjectID });
@@ -16364,9 +16363,6 @@ namespace Server.Models
             if ((Poison & PoisonType.Red) == PoisonType.Red)
                 power = (int)(power * 1.2F);
 
-            for (int i = 0; i < attacker.Stats[Stat.Rebirth]; i++)
-                power = (int)(power * 1.2F);
-
             if (SEnvir.Random.Next(100) < attacker.Stats[Stat.CriticalChance] && canCrit)
             {
                 if (!canReflect)
@@ -17099,7 +17095,7 @@ namespace Server.Models
                 }
             }
 
-            if (Stats[Stat.Rebirth] > 0 && (LastHitter == null || LastHitter.Race != ObjectType.Player))
+/*            if (Stats[Stat.Rebirth] > 0 && (LastHitter == null || LastHitter.Race != ObjectType.Player))
             {
                 //Level = Math.Max(Level - Stats[Stat.Rebirth] * 3, 1);
                 decimal expbonus = Experience;
@@ -17130,7 +17126,7 @@ namespace Server.Models
 
                 // Enqueue(new S.LevelChanged { Level = Level, Experience = Experience });
                 // Broadcast(new S.ObjectLeveled { ObjectID = ObjectID });
-            }
+            }*/
 
 
             BuffInfo buff;

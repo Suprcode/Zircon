@@ -121,8 +121,95 @@ namespace Library
         };
 
 
+        public struct RebirthData
+        {
+            public int RequiredLevel;
+            public int LevelLoss;
+            public Dictionary<Stat, int> BonusStatistics;
+            public RebirthData(int _RequiredLevel, int _LevelLoss, Dictionary<Stat, int> _BonusStatistics)
+            {
+                RequiredLevel = _RequiredLevel;
+                LevelLoss = _LevelLoss;
+                BonusStatistics = _BonusStatistics;
+            }
+        }
 
-
+        public static List<RebirthData> RebirthDataList = new List<RebirthData>
+        {
+            new RebirthData(0, 0, new Dictionary<Stat, int>{}), // This is default 0th rebirth, it has no requirements and gives no bonuses
+            new RebirthData(60, 0, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 20},
+                {Stat.LightningAttack, 5},
+                {Stat.FireAttack, 5},
+                {Stat.IceAttack, 5},
+                {Stat.WindAttack, 5},
+                {Stat.DarkAttack, 5},
+                {Stat.HolyAttack, 5},
+                {Stat.PhantomAttack, 5}}),
+            new RebirthData(150, 50, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 40},
+                {Stat.LightningAttack, 10},
+                {Stat.FireAttack, 10},
+                {Stat.IceAttack, 10},
+                {Stat.WindAttack, 10},
+                {Stat.DarkAttack, 10},
+                {Stat.HolyAttack, 10},
+                {Stat.PhantomAttack, 10}}),
+            new RebirthData(300, 100, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 60},
+                {Stat.LightningAttack, 15},
+                {Stat.FireAttack, 15},
+                {Stat.IceAttack, 15},
+                {Stat.WindAttack, 15},
+                {Stat.DarkAttack, 15},
+                {Stat.HolyAttack, 15},
+                {Stat.PhantomAttack, 15}}),
+            new RebirthData(450, 150, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 80},
+                {Stat.LightningAttack, 20},
+                {Stat.FireAttack, 20},
+                {Stat.IceAttack, 20},
+                {Stat.WindAttack, 20},
+                {Stat.DarkAttack, 20},
+                {Stat.HolyAttack, 20},
+                {Stat.PhantomAttack, 20}}),
+            new RebirthData(600, 200, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 100},
+                {Stat.LightningAttack, 25},
+                {Stat.FireAttack, 25},
+                {Stat.IceAttack, 25},
+                {Stat.WindAttack, 25},
+                {Stat.DarkAttack, 25},
+                {Stat.HolyAttack, 25},
+                {Stat.PhantomAttack, 25}}),
+            new RebirthData(900, 250, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 120},
+                {Stat.LightningAttack, 30},
+                {Stat.FireAttack, 30},
+                {Stat.IceAttack, 30},
+                {Stat.WindAttack, 30},
+                {Stat.DarkAttack, 30},
+                {Stat.HolyAttack, 30},
+                {Stat.PhantomAttack, 30}}),
+            new RebirthData(1200, 400, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 140},
+                {Stat.LightningAttack, 35},
+                {Stat.FireAttack, 35},
+                {Stat.IceAttack, 35},
+                {Stat.WindAttack, 35},
+                {Stat.DarkAttack, 35},
+                {Stat.HolyAttack, 35},
+                {Stat.PhantomAttack, 35}}),
+            new RebirthData(1800, 500, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 160},
+                {Stat.LightningAttack, 40},
+                {Stat.FireAttack, 40},
+                {Stat.IceAttack, 40},
+                {Stat.WindAttack, 40},
+                {Stat.DarkAttack, 40},
+                {Stat.HolyAttack, 40},
+                {Stat.PhantomAttack, 40}})
+        };
 
 
 
