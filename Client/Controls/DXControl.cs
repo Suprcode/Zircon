@@ -1639,7 +1639,7 @@ namespace Client.Controls
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
 
-        public static void PresentTexture(Texture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0)
+        public static void PresentTexture(Texture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f)
         {
             Rectangle bounds = ActiveScene.DisplayArea;
             Rectangle textureArea = Rectangle.Intersect(bounds, displayArea);
@@ -1669,10 +1669,20 @@ namespace Client.Controls
             if (textureArea.IsEmpty) return;
             
             textureArea.Location = new Point(textureArea.X - displayArea.X, textureArea.Y - displayArea.Y);
-            
-            DXManager.Sprite.Draw(texture, textureArea, Vector3.Zero, new Vector3(displayArea.X + textureArea.Location.X + offX, displayArea.Y + textureArea.Location.Y + offY, 0), colour);
 
+            float fX = displayArea.X + textureArea.Location.X + offX;
+            float fY = displayArea.Y + textureArea.Location.Y + offY;
+
+            fX /= scale;
+            fY /= scale;
+
+            DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
+
+            DXManager.Sprite.Draw(texture, textureArea, Vector3.Zero, new Vector3(fX, fY, 0), colour);
+
+            DXManager.Sprite.Transform = Matrix.Identity;
         }
+
         #endregion
 
         #endregion

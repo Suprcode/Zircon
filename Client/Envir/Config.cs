@@ -13,7 +13,7 @@ namespace Client.Envir
     {
         public static readonly Size IntroSceneSize = new Size(1024, 768);
 
-        public const string DefaultIPAddress = "145.239.204.13";
+        public const string DefaultIPAddress = "127.0.0.1";
         public const int DefaultPort = 7100;
 
         [ConfigSection("Network")]

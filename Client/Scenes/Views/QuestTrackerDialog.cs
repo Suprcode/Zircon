@@ -28,7 +28,7 @@ namespace Client.Scenes.Views
             ScrollBar.Size = new Size(14, Size.Height);
             ScrollBar.Location = new Point(Size.Width - 14, 0);
             ScrollBar.VisibleSize = Size.Height;
-            
+            ScrollBar.HideWhenNoScroll = true;
 
             TextPanel.Location = new Point(0, ResizeBuffer);
             TextPanel.Size = new Size(Size.Width - ScrollBar.Size.Width - 1 - ResizeBuffer , Size.Height - ResizeBuffer * 2);
@@ -36,6 +36,20 @@ namespace Client.Scenes.Views
             ScrollBar.VisibleSize = TextPanel.Size.Height;
             ScrollBar.Location = new Point(Size.Width - ScrollBar.Size.Width - ResizeBuffer, ResizeBuffer);
             ScrollBar.Size = new Size(14, Size.Height - ResizeBuffer * 2);
+        }
+
+        public override void OnMouseEnter()
+        {
+            base.OnMouseEnter();
+
+            this.Opacity = 0.3F;
+        }
+
+        public override void OnMouseLeave()
+        {
+            base.OnMouseLeave();
+
+            this.Opacity = 0.0F;
         }
 
 
@@ -51,9 +65,9 @@ namespace Client.Scenes.Views
             HasTopBorder = false;
             TitleLabel.Visible = false;
             CloseButton.Visible = false;
-            Opacity = 0.3F;
+            Opacity = 0.0F;
             AllowResize = true;
-            
+
             ScrollBar = new DXVScrollBar
             {
                 Parent = this,
@@ -138,19 +152,17 @@ namespace Client.Scenes.Views
 
 
                 if (userQuest.IsComplete)
+                {
                     label.Text += " (Complete)";
+                }
 
                 Lines.Add(label);
 
-                foreach (QuestTask task in quest.Tasks)
+                if (userQuest.IsComplete)
                 {
-                    ClientUserQuestTask userTask = userQuest.Tasks.FirstOrDefault(x => x.Task == task);
-
-                    if (userTask != null && userTask.Completed) continue;
-
                     DXLabel label1 = new DXLabel
                     {
-                        Text = GameScene.Game.GetTaskText(task, userQuest),
+                        Text = $"Goto {quest.FinishNPC.NPCName} in {quest.FinishNPC.RegionName}",
                         Parent = TextPanel,
                         ForeColour = Color.White,
                         Outline = true,
@@ -160,6 +172,28 @@ namespace Client.Scenes.Views
                     };
 
                     Lines.Add(label1);
+                }
+                else
+                {
+                    foreach (QuestTask task in quest.Tasks)
+                    {
+                        ClientUserQuestTask userTask = userQuest.Tasks.FirstOrDefault(x => x.Task == task);
+
+                        if (userTask != null && userTask.Completed) continue;
+
+                        DXLabel label1 = new DXLabel
+                        {
+                            Text = GameScene.Game.GetTaskText(task, userQuest),
+                            Parent = TextPanel,
+                            ForeColour = Color.White,
+                            Outline = true,
+                            OutlineColour = Color.Black,
+                            IsControl = false,
+                            Location = new Point(25, Lines.Count * 15)
+                        };
+
+                        Lines.Add(label1);
+                    }
                 }
             }
             

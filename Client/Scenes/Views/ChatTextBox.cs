@@ -77,7 +77,6 @@ namespace Client.Scenes.Views
 
         public ChatTextBox()
         {
-
             Size = new Size(400, 25);
 
             Opacity = 0.6F;
@@ -243,6 +242,7 @@ namespace Client.Scenes.Views
             TextBox.TextBox.SelectionLength = 0;
             TextBox.TextBox.SelectionStart = TextBox.TextBox.Text.Length;
         }
+
         #endregion
 
         #region IDisposable
@@ -286,7 +286,6 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-
     }
 
     public enum ChatMode

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using Library;
 using Library.Network;
 using Library.SystemModels;
@@ -418,6 +419,58 @@ namespace Server.Models
 
         public override bool CanBeSeenBy(PlayerObject ob)
         {
+            foreach (NPCRequirement requirement in NPCInfo.Requirements)
+            {
+                switch (requirement.Requirement)
+                {
+                    case NPCRequirementType.MaxLevel:
+                        if (Level > requirement.IntParameter1) return false;
+                        break;
+                    case NPCRequirementType.MinLevel:
+                        if (Level < requirement.IntParameter1) return false;
+                        break;
+                    case NPCRequirementType.Accepted:
+                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) break;
+
+                        return false;
+                    case NPCRequirementType.NotAccepted:
+                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) return false;
+
+                        break;
+                    case NPCRequirementType.HaveCompleted:
+                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) break;
+
+                        return false;
+                    case NPCRequirementType.HaveNotCompleted:
+                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) return false;
+
+                        break;
+                    case NPCRequirementType.Class:
+                        switch (ob.Class)
+                        {
+                            case MirClass.Warrior:
+                                if ((requirement.Class & RequiredClass.Warrior) != RequiredClass.Warrior) return false;
+                                break;
+                            case MirClass.Wizard:
+                                if ((requirement.Class & RequiredClass.Wizard) != RequiredClass.Wizard) return false;
+                                break;
+                            case MirClass.Taoist:
+                                if ((requirement.Class & RequiredClass.Taoist) != RequiredClass.Taoist) return false;
+                                break;
+                            case MirClass.Assassin:
+                                if ((requirement.Class & RequiredClass.Assassin) != RequiredClass.Assassin) return false;
+                                break;
+                        }
+                        break;
+                    case NPCRequirementType.DaysOfWeek:
+                        DaysOfWeek currentDayOfWeek = (DaysOfWeek)Math.Pow(2, (double)DateTime.Now.DayOfWeek);
+                        var flag = (DaysOfWeek)Enum.ToObject(typeof(DaysOfWeek), 1 << (int)DateTime.UtcNow.DayOfWeek);
+
+                        if (!requirement.DaysOfWeek.HasFlag(flag)) return false;
+                        break;
+                }
+            }
+
             return Visible && base.CanBeSeenBy(ob);
         }
 

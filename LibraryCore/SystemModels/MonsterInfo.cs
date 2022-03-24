@@ -216,6 +216,21 @@ namespace Library.SystemModels
         }
         private MonsterFlag _Flag;
 
+        public int FaceImage
+        {
+            get { return _FaceImage; }
+            set
+            {
+                if (_FaceImage == value) return;
+
+                var oldValue = _FaceImage;
+                _FaceImage = value;
+
+                OnChanged(oldValue, value, "FaceImage");
+            }
+        }
+        private int _FaceImage;
+
 
         /*
         public MonsterEffect Effect
@@ -232,7 +247,7 @@ namespace Library.SystemModels
             }
         }
         private MonsterEffect _Effect;*/
-        
+
 
         [Association("MonsterInfoStats", true)]
         public DBBindingList<MonsterInfoStat> MonsterInfoStats { get; set; }

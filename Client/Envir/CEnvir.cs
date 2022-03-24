@@ -188,7 +188,7 @@ namespace Client.Envir
             }
             debugText += $", DPS: {DPSCount}";
 
-            DXControl.DebugLabel.Text = debugText;
+            string connectionText = string.Empty;
 
             if (Connection != null)
             {
@@ -196,7 +196,6 @@ namespace Client.Envir
                 const decimal MB = KB * 1024;
 
                 string sent, received;
-
 
                 if (Connection.TotalBytesSent > MB)
                     sent = $"{Connection.TotalBytesSent / MB:#,##0.0}MB";
@@ -212,14 +211,32 @@ namespace Client.Envir
                 else
                     received = $"{Connection.TotalBytesReceived:#,##0}B";
 
-                DXControl.PingLabel.Text = $"Ping: {Connection.Ping}, Sent: {sent}, Received: {received}";
-                DXControl.PingLabel.Location = new Point(DXControl.DebugLabel.DisplayArea.Right + 5, DXControl.DebugLabel.DisplayArea.Y);
+                connectionText = $"Ping: {Connection.Ping}, Sent: {sent}, Received: {received}";
+            }
+
+            if (Config.FullScreen)
+            {
+                DXControl.DebugLabel.Text = debugText;
+
+                DXControl.DebugLabel.IsVisible = Config.DebugLabel;
+                DXControl.PingLabel.IsVisible = Config.DebugLabel;
+
+                if (Connection != null)
+                {
+                    DXControl.PingLabel.Text = connectionText;
+                    DXControl.PingLabel.Location = new Point(DXControl.DebugLabel.DisplayArea.Right + 5, DXControl.DebugLabel.DisplayArea.Y);
+                }
             }
             else
             {
-                DXControl.PingLabel.Text = String.Empty;
-            }
+                CEnvir.Target.Text = $"{Globals.ClientName} - {debugText} - {connectionText}";
 
+                DXControl.PingLabel.Text = string.Empty;
+                DXControl.DebugLabel.Text = string.Empty;
+
+                DXControl.DebugLabel.Visible = false;
+                DXControl.PingLabel.Visible = false;
+            }
 
             if (DXControl.MouseControl != null && DXControl.ActiveScene != null)
             {

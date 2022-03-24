@@ -29,7 +29,7 @@ namespace Client.Scenes.Views
         {
             TitleLabel.Text = "Quest Log";
 
-            SetClientSize(new Size(558, 380));
+            SetClientSize(new Size(608, 380));
 
             TabControl = new DXTabControl
             {
@@ -76,7 +76,54 @@ namespace Client.Scenes.Views
 
             if (CompletedTab.SelectedQuest?.QuestInfo == quest.Quest)
                 CompletedTab.UpdateQuestDisplay();
+        }
 
+        public void CancelQuest(QuestInfo quest)
+        {
+            bool available = false, current = false, completed = false;
+
+            ClientUserQuest userQuest = GameScene.Game.QuestLog.FirstOrDefault(x => x.Quest == quest);
+
+            if (userQuest == null) return;
+
+            if (CompletedTab.Quests.Contains(quest))
+            {
+                CompletedTab.Quests.Remove(quest);
+                completed = true;
+            }
+
+            if (CurrentTab.Quests.Contains(quest))
+            {
+                CurrentTab.Quests.Remove(quest);
+                current = true;
+            }
+
+            if (GameScene.Game.CanAccept(quest))
+            {
+                if (!AvailableTab.Quests.Contains(quest))
+                {
+                    AvailableTab.Quests.Add(quest);
+                    available = true;
+                }
+            }
+
+            GameScene.Game.QuestLog.Remove(userQuest);
+
+            if (available)
+            {
+                AvailableTab.NeedUpdate = true;
+                AvailableTab.UpdateQuestDisplay();
+            }
+            if (current)
+            {
+                CurrentTab.NeedUpdate = true;
+                CurrentTab.UpdateQuestDisplay();
+            }
+            if (completed)
+            {
+                CompletedTab.NeedUpdate = true;
+                CompletedTab.UpdateQuestDisplay();
+            }
         }
 
         public void PopulateQuests()
@@ -365,24 +412,22 @@ namespace Client.Scenes.Views
             if (!IsVisible || !NeedUpdate) return;
 
             UpdateQuestTree();
-
         }
         
-
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
             base.OnSizeChanged(oValue, nValue);
 
             if (Tree == null) return;
 
-            Tree.Size = new Size(240, Size.Height - 10);
-
+            Tree.Size = new Size(290, Size.Height - 10);
         }
+
         #endregion
 
         public QuestTab()
         {
-            int width = 250;
+            int width = 300;
 
             Tree = new QuestTree
             {
@@ -390,7 +435,6 @@ namespace Client.Scenes.Views
                 Location = new Point(5, 5)
             };
             Tree.SelectedEntryChanged += (o, e) => SelectedQuest = Tree.SelectedEntry;
-
 
             DXLabel label = new DXLabel
             {
@@ -408,6 +452,7 @@ namespace Client.Scenes.Views
             {
                 Label = { Text = "Show Quest Tracker" },
                 Parent = this,
+                Checked = Config.QuestTrackerVisible
             };
             ShowTrackerBox.Location = new Point(width + 303 - ShowTrackerBox.Size.Width, 7);
             ShowTrackerBox.CheckedChanged += (o, e) =>
@@ -826,7 +871,7 @@ namespace Client.Scenes.Views
 
                     entry.TrackBox.CheckedChanged += (o, e) =>
                     {
-                        if (entry.UserQuest.Track == entry.TrackBox.Checked) return;
+                        if (entry.UserQuest == null || entry.UserQuest.Track == entry.TrackBox.Checked) return;
 
                         entry.UserQuest.Track = entry.TrackBox.Checked;
 
@@ -1064,7 +1109,7 @@ namespace Client.Scenes.Views
             UserQuest = GameScene.Game.QuestLog.FirstOrDefault(x => x.Quest == QuestInfo);
 
             TrackBox.Visible = false;
-            QuestNameLabel.Text = QuestInfo.QuestName;
+            QuestNameLabel.Text = $"[{QuestInfo.QuestType}] {QuestInfo.QuestName}";
 
             if (UserQuest == null)
             {

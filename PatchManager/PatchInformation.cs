@@ -6,6 +6,9 @@ namespace PatchManager
     public sealed class PatchInformation
     {
         public string FileName { get; set; }
+
+        public string UploadFileName { get; set; }
+        public string PatchFileName { get; set; }
         public long CompressedLength { get; set; }
         public byte[] CheckSum { get; set; }
 

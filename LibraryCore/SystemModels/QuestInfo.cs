@@ -23,7 +23,21 @@ namespace Library.SystemModels
             }
         }
         private string _QuestName;
-        
+
+        public QuestType QuestType
+        {
+            get { return _QuestType; }
+            set
+            {
+                if (_QuestType == value) return;
+
+                var oldValue = _QuestType;
+                _QuestType = value;
+
+                OnChanged(oldValue, value, "QuestType");
+            }
+        }
+        private QuestType _QuestType;
 
         public string AcceptText
         {
@@ -388,6 +402,21 @@ namespace Library.SystemModels
         }
         private ItemInfo _ItemParameter;
 
+        public MapRegion RegionParameter
+        {
+            get { return _RegionParameter; }
+            set
+            {
+                if (_RegionParameter == value) return;
+
+                var oldValue = _RegionParameter;
+                _RegionParameter = value;
+
+                OnChanged(oldValue, value, "RegionParameter");
+            }
+        }
+        private MapRegion _RegionParameter;
+
         public string MobDescription
         {
             get { return _MobDescription; }
@@ -527,22 +556,4 @@ namespace Library.SystemModels
             Amount = 1;
         }
     }
-
-
-    public enum QuestRequirementType
-    {
-        MinLevel,
-        MaxLevel,
-        NotAccepted,
-        HaveCompleted,
-        HaveNotCompleted,
-        Class,
-    }
-
-    public enum QuestTaskType
-    {
-        KillMonster,
-        GainItem,
-    }
-
 }

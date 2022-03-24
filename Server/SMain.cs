@@ -27,8 +27,6 @@ namespace Server
         public List<Control> Windows = new List<Control>();
         public static Session Session;
 
-        public static PluginLoader Plugin;
-
         public SMain()
         {
             InitializeComponent();
@@ -41,11 +39,11 @@ namespace Server
 
         private void SetupPlugin()
         {
-            Plugin = new PluginLoader(typeof(Config));
+            PluginLoader.Init();
 
-            Plugin.Log += PluginLoader_Log;
+            PluginLoader.Loader.Log += PluginLoader_Log;
 
-            Plugin.Load(this.ribbonPage3);
+            PluginLoader.Load(this.ribbonPage3);
         }
 
         private void PluginLoader_Log(object sender, PluginCore.LogEventArgs e)
@@ -95,9 +93,11 @@ namespace Server
         {
             try
             {
+                //temp - move this in to a timer??
+                MapViewer.CurrentViewer?.Process();
+
                 while (AppStillIdle)
                 {
-                    MapViewer.CurrentViewer?.Process();
                     Thread.Sleep(1);
                 }
             }
@@ -105,7 +105,6 @@ namespace Server
             {
                 SEnvir.Log(ex.ToString());
             }
-
         }
 
         protected override void OnClosing(CancelEventArgs e)

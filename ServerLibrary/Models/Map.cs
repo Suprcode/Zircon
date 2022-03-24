@@ -473,6 +473,7 @@ namespace Server.Models
 
                             break;
                         }
+
                     }
 
                     if (movement.NeedSpawn != null)
@@ -506,6 +507,37 @@ namespace Server.Models
                         }
 
                         player.TakeItem(movement.NeedItem, 1);
+                    }
+
+                    foreach (UserQuest quest in player.Character.Quests)
+                    {
+                        //For Each Active Quest
+                        if (quest.Completed) continue;
+                        bool changed = false;
+
+                        foreach (QuestTask task in quest.QuestInfo.Tasks)
+                        {
+                            if (task.Task != QuestTaskType.Region || task.RegionParameter == null) continue;
+
+                            if (task.RegionParameter != movement.SourceRegion) continue;
+
+                            UserQuestTask userTask = quest.Tasks.FirstOrDefault(x => x.Task == task);
+
+                            if (userTask == null)
+                            {
+                                userTask = SEnvir.UserQuestTaskList.CreateNewObject();
+                                userTask.Task = task;
+                                userTask.Quest = quest;
+                            }
+
+                            if (userTask.Completed) continue;
+
+                            userTask.Amount = 1;
+                            changed = true;
+                        }
+
+                        if (changed)
+                            player.Enqueue(new S.QuestChanged { Quest = quest.ToClientInfo() });
                     }
 
                     switch (movement.Effect)

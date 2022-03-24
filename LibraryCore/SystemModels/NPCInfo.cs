@@ -3,7 +3,6 @@ using MirDB;
 
 namespace Library.SystemModels
 {
-
     public sealed class NPCInfo : DBObject
     {
         public MapRegion Region
@@ -50,7 +49,22 @@ namespace Library.SystemModels
             }
         }
         private int _Image;
-        
+
+        public int FaceImage
+        {
+            get { return _FaceImage; }
+            set
+            {
+                if (_FaceImage == value) return;
+
+                var oldValue = _FaceImage;
+                _FaceImage = value;
+
+                OnChanged(oldValue, value, "FaceImage");
+            }
+        }
+        private int _FaceImage;
+
         public NPCPage EntryPage
         {
             get { return _EntryPage; }
@@ -75,8 +89,21 @@ namespace Library.SystemModels
         [Association("FinishQuests")]
         public DBBindingList<QuestInfo> FinishQuests { get; set; }
 
+        [Association("Requirements", true)]
+        public DBBindingList<NPCRequirement> Requirements { get; set; }
 
-        public QuestIcon CurrentIcon;
+        public CurrentQuest CurrentQuest;
+    }
+
+    public sealed class CurrentQuest : IEquatable<CurrentQuest>
+    {
+        public QuestType Type { get; set; }
+        public QuestIcon Icon { get; set; }
+
+        public bool Equals(CurrentQuest other)
+        {
+            return other.Type == Type && other.Icon == Icon;
+        }
     }
 
     public sealed class NPCPage : DBObject
@@ -267,8 +294,6 @@ namespace Library.SystemModels
         }
         private ItemType _ItemType;
     }
-
-
 
     public sealed class NPCCheck : DBObject
     {
@@ -602,6 +627,99 @@ namespace Library.SystemModels
 
     }
 
+    public sealed class NPCRequirement : DBObject
+    {
+        [Association("Requirements")]
+        public NPCInfo NPC
+        {
+            get { return _NPC; }
+            set
+            {
+                if (_NPC == value) return;
+
+                var oldValue = _NPC;
+                _NPC = value;
+
+                OnChanged(oldValue, value, "NPC");
+            }
+        }
+        private NPCInfo _NPC;
+
+        public NPCRequirementType Requirement
+        {
+            get { return _Requirement; }
+            set
+            {
+                if (_Requirement == value) return;
+
+                var oldValue = _Requirement;
+                _Requirement = value;
+
+                OnChanged(oldValue, value, "Requirement");
+            }
+        }
+        private NPCRequirementType _Requirement;
+
+        public int IntParameter1
+        {
+            get { return _IntParameter1; }
+            set
+            {
+                if (_IntParameter1 == value) return;
+
+                var oldValue = _IntParameter1;
+                _IntParameter1 = value;
+
+                OnChanged(oldValue, value, "IntParameter1");
+            }
+        }
+        private int _IntParameter1;
+
+        public QuestInfo QuestParameter
+        {
+            get { return _QuestParameter; }
+            set
+            {
+                if (_QuestParameter == value) return;
+
+                var oldValue = _QuestParameter;
+                _QuestParameter = value;
+
+                OnChanged(oldValue, value, "QuestParameter");
+            }
+        }
+        private QuestInfo _QuestParameter;
+
+        public RequiredClass Class
+        {
+            get { return _Class; }
+            set
+            {
+                if (_Class == value) return;
+
+                var oldValue = _Class;
+                _Class = value;
+
+                OnChanged(oldValue, value, "Class");
+            }
+        }
+        private RequiredClass _Class;
+
+        public DaysOfWeek DaysOfWeek
+        {
+            get { return _DayOfWeek; }
+            set
+            {
+                if (_DayOfWeek == value) return;
+
+                var oldValue = _DayOfWeek;
+                _DayOfWeek = value;
+
+                OnChanged(oldValue, value, "DaysOfWeek");
+            }
+        }
+        private DaysOfWeek _DayOfWeek;
+    }
 
     public enum NPCCheckType
     {

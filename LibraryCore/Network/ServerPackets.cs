@@ -1032,6 +1032,11 @@ namespace Library.Network.ServerPackets
         public ClientUserQuest Quest { get; set; }
     }
 
+    public sealed class QuestCancelled : Packet
+    {
+        public int Index { get; set; }
+    }
+
     public sealed class CompanionUnlock : Packet
     {
         public int Index { get; set; }

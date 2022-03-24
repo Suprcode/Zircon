@@ -19,6 +19,7 @@ namespace Client.Scenes.Views
         #region Properties
         public static List<ChatTab> Tabs = new List<ChatTab>();
 
+        public ChatTabPageSetting Settings;
 
         public DXImageControl AlertIcon;
 
@@ -44,16 +45,16 @@ namespace Client.Scenes.Views
             ScrollBar.Size = new Size(14, Size.Height - ResizeBuffer*2);
 
             if (!IsResizing)
-                ResizeChat();
-            
+                ResizeChat();           
         }
+
         public override void OnIsResizingChanged(bool oValue, bool nValue)
         {
             ResizeChat();
 
-
             base.OnIsResizingChanged(oValue, nValue);
         }
+
         public override void OnSelectedChanged(bool oValue, bool nValue)
         {
             base.OnSelectedChanged(oValue, nValue);
@@ -65,6 +66,7 @@ namespace Client.Scenes.Views
             foreach (DXButton button in CurrentTabControl.TabButtons)
                 button.Opacity = opacity;
         }
+
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
             base.OnIsVisibleChanged(oValue, nValue);
@@ -80,16 +82,14 @@ namespace Client.Scenes.Views
             Opacity = 0.5F;
             DrawOtherBorder = true;
 
-
             ScrollBar = new DXVScrollBar
             {
                 Parent = this,
                 Size = new Size(14, Size.Height),
-                VisibleSize = Size.Height,
+                VisibleSize = Size.Height
             };
             ScrollBar.Location = new Point(Size.Width - ScrollBar.Size.Width - ResizeBuffer , 0);
             ScrollBar.ValueChanged += (o, e) => UpdateItems();
-
 
             TextPanel = new DXControl
             {
@@ -97,6 +97,7 @@ namespace Client.Scenes.Views
                 PassThrough = true,
                 Location = new Point(ResizeBuffer, ResizeBuffer),
                 Size = new Size(Size.Width - ScrollBar.Size.Width - 1 - ResizeBuffer * 2, Size.Height - ResizeBuffer * 2),
+                
             };
 
             AlertIcon = new DXImageControl
@@ -142,7 +143,6 @@ namespace Client.Scenes.Views
                 control.Location = new Point(0, y);
                 y += control.Size.Height;
             }
-
         }
 
         public void UpdateScrollBar()
@@ -195,7 +195,6 @@ namespace Client.Scenes.Views
                     if (!Panel.GuildCheckBox.Checked) return;
                     break;
             }
-
 
             DXLabel label = new DXLabel
             {
@@ -395,7 +394,6 @@ namespace Client.Scenes.Views
                     foreach (DXButton button in CurrentTabControl.TabButtons)
                         button.Opacity = 0.5f;
 
-
                 foreach (DXLabel label in History)
                     UpdateColours(label);
             }
@@ -409,7 +407,7 @@ namespace Client.Scenes.Views
                 if (CurrentTabControl.SelectedTab == this)
                     foreach (DXButton button in CurrentTabControl.TabButtons)
                         button.Opacity = 1f;
-                
+
                 foreach (DXLabel label in History)
                     UpdateColours(label);
             }

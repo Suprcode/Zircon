@@ -142,7 +142,7 @@ namespace Client.Scenes
         }
 
         #endregion
-        
+
         public MapControl MapControl;
         public MainPanel MainPanel;
 
@@ -214,6 +214,7 @@ namespace Client.Scenes
 
         public bool MoveFrame { get; set; }
         private DateTime MoveTime, OutputTime, ItemRefreshTime;
+
         public bool CanRun;
 
         public bool AutoRun
@@ -355,7 +356,7 @@ namespace Client.Scenes
             Game = this;
 
             foreach (NPCInfo info in Globals.NPCInfoList.Binding)
-                info.CurrentIcon = QuestIcon.None;
+                info.CurrentQuest = null;
 
             MapControl = new MapControl
             {
@@ -802,26 +803,31 @@ namespace Client.Scenes
                 ChatTab selected = null;
                 foreach (ChatTabPageSetting pSetting in cSetting.Controls)
                 {
-                    ChatTab tab = ChatOptionsBox.AddNewTab();
+                    ChatTab tab = ChatOptionsBox.AddNewTab(pSetting);
 
                     tab.Parent = tabControl;
 
-                    tab.Panel.NameTextBox.TextBox.Text = pSetting.Name;
-                    tab.Panel.TransparentCheckBox.Checked = pSetting.Transparent;
-                    tab.Panel.AlertCheckBox.Checked = pSetting.Alert;
-                    tab.Panel.LocalCheckBox.Checked = pSetting.LocalChat;
-                    tab.Panel.WhisperCheckBox.Checked = pSetting.WhisperChat;
-                    tab.Panel.GroupCheckBox.Checked = pSetting.GroupChat;
-                    tab.Panel.GuildCheckBox.Checked = pSetting.GuildChat;
-                    tab.Panel.ShoutCheckBox.Checked = pSetting.ShoutChat;
-                    tab.Panel.GlobalCheckBox.Checked = pSetting.GlobalChat;
-                    tab.Panel.ObserverCheckBox.Checked = pSetting.ObserverChat;
+                    tab.Panel.NameTextBox.TextBox.Text = tab.Settings.Name;
+                    tab.Panel.AlertCheckBox.Checked = tab.Settings.Alert;
+                    tab.Panel.LocalCheckBox.Checked = tab.Settings.LocalChat;
+                    tab.Panel.WhisperCheckBox.Checked = tab.Settings.WhisperChat;
+                    tab.Panel.GroupCheckBox.Checked = tab.Settings.GroupChat;
+                    tab.Panel.GuildCheckBox.Checked = tab.Settings.GuildChat;
+                    tab.Panel.ShoutCheckBox.Checked = tab.Settings.ShoutChat;
+                    tab.Panel.GlobalCheckBox.Checked = tab.Settings.GlobalChat;
+                    tab.Panel.ObserverCheckBox.Checked = tab.Settings.ObserverChat;
 
-                    tab.Panel.HintCheckBox.Checked = pSetting.HintChat;
-                    tab.Panel.SystemCheckBox.Checked = pSetting.SystemChat;
-                    tab.Panel.GainsCheckBox.Checked = pSetting.GainsChat;
+                    tab.Panel.HintCheckBox.Checked = tab.Settings.HintChat;
+                    tab.Panel.SystemCheckBox.Checked = tab.Settings.SystemChat;
+                    tab.Panel.GainsCheckBox.Checked = tab.Settings.GainsChat;
 
-                    if (pSetting == cSetting.SelectedPage)
+                }
+
+                foreach (ChatTab tab in ChatTab.Tabs)
+                {
+                    tab.Panel.TransparentCheckBox.Checked = tab.Settings.Transparent;
+
+                    if (tab.Settings == cSetting.SelectedPage)
                         selected = tab;
                 }
 
@@ -857,7 +863,6 @@ namespace Client.Scenes
                 else
                     MouseItem = null;
             }
-
 
             TimeSpan ticks = CEnvir.Now - ItemTime;
             ItemTime = CEnvir.Now;
@@ -928,7 +933,6 @@ namespace Client.Scenes
                 if (y <= Location.Y)
                     y = Location.Y;
 
-
                 ItemLabel.Location = new Point(x, y);
             }
 
@@ -948,10 +952,8 @@ namespace Client.Scenes
                 if (y <= Location.Y)
                     y = Location.Y;
 
-
                 MagicLabel.Location = new Point(x, y);
             }
-
 
             MonsterObject mob = MouseObject as MonsterObject;
 
@@ -2417,7 +2419,7 @@ namespace Client.Scenes
 
             MagicLabel = new DXControl
             {
-                BackColour = Color.FromArgb(255, 0, 24, 48),
+                BackColour = Color.FromArgb(200, 0, 24, 48),
                 Border = true,
                 BorderColour = Color.Yellow, // Color.FromArgb(144, 148, 48),
                 DrawTexture = true,
@@ -2560,9 +2562,7 @@ namespace Client.Scenes
                 Text = MouseMagic.Description,
             };
             label.Size = DXLabel.GetHeight(label, MagicLabel.Size.Width );
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom + 4);
-            
-
+            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom + 4);  
         }
         private void SetItemInfo(SetInfo set)
         {
@@ -3223,7 +3223,6 @@ namespace Client.Scenes
 
             if (MagicLabel != null && !MagicLabel.IsDisposed)
                 MagicLabel.Draw();
-
         }
 
         public void Displacement(MirDirection direction, Point location)
@@ -3752,6 +3751,10 @@ namespace Client.Scenes
 
             UpdateQuestIcons();
         }
+        public void CancelQuest(QuestInfo quest)
+        {
+            QuestBox.CancelQuest(quest);
+        }
 
         public bool HasQuest(MonsterInfo info, MapInfo map)
         {
@@ -3820,8 +3823,10 @@ namespace Client.Scenes
                     builder.AppendFormat("Kill {0} ", task.Amount);
                     break;
                 case QuestTaskType.GainItem:
-                    builder.AppendFormat("Collect {0} {1} from ", task.Amount, task.ItemParameter?.ItemName);
-                    
+                    builder.AppendFormat("Collect {0} {1} from ", task.Amount, task.ItemParameter?.ItemName);  
+                    break;
+                case QuestTaskType.Region:
+                    builder.AppendFormat("Goto {0} in {1}", task.RegionParameter?.Description, task.RegionParameter?.Map.Description);
                     break;
             }
 
@@ -3857,7 +3862,12 @@ namespace Client.Scenes
                 if (userTask != null && userTask.Completed)
                     builder.Append(" (Completed)");
                 else
-                    builder.Append($" ({userTask?.Amount ?? 0}/{task.Amount})");
+                {
+                    if (task.Task != QuestTaskType.Region)
+                    {
+                        builder.Append($" ({userTask?.Amount ?? 0}/{task.Amount})");
+                    }
+                }
             }
 
             return builder.ToString();
@@ -3866,11 +3876,7 @@ namespace Client.Scenes
         public void UpdateQuestIcons()
         {
             foreach (NPCInfo info in Globals.NPCInfoList.Binding)
-                info.CurrentIcon = QuestIcon.None;
-
-            foreach (QuestInfo quest in QuestBox.AvailableTab.Quests)
-                quest.StartNPC.CurrentIcon |= QuestIcon.NewQuest;
-
+                info.CurrentQuest = null;
 
             bool completed = false;
 
@@ -3878,13 +3884,35 @@ namespace Client.Scenes
             {
                 ClientUserQuest userQuest = QuestLog.First(x => x.Quest == quest);
 
+                if (quest.FinishNPC.CurrentQuest != null) continue;
+
+                var current = new CurrentQuest
+                {
+                    Type = quest.QuestType
+                };
+
                 if (userQuest.IsComplete)
                 {
-                    quest.FinishNPC.CurrentIcon |= QuestIcon.QuestComplete;
+                    current.Icon = QuestIcon.Complete;
                     completed = true;
                 }
-                else 
-                    quest.FinishNPC.CurrentIcon |= QuestIcon.QuestIncomplete;
+                else
+                {
+                    current.Icon = QuestIcon.Incomplete;
+                }
+
+                quest.FinishNPC.CurrentQuest = current;
+            }
+
+            foreach (QuestInfo quest in QuestBox.AvailableTab.Quests)
+            {
+                if (quest.StartNPC.CurrentQuest != null) continue;
+
+                quest.StartNPC.CurrentQuest = new CurrentQuest
+                {
+                    Type = quest.QuestType,
+                    Icon = QuestIcon.New
+                };
             }
 
             MainPanel.AvailableQuestIcon.Visible = QuestBox.AvailableTab.Quests.Count > 0;
@@ -3911,33 +3939,56 @@ namespace Client.Scenes
             int icon = 0;
             Color colour = Color.White;
 
+            if (NPC.CurrentQuest != null)
+            {
+                switch (NPC.CurrentQuest.Type)
+                {
+                    case QuestType.General:
+                        icon = 16;
+                        colour = Color.Yellow;
+                        break;
+                    case QuestType.Daily:
+                        icon = 76;
+                        colour = Color.Blue;
+                        break;
+                    case QuestType.Repeatable:
+                        icon = 16;
+                        colour = Color.Yellow;
+                        break;
+                    case QuestType.Story:
+                        icon = 56;
+                        colour = Color.Green;
+                        break;
+                    //case QuestType.Account:
+                    //    icon = 36;
+                    //    colour = Color.Purple;
+                    //    break;
+                }
 
-            if ((NPC.CurrentIcon & QuestIcon.QuestComplete) == QuestIcon.QuestComplete)
-            {
-                icon = 98;
-                colour = Color.Yellow;
-
-            }
-            else if ((NPC.CurrentIcon & QuestIcon.NewQuest) == QuestIcon.NewQuest)
-            {
-                icon = 97;
-                colour = Color.Yellow;
-            }
-            else if ((NPC.CurrentIcon & QuestIcon.QuestIncomplete) == QuestIcon.QuestIncomplete)
-            {
-                icon = 98;
-                colour = Color.White;
+                switch (NPC.CurrentQuest.Icon)
+                {
+                    case QuestIcon.New:
+                        icon += 0;
+                        break;
+                    case QuestIcon.Incomplete:
+                        icon = 2;
+                        colour = Color.White;
+                        break;
+                    case QuestIcon.Complete:
+                        icon += 2;
+                        break;
+                }
             }
 
             if (icon > 0)
             {
                 DXImageControl image = new DXImageControl
                 {
-                    LibraryFile = LibraryFile.Interface,
+                    LibraryFile = LibraryFile.QuestIcon,
                     Index = icon,
                     ForeColour = colour,
                     Hint = NPC.NPCName,
-                    Tag = NPC.CurrentIcon,
+                    Tag = NPC.CurrentQuest,
                 };
                 image.OpacityChanged += (o, e) => image.ImageOpacity = image.Opacity;
 
@@ -3950,7 +4001,7 @@ namespace Client.Scenes
                 DrawTexture = true,
                 Hint = NPC.NPCName,
                 BackColour = Color.Lime,
-                Tag = NPC.CurrentIcon,
+                Tag = NPC.CurrentQuest,
             };
         }
 
@@ -4010,7 +4061,6 @@ namespace Client.Scenes
 
                     MagicLabel = null;
                 }
-                
 
                 if (MapControl != null)
                 {

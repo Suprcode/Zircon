@@ -20,7 +20,7 @@ namespace Client.Models
 
         public override ObjectType Race => ObjectType.NPC;
 
-        public QuestIcon CurrentIcon;
+        public CurrentQuest CurrentQuest;
         public MirEffect QuestEffect;
 
         public NPCInfo NPCInfo;
@@ -127,28 +127,53 @@ namespace Client.Models
 
         public override void UpdateQuests()
         {
-            if (NPCInfo.CurrentIcon == QuestIcon.None)
+            if (NPCInfo.CurrentQuest == null)
             {
                 RemoveQuestEffect();
                 return;
             }
 
-            if (CurrentIcon == NPCInfo.CurrentIcon) return;
+            if (CurrentQuest == NPCInfo.CurrentQuest) return;
 
             RemoveQuestEffect();
 
-            CurrentIcon = NPCInfo.CurrentIcon;
+            CurrentQuest = NPCInfo.CurrentQuest;
 
             int startIndex = 0;
 
-            if ((CurrentIcon & QuestIcon.QuestComplete) == QuestIcon.QuestComplete)
-                startIndex = 1130;
-            else if ((CurrentIcon & QuestIcon.NewQuest) == QuestIcon.NewQuest)
-                startIndex = 1080;
-            else if ((CurrentIcon & QuestIcon.QuestIncomplete) == QuestIcon.QuestIncomplete)
-                startIndex = 1090;
-            
-            QuestEffect = new MirEffect(startIndex, 2, TimeSpan.FromMilliseconds(500), LibraryFile.GameInter, 0, 0, Color.Empty)
+            switch (CurrentQuest.Type)
+            {
+                case QuestType.General:
+                    startIndex = 10;
+                    break;
+                case QuestType.Daily:
+                    startIndex = 70;
+                    break;
+                case QuestType.Repeatable:
+                    startIndex = 10;
+                    break;
+                case QuestType.Story:
+                    startIndex = 50;
+                    break;
+                //case QuestType.Account:
+                //    startIndex = 30;
+                //    break;
+            }
+
+            switch (CurrentQuest.Icon)
+            {
+                case QuestIcon.New:
+                    startIndex += 0;
+                    break;
+                case QuestIcon.Incomplete:
+                    startIndex = 0;
+                    break;
+                case QuestIcon.Complete:
+                    startIndex += 2;
+                    break;
+            }
+
+            QuestEffect = new MirEffect(startIndex, 2, TimeSpan.FromMilliseconds(500), LibraryFile.QuestIcon, 0, 0, Color.Empty)
             {
                 Loop = true,
                 MapTarget = CurrentLocation,
@@ -162,7 +187,7 @@ namespace Client.Models
 
         public void RemoveQuestEffect()
         {
-            CurrentIcon = QuestIcon.None;
+            CurrentQuest = null;
             QuestEffect?.Remove();
             QuestEffect = null;
         }
@@ -175,7 +200,5 @@ namespace Client.Models
             NPCs.Remove(NPCInfo);
         }
     }
-
-
 }
 

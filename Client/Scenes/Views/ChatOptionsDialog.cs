@@ -41,7 +41,7 @@ namespace Client.Scenes.Views
             };
             button.Location = new Point((ListBox.DisplayArea.Right - button.Size.Width), ListBox.DisplayArea.Bottom + 5);
 
-            button.MouseClick += (o, e) => AddNewTab();
+            button.MouseClick += (o, e) => AddNewTab(null);
 
             button = new DXButton
             {
@@ -63,7 +63,6 @@ namespace Client.Scenes.Views
                     CreateDefaultWindows();
                 };
             };
-
 
             button = new DXButton
             {
@@ -102,7 +101,7 @@ namespace Client.Scenes.Views
 
         #region Methods
 
-        public ChatTab AddNewTab()
+        public ChatTab AddNewTab(ChatTabPageSetting settings)
         {
             ChatOptionsPanel panel;
             DXListBoxItem item = new DXListBoxItem
@@ -149,6 +148,9 @@ namespace Client.Scenes.Views
                     Label = { Text = $"Window {ListBox.Controls.Count - 1}" }
                 }
             };
+
+            tab.Settings = settings;
+
             tabControl.MouseWheel += (o, e1) => (tabControl.SelectedTab as ChatTab)?.ScrollBar.DoMouseWheel(o, e1);
 
             panel.TransparentCheckBox.CheckedChanged += (o, e1) => tab.TransparencyChanged();
@@ -212,11 +214,10 @@ namespace Client.Scenes.Views
                 Parent = GameScene.Game,
             };
 
-            ChatTab tab = AddNewTab();
+            ChatTab tab = AddNewTab(null);
             
             tab.CurrentTabControl.Size = new Size(GameScene.Game.ChatTextBox.Size.Width, 150);
             tab.CurrentTabControl.Location = new Point(GameScene.Game.ChatTextBox.Location.X, GameScene.Game.ChatTextBox.Location.Y - 150);
-
 
             tab.Panel.Text = $"Chat {ListBox.Controls.Count - 1}";
         }

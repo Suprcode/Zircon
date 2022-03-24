@@ -96,7 +96,9 @@ namespace Client.Scenes
         public ActivationDialog ActivationBox;
         public RequestActivationKeyDialog RequestActivationBox;
         public RankingDialog RankingBox;
-        
+
+        public DXImageControl Logo, LogoBackground;
+
         private TcpClient ConnectingClient;
         private DateTime ConnectionTime;
 
@@ -172,7 +174,28 @@ namespace Client.Scenes
                 Parent = background,
                 UseOffSet = true,
             };
-            
+
+            LogoBackground = new DXImageControl
+            {
+                Index = 23,
+                LibraryFile = LibraryFile.Interface1c,
+                Parent = this
+            };
+
+            Logo = new DXImageControl
+            {
+                Index = 22,
+                LibraryFile = LibraryFile.Interface1c,
+                Parent = LogoBackground,
+                Blend = true,
+                BlendMode = BlendMode.HIGHLIGHT,
+                FixedSize = true,
+                Size = new Size(564, 300)
+            };
+
+            LogoBackground.Location = new Point((Size.Width - LogoBackground.Size.Width) / 2, 25);
+            Logo.Location = new Point(((Size.Width - Logo.Size.Width) / 2) - 270, -27);
+
             ConfigButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
@@ -467,6 +490,22 @@ namespace Client.Scenes
                         RankingBox.Dispose();
 
                     RankingBox = null;
+                }
+
+                if (Logo != null)
+                {
+                    if (!Logo.IsDisposed)
+                        Logo.Dispose();
+
+                    Logo = null;
+                }
+
+                if (LogoBackground != null)
+                {
+                    if (!LogoBackground.IsDisposed)
+                        LogoBackground.Dispose();
+
+                    LogoBackground = null;
                 }
 
                 ConnectingClient = null;

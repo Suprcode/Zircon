@@ -68,7 +68,7 @@ namespace Client.Scenes.Views
         {
             ExpandButton.Index = Expanded ? 44 : 46;
 
-            Size = Expanded ? new Size(Size.Width, 150) : new Size(Size.Width, 54);
+            Size = Expanded ? new Size(Size.Width, 175) : new Size(Size.Width, 54);
             Config.MonsterBoxExpanded = Expanded;
 
             ExpandedChanged?.Invoke(this, EventArgs.Empty);
@@ -80,6 +80,7 @@ namespace Client.Scenes.Views
 
         public DXLabel LevelLabel, NameLabel, HealthLabel, ACLabel, MRLabel, DCLabel;
         public DXLabel FireResistLabel, IceResistLabel, LightningResistLabel, WindResistLabel, HolyResistLabel, DarkResistLabel, PhantomResistLabel, PhysicalResistLabel;
+        public DXImageControl AttackSpeedIcon, MovementSpeedIcon, TamableIcon, UndeadIcon;
         public DXButton ExpandButton;
 
 
@@ -236,7 +237,7 @@ namespace Client.Scenes.Views
 
             panel2 = new DXControl
             {
-                Size = new Size(Size.Width - 10, 85),
+                Size = new Size(Size.Width - 10, 110),
                 Location = new Point(5, 60),
                 Border = true,
                 BorderColour = Color.FromArgb(198, 166, 99),
@@ -420,6 +421,42 @@ namespace Client.Scenes.Views
                 Tag = icon,
             };
 
+            AttackSpeedIcon = new DXImageControl
+            {
+                Parent = panel2,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 590,
+                Location = new Point(5, 87),
+                Hint = "Attack Speed",
+            };
+
+            MovementSpeedIcon = new DXImageControl
+            {
+                Parent = panel2,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 620,
+                Location = new Point(AttackSpeedIcon.Location.X + AttackSpeedIcon.Size.Width + 2, 87),
+                Hint = "Movement Speed",
+            };
+
+            TamableIcon = new DXImageControl
+            {
+                Parent = panel2,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 631,
+                Location = new Point(MovementSpeedIcon.Location.X + MovementSpeedIcon.Size.Width + 2, 87),
+                Hint = "Tameable",
+            };
+
+            UndeadIcon = new DXImageControl
+            {
+                Parent = panel2,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 634,
+                Location = new Point(TamableIcon.Location.X + TamableIcon.Size.Width + 2, 87),
+                Hint = "Mortal",
+            };
+
             Expanded = Config.MonsterBoxExpanded;
         }
 
@@ -462,7 +499,83 @@ namespace Client.Scenes.Views
                 PopulateLabel(Stat.PhantomResistance, PhantomResistLabel, Monster.MonsterInfo.Stats);
                 PopulateLabel(Stat.PhysicalResistance, PhysicalResistLabel, Monster.MonsterInfo.Stats);
 
+                UndeadIcon.Hint = Monster.MonsterInfo.Undead ? "Undead" : "Mortal";
+                UndeadIcon.Index = Monster.MonsterInfo.Undead ? 635 : 634;
 
+                TamableIcon.Hint = Monster.MonsterInfo.CanTame ? "Tamable" : "Untamable";
+                TamableIcon.Index = Monster.MonsterInfo.CanTame ? 631 : 632;
+
+                switch (Monster.MonsterInfo.AttackDelay)
+                {
+                    case int n when (n == 0):
+                        AttackSpeedIcon.Hint = "Non Attacking";
+                        AttackSpeedIcon.Index = 630;
+                        break;
+                    case int n when (n >= 2500):
+                        AttackSpeedIcon.Hint = "Attacking: Very Slow";
+                        AttackSpeedIcon.Index = 590;
+                        break;
+                    case int n when (n >= 2000 && n < 2500):
+                        AttackSpeedIcon.Hint = "Attacking: Slow";
+                        AttackSpeedIcon.Index = 591;
+                        break;
+                    case int n when (n >= 1750 && n < 2000):
+                        AttackSpeedIcon.Hint = "Attacking: Somewhat Slow";
+                        AttackSpeedIcon.Index = 592;
+                        break;
+                    case int n when (n >= 1500 && n < 1750):
+                        AttackSpeedIcon.Hint = "Attacking: Moderate";
+                        AttackSpeedIcon.Index = 593;
+                        break;
+                    case int n when (n >= 1250 && n < 1500):
+                        AttackSpeedIcon.Hint = "Attacking: Somewhat Fast";
+                        AttackSpeedIcon.Index = 594;
+                        break;
+                    case int n when (n >= 1000 && n < 1250):
+                        AttackSpeedIcon.Hint = "Attacking: Fast";
+                        AttackSpeedIcon.Index = 595;
+                        break;
+                    case int n when (n > 0 && n < 1000):
+                        AttackSpeedIcon.Hint = "Attacking: Very Fast";
+                        AttackSpeedIcon.Index = 596;
+                        break;
+                }
+
+                switch (Monster.MonsterInfo.MoveDelay)
+                {
+                    case int n when (n == 0):
+                        MovementSpeedIcon.Hint = "Non Moving";
+                        MovementSpeedIcon.Index = 620;
+                        break;
+                    case int n when (n >= 2500):
+                        MovementSpeedIcon.Hint = "Moving: Very Slow";
+                        MovementSpeedIcon.Index = 621;
+                        break;
+                    case int n when (n >= 1500 && n < 2500):
+                        MovementSpeedIcon.Hint = "Moving: Slow";
+                        MovementSpeedIcon.Index = 622;
+                        break;
+                    case int n when (n >= 1000 && n < 1500):
+                        MovementSpeedIcon.Hint = "Moving: Somewhat Slow";
+                        MovementSpeedIcon.Index = 623;
+                        break;
+                    case int n when (n >= 900 && n < 1000):
+                        MovementSpeedIcon.Hint = "Moving: Moderate";
+                        MovementSpeedIcon.Index = 624;
+                        break;
+                    case int n when (n >= 800 && n < 900):
+                        MovementSpeedIcon.Hint = "Moving: Somewhat Fast";
+                        MovementSpeedIcon.Index = 625;
+                        break;
+                    case int n when (n >= 700 && n < 800):
+                        MovementSpeedIcon.Hint = "Moving: Fast";
+                        MovementSpeedIcon.Index = 626;
+                        break;
+                    case int n when (n > 0 && n < 700):
+                        MovementSpeedIcon.Hint = "Moving: Very Fast";
+                        MovementSpeedIcon.Index = 627;
+                        break;
+                }
 
                 switch (Monster.Stats.GetAffinityElement())
                 {
@@ -519,6 +632,83 @@ namespace Client.Scenes.Views
                 PopulateLabel(Stat.PhantomResistance, PhantomResistLabel, data.Stats);
                 PopulateLabel(Stat.PhysicalResistance, PhysicalResistLabel, data.Stats);
 
+                UndeadIcon.Hint = data.MonsterInfo.Undead ? "Undead" : "Mortal";
+                UndeadIcon.Index = data.MonsterInfo.Undead ? 635 : 634;
+
+                TamableIcon.Hint = data.MonsterInfo.CanTame ? "Tamable" : "Untamable";
+                TamableIcon.Index = data.MonsterInfo.CanTame ? 631 : 632;
+
+                switch (data.MonsterInfo.AttackDelay)
+                {
+                    case int n when (n == 0):
+                        AttackSpeedIcon.Hint = "Non Attacking";
+                        AttackSpeedIcon.Index = 630;
+                        break;
+                    case int n when (n >= 2500):
+                        AttackSpeedIcon.Hint = "Attacking: Very Slow";
+                        AttackSpeedIcon.Index = 590;
+                        break;
+                    case int n when (n >= 2000 && n < 2500):
+                        AttackSpeedIcon.Hint = "Attacking: Slow";
+                        AttackSpeedIcon.Index = 591;
+                        break;
+                    case int n when (n >= 1750 && n < 2000):
+                        AttackSpeedIcon.Hint = "Attacking: Somewhat Slow";
+                        AttackSpeedIcon.Index = 592;
+                        break;
+                    case int n when (n >= 1500 && n < 1750):
+                        AttackSpeedIcon.Hint = "Attacking: Moderate";
+                        AttackSpeedIcon.Index = 593;
+                        break;
+                    case int n when (n >= 1250 && n < 1500):
+                        AttackSpeedIcon.Hint = "Attacking: Somewhat Fast";
+                        AttackSpeedIcon.Index = 594;
+                        break;
+                    case int n when (n >= 1000 && n < 1250):
+                        AttackSpeedIcon.Hint = "Attacking: Fast";
+                        AttackSpeedIcon.Index = 595;
+                        break;
+                    case int n when (n > 0 && n < 1000):
+                        AttackSpeedIcon.Hint = "Attacking: Very Fast";
+                        AttackSpeedIcon.Index = 596;
+                        break;
+                }
+
+                switch (data.MonsterInfo.MoveDelay)
+                {
+                    case int n when (n == 0):
+                        MovementSpeedIcon.Hint = "Non Moving";
+                        MovementSpeedIcon.Index = 620;
+                        break;
+                    case int n when (n >= 2500):
+                        MovementSpeedIcon.Hint = "Moving: Very Slow";
+                        MovementSpeedIcon.Index = 621;
+                        break;
+                    case int n when (n >= 1500 && n < 2500):
+                        MovementSpeedIcon.Hint = "Moving: Slow";
+                        MovementSpeedIcon.Index = 622;
+                        break;
+                    case int n when (n >= 1000 && n < 1500):
+                        MovementSpeedIcon.Hint = "Moving: Somewhat Slow";
+                        MovementSpeedIcon.Index = 623;
+                        break;
+                    case int n when (n >= 900 && n < 1000):
+                        MovementSpeedIcon.Hint = "Moving: Moderate";
+                        MovementSpeedIcon.Index = 624;
+                        break;
+                    case int n when (n >= 800 && n < 900):
+                        MovementSpeedIcon.Hint = "Moving: Somewhat Fast";
+                        MovementSpeedIcon.Index = 625;
+                        break;
+                    case int n when (n >= 700 && n < 800):
+                        MovementSpeedIcon.Hint = "Moving: Fast";
+                        MovementSpeedIcon.Index = 626;
+                        break;
+                    case int n when (n > 0 && n < 700):
+                        MovementSpeedIcon.Hint = "Moving: Very Fast";
+                        MovementSpeedIcon.Index = 627;
+                        break;
+                }
 
                 switch (data.Stats.GetAffinityElement())
                 {
@@ -685,6 +875,38 @@ namespace Client.Scenes.Views
                     PhantomResistLabel = null;
                 }
 
+                if (AttackSpeedIcon != null)
+                {
+                    if (!AttackSpeedIcon.IsDisposed)
+                        AttackSpeedIcon.Dispose();
+
+                    AttackSpeedIcon = null;
+                }
+
+                if (MovementSpeedIcon != null)
+                {
+                    if (!MovementSpeedIcon.IsDisposed)
+                        MovementSpeedIcon.Dispose();
+
+                    MovementSpeedIcon = null;
+                }
+
+                if (UndeadIcon != null)
+                {
+                    if (!UndeadIcon.IsDisposed)
+                        UndeadIcon.Dispose();
+
+                    UndeadIcon = null;
+                }
+
+                if (TamableIcon != null)
+                {
+                    if (!TamableIcon.IsDisposed)
+                        TamableIcon.Dispose();
+
+                    TamableIcon = null;
+                }
+
                 if (ExpandButton != null)
                 {
                     if (!ExpandButton.IsDisposed)
@@ -692,7 +914,6 @@ namespace Client.Scenes.Views
 
                     ExpandButton = null;
                 }
-
             }
         }
 

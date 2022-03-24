@@ -331,7 +331,7 @@ namespace Launcher
                     if (!Directory.Exists(ClientPath + "Patch\\"))
                         Directory.CreateDirectory(ClientPath + "Patch\\");
 
-                     client.DownloadFileAsync(new Uri(Config.Host + webFileName), $"{ClientPath}Patch\\{webFileName}");
+                    client.DownloadFileAsync(new Uri(Config.Host + webFileName), $"{ClientPath}Patch\\{webFileName}");
 
                     while (downloading)
                         Thread.Sleep(1);
@@ -377,7 +377,7 @@ namespace Launcher
                 HasError = true;
                 MessageBox.Show(ex.Message + "\n\nFile might be in use, please make sure the game is closed.", "File Error", MessageBoxButtons.OK);
             }
-            catch
+            catch (Exception)
             {
                 file.CheckSum = new byte[8];
             }

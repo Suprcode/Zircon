@@ -88,7 +88,37 @@ namespace Server.DBModels
             }
         }
         private bool _Track;
-        
+
+        public DateTime DateTaken
+        {
+            get { return _DateTaken; }
+            set
+            {
+                if (_DateTaken == value) return;
+
+                var oldValue = _DateTaken;
+                _DateTaken = value;
+
+                OnChanged(oldValue, value, "DateTaken");
+            }
+        }
+        private DateTime _DateTaken;
+
+        public DateTime DateCompleted
+        {
+            get { return _DateCompleted; }
+            set
+            {
+                if (_DateCompleted == value) return;
+
+                var oldValue = _DateCompleted;
+                _DateCompleted = value;
+
+                OnChanged(oldValue, value, "DateCompleted");
+            }
+        }
+        private DateTime _DateCompleted;
+
 
         [IgnoreProperty]
         public bool IsComplete => Tasks.Count == QuestInfo.Tasks.Count && Tasks.All(x => x.Completed);
@@ -118,7 +148,8 @@ namespace Server.DBModels
                 Completed = Completed,
                 SelectedReward = SelectedReward,
                 Track = Track,
-
+                DateTaken = DateTaken,
+                DateCompleted = DateCompleted,
 
                 Tasks = Tasks.Select(x=> x.ToClientInfo()).ToList(),
             };

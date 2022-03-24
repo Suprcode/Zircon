@@ -22,7 +22,7 @@ namespace Client
     public sealed class TargetForm : RenderForm
     {
         public bool Resizing { get; private set; }
-        public TargetForm() : base("Zircon Client")
+        public TargetForm() : base(Globals.ClientName)
         {
             AutoScaleMode = AutoScaleMode.None;
 

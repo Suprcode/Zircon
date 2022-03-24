@@ -49,7 +49,6 @@
             this.InstanceInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.ItemInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MonsterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MagicInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MapRegionButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MovementInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -58,6 +57,7 @@
             this.DropInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.BaseStatButton = new DevExpress.XtraNavBar.NavBarItem();
             this.ItemInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
             this.SetInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.navBarItem5 = new DevExpress.XtraNavBar.NavBarItem();
             this.NPCInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -205,9 +205,9 @@
             this.navBarItem1,
             this.ConfigButton,
             this.MapInfoButton,
-            this.InstanceInfoButton,
             this.MonsterInfoButton,
             this.ItemInfoButton,
+            this.InstanceInfoButton,
             this.NPCInfoButton,
             this.NPCPageButton,
             this.MagicInfoButton,
@@ -215,6 +215,7 @@
             this.CharacterInfoButton,
             this.MovementInfoButton,
             this.ItemInfoStatButton,
+            this.MonsterInfoStatButton,
             this.SetInfoButton,
             this.StoreInfoButton,
             this.BaseStatButton,
@@ -226,7 +227,6 @@
             this.QuestInfoButton,
             this.CompanionInfoButton,
             this.EventInfoButton,
-            this.MonsterInfoStatButton,
             this.CastleInfoButton,
             this.PaymentButton,
             this.StoreSalesButton,
@@ -276,7 +276,6 @@
             new DevExpress.XtraNavBar.NavBarItemLink(this.InstanceInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.ItemInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoStatButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.MagicInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.MapRegionButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.MovementInfoButton),
@@ -285,6 +284,7 @@
             new DevExpress.XtraNavBar.NavBarItemLink(this.DropInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.BaseStatButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.ItemInfoStatButton),
+            new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoStatButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.SetInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem5),
             new DevExpress.XtraNavBar.NavBarItemLink(this.NPCInfoButton),
@@ -324,13 +324,6 @@
             this.MonsterInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MonsterInfoButton.ImageOptions.SmallImage")));
             this.MonsterInfoButton.Name = "MonsterInfoButton";
             this.MonsterInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MonsterInfoButton_LinkClicked);
-            // 
-            // MonsterInfoStatButton
-            // 
-            this.MonsterInfoStatButton.Caption = "Monster Info Stat";
-            this.MonsterInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MonsterInfoStatButton.ImageOptions.SmallImage")));
-            this.MonsterInfoStatButton.Name = "MonsterInfoStatButton";
-            this.MonsterInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MonsterInfoStatButton_LinkClicked);
             // 
             // MagicInfoButton
             // 
@@ -387,6 +380,13 @@
             this.ItemInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("ItemInfoStatButton.ImageOptions.SmallImage")));
             this.ItemInfoStatButton.Name = "ItemInfoStatButton";
             this.ItemInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ItemInfoStatButton_LinkClicked);
+            // 
+            // MonsterInfoStatButton
+            // 
+            this.MonsterInfoStatButton.Caption = "Monster Info Stat";
+            this.MonsterInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MonsterInfoStatButton.ImageOptions.SmallImage")));
+            this.MonsterInfoStatButton.Name = "MonsterInfoStatButton";
+            this.MonsterInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MonsterInfoStatButton_LinkClicked);
             // 
             // SetInfoButton
             // 

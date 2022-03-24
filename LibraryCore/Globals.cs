@@ -31,7 +31,6 @@ namespace Library
         public static DBCollection<CompanionInfo> CompanionInfoList;
         public static DBCollection<CompanionLevelInfo> CompanionLevelInfoList;
 
-
         public static Random Random = new Random();
 
         public static readonly Regex EMailRegex = new Regex(@"\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*", RegexOptions.Compiled);
@@ -50,6 +49,8 @@ namespace Library
 
                             BrownNameColour = Color.Brown,
                             RedNameColour = Color.Red;
+
+        public const string ClientName = "Legend of Mir 3";
 
         public const int
             MinPasswordLength = 5,
@@ -1033,6 +1034,9 @@ namespace Library
 
         public int SelectedReward { get; set; }
 
+        public DateTime DateTaken { get; set; }
+        public DateTime DateCompleted { get; set; }
+
         [IgnorePropertyPacket]
         public bool IsComplete => Tasks.Count == Quest.Tasks.Count && Tasks.All(x => x.Completed);
 
@@ -1134,7 +1138,7 @@ namespace Library
 
         public string Name;
 
-        //Guild/Grorup
+        //Guild/Group
         public MonsterInfo MonsterInfo;
         public ItemInfo ItemInfo;
 
@@ -1181,7 +1185,6 @@ namespace Library
         public string FilterRarity { get; set; }
         public string FilterItemType { get; set; }
     }
-
 }
 
 

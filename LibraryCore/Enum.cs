@@ -119,6 +119,20 @@ namespace Library
         Food = 3,
     }
 
+    [Flags]
+    public enum DaysOfWeek
+    {
+        None = 0,
+        Sunday = 1,
+        Monday = 2,
+        Tuesday = 4,
+        Wednesday = 8,
+        Thursday = 16,
+        Friday = 32,
+        Saturday = 64,
+        Weekday = Monday | Tuesday | Wednesday | Thursday | Friday,
+        Weekend = Saturday | Sunday
+    }
 
     public enum GridType
     {
@@ -1182,18 +1196,51 @@ namespace Library
         StartWar = 128,
     }
 
-    [Flags]
+    public enum NPCRequirementType
+    {
+        MinLevel,
+        MaxLevel,
+        Accepted,
+        NotAccepted,
+        HaveCompleted,
+        HaveNotCompleted,
+        Class,
+        DaysOfWeek,
+    }
+
+    public enum QuestType
+    {
+        General = 0,
+        Daily = 1,
+        Repeatable = 2,
+        Story = 3,
+        //Account = 4
+    }
+
     public enum QuestIcon
     {
         None = 0,
 
-        NewQuest = 1,
-        QuestIncomplete = 2,
-        QuestComplete = 4,
+        New,
+        Incomplete,
+        Complete,
+    }
 
+    public enum QuestRequirementType
+    {
+        MinLevel,
+        MaxLevel,
+        NotAccepted,
+        HaveCompleted,
+        HaveNotCompleted,
+        Class,
+    }
 
-        NewRepeatable = 8,
-        RepeatableComplete = 16,
+    public enum QuestTaskType
+    {
+        KillMonster,
+        GainItem,
+        Region
     }
 
     public enum MovementEffect

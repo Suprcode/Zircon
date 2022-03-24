@@ -156,7 +156,7 @@ namespace Client.Scenes.Views
 
                 MapInfoObjects[ob] = control;
             }
-            else if ((QuestIcon)control.Tag == ob.CurrentIcon) return;
+            else if ((CurrentQuest)control.Tag == ob.CurrentQuest) return;
 
             control.Dispose();
             MapInfoObjects.Remove(ob);

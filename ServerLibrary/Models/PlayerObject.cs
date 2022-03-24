@@ -94,7 +94,7 @@ namespace Server.Models
             set { Character.Direction = value; }
         }
 
-        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, FlamingSwordTime, DragonRiseTime, BladeStormTime, RevivalTime, TeleportTime;
+        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, FlamingSwordTime, DragonRiseTime, BladeStormTime, RevivalTime, TeleportTime, DailyQuestTime;
         public bool PacketWaiting;
 
         public bool CanPowerAttack, GameMaster, Observer;
@@ -264,12 +264,13 @@ namespace Server.Models
             if (Dead && SEnvir.Now >= RevivalTime)
                 TownRevive();
 
-
             ProcessTorch();
 
             ProcessAutoPotion();
 
             ProcessItemExpire();
+
+            ProcessQuests();
         }
         public override void ProcessAction(DelayedAction action)
         {
@@ -392,7 +393,6 @@ namespace Server.Models
         public void ProcessAutoPotion()
         {
             if (SEnvir.Now < UseItemTime || Buffs.Any(x => x.Type == BuffType.Cloak || x.Type == BuffType.Transparency || x.Type == BuffType.DragonRepulse)) return; //Can't auto Pot
-
 
             if (DelayItemUse != null)
             {
@@ -578,6 +578,47 @@ namespace Server.Models
 
             if (refresh)
                 RefreshStats();
+        }
+
+        public void ProcessQuests()
+        {
+            if (SEnvir.Now <= DailyQuestTime) return;
+
+            DailyQuestTime = SEnvir.Now.AddSeconds(20);
+
+            bool cancel = false;
+
+            for (int i = 0; i < Character.Quests.Count; i++)
+            {
+                var quest = Character.Quests[i];
+
+                switch (quest.QuestInfo.QuestType)
+                {
+                    case QuestType.Daily:
+                        {
+                            if (quest.Completed && quest.DateCompleted.Date != DateTime.UtcNow.Date)
+                            {
+                                Character.Quests.RemoveAt(i);
+                                cancel = true;
+                            }
+                        }
+                        break;
+                    case QuestType.Repeatable:
+                        {
+                            if (quest.Completed)
+                            {
+                                Character.Quests.RemoveAt(i);
+                                cancel = true;
+                            }
+                        }
+                        break;
+                }
+
+                if (cancel)
+                {
+                    Enqueue(new S.QuestCancelled { Index = quest.Index });
+                }
+            }
         }
 
         public override void ProcessNameColour()
@@ -3580,6 +3621,7 @@ namespace Server.Models
 
                 userQuest.QuestInfo = quest;
                 userQuest.Character = Character;
+                userQuest.DateTaken = DateTime.UtcNow;
 
                 Enqueue(new S.QuestChanged { Quest = userQuest.ToClientInfo() });
                 break;
@@ -3713,6 +3755,8 @@ namespace Server.Models
 
                 userQuest.Track = false;
                 userQuest.Completed = true;
+                userQuest.DateCompleted = DateTime.UtcNow;
+
                 if (hasChosen)
                     userQuest.SelectedReward = p.ChoiceIndex;
 
@@ -5496,6 +5540,7 @@ namespace Server.Models
 
                     continue;
                 }
+
                 if (check.Info.Effect == ItemEffect.Experience) continue;
 
                 if (checkWeight)
@@ -14667,22 +14712,20 @@ namespace Server.Models
                         magics.Add(augMagic);
                         power = augMagic.GetPower() + 1;
 
-                        possibleTargets = GetAllObjects(p.Location, 6);
+                        possibleTargets = GetAllObjects(p.Location, 3);
 
                         while (power >= realTargets.Count)
                         {
                             if (possibleTargets.Count == 0) break;
 
-
-                            PlayerObject target = possibleTargets[SEnvir.Random.Next(possibleTargets.Count)] as PlayerObject;
+                            MapObject target = possibleTargets[SEnvir.Random.Next(possibleTargets.Count)];
 
                             possibleTargets.Remove(target);
 
                             if (!Functions.InRange(CurrentLocation, target.CurrentLocation, Globals.MagicRange)) continue;
 
-                            if ((InGroup(target as PlayerObject) || InGuild(target as PlayerObject)) && target.Dead)
+                            if (target is PlayerObject && (InGroup(target as PlayerObject) || InGuild(target as PlayerObject)) && target.Dead)
                                 realTargets.Add(target);
-
                         }
                     }
 
@@ -18004,7 +18047,6 @@ namespace Server.Models
 
             if (SEnvir.Random.Next(4 - magic.Level) > 0)
             {
-
                 if (SEnvir.Random.Next(2) == 0) LevelMagic(magic);
                 return;
             }

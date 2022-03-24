@@ -49,12 +49,15 @@
             this.UploadSpeedLabel = new DevExpress.XtraEditors.LabelControl();
             this.labelControl10 = new DevExpress.XtraEditors.LabelControl();
             this.FolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.ProtocolDropDown = new DevExpress.XtraEditors.ComboBoxEdit();
+            this.labelControl7 = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.CleanClientButtonEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.UsernameTextEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.UseLoginCheckEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HostTextEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PasswordTextEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TotalProgressBar.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProtocolDropDown.Properties)).BeginInit();
             this.SuspendLayout();
             // 
             // labelControl1
@@ -89,7 +92,7 @@
             // 
             // UsernameTextEdit
             // 
-            this.UsernameTextEdit.Location = new System.Drawing.Point(79, 89);
+            this.UsernameTextEdit.Location = new System.Drawing.Point(79, 117);
             this.UsernameTextEdit.Name = "UsernameTextEdit";
             this.UsernameTextEdit.Size = new System.Drawing.Size(233, 20);
             this.UsernameTextEdit.TabIndex = 3;
@@ -97,7 +100,7 @@
             // 
             // UseLoginCheckEdit
             // 
-            this.UseLoginCheckEdit.Location = new System.Drawing.Point(79, 64);
+            this.UseLoginCheckEdit.Location = new System.Drawing.Point(79, 92);
             this.UseLoginCheckEdit.Name = "UseLoginCheckEdit";
             this.UseLoginCheckEdit.Properties.Caption = "";
             this.UseLoginCheckEdit.Size = new System.Drawing.Size(75, 19);
@@ -106,7 +109,7 @@
             // 
             // labelControl3
             // 
-            this.labelControl3.Location = new System.Drawing.Point(23, 67);
+            this.labelControl3.Location = new System.Drawing.Point(23, 95);
             this.labelControl3.Name = "labelControl3";
             this.labelControl3.Size = new System.Drawing.Size(50, 13);
             this.labelControl3.TabIndex = 5;
@@ -114,7 +117,7 @@
             // 
             // labelControl4
             // 
-            this.labelControl4.Location = new System.Drawing.Point(21, 92);
+            this.labelControl4.Location = new System.Drawing.Point(21, 120);
             this.labelControl4.Name = "labelControl4";
             this.labelControl4.Size = new System.Drawing.Size(52, 13);
             this.labelControl4.TabIndex = 6;
@@ -122,7 +125,7 @@
             // 
             // labelControl5
             // 
-            this.labelControl5.Location = new System.Drawing.Point(23, 118);
+            this.labelControl5.Location = new System.Drawing.Point(23, 146);
             this.labelControl5.Name = "labelControl5";
             this.labelControl5.Size = new System.Drawing.Size(50, 13);
             this.labelControl5.TabIndex = 7;
@@ -138,7 +141,7 @@
             // 
             // PasswordTextEdit
             // 
-            this.PasswordTextEdit.Location = new System.Drawing.Point(79, 115);
+            this.PasswordTextEdit.Location = new System.Drawing.Point(79, 143);
             this.PasswordTextEdit.Name = "PasswordTextEdit";
             this.PasswordTextEdit.Properties.PasswordChar = '*';
             this.PasswordTextEdit.Size = new System.Drawing.Size(233, 20);
@@ -147,7 +150,7 @@
             // 
             // UploadPatchButton
             // 
-            this.UploadPatchButton.Location = new System.Drawing.Point(79, 141);
+            this.UploadPatchButton.Location = new System.Drawing.Point(79, 169);
             this.UploadPatchButton.Name = "UploadPatchButton";
             this.UploadPatchButton.Size = new System.Drawing.Size(233, 23);
             this.UploadPatchButton.TabIndex = 10;
@@ -156,7 +159,7 @@
             // 
             // labelControl6
             // 
-            this.labelControl6.Location = new System.Drawing.Point(14, 182);
+            this.labelControl6.Location = new System.Drawing.Point(14, 210);
             this.labelControl6.Name = "labelControl6";
             this.labelControl6.Size = new System.Drawing.Size(35, 13);
             this.labelControl6.TabIndex = 11;
@@ -164,7 +167,7 @@
             // 
             // StatusLabel
             // 
-            this.StatusLabel.Location = new System.Drawing.Point(55, 182);
+            this.StatusLabel.Location = new System.Drawing.Point(55, 210);
             this.StatusLabel.Name = "StatusLabel";
             this.StatusLabel.Size = new System.Drawing.Size(41, 13);
             this.StatusLabel.TabIndex = 12;
@@ -172,7 +175,7 @@
             // 
             // labelControl8
             // 
-            this.labelControl8.Location = new System.Drawing.Point(12, 201);
+            this.labelControl8.Location = new System.Drawing.Point(12, 229);
             this.labelControl8.Name = "labelControl8";
             this.labelControl8.Size = new System.Drawing.Size(37, 13);
             this.labelControl8.TabIndex = 13;
@@ -180,7 +183,7 @@
             // 
             // UploadSizeLabel
             // 
-            this.UploadSizeLabel.Location = new System.Drawing.Point(55, 201);
+            this.UploadSizeLabel.Location = new System.Drawing.Point(55, 229);
             this.UploadSizeLabel.Name = "UploadSizeLabel";
             this.UploadSizeLabel.Size = new System.Drawing.Size(41, 13);
             this.UploadSizeLabel.TabIndex = 14;
@@ -188,14 +191,14 @@
             // 
             // TotalProgressBar
             // 
-            this.TotalProgressBar.Location = new System.Drawing.Point(12, 220);
+            this.TotalProgressBar.Location = new System.Drawing.Point(12, 248);
             this.TotalProgressBar.Name = "TotalProgressBar";
             this.TotalProgressBar.Size = new System.Drawing.Size(300, 18);
             this.TotalProgressBar.TabIndex = 15;
             // 
             // UploadSpeedLabel
             // 
-            this.UploadSpeedLabel.Location = new System.Drawing.Point(262, 201);
+            this.UploadSpeedLabel.Location = new System.Drawing.Point(262, 229);
             this.UploadSpeedLabel.Name = "UploadSpeedLabel";
             this.UploadSpeedLabel.Size = new System.Drawing.Size(41, 13);
             this.UploadSpeedLabel.TabIndex = 17;
@@ -203,17 +206,41 @@
             // 
             // labelControl10
             // 
-            this.labelControl10.Location = new System.Drawing.Point(222, 201);
+            this.labelControl10.Location = new System.Drawing.Point(222, 229);
             this.labelControl10.Name = "labelControl10";
             this.labelControl10.Size = new System.Drawing.Size(34, 13);
             this.labelControl10.TabIndex = 16;
             this.labelControl10.Text = "Speed:";
             // 
+            // ProtocolDropDown
+            // 
+            this.ProtocolDropDown.Location = new System.Drawing.Point(79, 65);
+            this.ProtocolDropDown.Name = "ProtocolDropDown";
+            this.ProtocolDropDown.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.ProtocolDropDown.Properties.Items.AddRange(new object[] {
+            "Ftp",
+            "SFtp"});
+            this.ProtocolDropDown.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            this.ProtocolDropDown.Size = new System.Drawing.Size(100, 20);
+            this.ProtocolDropDown.TabIndex = 18;
+            this.ProtocolDropDown.SelectedIndexChanged += new System.EventHandler(this.ProtocolDropDown_SelectedIndexChanged);
+            // 
+            // labelControl7
+            // 
+            this.labelControl7.Location = new System.Drawing.Point(30, 68);
+            this.labelControl7.Name = "labelControl7";
+            this.labelControl7.Size = new System.Drawing.Size(43, 13);
+            this.labelControl7.TabIndex = 19;
+            this.labelControl7.Text = "Protocol:";
+            // 
             // PMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(325, 250);
+            this.ClientSize = new System.Drawing.Size(325, 276);
+            this.Controls.Add(this.labelControl7);
+            this.Controls.Add(this.ProtocolDropDown);
             this.Controls.Add(this.UploadSpeedLabel);
             this.Controls.Add(this.labelControl10);
             this.Controls.Add(this.TotalProgressBar);
@@ -244,6 +271,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.HostTextEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PasswordTextEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TotalProgressBar.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProtocolDropDown.Properties)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -271,6 +299,8 @@
         private DevExpress.XtraEditors.LabelControl UploadSpeedLabel;
         private DevExpress.XtraEditors.LabelControl labelControl10;
         private System.Windows.Forms.FolderBrowserDialog FolderDialog;
+        private DevExpress.XtraEditors.ComboBoxEdit ProtocolDropDown;
+        private DevExpress.XtraEditors.LabelControl labelControl7;
     }
 }
 

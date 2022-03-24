@@ -150,8 +150,6 @@ namespace Server.Views
             GoldRateEdit.EditValue = Config.GoldRate;
             SkillRateEdit.EditValue = Config.SkillRate;
             CompanionRateEdit.EditValue = Config.CompanionRate;
-
-
         }
         public void SaveSettings()
         {
@@ -266,18 +264,13 @@ namespace Server.Views
             Config.SkillRate = (int)SkillRateEdit.EditValue;
             Config.CompanionRate = (int)CompanionRateEdit.EditValue;
 
-
             if (SEnvir.Started)
             {
                 SEnvir.ServerBuffChanged = true;
             }
 
-
-
-
             ConfigReader.Save(typeof(Config).Assembly);
         }
-
 
         private void SaveButton_ItemClick(object sender, ItemClickEventArgs e)
         {

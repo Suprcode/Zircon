@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DevExpress.XtraTab;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -9,9 +10,9 @@ namespace PluginCore
     {
         event EventHandler<LogEventArgs> Log;
 
+        string Namespace { get; }
         string Prefix { get; }
 
         void SetupMenu(IComponent page);
-        void SetupConfig(Dictionary<string, object> configParams);
     }
 }

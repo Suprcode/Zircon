@@ -16,5 +16,6 @@ namespace PatchManager
         public static bool UseLogin { get; set; } = true;
         public static string Username { get; set; } = @"REDACTED";
         public static string Password { get; set; } = @"REDACTED";
+        public static string Protocol { get; set; } = "Ftp";
     }
 }

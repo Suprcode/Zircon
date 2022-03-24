@@ -70,69 +70,69 @@
             this.ribbon.ShowExpandCollapseButton = DevExpress.Utils.DefaultBoolean.False;
             this.ribbon.ShowQatLocationSelector = false;
             this.ribbon.ShowToolbarCustomizeItem = false;
-            this.ribbon.Size = new System.Drawing.Size(1098, 144);
+            this.ribbon.Size = new System.Drawing.Size(1092, 144);
             this.ribbon.Toolbar.ShowCustomizeItem = false;
             // 
             // ZoomResetButton
             // 
             this.ZoomResetButton.Caption = "Reset";
-            this.ZoomResetButton.Glyph = ((System.Drawing.Image)(resources.GetObject("ZoomResetButton.Glyph")));
             this.ZoomResetButton.Id = 2;
-            this.ZoomResetButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("ZoomResetButton.LargeGlyph")));
+            this.ZoomResetButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ZoomResetButton.ImageOptions.Image")));
+            this.ZoomResetButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ZoomResetButton.ImageOptions.LargeImage")));
             this.ZoomResetButton.Name = "ZoomResetButton";
             this.ZoomResetButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ZoomResetButton_ItemClick);
             // 
             // ZoomInButton
             // 
             this.ZoomInButton.Caption = "Zoom In";
-            this.ZoomInButton.Glyph = ((System.Drawing.Image)(resources.GetObject("ZoomInButton.Glyph")));
             this.ZoomInButton.Id = 3;
-            this.ZoomInButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("ZoomInButton.LargeGlyph")));
+            this.ZoomInButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ZoomInButton.ImageOptions.Image")));
+            this.ZoomInButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ZoomInButton.ImageOptions.LargeImage")));
             this.ZoomInButton.Name = "ZoomInButton";
             this.ZoomInButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ZoomInButton_ItemClick);
             // 
             // ZoomOutButton
             // 
             this.ZoomOutButton.Caption = "Zoom Out";
-            this.ZoomOutButton.Glyph = ((System.Drawing.Image)(resources.GetObject("ZoomOutButton.Glyph")));
             this.ZoomOutButton.Id = 4;
-            this.ZoomOutButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("ZoomOutButton.LargeGlyph")));
+            this.ZoomOutButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ZoomOutButton.ImageOptions.Image")));
+            this.ZoomOutButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ZoomOutButton.ImageOptions.LargeImage")));
             this.ZoomOutButton.Name = "ZoomOutButton";
             this.ZoomOutButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ZoomOutButton_ItemClick);
             // 
             // AttributesButton
             // 
             this.AttributesButton.Caption = "Attributes";
-            this.AttributesButton.Glyph = ((System.Drawing.Image)(resources.GetObject("AttributesButton.Glyph")));
             this.AttributesButton.Id = 5;
-            this.AttributesButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("AttributesButton.LargeGlyph")));
+            this.AttributesButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("AttributesButton.ImageOptions.Image")));
+            this.AttributesButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("AttributesButton.ImageOptions.LargeImage")));
             this.AttributesButton.Name = "AttributesButton";
             this.AttributesButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.AttributesButton_ItemClick);
             // 
             // SelectionButton
             // 
             this.SelectionButton.Caption = "Selection";
-            this.SelectionButton.Glyph = ((System.Drawing.Image)(resources.GetObject("SelectionButton.Glyph")));
             this.SelectionButton.Id = 6;
-            this.SelectionButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("SelectionButton.LargeGlyph")));
+            this.SelectionButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SelectionButton.ImageOptions.Image")));
+            this.SelectionButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SelectionButton.ImageOptions.LargeImage")));
             this.SelectionButton.Name = "SelectionButton";
             this.SelectionButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SelectionButton_ItemClick);
             // 
             // SaveButton
             // 
             this.SaveButton.Caption = "Save";
-            this.SaveButton.Glyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.Glyph")));
             this.SaveButton.Id = 10;
-            this.SaveButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.LargeGlyph")));
+            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
+            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
             // 
             // CancelButton
             // 
             this.CancelButton.Caption = "Cancel";
-            this.CancelButton.Glyph = ((System.Drawing.Image)(resources.GetObject("CancelButton.Glyph")));
             this.CancelButton.Id = 11;
-            this.CancelButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("CancelButton.LargeGlyph")));
+            this.CancelButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("CancelButton.ImageOptions.Image")));
+            this.CancelButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("CancelButton.ImageOptions.LargeImage")));
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.CancelButton_ItemClick);
             // 
@@ -172,7 +172,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DXPanel.Location = new System.Drawing.Point(0, 150);
             this.DXPanel.Name = "DXPanel";
-            this.DXPanel.Size = new System.Drawing.Size(1081, 452);
+            this.DXPanel.Size = new System.Drawing.Size(1075, 449);
             this.DXPanel.TabIndex = 2;
             this.DXPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DXPanel_MouseDown);
             this.DXPanel.MouseEnter += new System.EventHandler(this.DXPanel_MouseEnter);
@@ -184,9 +184,9 @@
             // 
             this.MapVScroll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.MapVScroll.Location = new System.Drawing.Point(1081, 150);
+            this.MapVScroll.Location = new System.Drawing.Point(1075, 150);
             this.MapVScroll.Name = "MapVScroll";
-            this.MapVScroll.Size = new System.Drawing.Size(17, 452);
+            this.MapVScroll.Size = new System.Drawing.Size(17, 449);
             this.MapVScroll.TabIndex = 4;
             this.MapVScroll.ValueChanged += new System.EventHandler(this.MapVScroll_ValueChanged);
             // 
@@ -194,9 +194,9 @@
             // 
             this.MapHScroll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.MapHScroll.Location = new System.Drawing.Point(0, 602);
+            this.MapHScroll.Location = new System.Drawing.Point(0, 599);
             this.MapHScroll.Name = "MapHScroll";
-            this.MapHScroll.Size = new System.Drawing.Size(1081, 17);
+            this.MapHScroll.Size = new System.Drawing.Size(1075, 17);
             this.MapHScroll.TabIndex = 5;
             this.MapHScroll.ValueChanged += new System.EventHandler(this.MapHScroll_ValueChanged);
             // 
@@ -204,7 +204,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1098, 619);
+            this.ClientSize = new System.Drawing.Size(1092, 616);
             this.Controls.Add(this.MapHScroll);
             this.Controls.Add(this.MapVScroll);
             this.Controls.Add(this.DXPanel);

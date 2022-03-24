@@ -2,6 +2,7 @@
 using System.Drawing;
 using Client.Envir;
 using Library;
+using SlimDX;
 
 //Cleaned
 namespace Client.Controls
@@ -30,6 +31,30 @@ namespace Client.Controls
         public virtual void OnBlendChanged(bool oValue, bool nValue)
         {
             BlendChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region BlendMode
+
+        public BlendMode BlendMode
+        {
+            get => _BlendMode;
+            set
+            {
+                if (_BlendMode == value) return;
+
+                BlendMode oldValue = _BlendMode;
+                _BlendMode = value;
+
+                OnBlendModeChanged(oldValue, value);
+            }
+        }
+        private BlendMode _BlendMode = BlendMode.NORMAL;
+        public event EventHandler<EventArgs> BlendModeChanged;
+        public virtual void OnBlendModeChanged(BlendMode oValue, BlendMode nValue)
+        {
+            BlendModeChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -83,6 +108,33 @@ namespace Client.Controls
         }
 
         #endregion
+
+
+        #region Scale
+
+        public float Scale
+        {
+            get => _Scale;
+            set
+            {
+                if (_Scale == value) return;
+
+                float oldValue = _Scale;
+                _Scale = value;
+
+                OnScaleChanged(oldValue, value);
+            }
+        }
+        private float _Scale = 1.0f;
+        public event EventHandler<EventArgs> ScaleChanged;
+        public virtual void OnScaleChanged(float oValue, float nValue)
+        {
+            TextureValid = false;
+            ScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
 
         #region ImageOpacity
 
@@ -254,15 +306,14 @@ namespace Client.Controls
             if (image?.Image == null) return;
 
             if (Blend)
-                DXManager.SetBlend(true, ImageOpacity);
+                DXManager.SetBlend(true, ImageOpacity, BlendMode);
             else
                 DXManager.SetOpacity(ImageOpacity);
 
-            
-            PresentTexture(image.Image, Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this);
-            
+            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, Scale);
+
             if (Blend)
-                DXManager.SetBlend(oldBlend, oldRate);
+                DXManager.SetBlend(oldBlend, oldRate, BlendMode);
             else
                 DXManager.SetOpacity(1F);
 

@@ -21,6 +21,7 @@ namespace Server.Views
             RequirementImageComboBox.Items.AddEnum<QuestRequirementType>();
             TaskImageComboBox.Items.AddEnum<QuestTaskType>();
             RequiredClassImageComboBox.Items.AddEnum<RequiredClass>();
+            TypeImageComboBox.Items.AddEnum<QuestType>();
 
             QuestInfoGridControl.DataSource = SMain.Session.GetCollection<QuestInfo>().Binding;
 
@@ -28,6 +29,7 @@ namespace Server.Views
             ItemInfoLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
             MonsterInfoLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
             MapInfoLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
+            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             NPCLookUpEdit.DataSource = SMain.Session.GetCollection<NPCInfo>().Binding;
         }
 

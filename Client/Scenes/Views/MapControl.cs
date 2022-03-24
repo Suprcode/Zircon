@@ -274,8 +274,9 @@ namespace Client.Scenes.Views
             }
 
             DXManager.Sprite.Flush();
-            DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.DestinationColor);
-            DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.BothInverseSourceAlpha);
+
+            DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.Zero);
+            DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.SourceColor);
 
             DXManager.Sprite.Draw(LLayer.ControlTexture, Color.White);
 
@@ -1326,6 +1327,7 @@ namespace Client.Scenes.Views
 
                 DXManager.SetBlend(true);
                 DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
 
 
                 const float lightScale = 0.02F; //Players/Monsters

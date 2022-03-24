@@ -3716,18 +3716,32 @@ namespace Client.Envir
             {
                 if (quest.Quest != p.Quest.Quest) continue;
 
-
                 quest.Completed = p.Quest.Completed;
+                quest.DateCompleted = p.Quest.DateCompleted;
                 quest.Track = p.Quest.Track;
                 quest.SelectedReward = p.Quest.SelectedReward;
                 quest.Tasks.Clear();
                 quest.Tasks.AddRange(p.Quest.Tasks);
-
+            
                 GameScene.Game.QuestChanged(p.Quest);
                 return;
             }
+
             GameScene.Game.QuestLog.Add(p.Quest);
             GameScene.Game.QuestChanged(p.Quest);
+        }
+
+        public void Process(S.QuestCancelled p)
+        {
+            foreach (ClientUserQuest quest in GameScene.Game.QuestLog)
+            {
+                if (quest.Index != p.Index) continue;
+
+                GameScene.Game.CancelQuest(quest.Quest);
+                GameScene.Game.QuestChanged(quest);
+                return;
+            }
+
         }
 
         public void Process(S.CompanionUnlock p)

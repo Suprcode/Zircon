@@ -41,8 +41,8 @@
             this.colRegion = new DevExpress.XtraGrid.Columns.GridColumn();
             this.RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.colDelay = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colSpread = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colCount = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colSpread = new DevExpress.XtraGrid.Columns.GridColumn();
             this.DropsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.ColItem = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
@@ -71,6 +71,7 @@
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.colFaceImage = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoStatsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StatComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoGridControl)).BeginInit();
@@ -131,7 +132,7 @@
             gridLevelNode1,
             gridLevelNode2,
             gridLevelNode3});
-            this.MonsterInfoGridControl.Location = new System.Drawing.Point(0, 144);
+            this.MonsterInfoGridControl.Location = new System.Drawing.Point(0, 143);
             this.MonsterInfoGridControl.MainView = this.MonsterInfoGridView;
             this.MonsterInfoGridControl.MenuManager = this.ribbon;
             this.MonsterInfoGridControl.Name = "MonsterInfoGridControl";
@@ -141,7 +142,7 @@
             this.ItemLookUpEdit,
             this.RegionLookUpEdit});
             this.MonsterInfoGridControl.ShowOnlyPredefinedDetails = true;
-            this.MonsterInfoGridControl.Size = new System.Drawing.Size(775, 373);
+            this.MonsterInfoGridControl.Size = new System.Drawing.Size(775, 374);
             this.MonsterInfoGridControl.TabIndex = 2;
             this.MonsterInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.RespawnsGridView,
@@ -169,9 +170,9 @@
             this.colRegion.ColumnEdit = this.RegionLookUpEdit;
             this.colRegion.FieldName = "Region";
             this.colRegion.Name = "colRegion";
+            this.colRegion.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
             this.colRegion.Visible = true;
             this.colRegion.VisibleIndex = 0;
-            this.colRegion.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
             // 
             // RegionLookUpEdit
             // 
@@ -194,19 +195,19 @@
             this.colDelay.Visible = true;
             this.colDelay.VisibleIndex = 1;
             // 
-            // colSpread
-            // 
-            this.colSpread.FieldName = "Spread";
-            this.colSpread.Name = "colSpread";
-            this.colSpread.Visible = true;
-            this.colSpread.VisibleIndex = 2;
-            // 
             // colCount
             // 
             this.colCount.FieldName = "Count";
             this.colCount.Name = "colCount";
             this.colCount.Visible = true;
             this.colCount.VisibleIndex = 3;
+            // 
+            // colSpread
+            // 
+            this.colSpread.FieldName = "Spread";
+            this.colSpread.Name = "colSpread";
+            this.colSpread.Visible = true;
+            this.colSpread.VisibleIndex = 2;
             // 
             // DropsGridView
             // 
@@ -302,7 +303,8 @@
             this.colUndead,
             this.gridColumn3,
             this.gridColumn4,
-            this.gridColumn5});
+            this.gridColumn5,
+            this.colFaceImage});
             this.MonsterInfoGridView.GridControl = this.MonsterInfoGridControl;
             this.MonsterInfoGridView.Name = "MonsterInfoGridView";
             this.MonsterInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -429,7 +431,7 @@
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(775, 144);
+            this.ribbon.Size = new System.Drawing.Size(775, 143);
             // 
             // SaveButton
             // 
@@ -455,6 +457,14 @@
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
+            // 
+            // colFaceImage
+            // 
+            this.colFaceImage.Caption = "Face Image";
+            this.colFaceImage.FieldName = "FaceImage";
+            this.colFaceImage.Name = "colFaceImage";
+            this.colFaceImage.Visible = true;
+            this.colFaceImage.VisibleIndex = 14;
             // 
             // MonsterInfoView
             // 
@@ -522,5 +532,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn6;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
+        private DevExpress.XtraGrid.Columns.GridColumn colFaceImage;
     }
 }

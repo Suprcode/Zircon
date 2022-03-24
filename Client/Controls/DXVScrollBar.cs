@@ -126,6 +126,33 @@ namespace Client.Controls
 
         #endregion
 
+        #region HideWhenNoScroll
+
+        public bool HideWhenNoScroll
+        {
+            get => _HideWhenNoScroll;
+            set
+            {
+                if (_HideWhenNoScroll == value) return;
+
+                bool oldValue = _HideWhenNoScroll;
+                _HideWhenNoScroll = value;
+
+                OnHideWhenNoScrollChanged(oldValue, value);
+            }
+        }
+        private bool _HideWhenNoScroll;
+        public event EventHandler<EventArgs> HideWhenNoScrollChanged;
+        public void OnHideWhenNoScrollChanged(bool oValue, bool nValue)
+        {
+            UpdateScrollBar();
+
+            HideWhenNoScrollChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+
+        #endregion
+
 
         private int ScrollHeight => Size.Height - 50;
 
@@ -144,6 +171,7 @@ namespace Client.Controls
 
             UpdateScrollBar();
         }
+
         #endregion
 
         public DXVScrollBar()
@@ -152,7 +180,6 @@ namespace Client.Controls
             BorderColour = Color.FromArgb(198, 166, 99);
             DrawTexture = true;
             BackColour = Color.Black;
-
 
             UpButton = new DXButton
             {
@@ -165,7 +192,6 @@ namespace Client.Controls
             UpButton.MouseClick += (o, e) => Value -= Change;
             UpButton.MouseWheel += DoMouseWheel;
 
-
             DownButton = new DXButton
             {
                 Index = 46,
@@ -176,8 +202,6 @@ namespace Client.Controls
             };
             DownButton.MouseClick += (o, e) => Value += Change;
             DownButton.MouseWheel += DoMouseWheel;
-
-
 
             PositionBar = new DXButton
             {
@@ -206,6 +230,9 @@ namespace Client.Controls
 
             if (MaxValue - MinValue - VisibleSize != 0)
                 PositionBar.Location = new Point(UpButton.Location.X, 16 + (int) (ScrollHeight*(Value/(float) (MaxValue - MinValue - VisibleSize))));
+
+            if (HideWhenNoScroll)
+                Visible = UpButton.Enabled || DownButton.Enabled;
         }
 
         public void DoMouseWheel(object sender, MouseEventArgs e)

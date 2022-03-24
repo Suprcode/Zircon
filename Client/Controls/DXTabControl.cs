@@ -427,7 +427,6 @@ namespace Client.Controls
 
             if (Parent?.Parent == null) return;
 
-
             const int threshhold = 20;
             foreach (DXControl control in Parent?.Parent.Controls) //parent.parent
             {
@@ -436,7 +435,6 @@ namespace Client.Controls
                 if (tab == null) continue;
                 if (tab.DisplayArea.Left - TabButton.DisplayArea.Right > threshhold || tab.DisplayArea.Top - TabButton.DisplayArea.Bottom > threshhold ||
                     TabButton.DisplayArea.Left - tab.DisplayArea.Right > threshhold || TabButton.DisplayArea.Top - tab.DisplayArea.Top > threshhold) continue;
-
 
                 DXControl oldParent = Parent;
                 Updating = true;

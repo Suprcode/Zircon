@@ -164,8 +164,17 @@ namespace Client.Controls
 
             Label.Size = DisplayArea.Size;
         }
+        public override void OnOpacityChanged(float oValue, float nValue)
+        {
+            base.OnOpacityChanged(oValue, nValue);
+
+            if (Label == null) return;
+
+            Label.Opacity = Opacity;
+        }
+
         #endregion
-        
+
         public DXButton()
         {
             ForeColour = Color.White;
@@ -239,14 +248,14 @@ namespace Client.Controls
             float oldRate = DXManager.BlendRate;
 
             if (Blend)
-                DXManager.SetBlend(true, ImageOpacity);
+                DXManager.SetBlend(true, ImageOpacity, BlendMode);
             else
                 DXManager.SetOpacity(Opacity);
 
             PresentTexture(texture, Parent, DisplayArea, ForeColour, this);
             
             if (Blend)
-                DXManager.SetBlend(oldBlend, oldRate);
+                DXManager.SetBlend(oldBlend, oldRate, BlendMode);
             else
                 DXManager.SetOpacity(1F);
 

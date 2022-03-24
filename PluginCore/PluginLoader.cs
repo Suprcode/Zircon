@@ -1,32 +1,44 @@
-﻿using System;
+﻿using Library;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace PluginCore
 {
     public class PluginLoader
     {
-        private readonly Dictionary<string, object> _configParams = new Dictionary<string, object>();
+        public static PluginLoader Loader;
 
         public event EventHandler<LogEventArgs> Log;
+
+        public List<IPluginStart> Plugins = new List<IPluginStart>();
 
         /// <summary>
         /// Main entry
         /// </summary>
-        /// <param name="config">Reference to the servers config class</param>
-        public PluginLoader(Type config)
+        public PluginLoader()
         {
-            InitialiseConfig(config);
+        }
+
+        public static void Init()
+        {
+            if (Loader == null)
+            {
+                Loader = new PluginLoader();
+            }
         }
 
         /// <summary>
         /// Load all plugins in root folder
         /// </summary>
         /// <param name="ribbonPage">Reference to the plugin ribbon tab</param>
-        public void Load(IComponent ribbonPage)
+        public static void Load(IComponent ribbonPage)
         {
+            if (Loader == null) return;
+
             var files = Directory.GetFiles("./", "Plugin.*.dll", SearchOption.TopDirectoryOnly);
 
             foreach (var file in files)
@@ -43,29 +55,24 @@ namespace PluginCore
 
                         pluginStart.Log += (o, e) =>
                         {
-                            Log?.Invoke(o, e);
+                            Loader.Log?.Invoke(o, e);
                         };
 
-                        pluginStart.SetupConfig(_configParams);
-
                         pluginStart.SetupMenu(ribbonPage);
+
+                        Loader.Plugins.Add(pluginStart);
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogMessage(ex.ToString());
+                    Loader.LogMessage(ex.ToString());
                 }
             }
         }
 
-        private void InitialiseConfig(Type t)
+        public IPluginStart FindPlugin(string pluginNamespace)
         {
-            var props = t.GetProperties();
-
-            foreach (var prop in props)
-            {
-                _configParams[prop.Name] = prop.GetValue(t, null);
-            }
+            return Plugins.FirstOrDefault(x => x.Namespace == pluginNamespace);
         }
 
         private void LogMessage(string message)

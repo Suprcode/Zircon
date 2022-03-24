@@ -3179,7 +3179,7 @@ namespace Client.Scenes.Views
 
             QuestInfo previousQuest = SelectedQuest?.QuestInfo;
 
-            _SelectedQuest = null;
+            SelectedQuest = null;
 
             UpdateScrollBar();
 
@@ -3189,7 +3189,7 @@ namespace Client.Scenes.Views
                 {
                     if (row.QuestInfo != previousQuest) continue;
 
-                    _SelectedQuest = row;
+                    SelectedQuest = row;
                     break;
                 }
             }
@@ -3367,13 +3367,59 @@ namespace Client.Scenes.Views
                 QuestIcon.Visible = true;
             }
 
-            if (UserQuest == null)
-                QuestIcon.BaseIndex = 83; //Available
-            else if (!UserQuest.IsComplete)
-                QuestIcon.BaseIndex = 85; //Completed
-            else
-                QuestIcon.BaseIndex = 93; //Current
-            
+            Color colour = Color.White;
+
+            QuestIcon icon = Library.QuestIcon.None;
+            QuestType type = QuestType.General;
+
+            if (UserQuest != null)
+            {
+                type = UserQuest.Quest.QuestType;
+                icon = UserQuest.IsComplete ? Library.QuestIcon.Complete : Library.QuestIcon.Incomplete;
+            }
+            else if (QuestInfo != null)
+            {
+                type = QuestInfo.QuestType;
+
+                icon = Library.QuestIcon.New;
+            }
+
+            int startIndex = 0;
+
+            switch (type)
+            {
+                case QuestType.General:
+                    startIndex = 16;
+                    break;
+                case QuestType.Daily:
+                    startIndex = 76;
+                    break;
+                case QuestType.Repeatable:
+                    startIndex = 16;
+                    break;
+                case QuestType.Story:
+                    startIndex = 56;
+                    break;
+                //case QuestType.Account:
+                //    startIndex = 36;
+                //    break;
+            }
+
+            switch (icon)
+            {
+                case Library.QuestIcon.New:
+                    startIndex += 0;
+                    break;
+                case Library.QuestIcon.Incomplete:
+                    startIndex = 2;
+                    break;
+                case Library.QuestIcon.Complete:
+                    startIndex += 2;
+                    break;
+            }
+
+            QuestIcon.BaseIndex = startIndex;
+
             QuestInfoChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -3446,8 +3492,8 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(2,2),
                 Loop = true,
-                LibraryFile = LibraryFile.Interface,
-                BaseIndex = 83,
+                LibraryFile = LibraryFile.QuestIcon,
+                BaseIndex = 2,
                 FrameCount = 2,
                 AnimationDelay = TimeSpan.FromSeconds(1),
                 Visible = false,

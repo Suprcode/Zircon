@@ -26,6 +26,10 @@ namespace Library
             
             [LibraryFile.MagicIcon] = @"Data\MIcon.Zl",
             [LibraryFile.CBIcon] = @"Data\CBIcons.Zl",
+            [LibraryFile.QuestIcon] = @"Data\QuestIcons.Zl",
+
+            [LibraryFile.NPCImage] = @"Data\NPCface.Zl",
+            [LibraryFile.MonImage] = @"Data\MonImg.Zl",
 
             [LibraryFile.PEquipB1] = @"Data\PEquipB1.Zl",
             [LibraryFile.PEquipH1] = @"Data\PEquipH1.Zl",
@@ -73,6 +77,8 @@ namespace Library
             [LibraryFile.HorseBlue] = @"Data\Horse_Blue.Zl",
             [LibraryFile.HorseDark] = @"Data\Horse_Dark.Zl",
             [LibraryFile.HorseDarkEffect] = @"Data\Horse_DarkEffect.Zl",
+            [LibraryFile.HorseRoyal] = @"Data\Horse_Royal.Zl",
+            [LibraryFile.HorseRoyalEffect] = @"Data\Horse_RoyalEffect.Zl",
 
             [LibraryFile.M_Shield1] = @"Data\M-Shield1.Zl",
             [LibraryFile.M_Shield2] = @"Data\M-Shield2.Zl",
@@ -432,6 +438,10 @@ namespace Library
         MiniMap,
         MagicIcon,
         CBIcon,
+        QuestIcon,
+
+        NPCImage,
+        MonImage,
 
         PEquipB1,
         PEquipH1,
@@ -478,7 +488,8 @@ namespace Library
         HorseBlue,
         HorseDark,
         HorseDarkEffect,
-
+        HorseRoyal,
+        HorseRoyalEffect,
 
         M_Weapon1,
         M_Weapon2,
