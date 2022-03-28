@@ -59,7 +59,7 @@ namespace Client.Scenes.Views
         {
             base.OnSelectedChanged(oValue, nValue);
 
-            if (Panel == null || CurrentTabControl == null || CurrentTabControl.SelectedTab != this) return;
+            if (Panel == null || CurrentTabControl == null || CurrentTabControl.SelectedTab != this || Panel.TransparentCheckBox == null) return;
 
             float opacity = Panel.TransparentCheckBox.Checked ? 0.5F : 1F;
 
