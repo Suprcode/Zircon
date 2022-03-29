@@ -128,8 +128,8 @@ namespace LibraryEditor
                     WTLImage image = Images[i];
                     WTLImage shadowimage = shadowLibrary != null ? shadowLibrary.Images[i] : null;
 
-                    if (shadowimage != null)
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                    if (shadowimage != null && shadowimage.Length > 0)
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.X, ShadowOffSetY = shadowimage.Y, ShadowType = shadowimage.Shadow };
                     else
                         library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                 });
