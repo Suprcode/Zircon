@@ -1186,6 +1186,9 @@ namespace Library
         White,
         Red,
         Black,
+        WhiteUnicorn,
+        RedUnicorn
+
     }
 
     [Flags]

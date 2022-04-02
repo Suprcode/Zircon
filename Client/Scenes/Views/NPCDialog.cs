@@ -22,6 +22,7 @@ namespace Client.Scenes.Views
     public sealed class NPCDialog : DXWindow
     {
         #region Properties
+
         public static  Regex R = new Regex(@"\[(?<Text>.*?):(?<ID>.+?)\]", RegexOptions.Compiled);
 
         public NPCPage Page;
@@ -154,6 +155,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(ClientArea.X + 10, ClientArea.Y + 10),
                 Size = new Size(ClientArea.Width - 20, ClientArea.Height - 20),
+                ForeColour = Color.White
             };
         }
 
@@ -170,7 +172,6 @@ namespace Client.Scenes.Views
             int height = DXLabel.GetHeight(PageText, ClientArea.Width).Height;
             if (height > ClientArea.Height)
                 SetClientSize(new Size(ClientArea.Width, height));
-
 
             ProcessText();
 
@@ -295,7 +296,7 @@ namespace Client.Scenes.Views
                         Location = info.Region.Location,
                         DrawFormat = PageText.DrawFormat,
                         Text = PageText.Text.Substring(info.Index, info.Length),
-                        Font = new Font(PageText.Font.FontFamily, PageText.Font.Size, FontStyle.Underline),
+                        Font = new Font(PageText.Font.FontFamily, PageText.Font.Size),
                         Size = info.Region.Size,
                         Outline = false,
                         Sound = SoundIndex.ButtonC,
@@ -344,7 +345,6 @@ namespace Client.Scenes.Views
 
         public static List<ButtonInfo> GetWordRegionsNew(Graphics graphics, string text, Font font, TextFormatFlags flags, int width, int index, int length)
         {
-
             List<ButtonInfo> regions = new List<ButtonInfo>();
 
             Size tSize = TextRenderer.MeasureText(graphics, "A", font, new Size(width, 2000), flags);
@@ -490,6 +490,7 @@ namespace Client.Scenes.Views
 
             return regions;*/
         }
+
         #endregion
 
         #region IDisposable
@@ -4804,7 +4805,6 @@ namespace Client.Scenes.Views
         #endregion
     }
 
-
     public sealed class NPCItemFragmentDialog : DXWindow
     {
         #region Properties
@@ -4987,7 +4987,6 @@ namespace Client.Scenes.Views
 
         #endregion
     }
-
 
     public sealed class NPCMasterRefineDialog : DXWindow
     {
@@ -6409,7 +6408,6 @@ namespace Client.Scenes.Views
 
         #endregion
     }
-
 
     public sealed class NPCAccessoryResetDialog : DXWindow
     {

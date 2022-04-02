@@ -2086,6 +2086,25 @@ namespace Server.Models
 
                         SendGuildInfo();
                         break;
+                    case "GIVEHORSE":
+                        if (!Character.Account.TempAdmin) return;
+
+                        if (parts.Length < 2) return;
+
+                        HorseType horse = HorseType.None;
+
+                        if (HorseType.TryParse(parts[1], true, out horse))
+                        {
+                            Character.Account.Horse = horse;
+
+                            RefreshStats();
+
+                            if (Character.Account.Horse != HorseType.None) Mount();
+
+                            Connection.ReceiveChat($"Horse Updated to {horse}", MessageType.System);
+                        }
+
+                        break;
 
                 }
 
@@ -2497,6 +2516,16 @@ namespace Server.Models
                     Stats[Stat.MaxDC] += 25;
                     Stats[Stat.MaxMC] += 25;
                     Stats[Stat.MaxSC] += 25;
+                    break;
+                case HorseType.WhiteUnicorn:
+                case HorseType.RedUnicorn:
+                    Stats[Stat.Comfort] += 9;
+                    Stats[Stat.BagWeight] += 250;
+                    Stats[Stat.MaxAC] += 30;
+                    Stats[Stat.MaxMR] += 30;
+                    Stats[Stat.MaxDC] += 30;
+                    Stats[Stat.MaxMC] += 30;
+                    Stats[Stat.MaxSC] += 30;
                     break;
             }
 

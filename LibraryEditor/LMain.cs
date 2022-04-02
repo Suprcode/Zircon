@@ -66,7 +66,7 @@ namespace LibraryEditor
                     ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
                     Parallel.For(0, files.Length, options, i =>
                     {
-                        if (Path.GetExtension(files[i]) == ".wtl")
+                        if (Path.GetExtension(files[i]).ToUpper() == ".WTL")
                         {
                             WTLLibrary WTLlib = new WTLLibrary(files[i]);
                             WTLlib.ToMLibrary();
@@ -360,12 +360,12 @@ namespace LibraryEditor
                 ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 1 };
                 Parallel.For(0, OpenWeMadeDialog.FileNames.Length, options, i =>
                             {
-                                if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]) == ".wtl")
+                                if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]).ToUpper() == ".WTL")
                                 {
                                     WTLLibrary WTLlib = new WTLLibrary(OpenWeMadeDialog.FileNames[i]);
                                     WTLlib.ToMLibrary();
                                 }
-                                else if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]) == ".Lib")
+                                else if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]).ToUpper() == ".LIB")
                                 {
                                     FileStream stream = new FileStream(OpenWeMadeDialog.FileNames[i], FileMode.Open, FileAccess.ReadWrite);
                                     BinaryReader reader = new BinaryReader(stream);
@@ -1161,7 +1161,7 @@ namespace LibraryEditor
             {
                 foreach (string file in OpenMergeDialog.FileNames)
                 {
-                    if (Path.GetExtension(file) == ".Zl")
+                    if (Path.GetExtension(file).ToUpper() == ".ZL")
                     {
                         Mir3Library newLib = new Mir3Library(file);
                         foreach (Mir3Library.Mir3Image image in newLib.Images)
@@ -1169,12 +1169,12 @@ namespace LibraryEditor
                             _library.AddImage(image.Image, image.OffSetX, image.OffSetY);
                         }
                     }
-                    else if (Path.GetExtension(file) == ".wtl")
+                    else if (Path.GetExtension(file).ToUpper() == ".WTL")
                     {
                         WTLLibrary WTLlib = new WTLLibrary(file);
                         WTLlib.MergeToMLibrary(_library, newImages);
                     }
-                    else if (Path.GetExtension(file) == ".Lib")
+                    else if (Path.GetExtension(file).ToUpper() == ".LIB")
                     {
                         FileStream stream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite);
                         BinaryReader reader = new BinaryReader(stream);
