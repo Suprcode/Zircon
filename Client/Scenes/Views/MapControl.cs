@@ -560,7 +560,7 @@ namespace Client.Scenes.Views
             if (GameScene.Game.GoldPickedUp)
             {
                 MapButtons &= ~e.Button;
-                DXItemAmountWindow window = new DXItemAmountWindow("Drop Item", new ClientUserItem(Globals.GoldInfo, User.Gold));
+                DXItemAmountWindow window = new DXItemAmountWindow("Drop Item", new ClientUserItem(Globals.GoldInfo, User.Gold.Amount));
 
                 window.ConfirmButton.MouseClick += (o, a) =>
                 {

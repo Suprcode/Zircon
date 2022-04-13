@@ -30,6 +30,7 @@ namespace Library
         public static DBCollection<QuestTask> QuestTaskList;
         public static DBCollection<CompanionInfo> CompanionInfoList;
         public static DBCollection<CompanionLevelInfo> CompanionLevelInfoList;
+        public static DBCollection<CurrencyInfo> CurrencyInfoList;
 
         public static Random Random = new Random();
 
@@ -377,8 +378,7 @@ namespace Library
             2090000,
         };
 
-
-        public const int InventorySize = 49,
+        public const int InventorySize = 48,
                          EquipmentSize = 17,
                          CompanionInventorySize = 40,
                          CompanionEquipmentSize = 4,
@@ -439,9 +439,6 @@ namespace Library
         public int MapIndex { get; set; }
         public int InstanceIndex { get; set; }
 
-        public long Gold { get; set; }
-        public int GameGold { get; set; }
-
         public int Level { get; set; }
         public int HairType { get; set; }
         public Color HairColour { get; set; }
@@ -473,6 +470,8 @@ namespace Library
 
         public List<ClientUserMagic> Magics { get; set; }
         public List<ClientBuffInfo> Buffs { get; set; }
+
+        public List<ClientUserCurrency> Currencies { get; set; }
 
         public PoisonType Poison { get; set; }
 
@@ -1179,11 +1178,19 @@ namespace Library
             CheckDate = Time.Now - CheckTime;
         }
     }
+
     public class CompanionFiltersInfo
     {
         public string FilterClass { get; set; }
         public string FilterRarity { get; set; }
         public string FilterItemType { get; set; }
+    }
+
+    public class ClientUserCurrency
+    {
+        public int CurrencyIndex { get; set; }
+        public CurrencyInfo Info;
+        public long Amount { get; set; }
     }
 }
 

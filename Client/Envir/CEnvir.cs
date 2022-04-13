@@ -326,6 +326,7 @@ namespace Client.Envir
                 Globals.ItemInfoList = Session.GetCollection<ItemInfo>();
                 Globals.MagicInfoList = Session.GetCollection<MagicInfo>();
                 Globals.MapInfoList = Session.GetCollection<MapInfo>();
+                Globals.CurrencyInfoList = Session.GetCollection<CurrencyInfo>();
                 Globals.InstanceInfoList = Session.GetCollection<InstanceInfo>();
                 Globals.NPCPageList = Session.GetCollection<NPCPage>();
                 Globals.MonsterInfoList = Session.GetCollection<MonsterInfo>();
@@ -341,7 +342,7 @@ namespace Client.Envir
                 WindowSettings = Session.GetCollection<WindowSetting>();
                 CastleInfoList = Session.GetCollection<CastleInfo>();
 
-                Globals.GoldInfo = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Effect == ItemEffect.Gold);
+                Globals.GoldInfo = Globals.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
 
                 CheckKeyBinds();
 
@@ -798,6 +799,11 @@ namespace Client.Envir
                     bind.Key1 = Keys.W;
                     bind.Control1 = true;
                     break;
+                case KeyBindAction.CurrencyWindow:
+                    bind.Category = "Windows";
+                    bind.Key1 = Keys.C;
+                    bind.Control1 = true;
+                    break;
             }
         }
 
@@ -921,6 +927,11 @@ namespace Client.Envir
                 default:
                     return key.ToString();
             }
+        }
+
+        public static bool IsCurrencyItem(ItemInfo info)
+        {
+            return Globals.CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info) != null;
         }
     }
 }

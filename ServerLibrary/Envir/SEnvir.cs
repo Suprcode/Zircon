@@ -241,12 +241,14 @@ namespace Server.Envir
         public static DBCollection<ItemInfo> ItemInfoList;
         public static DBCollection<RespawnInfo> RespawnInfoList;
         public static DBCollection<MagicInfo> MagicInfoList;
+        public static DBCollection<CurrencyInfo> CurrencyInfoList;
 
         public static DBCollection<AccountInfo> AccountInfoList;
         public static DBCollection<CharacterInfo> CharacterInfoList;
         public static DBCollection<CharacterBeltLink> BeltLinkList;
         public static DBCollection<AutoPotionLink> AutoPotionLinkList;
         public static DBCollection<UserItem> UserItemList;
+        public static DBCollection<UserCurrency> UserCurrencyList;
         public static DBCollection<RefineInfo> RefineInfoList;
         public static DBCollection<UserItemStat> UserItemStatsList;
         public static DBCollection<UserMagic> UserMagicList;
@@ -397,12 +399,14 @@ namespace Server.Envir
             MonsterInfoList = Session.GetCollection<MonsterInfo>();
             RespawnInfoList = Session.GetCollection<RespawnInfo>();
             MagicInfoList = Session.GetCollection<MagicInfo>();
+            CurrencyInfoList = Session.GetCollection<CurrencyInfo>();
 
             AccountInfoList = Session.GetCollection<AccountInfo>();
             CharacterInfoList = Session.GetCollection<CharacterInfo>();
             BeltLinkList = Session.GetCollection<CharacterBeltLink>();
             AutoPotionLinkList = Session.GetCollection<AutoPotionLink>();
             UserItemList = Session.GetCollection<UserItem>();
+            UserCurrencyList = Session.GetCollection<UserCurrency>();
             UserItemStatsList = Session.GetCollection<UserItemStat>();
             RefineInfoList = Session.GetCollection<RefineInfo>();
             UserMagicList = Session.GetCollection<UserMagic>();
@@ -438,7 +442,8 @@ namespace Server.Envir
             UserFortuneInfoList = Session.GetCollection<UserFortuneInfo>();
             WeaponCraftStatInfoList = Session.GetCollection<WeaponCraftStatInfo>();
 
-            GoldInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Gold);
+            GoldInfo = CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
+
             RefinementStoneInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.RefinementStone);
             FragmentInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment1);
             Fragment2Info = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment2);
@@ -446,7 +451,6 @@ namespace Server.Envir
 
             ItemPartInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.ItemPart);
             FortuneCheckerInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.FortuneChecker);
-
 
             MysteryShipMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.MysteryShipRegionIndex);
             LairMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.LairRegionIndex);
@@ -485,9 +489,9 @@ namespace Server.Envir
                 if (monster.Drops.Count == 0) continue;
 
                 BossList.Add(monster);
-
             }
         }
+
         //Only works on Increasing EXP, still need to do Rebirth or loss of exp ranking update.
         public static void RankingSort(CharacterInfo character, bool updateLead = true)
         {
@@ -814,7 +818,7 @@ namespace Server.Envir
             SafeZoneInfoList = null;
             AccountInfoList = null;
             CharacterInfoList = null;
-
+            CurrencyInfoList = null;
 
             MapInfoList = null;
             SafeZoneInfoList = null;
@@ -823,10 +827,9 @@ namespace Server.Envir
             RespawnInfoList = null;
             MagicInfoList = null;
 
-            AccountInfoList = null;
-            CharacterInfoList = null;
             BeltLinkList = null;
             UserItemList = null;
+            UserCurrencyList = null;
             UserItemStatsList = null;
             UserMagicList = null;
             BuffInfoList = null;
@@ -1132,7 +1135,7 @@ namespace Server.Envir
                 bool error = false;
                 string tempString, paymentStatus, transactionID;
                 decimal tempDecimal;
-                int tempInt;
+                long tempInt;
 
                 if (!values.TryGetValue("payment_status", out paymentStatus))
                     error = true;
@@ -1228,22 +1231,20 @@ namespace Server.Envir
                 }
 
                 payment.Account = character.Account;
-                payment.Account.GameGold += payment.GameGoldAmount;
+                character.Account.GameGold2.Amount += payment.GameGoldAmount;
                 character.Account.Connection?.ReceiveChat(string.Format(character.Account.Connection.Language.PaymentComplete, payment.GameGoldAmount), MessageType.System);
-                character.Player?.Enqueue(new S.GameGoldChanged { GameGold = payment.Account.GameGold });
+                character.Player?.GameGoldChanged();
 
                 AccountInfo referral = payment.Account.Referral;
 
                 if (referral != null)
                 {
-                    referral.HuntGold += payment.GameGoldAmount / 10;
+                    referral.HuntGold2.Amount += payment.GameGoldAmount / 10;
 
                     if (referral.Connection != null)
                     {
                         referral.Connection.ReceiveChat(string.Format(referral.Connection.Language.ReferralPaymentComplete, payment.GameGoldAmount / 10), MessageType.System);
-
-                        if (referral.Connection.Stage == GameStage.Game)
-                            referral.Connection.Player.Enqueue(new S.HuntGoldChanged { HuntGold = referral.GameGold });
+                        referral.Connection.Player?.HuntGoldChanged();
                     }
                 }
 
@@ -1432,7 +1433,7 @@ namespace Server.Envir
             item.Flags = check.Flags;
             item.ExpireTime = check.ExpireTime;
 
-            if (item.Info.Effect == ItemEffect.Gold || item.Info.Effect == ItemEffect.Experience)
+            if (IsCurrencyItem(item.Info) || item.Info.Effect == ItemEffect.Experience)
                 item.Count = check.Count;
             else
                 item.Count = Math.Min(check.Info.StackSize, check.Count);
@@ -1460,7 +1461,7 @@ namespace Server.Envir
             item.Flags = check.Flags;
             item.ExpireTime = check.ExpireTime;
 
-            if (item.Info.Effect == ItemEffect.Gold || item.Info.Effect == ItemEffect.Experience)
+            if (IsCurrencyItem(item.Info) || item.Info.Effect == ItemEffect.Experience)
                 item.Count = check.Count;
             else
                 item.Count = Math.Min(check.Info.StackSize, check.Count);
@@ -1581,6 +1582,10 @@ namespace Server.Envir
             return null;
         }
 
+        public static bool IsCurrencyItem(ItemInfo info)
+        {
+            return CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info) != null;
+        }
 
         public static void UpgradeWeapon(UserItem item)
         {
@@ -2773,13 +2778,13 @@ namespace Server.Envir
 
             if (refferal != null)
             {
-                int maxLevel = refferal.HightestLevel();
+                int maxLevel = refferal.HighestLevel();
 
-                if (maxLevel >= 50) account.HuntGold = 500;
-                else if (maxLevel >= 40) account.HuntGold = 300;
-                else if (maxLevel >= 30) account.HuntGold = 200;
-                else if (maxLevel >= 20) account.HuntGold = 100;
-                else if (maxLevel >= 10) account.HuntGold = 50;
+                if (maxLevel >= 50) account.HuntGold2.Amount = 500;
+                else if (maxLevel >= 40) account.HuntGold2.Amount = 300;
+                else if (maxLevel >= 30) account.HuntGold2.Amount = 200;
+                else if (maxLevel >= 20) account.HuntGold2.Amount = 100;
+                else if (maxLevel >= 10) account.HuntGold2.Amount = 50;
             }
 
 

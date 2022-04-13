@@ -984,7 +984,7 @@ namespace Client.Scenes.Views
 
         private void GoldBox_ValueChanged(object sender, EventArgs e)
         {
-            GoldValid = GoldBox.Value >= 0 && GoldBox.Value <= MapObject.User.Gold;
+            GoldValid = GoldBox.Value >= 0 && GoldBox.Value <= MapObject.User.Gold.Amount;
 
             if (GoldBox.Value == 0)
                 GoldBox.ValueTextBox.BorderColour = Color.FromArgb(198, 166, 99);

@@ -27,7 +27,6 @@ namespace Server.DBModels
         }
         private AccountInfo _Account;
         
-
         public string CharacterName
         {
             get { return _CharacterName; }
@@ -585,9 +584,7 @@ namespace Server.DBModels
             }
         }
         private DateTime _NextDeathDropChange;
-        
-        
-        
+              
         [Association("Companion")]
         public UserCompanion Companion
         {
@@ -685,7 +682,6 @@ namespace Server.DBModels
             }
         }
         private string _FiltersItemType;
-
 
         protected override void OnDeleted()
         {

@@ -1095,7 +1095,7 @@ namespace Library
     {
         None,
 
-        Gold = 1,
+        //Gold = 1,
         Experience = 2,
         CompanionTicket = 3,
         BasicCompanionBag = 4,
@@ -1152,6 +1152,14 @@ namespace Library
         StatExtractor = 90,
         SpiritBlade = 91,
         RefineExtractor = 92,
+    }
+
+    public enum CurrencyType
+    {
+        Gold,
+        GameGold,
+        HuntGold,
+        Other
     }
 
     [Flags]
@@ -1215,9 +1223,10 @@ namespace Library
     {
         General = 0,
         Daily = 1,
-        Repeatable = 2,
-        Story = 3,
-        //Account = 4
+        //Weekly = 2,
+        Repeatable = 3,
+        Story = 4,
+        //Account = 5
     }
 
     public enum QuestIcon

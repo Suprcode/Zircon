@@ -121,6 +121,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\CurrencyInfoView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\CurrencyInfoView.Designer.cs">
+      <DependentUpon>CurrencyInfoView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\GameStoreSaleView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -341,6 +347,9 @@
     <EmbeddedResource Include="SMain.resx">
       <DependentUpon>SMain.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\CurrencyInfoView.resx">
+      <DependentUpon>CurrencyInfoView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\GameStoreSaleView.resx">
       <DependentUpon>GameStoreSaleView.cs</DependentUpon>

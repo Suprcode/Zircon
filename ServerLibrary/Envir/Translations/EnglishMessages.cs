@@ -245,12 +245,13 @@ namespace Server.Envir.Translations
         public override string NPCFundsGuild { get; set; } = "You cannot use Guild Funds to buy from a merchant because you are not in a guild.";
         public override string NPCFundsPermission { get; set; } = "You cannot use Guild Funds to buy from a merchant because you do not have permission.";
         public override string NPCFundsCost { get; set; } = "Unable to buy items, Your Guild needs another {0:#,##0} Gold.";
+        public override string NPCFundsCurrency { get; set; } = "Unable to buy items, Guild Funds can only be used for Gold merchants.";
         public override string NPCCost { get; set; } = "Unable to buy items, You need another {0:#,##0} Gold.";
         public override string NPCNoRoom { get; set; } = "You can not carry this many items.";
         public override string NPCFundsBuy { get; set; } = "{0} used {1:#,##0} gold of guild funds to buy {2} x{3}.";
         public override string NPCSellWorthless { get; set; } = "Unable to sell items that are worthless";
         public override string NPCSellTooMuchGold { get; set; } = "Unable to sell items, You would be carrying too much gold";
-        public override string NPCSellResult { get; set; } = "You sold {0} item(s) for {1:#,##0} Gold.";
+        public override string NPCSellResult { get; set; } = "You sold {0} item(s) for {1:#,##0} {2}.";
         public override string FragmentCost { get; set; } = "Unable to Fragment these items, You need another {0:#,##0} Gold.";
         public override string FragmentSpace { get; set; } = "Unable to Fragment these items, You need do not have enough inventory space.";
         public override string FragmentResult { get; set; } = "You fragmented {0} item(s) costing {1:#,##0}.";

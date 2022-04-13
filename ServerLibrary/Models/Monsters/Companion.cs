@@ -207,7 +207,7 @@ namespace Server.Models.Monsters
 
                 long amount = 0;
 
-                if (item.Item.Info.Effect == ItemEffect.Gold && item.Account.GuildMember != null && item.Account.GuildMember.Guild.GuildTax > 0)
+                if (item.Item.Info == Globals.GoldInfo && item.Account.GuildMember != null && item.Account.GuildMember.Guild.GuildTax > 0)
                     amount = (long)Math.Ceiling(item.Item.Count * item.Account.GuildMember.Guild.GuildTax);
 
                 ItemCheck check = new ItemCheck(item.Item, item.Item.Count - amount, item.Item.Flags, item.Item.ExpireTime);
@@ -513,7 +513,8 @@ namespace Server.Models.Monsters
                 long count = check.Count;
 
                 if (check.Info.Effect == ItemEffect.Experience) continue;
-                if (check.Info.Effect == ItemEffect.Gold) continue;
+
+                if (SEnvir.IsCurrencyItem(check.Info)) continue;
 
                 if (checkWeight)
                 {
@@ -600,9 +601,10 @@ namespace Server.Models.Monsters
                     continue;
                 }
 
-                if (item.Info.Effect == ItemEffect.Gold)
+                if (SEnvir.IsCurrencyItem(item.Info))
                 {
-                    CompanionOwner.Gold += item.Count;
+                    var currency = CompanionOwner.GetCurrency(item.Info);
+                    currency.Amount += item.Count;
                     item.IsTemporary = true;
                     item.Delete();
                     continue;

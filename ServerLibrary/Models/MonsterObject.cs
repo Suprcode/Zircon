@@ -2626,7 +2626,7 @@ namespace Server.Models
                 long amount = Math.Max(1, drop.Amount / 2 + SEnvir.Random.Next(drop.Amount));
 
                 long chance;
-                if (drop.Item.Effect == ItemEffect.Gold)
+                if (drop.Item == Globals.GoldInfo)
                 {
                     if (owner.Character.Account.GoldBot && Level < owner.Level) continue;
 
@@ -2658,17 +2658,18 @@ namespace Server.Models
                     userDrop.Account = owner.Character.Account;
                 }
 
-                decimal progress = chance / (decimal)int.MaxValue;
+                if (Config.EnableFortune)
+                {
+                    decimal progress = chance / (decimal)int.MaxValue;
 
-                progress *= amount;
+                    progress *= amount;
 
-                if (!drop.PartOnly)
-                    userDrop.Progress += progress;
+                    if (!drop.PartOnly)
+                        userDrop.Progress += progress;
+                }
 
                 if (drop.PartOnly ||
-                    ((SEnvir.Random.Next() > chance ||
-                      (drop.Item.Effect != ItemEffect.Gold && owner.Character.Account.ItemBot)) &&
-                     ((long)userDrop.Progress <= userDrop.DropCount || drop.Item.Effect == ItemEffect.Gold)))
+                    ((SEnvir.Random.Next() > chance || (!SEnvir.IsCurrencyItem(drop.Item) && owner.Character.Account.ItemBot)) && ((long)userDrop.Progress <= userDrop.DropCount || SEnvir.IsCurrencyItem(drop.Item))))
                 {
                     if (drop.Item.PartCount <= 1) continue;
 
@@ -2676,9 +2677,7 @@ namespace Server.Models
                             ? chance
                             : (chance * drop.Item.PartCount))) continue;
 
-
                     result = true;
-
 
                     UserItem item = SEnvir.CreateDropItem(SEnvir.ItemPartInfo);
 
@@ -2725,7 +2724,7 @@ namespace Server.Models
                     {
                         long goldAmount = 0;
 
-                        if (ob.Item.Info.Effect == ItemEffect.Gold && ob.Account.GuildMember != null &&
+                        if (ob.Item.Info == Globals.GoldInfo && ob.Account.GuildMember != null &&
                             ob.Account.GuildMember.Guild.GuildTax > 0)
                             goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
 
@@ -2740,7 +2739,7 @@ namespace Server.Models
                 }
 
 
-                if (drop.Item.Effect != ItemEffect.Gold && Math.Floor(userDrop.Progress) > userDrop.DropCount + amount)
+                if (!SEnvir.IsCurrencyItem(drop.Item) && (Math.Floor(userDrop.Progress) > userDrop.DropCount + amount) && Config.EnableFortune)
                     amount = (long)(userDrop.Progress - userDrop.DropCount);
 
                 userDrop.DropCount += amount;
@@ -2786,7 +2785,7 @@ namespace Server.Models
                     {
                         long goldAmount = 0;
 
-                        if (ob.Item.Info.Effect == ItemEffect.Gold && ob.Account.GuildMember != null &&
+                        if (ob.Item.Info == Globals.GoldInfo && ob.Account.GuildMember != null &&
                             ob.Account.GuildMember.Guild.GuildTax > 0)
                             goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
 
@@ -2880,7 +2879,7 @@ namespace Server.Models
                             {
                                 long goldAmount = 0;
 
-                                if (ob.Item.Info.Effect == ItemEffect.Gold && ob.Account.GuildMember != null &&
+                                if (ob.Item.Info == Globals.GoldInfo && ob.Account.GuildMember != null &&
                                     ob.Account.GuildMember.Guild.GuildTax > 0)
                                     goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
 

@@ -79,7 +79,7 @@ namespace Library.SystemModels
             }
         }
         private NPCPage _EntryPage;
-
+      
         [IgnoreProperty]
         public string RegionName => Region?.ServerDescription ?? string.Empty;
 
@@ -92,7 +92,8 @@ namespace Library.SystemModels
         [Association("Requirements", true)]
         public DBBindingList<NPCRequirement> Requirements { get; set; }
 
-        public CurrentQuest CurrentQuest;
+        [IgnoreProperty]
+        public CurrentQuest CurrentQuest { get; set; }
     }
 
     public sealed class CurrentQuest : IEquatable<CurrentQuest>
@@ -182,6 +183,21 @@ namespace Library.SystemModels
             }
         }
         private string _Arguments;
+
+        public CurrencyInfo Currency
+        {
+            get { return _Currency; }
+            set
+            {
+                if (_Currency == value) return;
+
+                var oldValue = _Currency;
+                _Currency = value;
+
+                OnChanged(oldValue, value, "Currency");
+            }
+        }
+        private CurrencyInfo _Currency;
 
         [Association("Checks", true)]
         public DBBindingList<NPCCheck> Checks { get; set; }
@@ -745,7 +761,9 @@ namespace Library.SystemModels
 
         Random,
 
-        WeaponAddedStats
+        WeaponAddedStats,
+
+        Currency
     }
     public enum Operator
     {
@@ -775,6 +793,9 @@ namespace Library.SystemModels
         GiveItemExperience,
 
         SpecialRefine,
-        Rebirth
+        Rebirth,
+
+        GiveCurrency,
+        TakeCurrency
     }
 }

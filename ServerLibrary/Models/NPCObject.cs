@@ -91,7 +91,7 @@ namespace Server.Models
                         }
                         break;
                     case NPCActionType.TakeGold:
-                        ob.Gold -= action.IntParameter1;
+                        ob.Gold.Amount -= action.IntParameter1;
                         ob.GoldChanged();
                         break;
                     case NPCActionType.ChangeElement:
@@ -117,9 +117,9 @@ namespace Server.Models
                         break;
                     case NPCActionType.GiveGold:
 
-                        long gold = ob.Gold + action.IntParameter1;
+                        long gold = ob.Gold.Amount + action.IntParameter1;
                         
-                        ob.Gold = (long) gold;
+                        ob.Gold.Amount = (long) gold;
                         ob.GoldChanged();
 
                         break;
@@ -183,6 +183,36 @@ namespace Server.Models
                         if (ob.Level >= 86 + ob.Character.Rebirth)
                             ob.NPCRebirth();
                         break;
+                    case NPCActionType.GiveCurrency:
+                        {
+                            if (action.StringParameter1 == null) continue;
+
+                            var info = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => string.Equals(x.Name, action.StringParameter1, StringComparison.OrdinalIgnoreCase));
+                            if (info == null) continue;
+
+                            var userCurrency = ob.GetCurrency(info);
+
+                            var amount = userCurrency.Amount + action.IntParameter1;
+
+                            userCurrency.Amount = amount;
+                            ob.CurrencyChanged(userCurrency);
+                        }
+                        break;
+                    case NPCActionType.TakeCurrency:
+                        {
+                            if (action.StringParameter1 == null) continue;
+
+                            var info = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => string.Equals(x.Name, action.StringParameter1, StringComparison.OrdinalIgnoreCase));
+                            if (info == null) continue;
+
+                            var userCurrency = ob.GetCurrency(info);
+
+                            var amount = userCurrency.Amount - action.IntParameter1;
+
+                            userCurrency.Amount = amount;
+                            ob.CurrencyChanged(userCurrency);
+                        }
+                        break;
                 }
             }
         }
@@ -202,7 +232,7 @@ namespace Server.Models
                         if (!Compare(check.Operator, (int)ob.Class, check.IntParameter1)) return false;
                         break;
                     case NPCCheckType.Gold:
-                        if (!Compare(check.Operator, ob.Gold, check.IntParameter1)) return false;
+                        if (!Compare(check.Operator, ob.Gold.Amount, check.IntParameter1)) return false;
                         break;
 
                     case NPCCheckType.HasWeapon:
@@ -376,6 +406,17 @@ namespace Server.Models
                         break;
                     case NPCCheckType.Random:
                         if (!Compare(check.Operator, SEnvir.Random.Next(check.IntParameter1), check.IntParameter2)) return false;
+                        break;
+
+                    case NPCCheckType.Currency:
+                        if (check.StringParameter1 == null) continue;
+
+                        var info = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => string.Equals(x.Name, check.StringParameter1, StringComparison.OrdinalIgnoreCase));
+                        if (info == null) continue;
+
+                        var userCurrency = ob.GetCurrency(info);
+
+                        if (!Compare(check.Operator, userCurrency.Amount, check.IntParameter1)) return false;
                         break;
                 }
             }

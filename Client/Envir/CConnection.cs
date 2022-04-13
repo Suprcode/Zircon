@@ -1816,19 +1816,19 @@ namespace Client.Envir
             //if (p.ToGrid == GridType.GuildStorage || p.FromGrid == GridType.GuildStorage)
             //    GameScene.Game.GuildPanel.StorageControl.ItemCount = GameScene.Game.GuildStorage.Count(x => x != null);
         }
-        public void Process(S.GoldChanged p)
+
+        public void Process(S.CurrencyChanged p)
         {
-            GameScene.Game.User.Gold = p.Gold;
-            DXSoundManager.Play(SoundIndex.GoldGained);
+            var currency = GameScene.Game.User.Currencies.First(x => x.Info.Index == p.CurrencyIndex);
+
+            currency.Amount = p.Amount;
+
+            GameScene.Game.CurrencyChanged();
+
+            if (currency.Info.Type == CurrencyType.Gold)
+                DXSoundManager.Play(SoundIndex.GoldGained);
         }
-        public void Process(S.GameGoldChanged p)
-        {
-            GameScene.Game.User.GameGold = p.GameGold;
-        }
-        public void Process(S.HuntGoldChanged p)
-        {
-            GameScene.Game.User.HuntGold = p.HuntGold;
-        }
+
         public void Process(S.ItemChanged p)
         {
             DXItemCell[] grid;

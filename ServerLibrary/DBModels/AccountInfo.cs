@@ -326,6 +326,19 @@ namespace Server.DBModels
         }
         private string _BanReason;
 
+        [IgnoreProperty]
+        public UserCurrency Gold2 => Currencies.First(x => x.Info.Type == CurrencyType.Gold);
+
+        [IgnoreProperty]
+        public UserCurrency GameGold2 => Currencies.First(x => x.Info.Type == CurrencyType.GameGold);
+
+        [IgnoreProperty]
+        public UserCurrency HuntGold2 => Currencies.First(x => x.Info.Type == CurrencyType.HuntGold);
+
+
+        /// <summary>
+        /// OLD PROPERTY. DO NOT USE.
+        /// </summary>
         public long Gold
         {
             get { return _Gold; }
@@ -341,6 +354,9 @@ namespace Server.DBModels
         }
         private long _Gold;
 
+        /// <summary>
+        /// OLD PROPERTY. DO NOT USE.
+        /// </summary>
         public int GameGold
         {
             get { return _GameGold; }
@@ -355,7 +371,25 @@ namespace Server.DBModels
             }
         }
         private int _GameGold;
-        
+
+        /// <summary>
+        /// OLD PROPERTY. DO NOT USE.
+        /// </summary>
+        public int HuntGold
+        {
+            get { return _HuntGold; }
+            set
+            {
+                if (_HuntGold == value) return;
+
+                var oldValue = _HuntGold;
+                _HuntGold = value;
+
+                OnChanged(oldValue, value, "HuntGold");
+            }
+        }
+        private int _HuntGold;
+
         public bool AllowGroup
         {
             get { return _AllowGroup; }
@@ -463,21 +497,6 @@ namespace Server.DBModels
             }
         }
         private HorseType _Horse;
-        
-        public int HuntGold
-        {
-            get { return _HuntGold; }
-            set
-            {
-                if (_HuntGold == value) return;
-
-                var oldValue = _HuntGold;
-                _HuntGold = value;
-
-                OnChanged(oldValue, value, "HuntGold");
-            }
-        }
-        private int _HuntGold;
 
         public bool Admin
         {
@@ -585,10 +604,10 @@ namespace Server.DBModels
         }
         private bool _Observer;
         
-
-
         public bool TempAdmin;
-        
+
+        [Association("Currencies")]
+        public DBBindingList<UserCurrency> Currencies { get; set; }
 
         [Association("Items")]
         public DBBindingList<UserItem> Items { get; set; }
@@ -679,7 +698,7 @@ namespace Server.DBModels
                 buff.Stats = new Stats { [Stat.AvailableHuntGoldCap] = 15 };
         }
 
-        public int HightestLevel()
+        public int HighestLevel()
         {
             int count = 0;
 

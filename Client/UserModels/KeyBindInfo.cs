@@ -329,6 +329,9 @@ namespace Client.UserModels
         ToggleItemLock,
 
         [Description("Fortune Window")]
-        FortuneWindow
+        FortuneWindow,
+
+        [Description("Currency Window")]
+        CurrencyWindow
     }
 }

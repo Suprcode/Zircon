@@ -84,6 +84,8 @@ namespace Server
                         BaseStatList = Session.GetCollection<BaseStat>();
                         MapRegionList = Session.GetCollection<MapRegion>();*/
 
+            CurrencyInfoView.AddDefaultCurrencies();
+
             UpdateInterface();
 
             Application.Idle += Application_Idle;
@@ -398,6 +400,11 @@ namespace Server
         private void MagicInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(MagicInfoView));
+        }
+
+        private void CurrencyInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(CurrencyInfoView));
         }
 
         private void CharacterInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)

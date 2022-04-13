@@ -131,7 +131,7 @@ namespace Server.DBModels
         }
         private string _Status;
 
-        public int GameGoldAmount
+        public long GameGoldAmount
         {
             get { return _GameGoldAmount; }
             set
@@ -144,7 +144,7 @@ namespace Server.DBModels
                 OnChanged(oldValue, value, "GameGoldAmount");
             }
         }
-        private int _GameGoldAmount;
+        private long _GameGoldAmount;
 
         public string Receiver_EMail
         {

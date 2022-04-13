@@ -30,7 +30,7 @@ namespace Server.Envir
         public const string Completed = "Completed";
         public const string Currency = "GBP";
 
-        public static Dictionary<decimal, int> GoldTable = new Dictionary<decimal, int>
+        public static Dictionary<decimal, long> GoldTable = new Dictionary<decimal, long>
         {
             [5M] = 500,
             [10M] = 1030,

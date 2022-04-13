@@ -197,6 +197,7 @@ namespace Client.Scenes
         public FortuneCheckerDialog FortuneCheckerBox;
         public NPCWeaponCraftWindow NPCWeaponCraftBox;
         public NPCAccessoryRefineDialog NPCAccessoryRefineBox;
+        public CurrencyDialog CurrencyBox;
 
         public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
         public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
@@ -344,6 +345,8 @@ namespace Client.Scenes
 
             foreach (DXWindow window in DXWindow.Windows)
                 window.LoadSettings();
+
+            InventoryBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -632,6 +635,12 @@ namespace Client.Scenes
                 Visible = false,
             };
 
+            CurrencyBox = new CurrencyDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+
             NPCWeaponCraftBox = new NPCWeaponCraftWindow
             {
                 Visible = false,
@@ -650,6 +659,8 @@ namespace Client.Scenes
 
             foreach (DXWindow window in DXWindow.Windows)
                 window.LoadSettings();
+
+            InventoryBox.LoadSettings();
         }
 
         #region Methods
@@ -669,7 +680,7 @@ namespace Client.Scenes
 
             GuildMemberBox.Location = new Point((Size.Width - GuildMemberBox.Size.Width) / 2, (Size.Height - GuildMemberBox.Size.Height) / 2);
 
-            InventoryBox.Location = new Point(Size.Width - InventoryBox.Size.Width, 0);
+            InventoryBox.Location = new Point(Size.Width - InventoryBox.Size.Width, MiniMapBox.Size.Height);
             
             CharacterBox.Location = Point.Empty;
 
@@ -726,6 +737,8 @@ namespace Client.Scenes
             FortuneCheckerBox.Location = new Point((Size.Width - FortuneCheckerBox.Size.Width) / 2, (Size.Height - FortuneCheckerBox.Size.Height) / 2);
 
             NPCWeaponCraftBox.Location = new Point((Size.Width - NPCWeaponCraftBox.Size.Width) / 2, (Size.Height - NPCWeaponCraftBox.Size.Height) / 2);
+
+            CurrencyBox.Location = new Point((Size.Width - CurrencyBox.Size.Width) / 2, (Size.Height - CurrencyBox.Size.Height) / 2);
         }
 
         public void SaveChatTabs()
@@ -999,6 +1012,9 @@ namespace Client.Scenes
                         break;
                     case KeyBindAction.FortuneWindow:
                         FortuneCheckerBox.Visible = !FortuneCheckerBox.Visible;
+                        break;
+                    case KeyBindAction.CurrencyWindow:
+                        CurrencyBox.Visible = !CurrencyBox.Visible;
                         break;
                     case KeyBindAction.MagicWindow:
                         MagicBox.Visible = !MagicBox.Visible;
@@ -1524,7 +1540,7 @@ namespace Client.Scenes
             if (needSpacer)
                 ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
 
-            if (MouseItem.Info.Effect == ItemEffect.Gold || MouseItem.Info.Effect == ItemEffect.Experience)
+            if (CEnvir.IsCurrencyItem(MouseItem.Info) || MouseItem.Info.Effect == ItemEffect.Experience)
             {
                 label = new DXLabel
                 {
@@ -3254,10 +3270,16 @@ namespace Client.Scenes
                 if (item.Info.Effect == ItemEffect.Experience) continue;
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
-                if (item.Info.Effect == ItemEffect.Gold)
+                var currency = User.GetCurrency(item.Info);
+                if (currency != null)
                 {
-                    User.Gold += item.Count;
-                    DXSoundManager.Play(SoundIndex.GoldGained);
+                    currency.Amount += item.Count;
+
+                    GameScene.Game.CurrencyChanged();
+
+                    if (currency.Info.Type == CurrencyType.Gold)
+                        DXSoundManager.Play(SoundIndex.GoldGained);
+
                     continue;
                 }
 
@@ -3306,10 +3328,16 @@ namespace Client.Scenes
                 if (item.Info.Effect == ItemEffect.Experience) continue;
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
-                if (item.Info.Effect == ItemEffect.Gold)
+                var currency = User.GetCurrency(item.Info);
+                if (currency != null)
                 {
-                    User.Gold += item.Count;
-                    DXSoundManager.Play(SoundIndex.GoldGained);
+                    currency.Amount += item.Count;
+
+                    GameScene.Game.CurrencyChanged();
+
+                    if (currency.Info.Type == CurrencyType.Gold)
+                        DXSoundManager.Play(SoundIndex.GoldGained);
+
                     continue;
                 }
 
@@ -3514,7 +3542,7 @@ namespace Client.Scenes
             ExperienceChanged();
             HealthChanged();
             ManaChanged();
-            GoldChanged();
+            CurrencyChanged();
             SafeZoneChanged();
             AttackModeChanged();
             PetModeChanged();
@@ -3628,18 +3656,26 @@ namespace Client.Scenes
 
             MainPanel.PetModeLabel.Text = description?.Description ?? User.PetMode.ToString();
         }
-        public void GoldChanged()
+        public void CurrencyChanged()
         {
             if (User == null) return;
 
-            InventoryBox.GoldLabel.Text = User.Gold.ToString("#,##0");
-            MarketPlaceBox.GameGoldBox.Value = User.GameGold;
-            MarketPlaceBox.HuntGoldBox.Value = User.HuntGold;
+            InventoryBox.GoldLabel.Text = User.Gold.Amount.ToString("#,##0");
+            InventoryBox.GameGoldLabel.Text = User.GameGold.Amount.ToString("#,##0");
+            MarketPlaceBox.GameGoldBox.Value = User.GameGold.Amount;
+            MarketPlaceBox.HuntGoldBox.Value = User.HuntGold.Amount;
             NPCAdoptCompanionBox.RefreshUnlockButton();
 
-
             foreach (NPCGoodsCell cell in NPCGoodsBox.Cells)
+            {
+                cell.UpdateCosts();
                 cell.UpdateColours();
+            }
+
+            foreach (CurrencyCell cell in CurrencyBox.Cells)
+            {
+                cell.UpdateAmount();
+            }
         }
         public void SafeZoneChanged()
         {

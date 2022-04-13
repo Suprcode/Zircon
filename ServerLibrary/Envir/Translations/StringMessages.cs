@@ -259,6 +259,7 @@ namespace Server.Envir
         public abstract string NPCFundsGuild { get; set; }
         public abstract string NPCFundsPermission { get; set; }
         public abstract string NPCFundsCost { get; set; }
+        public abstract string NPCFundsCurrency { get; set; }
         public abstract string NPCCost { get; set; }
         public abstract string NPCNoRoom { get; set; }
         public abstract string NPCFundsBuy { get; set; }
