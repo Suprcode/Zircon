@@ -33,6 +33,8 @@ namespace Server.Views
 
         public static void AddDefaultCurrencies()
         {
+            bool needSave = false;
+
             var gold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.Gold);
 
             if (gold == null)
@@ -42,6 +44,7 @@ namespace Server.Views
                 gold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 gold.Name = "Gold";
                 gold.Type = CurrencyType.Gold;
+                needSave = true;
 
                 if (goldItem != null)
                 {
@@ -57,6 +60,7 @@ namespace Server.Views
                 gameGold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 gameGold.Name = "Game Gold";
                 gameGold.Type = CurrencyType.GameGold;
+                needSave = true;
             }
 
             var huntGold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.HuntGold);
@@ -66,6 +70,12 @@ namespace Server.Views
                 huntGold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 huntGold.Name = "Hunt Gold";
                 huntGold.Type = CurrencyType.HuntGold;
+                needSave = true;
+            }
+
+            if (needSave)
+            {
+                SMain.Session.Save(true);
             }
         }
 
