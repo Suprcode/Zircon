@@ -104,6 +104,8 @@ namespace Server.Models
 
         public HorseType Horse;
 
+        public bool Fishing;
+
         public bool BlockWhisper;
         public bool CompanionLevelLock3, CompanionLevelLock5, CompanionLevelLock7, CompanionLevelLock10, CompanionLevelLock11, CompanionLevelLock13, CompanionLevelLock15;
         public bool ExtractorLock;
@@ -345,8 +347,10 @@ namespace Server.Models
                     PacketWaiting = false;
                     Mount();
                     break;
-
-
+                case ActionType.Fishing:
+                    PacketWaiting = false;
+                    FishingCast(true);
+                    break;
             }
 
             base.ProcessAction(action);
@@ -1397,11 +1401,11 @@ namespace Server.Models
                         if (parts.Length < 2 || !int.TryParse(parts[1], out count) || count < 0)
                             count = 6;
 
-                        int result = SEnvir.Random.Next(count) + 1;
+                        int rollResult = SEnvir.Random.Next(count) + 1;
 
 
                         foreach (PlayerObject member in GroupMembers)
-                            member.Connection.ReceiveChat(string.Format(member.Connection.Language.DiceRoll, Name, result, count), MessageType.Group);
+                            member.Connection.ReceiveChat(string.Format(member.Connection.Language.DiceRoll, Name, rollResult, count), MessageType.Group);
                         break;
                     case "EXTRACTORLOCK":
                         ExtractorLock = !ExtractorLock;
@@ -1915,43 +1919,48 @@ namespace Server.Models
                         //If Is GM or Teleport Ring
                         break;
                     case "MAP":
-                        if (!Character.Account.TempAdmin) return;
-                        if (parts.Length < 2) return;
-
-                        MapInfo info = SEnvir.MapInfoList.Binding.FirstOrDefault(x => string.Compare(x.FileName, parts[1], StringComparison.OrdinalIgnoreCase) == 0);
-
-                        InstanceInfo instance = null;
-                        byte? index = null;
-
-                        //Get chosen index
-                        if (parts.Length > 3)
                         {
-                            if (byte.TryParse(parts[3], out byte tempIndex))
+                            if (!Character.Account.TempAdmin) return;
+                            if (parts.Length < 2) return;
+
+                            MapInfo info = SEnvir.MapInfoList.Binding.FirstOrDefault(x => string.Compare(x.FileName, parts[1], StringComparison.OrdinalIgnoreCase) == 0);
+
+                            InstanceInfo instance = null;
+                            byte? instanceIndex = null;
+
+                            //Get chosen index
+                            if (parts.Length > 3)
                             {
-                                index = tempIndex;
-                            }
-                        }
-
-                        if (parts.Length > 2)
-                        {
-                            var instanceName = parts[2];
-
-                            instance = SEnvir.InstanceInfoList.Binding.FirstOrDefault(x => x.Name == instanceName);
-
-                            //Load new index
-                            if (instance != null && index == null)
-                            {
-                                index = SEnvir.LoadInstance(instance);
+                                if (byte.TryParse(parts[3], out byte tempIndex))
+                                {
+                                    instanceIndex = tempIndex;
+                                }
                             }
 
-                            if (index == null) return;
+                            if (parts.Length > 2)
+                            {
+                                var instanceName = parts[2];
+
+                                instance = SEnvir.InstanceInfoList.Binding.FirstOrDefault(x => x.Name == instanceName);
+
+                                //Load new index
+                                var (index, result) = GetInstance(instance);
+
+                                if (result != InstanceResult.Success)
+                                {
+                                    SendInstanceMessage(instance, result);
+                                    return;
+                                }
+
+                                instanceIndex = index;
+                            }
+
+                            Map map = SEnvir.GetMap(info, instance, instanceIndex ?? 0);
+
+                            if (map == null) return;
+
+                            Teleport(map, map.GetRandomLocation());
                         }
-
-                        Map map = SEnvir.GetMap(info, instance, index ?? 0);
-
-                        if (map == null) return;
-
-                        Teleport(map, map.GetRandomLocation());
                         break;
                     case "CLEARBELT":
                         for (int i = Character.BeltLinks.Count - 1; i >= 0; i--)
@@ -5409,7 +5418,7 @@ namespace Server.Models
                 return;
             }
 
-            if (GroupMembers.Any(x => x.CurrentMap.Instance != null))
+            if (GroupMembers != null && GroupMembers.Any(x => x.CurrentMap.Instance != null))
             {
                 Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
 
@@ -12723,6 +12732,28 @@ namespace Server.Models
 
             Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
         }
+        public void FishingCast(bool cast, bool cancel = false)
+        {
+            //TODO - All logic
+
+            if (SEnvir.Now < ActionTime)
+            {
+                if (!PacketWaiting)
+                {
+                    ActionList.Add(new DelayedAction(ActionTime, ActionType.Fishing));
+                    PacketWaiting = true;
+                }
+                else
+                    Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+
+                return;
+            }
+
+            Fishing = cast;
+
+            Broadcast(new S.FishingUpdate { ObjectID = ObjectID, Fishing = cast });
+        }
+
         public void Move(MirDirection direction, int distance)
         {
             if (SEnvir.Now < ActionTime || SEnvir.Now < MoveTime)
@@ -19395,7 +19426,7 @@ namespace Server.Models
                 AutoPotionLinks = alinks,
                 Magics = Character.Magics.Select(X => X.ToClientInfo()).ToList(),
                 Buffs = Buffs.Select(X => X.ToClientInfo()).ToList(),
-                Currencies = Character.Account.Currencies.Select(x => x.ToClientInfo(x.Info.Type == CurrencyType.GameGold && observer)).ToList(),
+                Currencies = Character.Account.Currencies.Where(x => x.Info != null).Select(x => x.ToClientInfo(x.Info.Type == CurrencyType.GameGold && observer)).ToList(),
 
                 Poison = Poison,
 
@@ -19876,6 +19907,17 @@ namespace Server.Models
             RefreshStats();
         }
 
+        public void SetFilters(C.SendCompanionFilters p)
+        {
+            Character.FiltersClass = String.Join(",", p.FilterClass);
+            Character.FiltersRarity = String.Join(",", p.FilterRarity);
+            Character.FiltersItemType = String.Join(",", p.FilterItemType);
+            FiltersClass = Character.FiltersClass;
+            FiltersItemType = Character.FiltersItemType;
+            FiltersRarity = Character.FiltersRarity;
+            Enqueue(new S.SendCompanionFilters { FilterClass = p.FilterClass, FilterRarity = p.FilterRarity, FilterItemType = p.FilterItemType });
+            Connection.ReceiveChat("Companion filters have been updated", MessageType.System);
+        }
 
         #region Instance / Dungeon Finder
 
@@ -19894,88 +19936,208 @@ namespace Server.Models
                 return;
             }
 
-            S.JoinInstance result = new S.JoinInstance { Success = false };
-
-
-            if (instance.ConnectRegion == null)
-            {
-                result.Result = InstanceResult.ConnectRegionNotSet;
-                Enqueue(result);
-                return;
-            }
-
-            if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
-            {
-                result.Result = InstanceResult.InsufficientLevel;
-                Enqueue(result);
-                return;
-            }
-            
-            if (instance.MinPlayerCount > 1 && (GroupMembers == null || GroupMembers.Count < instance.MinPlayerCount))
-            {
-                result.Result = InstanceResult.TooFewInGroup;
-                Enqueue(result);
-                return;
-            }
-            
-            if (instance.MaxPlayerCount > 1 && (GroupMembers != null && GroupMembers.Count > instance.MaxPlayerCount))
-            {
-                result.Result = InstanceResult.TooManyInGroup;
-                Enqueue(result);
-                return;
-            }
+            S.JoinInstance joinResult = new S.JoinInstance { Success = false };
 
             //Load up instance
-            var index = SEnvir.LoadInstance(instance);
+            var (index, result) = GetInstance(instance);
 
-            if (index == null)
+            joinResult.Result = result;
+
+            if (result != InstanceResult.Success)
             {
-                result.Result = InstanceResult.NoSlots;
-                Enqueue(result);
+                SendInstanceMessage(instance, joinResult.Result);
+                Enqueue(joinResult);
                 return;
             }
-
-            //TODO - Prompt first before taking everyone to the instance??
-            //Offer teleport now or 5 minute delay.
 
             if (!Teleport(instance.ConnectRegion, instance, index.Value))
             {
-                result.Result = InstanceResult.NoMap;
-                Enqueue(result);
+                joinResult.Result = InstanceResult.NoMap;
+                SendInstanceMessage(instance, joinResult.Result);
+                Enqueue(joinResult);
                 return;
             }
 
-            if (GroupMembers != null)
-            {
-                foreach (var member in GroupMembers)
-                {
-                    if (member == this) continue;
+            joinResult.Success = true;
 
-                    member.Teleport(instance.ConnectRegion, instance, index.Value);
+            Enqueue(joinResult);
+        }
+
+        public (byte? index, InstanceResult result) GetInstance(InstanceInfo instance)
+        {
+            var mapInstance = SEnvir.Instances[instance];
+
+            var (index, result) = GetInstanceResult(instance);
+
+            if (result != InstanceResult.Success)
+                return (null, result);
+
+            //Find existing instance for group/guild
+            //TODO - Store previously created instances to allow quick rejoin for solo/group/guilds
+
+            bool existing = false;
+            if (instance.Type == InstanceType.Group || instance.Type == InstanceType.Guild)
+            {
+                for (int i = 0; i < mapInstance.Length; i++)
+                {
+                    if (mapInstance[i] == null) continue;
+
+                    var maps = mapInstance[i];
+
+                    foreach (var key in maps.Keys)
+                    {
+                        var map = maps[key];
+
+                        switch (instance.Type)
+                        {
+                            case InstanceType.Group:
+                                if (!map.Players.Any(x => x.InGroup(this))) continue;
+                                break;
+                            case InstanceType.Guild:
+                                if (!map.Players.Any(x => x.InGuild(this))) continue;
+                                break;
+                        }
+
+                        return ((byte)i, result);
+                    }
                 }
             }
 
-            result.Success = true;
-            result.Result = InstanceResult.Success;
+            if (existing)
+            {
+                return (index, result);
+            }
 
-            Enqueue(result);
+            var loadIndex = SEnvir.LoadInstance(instance, index.Value);
+
+            return (loadIndex, result);
         }
 
-        public void SetFilters(C.SendCompanionFilters p)
+        public (byte? index, InstanceResult result) GetInstanceResult(InstanceInfo instance)
         {
-            Character.FiltersClass = String.Join(",", p.FilterClass);
-            Character.FiltersRarity = String.Join(",", p.FilterRarity);
-            Character.FiltersItemType = String.Join(",", p.FilterItemType);
-            FiltersClass = Character.FiltersClass;
-            FiltersItemType = Character.FiltersItemType;
-            FiltersRarity = Character.FiltersRarity;
-            Enqueue(new S.SendCompanionFilters { FilterClass = p.FilterClass, FilterRarity = p.FilterRarity, FilterItemType = p.FilterItemType });
-            Connection.ReceiveChat("Companion filters have been updated", MessageType.System);
+            if (instance.ConnectRegion == null)
+                return (null, InstanceResult.ConnectRegionNotSet);
+
+            if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
+                return (null, InstanceResult.InsufficientLevel);
+
+            if (instance.Type == InstanceType.Group)
+            {
+                if (GroupMembers == null)
+                    return (null, InstanceResult.NotInGroup);
+
+                if (instance.MinPlayerCount > 1 && (GroupMembers.Count < instance.MinPlayerCount))
+                    return (null, InstanceResult.TooFewInGroup);
+
+                if (instance.MaxPlayerCount > 1 && (GroupMembers.Count > instance.MaxPlayerCount))
+                    return (null, InstanceResult.TooManyInGroup);
+            }
+
+            if (instance.Type == InstanceType.Guild && Character.Account.GuildMember == null)
+                return (null, InstanceResult.NotInGuild);
+
+            var mapInstance = SEnvir.Instances[instance];
+
+            byte? index = null;
+
+            for (int i = 0; i < mapInstance.Length; i++)
+            {
+                if (mapInstance[i] == null)
+                {
+                    index = (byte)i;
+                    break;
+                }
+            }
+
+            if (index == null)
+                return (null, InstanceResult.NoSlots);
+
+            return ((byte)index, InstanceResult.Success);
+        }
+
+        public void SendInstanceMessage(InstanceInfo instance, InstanceResult result)
+        {
+            switch (result)
+            {
+                case InstanceResult.Invalid:
+                    {
+                        Connection.ReceiveChat(Connection.Language.InstanceInvalid, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.InstanceInvalid, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.InsufficientLevel:
+                    {
+                        Connection.ReceiveChat(string.Format(Connection.Language.InstanceInsufficientLevel, instance.MinPlayerLevel, instance.MaxPlayerLevel), MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(string.Format(con.Language.InstanceInsufficientLevel, instance.MinPlayerLevel, instance.MaxPlayerLevel), MessageType.System);
+                    }
+                    break;
+                case InstanceResult.NotInGroup:
+                    {
+                        Connection.ReceiveChat(Connection.Language.InstanceNotInGroup, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.InstanceNotInGroup, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.NotInGuild:
+                    {
+                        Connection.ReceiveChat(Connection.Language.InstanceNotInGuild, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.InstanceNotInGuild, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.TooFewInGroup:
+                    {
+                        Connection.ReceiveChat(string.Format(Connection.Language.InstanceTooFewInGroup, instance.MinPlayerCount), MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(string.Format(con.Language.InstanceTooFewInGroup, instance.MinPlayerCount), MessageType.System);
+                    }
+                    break;
+                case InstanceResult.TooManyInGroup:
+                    {
+                        Connection.ReceiveChat(string.Format(Connection.Language.InstanceTooManyInGroup, instance.MaxPlayerCount), MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(string.Format(con.Language.InstanceTooManyInGroup, instance.MaxPlayerCount), MessageType.System);
+                    }
+                    break;
+                case InstanceResult.ConnectRegionNotSet:
+                    {
+                        Connection.ReceiveChat(Connection.Language.InstanceConnectRegionNotSet, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.InstanceConnectRegionNotSet, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.NoSlots:
+                    {
+                        Connection.ReceiveChat(Connection.Language.InstanceNoSlots, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.InstanceNoSlots, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.NoMap:
+                    {
+                        Connection.ReceiveChat(Connection.Language.InstanceNoMap, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.InstanceNoMap, MessageType.System);
+                    }
+                    break;
+            }
         }
 
         #endregion
 
         #region Currency
+
         public UserCurrency GetCurrency(ItemInfo item)
         {
             var info = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == item);
@@ -19992,6 +20154,7 @@ namespace Server.Models
         {
             return Character.Account.Currencies.First(x => x.Info == info);
         }
+
         #endregion
     }
 

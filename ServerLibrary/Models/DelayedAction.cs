@@ -36,5 +36,6 @@ namespace Server.Models
         DelayedMagicDamage,
         Mining,
         DelayMining,
+        Fishing
     }
 }

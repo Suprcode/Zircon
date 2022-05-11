@@ -199,6 +199,8 @@ namespace Client.Scenes
         public NPCAccessoryRefineDialog NPCAccessoryRefineBox;
         public CurrencyDialog CurrencyBox;
 
+        public FishingCatchDialog FishingCatchBox;
+
         public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
         public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
 
@@ -653,6 +655,12 @@ namespace Client.Scenes
                 Visible = false,
             };
 
+            FishingCatchBox = new FishingCatchDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+
             SetDefaultLocations();
 
             LoadChatTabs();
@@ -739,6 +747,8 @@ namespace Client.Scenes
             NPCWeaponCraftBox.Location = new Point((Size.Width - NPCWeaponCraftBox.Size.Width) / 2, (Size.Height - NPCWeaponCraftBox.Size.Height) / 2);
 
             CurrencyBox.Location = new Point((Size.Width - CurrencyBox.Size.Width) / 2, (Size.Height - CurrencyBox.Size.Height) / 2);
+
+            FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2) - 10, ((Size.Height - FishingCatchBox.Size.Height) / 2) - 100);
         }
 
         public void SaveChatTabs()
@@ -998,6 +1008,15 @@ namespace Client.Scenes
             {
                 switch (action)
                 {
+                    //case KeyBindAction.FishingTemp:
+                    //    if (Observer) continue;
+
+                    //    if (CEnvir.Now < User.NextActionTime || User.ActionQueue.Count > 0) return;
+                    //    if (CEnvir.Now < User.ServerTime) return; //Next Server response Time.
+
+                    //    User.ServerTime = CEnvir.Now.AddSeconds(5);
+                    //    CEnvir.Enqueue(new C.FishingCast { CastOut = !GameScene.Game.User.Fishing });
+                    //    break;
                     case KeyBindAction.ConfigWindow:
                         ConfigBox.Visible = !ConfigBox.Visible;
                         break;
@@ -2732,7 +2751,7 @@ namespace Client.Scenes
 
         public void UseMagic(SpellKey key)
         {
-            if (Game.Observer || User == null || User.Horse != HorseType.None || MagicBarBox == null) return;
+            if (Game.Observer || User == null || User.Horse != HorseType.None || MagicBarBox == null || User.Fishing) return;
 
             ClientUserMagic magic = null;
 

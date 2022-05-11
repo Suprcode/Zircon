@@ -43,7 +43,7 @@ namespace Server
 
             PluginLoader.Loader.Log += PluginLoader_Log;
 
-            PluginLoader.Load(this.ribbonPage3);
+            PluginLoader.LoadIntegrated(this.ribbonPage3);
         }
 
         private void PluginLoader_Log(object sender, PluginCore.LogEventArgs e)

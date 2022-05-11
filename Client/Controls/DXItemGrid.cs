@@ -330,7 +330,7 @@ namespace Client.Controls
 
                     cell.Visible = true;
 
-                    cell.Location = new Point((x * (DXItemCell.CellWidth - 1 + (GridPadding * 2))) + GridPadding, (y * (DXItemCell.CellHeight - 1 + (GridPadding * 2))) + GridPadding);
+                    cell.Location = new Point((x * (DXItemCell.CellWidth - 1 + (GridPadding * 2))) + GridPadding, ((y - ScrollValue) * (DXItemCell.CellHeight - 1 + (GridPadding * 2))) + GridPadding);
                 }
         }
 

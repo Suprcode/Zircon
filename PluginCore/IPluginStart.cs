@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Windows.Forms;
 
 namespace PluginCore
 {
@@ -10,9 +11,13 @@ namespace PluginCore
     {
         event EventHandler<LogEventArgs> Log;
 
+        bool SupportsStandaloneLoading { get; }
+
         string Namespace { get; }
         string Prefix { get; }
 
         void SetupMenu(IComponent page);
+
+        Form CreateStandaloneForm();
     }
 }

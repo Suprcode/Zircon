@@ -311,6 +311,17 @@ namespace Server.Envir
         public abstract string HorseOwner { get; set; }
         public abstract string HorseMap { get; set; }
 
+        [ConfigSection("Instance")]
+        public abstract string InstanceInvalid { get; set; }
+        public abstract string InstanceInsufficientLevel { get; set; }
+        public abstract string InstanceNotInGroup { get; set; }
+        public abstract string InstanceNotInGuild { get; set; }
+        public abstract string InstanceTooFewInGroup { get; set; }
+        public abstract string InstanceTooManyInGroup { get; set; }
+        public abstract string InstanceConnectRegionNotSet { get; set; }
+        public abstract string InstanceNoSlots { get; set; }
+        public abstract string InstanceNoMap { get; set; }
+
     }
 
 

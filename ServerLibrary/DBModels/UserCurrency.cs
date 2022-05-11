@@ -55,13 +55,21 @@ namespace Server.DBModels
             }
         }
         private AccountInfo _Account;
+        protected override void OnDeleted()
+        {
+            Info = null;
 
-        public ClientUserCurrency ToClientInfo(bool ignoreAmount = false)
+            Account = null;
+
+            base.OnDeleted();
+        }
+
+        public ClientUserCurrency ToClientInfo(bool hideAmount = false)
         {
             return new ClientUserCurrency
             {
                 CurrencyIndex = Info.Index,
-                Amount = ignoreAmount ? 0 : Amount,
+                Amount = hideAmount ? 0 : Amount,
             };
         }
     }

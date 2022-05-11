@@ -1021,6 +1021,7 @@ namespace Client.Envir
 
                 if (player.Interupt)
                     player.FrameStart = DateTime.MinValue;
+
                 return;
             }
         }
@@ -1028,6 +1029,33 @@ namespace Client.Envir
         {
             MapObject.User.ServerTime = DateTime.MinValue;
             GameScene.Game.User.Horse = p.Horse;
+        }
+
+        public void Process(S.FishingUpdate p)
+        {
+            if (MapObject.User.ObjectID == p.ObjectID)
+            {
+                MapObject.User.ServerTime = DateTime.MinValue;
+                MapObject.User.NextActionTime = CEnvir.Now + Globals.TurnTime;
+            }
+
+            foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+            {
+                if (ob.ObjectID != p.ObjectID) continue;
+
+                if (ob.Race != ObjectType.Player) return;
+
+                PlayerObject player = (PlayerObject)ob;
+
+                player.Fishing = p.Fishing;
+
+                if (player.Interupt)
+                    player.FrameStart = DateTime.MinValue;
+
+                GameScene.Game.FishingCatchBox.Visible = player.Fishing;
+
+                return;
+            }
         }
 
         public void Process(S.ObjectStruck p)

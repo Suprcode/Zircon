@@ -412,6 +412,29 @@ namespace Server.Models
 
                 Map map = SEnvir.GetMap(movement.DestinationRegion.Map, Map.Instance, Map.InstanceIndex);
 
+                if (movement.NeedInstance != null)
+                {
+                    if (ob.Race != ObjectType.Player) break;
+
+                    if (Map.Instance != null) //Moving from instance
+                    {
+                        map = SEnvir.GetMap(movement.DestinationRegion.Map, null, 0);
+                    }
+                    else //Moving to instance
+                    {
+                        var (index, result) = ((PlayerObject)ob).GetInstance(movement.NeedInstance);
+
+                        if (result != InstanceResult.Success)
+                        {
+                            ((PlayerObject)ob).SendInstanceMessage(movement.NeedInstance, result);
+                            break;
+                        }
+
+                        map = SEnvir.GetMap(movement.DestinationRegion.Map, movement.NeedInstance, index.Value);
+                    }
+                }
+
+                if (map == null) break;
 
                 Cell cell = map.GetCell(movement.DestinationRegion.PointList[SEnvir.Random.Next(movement.DestinationRegion.PointList.Count)]);
 
@@ -473,7 +496,6 @@ namespace Server.Models
 
                             break;
                         }
-
                     }
 
                     if (movement.NeedSpawn != null)
@@ -492,7 +514,6 @@ namespace Server.Models
 
                             break;
                         }
-
                     }
 
                     if (movement.NeedItem != null)
@@ -557,7 +578,6 @@ namespace Server.Models
                             player.RefreshStats();
                             break;
                     }
-
                 }
 
                 return cell.GetMovement(ob);

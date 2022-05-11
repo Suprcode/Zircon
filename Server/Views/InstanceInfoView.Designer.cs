@@ -37,6 +37,7 @@
             this.InstanceInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -44,16 +45,18 @@
             this.gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.InstanceTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceMapGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RegionLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstanceTypeImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             this.SuspendLayout();
             // 
@@ -106,7 +109,8 @@
             this.InstanceInfoGridControl.Name = "InstanceInfoGridControl";
             this.InstanceInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.MapInfoLookUpEdit,
-            this.RegionLookUpEdit});
+            this.RegionLookUpEdit,
+            this.InstanceTypeImageComboBox});
             this.InstanceInfoGridControl.ShowOnlyPredefinedDetails = true;
             this.InstanceInfoGridControl.Size = new System.Drawing.Size(727, 343);
             this.InstanceInfoGridControl.TabIndex = 2;
@@ -125,7 +129,8 @@
             this.gridColumn7,
             this.gridColumn8,
             this.gridColumn10,
-            this.gridColumn9});
+            this.gridColumn9,
+            this.gridColumn11});
             this.InstanceInfoGridView.GridControl = this.InstanceInfoGridControl;
             this.InstanceInfoGridView.Name = "InstanceInfoGridView";
             this.InstanceInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -149,39 +154,47 @@
             this.gridColumn6.FieldName = "MaxInstances";
             this.gridColumn6.Name = "gridColumn6";
             this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 1;
+            this.gridColumn6.VisibleIndex = 2;
+            // 
+            // gridColumn5
+            // 
+            this.gridColumn5.Caption = "Show On Dungeon Finder";
+            this.gridColumn5.FieldName = "ShowOnDungeonFinder";
+            this.gridColumn5.Name = "gridColumn5";
+            this.gridColumn5.Visible = true;
+            this.gridColumn5.VisibleIndex = 3;
             // 
             // gridColumn3
             // 
-            this.gridColumn3.Caption = "Min Player Level";
+            this.gridColumn3.Caption = "Min Level";
             this.gridColumn3.FieldName = "MinPlayerLevel";
             this.gridColumn3.Name = "gridColumn3";
             this.gridColumn3.Visible = true;
-            this.gridColumn3.VisibleIndex = 3;
+            this.gridColumn3.VisibleIndex = 4;
             // 
             // gridColumn4
             // 
-            this.gridColumn4.Caption = "Max Player Level";
+            this.gridColumn4.Caption = "Max Level";
             this.gridColumn4.FieldName = "MaxPlayerLevel";
             this.gridColumn4.Name = "gridColumn4";
             this.gridColumn4.Visible = true;
-            this.gridColumn4.VisibleIndex = 4;
+            this.gridColumn4.VisibleIndex = 5;
             // 
             // gridColumn7
             // 
-            this.gridColumn7.Caption = "Min Player Count";
+            this.gridColumn7.Caption = "Min Group";
             this.gridColumn7.FieldName = "MinPlayerCount";
             this.gridColumn7.Name = "gridColumn7";
             this.gridColumn7.Visible = true;
-            this.gridColumn7.VisibleIndex = 5;
+            this.gridColumn7.VisibleIndex = 6;
             // 
             // gridColumn8
             // 
-            this.gridColumn8.Caption = "Max Player Count";
+            this.gridColumn8.Caption = "Max Group";
             this.gridColumn8.FieldName = "MaxPlayerCount";
             this.gridColumn8.Name = "gridColumn8";
             this.gridColumn8.Visible = true;
-            this.gridColumn8.VisibleIndex = 6;
+            this.gridColumn8.VisibleIndex = 7;
             // 
             // gridColumn10
             // 
@@ -190,7 +203,7 @@
             this.gridColumn10.FieldName = "ConnectRegion";
             this.gridColumn10.Name = "gridColumn10";
             this.gridColumn10.Visible = true;
-            this.gridColumn10.VisibleIndex = 7;
+            this.gridColumn10.VisibleIndex = 8;
             // 
             // RegionLookUpEdit
             // 
@@ -213,7 +226,23 @@
             this.gridColumn9.FieldName = "ReconnectRegion";
             this.gridColumn9.Name = "gridColumn9";
             this.gridColumn9.Visible = true;
-            this.gridColumn9.VisibleIndex = 8;
+            this.gridColumn9.VisibleIndex = 9;
+            // 
+            // gridColumn11
+            // 
+            this.gridColumn11.Caption = "Type";
+            this.gridColumn11.ColumnEdit = this.InstanceTypeImageComboBox;
+            this.gridColumn11.FieldName = "Type";
+            this.gridColumn11.Name = "gridColumn11";
+            this.gridColumn11.Visible = true;
+            this.gridColumn11.VisibleIndex = 1;
+            // 
+            // InstanceTypeImageComboBox
+            // 
+            this.InstanceTypeImageComboBox.AutoHeight = false;
+            this.InstanceTypeImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.InstanceTypeImageComboBox.Name = "InstanceTypeImageComboBox";
             // 
             // ribbon
             // 
@@ -253,14 +282,6 @@
             this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
-            // gridColumn5
-            // 
-            this.gridColumn5.Caption = "Show On Dungeon Finder";
-            this.gridColumn5.FieldName = "ShowOnDungeonFinder";
-            this.gridColumn5.Name = "gridColumn5";
-            this.gridColumn5.Visible = true;
-            this.gridColumn5.VisibleIndex = 2;
-            // 
             // InstanceInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -276,6 +297,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RegionLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstanceTypeImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -303,5 +325,7 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn10;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn11;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox InstanceTypeImageComboBox;
     }
 }

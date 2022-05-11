@@ -120,6 +120,11 @@ namespace Library.Network.ServerPackets
         public uint ObjectID { get; set; }
         public HorseType Horse { get; set; }
     }
+    public sealed class FishingUpdate : Packet
+    {
+        public uint ObjectID { get; set; }
+        public bool Fishing { get; set; }
+    }
     public sealed class ObjectMove : Packet
     {
         public uint ObjectID { get; set; }

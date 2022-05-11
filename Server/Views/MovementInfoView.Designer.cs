@@ -44,8 +44,10 @@
             this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.SpawnLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.InstanceLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MovementGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MovementGridView)).BeginInit();
@@ -53,6 +55,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpawnLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).BeginInit();
             this.SuspendLayout();
             // 
             // ribbon
@@ -66,14 +69,14 @@
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(733, 144);
+            this.ribbon.Size = new System.Drawing.Size(733, 143);
             // 
             // SaveButton
             // 
             this.SaveButton.Caption = "Save Database";
-            this.SaveButton.Glyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.Glyph")));
             this.SaveButton.Id = 1;
-            this.SaveButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.LargeGlyph")));
+            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
+            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
             this.SaveButton.LargeWidth = 60;
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
@@ -96,7 +99,7 @@
             // MovementGridControl
             // 
             this.MovementGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MovementGridControl.Location = new System.Drawing.Point(0, 144);
+            this.MovementGridControl.Location = new System.Drawing.Point(0, 143);
             this.MovementGridControl.MainView = this.MovementGridView;
             this.MovementGridControl.MenuManager = this.ribbon;
             this.MovementGridControl.Name = "MovementGridControl";
@@ -104,9 +107,10 @@
             this.MapLookUpEdit,
             this.MapIconImageComboBox,
             this.ItemLookUpEdit,
-            this.SpawnLookUpEdit});
+            this.SpawnLookUpEdit,
+            this.InstanceLookUpEdit});
             this.MovementGridControl.ShowOnlyPredefinedDetails = true;
-            this.MovementGridControl.Size = new System.Drawing.Size(733, 391);
+            this.MovementGridControl.Size = new System.Drawing.Size(733, 392);
             this.MovementGridControl.TabIndex = 2;
             this.MovementGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.MovementGridView});
@@ -120,7 +124,8 @@
             this.gridColumn4,
             this.gridColumn5,
             this.gridColumn6,
-            this.gridColumn7});
+            this.gridColumn7,
+            this.gridColumn8});
             this.MovementGridView.GridControl = this.MovementGridControl;
             this.MovementGridView.Name = "MovementGridView";
             this.MovementGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -220,7 +225,14 @@
             this.gridColumn6.FieldName = "Effect";
             this.gridColumn6.Name = "gridColumn6";
             this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 5;
+            this.gridColumn6.VisibleIndex = 6;
+            // 
+            // gridColumn7
+            // 
+            this.gridColumn7.FieldName = "RequiredClass";
+            this.gridColumn7.Name = "gridColumn7";
+            this.gridColumn7.Visible = true;
+            this.gridColumn7.VisibleIndex = 7;
             // 
             // MapIconImageComboBox
             // 
@@ -229,12 +241,26 @@
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.MapIconImageComboBox.Name = "MapIconImageComboBox";
             // 
-            // gridColumn7
+            // gridColumn8
             // 
-            this.gridColumn7.FieldName = "RequiredClass";
-            this.gridColumn7.Name = "gridColumn7";
-            this.gridColumn7.Visible = true;
-            this.gridColumn7.VisibleIndex = 6;
+            this.gridColumn8.Caption = "Need Instance";
+            this.gridColumn8.ColumnEdit = this.InstanceLookUpEdit;
+            this.gridColumn8.FieldName = "NeedInstance";
+            this.gridColumn8.Name = "gridColumn8";
+            this.gridColumn8.Visible = true;
+            this.gridColumn8.VisibleIndex = 5;
+            // 
+            // InstanceLookUpEdit
+            // 
+            this.InstanceLookUpEdit.AutoHeight = false;
+            this.InstanceLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.InstanceLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Name"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Type", "Type")});
+            this.InstanceLookUpEdit.DisplayMember = "Name";
+            this.InstanceLookUpEdit.Name = "InstanceLookUpEdit";
+            this.InstanceLookUpEdit.NullText = "[Instance is null]";
             // 
             // MovementInfoView
             // 
@@ -253,6 +279,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpawnLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -277,5 +304,7 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit SpawnLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn6;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn8;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit InstanceLookUpEdit;
     }
 }

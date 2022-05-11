@@ -332,6 +332,9 @@ namespace Client.UserModels
         FortuneWindow,
 
         [Description("Currency Window")]
-        CurrencyWindow
+        CurrencyWindow,
+
+        //[Description("Test")]
+        //FishingTemp,
     }
 }

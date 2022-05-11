@@ -74,9 +74,15 @@ namespace Server.Models
                                 return;
                             }
 
-                            var index = SEnvir.LoadInstance(action.InstanceParameter1);
+                            //TODO - Add conditions to npc instance moving
 
-                            if (index == null) return;
+                            var (index, result) = ob.GetInstance(action.InstanceParameter1);
+
+                            if (result != InstanceResult.Success)
+                            {
+                                ob.SendInstanceMessage(action.InstanceParameter1, result);
+                                return;
+                            }
 
                             ob.Teleport(action.InstanceParameter1.ConnectRegion, action.InstanceParameter1, index.Value);
                         }
@@ -97,14 +103,14 @@ namespace Server.Models
                     case NPCActionType.ChangeElement:
                         UserItem weapon = ob.Equipment[(int) EquipmentSlot.Weapon];
 
-                        S.ItemStatsChanged result = new S.ItemStatsChanged { GridType = GridType.Equipment, Slot = (int)EquipmentSlot.Weapon, NewStats = new Stats() };
-                        result.NewStats[Stat.WeaponElement] = action.IntParameter1 - weapon.Stats[Stat.WeaponElement];
+                        S.ItemStatsChanged changedResult = new S.ItemStatsChanged { GridType = GridType.Equipment, Slot = (int)EquipmentSlot.Weapon, NewStats = new Stats() };
+                        changedResult.NewStats[Stat.WeaponElement] = action.IntParameter1 - weapon.Stats[Stat.WeaponElement];
 
                         weapon.AddStat(Stat.WeaponElement, action.IntParameter1 - weapon.Stats[Stat.WeaponElement], StatSource.Refine);
                         weapon.StatsChanged();
                         ob.RefreshStats();
 
-                        ob.Enqueue(result);
+                        ob.Enqueue(changedResult);
                         break;
                     case NPCActionType.ChangeHorse:
                         ob.Character.Account.Horse = (HorseType) action.IntParameter1;

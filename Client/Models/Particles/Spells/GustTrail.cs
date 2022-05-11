@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Client.Models.Particles.Types
+namespace Client.Models.Particles
 {
     public class GustTrail : ParticleEmitter
     {

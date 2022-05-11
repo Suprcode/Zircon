@@ -28,6 +28,21 @@ namespace Library.SystemModels
         }
         private string _Name;
 
+        public InstanceType Type
+        {
+            get { return _Type; }
+            set
+            {
+                if (_Type == value) return;
+
+                var oldValue = _Type;
+                _Type = value;
+
+                OnChanged(oldValue, value, "Type");
+            }
+        }
+        private InstanceType _Type;
+
         public byte MaxInstances
         {
             get { return _MaxInstances; }
@@ -87,7 +102,6 @@ namespace Library.SystemModels
             }
         }
         private byte _MaxPlayerLevel;
-
 
         public byte MinPlayerCount
         {

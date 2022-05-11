@@ -293,6 +293,13 @@ namespace Library
         Fight,
     }
 
+    public enum InstanceType : byte
+    {
+        Solo,
+        Group,
+        Guild
+    }
+
     public enum ObjectType : byte
     {
         None, //Error
@@ -405,6 +412,9 @@ namespace Library
         DragonRepulseMiddle,
         DragonRepulseEnd,
 
+        FishingCast,
+        FishingWait,
+        FishingReel
     }
     
 
@@ -1512,6 +1522,8 @@ namespace Library
     {
         Invalid,
         InsufficientLevel,
+        NotInGroup,
+        NotInGuild,
         TooFewInGroup,
         TooManyInGroup,
         ConnectRegionNotSet,
@@ -1519,9 +1531,6 @@ namespace Library
         NoMap,
         Success
     }
-
-
-
 
     #endregion
 

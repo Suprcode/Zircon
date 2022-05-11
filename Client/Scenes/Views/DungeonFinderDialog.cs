@@ -373,16 +373,34 @@ namespace Client.Scenes.Views
                 return;
             }
 
-            if (instance.MinPlayerCount > 1 && ( GameScene.Game.GroupBox.Members.Count < instance.MinPlayerCount))
+            if (instance.Type == InstanceType.Group)
             {
-                GameScene.Game.ReceiveChat("There are not enough people in your group.", MessageType.System);
-                return;
+                if (GameScene.Game.GroupBox.Members.Count == 0)
+                {
+                    GameScene.Game.ReceiveChat("You must be in a group.", MessageType.System);
+                    return;
+                }
+
+                if (instance.MinPlayerCount > 1 && (GameScene.Game.GroupBox.Members.Count < instance.MinPlayerCount))
+                {
+                    GameScene.Game.ReceiveChat("There are not enough people in your group.", MessageType.System);
+                    return;
+                }
+
+                if (instance.MaxPlayerCount > 1 && (GameScene.Game.GroupBox.Members.Count > instance.MaxPlayerCount))
+                {
+                    GameScene.Game.ReceiveChat("There are too many people in your group.", MessageType.System);
+                    return;
+                }
             }
 
-            if (instance.MaxPlayerCount > 1 && (GameScene.Game.GroupBox.Members.Count > instance.MaxPlayerCount))
+            if (instance.Type == InstanceType.Guild)
             {
-                GameScene.Game.ReceiveChat("There are too many people in your group.", MessageType.System);
-                return;
+                if (GameScene.Game.GuildBox.GuildInfo == null)
+                {
+                    GameScene.Game.ReceiveChat("You must be in a guild.", MessageType.System);
+                    return;
+                }
             }
 
             CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
@@ -459,6 +477,7 @@ namespace Client.Scenes.Views
             Visible = true;
 
             NameLabel.Text = InstanceInfo.Name;
+            TypeLabel.Text = InstanceInfo.Type.ToString();
             LevelLabel.Text = $"Level: {GetLevel(InstanceInfo)}";
             CountLabel.Text = $"Player Count: {GetPlayerCount(InstanceInfo)}";
             //FreeSlotLabel.Text = $"Slots: 0 / {InstanceInfo.MaxInstances}";
@@ -491,7 +510,7 @@ namespace Client.Scenes.Views
 
         #endregion
 
-        public DXLabel NameLabel, LevelLabel, CountLabel;
+        public DXLabel NameLabel, TypeLabel, LevelLabel, CountLabel;
         public DXButton FavouriteImage;
 
         #endregion
@@ -510,17 +529,24 @@ namespace Client.Scenes.Views
                 IsControl = false,
             };
 
-            LevelLabel = new DXLabel
+            TypeLabel = new DXLabel
             {
                 Parent = this,
                 Location = new Point(150, 12),
                 IsControl = false,
             };
 
-            CountLabel = new DXLabel
+            LevelLabel = new DXLabel
             {
                 Parent = this,
                 Location = new Point(250, 12),
+                IsControl = false,
+            };
+
+            CountLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(350, 12),
                 IsControl = false,
             };
 
@@ -564,6 +590,30 @@ namespace Client.Scenes.Views
                         NameLabel.Dispose();
 
                     NameLabel = null;
+                }
+
+                if (TypeLabel != null)
+                {
+                    if (!TypeLabel.IsDisposed)
+                        TypeLabel.Dispose();
+
+                    TypeLabel = null;
+                }
+
+                if (CountLabel != null)
+                {
+                    if (!CountLabel.IsDisposed)
+                        CountLabel.Dispose();
+
+                    CountLabel = null;
+                }
+
+                if (LevelLabel != null)
+                {
+                    if (!LevelLabel.IsDisposed)
+                        LevelLabel.Dispose();
+
+                    LevelLabel = null;
                 }
 
                 //if (FreeSlotLabel != null)

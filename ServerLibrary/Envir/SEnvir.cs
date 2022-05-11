@@ -617,7 +617,11 @@ namespace Server.Envir
         {
             foreach (MovementInfo movement in MovementInfoList.Binding)
             {
-                if (movement.SourceRegion == null) continue;
+                if (movement.SourceRegion == null)
+                {
+                    Log($"[Movement] No Source Region, Source: {movement.SourceRegion.ServerDescription}");
+                    continue;
+                }
 
                 Map sourceMap = GetMap(movement.SourceRegion.Map, instance, index);
 
@@ -638,6 +642,7 @@ namespace Server.Envir
                 }
 
                 Map destMap = GetMap(movement.DestinationRegion.Map, instance, index);
+
                 if (destMap == null)
                 {
                     if (instance == null)
@@ -645,9 +650,11 @@ namespace Server.Envir
                         Log($"[Movement] Bad Destination Map, Destination: {movement.DestinationRegion.ServerDescription}");
                     }
 
-                    continue;
+                    if (movement.NeedInstance == null || movement.NeedInstance != instance)
+                    {
+                        continue;
+                    }
                 }
-
 
                 foreach (Point sPoint in movement.SourceRegion.PointList)
                 {
@@ -811,7 +818,6 @@ namespace Server.Envir
             Now = DateTime.MinValue;
 
             Session = null;
-
 
             MapInfoList = null;
             InstanceInfoList = null;
@@ -3441,31 +3447,15 @@ namespace Server.Envir
             return instanceMaps != null && instanceMaps[instanceIndex].ContainsKey(info) ? instanceMaps[instanceIndex][info] : null;
         }
 
-        public static byte? LoadInstance(InstanceInfo instance)
+        public static byte? LoadInstance(InstanceInfo instance, byte index)
         {
             var mapInstance = Instances[instance];
-
-            var index = -1;
-
-            for (int i = 0; i < mapInstance.Length; i++)
-            {
-                if (mapInstance[i] == null)
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            if (index < 0)
-            {
-                return null;
-            }
 
             mapInstance[index] = new Dictionary<MapInfo, Map>();
 
             for (int i = 0; i < instance.Maps.Count; i++)
             {
-                mapInstance[index][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, (byte)index);
+                mapInstance[index][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, index);
             }
 
             Parallel.ForEach(mapInstance[index], x => x.Value.Load());
@@ -3477,15 +3467,15 @@ namespace Server.Envir
 
             CreateSafeZones();
 
-            CreateMovements(instance, (byte)index);
+            CreateMovements(instance, index);
 
-            CreateNPCs(instance, (byte)index);
+            CreateNPCs(instance, index);
 
-            CreateSpawns(instance, (byte)index);
+            CreateSpawns(instance, index);
 
             Log($"Loaded Instance {instance.Name} at index {index}");
 
-            return (byte)index;
+            return index;
         }
 
         public static void UnloadInstance(InstanceInfo instance, byte index)
