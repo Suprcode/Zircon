@@ -587,7 +587,6 @@ namespace Server.Envir
                 Instances[InstanceInfoList[i]] = new Dictionary<MapInfo, Map>[count];
             }
 
-
             Parallel.ForEach(Maps, x => x.Value.Load());
 
             #endregion
@@ -813,6 +812,11 @@ namespace Server.Envir
             }
         }
 
+        private static void RemoveSpawns(InstanceInfo instance = null, byte index = 0)
+        {
+            Spawns.RemoveAll(x => x.CurrentMap.Instance == instance && x.CurrentMap.InstanceIndex == index);
+        }
+
         private static void StopEnvir()
         {
             Now = DateTime.MinValue;
@@ -1029,10 +1033,8 @@ namespace Server.Envir
                                 foreach (KeyValuePair<MapInfo, Map> pair in instance.Value[i])
                                     pair.Value.Process();
 
-                                if (instance.Value[i].Values.All(x => x.LastPlayer.AddMinutes(10) < DateTime.Now))
-                                {
+                                if (instance.Value[i].Values.All(x => x.LastPlayer.AddMinutes(5) < DateTime.UtcNow))
                                     UnloadInstance(instance.Key, i);
-                                }
                             }
                         }
 
@@ -3480,11 +3482,43 @@ namespace Server.Envir
 
         public static void UnloadInstance(InstanceInfo instance, byte index)
         {
-            //TODO - Dispose of all spawns/npcs/spell objects on map (remove from spawn list??)
+            //TODO - Dispose of all spawns/npcs/spell objects on map
+            RemoveSpawns(instance, index);
 
             Instances[instance][index] = null;
 
-            Log($"Unloaded Instance {instance.Name} at index {index}");
+            var users = new List<string>();
+
+            foreach (var pair in instance.UserRecord)
+            {
+                if (pair.Value == index)
+                    users.Add(pair.Key);
+            }
+
+            foreach (var user in users)
+            {
+                instance.UserRecord.Remove(user);
+
+                if (instance.CooldownTimeInMinutes > 0)
+                {
+                    var cooldown = DateTime.UtcNow.AddMinutes(instance.CooldownTimeInMinutes);
+
+                    switch (instance.Type)
+                    {
+                        case InstanceType.Guild:
+                            var character = GetCharacter(user);
+                            if (character?.Account?.GuildMember?.Guild != null)
+                                instance.GuildCooldown.Add(character.Account.GuildMember.Guild.GuildName, cooldown);
+                            break;
+                        default:
+                            if (!instance.UserCooldown.ContainsKey(user))
+                                instance.UserCooldown.Add(user, cooldown);
+                            break;
+                    }
+                }
+            }
+
+            Log($"Unloaded Instance {instance.Name} at index {index} and removed {users.Count} user records");
         }
 
         public static UserConquestStats GetConquestStats(PlayerObject player)

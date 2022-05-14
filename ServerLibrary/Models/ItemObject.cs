@@ -100,7 +100,7 @@ namespace Server.Models
 
             long amount = 0;
 
-            if (Account != null && Item.Info == Globals.GoldInfo && Account.GuildMember != null && Account.GuildMember.Guild.GuildTax > 0)
+            if (Account != null && Item.Info == SEnvir.GoldInfo && Account.GuildMember != null && Account.GuildMember.Guild.GuildTax > 0)
                 amount = (long)Math.Ceiling(Item.Count * Account.GuildMember.Guild.GuildTax);
 
             ItemCheck check = new ItemCheck(Item, Item.Count - amount, Item.Flags, Item.ExpireTime);
@@ -148,7 +148,7 @@ namespace Server.Models
 
             long amount = 0;
 
-            if (Account != null && Item.Info == Globals.GoldInfo && Account.GuildMember != null && Account.GuildMember.Guild.GuildTax > 0)
+            if (Account != null && Item.Info == SEnvir.GoldInfo && Account.GuildMember != null && Account.GuildMember.Guild.GuildTax > 0)
                 amount = (long)Math.Ceiling(Item.Count * Account.GuildMember.Guild.GuildTax);
 
             ItemCheck check = new ItemCheck(Item, Item.Count - amount, Item.Flags, Item.ExpireTime);

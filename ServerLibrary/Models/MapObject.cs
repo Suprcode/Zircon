@@ -698,7 +698,6 @@ namespace Server.Models
             for (int i = 0; i < 20; i++)
                 if (Spawn(map, region.PointList[SEnvir.Random.Next(region.PointList.Count)])) break;
 
-
             return true;
         }
 

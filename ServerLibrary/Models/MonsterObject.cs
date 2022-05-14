@@ -2626,7 +2626,7 @@ namespace Server.Models
                 long amount = Math.Max(1, drop.Amount / 2 + SEnvir.Random.Next(drop.Amount));
 
                 long chance;
-                if (drop.Item == Globals.GoldInfo)
+                if (drop.Item == SEnvir.GoldInfo)
                 {
                     if (owner.Character.Account.GoldBot && Level < owner.Level) continue;
 
@@ -2724,7 +2724,7 @@ namespace Server.Models
                     {
                         long goldAmount = 0;
 
-                        if (ob.Item.Info == Globals.GoldInfo && ob.Account.GuildMember != null &&
+                        if (ob.Item.Info == SEnvir.GoldInfo && ob.Account.GuildMember != null &&
                             ob.Account.GuildMember.Guild.GuildTax > 0)
                             goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
 
@@ -2785,7 +2785,7 @@ namespace Server.Models
                     {
                         long goldAmount = 0;
 
-                        if (ob.Item.Info == Globals.GoldInfo && ob.Account.GuildMember != null &&
+                        if (ob.Item.Info == SEnvir.GoldInfo && ob.Account.GuildMember != null &&
                             ob.Account.GuildMember.Guild.GuildTax > 0)
                             goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
 
@@ -2879,7 +2879,7 @@ namespace Server.Models
                             {
                                 long goldAmount = 0;
 
-                                if (ob.Item.Info == Globals.GoldInfo && ob.Account.GuildMember != null &&
+                                if (ob.Item.Info == SEnvir.GoldInfo && ob.Account.GuildMember != null &&
                                     ob.Account.GuildMember.Guild.GuildTax > 0)
                                     goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
 

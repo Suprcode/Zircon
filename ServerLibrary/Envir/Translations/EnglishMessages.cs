@@ -47,7 +47,6 @@ namespace Server.Envir.Translations
         public override string Died { get; set; } = "You have died in combat.";
         public override string GroupRecallEnabled { get; set; } = "Group Recall Enabled.";
         public override string GroupRecallDisabled { get; set; } = "Group Recall Disabled.";
-        public override string NoActionOnInstance { get; set; } = "Cannot perform this action whilst on an instance.";
 
 
         public override string NeedMaxLevel { get; set; } = "You need to be level {0} or lower to proceed.";
@@ -295,6 +294,7 @@ namespace Server.Envir.Translations
         public override string HorseOwner { get; set; } = "You do not own a horse to ride.";
         public override string HorseMap { get; set; } = "You cannot ride your horse on this map.";
 
+        public override string InstanceNoAction { get; set; } = "Cannot perform this action whilst on an instance.";
         public override string InstanceInvalid { get; set; } = "You cannot move to instance.";
         public override string InstanceInsufficientLevel { get; set; } = "You must be between level {0} and {1} to join instance.";
         public override string InstanceNotInGroup { get; set; } = "You must be in a group to join instance.";
@@ -303,6 +303,8 @@ namespace Server.Envir.Translations
         public override string InstanceTooManyInGroup { get; set; } = "Maximum {0} people required to join instance.";
         public override string InstanceConnectRegionNotSet { get; set; } = "Connect region has not been setup for instance.";
         public override string InstanceNoSlots { get; set; } = "No more free slots on instance.";
+        public override string InstanceUserCooldown { get; set; } = "Cannot re-enter instance until {0:ddd, dd MMM HH:mm} UTC.";
+        public override string InstanceGuildCooldown { get; set; } = "Cannot re-enter instance until {0:ddd, dd MMM HH:mm} UTC.";
         public override string InstanceNoMap { get; set; } = "Failed to move to instance.";
     }
 }

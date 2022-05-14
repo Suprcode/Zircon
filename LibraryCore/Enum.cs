@@ -1528,6 +1528,8 @@ namespace Library
         TooManyInGroup,
         ConnectRegionNotSet,
         NoSlots,
+        UserCooldown,
+        GuildCooldown,
         NoMap,
         Success
     }

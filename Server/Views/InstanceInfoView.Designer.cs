@@ -51,6 +51,7 @@
             this.SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceMapGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridControl)).BeginInit();
@@ -130,7 +131,8 @@
             this.gridColumn8,
             this.gridColumn10,
             this.gridColumn9,
-            this.gridColumn11});
+            this.gridColumn11,
+            this.gridColumn12});
             this.InstanceInfoGridView.GridControl = this.InstanceInfoGridControl;
             this.InstanceInfoGridView.Name = "InstanceInfoGridView";
             this.InstanceInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -203,7 +205,7 @@
             this.gridColumn10.FieldName = "ConnectRegion";
             this.gridColumn10.Name = "gridColumn10";
             this.gridColumn10.Visible = true;
-            this.gridColumn10.VisibleIndex = 8;
+            this.gridColumn10.VisibleIndex = 9;
             // 
             // RegionLookUpEdit
             // 
@@ -226,7 +228,7 @@
             this.gridColumn9.FieldName = "ReconnectRegion";
             this.gridColumn9.Name = "gridColumn9";
             this.gridColumn9.Visible = true;
-            this.gridColumn9.VisibleIndex = 9;
+            this.gridColumn9.VisibleIndex = 10;
             // 
             // gridColumn11
             // 
@@ -282,6 +284,14 @@
             this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
+            // gridColumn12
+            // 
+            this.gridColumn12.Caption = "Cooldown (In Minutes)";
+            this.gridColumn12.FieldName = "CooldownTimeInMinutes";
+            this.gridColumn12.Name = "gridColumn12";
+            this.gridColumn12.Visible = true;
+            this.gridColumn12.VisibleIndex = 8;
+            // 
             // InstanceInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -327,5 +337,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn11;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox InstanceTypeImageComboBox;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn12;
     }
 }

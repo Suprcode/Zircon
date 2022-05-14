@@ -207,7 +207,7 @@ namespace Server.Models.Monsters
 
                 long amount = 0;
 
-                if (item.Item.Info == Globals.GoldInfo && item.Account.GuildMember != null && item.Account.GuildMember.Guild.GuildTax > 0)
+                if (item.Item.Info == SEnvir.GoldInfo && item.Account.GuildMember != null && item.Account.GuildMember.Guild.GuildTax > 0)
                     amount = (long)Math.Ceiling(item.Item.Count * item.Account.GuildMember.Guild.GuildTax);
 
                 ItemCheck check = new ItemCheck(item.Item, item.Item.Count - amount, item.Item.Flags, item.Item.ExpireTime);

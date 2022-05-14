@@ -5302,10 +5302,10 @@ namespace Server.Models
 
             if (GroupMembers != null && GroupMembers.Any(x => x.CurrentMap.Instance != null))
             {
-                Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
 
                 foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.NoActionOnInstance, MessageType.System);
+                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
                 return;
             }
 
@@ -5339,10 +5339,10 @@ namespace Server.Models
 
             if (GroupMembers.Any(x => x.CurrentMap.Instance != null))
             {
-                Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
 
                 foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.NoActionOnInstance, MessageType.System);
+                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
                 return;
             }
 
@@ -5420,10 +5420,10 @@ namespace Server.Models
 
             if (GroupMembers != null && GroupMembers.Any(x => x.CurrentMap.Instance != null))
             {
-                Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
 
                 foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.NoActionOnInstance, MessageType.System);
+                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
                 return;
             }
 
@@ -5462,10 +5462,10 @@ namespace Server.Models
 
             if (CurrentMap.Instance != null)
             {
-                Connection.ReceiveChat(Connection.Language.NoActionOnInstance, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
 
                 foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.NoActionOnInstance, MessageType.System);
+                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
                 return;
             }
 
@@ -19963,80 +19963,108 @@ namespace Server.Models
             Enqueue(joinResult);
         }
 
-        public (byte? index, InstanceResult result) GetInstance(InstanceInfo instance)
+        public (byte? index, InstanceResult result) GetInstance(InstanceInfo instance, bool checkOnly = false)
         {
             var mapInstance = SEnvir.Instances[instance];
 
-            var (index, result) = GetInstanceResult(instance);
-
-            if (result != InstanceResult.Success)
-                return (null, result);
-
-            //Find existing instance for group/guild
-            //TODO - Store previously created instances to allow quick rejoin for solo/group/guilds
-
-            bool existing = false;
-            if (instance.Type == InstanceType.Group || instance.Type == InstanceType.Guild)
-            {
-                for (int i = 0; i < mapInstance.Length; i++)
-                {
-                    if (mapInstance[i] == null) continue;
-
-                    var maps = mapInstance[i];
-
-                    foreach (var key in maps.Keys)
-                    {
-                        var map = maps[key];
-
-                        switch (instance.Type)
-                        {
-                            case InstanceType.Group:
-                                if (!map.Players.Any(x => x.InGroup(this))) continue;
-                                break;
-                            case InstanceType.Guild:
-                                if (!map.Players.Any(x => x.InGuild(this))) continue;
-                                break;
-                        }
-
-                        return ((byte)i, result);
-                    }
-                }
-            }
-
-            if (existing)
-            {
-                return (index, result);
-            }
-
-            var loadIndex = SEnvir.LoadInstance(instance, index.Value);
-
-            return (loadIndex, result);
-        }
-
-        public (byte? index, InstanceResult result) GetInstanceResult(InstanceInfo instance)
-        {
             if (instance.ConnectRegion == null)
                 return (null, InstanceResult.ConnectRegionNotSet);
 
             if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
                 return (null, InstanceResult.InsufficientLevel);
 
-            if (instance.Type == InstanceType.Group)
+            switch (instance.Type)
             {
-                if (GroupMembers == null)
-                    return (null, InstanceResult.NotInGroup);
+                case InstanceType.Solo:
+                    {
+                        if (instance.UserCooldown.TryGetValue(Name, out DateTime cooldown))
+                        {
+                            if (cooldown > SEnvir.Now)
+                                return (null, InstanceResult.UserCooldown);
 
-                if (instance.MinPlayerCount > 1 && (GroupMembers.Count < instance.MinPlayerCount))
-                    return (null, InstanceResult.TooFewInGroup);
+                            if (!checkOnly)
+                                instance.UserCooldown.Remove(Name);
+                        }
+                    }
+                    break;
+                case InstanceType.Group:
+                    {
+                        if (GroupMembers == null)
+                            return (null, InstanceResult.NotInGroup);
 
-                if (instance.MaxPlayerCount > 1 && (GroupMembers.Count > instance.MaxPlayerCount))
-                    return (null, InstanceResult.TooManyInGroup);
+                        if (instance.MinPlayerCount > 1 && (GroupMembers.Count < instance.MinPlayerCount))
+                            return (null, InstanceResult.TooFewInGroup);
+
+                        if (instance.MaxPlayerCount > 1 && (GroupMembers.Count > instance.MaxPlayerCount))
+                            return (null, InstanceResult.TooManyInGroup);
+
+                        if (instance.UserCooldown.TryGetValue(Name, out DateTime cooldown))
+                        {
+                            if (cooldown > SEnvir.Now)
+                                return (null, InstanceResult.UserCooldown);
+
+                            if (!checkOnly)
+                                instance.UserCooldown.Remove(Name);
+                        }
+                    }
+                    break;
+                case InstanceType.Guild:
+                    {
+                        if (Character.Account.GuildMember == null)
+                            return (null, InstanceResult.NotInGuild);
+
+                        if (instance.GuildCooldown.TryGetValue(Character.Account.GuildMember.Guild.GuildName, out DateTime cooldown))
+                        {
+                            if (cooldown > SEnvir.Now)
+                                return (null, InstanceResult.GuildCooldown);
+
+                            if (!checkOnly)
+                                instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
+                        }
+                    }
+                    break;
             }
 
-            if (instance.Type == InstanceType.Guild && Character.Account.GuildMember == null)
-                return (null, InstanceResult.NotInGuild);
+            switch (instance.Type)
+            {
+                case InstanceType.Group:
+                case InstanceType.Guild:
+                    {
+                        for (int i = 0; i < mapInstance.Length; i++)
+                        {
+                            if (mapInstance[i] == null) continue;
 
-            var mapInstance = SEnvir.Instances[instance];
+                            var maps = mapInstance[i];
+
+                            foreach (var key in maps.Keys)
+                            {
+                                var map = maps[key];
+
+                                switch (instance.Type)
+                                {
+                                    case InstanceType.Group:
+                                        if (!map.Players.Any(x => x.InGroup(this))) continue;
+                                        break;
+                                    case InstanceType.Guild:
+                                        if (!map.Players.Any(x => x.InGuild(this))) continue;
+                                        break;
+                                }
+
+                                if (!checkOnly)
+                                {
+                                    if (!instance.UserRecord.ContainsKey(Name))
+                                        instance.UserRecord.Add(Name, (byte)i);
+                                }
+
+                                return ((byte)i, InstanceResult.Success);
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            if (instance.UserRecord.ContainsKey(Name))
+                return (instance.UserRecord[Name], InstanceResult.Success);
 
             byte? index = null;
 
@@ -20052,7 +20080,14 @@ namespace Server.Models
             if (index == null)
                 return (null, InstanceResult.NoSlots);
 
-            return ((byte)index, InstanceResult.Success);
+            if (!checkOnly)
+            {
+                SEnvir.LoadInstance(instance, index.Value);
+
+                instance.UserRecord.Add(Name, index.Value);
+            }
+
+            return (index.Value, InstanceResult.Success);
         }
 
         public void SendInstanceMessage(InstanceInfo instance, InstanceResult result)
@@ -20121,6 +20156,24 @@ namespace Server.Models
 
                         foreach (SConnection con in Connection.Observers)
                             con.ReceiveChat(con.Language.InstanceNoSlots, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.UserCooldown:
+                    {
+                        var cooldown = instance.UserCooldown[Name];
+                        Connection.ReceiveChat(string.Format(Connection.Language.InstanceUserCooldown, cooldown), MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(string.Format(con.Language.InstanceUserCooldown, cooldown), MessageType.System);
+                    }
+                    break;
+                case InstanceResult.GuildCooldown:
+                    {
+                        var cooldown = instance.GuildCooldown[Character.Account.GuildMember.Guild.GuildName];
+                        Connection.ReceiveChat(string.Format(Connection.Language.InstanceGuildCooldown, cooldown), MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(string.Format(con.Language.InstanceGuildCooldown, cooldown), MessageType.System);
                     }
                     break;
                 case InstanceResult.NoMap:

@@ -85,7 +85,7 @@ namespace Server.Models
         {
             CreateGuards();
 
-            LastPlayer = DateTime.Now;
+            LastPlayer = DateTime.UtcNow;
         }
 
         private void CreateGuards()
@@ -106,9 +106,9 @@ namespace Server.Models
 
         public void Process()
         {
-            if (LastPlayer.AddMinutes(1) < DateTime.Now && Players.Any())
+            if (LastPlayer.AddMinutes(1) < DateTime.UtcNow && Players.Any())
             {
-                LastPlayer = DateTime.Now;
+                LastPlayer = DateTime.UtcNow;
             }
         }
 
@@ -268,6 +268,11 @@ namespace Server.Models
 
         public void DoSpawn(bool eventSpawn)
         {
+            if (CurrentMap.Instance != null)
+            {
+
+            }
+
             if (!eventSpawn)
             {
                 if (Info.EventSpawn || SEnvir.Now < NextSpawn) return;

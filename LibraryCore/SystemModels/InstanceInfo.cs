@@ -1,4 +1,5 @@
 ﻿using MirDB;
+using System;
 using System.Collections.Generic;
 
 namespace Library.SystemModels
@@ -163,6 +164,39 @@ namespace Library.SystemModels
             }
         }
         private MapRegion _ReconnectRegion;
+
+        public int CooldownTimeInMinutes
+        {
+            get { return _CooldownTimeInMinutes; }
+            set
+            {
+                if (_CooldownTimeInMinutes == value) return;
+
+                var oldValue = _CooldownTimeInMinutes;
+                _CooldownTimeInMinutes = value;
+
+                OnChanged(oldValue, value, "CooldownTimeInMinutes");
+            }
+        }
+        private int _CooldownTimeInMinutes;
+
+        [IgnoreProperty]
+        public Dictionary<string, byte> UserRecord { get; set; }
+
+        [IgnoreProperty]
+        public Dictionary<string, DateTime> UserCooldown { get; set; }
+
+        [IgnoreProperty]
+        public Dictionary<string, DateTime> GuildCooldown { get; set; }
+
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            UserRecord = new Dictionary<string, byte>();
+            UserCooldown = new Dictionary<string, DateTime>();
+            GuildCooldown = new Dictionary<string, DateTime>();
+        }
     }
 
     public class InstanceMapInfo : DBObject
