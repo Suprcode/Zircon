@@ -3507,8 +3507,9 @@ namespace Server.Envir
                     {
                         case InstanceType.Guild:
                             var character = GetCharacter(user);
-                            if (character?.Account?.GuildMember?.Guild != null)
-                                instance.GuildCooldown.Add(character.Account.GuildMember.Guild.GuildName, cooldown);
+                            var guildName = character.Account?.GuildMember?.Guild.GuildName;
+                            if (guildName != null && !instance.GuildCooldown.ContainsKey(guildName))
+                                instance.GuildCooldown.Add(guildName, cooldown);
                             break;
                         default:
                             if (!instance.UserCooldown.ContainsKey(user))
