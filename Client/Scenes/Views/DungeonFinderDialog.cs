@@ -373,7 +373,11 @@ namespace Client.Scenes.Views
                 return;
             }
 
-            if (instance.Type == InstanceType.Group)
+            if (instance.Type == InstanceType.Solo)
+            {
+                CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
+            }
+            else if (instance.Type == InstanceType.Group)
             {
                 if (GameScene.Game.GroupBox.Members.Count == 0)
                 {
@@ -392,18 +396,27 @@ namespace Client.Scenes.Views
                     GameScene.Game.ReceiveChat("There are too many people in your group.", MessageType.System);
                     return;
                 }
-            }
 
-            if (instance.Type == InstanceType.Guild)
+                DXMessageBox box = new DXMessageBox("Your group will be teleported to the instance. Are you ready?", "Instance Confirmation", DXMessageBoxButtons.YesNo);
+
+                box.YesButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
+                };
+
+                return;
+            }
+            else if (instance.Type == InstanceType.Guild)
             {
                 if (GameScene.Game.GuildBox.GuildInfo == null)
                 {
                     GameScene.Game.ReceiveChat("You must be in a guild.", MessageType.System);
                     return;
                 }
+
+                CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
             }
 
-            CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
         }
 
 

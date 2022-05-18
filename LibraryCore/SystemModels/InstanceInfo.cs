@@ -72,7 +72,22 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "ShowOnDungeonFinder");
             }
         }
+
         private bool _ShowOnDungeonFinder;
+        public bool SafeZoneOnly
+        {
+            get { return _SafeZoneOnly; }
+            set
+            {
+                if (_SafeZoneOnly == value) return;
+
+                var oldValue = _SafeZoneOnly;
+                _SafeZoneOnly = value;
+
+                OnChanged(oldValue, value, "SafeZoneOnly");
+            }
+        }
+        private bool _SafeZoneOnly;
 
         public byte MinPlayerLevel
         {

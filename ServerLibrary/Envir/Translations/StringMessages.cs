@@ -314,14 +314,16 @@ namespace Server.Envir
         public abstract string InstanceNoAction { get; set; }
         public abstract string InstanceInvalid { get; set; }
         public abstract string InstanceInsufficientLevel { get; set; }
+        public abstract string InstanceSafeZoneOnly { get; set; }
         public abstract string InstanceNotInGroup { get; set; }
         public abstract string InstanceNotInGuild { get; set; }
         public abstract string InstanceTooFewInGroup { get; set; }
         public abstract string InstanceTooManyInGroup { get; set; }
         public abstract string InstanceConnectRegionNotSet { get; set; }
-        public abstract string InstanceNoSlots { get; set; }
         public abstract string InstanceUserCooldown { get; set; }
         public abstract string InstanceGuildCooldown { get; set; }
+        public abstract string InstanceNoSlots { get; set; }
+        public abstract string InstanceNotGroupLeader { get; set; }
         public abstract string InstanceNoMap { get; set; }
 
     }

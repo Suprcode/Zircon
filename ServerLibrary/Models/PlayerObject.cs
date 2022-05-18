@@ -19939,7 +19939,7 @@ namespace Server.Models
             S.JoinInstance joinResult = new S.JoinInstance { Success = false };
 
             //Load up instance
-            var (index, result) = GetInstance(instance);
+            var (index, result) = GetInstance(instance, false, true);
 
             joinResult.Result = result;
 
@@ -19950,20 +19950,36 @@ namespace Server.Models
                 return;
             }
 
-            if (!Teleport(instance.ConnectRegion, instance, index.Value))
+            joinResult.Success = true;
+
+            if (instance.Type == InstanceType.Group)
             {
-                joinResult.Result = InstanceResult.NoMap;
-                SendInstanceMessage(instance, joinResult.Result);
-                Enqueue(joinResult);
-                return;
+                var map = SEnvir.GetMap(instance.ConnectRegion.Map, instance, index.Value);
+
+                if (!map.Players.Any())
+                {
+                    foreach (PlayerObject member in GroupMembers)
+                    {
+                        if (!member.Teleport(instance.ConnectRegion, instance, index.Value))
+                            member.SendInstanceMessage(instance, InstanceResult.NoMap);
+                    }
+
+                    Enqueue(joinResult);
+                    return;
+                }
             }
 
-            joinResult.Success = true;
+            if (!Teleport(instance.ConnectRegion, instance, index.Value))
+            {
+                joinResult.Success = false;
+                joinResult.Result = InstanceResult.NoMap;
+                SendInstanceMessage(instance, joinResult.Result);
+            }
 
             Enqueue(joinResult);
         }
 
-        public (byte? index, InstanceResult result) GetInstance(InstanceInfo instance, bool checkOnly = false)
+        public (byte? index, InstanceResult result) GetInstance(InstanceInfo instance, bool checkOnly = false, bool dungeonFinder = false)
         {
             var mapInstance = SEnvir.Instances[instance];
 
@@ -19972,6 +19988,12 @@ namespace Server.Models
 
             if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
                 return (null, InstanceResult.InsufficientLevel);
+
+            if (dungeonFinder)
+            {
+                if (instance.SafeZoneOnly && !InSafeZone)
+                    return (null, InstanceResult.SafeZoneOnly);
+            }
 
             switch (instance.Type)
             {
@@ -20066,6 +20088,9 @@ namespace Server.Models
             if (instance.UserRecord.ContainsKey(Name))
                 return (instance.UserRecord[Name], InstanceResult.Success);
 
+            if (instance.Type == InstanceType.Group && dungeonFinder && GroupMembers[0] != this)
+                return (null, InstanceResult.NotGroupLeader);
+
             byte? index = null;
 
             for (int i = 0; i < mapInstance.Length; i++)
@@ -20108,6 +20133,14 @@ namespace Server.Models
 
                         foreach (SConnection con in Connection.Observers)
                             con.ReceiveChat(string.Format(con.Language.InstanceInsufficientLevel, instance.MinPlayerLevel, instance.MaxPlayerLevel), MessageType.System);
+                    }
+                    break;
+                case InstanceResult.SafeZoneOnly:
+                    {
+                        Connection.ReceiveChat(string.Format(Connection.Language.InstanceSafeZoneOnly, instance.MinPlayerLevel, instance.MaxPlayerLevel), MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(string.Format(con.Language.InstanceSafeZoneOnly, instance.MinPlayerLevel, instance.MaxPlayerLevel), MessageType.System);
                     }
                     break;
                 case InstanceResult.NotInGroup:
@@ -20174,6 +20207,14 @@ namespace Server.Models
 
                         foreach (SConnection con in Connection.Observers)
                             con.ReceiveChat(string.Format(con.Language.InstanceGuildCooldown, cooldown), MessageType.System);
+                    }
+                    break;
+                case InstanceResult.NotGroupLeader:
+                    {
+                        Connection.ReceiveChat(Connection.Language.InstanceNotGroupLeader, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.InstanceNotGroupLeader, MessageType.System);
                     }
                     break;
                 case InstanceResult.NoMap:

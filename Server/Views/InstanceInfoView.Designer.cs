@@ -47,11 +47,12 @@
             this.gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.InstanceTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceMapGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridControl)).BeginInit();
@@ -132,7 +133,8 @@
             this.gridColumn10,
             this.gridColumn9,
             this.gridColumn11,
-            this.gridColumn12});
+            this.gridColumn12,
+            this.gridColumn13});
             this.InstanceInfoGridView.GridControl = this.InstanceInfoGridControl;
             this.InstanceInfoGridView.Name = "InstanceInfoGridView";
             this.InstanceInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -172,7 +174,7 @@
             this.gridColumn3.FieldName = "MinPlayerLevel";
             this.gridColumn3.Name = "gridColumn3";
             this.gridColumn3.Visible = true;
-            this.gridColumn3.VisibleIndex = 4;
+            this.gridColumn3.VisibleIndex = 5;
             // 
             // gridColumn4
             // 
@@ -180,7 +182,7 @@
             this.gridColumn4.FieldName = "MaxPlayerLevel";
             this.gridColumn4.Name = "gridColumn4";
             this.gridColumn4.Visible = true;
-            this.gridColumn4.VisibleIndex = 5;
+            this.gridColumn4.VisibleIndex = 6;
             // 
             // gridColumn7
             // 
@@ -188,7 +190,7 @@
             this.gridColumn7.FieldName = "MinPlayerCount";
             this.gridColumn7.Name = "gridColumn7";
             this.gridColumn7.Visible = true;
-            this.gridColumn7.VisibleIndex = 6;
+            this.gridColumn7.VisibleIndex = 7;
             // 
             // gridColumn8
             // 
@@ -196,7 +198,7 @@
             this.gridColumn8.FieldName = "MaxPlayerCount";
             this.gridColumn8.Name = "gridColumn8";
             this.gridColumn8.Visible = true;
-            this.gridColumn8.VisibleIndex = 7;
+            this.gridColumn8.VisibleIndex = 8;
             // 
             // gridColumn10
             // 
@@ -205,7 +207,7 @@
             this.gridColumn10.FieldName = "ConnectRegion";
             this.gridColumn10.Name = "gridColumn10";
             this.gridColumn10.Visible = true;
-            this.gridColumn10.VisibleIndex = 9;
+            this.gridColumn10.VisibleIndex = 10;
             // 
             // RegionLookUpEdit
             // 
@@ -228,7 +230,7 @@
             this.gridColumn9.FieldName = "ReconnectRegion";
             this.gridColumn9.Name = "gridColumn9";
             this.gridColumn9.Visible = true;
-            this.gridColumn9.VisibleIndex = 10;
+            this.gridColumn9.VisibleIndex = 11;
             // 
             // gridColumn11
             // 
@@ -245,6 +247,14 @@
             this.InstanceTypeImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.InstanceTypeImageComboBox.Name = "InstanceTypeImageComboBox";
+            // 
+            // gridColumn12
+            // 
+            this.gridColumn12.Caption = "Cooldown (In Minutes)";
+            this.gridColumn12.FieldName = "CooldownTimeInMinutes";
+            this.gridColumn12.Name = "gridColumn12";
+            this.gridColumn12.Visible = true;
+            this.gridColumn12.VisibleIndex = 9;
             // 
             // ribbon
             // 
@@ -284,13 +294,13 @@
             this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
-            // gridColumn12
+            // gridColumn13
             // 
-            this.gridColumn12.Caption = "Cooldown (In Minutes)";
-            this.gridColumn12.FieldName = "CooldownTimeInMinutes";
-            this.gridColumn12.Name = "gridColumn12";
-            this.gridColumn12.Visible = true;
-            this.gridColumn12.VisibleIndex = 8;
+            this.gridColumn13.Caption = "Join In SafeZone Only";
+            this.gridColumn13.FieldName = "SafeZoneOnly";
+            this.gridColumn13.Name = "gridColumn13";
+            this.gridColumn13.Visible = true;
+            this.gridColumn13.VisibleIndex = 4;
             // 
             // InstanceInfoView
             // 
@@ -338,5 +348,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn11;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox InstanceTypeImageComboBox;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn12;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn13;
     }
 }
