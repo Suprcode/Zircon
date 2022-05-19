@@ -115,10 +115,10 @@
     <Compile Include="Models\Particles\Particle.cs" />
     <Compile Include="Models\Particles\ParticleEmitter.cs" />
     <Compile Include="Models\Particles\ParticleType.cs" />
-    <Compile Include="Models\Particles\Types\FireballTrail.cs" />
-    <Compile Include="Models\Particles\Types\GustTrail.cs" />
-    <Compile Include="Models\Particles\Types\IceBladesTrail.cs" />
-    <Compile Include="Models\Particles\Types\IceBoltTrail.cs" />
+    <Compile Include="Models\Particles\Spells\FireballTrail.cs" />
+    <Compile Include="Models\Particles\Spells\GustTrail.cs" />
+    <Compile Include="Models\Particles\Spells\IceBladesTrail.cs" />
+    <Compile Include="Models\Particles\Spells\IceBoltTrail.cs" />
     <Compile Include="Models\PlayerObject.cs" />
     <Compile Include="Models\SpellObject.cs" />
     <Compile Include="Models\UserObject.cs" />
@@ -153,8 +153,10 @@
     <Compile Include="Scenes\Views\ChatTab.cs" />
     <Compile Include="Scenes\Views\CompanionDialog.cs" />
     <Compile Include="Scenes\Views\BlockDialog.cs" />
+    <Compile Include="Scenes\Views\CurrencyDialog.cs" />
     <Compile Include="Scenes\Views\DungeonFinderDialog.cs" />
     <Compile Include="Scenes\Views\EditCharacterDialog.cs" />
+    <Compile Include="Scenes\Views\FishingDialog.cs" />
     <Compile Include="Scenes\Views\FortuneCheckerDialog.cs" />
     <Compile Include="Scenes\Views\GuildDialog.cs" />
     <Compile Include="Scenes\Views\MagicBarDialog.cs" />
@@ -210,6 +212,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zircon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Particles\Weather\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

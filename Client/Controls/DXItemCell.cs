@@ -594,10 +594,9 @@ namespace Client.Controls
 
             if (Library != null && Item != null)
             {
-
                 int drawIndex;
 
-                if (Item.Info.Effect == ItemEffect.Gold)
+                if (Item.Info == Globals.GoldInfo)
                 {
                     if (Item.Count < 100)
                         drawIndex = 120;
@@ -710,7 +709,7 @@ namespace Client.Controls
                 GameScene.Game.MouseItem = Item;
             }
 
-            CountLabel.Visible = ShowCountLabel && Item != null && (Item.Info.Effect != ItemEffect.Gold && Item.Info.Effect != ItemEffect.Experience)  && (Item.Info.StackSize > 1 || Item.Count > 1);
+            CountLabel.Visible = ShowCountLabel && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.Effect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
             CountLabel.Text = Linked ? LinkedCount.ToString() : Item?.Count.ToString();
         }
         public void MoveItem()
@@ -1723,8 +1722,6 @@ namespace Client.Controls
                         CEnvir.Enqueue(new C.ItemLock { GridType = GridType, SlotIndex = Slot, Locked = (Item.Flags & UserItemFlags.Locked) != UserItemFlags.Locked });
                     break;
                 case MouseButtons.Right:
-
-
 
                     switch (GridType)
                     {

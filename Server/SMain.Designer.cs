@@ -67,6 +67,7 @@
             this.EventInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.CastleInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.CompanionInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.CurrencyInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.ConfigButton = new DevExpress.XtraNavBar.NavBarItem();
             this.navBarGroup3 = new DevExpress.XtraNavBar.NavBarGroup();
             this.AccountInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -98,6 +99,7 @@
             this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlRight = new DevExpress.XtraBars.BarDockControl();
             this.InterfaceTimer = new System.Windows.Forms.Timer(this.components);
+            this.navBarItem6 = new DevExpress.XtraNavBar.NavBarItem();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.navBarControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DManager)).BeginInit();
@@ -234,7 +236,8 @@
             this.navBarItem2,
             this.navBarItem3,
             this.navBarItem4,
-            this.navBarItem5});
+            this.navBarItem5,
+            this.CurrencyInfoButton});
             this.navBarControl1.Location = new System.Drawing.Point(0, 144);
             this.navBarControl1.Name = "navBarControl1";
             this.navBarControl1.OptionsNavPane.ExpandedWidth = 144;
@@ -294,6 +297,7 @@
             new DevExpress.XtraNavBar.NavBarItemLink(this.EventInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.CastleInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.CompanionInfoButton),
+            new DevExpress.XtraNavBar.NavBarItemLink(this.CurrencyInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.ConfigButton)});
             this.navBarGroup2.Name = "navBarGroup2";
             // 
@@ -450,6 +454,13 @@
             this.CompanionInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CompanionInfoButton.ImageOptions.SmallImage")));
             this.CompanionInfoButton.Name = "CompanionInfoButton";
             this.CompanionInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CompanionInfoButton_LinkClicked);
+            // 
+            // CurrencyInfoButton
+            // 
+            this.CurrencyInfoButton.Caption = "Currency Info";
+            this.CurrencyInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CurrencyInfoButton.ImageOptions.SmallImage")));
+            this.CurrencyInfoButton.Name = "CurrencyInfoButton";
+            this.CurrencyInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CurrencyInfoButton_LinkClicked);
             // 
             // ConfigButton
             // 
@@ -700,6 +711,10 @@
             this.InterfaceTimer.Interval = 1000;
             this.InterfaceTimer.Tick += new System.EventHandler(this.InterfaceTimer_Tick);
             // 
+            // navBarItem6
+            // 
+            this.navBarItem6.Name = "navBarItem6";
+            // 
             // SMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -797,6 +812,8 @@
         private DevExpress.XtraNavBar.NavBarItem navBarItem3;
         private DevExpress.XtraNavBar.NavBarItem navBarItem4;
         private DevExpress.XtraNavBar.NavBarItem navBarItem5;
+        private DevExpress.XtraNavBar.NavBarItem CurrencyInfoButton;
+        private DevExpress.XtraNavBar.NavBarItem navBarItem6;
     }
 }
 

@@ -205,7 +205,6 @@ namespace Server.Envir
 
         public void ReceiveChat(string text, MessageType type, uint objectID = 0)
         {
-
             switch (Stage)
             {
                 case GameStage.Game:
@@ -409,6 +408,12 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.Mount();
+        }
+        public void Process(C.FishingCast p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.FishingCast(p.CastOut, true);
         }
         public void Process(C.Attack p)
         {

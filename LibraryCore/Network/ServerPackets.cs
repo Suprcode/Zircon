@@ -120,6 +120,11 @@ namespace Library.Network.ServerPackets
         public uint ObjectID { get; set; }
         public HorseType Horse { get; set; }
     }
+    public sealed class FishingUpdate : Packet
+    {
+        public uint ObjectID { get; set; }
+        public bool Fishing { get; set; }
+    }
     public sealed class ObjectMove : Packet
     {
         public uint ObjectID { get; set; }
@@ -545,10 +550,6 @@ namespace Library.Network.ServerPackets
         public int Slot { get; set; }
         public int CurrentDurability { get; set; }
     }
-    public sealed class GoldChanged : Packet
-    {
-        public long Gold { get; set; }
-    }
     public sealed class ItemExperience : Packet
     {
         public CellLinkInfo Target { get; set; }
@@ -810,9 +811,10 @@ namespace Library.Network.ServerPackets
         public PetMode Mode { get; set; }
     }
 
-    public sealed class GameGoldChanged : Packet
+    public sealed class CurrencyChanged : Packet
     {
-        public int GameGold { get; set; }
+        public int CurrencyIndex { get; set; }
+        public long Amount { get; set; }
     }
 
     public sealed class MountFailed : Packet
@@ -825,11 +827,6 @@ namespace Library.Network.ServerPackets
         public int BagWeight { get; set; }
         public int WearWeight { get; set; }
         public int HandWeight { get; set; }
-    }
-
-    public sealed class HuntGoldChanged : Packet
-    {
-        public int HuntGold { get; set; }
     }
 
 

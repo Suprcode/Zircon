@@ -115,7 +115,7 @@ namespace Client.Models
 
             int drawIndex;
 
-            if (Item.Info.Effect == ItemEffect.Gold)
+            if (Item.Info == Globals.GoldInfo)
             {
                 if (Item.Count < 100)
                     drawIndex = 120;

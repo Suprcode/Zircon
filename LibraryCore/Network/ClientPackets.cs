@@ -107,6 +107,11 @@ namespace Library.Network.ClientPackets
 
     public sealed class Mount : Packet {}
 
+    public sealed class FishingCast : Packet 
+    { 
+        public bool CastOut { get; set; }
+    }
+
     public sealed class Attack : Packet
     {
         public MirDirection Direction { get; set; }

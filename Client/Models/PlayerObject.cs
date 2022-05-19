@@ -228,6 +228,8 @@ namespace Client.Models
 
         public bool DrawWeapon;
 
+        public bool Fishing;
+
 
         public int CharacterIndex;
 
@@ -482,6 +484,19 @@ namespace Client.Models
                     if (Horse != HorseType.None)
                         animation = MirAnimation.HorseStanding;
 
+                    if (Fishing)
+                    {
+                        if (CurrentAnimation == MirAnimation.FishingCast || CurrentAnimation == MirAnimation.FishingWait)
+                            animation = MirAnimation.FishingWait;
+                        else
+                            animation = MirAnimation.FishingCast;
+                    }
+                    else
+                    {
+                        if (CurrentAnimation == MirAnimation.FishingWait)
+                            animation = MirAnimation.FishingReel;
+                    }
+
                     if (VisibleBuffs.Contains(BuffType.DragonRepulse))
                         animation = MirAnimation.DragonRepulseMiddle;
                     else if (CurrentAnimation == MirAnimation.DragonRepulseMiddle)
@@ -658,6 +673,11 @@ namespace Client.Models
                             ArmourShift = 80;
                             break;
                         case MirAnimation.HorseStruck:
+                            ArmourShift = 80;
+                            break;
+                        case MirAnimation.FishingCast:
+                        case MirAnimation.FishingWait:
+                        case MirAnimation.FishingReel:
                             ArmourShift = 80;
                             break;
                         default:

@@ -50,7 +50,6 @@ namespace Server.Envir
         public abstract string Died { get; set; }
         public abstract string GroupRecallEnabled { get; set; }
         public abstract string GroupRecallDisabled { get; set; }
-        public abstract string NoActionOnInstance { get; set; }
 
 
         [ConfigSection("Movement")]
@@ -259,6 +258,7 @@ namespace Server.Envir
         public abstract string NPCFundsGuild { get; set; }
         public abstract string NPCFundsPermission { get; set; }
         public abstract string NPCFundsCost { get; set; }
+        public abstract string NPCFundsCurrency { get; set; }
         public abstract string NPCCost { get; set; }
         public abstract string NPCNoRoom { get; set; }
         public abstract string NPCFundsBuy { get; set; }
@@ -309,6 +309,22 @@ namespace Server.Envir
         public abstract string HorseDead { get; set; }
         public abstract string HorseOwner { get; set; }
         public abstract string HorseMap { get; set; }
+
+        [ConfigSection("Instance")]
+        public abstract string InstanceNoAction { get; set; }
+        public abstract string InstanceInvalid { get; set; }
+        public abstract string InstanceInsufficientLevel { get; set; }
+        public abstract string InstanceSafeZoneOnly { get; set; }
+        public abstract string InstanceNotInGroup { get; set; }
+        public abstract string InstanceNotInGuild { get; set; }
+        public abstract string InstanceTooFewInGroup { get; set; }
+        public abstract string InstanceTooManyInGroup { get; set; }
+        public abstract string InstanceConnectRegionNotSet { get; set; }
+        public abstract string InstanceUserCooldown { get; set; }
+        public abstract string InstanceGuildCooldown { get; set; }
+        public abstract string InstanceNoSlots { get; set; }
+        public abstract string InstanceNotGroupLeader { get; set; }
+        public abstract string InstanceNoMap { get; set; }
 
     }
 

@@ -58,11 +58,38 @@ namespace Client.Controls
         public event EventHandler<EventArgs> GridSizeChanged;
         public void OnGridSizeChanged(Size oValue, Size nValue)
         {
-
-            Size = new Size(GridSize.Width * (DXItemCell.CellWidth - 1) + 1, Math.Min(GridSize.Height, VisibleHeight) * (DXItemCell.CellHeight - 1) + 1);
+            Size = new Size(GridSize.Width * (DXItemCell.CellWidth - 1 + (GridPadding * 2)) + 1, Math.Min(GridSize.Height, VisibleHeight) * (DXItemCell.CellHeight - 1 + (GridPadding * 2)) + 1);
             CreateGrid();
 
             GridSizeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+
+        #region GridPadding
+
+        public int GridPadding
+        {
+            get => _GridPadding;
+            set
+            {
+                if (_GridPadding == value) return;
+
+                int oldValue = _GridPadding;
+                _GridPadding = value;
+
+                OnGridPaddingChanged(oldValue, value);
+            }
+        }
+        private int _GridPadding;
+        public event EventHandler<EventArgs> GridPaddingChanged;
+        public void OnGridPaddingChanged(int oValue, int nValue)
+        {
+            Size = new Size(GridSize.Width * (DXItemCell.CellWidth - 1 + (GridPadding * 2)) + 1, Math.Min(GridSize.Height, VisibleHeight) * (DXItemCell.CellHeight - 1 + (GridPadding * 2)) + 1);
+            CreateGrid();
+
+            GridPaddingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -274,7 +301,7 @@ namespace Client.Controls
                     Grid[y * GridSize.Width + x] = new DXItemCell
                     {
                         Parent = this,
-                        Location = new Point(x * (DXItemCell.CellWidth - 1), y * (DXItemCell.CellHeight - 1)),
+                        Location = new Point((x * (DXItemCell.CellWidth - 1 + (GridPadding * 2))) + GridPadding, (y * (DXItemCell.CellHeight - 1 + (GridPadding * 2))) + GridPadding),
                         Slot = y * GridSize.Width + x,
                         HostGrid = this,
                         ItemGrid = ItemGrid,
@@ -303,7 +330,7 @@ namespace Client.Controls
 
                     cell.Visible = true;
 
-                    cell.Location = new Point(x * (DXItemCell.CellWidth - 1), (y - ScrollValue) * (DXItemCell.CellHeight - 1));
+                    cell.Location = new Point((x * (DXItemCell.CellWidth - 1 + (GridPadding * 2))) + GridPadding, ((y - ScrollValue) * (DXItemCell.CellHeight - 1 + (GridPadding * 2))) + GridPadding);
                 }
         }
 
@@ -315,11 +342,21 @@ namespace Client.Controls
 
             DXManager.Line.Draw(BorderInformation, BorderColour);
 
-            for (int i = 0; i < GridSize.Width; i++)
-                DXManager.Line.Draw(new[] { new Vector2((DXItemCell.CellWidth - 1) * i, 0), new Vector2((DXItemCell.CellWidth - 1) * i, Size.Height), }, BorderColour);
+            for (int i = 0; i <= GridSize.Width; i++)
+            {
+                DXManager.Line.Draw(new[] { 
+                    new Vector2(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), 0), 
+                    new Vector2(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), Size.Height) 
+                }, BorderColour);
+            }
 
-            for (int i = 0; i < Math.Min(GridSize.Height, VisibleHeight); i++)
-                DXManager.Line.Draw(new[] { new Vector2(0, (DXItemCell.CellHeight - 1) * i), new Vector2(Size.Width - 1, (DXItemCell.CellHeight - 1) * i), }, BorderColour);
+            for (int i = 0; i <= Math.Min(GridSize.Height, VisibleHeight); i++)
+            {
+                DXManager.Line.Draw(new[] { 
+                    new Vector2(0, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i)), 
+                    new Vector2(Size.Width, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i))
+                }, BorderColour);
+            }
         }
         
         protected internal override void UpdateBorderInformation()

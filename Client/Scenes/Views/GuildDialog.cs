@@ -141,7 +141,7 @@ namespace Client.Scenes.Views
         #endregion
 
 
-        public bool CanCreate => !CreateAttempted && GuildNameValid && GameScene.Game != null && TotalCost <= GameScene.Game.User.Gold;
+        public bool CanCreate => !CreateAttempted && GuildNameValid && GameScene.Game != null && TotalCost <= GameScene.Game.User.Gold.Amount;
         public int TotalCost => (int) Math.Min(int.MaxValue, (GoldCheckBox.Checked ? Globals.GuildCreationCost : 0) + (MemberLimit * Globals.GuildMemberCost) + (StorageSize * Globals.GuildStorageCost));
 
         public DXButton CreateButton, StarterGuildButton;
@@ -741,7 +741,7 @@ namespace Client.Scenes.Views
 
         private void TotalCostBox_ValueChanged(object sender, EventArgs e)
         {
-            TotalCostBox.BorderColour = TotalCostBox.Value > GameScene.Game.User.Gold ? Color.Red : Color.FromArgb(198, 166, 99);
+            TotalCostBox.BorderColour = TotalCostBox.Value > GameScene.Game.User.Gold.Amount ? Color.Red : Color.FromArgb(198, 166, 99);
         }
 
         private void MemberTextBox_ValueChanged(object sender, EventArgs e)

@@ -189,7 +189,7 @@ namespace Client.Scenes.Views
         {
             if (GameScene.Game.Observer) return;
 
-            DXItemAmountWindow window = new DXItemAmountWindow("Trade Gold", new ClientUserItem(Globals.GoldInfo, GameScene.Game.User.Gold));
+            DXItemAmountWindow window = new DXItemAmountWindow("Trade Gold", new ClientUserItem(Globals.GoldInfo, GameScene.Game.User.Gold.Amount));
 
             window.ConfirmButton.MouseClick += (o1, e1) =>
             {

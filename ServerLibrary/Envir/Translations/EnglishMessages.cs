@@ -47,7 +47,6 @@ namespace Server.Envir.Translations
         public override string Died { get; set; } = "You have died in combat.";
         public override string GroupRecallEnabled { get; set; } = "Group Recall Enabled.";
         public override string GroupRecallDisabled { get; set; } = "Group Recall Disabled.";
-        public override string NoActionOnInstance { get; set; } = "Cannot perform this action whilst on an instance.";
 
 
         public override string NeedMaxLevel { get; set; } = "You need to be level {0} or lower to proceed.";
@@ -245,12 +244,13 @@ namespace Server.Envir.Translations
         public override string NPCFundsGuild { get; set; } = "You cannot use Guild Funds to buy from a merchant because you are not in a guild.";
         public override string NPCFundsPermission { get; set; } = "You cannot use Guild Funds to buy from a merchant because you do not have permission.";
         public override string NPCFundsCost { get; set; } = "Unable to buy items, Your Guild needs another {0:#,##0} Gold.";
+        public override string NPCFundsCurrency { get; set; } = "Unable to buy items, Guild Funds can only be used for Gold merchants.";
         public override string NPCCost { get; set; } = "Unable to buy items, You need another {0:#,##0} Gold.";
         public override string NPCNoRoom { get; set; } = "You can not carry this many items.";
         public override string NPCFundsBuy { get; set; } = "{0} used {1:#,##0} gold of guild funds to buy {2} x{3}.";
         public override string NPCSellWorthless { get; set; } = "Unable to sell items that are worthless";
         public override string NPCSellTooMuchGold { get; set; } = "Unable to sell items, You would be carrying too much gold";
-        public override string NPCSellResult { get; set; } = "You sold {0} item(s) for {1:#,##0} Gold.";
+        public override string NPCSellResult { get; set; } = "You sold {0} item(s) for {1:#,##0} {2}.";
         public override string FragmentCost { get; set; } = "Unable to Fragment these items, You need another {0:#,##0} Gold.";
         public override string FragmentSpace { get; set; } = "Unable to Fragment these items, You need do not have enough inventory space.";
         public override string FragmentResult { get; set; } = "You fragmented {0} item(s) costing {1:#,##0}.";
@@ -293,5 +293,20 @@ namespace Server.Envir.Translations
         public override string HorseDead { get; set; } = "You cannot ride your horse when dead.";
         public override string HorseOwner { get; set; } = "You do not own a horse to ride.";
         public override string HorseMap { get; set; } = "You cannot ride your horse on this map.";
+
+        public override string InstanceNoAction { get; set; } = "Cannot perform this action whilst on an instance.";
+        public override string InstanceInvalid { get; set; } = "You cannot move to instance.";
+        public override string InstanceInsufficientLevel { get; set; } = "You must be between level {0} and {1} to join instance.";
+        public override string InstanceSafeZoneOnly { get; set; } = "You must be in a safe zone to join instance.";
+        public override string InstanceNotInGroup { get; set; } = "You must be in a group to join instance.";
+        public override string InstanceNotInGuild { get; set; } = "You must be in a guild to join instance.";
+        public override string InstanceTooFewInGroup { get; set; } = "Minimum {0} people required to join instance.";
+        public override string InstanceTooManyInGroup { get; set; } = "Maximum {0} people required to join instance.";
+        public override string InstanceConnectRegionNotSet { get; set; } = "Connect region has not been setup for instance.";
+        public override string InstanceUserCooldown { get; set; } = "Cannot re-enter instance until {0:ddd, dd MMM HH:mm} UTC.";
+        public override string InstanceGuildCooldown { get; set; } = "Cannot re-enter instance until {0:ddd, dd MMM HH:mm} UTC.";
+        public override string InstanceNoSlots { get; set; } = "No more free slots on instance.";
+        public override string InstanceNotGroupLeader { get; set; } = "You must be the group leader to start instance.";
+        public override string InstanceNoMap { get; set; } = "Failed to move to instance.";
     }
 }

@@ -55,6 +55,8 @@
             this.gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.MapLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.gridColumn22 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.InstanceLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.gridColumn19 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ButtonsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -79,8 +81,8 @@
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.gridColumn22 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.InstanceLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.gridColumn23 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.CurrencyInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             ((System.ComponentModel.ISupportInitialize)(this.ChecksGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PageLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CheckTypeImageComboBox)).BeginInit();
@@ -89,6 +91,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ActionsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ActionTypeImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ButtonsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TypesGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemTypeImageComboBox)).BeginInit();
@@ -98,7 +101,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.DialogTypeImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SayMemoExEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoLookUpEdit)).BeginInit();
             this.SuspendLayout();
             // 
             // ChecksGridView
@@ -250,7 +253,8 @@
             this.ItemTypeImageComboBox,
             this.PercentTextEdit,
             this.MapLookUpEdit,
-            this.InstanceLookUpEdit});
+            this.InstanceLookUpEdit,
+            this.CurrencyInfoLookUpEdit});
             this.NPCPageGridControl.ShowOnlyPredefinedDetails = true;
             this.NPCPageGridControl.Size = new System.Drawing.Size(641, 395);
             this.NPCPageGridControl.TabIndex = 2;
@@ -338,6 +342,28 @@
             this.MapLookUpEdit.DisplayMember = "Description";
             this.MapLookUpEdit.Name = "MapLookUpEdit";
             this.MapLookUpEdit.NullText = "[Map is null]";
+            // 
+            // gridColumn22
+            // 
+            this.gridColumn22.Caption = "Instance Parameter 1";
+            this.gridColumn22.ColumnEdit = this.InstanceLookUpEdit;
+            this.gridColumn22.FieldName = "InstanceParameter1";
+            this.gridColumn22.Name = "gridColumn22";
+            this.gridColumn22.Visible = true;
+            this.gridColumn22.VisibleIndex = 5;
+            // 
+            // InstanceLookUpEdit
+            // 
+            this.InstanceLookUpEdit.AutoHeight = false;
+            this.InstanceLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            this.InstanceLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.InstanceLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Name")});
+            this.InstanceLookUpEdit.DisplayMember = "Name";
+            this.InstanceLookUpEdit.Name = "InstanceLookUpEdit";
+            this.InstanceLookUpEdit.NullText = "[Instance is null]";
             // 
             // gridColumn19
             // 
@@ -453,7 +479,8 @@
             this.colDialogType,
             this.colSay,
             this.colSuccessPage,
-            this.gridColumn17});
+            this.gridColumn17,
+            this.gridColumn23});
             this.NPCPageGridView.GridControl = this.NPCPageGridControl;
             this.NPCPageGridView.Name = "NPCPageGridView";
             this.NPCPageGridView.OptionsBehavior.EditorShowMode = DevExpress.Utils.EditorShowMode.MouseDown;
@@ -554,27 +581,26 @@
             this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
-            // gridColumn22
+            // gridColumn23
             // 
-            this.gridColumn22.Caption = "Instance Parameter 1";
-            this.gridColumn22.ColumnEdit = this.InstanceLookUpEdit;
-            this.gridColumn22.FieldName = "InstanceParameter1";
-            this.gridColumn22.Name = "gridColumn22";
-            this.gridColumn22.Visible = true;
-            this.gridColumn22.VisibleIndex = 5;
+            this.gridColumn23.Caption = "Currency";
+            this.gridColumn23.ColumnEdit = this.CurrencyInfoLookUpEdit;
+            this.gridColumn23.FieldName = "Currency";
+            this.gridColumn23.Name = "gridColumn23";
+            this.gridColumn23.Visible = true;
+            this.gridColumn23.VisibleIndex = 5;
             // 
-            // InstanceLookUpEdit
+            // CurrencyInfoLookUpEdit
             // 
-            this.InstanceLookUpEdit.AutoHeight = false;
-            this.InstanceLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.InstanceLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            this.CurrencyInfoLookUpEdit.AutoHeight = false;
+            this.CurrencyInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.InstanceLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            this.CurrencyInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
             new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
             new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Name")});
-            this.InstanceLookUpEdit.DisplayMember = "Name";
-            this.InstanceLookUpEdit.Name = "InstanceLookUpEdit";
-            this.InstanceLookUpEdit.NullText = "[Instance is null]";
+            this.CurrencyInfoLookUpEdit.DisplayMember = "Name";
+            this.CurrencyInfoLookUpEdit.Name = "CurrencyInfoLookUpEdit";
+            this.CurrencyInfoLookUpEdit.NullText = "[Currency is null]";
             // 
             // NPCPageView
             // 
@@ -594,6 +620,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ActionsGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ActionTypeImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ButtonsGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TypesGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemTypeImageComboBox)).EndInit();
@@ -603,7 +630,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.DialogTypeImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SayMemoExEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoLookUpEdit)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -658,5 +685,7 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn21;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn22;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit InstanceLookUpEdit;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn23;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit CurrencyInfoLookUpEdit;
     }
 }

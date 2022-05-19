@@ -162,48 +162,17 @@ namespace Client.Models
         private PetMode _PetMode;
         #endregion
 
-        #region Gold
-        public long Gold
-        {
-            get { return _Gold; }
-            set
-            {
-                _Gold = value;
+        #region Currencies
 
-                GameScene.Game.GoldChanged();
-            }
-        }
-        private long _Gold;
+        public List<ClientUserCurrency> Currencies = new();
+
+        public ClientUserCurrency Gold => Currencies.First(x => x.Info.Type == CurrencyType.Gold);
+
+        public ClientUserCurrency GameGold => Currencies.First(x => x.Info.Type == CurrencyType.GameGold);
+
+        public ClientUserCurrency HuntGold => Currencies.First(x => x.Info.Type == CurrencyType.HuntGold);
+
         #endregion
-
-        #region Game Gold
-        public int GameGold
-        {
-            get { return _GameGold; }
-            set
-            {
-                _GameGold = value;
-
-                GameScene.Game.GoldChanged();
-            }
-        }
-        private int _GameGold;
-        #endregion
-
-        #region Hunt Gold
-        public int HuntGold
-        {
-            get { return _HuntGold; }
-            set
-            {
-                _HuntGold = value;
-
-                GameScene.Game.GoldChanged();
-            }
-        }
-        private int _HuntGold;
-        #endregion
-        
 
         public int BagWeight, WearWeight, HandWeight;
 
@@ -339,7 +308,6 @@ namespace Client.Models
             HelmetShape = info.HelmetShape;
             ShieldShape = info.Shield;
 
-            Gold = info.Gold;
             GameScene.Game.DayTime = info.DayTime;
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;
 
@@ -353,7 +321,16 @@ namespace Client.Models
                 Buffs.Add(buff);
                 VisibleBuffs.Add(buff.Type);
             }
-            
+
+            foreach (ClientUserCurrency currency in info.Currencies)
+            {
+                Currencies.Add(new ClientUserCurrency
+                {
+                    CurrencyIndex = currency.CurrencyIndex,
+                    Info = Globals.CurrencyInfoList.Binding.First(x => x.Index == currency.CurrencyIndex),
+                    Amount = currency.Amount
+                });
+            }
 
             FiltersClass = info.FiltersClass;
             FiltersRarity = info.FiltersRarity;
@@ -693,6 +670,27 @@ namespace Client.Models
 
             GameScene.Game.CharacterBox.CharacterNameLabel.Text = Name;
             GameScene.Game.TradeBox.UserLabel.Text = Name;
+        }
+
+        public ClientUserCurrency GetCurrency(ItemInfo item)
+        {
+            var info = Globals.CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == item);
+
+            if (info == null)
+            {
+                return null;
+            }
+
+            return Currencies.First(x => x.Info == info);
+        }
+        public ClientUserCurrency GetCurrency(CurrencyInfo info)
+        {
+            if (info == null)
+            {
+                return null;
+            }
+
+            return Currencies.First(x => x.Info == info);
         }
     }
 }

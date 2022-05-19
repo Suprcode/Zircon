@@ -79,10 +79,14 @@ namespace Library
                 [MirAnimation.Struck] = new Frame(1840, 3, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.Die] = new Frame(1920, 10, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.Dead] = new Frame(1929, 1, 10, TimeSpan.FromMilliseconds(1000)),
+                [MirAnimation.FishingCast] = new Frame(2000, 8, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.FishingWait] = new Frame(2080, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.FishingReel] = new Frame(2160, 8, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.HorseStanding] = new Frame(2240, 4, 10, TimeSpan.FromMilliseconds(500)), //Horse Standing
                 [MirAnimation.HorseWalking] = new Frame(2320, 6, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.HorseRunning] = new Frame(2400, 6, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.HorseStruck] = new Frame(2480, 3, 10, TimeSpan.FromMilliseconds(100)),
+
                 //Repeated?
             };
 

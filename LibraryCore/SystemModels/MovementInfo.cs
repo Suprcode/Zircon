@@ -81,6 +81,21 @@ namespace Library.SystemModels
         }
         private RespawnInfo _NeedSpawn;
 
+        public InstanceInfo NeedInstance
+        {
+            get { return _NeedInstance; }
+            set
+            {
+                if (_NeedInstance == value) return;
+
+                var oldValue = _NeedInstance;
+                _NeedInstance = value;
+
+                OnChanged(oldValue, value, "NeedInstance");
+            }
+        }
+        private InstanceInfo _NeedInstance;
+
         public MovementEffect Effect
         {
             get { return _Effect; }

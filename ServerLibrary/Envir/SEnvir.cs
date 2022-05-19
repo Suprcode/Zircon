@@ -241,12 +241,14 @@ namespace Server.Envir
         public static DBCollection<ItemInfo> ItemInfoList;
         public static DBCollection<RespawnInfo> RespawnInfoList;
         public static DBCollection<MagicInfo> MagicInfoList;
+        public static DBCollection<CurrencyInfo> CurrencyInfoList;
 
         public static DBCollection<AccountInfo> AccountInfoList;
         public static DBCollection<CharacterInfo> CharacterInfoList;
         public static DBCollection<CharacterBeltLink> BeltLinkList;
         public static DBCollection<AutoPotionLink> AutoPotionLinkList;
         public static DBCollection<UserItem> UserItemList;
+        public static DBCollection<UserCurrency> UserCurrencyList;
         public static DBCollection<RefineInfo> RefineInfoList;
         public static DBCollection<UserItemStat> UserItemStatsList;
         public static DBCollection<UserMagic> UserMagicList;
@@ -397,12 +399,14 @@ namespace Server.Envir
             MonsterInfoList = Session.GetCollection<MonsterInfo>();
             RespawnInfoList = Session.GetCollection<RespawnInfo>();
             MagicInfoList = Session.GetCollection<MagicInfo>();
+            CurrencyInfoList = Session.GetCollection<CurrencyInfo>();
 
             AccountInfoList = Session.GetCollection<AccountInfo>();
             CharacterInfoList = Session.GetCollection<CharacterInfo>();
             BeltLinkList = Session.GetCollection<CharacterBeltLink>();
             AutoPotionLinkList = Session.GetCollection<AutoPotionLink>();
             UserItemList = Session.GetCollection<UserItem>();
+            UserCurrencyList = Session.GetCollection<UserCurrency>();
             UserItemStatsList = Session.GetCollection<UserItemStat>();
             RefineInfoList = Session.GetCollection<RefineInfo>();
             UserMagicList = Session.GetCollection<UserMagic>();
@@ -438,7 +442,8 @@ namespace Server.Envir
             UserFortuneInfoList = Session.GetCollection<UserFortuneInfo>();
             WeaponCraftStatInfoList = Session.GetCollection<WeaponCraftStatInfo>();
 
-            GoldInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Gold);
+            GoldInfo = CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
+
             RefinementStoneInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.RefinementStone);
             FragmentInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment1);
             Fragment2Info = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment2);
@@ -446,7 +451,6 @@ namespace Server.Envir
 
             ItemPartInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.ItemPart);
             FortuneCheckerInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.FortuneChecker);
-
 
             MysteryShipMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.MysteryShipRegionIndex);
             LairMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.LairRegionIndex);
@@ -485,9 +489,9 @@ namespace Server.Envir
                 if (monster.Drops.Count == 0) continue;
 
                 BossList.Add(monster);
-
             }
         }
+
         //Only works on Increasing EXP, still need to do Rebirth or loss of exp ranking update.
         public static void RankingSort(CharacterInfo character, bool updateLead = true)
         {
@@ -583,7 +587,6 @@ namespace Server.Envir
                 Instances[InstanceInfoList[i]] = new Dictionary<MapInfo, Map>[count];
             }
 
-
             Parallel.ForEach(Maps, x => x.Value.Load());
 
             #endregion
@@ -613,7 +616,11 @@ namespace Server.Envir
         {
             foreach (MovementInfo movement in MovementInfoList.Binding)
             {
-                if (movement.SourceRegion == null) continue;
+                if (movement.SourceRegion == null)
+                {
+                    Log($"[Movement] No Source Region, Source: {movement.SourceRegion.ServerDescription}");
+                    continue;
+                }
 
                 Map sourceMap = GetMap(movement.SourceRegion.Map, instance, index);
 
@@ -634,6 +641,7 @@ namespace Server.Envir
                 }
 
                 Map destMap = GetMap(movement.DestinationRegion.Map, instance, index);
+
                 if (destMap == null)
                 {
                     if (instance == null)
@@ -641,9 +649,11 @@ namespace Server.Envir
                         Log($"[Movement] Bad Destination Map, Destination: {movement.DestinationRegion.ServerDescription}");
                     }
 
-                    continue;
+                    if (movement.NeedInstance == null || movement.NeedInstance != instance)
+                    {
+                        continue;
+                    }
                 }
-
 
                 foreach (Point sPoint in movement.SourceRegion.PointList)
                 {
@@ -802,19 +812,23 @@ namespace Server.Envir
             }
         }
 
+        private static void RemoveSpawns(InstanceInfo instance = null, byte index = 0)
+        {
+            Spawns.RemoveAll(x => x.CurrentMap.Instance == instance && x.CurrentMap.InstanceIndex == index);
+        }
+
         private static void StopEnvir()
         {
             Now = DateTime.MinValue;
 
             Session = null;
 
-
             MapInfoList = null;
             InstanceInfoList = null;
             SafeZoneInfoList = null;
             AccountInfoList = null;
             CharacterInfoList = null;
-
+            CurrencyInfoList = null;
 
             MapInfoList = null;
             SafeZoneInfoList = null;
@@ -823,10 +837,9 @@ namespace Server.Envir
             RespawnInfoList = null;
             MagicInfoList = null;
 
-            AccountInfoList = null;
-            CharacterInfoList = null;
             BeltLinkList = null;
             UserItemList = null;
+            UserCurrencyList = null;
             UserItemStatsList = null;
             UserMagicList = null;
             BuffInfoList = null;
@@ -1020,10 +1033,8 @@ namespace Server.Envir
                                 foreach (KeyValuePair<MapInfo, Map> pair in instance.Value[i])
                                     pair.Value.Process();
 
-                                if (instance.Value[i].Values.All(x => x.LastPlayer.AddMinutes(10) < DateTime.Now))
-                                {
+                                if (instance.Value[i].Values.All(x => x.LastPlayer.AddMinutes(5) < DateTime.UtcNow))
                                     UnloadInstance(instance.Key, i);
-                                }
                             }
                         }
 
@@ -1132,7 +1143,7 @@ namespace Server.Envir
                 bool error = false;
                 string tempString, paymentStatus, transactionID;
                 decimal tempDecimal;
-                int tempInt;
+                long tempInt;
 
                 if (!values.TryGetValue("payment_status", out paymentStatus))
                     error = true;
@@ -1228,22 +1239,20 @@ namespace Server.Envir
                 }
 
                 payment.Account = character.Account;
-                payment.Account.GameGold += payment.GameGoldAmount;
+                character.Account.GameGold2.Amount += payment.GameGoldAmount;
                 character.Account.Connection?.ReceiveChat(string.Format(character.Account.Connection.Language.PaymentComplete, payment.GameGoldAmount), MessageType.System);
-                character.Player?.Enqueue(new S.GameGoldChanged { GameGold = payment.Account.GameGold });
+                character.Player?.GameGoldChanged();
 
                 AccountInfo referral = payment.Account.Referral;
 
                 if (referral != null)
                 {
-                    referral.HuntGold += payment.GameGoldAmount / 10;
+                    referral.HuntGold2.Amount += payment.GameGoldAmount / 10;
 
                     if (referral.Connection != null)
                     {
                         referral.Connection.ReceiveChat(string.Format(referral.Connection.Language.ReferralPaymentComplete, payment.GameGoldAmount / 10), MessageType.System);
-
-                        if (referral.Connection.Stage == GameStage.Game)
-                            referral.Connection.Player.Enqueue(new S.HuntGoldChanged { HuntGold = referral.GameGold });
+                        referral.Connection.Player?.HuntGoldChanged();
                     }
                 }
 
@@ -1432,7 +1441,7 @@ namespace Server.Envir
             item.Flags = check.Flags;
             item.ExpireTime = check.ExpireTime;
 
-            if (item.Info.Effect == ItemEffect.Gold || item.Info.Effect == ItemEffect.Experience)
+            if (IsCurrencyItem(item.Info) || item.Info.Effect == ItemEffect.Experience)
                 item.Count = check.Count;
             else
                 item.Count = Math.Min(check.Info.StackSize, check.Count);
@@ -1460,7 +1469,7 @@ namespace Server.Envir
             item.Flags = check.Flags;
             item.ExpireTime = check.ExpireTime;
 
-            if (item.Info.Effect == ItemEffect.Gold || item.Info.Effect == ItemEffect.Experience)
+            if (IsCurrencyItem(item.Info) || item.Info.Effect == ItemEffect.Experience)
                 item.Count = check.Count;
             else
                 item.Count = Math.Min(check.Info.StackSize, check.Count);
@@ -1581,6 +1590,10 @@ namespace Server.Envir
             return null;
         }
 
+        public static bool IsCurrencyItem(ItemInfo info)
+        {
+            return CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info) != null;
+        }
 
         public static void UpgradeWeapon(UserItem item)
         {
@@ -2773,13 +2786,13 @@ namespace Server.Envir
 
             if (refferal != null)
             {
-                int maxLevel = refferal.HightestLevel();
+                int maxLevel = refferal.HighestLevel();
 
-                if (maxLevel >= 50) account.HuntGold = 500;
-                else if (maxLevel >= 40) account.HuntGold = 300;
-                else if (maxLevel >= 30) account.HuntGold = 200;
-                else if (maxLevel >= 20) account.HuntGold = 100;
-                else if (maxLevel >= 10) account.HuntGold = 50;
+                if (maxLevel >= 50) account.HuntGold2.Amount = 500;
+                else if (maxLevel >= 40) account.HuntGold2.Amount = 300;
+                else if (maxLevel >= 30) account.HuntGold2.Amount = 200;
+                else if (maxLevel >= 20) account.HuntGold2.Amount = 100;
+                else if (maxLevel >= 10) account.HuntGold2.Amount = 50;
             }
 
 
@@ -3436,31 +3449,15 @@ namespace Server.Envir
             return instanceMaps != null && instanceMaps[instanceIndex].ContainsKey(info) ? instanceMaps[instanceIndex][info] : null;
         }
 
-        public static byte? LoadInstance(InstanceInfo instance)
+        public static byte? LoadInstance(InstanceInfo instance, byte index)
         {
             var mapInstance = Instances[instance];
-
-            var index = -1;
-
-            for (int i = 0; i < mapInstance.Length; i++)
-            {
-                if (mapInstance[i] == null)
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            if (index < 0)
-            {
-                return null;
-            }
 
             mapInstance[index] = new Dictionary<MapInfo, Map>();
 
             for (int i = 0; i < instance.Maps.Count; i++)
             {
-                mapInstance[index][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, (byte)index);
+                mapInstance[index][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, index);
             }
 
             Parallel.ForEach(mapInstance[index], x => x.Value.Load());
@@ -3472,24 +3469,57 @@ namespace Server.Envir
 
             CreateSafeZones();
 
-            CreateMovements(instance, (byte)index);
+            CreateMovements(instance, index);
 
-            CreateNPCs(instance, (byte)index);
+            CreateNPCs(instance, index);
 
-            CreateSpawns(instance, (byte)index);
+            CreateSpawns(instance, index);
 
             Log($"Loaded Instance {instance.Name} at index {index}");
 
-            return (byte)index;
+            return index;
         }
 
         public static void UnloadInstance(InstanceInfo instance, byte index)
         {
-            //TODO - Dispose of all spawns/npcs/spell objects on map (remove from spawn list??)
+            //TODO - Dispose of all spawns/npcs/spell objects on map
+            RemoveSpawns(instance, index);
 
             Instances[instance][index] = null;
 
-            Log($"Unloaded Instance {instance.Name} at index {index}");
+            var users = new List<string>();
+
+            foreach (var pair in instance.UserRecord)
+            {
+                if (pair.Value == index)
+                    users.Add(pair.Key);
+            }
+
+            foreach (var user in users)
+            {
+                instance.UserRecord.Remove(user);
+
+                if (instance.CooldownTimeInMinutes > 0)
+                {
+                    var cooldown = DateTime.UtcNow.AddMinutes(instance.CooldownTimeInMinutes);
+
+                    switch (instance.Type)
+                    {
+                        case InstanceType.Guild:
+                            var character = GetCharacter(user);
+                            var guildName = character.Account?.GuildMember?.Guild.GuildName;
+                            if (guildName != null && !instance.GuildCooldown.ContainsKey(guildName))
+                                instance.GuildCooldown.Add(guildName, cooldown);
+                            break;
+                        default:
+                            if (!instance.UserCooldown.ContainsKey(user))
+                                instance.UserCooldown.Add(user, cooldown);
+                            break;
+                    }
+                }
+            }
+
+            Log($"Unloaded Instance {instance.Name} at index {index} and removed {users.Count} user records");
         }
 
         public static UserConquestStats GetConquestStats(PlayerObject player)

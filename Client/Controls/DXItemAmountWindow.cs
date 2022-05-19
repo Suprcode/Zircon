@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Client.Envir;
 using Client.UserModels;
 using Library;
 
@@ -67,7 +68,7 @@ namespace Client.Controls
 
                 ConfirmButton.Enabled = Amount > 0;
 
-                if (item.Info.Effect == ItemEffect.Gold)
+                if (CEnvir.IsCurrencyItem(item.Info))
                 {
                     item.Count = Amount;
                     ItemCell.RefreshItem();

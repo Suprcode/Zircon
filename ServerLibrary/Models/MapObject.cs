@@ -526,7 +526,10 @@ namespace Server.Models
                         {
                             if (SEnvir.ConquestWars.Any(war => war.Map == CurrentMap))
                             {
-                                player.Enqueue(new S.HuntGoldChanged { HuntGold = ++player.Character.Account.HuntGold });
+                                player.Character.Account.HuntGold2.Amount += 1;
+
+                                player.CurrencyChanged(player.Character.Account.HuntGold2);
+
                                 continue;
                             }
                         }
@@ -694,7 +697,6 @@ namespace Server.Models
 
             for (int i = 0; i < 20; i++)
                 if (Spawn(map, region.PointList[SEnvir.Random.Next(region.PointList.Count)])) break;
-
 
             return true;
         }

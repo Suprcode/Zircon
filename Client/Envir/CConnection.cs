@@ -1021,6 +1021,7 @@ namespace Client.Envir
 
                 if (player.Interupt)
                     player.FrameStart = DateTime.MinValue;
+
                 return;
             }
         }
@@ -1028,6 +1029,33 @@ namespace Client.Envir
         {
             MapObject.User.ServerTime = DateTime.MinValue;
             GameScene.Game.User.Horse = p.Horse;
+        }
+
+        public void Process(S.FishingUpdate p)
+        {
+            if (MapObject.User.ObjectID == p.ObjectID)
+            {
+                MapObject.User.ServerTime = DateTime.MinValue;
+                MapObject.User.NextActionTime = CEnvir.Now + Globals.TurnTime;
+            }
+
+            foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+            {
+                if (ob.ObjectID != p.ObjectID) continue;
+
+                if (ob.Race != ObjectType.Player) return;
+
+                PlayerObject player = (PlayerObject)ob;
+
+                player.Fishing = p.Fishing;
+
+                if (player.Interupt)
+                    player.FrameStart = DateTime.MinValue;
+
+                GameScene.Game.FishingCatchBox.Visible = player.Fishing;
+
+                return;
+            }
         }
 
         public void Process(S.ObjectStruck p)
@@ -1816,19 +1844,19 @@ namespace Client.Envir
             //if (p.ToGrid == GridType.GuildStorage || p.FromGrid == GridType.GuildStorage)
             //    GameScene.Game.GuildPanel.StorageControl.ItemCount = GameScene.Game.GuildStorage.Count(x => x != null);
         }
-        public void Process(S.GoldChanged p)
+
+        public void Process(S.CurrencyChanged p)
         {
-            GameScene.Game.User.Gold = p.Gold;
-            DXSoundManager.Play(SoundIndex.GoldGained);
+            var currency = GameScene.Game.User.Currencies.First(x => x.Info.Index == p.CurrencyIndex);
+
+            currency.Amount = p.Amount;
+
+            GameScene.Game.CurrencyChanged();
+
+            if (currency.Info.Type == CurrencyType.Gold)
+                DXSoundManager.Play(SoundIndex.GoldGained);
         }
-        public void Process(S.GameGoldChanged p)
-        {
-            GameScene.Game.User.GameGold = p.GameGold;
-        }
-        public void Process(S.HuntGoldChanged p)
-        {
-            GameScene.Game.User.HuntGold = p.HuntGold;
-        }
+
         public void Process(S.ItemChanged p)
         {
             DXItemCell[] grid;

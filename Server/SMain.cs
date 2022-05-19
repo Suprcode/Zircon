@@ -43,7 +43,7 @@ namespace Server
 
             PluginLoader.Loader.Log += PluginLoader_Log;
 
-            PluginLoader.Load(this.ribbonPage3);
+            PluginLoader.LoadIntegrated(this.ribbonPage3);
         }
 
         private void PluginLoader_Log(object sender, PluginCore.LogEventArgs e)
@@ -83,6 +83,8 @@ namespace Server
                         StoreInfoList = Session.GetCollection<StoreInfo>();
                         BaseStatList = Session.GetCollection<BaseStat>();
                         MapRegionList = Session.GetCollection<MapRegion>();*/
+
+            CurrencyInfoView.AddDefaultCurrencies();
 
             UpdateInterface();
 
@@ -398,6 +400,11 @@ namespace Server
         private void MagicInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(MagicInfoView));
+        }
+
+        private void CurrencyInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(CurrencyInfoView));
         }
 
         private void CharacterInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)

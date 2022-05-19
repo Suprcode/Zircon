@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
-using Client.Models.Particles.Types;
+using Client.Models.Particles;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;

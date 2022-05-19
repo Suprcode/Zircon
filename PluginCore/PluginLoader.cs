@@ -19,9 +19,7 @@ namespace PluginCore
         /// <summary>
         /// Main entry
         /// </summary>
-        public PluginLoader()
-        {
-        }
+        private PluginLoader() { }
 
         public static void Init()
         {
@@ -31,11 +29,41 @@ namespace PluginCore
             }
         }
 
+        public static IPluginStart LoadStandalone(string file)
+        {
+            try
+            {
+                Assembly dll = Assembly.LoadFrom(file);
+                var filename = Path.GetFileNameWithoutExtension(file);
+
+                Type classType = dll.GetType(String.Format("{0}.Start", filename));
+                if (classType != null && typeof(IPluginStart).IsAssignableFrom(classType))
+                {
+                    var pluginStart = (IPluginStart)Activator.CreateInstance(classType);
+
+                    pluginStart.Log += (o, e) =>
+                    {
+                        Loader.Log?.Invoke(o, e);
+                    };
+
+                    Loader.Plugins.Add(pluginStart);
+
+                    return pluginStart;
+                }
+            }
+            catch (Exception ex)
+            {
+                Loader.LogMessage(ex.ToString());
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Load all plugins in root folder
         /// </summary>
         /// <param name="ribbonPage">Reference to the plugin ribbon tab</param>
-        public static void Load(IComponent ribbonPage)
+        public static void LoadIntegrated(IComponent ribbonPage)
         {
             if (Loader == null) return;
 

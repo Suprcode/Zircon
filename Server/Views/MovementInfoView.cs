@@ -18,6 +18,7 @@ namespace Server.Views
             MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
             SpawnLookUpEdit.DataSource = SMain.Session.GetCollection<RespawnInfo>().Binding;
+            InstanceLookUpEdit.DataSource = SMain.Session.GetCollection<InstanceInfo>().Binding;
 
             MapIconImageComboBox.Items.AddEnum<MapIcon>();
         }
