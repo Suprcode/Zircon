@@ -17,7 +17,7 @@ namespace Server.Models
     {
         public MapInfo Info { get; }
         public InstanceInfo Instance { get; }
-        public byte InstanceIndex { get; }
+        public byte InstanceSequence { get; }
         public int Width { get; private set; }
         public int Height { get; private set; }
 
@@ -36,14 +36,14 @@ namespace Server.Models
 
         public DateTime HalloweenEventTime, ChristmasEventTime;
 
-        public Map(MapInfo info, InstanceInfo instance = null, byte instanceIndex = 0)
+        public Map(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0)
         {
             Info = info;
 
             if (instance != null)
             {
                 Instance = instance;
-                InstanceIndex = instanceIndex;
+                InstanceSequence = instanceSequence;
             }
         }
 
@@ -320,7 +320,7 @@ namespace Server.Models
 
                 mob.SpawnInfo = this;
 
-                if (!mob.Spawn(Info.Region, CurrentMap.Instance, CurrentMap.InstanceIndex))
+                if (!mob.Spawn(Info.Region, CurrentMap.Instance, CurrentMap.InstanceSequence))
                 {
                     mob.SpawnInfo = null;
                     continue;
@@ -415,7 +415,7 @@ namespace Server.Models
             {
                 MovementInfo movement = Movements[SEnvir.Random.Next(Movements.Count)];
 
-                Map map = SEnvir.GetMap(movement.DestinationRegion.Map, Map.Instance, Map.InstanceIndex);
+                Map map = SEnvir.GetMap(movement.DestinationRegion.Map, Map.Instance, Map.InstanceSequence);
 
                 if (movement.NeedInstance != null)
                 {

@@ -1117,7 +1117,7 @@ namespace Server.Models
             Enqueue(new S.MapChanged
             {
                 MapIndex = CurrentMap.Info.Index,
-                InstanceIndex = CurrentMap.Instance?.Index ?? -1
+                InstanceIndex = CurrentMap.Instance?.Index
             });
 
             if (!CurrentMap.Info.CanHorse)
@@ -1926,14 +1926,14 @@ namespace Server.Models
                             MapInfo info = SEnvir.MapInfoList.Binding.FirstOrDefault(x => string.Compare(x.FileName, parts[1], StringComparison.OrdinalIgnoreCase) == 0);
 
                             InstanceInfo instance = null;
-                            byte? instanceIndex = null;
+                            byte? instanceSequence = null;
 
                             //Get chosen index
                             if (parts.Length > 3)
                             {
-                                if (byte.TryParse(parts[3], out byte tempIndex))
+                                if (byte.TryParse(parts[3], out byte tempSequence))
                                 {
-                                    instanceIndex = tempIndex;
+                                    instanceSequence = tempSequence;
                                 }
                             }
 
@@ -1952,10 +1952,10 @@ namespace Server.Models
                                     return;
                                 }
 
-                                instanceIndex = index;
+                                instanceSequence = index;
                             }
 
-                            Map map = SEnvir.GetMap(info, instance, instanceIndex ?? 0);
+                            Map map = SEnvir.GetMap(info, instance, instanceSequence ?? 0);
 
                             if (map == null) return;
 
@@ -3120,7 +3120,7 @@ namespace Server.Models
                 TeleportTime = SEnvir.Now.AddSeconds(1);
             }
 
-            Map destMap = SEnvir.GetMap(destInfo, CurrentMap.Instance, CurrentMap.InstanceIndex);
+            Map destMap = SEnvir.GetMap(destInfo, CurrentMap.Instance, CurrentMap.InstanceSequence);
 
             if (destMap == null)
             {
@@ -19394,7 +19394,7 @@ namespace Server.Models
                 Direction = Direction,
 
                 MapIndex = CurrentMap.Info.Index,
-                InstanceIndex = CurrentMap.Instance?.Index ?? -1,
+                InstanceIndex = CurrentMap.Instance?.Index,
 
                 HairType = HairType,
                 HairColour = HairColour,
