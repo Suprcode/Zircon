@@ -88,7 +88,7 @@ namespace Library.Network.ServerPackets
     public sealed class MapChanged : Packet
     {
         public int MapIndex { get; set; }
-        public int InstanceIndex { get; set; }
+        public int? InstanceIndex { get; set; }
     }
     public sealed class UserLocation : Packet
     {

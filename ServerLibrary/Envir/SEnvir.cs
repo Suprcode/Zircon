@@ -812,9 +812,9 @@ namespace Server.Envir
             }
         }
 
-        private static void RemoveSpawns(InstanceInfo instance = null, byte index = 0)
+        private static void RemoveSpawns(InstanceInfo instance = null, byte sequence = 0)
         {
-            Spawns.RemoveAll(x => x.CurrentMap.Instance == instance && x.CurrentMap.InstanceIndex == index);
+            Spawns.RemoveAll(x => x.CurrentMap.Instance == instance && x.CurrentMap.InstanceSequence == sequence);
         }
 
         private static void StopEnvir()
@@ -3432,7 +3432,7 @@ namespace Server.Envir
 
             return result;
         }
-        public static Map GetMap(MapInfo info, InstanceInfo instance = null, byte instanceIndex = 0)
+        public static Map GetMap(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0)
         {
             if (instance == null)
             {
@@ -3441,12 +3441,12 @@ namespace Server.Envir
 
             var instanceMaps = Instances[instance];
 
-            if (instanceIndex >= instanceMaps.Length || instanceMaps[instanceIndex] == null)
+            if (instanceSequence >= instanceMaps.Length || instanceMaps[instanceSequence] == null)
             {
                 return null;
             }
 
-            return instanceMaps != null && instanceMaps[instanceIndex].ContainsKey(info) ? instanceMaps[instanceIndex][info] : null;
+            return instanceMaps != null && instanceMaps[instanceSequence].ContainsKey(info) ? instanceMaps[instanceSequence][info] : null;
         }
 
         public static byte? LoadInstance(InstanceInfo instance, byte index)

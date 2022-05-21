@@ -685,11 +685,11 @@ namespace Server.Models
             }
         }
 
-        public bool Spawn(MapRegion region, InstanceInfo instance, byte instanceIndex)
+        public bool Spawn(MapRegion region, InstanceInfo instance, byte instanceSequence)
         {
             if (region == null) return false;
 
-            Map map = SEnvir.GetMap(region.Map, instance, instanceIndex);
+            Map map = SEnvir.GetMap(region.Map, instance, instanceSequence);
 
             if (map == null) return false;
 
@@ -701,9 +701,9 @@ namespace Server.Models
             return true;
         }
 
-        public bool Spawn(MapInfo info, InstanceInfo instance, byte instanceIndex, Point location)
+        public bool Spawn(MapInfo info, InstanceInfo instance, byte instanceSequence, Point location)
         {
-            var map = SEnvir.GetMap(info, instance, instanceIndex);
+            var map = SEnvir.GetMap(info, instance, instanceSequence);
 
             if (map == null)
             {
@@ -819,9 +819,9 @@ namespace Server.Models
 
             Teleport(CurrentMap, cells[SEnvir.Random.Next(cells.Count)].Location);
         }
-        public bool Teleport(MapRegion region, InstanceInfo instance, byte instanceIndex, bool leaveEffect = true)
+        public bool Teleport(MapRegion region, InstanceInfo instance, byte instanceSequence, bool leaveEffect = true)
         {
-            Map map = SEnvir.GetMap(region.Map, instance, instanceIndex);
+            Map map = SEnvir.GetMap(region.Map, instance, instanceSequence);
 
             if (map == null)
             {
@@ -923,6 +923,8 @@ namespace Server.Models
                 case ObjectType.Player:
                     PlayerObject player = (PlayerObject)this;
                     if (player.Observer) return false;
+
+                    if (ob.CurrentMap.Instance != CurrentMap.Instance || ob.CurrentMap.InstanceSequence != CurrentMap.InstanceSequence) return false;
 
                     if (InGroup(ob)) return true;
 
