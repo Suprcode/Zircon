@@ -2041,6 +2041,62 @@ namespace Client.Models
                     //Fuckjed up Mob
 
                     break;
+                case MonsterImage.SeaFloor0:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 0;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaFloor0)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.SeaFloor1:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 1;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaFloor1)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.SeaFloor2:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 2;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaFloor2)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.SeaFloor3:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 3;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaFloor3)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.SeaFloor4:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 4;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaFloor4)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.SeaFloorSub:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 5;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaFloorSub)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.SeaFloor6:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 6;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaFloor6)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.SeaFloorBoss:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 7;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaFloorBoss)
+                        Frames[frame.Key] = frame.Value;
+                    break;
                 default:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_1, out BodyLibrary);
                     BodyShape = 0;

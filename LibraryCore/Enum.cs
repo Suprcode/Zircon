@@ -958,6 +958,15 @@ namespace Library
         MonasteryMon4,
         MonasteryMon5,
         MonasteryMon6,
+
+        SeaFloor0,
+        SeaFloor1,
+        SeaFloor2,
+        SeaFloor3,
+        SeaFloor4,
+        SeaFloorSub,
+        SeaFloor6,
+        SeaFloorBoss,
     }
 
     
