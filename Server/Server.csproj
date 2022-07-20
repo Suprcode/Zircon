@@ -62,6 +62,7 @@
       <Private>True</Private>
       <HintPath>..\..\DevExpress Components RUNTIME\DevExpress.XtraEditors.v18.2.dll</HintPath>
     </Reference>
+    <Reference Include="DevExpress.XtraLayout.v18.2, Version=18.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraPrinting.v18.2, Version=18.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\DevExpress Components RUNTIME\DevExpress.XtraPrinting.v18.2.dll</HintPath>

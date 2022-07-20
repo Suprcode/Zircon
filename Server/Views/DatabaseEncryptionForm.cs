@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace Server.Views
 {
-    public partial class DatabaseEncryptionForm : Form
+    public partial class DatabaseEncryptionForm : DevExpress.XtraEditors.XtraForm
     {
         public DatabaseEncryptionForm()
         {
