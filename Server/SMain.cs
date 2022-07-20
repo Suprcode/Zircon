@@ -60,6 +60,12 @@ namespace Server
                 Encryption.SetKey(SEnvir.CryptoKey);
             }
 
+            if (File.Exists("LibraryCore.key.old"))
+            {
+                var oldCryptoKey = Convert.FromBase64String(File.ReadAllText("LibraryCore.key.old"));
+                Encryption.SetOldKey(oldCryptoKey);
+            }
+
             ShowView(typeof(SystemLogView));
 
             Session = new Session(SessionMode.System)
