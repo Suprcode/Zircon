@@ -54,17 +54,21 @@ namespace Server
 
         private void SMain_Load(object sender, EventArgs e)
         {
-            if (File.Exists("LibraryCore.key"))
+            try
             {
-                SEnvir.CryptoKey = Convert.FromBase64String(File.ReadAllText("LibraryCore.key"));
-                Encryption.SetKey(SEnvir.CryptoKey);
+                if (!string.IsNullOrEmpty(Config.EncryptionKey))
+                    SEnvir.CryptoKey = Convert.FromBase64String(Config.EncryptionKey);
+            }
+            catch (Exception)
+            {
+                throw new ApplicationException($"Invalid format encryption key, expected a base64 with 32 bytes");
             }
 
-            if (File.Exists("LibraryCore.key.old"))
-            {
-                var oldCryptoKey = Convert.FromBase64String(File.ReadAllText("LibraryCore.key.old"));
-                Encryption.SetOldKey(oldCryptoKey);
-            }
+            if (Config.EncryptionEnabled && SEnvir.CryptoKey == null)
+                throw new ApplicationException($"Encryption is enabled but not specified key [System] => DatabaseKey");
+
+            if (Config.EncryptionEnabled)
+                Encryption.SetKey(SEnvir.CryptoKey);
 
             ShowView(typeof(SystemLogView));
 

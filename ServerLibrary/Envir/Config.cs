@@ -34,6 +34,8 @@ namespace Server.Envir
         public static DateTime HalloweenEventEnd { get; set; } = new DateTime(2018, 11, 07, 00, 00, 00, DateTimeKind.Utc);
         public static DateTime ChristmasEventEnd { get; set; } = new DateTime(2019, 01, 03, 00, 00, 00, DateTimeKind.Utc);
         public static TimeSpan DBSaveDelay { get; set; } = TimeSpan.FromMinutes(5);
+        public static bool EncryptionEnabled { get; set; } = false;
+        public static string EncryptionKey { get; set; } = string.Empty;
 
         [ConfigSection("Control")]
         public static bool AllowLogin { get; set; } = true;

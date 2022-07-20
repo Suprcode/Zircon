@@ -10,7 +10,6 @@ namespace Library
     public class Encryption
     {
         private static byte[] _cryptoKey = null;
-        private static byte[] _oldCryptoKey = null;
         private readonly static SymmetricAlgorithm _algorithm = new RijndaelManaged() { KeySize = 256 };
         private readonly static RandomNumberGenerator _randomNumberGenerator = new RNGCryptoServiceProvider();
 
@@ -28,7 +27,7 @@ namespace Library
         {
             var isEncrypted = IsEncrypted(stream);
 
-            if (isEncrypted && _cryptoKey == null && _oldCryptoKey == null)
+            if (isEncrypted && _cryptoKey == null)
                 throw new ApplicationException("Database is encrypted but not specified Crypto Key");
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -40,32 +39,9 @@ namespace Library
                 var iv = new byte[16];
                 stream.Read(iv, 0, 16);
 
-                var decryptor = _algorithm.CreateDecryptor(_cryptoKey ?? _oldCryptoKey, iv);
+                var decryptor = _algorithm.CreateDecryptor(_cryptoKey, iv);
                 var decStream = new CryptoStream(stream, decryptor, CryptoStreamMode.Read);
-
-                if (IsEncrypted(decStream))
-                {
-                    stream.Seek(16, SeekOrigin.Begin);
-
-                    if (_cryptoKey != null && _oldCryptoKey != null)
-                    {
-                        decryptor = _algorithm.CreateDecryptor(_oldCryptoKey, iv);
-                        decStream = new CryptoStream(stream, decryptor, CryptoStreamMode.Read);
-                        reader = new BinaryReader(decStream);
-                    }
-                    else
-                    {
-                        throw new ApplicationException("Invalid database key");
-                    }
-                }
-                else
-                {
-                    stream.Seek(16, SeekOrigin.Begin);
-
-                    decryptor = _algorithm.CreateDecryptor(_cryptoKey, iv);
-                    decStream = new CryptoStream(stream, decryptor, CryptoStreamMode.Read);
-                    reader = new BinaryReader(decStream);
-                }
+                reader = new BinaryReader(decStream);
             }
             else
             {
@@ -85,14 +61,14 @@ namespace Library
             return new BinaryWriter(new CryptoStream(stream, encryptor, CryptoStreamMode.Write));
         }
 
-        public static void SetOldKey(byte[] cryptoKey)
-        {
-            _oldCryptoKey = cryptoKey;
-        }
-
         public static void SetKey(byte[] databaseKey)
         {
             _cryptoKey = databaseKey;
+        }
+
+        public static void SetKey(string databaseKey)
+        {
+            _cryptoKey = Convert.FromBase64String(databaseKey);
         }
     }
 }

@@ -249,7 +249,7 @@ namespace Server.Envir
             }
 
             Stage = GameStage.Login;
-            Enqueue(new G.GoodVersion() { DatabaseKey = SEnvir.CryptoKey });
+            Enqueue(new G.GoodVersion() { DatabaseKey = Config.EncryptionEnabled ? SEnvir.CryptoKey : null });
         }
         public void Process(G.Version p)
         {
@@ -262,7 +262,7 @@ namespace Server.Envir
             }
 
             Stage = GameStage.Login;
-            Enqueue(new G.GoodVersion() { DatabaseKey = SEnvir.CryptoKey });
+            Enqueue(new G.GoodVersion() { DatabaseKey = Config.EncryptionEnabled ? SEnvir.CryptoKey : null });
         }
         public void Process(G.Ping p)
         {

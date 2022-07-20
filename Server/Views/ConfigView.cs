@@ -16,8 +16,15 @@ namespace Server.Views
         {
             InitializeComponent();
             this.SyncronizeButton.Click += SyncronizeButton_Click;
+            this.DatabaseEncryptionButton.Click += DatabaseEncryptionButton_Click;
             MysteryShipRegionIndexEdit.Properties.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             LairRegionIndexEdit.Properties.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
+        }
+
+        private void DatabaseEncryptionButton_Click(object sender, EventArgs e)
+        {
+            var form = new DatabaseEncryptionForm();
+            form.ShowDialog();
         }
 
         private void SyncronizeButton_Click(object sender, EventArgs e)
@@ -310,11 +317,6 @@ namespace Server.Views
             if (FolderDialog.ShowDialog() != DialogResult.OK) return;
 
             ClientPathEdit.EditValue = FolderDialog.SelectedPath;
-        }
-
-        private void ConfigView_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
