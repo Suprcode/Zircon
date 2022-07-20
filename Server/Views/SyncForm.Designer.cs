@@ -40,7 +40,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 18);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(57, 13);
+            this.label1.Size = new System.Drawing.Size(70, 16);
             this.label1.TabIndex = 0;
             this.label1.Text = "Remote IP";
             // 
@@ -48,7 +48,7 @@
             // 
             this.txtRemoteIP.Location = new System.Drawing.Point(75, 15);
             this.txtRemoteIP.Name = "txtRemoteIP";
-            this.txtRemoteIP.Size = new System.Drawing.Size(222, 20);
+            this.txtRemoteIP.Size = new System.Drawing.Size(222, 22);
             this.txtRemoteIP.TabIndex = 1;
             // 
             // btnSync
@@ -66,7 +66,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 48);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(25, 13);
+            this.label2.Size = new System.Drawing.Size(30, 16);
             this.label2.TabIndex = 3;
             this.label2.Text = "Key";
             // 
@@ -75,7 +75,7 @@
             this.txtKey.Location = new System.Drawing.Point(75, 45);
             this.txtKey.Name = "txtKey";
             this.txtKey.PasswordChar = '*';
-            this.txtKey.Size = new System.Drawing.Size(222, 20);
+            this.txtKey.Size = new System.Drawing.Size(222, 22);
             this.txtKey.TabIndex = 4;
             // 
             // SyncForm
@@ -87,7 +87,7 @@
             this.Controls.Add(this.btnSync);
             this.Controls.Add(this.txtRemoteIP);
             this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "SyncForm";
             this.Text = "Syncronization Remote DB";
             this.ResumeLayout(false);

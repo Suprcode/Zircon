@@ -212,7 +212,7 @@ namespace Server.Envir
 
         #endregion
 
-    
+
 
         public static bool Started { get; set; }
         public static bool NetworkStarted { get; set; }
@@ -226,7 +226,7 @@ namespace Server.Envir
         public static long DBytesSent, DBytesReceived;
         public static long TotalBytesSent, TotalBytesReceived;
         public static long DownloadSpeed, UploadSpeed;
-        
+
 
         public static bool ServerBuffChanged;
 
@@ -325,6 +325,8 @@ namespace Server.Envir
                 Broadcast(new S.DayChanged { DayTime = DayTime });
             }
         }
+
+        public static byte[] CryptoKey { get; set; }
 
         public static LinkedList<CharacterInfo> Rankings;
         public static HashSet<CharacterInfo> TopRankings;
@@ -1268,7 +1270,7 @@ namespace Server.Envir
             Session.Save(false);
 
             WebServer.Save();
-            
+
             Thread saveThread = new Thread(CommitChanges) { IsBackground = true };
             saveThread.Start(Session);
         }
@@ -1333,7 +1335,7 @@ namespace Server.Envir
 
             lines.Clear();
         }
-       
+
         public static void CheckGuildWars()
         {
             TimeSpan change = Now - LastWarTime;
@@ -3280,7 +3282,7 @@ namespace Server.Envir
             return false;
         }
 
-      
+
 
         #region Password Encryption
         private const int Iterations = 1354;

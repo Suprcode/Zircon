@@ -46,7 +46,7 @@ namespace Server.Envir
             SessionID = ++SessionCount;
 
 
-            Language = (StringMessages) ConfigReader.ConfigObjects[typeof(EnglishMessages)]; //Todo Language Selections
+            Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)]; //Todo Language Selections
 
             OnException += (o, e) =>
             {
@@ -249,7 +249,7 @@ namespace Server.Envir
             }
 
             Stage = GameStage.Login;
-            Enqueue(new G.GoodVersion());
+            Enqueue(new G.GoodVersion() { DatabaseKey = Config.EncryptionEnabled ? SEnvir.CryptoKey : null });
         }
         public void Process(G.Version p)
         {
@@ -262,13 +262,13 @@ namespace Server.Envir
             }
 
             Stage = GameStage.Login;
-            Enqueue(new G.GoodVersion());
+            Enqueue(new G.GoodVersion() { DatabaseKey = Config.EncryptionEnabled ? SEnvir.CryptoKey : null });
         }
         public void Process(G.Ping p)
         {
             if (Stage == GameStage.None) return;
 
-            int ping = (int) (SEnvir.Now - PingTime).TotalMilliseconds/2;
+            int ping = (int)(SEnvir.Now - PingTime).TotalMilliseconds / 2;
             PingSent = false;
             PingTime = SEnvir.Now + Config.PingDelay;
 
@@ -727,7 +727,7 @@ namespace Server.Envir
             }
 
             if (count == 0) return;
-            result.AveragePrice = average/count;
+            result.AveragePrice = average / count;
         }
         public void Process(C.MarketPlaceConsign p)
         {
@@ -749,9 +749,9 @@ namespace Server.Envir
             {
                 try
                 {
-                if (!string.IsNullOrEmpty(p.Name) && info.ItemName.IndexOf(p.Name, StringComparison.OrdinalIgnoreCase) < 0) continue;
-                
-                matches.Add(info.Index);
+                    if (!string.IsNullOrEmpty(p.Name) && info.ItemName.IndexOf(p.Name, StringComparison.OrdinalIgnoreCase) < 0) continue;
+
+                    matches.Add(info.Index);
 
                 }
                 catch (Exception e)
@@ -905,7 +905,7 @@ namespace Server.Envir
                     break;
             }
         }
-        
+
         public void Process(C.ItemSplit p)
         {
             if (Stage != GameStage.Game) return;
@@ -1154,7 +1154,7 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
-            
+
             Player.GenderChange(p);
         }
         public void Process(C.HairChange p)
@@ -1176,14 +1176,14 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
-            
+
             Player.NameChange(p.Name);
         }
 
         public void Process(C.FortuneCheck p)
         {
             if (Stage != GameStage.Game) return;
-            
+
             Player.FortuneCheck(p.ItemIndex);
         }
         public void Process(C.TeleportRing p)

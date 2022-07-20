@@ -49,8 +49,6 @@ namespace Client
                 CEnvir.LibraryList[pair.Key] = new MirLibrary(@".\" + pair.Value);
             }
 
-            CEnvir.LoadDatabase();
-
             CEnvir.Target = new TargetForm();
             DXManager.Create();
             DXSoundManager.Create();

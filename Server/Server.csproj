@@ -127,6 +127,12 @@
     <Compile Include="Views\CurrencyInfoView.Designer.cs">
       <DependentUpon>CurrencyInfoView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\DatabaseEncryptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DatabaseEncryptionForm.Designer.cs">
+      <DependentUpon>DatabaseEncryptionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\GameStoreSaleView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -350,6 +356,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\CurrencyInfoView.resx">
       <DependentUpon>CurrencyInfoView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DatabaseEncryptionForm.resx">
+      <DependentUpon>DatabaseEncryptionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\GameStoreSaleView.resx">
       <DependentUpon>GameStoreSaleView.cs</DependentUpon>
