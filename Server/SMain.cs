@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -53,6 +54,12 @@ namespace Server
 
         private void SMain_Load(object sender, EventArgs e)
         {
+            if (File.Exists("LibraryCore.key"))
+            {
+                SEnvir.CryptoKey = Convert.FromBase64String(File.ReadAllText("LibraryCore.key"));
+                Encryption.SetKey(SEnvir.CryptoKey);
+            }
+
             ShowView(typeof(SystemLogView));
 
             Session = new Session(SessionMode.System)

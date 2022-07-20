@@ -13,12 +13,6 @@ namespace Library
         private readonly static SymmetricAlgorithm _algorithm = new RijndaelManaged() { KeySize = 256 };
         private readonly static RandomNumberGenerator _randomNumberGenerator = new RNGCryptoServiceProvider();
 
-        static Encryption()
-        {
-            if (File.Exists("LibraryCore.key"))
-                _cryptoKey = Convert.FromBase64String(File.ReadAllText("LibraryCore.key"));
-        }
-
         public static BinaryReader GetReader(Stream stream)
         {
             stream.Seek(5, SeekOrigin.Begin);
@@ -31,7 +25,7 @@ namespace Library
             var isEncrypted = !new string[] { "Server.DBModels.", "Library.SystemMo", "Client.UserModel" }.Contains(stringToCompare);
 
             if (isEncrypted && _cryptoKey == null)
-                throw new ApplicationException("Database is encrypted but not found LibraryCore.key");
+                throw new ApplicationException("Database is encrypted but not specified Crypto Key");
 
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -59,6 +53,11 @@ namespace Library
             stream.Write(iv, 0, iv.Length);
             var encryptor = _algorithm.CreateEncryptor(_cryptoKey, iv);
             return new BinaryWriter(new CryptoStream(stream, encryptor, CryptoStreamMode.Write));
+        }
+
+        public static void SetKey(byte[] databaseKey)
+        {
+            _cryptoKey = databaseKey;
         }
     }
 }

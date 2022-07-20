@@ -9,7 +9,10 @@
     {
         public byte[] ClientHash { get; set; }
     }
-    public sealed class GoodVersion : Packet { }
+    public sealed class GoodVersion : Packet
+    {
+        public byte[] DatabaseKey { get; set; }
+    }
     public sealed class PingResponse : Packet
     {
         public int Ping { get; set; }
