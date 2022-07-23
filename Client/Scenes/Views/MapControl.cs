@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
 using Client.Models;
+using Client.Models.Particles;
 using Library;
 using Library.SystemModels;
 using SlimDX;
@@ -72,6 +73,7 @@ namespace Client.Scenes.Views
             if (nValue != null)
                 DXSoundManager.Play(nValue.Music);
 
+            UpdateWeather();
             LLayer.UpdateLights();
             MapInfoChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -418,7 +420,6 @@ namespace Client.Scenes.Views
 
         }
 
-
         private void LoadMap()
         {
             try
@@ -482,6 +483,15 @@ namespace Client.Scenes.Views
                     Cells[ob.CurrentLocation.X, ob.CurrentLocation.Y].AddObject(ob);
         }
 
+        private void UpdateWeather()
+        {
+            //var point = new Point((Size.Width) / 2, (Size.Height) / 2);
+
+            //var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Fog), point);
+
+            //GameScene.Game.MapControl.ParticleEffects.Add(emitter);
+        }
+
         public override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
@@ -490,7 +500,6 @@ namespace Client.Scenes.Views
         }
         public override void OnMouseDown(MouseEventArgs e)
         {
-
             base.OnMouseDown(e);
 
             if (GameScene.Game.Observer) return;
@@ -504,7 +513,6 @@ namespace Client.Scenes.Views
             }
             
             if (e.Button != MouseButtons.Left) return;
-
 
             DXItemCell cell = DXItemCell.SelectedCell;
             if (cell != null)
@@ -531,7 +539,6 @@ namespace Client.Scenes.Views
                     GameScene.Game.AutoPotionBox.Rows[cell.Slot].SendUpdate();
                     return;
                 }
-
 
                 if ((cell.Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked || (cell.GridType != GridType.Inventory && cell.GridType != GridType.CompanionInventory))
                 {

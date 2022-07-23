@@ -58,8 +58,8 @@ namespace Library.Network
                 [typeof(Byte)] = (v, w) => w.Write((Byte) v),
                 [typeof(Byte[])] = (v, w) =>
                 {
-                    w.Write(((Byte[]) v).Length);
-                    w.Write((Byte[]) v);
+                    w.Write(v != null ? ((Byte[]) v).Length : 0);
+                    w.Write(v != null ? (Byte[]) v : new byte[0]);
                 },
                 [typeof(Char)] = (v, w) => w.Write((Char) v),
                 [typeof(Color)] = (v, w) => w.Write(((Color) v).ToArgb()),

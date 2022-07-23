@@ -371,7 +371,7 @@ namespace Server.Envir
                         else
                             Globals.ExperienceList[i] = exp;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         Log(string.Format("ExperienceList: Error parsing line {0} - {1}", i, lines[i]));
                     }

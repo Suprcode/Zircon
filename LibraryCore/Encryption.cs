@@ -10,8 +10,15 @@ namespace Library
     public class Encryption
     {
         private static byte[] _cryptoKey = null;
+
+        private static bool HasCryptoKey
+        {
+            get { return _cryptoKey != null && _cryptoKey.Length > 0; }
+        }
+
         private readonly static SymmetricAlgorithm _algorithm = new RijndaelManaged() { KeySize = 256 };
         private readonly static RandomNumberGenerator _randomNumberGenerator = new RNGCryptoServiceProvider();
+
 
         private static bool IsEncrypted(Stream stream)
         {
@@ -27,7 +34,7 @@ namespace Library
         {
             var isEncrypted = IsEncrypted(stream);
 
-            if (isEncrypted && _cryptoKey == null)
+            if (isEncrypted && !HasCryptoKey)
                 throw new ApplicationException("Database is encrypted but not specified Crypto Key");
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -53,10 +60,13 @@ namespace Library
 
         public static BinaryWriter GetWriter(Stream stream)
         {
-            if (_cryptoKey == null) return new BinaryWriter(stream);
+            if (!HasCryptoKey) return new BinaryWriter(stream);
+
             var iv = new byte[16];
+
             _randomNumberGenerator.GetNonZeroBytes(iv);
             stream.Write(iv, 0, iv.Length);
+
             var encryptor = _algorithm.CreateEncryptor(_cryptoKey, iv);
             return new BinaryWriter(new CryptoStream(stream, encryptor, CryptoStreamMode.Write));
         }
@@ -64,11 +74,6 @@ namespace Library
         public static void SetKey(byte[] databaseKey)
         {
             _cryptoKey = databaseKey;
-        }
-
-        public static void SetKey(string databaseKey)
-        {
-            _cryptoKey = Convert.FromBase64String(databaseKey);
         }
     }
 }

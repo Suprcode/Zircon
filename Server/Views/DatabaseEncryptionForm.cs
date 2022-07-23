@@ -1,10 +1,14 @@
-﻿using Server.Envir;
+﻿using Library.SystemModels;
+using MirDB;
+using Server.DBModels;
+using Server.Envir;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -30,25 +34,36 @@ namespace Server.Views
         {
             try
             {
-                var key = Convert.FromBase64String(txtEncryptionKey.Text);
-                if (key.Length != 32)
+                if (chkEnabled.Checked)
                 {
-                    MessageBox.Show("Encryption key is not a valid, expected 32 bytes", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    var key = Convert.FromBase64String(txtEncryptionKey.Text);
+
+                    if (key.Length != 32)
+                        throw new Exception();
                 }
             }
             catch (Exception)
             {
-                MessageBox.Show("Encryption key is not a valid base64", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AlertControl.Show(this, "Validation", "Encryption key is not a valid base64", false);
                 return;
             }
 
             Config.EncryptionEnabled = chkEnabled.Checked;
             Config.EncryptionKey = txtEncryptionKey.Text;
-            Library.Encryption.SetKey(Config.EncryptionKey);
-            SMain.Session.Save(true);
 
-            MessageBox.Show("Changes saved OK!");
+            var session = new Session(SessionMode.Both)
+            {
+                BackUpDelay = 60
+            };
+
+            session.Initialize(
+                Assembly.GetAssembly(typeof(ItemInfo)),
+                Assembly.GetAssembly(typeof(AccountInfo))
+            );
+
+            Library.Encryption.SetKey(Config.EncryptionEnabled ? Convert.FromBase64String(Config.EncryptionKey) : null);
+
+            session.Save(true);
 
             this.Close();
         }

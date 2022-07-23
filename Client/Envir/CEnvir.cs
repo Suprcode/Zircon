@@ -55,7 +55,7 @@ namespace Client.Envir
         public static DBCollection<KeyBindInfo> KeyBinds;
         public static DBCollection<WindowSetting> WindowSettings;
         public static DBCollection<CastleInfo> CastleInfoList;
-        public static Session Session;
+        public static MirDB.Session Session;
 
         public static ConcurrentQueue<string> ChatLog = new ConcurrentQueue<string>();
 
@@ -321,7 +321,7 @@ namespace Client.Envir
             {
                 try
                 {
-                    Session = new Session(SessionMode.Users, @".\Data\") { BackUp = false };
+                    Session = new MirDB.Session(SessionMode.Users, @".\Data\") { BackUp = false };
 
                     Session.Initialize(
                         Assembly.GetAssembly(typeof(ItemInfo)),

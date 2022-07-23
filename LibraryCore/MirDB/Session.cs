@@ -26,7 +26,6 @@ namespace MirDB
         public int BackUpDelay { get; set; }
         private string BackupRoot { get; }
 
-
         public string SystemPath => Root + "System" + Extension;
         public string SystemBackupPath => BackupRoot + @"System\";
         public byte[] SystemHeader;

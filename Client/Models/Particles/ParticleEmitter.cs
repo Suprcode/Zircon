@@ -44,6 +44,13 @@ namespace Client.Models.Particles
             };
         }
 
+        public ParticleEmitter(Point location)
+        {
+            _startTime = CEnvir.Now.Add(StartDelay);
+
+            Location = new Vector2(location.X, location.Y);
+        }
+
         public void SetLocation(int dir, int x, int y)
         {
             var center = CenterPoint[dir];
