@@ -112,7 +112,7 @@ namespace Client.Scenes
                 LibraryFile = LibraryFile.Interface1c,
                 Parent = this,
             };
-            
+
             DXAnimatedControl control = new DXAnimatedControl
             {
                 BaseIndex = 2200,
@@ -269,16 +269,17 @@ namespace Client.Scenes
 
             DXSoundManager.Play(SoundIndex.LoginScene);
         }
-        
+
         #region Methods
 
         public override void Process()
         {
             base.Process();
 
-            if (!CEnvir.Loaded)
+            Loaded = CEnvir.Loaded;
+
+            if (!CEnvir.Loaded && ConnectionBox == null)
             {
-                if (ConnectionBox != null) return;
 
                 ConnectionBox = new DXMessageBox("Loading Client Information...\n" +
                                                  "Please wait...", "Loading", DXMessageBoxButtons.Cancel);
@@ -289,10 +290,7 @@ namespace Client.Scenes
                 ConnectionBox.Modal = false;
 
                 LoginBox.Visible = false;
-
-                return;
             }
-            Loaded = CEnvir.Loaded;
 
             if (CEnvir.WrongVersion)
             {
@@ -310,8 +308,17 @@ namespace Client.Scenes
                 ConnectionBox = null;
                 return;
             }
-            
-            if (CEnvir.Connection != null && CEnvir.Connection.ServerConnected) return;
+
+            if (CEnvir.Connection != null && CEnvir.Connection.ServerConnected)
+            {
+                if (CEnvir.Loaded && !LoginBox.Visible)
+                {
+                    ConnectionBox.Dispose();
+                    LoginBox.Visible = true;
+                }
+                return;
+            }
+
             if (CEnvir.Now < ConnectionTime) return;
 
             ConnectingClient?.Close();
@@ -372,11 +379,12 @@ namespace Client.Scenes
             catch { }
         }
 
-        public void ShowLogin()
+        public void LoadDatabase()
         {
-            ConnectionBox.Dispose();
-            LoginBox.Visible = true;
+            ConnectionBox.Label.Text = "Loading Client Information...\nPlease wait...";
+            CEnvir.LoadDatabase();
         }
+
         public void Disconnected()
         {
             _ConnectionAttempt = 0;
@@ -451,7 +459,7 @@ namespace Client.Scenes
                         ChangeBox.Dispose();
                     ChangeBox = null;
                 }
-                
+
                 if (RequestPassswordBox != null)
                 {
                     if (!RequestPassswordBox.IsDisposed)
@@ -597,7 +605,7 @@ namespace Client.Scenes
             }
 
             #endregion
-            
+
             public bool CanLogin => EMailValid && PasswordValid && !LoginAttempted;
 
             public DXTextBox EMailTextBox, PasswordTextBox;
@@ -630,7 +638,7 @@ namespace Client.Scenes
             public override bool CustomSize => false;
             public override bool AutomaticVisiblity => false;
             #endregion
-            
+
             public LoginDialog()
             {
                 Size = new Size(300, 250);
@@ -750,9 +758,9 @@ namespace Client.Scenes
                     PasswordTextBox.TextBox.Text = Config.RememberedPassword;
                 }
             }
-            
+
             #region Methods
-            
+
 
             public void Login()
             {
@@ -1102,7 +1110,7 @@ namespace Client.Scenes
             }
 
             #endregion
-            
+
             public bool CanCreate => EMailValid && Password1Valid && Password2Valid && RealNameValid && BirthDateValid && ReferralValid && !CreateAttempted;
 
             public DXButton CreateButton, CancelButton;
@@ -1640,7 +1648,7 @@ namespace Client.Scenes
             }
 
             #endregion
-            
+
             #region CurrentPasswordValid
 
             public bool CurrentPasswordValid
@@ -1665,7 +1673,7 @@ namespace Client.Scenes
             }
 
             #endregion
-            
+
             #region NewPassword1Valid
 
             public bool NewPassword1Valid
@@ -1740,7 +1748,7 @@ namespace Client.Scenes
             }
 
             #endregion
-            
+
             public bool CanChange => EMailValid && CurrentPasswordValid && NewPassword1Valid && NewPassword2Valid && !ChangeAttempted;
 
             public DXButton ChangeButton, CancelButton;
@@ -2175,7 +2183,7 @@ namespace Client.Scenes
             #endregion
 
             public bool CanReset => EMailValid && !RequestAttempted;
-            
+
             public DXButton RequestButton, CancelButton;
 
             public DXTextBox EMailTextBox;
@@ -2263,7 +2271,7 @@ namespace Client.Scenes
                 HaveKeyLabel.MouseClick += HaveKeyLabel_MouseClick;
                 HaveKeyLabel.Location = new Point(EMailTextBox.Location.X + (EMailTextBox.Size.Width - HaveKeyLabel.Size.Width) / 2, 70);
             }
-            
+
             #region Methods
 
             public void Request()
@@ -2489,9 +2497,9 @@ namespace Client.Scenes
             }
 
             #endregion
-            
+
             public bool CanReset => ResetKeyValid && NewPassword1Valid && NewPassword2Valid && !ResetAttempted;
-            
+
             public DXButton ResetButton, CancelButton;
 
             public DXTextBox ResetKeyTextBox, NewPassword1TextBox, NewPassword2TextBox;
@@ -2775,7 +2783,7 @@ namespace Client.Scenes
 
                         ResetHelpLabel = null;
                     }
-                    
+
                     if (NewPassword1HelpLabel != null)
                     {
                         if (!NewPassword1HelpLabel.IsDisposed)
@@ -2853,7 +2861,7 @@ namespace Client.Scenes
             }
 
             #endregion
-            
+
             public bool CanActivate => ActivationKeyValid && !ActivationAttempted;
 
             public DXWindow PreviousWindow;
@@ -2874,7 +2882,7 @@ namespace Client.Scenes
             public override WindowType Type => WindowType.None;
             public override bool CustomSize => false;
             public override bool AutomaticVisiblity => false;
-            
+
             #endregion
 
             public ActivationDialog()
@@ -3095,7 +3103,7 @@ namespace Client.Scenes
             }
 
             #endregion
-            
+
             #region RequestAttempted
 
             public bool RequestAttempted

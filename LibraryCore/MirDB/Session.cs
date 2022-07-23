@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Library.MirDB;
 using Library.SystemModels;
@@ -24,7 +25,6 @@ namespace MirDB
         public bool BackUp { get; set; } = true;
         public int BackUpDelay { get; set; }
         private string BackupRoot { get; }
-
 
         public string SystemPath => Root + "System" + Extension;
         public string SystemBackupPath => BackupRoot + @"System\";
@@ -137,7 +137,7 @@ namespace MirDB
 
             if (!File.Exists(SystemPath)) return;
 
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(SystemPath)))
+            using (BinaryReader reader = Library.Encryption.GetReader(File.OpenRead(SystemPath)))
             {
                 int count = reader.ReadInt32();
 
@@ -183,7 +183,7 @@ namespace MirDB
 
             if (!File.Exists(UsersPath)) return;
 
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(UsersPath)))
+            using (BinaryReader reader = Library.Encryption.GetReader(File.OpenRead(UsersPath)))
             {
                 int count = reader.ReadInt32();
 
@@ -226,7 +226,7 @@ namespace MirDB
             if (!Directory.Exists(Root))
                 Directory.CreateDirectory(Root);
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create(SystemPath + TempExtension)))
+            using (BinaryWriter writer = Library.Encryption.GetWriter(File.Create(SystemPath + TempExtension)))
             {
                 writer.Write(SystemHeader);
 
@@ -265,7 +265,7 @@ namespace MirDB
             if (!Directory.Exists(Root))
                 Directory.CreateDirectory(Root);
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create(UsersPath + TempExtension)))
+            using (BinaryWriter writer = Library.Encryption.GetWriter(File.Create(UsersPath + TempExtension)))
             {
                 writer.Write(UsersHeader);
 

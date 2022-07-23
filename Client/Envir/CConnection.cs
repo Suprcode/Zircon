@@ -120,6 +120,7 @@ namespace Client.Envir
             if (this == CEnvir.Connection)
                 CEnvir.Connection = null;
         }
+
         public void Process(G.Connected p)
         {
             Enqueue(new G.Connected());
@@ -139,8 +140,11 @@ namespace Client.Envir
         }
         public void Process(G.GoodVersion p)
         {
+            Encryption.SetKey(p.DatabaseKey);
+
             LoginScene scene = DXControl.ActiveScene as LoginScene;
-            scene?.ShowLogin();
+
+            scene?.LoadDatabase();
 
             Enqueue(new C.SelectLanguage { Language = Config.Language });
         }
