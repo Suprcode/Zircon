@@ -67,11 +67,11 @@
             this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colFaceImage = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.colFaceImage = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoStatsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StatComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoGridControl)).BeginInit();
@@ -132,7 +132,7 @@
             gridLevelNode1,
             gridLevelNode2,
             gridLevelNode3});
-            this.MonsterInfoGridControl.Location = new System.Drawing.Point(0, 143);
+            this.MonsterInfoGridControl.Location = new System.Drawing.Point(0, 144);
             this.MonsterInfoGridControl.MainView = this.MonsterInfoGridView;
             this.MonsterInfoGridControl.MenuManager = this.ribbon;
             this.MonsterInfoGridControl.Name = "MonsterInfoGridControl";
@@ -142,7 +142,7 @@
             this.ItemLookUpEdit,
             this.RegionLookUpEdit});
             this.MonsterInfoGridControl.ShowOnlyPredefinedDetails = true;
-            this.MonsterInfoGridControl.Size = new System.Drawing.Size(775, 374);
+            this.MonsterInfoGridControl.Size = new System.Drawing.Size(775, 373);
             this.MonsterInfoGridControl.TabIndex = 2;
             this.MonsterInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.RespawnsGridView,
@@ -420,18 +420,27 @@
             this.gridColumn5.Visible = true;
             this.gridColumn5.VisibleIndex = 13;
             // 
+            // colFaceImage
+            // 
+            this.colFaceImage.Caption = "Face Image";
+            this.colFaceImage.FieldName = "FaceImage";
+            this.colFaceImage.Name = "colFaceImage";
+            this.colFaceImage.Visible = true;
+            this.colFaceImage.VisibleIndex = 14;
+            // 
             // ribbon
             // 
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
-            this.SaveButton});
+            this.SaveButton,
+            this.ribbon.SearchEditItem});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
             this.ribbon.MaxItemId = 2;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(775, 143);
+            this.ribbon.Size = new System.Drawing.Size(775, 144);
             // 
             // SaveButton
             // 
@@ -453,18 +462,10 @@
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
-            // 
-            // colFaceImage
-            // 
-            this.colFaceImage.Caption = "Face Image";
-            this.colFaceImage.FieldName = "FaceImage";
-            this.colFaceImage.Name = "colFaceImage";
-            this.colFaceImage.Visible = true;
-            this.colFaceImage.VisibleIndex = 14;
             // 
             // MonsterInfoView
             // 

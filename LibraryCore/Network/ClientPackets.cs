@@ -109,7 +109,10 @@ namespace Library.Network.ClientPackets
 
     public sealed class FishingCast : Packet 
     { 
-        public bool CastOut { get; set; }
+        public bool Cast { get; set; }
+        public MirDirection Direction { get; set; }
+
+        public Point FloatLocation { get; set; }
     }
 
     public sealed class Attack : Packet

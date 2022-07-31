@@ -531,7 +531,6 @@ namespace Client.Models
                         }
                     }
 
-
                     if (CanBladeStorm)
                         attackMagic = MagicType.BladeStorm;
                     else if (CanDragonRise)
@@ -539,7 +538,6 @@ namespace Client.Models
                     else if (CanFlamingSword)
                         attackMagic = MagicType.FlamingSword;
                     
-
                     action.Extra[1] = attackMagic;
                     break;
                 case MirAction.Mount:
@@ -585,6 +583,17 @@ namespace Client.Models
                         NextMagicTime += Globals.MagicDelay;
 
                     CEnvir.Enqueue(new C.Magic { Direction = action.Direction, Action = action.Action, Type = MagicType, Target = AttackTargets?.Count > 0 ? AttackTargets[0].ObjectID : 0, Location = MagicLocations?.Count > 0 ? MagicLocations[0] : Point.Empty });
+                    GameScene.Game.CanRun = false;
+                    break;
+                case MirAction.Fishing:
+                    attackDelay = Globals.AttackDelay - Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
+                    attackDelay = Math.Max(800, attackDelay);
+                    AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(attackDelay);
+
+                    var cast = (bool)action.Extra[0];
+                    var floatLocation = (Point)action.Extra[1];
+
+                    CEnvir.Enqueue(new C.FishingCast { Cast = cast, Direction = action.Direction, FloatLocation = floatLocation });
                     GameScene.Game.CanRun = false;
                     break;
                 case MirAction.Mining:

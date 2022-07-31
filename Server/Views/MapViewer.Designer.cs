@@ -37,6 +37,7 @@
             this.SelectionButton = new DevExpress.XtraBars.BarButtonItem();
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
             this.CancelButton = new DevExpress.XtraBars.BarButtonItem();
+            this.BlockedOnlyButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -52,21 +53,23 @@
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
+            this.ribbon.SearchEditItem,
             this.ZoomResetButton,
             this.ZoomInButton,
             this.ZoomOutButton,
             this.AttributesButton,
             this.SelectionButton,
             this.SaveButton,
-            this.CancelButton});
+            this.CancelButton,
+            this.BlockedOnlyButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 12;
+            this.ribbon.MaxItemId = 13;
             this.ribbon.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
             this.ribbon.Name = "ribbon";
+            this.ribbon.OptionsPageCategories.ShowCaptions = false;
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
             this.ribbon.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
-            this.ribbon.ShowCategoryInCaption = false;
             this.ribbon.ShowExpandCollapseButton = DevExpress.Utils.DefaultBoolean.False;
             this.ribbon.ShowQatLocationSelector = false;
             this.ribbon.ShowToolbarCustomizeItem = false;
@@ -136,6 +139,15 @@
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.CancelButton_ItemClick);
             // 
+            // BlockedOnlyButton
+            // 
+            this.BlockedOnlyButton.Caption = "Attribute Selection";
+            this.BlockedOnlyButton.Id = 12;
+            this.BlockedOnlyButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("BlockedOnlyButton.ImageOptions.Image")));
+            this.BlockedOnlyButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("BlockedOnlyButton.ImageOptions.LargeImage")));
+            this.BlockedOnlyButton.Name = "BlockedOnlyButton";
+            this.BlockedOnlyButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.BlockedOnlyButton_ItemClick);
+            // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
@@ -147,22 +159,23 @@
             // ribbonPageGroup2
             // 
             this.ribbonPageGroup2.AllowTextClipping = false;
+            this.ribbonPageGroup2.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup2.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup2.ItemLinks.Add(this.CancelButton);
             this.ribbonPageGroup2.Name = "ribbonPageGroup2";
-            this.ribbonPageGroup2.ShowCaptionButton = false;
             this.ribbonPageGroup2.Text = "Selection";
             // 
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.ZoomResetButton);
             this.ribbonPageGroup1.ItemLinks.Add(this.ZoomInButton);
             this.ribbonPageGroup1.ItemLinks.Add(this.ZoomOutButton);
             this.ribbonPageGroup1.ItemLinks.Add(this.AttributesButton);
+            this.ribbonPageGroup1.ItemLinks.Add(this.BlockedOnlyButton);
             this.ribbonPageGroup1.ItemLinks.Add(this.SelectionButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "View";
             // 
             // DXPanel
@@ -235,5 +248,6 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
         private DevExpress.XtraBars.BarButtonItem SaveButton;
         private DevExpress.XtraBars.BarButtonItem CancelButton;
+        private DevExpress.XtraBars.BarButtonItem BlockedOnlyButton;
     }
 }

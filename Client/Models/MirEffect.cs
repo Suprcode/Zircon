@@ -163,18 +163,18 @@ namespace Client.Models
 
             int frame = GetFrame();
 
-
             if (frame == FrameCount)
             {
                 CompleteAction?.Invoke();
                 Remove();
                 return;
             }
+
             if (Reversed)
                 frame = FrameCount - frame - 1;
 
             FrameIndex = frame;
-            DrawFrame = FrameIndex + StartIndex+ (int)Direction * Skip;
+            DrawFrame = FrameIndex + StartIndex + (int)Direction * Skip;
         }
     
         protected virtual int GetFrame()
@@ -208,8 +208,7 @@ namespace Client.Models
             return FrameCount;
         }
 
-
-        public void Draw()
+        public virtual void Draw()
         {
             if (CEnvir.Now < StartTime || Library == null) return;
             
@@ -217,7 +216,6 @@ namespace Client.Models
                 Library.DrawBlend(DrawFrame, DrawX, DrawY, DrawColour, UseOffSet, BlendRate, ImageType.Image);
             else
                 Library.Draw(DrawFrame, DrawX, DrawY, DrawColour, UseOffSet, Opacity, ImageType.Image);
-
         }
 
         public void Remove()

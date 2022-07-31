@@ -84,6 +84,9 @@ namespace Client.Models
         public MirGender Gender;
         public bool MiningEffect;
 
+        public bool Fishing, FishFound;
+        public Point FloatLocation;
+
         public Point CurrentLocation
         {
             get { return _CurrentLocation; }
@@ -241,6 +244,8 @@ namespace Client.Models
         public MirEffect MagicShieldEffect, WraithGripEffect, WraithGripEffect2, AssaultEffect, CelestialLightEffect, LifeStealEffect, SilenceEffect, BlindEffect, AbyssEffect, DragonRepulseEffect, DragonRepulseEffect1,
                          RankingEffect, DeveloperEffect, FrostBiteEffect, InfectionEffect;
 
+        public MirFishingFloat FishingFloatEffect;
+
         public bool CanShowWraithGrip = true;
 
 
@@ -327,7 +332,6 @@ namespace Client.Models
 
             DrawX *= MapControl.CellWidth;
             DrawY *= MapControl.CellHeight;
-
 
             if (this != User)
             {
@@ -455,7 +459,13 @@ namespace Client.Models
             else if (FrostBiteEffect != null)
                 FrostBiteEnd();
 
+            if (CurrentAnimation != MirAnimation.FishingWait)
+            {
+                if (FishingFloatEffect != null)
+                    FishingFloatEnd();
+            }
         }
+
         public virtual void UpdateFrame()
         {
             if (Frames == null || CurrentFrame == null) return;
@@ -556,6 +566,9 @@ namespace Client.Models
                 case MirAction.Dead:
                     Interupt = true;
                     break;
+                case MirAction.Fishing:
+                    Interupt = CurrentAnimation == MirAnimation.FishingWait;
+                    break;
                 default:
                     Interupt = false;
                     break;
@@ -580,7 +593,6 @@ namespace Client.Models
                     break;
                 case MirAction.Spell:
                     if (!MagicCast) break;
-
 
                     switch (MagicType)
                     {
@@ -2058,7 +2070,7 @@ namespace Client.Models
 
                         #endregion
 
-                        #region Fire Ball
+                        #region Pink Fire Ball
 
                         case MagicType.PinkFireBall:
                             foreach (Point point in MagicLocations)
@@ -2365,6 +2377,11 @@ namespace Client.Models
 
             switch (action.Action)
             {
+                case MirAction.Fishing:
+                    Fishing = (bool)action.Extra[0];
+                    FloatLocation = (Point)action.Extra[1];
+                    FishFound = (bool)action.Extra[2];
+                    break;
                 case MirAction.Mining:
                     MiningEffect = (bool)action.Extra[0];
                     break;
@@ -3883,7 +3900,6 @@ namespace Client.Models
                         ActionQueue.Add(new ObjectAction(MirAction.Standing, Direction, CurrentLocation));
                         break;
                 }
-
             }
 
             switch (ActionQueue[0].Action)
@@ -3894,8 +3910,8 @@ namespace Client.Models
                 case MirAction.Pushed:
                     if (!GameScene.Game.MoveFrame) return;
                     break;
-
             }
+
             SetAction(ActionQueue[0]);
             ActionQueue.RemoveAt(0);
         }
@@ -4501,6 +4517,17 @@ namespace Client.Models
             DeveloperEffect = null;
         }
 
+        public virtual void FishingFloatCreate(int startIndex)
+        {
+
+        }
+
+        public void FishingFloatEnd()
+        {
+            FishingFloatEffect?.Remove();
+            FishingFloatEffect = null;
+        }
+
         public virtual void Remove()
         {
             GameScene.Game.MapControl.RemoveObject(this);
@@ -4517,6 +4544,7 @@ namespace Client.Models
             AssaultEnd();
             FrostBiteEnd();
             InfectionEnd();
+            FishingFloatEnd();
 
             for (int i = Effects.Count - 1; i >= 0; i--)
             {

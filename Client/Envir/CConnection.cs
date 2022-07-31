@@ -281,26 +281,26 @@ namespace Client.Envir
             LoginScene login = DXControl.ActiveScene as LoginScene;
             if (login == null) return;
 
-            login.RequestPassswordBox.RequestAttempted = false;
+            login.RequestPasswordBox.RequestAttempted = false;
 
             DateTime expiry;
             DXMessageBox box;
             switch (p.Result)
             {
                 case RequestPasswordResetResult.Disabled:
-                    login.RequestPassswordBox.Clear();
+                    login.RequestPasswordBox.Clear();
                     DXMessageBox.Show("Password Reset is currently disabled.", "Reset Password");
                     break;
                 case RequestPasswordResetResult.BadEMail:
-                    login.RequestPassswordBox.EMailTextBox.SetFocus();
+                    login.RequestPasswordBox.EMailTextBox.SetFocus();
                     DXMessageBox.Show("E-Mail is not acceptable.", "Reset Password");
                     break;
                 case RequestPasswordResetResult.AccountNotFound:
-                    login.RequestPassswordBox.EMailTextBox.SetFocus();
+                    login.RequestPasswordBox.EMailTextBox.SetFocus();
                     DXMessageBox.Show("Account does not exist.", "Reset Password");
                     break;
                 case RequestPasswordResetResult.AccountNotActivated:
-                    login.ShowActivationBox(login.RequestPassswordBox);
+                    login.ShowActivationBox(login.RequestPasswordBox);
                     break;
                 case RequestPasswordResetResult.ResetDelay:
                     expiry = CEnvir.Now.Add(p.Duration);
@@ -312,8 +312,8 @@ namespace Client.Envir
                     {
                         if (CEnvir.Now > expiry)
                         {
-                            if (login.RequestPassswordBox.CanReset)
-                                login.RequestPassswordBox.Request();
+                            if (login.RequestPasswordBox.CanReset)
+                                login.RequestPasswordBox.Request();
                             box.ProcessAction = null;
                             return;
                         }
@@ -335,8 +335,8 @@ namespace Client.Envir
                     {
                         if (CEnvir.Now > expiry)
                         {
-                            if (login.RequestPassswordBox.CanReset)
-                                login.RequestPassswordBox.Request();
+                            if (login.RequestPasswordBox.CanReset)
+                                login.RequestPasswordBox.Request();
                             box.ProcessAction = null;
                             return;
                         }
@@ -350,7 +350,7 @@ namespace Client.Envir
                     };
                     break;
                 case RequestPasswordResetResult.Success:
-                    login.RequestPassswordBox.Clear();
+                    login.RequestPasswordBox.Clear();
                     DXMessageBox.Show("Password reset request success\n" +
                                       "Please check your E-Mail for further instructions.", "Reset Password");
                     break;
@@ -542,7 +542,7 @@ namespace Client.Envir
                     login.LoginBox.Visible = false;
                     login.AccountBox.Visible = false;
                     login.ChangeBox.Visible = false;
-                    login.RequestPassswordBox.Visible = false;
+                    login.RequestPasswordBox.Visible = false;
                     login.ResetBox.Visible = false;
                     login.ActivationBox.Visible = false;
                     login.RequestActivationBox.Visible = false;
@@ -1040,23 +1040,23 @@ namespace Client.Envir
             if (MapObject.User.ObjectID == p.ObjectID)
             {
                 MapObject.User.ServerTime = DateTime.MinValue;
-                MapObject.User.NextActionTime = CEnvir.Now + Globals.TurnTime;
+
+                MapObject.User.FishFound = p.FishFound;
+                MapObject.User.Fishing = p.Cast;
+                MapObject.User.FloatLocation = p.FloatLocation;
+
+                GameScene.Game.MapControl.Fishing = p.Cast;
+
+                GameScene.Game.FishingCatchBox.Visible = p.Cast;
+
+                return;
             }
 
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                if (ob.Race != ObjectType.Player) return;
-
-                PlayerObject player = (PlayerObject)ob;
-
-                player.Fishing = p.Fishing;
-
-                if (player.Interupt)
-                    player.FrameStart = DateTime.MinValue;
-
-                GameScene.Game.FishingCatchBox.Visible = player.Fishing;
+                ob.ActionQueue.Add(new ObjectAction(MirAction.Fishing, p.Direction, ob.CurrentLocation, p.Cast, p.FloatLocation, p.FishFound));
 
                 return;
             }
@@ -1064,9 +1064,6 @@ namespace Client.Envir
 
         public void Process(S.ObjectStruck p)
         {
-
-
-
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
                 if (ob.ObjectID != p.ObjectID) continue;
@@ -1103,8 +1100,6 @@ namespace Client.Envir
         }
         public void Process(S.ObjectDash p)
         {
-
-
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer)
                 MapObject.User.ServerTime = DateTime.MinValue;
 
@@ -1661,8 +1656,6 @@ namespace Client.Envir
         }
         public void Process(S.ObjectRevive p)
         {
-
-
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
                 if (ob.ObjectID != p.ObjectID) continue;

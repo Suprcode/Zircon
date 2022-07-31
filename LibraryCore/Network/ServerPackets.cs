@@ -123,7 +123,12 @@ namespace Library.Network.ServerPackets
     public sealed class FishingUpdate : Packet
     {
         public uint ObjectID { get; set; }
-        public bool Fishing { get; set; }
+        public bool Cast { get; set; }
+        public MirDirection Direction { get; set; }
+
+        public bool FishFound { get; set; }
+        public int FloatType { get; set; }
+        public Point FloatLocation { get; set; }
     }
     public sealed class ObjectMove : Packet
     {

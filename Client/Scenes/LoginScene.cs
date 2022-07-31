@@ -91,7 +91,7 @@ namespace Client.Scenes
         public LoginDialog LoginBox;
         public NewAccountDialog AccountBox;
         public ChangePasswordDialog ChangeBox;
-        public RequestResetPasswordDialog RequestPassswordBox;
+        public RequestResetPasswordDialog RequestPasswordBox;
         public ResetPasswordDialog ResetBox;
         public ActivationDialog ActivationBox;
         public RequestActivationKeyDialog RequestActivationBox;
@@ -241,11 +241,11 @@ namespace Client.Scenes
             ChangeBox.Location = new Point((Size.Width - ChangeBox.Size.Width) / 2, (Size.Height - ChangeBox.Size.Height) / 2);
 
 
-            RequestPassswordBox = new RequestResetPasswordDialog
+            RequestPasswordBox = new RequestResetPasswordDialog
             {
                 Parent = this,
             };
-            RequestPassswordBox.Location = new Point((Size.Width - RequestPassswordBox.Size.Width) / 2, (Size.Height - RequestPassswordBox.Size.Height) / 2);
+            RequestPasswordBox.Location = new Point((Size.Width - RequestPasswordBox.Size.Width) / 2, (Size.Height - RequestPasswordBox.Size.Height) / 2);
 
             ResetBox = new ResetPasswordDialog
             {
@@ -311,9 +311,11 @@ namespace Client.Scenes
 
             if (CEnvir.Connection != null && CEnvir.Connection.ServerConnected)
             {
-                if (CEnvir.Loaded && !LoginBox.Visible)
+                if (CEnvir.Loaded && !LoginBox.Visible && !AccountBox.Visible && !ChangeBox.Visible && !ResetBox.Visible)
                 {
-                    ConnectionBox.Dispose();
+                    if (ConnectionBox != null && !ConnectionBox.IsDisposed)
+                        ConnectionBox.Dispose();
+
                     LoginBox.Visible = true;
                 }
                 return;
@@ -460,12 +462,12 @@ namespace Client.Scenes
                     ChangeBox = null;
                 }
 
-                if (RequestPassswordBox != null)
+                if (RequestPasswordBox != null)
                 {
-                    if (!RequestPassswordBox.IsDisposed)
-                        RequestPassswordBox.Dispose();
+                    if (!RequestPasswordBox.IsDisposed)
+                        RequestPasswordBox.Dispose();
 
-                    RequestPassswordBox = null;
+                    RequestPasswordBox = null;
                 }
 
                 if (ResetBox != null)
@@ -831,8 +833,8 @@ namespace Client.Scenes
                 if (scene == null) return;
 
                 Visible = false;
-                scene.RequestPassswordBox.Visible = true;
-                scene.RequestPassswordBox.EMailTextBox.SetFocus();
+                scene.RequestPasswordBox.Visible = true;
+                scene.RequestPasswordBox.EMailTextBox.SetFocus();
             }
             private void NewAccountButton_MouseClick(object sender, MouseEventArgs e)
             {
@@ -2667,7 +2669,7 @@ namespace Client.Scenes
                 if (scene == null) return;
 
                 Visible = false;
-                scene.RequestPassswordBox.Visible = true;
+                scene.RequestPasswordBox.Visible = true;
             }
 
             private void TextBox_KeyPress(object sender, KeyPressEventArgs e)

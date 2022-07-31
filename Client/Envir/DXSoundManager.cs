@@ -47,6 +47,10 @@ namespace Client.Envir
             [SoundIndex.Foot3] = new DXSound(SoundPath + @"3.wav", SoundType.Player),
             [SoundIndex.Foot4] = new DXSound(SoundPath + @"4.wav", SoundType.Player),
 
+            [SoundIndex.FishingCast] = new DXSound(SoundPath + @"84.wav", SoundType.Player),
+            [SoundIndex.FishingBob] = new DXSound(SoundPath + @"85.wav", SoundType.Player),
+            [SoundIndex.FishingReel] = new DXSound(SoundPath + @"86.wav", SoundType.Player),
+
             [SoundIndex.HorseWalk1] = new DXSound(SoundPath + @"33.wav", SoundType.Player),
             [SoundIndex.HorseWalk2] = new DXSound(SoundPath + @"34.wav", SoundType.Player),
             [SoundIndex.HorseRun] = new DXSound(SoundPath + @"35.wav", SoundType.Player),

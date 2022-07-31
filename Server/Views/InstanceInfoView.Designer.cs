@@ -48,11 +48,11 @@
             this.gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.InstanceTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceMapGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridControl)).BeginInit();
@@ -105,7 +105,7 @@
             gridLevelNode1.RelationName = "Maps";
             this.InstanceInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
             gridLevelNode1});
-            this.InstanceInfoGridControl.Location = new System.Drawing.Point(0, 143);
+            this.InstanceInfoGridControl.Location = new System.Drawing.Point(0, 144);
             this.InstanceInfoGridControl.MainView = this.InstanceInfoGridView;
             this.InstanceInfoGridControl.MenuManager = this.ribbon;
             this.InstanceInfoGridControl.Name = "InstanceInfoGridControl";
@@ -114,7 +114,7 @@
             this.RegionLookUpEdit,
             this.InstanceTypeImageComboBox});
             this.InstanceInfoGridControl.ShowOnlyPredefinedDetails = true;
-            this.InstanceInfoGridControl.Size = new System.Drawing.Size(727, 343);
+            this.InstanceInfoGridControl.Size = new System.Drawing.Size(713, 335);
             this.InstanceInfoGridControl.TabIndex = 2;
             this.InstanceInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.InstanceInfoGridView,
@@ -256,18 +256,27 @@
             this.gridColumn12.Visible = true;
             this.gridColumn12.VisibleIndex = 9;
             // 
+            // gridColumn13
+            // 
+            this.gridColumn13.Caption = "Join In SafeZone Only";
+            this.gridColumn13.FieldName = "SafeZoneOnly";
+            this.gridColumn13.Name = "gridColumn13";
+            this.gridColumn13.Visible = true;
+            this.gridColumn13.VisibleIndex = 4;
+            // 
             // ribbon
             // 
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
+            this.ribbon.SearchEditItem,
             this.SaveDatabaseButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
             this.ribbon.MaxItemId = 2;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(727, 143);
+            this.ribbon.Size = new System.Drawing.Size(713, 144);
             // 
             // SaveDatabaseButton
             // 
@@ -289,24 +298,16 @@
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveDatabaseButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
-            // 
-            // gridColumn13
-            // 
-            this.gridColumn13.Caption = "Join In SafeZone Only";
-            this.gridColumn13.FieldName = "SafeZoneOnly";
-            this.gridColumn13.Name = "gridColumn13";
-            this.gridColumn13.Visible = true;
-            this.gridColumn13.VisibleIndex = 4;
             // 
             // InstanceInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(727, 486);
+            this.ClientSize = new System.Drawing.Size(713, 479);
             this.Controls.Add(this.InstanceInfoGridControl);
             this.Controls.Add(this.ribbon);
             this.Name = "InstanceInfoView";

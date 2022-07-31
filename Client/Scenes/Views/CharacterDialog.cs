@@ -40,6 +40,16 @@ namespace Client.Scenes.Views
         public override bool CustomSize => false;
         public override bool AutomaticVisiblity => true;
 
+        public bool HasFishingRod
+        {
+            get { return Grid[(int)EquipmentSlot.Weapon]?.Item?.Info.Effect == ItemEffect.FishingRod; }
+        }
+
+        public bool HasFishingRobe
+        {
+            get { return Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe; }
+        }
+
         #endregion
 
         public CharacterDialog()
@@ -1847,8 +1857,10 @@ namespace Client.Scenes.Views
                 }
             }
 
+            if (HasFishingRobe)
+                return;
 
-            if (Grid[(int) EquipmentSlot.Helmet].Item != null && library != null)
+            if (Grid[(int)EquipmentSlot.Helmet].Item != null && library != null)
             {
                 int index = Grid[(int) EquipmentSlot.Helmet].Item.Info.Image;
 
@@ -1886,6 +1898,7 @@ namespace Client.Scenes.Views
                         }
                         break;
                 }
+
             }
         }
 

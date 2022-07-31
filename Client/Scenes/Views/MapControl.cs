@@ -150,9 +150,14 @@ namespace Client.Scenes.Views
 
         public MouseButtons MapButtons;
         public Point MapLocation;
+
         public bool Mining;
         public Point MiningPoint;
         public MirDirection MiningDirection;
+
+        public bool Fishing;
+        public Point FloatLocation;
+        public MirDirection FishingDirection;
         
         public Floor FLayer;
         public Light LLayer;
@@ -730,7 +735,7 @@ namespace Client.Scenes.Views
             
             if (MapObject.TargetObject != null && !MapObject.TargetObject.Dead && ((MapObject.TargetObject.Race == ObjectType.Monster && string.IsNullOrEmpty(MapObject.TargetObject.PetOwner)) || CEnvir.Shift))
             {
-                if (Functions.Distance(MapObject.TargetObject.CurrentLocation, MapObject.User.CurrentLocation) ==  1 && CEnvir.Now > User.AttackTime && User.Horse == HorseType.None && !User.Fishing)
+                if (Functions.Distance(MapObject.TargetObject.CurrentLocation, MapObject.User.CurrentLocation) ==  1 && CEnvir.Now > User.AttackTime && User.Horse == HorseType.None)
                 {
                     MapObject.User.AttemptAction(new ObjectAction(
                         MirAction.Attack,
@@ -763,31 +768,68 @@ namespace Client.Scenes.Views
 
                         if (CEnvir.Shift && MapObject.TargetObject == null)
                         {
+                            if (Fishing) return;
+
                             if (CEnvir.Now > User.AttackTime && User.Horse == HorseType.None)
-                                MapObject.User.AttemptAction(new ObjectAction(
-                                    MirAction.Attack, //RANDOMIZE
-                                    direction,
-                                    MapObject.User.CurrentLocation,
-                                    0, //Ranged Attack Target ID
-                                    MagicType.None,
-                                    Element.None));
+                                MapObject.User.AttemptAction(new ObjectAction( MirAction.Attack, direction, MapObject.User.CurrentLocation, 0, MagicType.None, Element.None));
+
                             return;
                         }
 
+                        ClientUserItem weap = GameScene.Game.Equipment[(int)EquipmentSlot.Weapon];
+                        ClientUserItem armour = GameScene.Game.Equipment[(int)EquipmentSlot.Armour];
+
                         if (CEnvir.Alt)
                         {
-                            if (User.Horse == HorseType.None)
-                                MapObject.User.AttemptAction(new ObjectAction(
-                                MirAction.Harvest,
-                                direction,
-                                MapObject.User.CurrentLocation));
+                            if (Fishing) return;
+
+                            if (weap != null && weap.Info.Effect == ItemEffect.FishingRod && armour != null && armour.Info.Effect == ItemEffect.FishingRobe)
+                            {
+                                FloatLocation = MapLocation;
+                                FishingDirection = Functions.DirectionFromPoint(MapObject.User.CurrentLocation, FloatLocation);
+
+                                var distance = Functions.Distance(MapObject.User.CurrentLocation, FloatLocation);
+                                var canFish = false;
+
+                                foreach (var info in Globals.FishingInfoList.Binding)
+                                {
+                                    if (info.Region != null && info.Region.Map == MapInfo)
+                                    {
+                                        if (info.Region.PointList == null)
+                                            info.Region.CreatePoints(Width);
+
+                                        if (info.Region.PointList.Contains(FloatLocation))
+                                        {
+                                            canFish = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (canFish && distance > 3 && distance < 10 && FloatLocation.X >= 0 && FloatLocation.Y >= 0 && FloatLocation.X < Width && FloatLocation.Y < Height)
+                                {
+                                    Fishing = true;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (User.Horse == HorseType.None)
+                                    MapObject.User.AttemptAction(new ObjectAction( MirAction.Harvest, direction, MapObject.User.CurrentLocation));
+
+                                return;
+                            }
+                        }
+
+                        if (Fishing)
+                        {
+                            MapObject.User.AttemptAction(new ObjectAction(MirAction.Fishing, FishingDirection, MapObject.User.CurrentLocation, false, FloatLocation, false));
                             return;
                         }
 
                         if (MapLocation == MapObject.User.CurrentLocation)
                         {
                             if (CEnvir.Now <= GameScene.Game.PickUpTime) return;
-
 
                             CEnvir.Enqueue(new C.PickUp());
                             GameScene.Game.PickUpTime = CEnvir.Now.AddMilliseconds(250);
@@ -797,9 +839,6 @@ namespace Client.Scenes.Views
 
                         if (MapObject.MouseObject != null && MapObject.MouseObject.Race != ObjectType.Item && !MapObject.MouseObject.Dead) break;
 
-
-                        ClientUserItem weap = GameScene.Game.Equipment[(int) EquipmentSlot.Weapon];
-                        
                         if (MapInfo.CanMine && weap != null && weap.Info.Effect == ItemEffect.PickAxe)
                         {
                             MiningPoint = Functions.Move(User.CurrentLocation, direction);
@@ -828,8 +867,14 @@ namespace Client.Scenes.Views
                             MapObject.User.AttemptAction(new ObjectAction(MirAction.Moving, direction, Functions.Move(MapObject.User.CurrentLocation, direction), 1, MagicType.None));
                         return;
                     case MouseButtons.Right:
-
                         Mining = false;
+
+                        if (Fishing)
+                        {
+                            MapObject.User.AttemptAction(new ObjectAction(MirAction.Fishing, MapObject.User.Direction, MapObject.User.CurrentLocation, false, FloatLocation, false));
+                            return;
+                        }
+
                         if (MapObject.MouseObject is PlayerObject && MapObject.MouseObject != MapObject.User && CEnvir.Ctrl) break;
 
                         if (!GameScene.Game.MoveFrame || (User.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip) break;
@@ -853,18 +898,28 @@ namespace Client.Scenes.Views
 
                 if (MapInfo.CanMine && weap != null && (weap.CurrentDurability > 0 || weap.Info.Durability == 0) && weap.Info.Effect == ItemEffect.PickAxe &&
                     MiningPoint.X >= 0 && MiningPoint.Y >= 0 && MiningPoint.X < Width && MiningPoint.Y < Height && Cells[MiningPoint.X, MiningPoint.Y].Flag &&
-                    Functions.Distance(MiningPoint, MapObject.User.CurrentLocation) == 1  && User.Horse == HorseType.None)
+                    Functions.Distance(MiningPoint, MapObject.User.CurrentLocation) == 1 && User.Horse == HorseType.None)
                 {
                     if (CEnvir.Now > User.AttackTime)
-                    MapObject.User.AttemptAction(new ObjectAction(
-                        MirAction.Mining,
-                        Functions.DirectionFromPoint(MapObject.User.CurrentLocation, MiningPoint),
-                        MapObject.User.CurrentLocation,
-                        false));
+                    {
+                        MapObject.User.AttemptAction(new ObjectAction(
+                            MirAction.Mining,
+                            Functions.DirectionFromPoint(MapObject.User.CurrentLocation, MiningPoint),
+                            MapObject.User.CurrentLocation,
+                            false));
+                    }
                 }
                 else
                 {
                     Mining = false;
+                }
+            }
+
+            if (Fishing)
+            {
+                if (CEnvir.Now > User.AttackTime)
+                {
+                    MapObject.User.AttemptAction(new ObjectAction(MirAction.Fishing, FishingDirection, MapObject.User.CurrentLocation, true, FloatLocation, false));
                 }
             }
 
@@ -1153,6 +1208,8 @@ namespace Client.Scenes.Views
                 _MapInfo = null;
                 MapInfoChanged = null;
 
+                _InstanceInfo = null;
+
                 _Animation = 0;
                 AnimationChanged = null;
 
@@ -1161,6 +1218,9 @@ namespace Client.Scenes.Views
                 Mining = false;
                 MiningPoint = Point.Empty;
                 MiningDirection = 0;
+                Fishing = false;
+                FloatLocation = Point.Empty;
+                FishingDirection = 0;
 
 
                 if (FLayer != null)

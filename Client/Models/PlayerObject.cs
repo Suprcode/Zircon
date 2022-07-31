@@ -228,9 +228,6 @@ namespace Client.Models
 
         public bool DrawWeapon;
 
-        public bool Fishing;
-
-
         public int CharacterIndex;
 
         public string FiltersClass;
@@ -484,24 +481,10 @@ namespace Client.Models
                     if (Horse != HorseType.None)
                         animation = MirAnimation.HorseStanding;
 
-                    if (Fishing)
-                    {
-                        if (CurrentAnimation == MirAnimation.FishingCast || CurrentAnimation == MirAnimation.FishingWait)
-                            animation = MirAnimation.FishingWait;
-                        else
-                            animation = MirAnimation.FishingCast;
-                    }
-                    else
-                    {
-                        if (CurrentAnimation == MirAnimation.FishingWait)
-                            animation = MirAnimation.FishingReel;
-                    }
-
                     if (VisibleBuffs.Contains(BuffType.DragonRepulse))
                         animation = MirAnimation.DragonRepulseMiddle;
                     else if (CurrentAnimation == MirAnimation.DragonRepulseMiddle)
                         animation = MirAnimation.DragonRepulseEnd;
-
                     break;
                 case MirAction.Moving:
                     //if(VisibleBuffs.Contains(BuffType.Stealth))
@@ -531,6 +514,14 @@ namespace Client.Models
                     break;
                 case MirAction.Mining:
                     animation = Functions.GetAttackAnimation(Class, LibraryWeaponShape, MagicType.None);
+                    break;
+                case MirAction.Fishing:
+                    bool cast = (bool)action.Extra[0];
+
+                    if (cast)
+                        animation = CurrentAnimation == MirAnimation.FishingWait || CurrentAnimation == MirAnimation.FishingCast ? MirAnimation.FishingWait : MirAnimation.FishingCast;
+                    else
+                        animation = CurrentAnimation == MirAnimation.FishingWait ? MirAnimation.FishingReel : MirAnimation.Standing;
                     break;
                 case MirAction.RangeAttack:
                     animation = MirAnimation.Combat1;
@@ -729,10 +720,70 @@ namespace Client.Models
                             #endregion
                     }
                     break;
-
             }
+
         }
 
+        public override void DoNextAction()
+        {
+            if (ActionQueue.Count == 0)
+            {
+                switch (CurrentAction)
+                {
+                    //Die, Attack,..
+                    case MirAction.Die:
+                    case MirAction.Dead:
+                        ActionQueue.Add(new ObjectAction(MirAction.Dead, Direction, CurrentLocation));
+                        break;
+                    default:
+                        if (Fishing)
+                            ActionQueue.Add(new ObjectAction(MirAction.Fishing, Direction, CurrentLocation, Fishing, FloatLocation, FishFound));
+                        else
+                            ActionQueue.Add(new ObjectAction(MirAction.Standing, Direction, CurrentLocation));
+                        break;
+                }
+            }
+
+            base.DoNextAction();
+        }
+
+        public override void FrameIndexChanged()
+        {
+            base.FrameIndexChanged();
+
+            switch (CurrentAction)
+            {
+                case MirAction.Fishing:
+                    if (FrameIndex != 1) return;
+
+                    switch (CurrentAnimation)
+                    {
+                        case MirAnimation.FishingCast:
+                            DXSoundManager.Play(SoundIndex.FishingCast);
+                            break;
+                        case MirAnimation.FishingWait:
+                            {
+                                if (FishFound)
+                                {
+                                    Effects.Add(new MirEffect(431, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
+
+                                    FishingFloatCreate(420);
+                                }
+                                else
+                                {
+                                    Effects.Add(new MirEffect(410, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
+
+                                    FishingFloatCreate(400);
+                                }
+                            }
+                            break;
+                        case MirAnimation.FishingReel:
+                            DXSoundManager.Play(SoundIndex.FishingReel);
+                            break;
+                    }
+                    break;
+            }
+        }
 
 
         public override void Draw()
@@ -807,7 +858,6 @@ namespace Client.Models
 
             int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;
 
-
             MirImage image;
             switch (Direction)
             {
@@ -843,7 +893,6 @@ namespace Client.Models
                     break;
             }
 
-
             image = BodyLibrary?.GetImage(ArmourFrame);
             if (image != null)
             {
@@ -857,7 +906,6 @@ namespace Client.Models
                 r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                 b = Math.Max(b, image.Height + DrawY + image.OffSetY);
             }
-
 
             if (HelmetShape > 0)
             {
@@ -1280,6 +1328,26 @@ namespace Client.Models
                     DXSoundManager.Play(SoundIndex.FistSwing);
                     break;
             }
+        }
+
+        public override void FishingFloatCreate(int startIndex)
+        {
+            FishingFloatEffect = new MirFishingFloat(startIndex, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
+            {
+                MapTarget = FloatLocation,
+                PlayerTarget = CurrentLocation,
+                Direction = Direction,
+                Skip = 0
+            };
+
+            FishingFloatEffect.FrameAction += () =>
+            {
+                if (FishFound && FishingFloatEffect.FrameIndex == 3)
+                    DXSoundManager.Play(SoundIndex.FishingBob);
+
+                FishingFloatEffect.WeaponLibrary = WeaponLibrary1;
+                FishingFloatEffect.WeaponFrame = WeaponFrame;
+            };
         }
     }
 }

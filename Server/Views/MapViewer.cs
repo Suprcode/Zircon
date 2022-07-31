@@ -308,6 +308,11 @@ namespace Server.Views
 
             Map.TextureValid = false;
         }
+
+        private void BlockedOnlyButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            Map.AttributeSelection = !Map.AttributeSelection;
+        }
     }
     
 
@@ -1516,6 +1521,32 @@ namespace Server.Views.DirectX
 
         #endregion
 
+
+        #region AttributeSelection
+
+        public bool AttributeSelection
+        {
+            get { return _AttributeSelection; }
+            set
+            {
+                if (_AttributeSelection == value) return;
+
+                bool oldValue = _AttributeSelection;
+                _AttributeSelection = value;
+
+                OnAttributeSelectionChanged(oldValue, value);
+            }
+        }
+        private bool _AttributeSelection;
+        public event EventHandler<EventArgs> AttributeSelectionChanged;
+        public virtual void OnAttributeSelectionChanged(bool oValue, bool nValue)
+        {
+            AttributeSelectionChanged?.Invoke(this, EventArgs.Empty);
+            TextureValid = false;
+        }
+
+        #endregion
+
         public HashSet<Point> Selection = new HashSet<Point>();
         
         
@@ -1916,7 +1947,7 @@ namespace Server.Views.DirectX
 
                     Cell tile = Cells[x, y];
 
-                    if (tile.Flag)
+                    if (tile.Flag != AttributeSelection)
                     {
                         if (!DrawAttributes) continue;
 
@@ -2094,7 +2125,7 @@ namespace Server.Views.DirectX
                     for (int y = MouseLocation.Y - Radius; y <= MouseLocation.Y + Radius; y++)
                         for (int x = MouseLocation.X - Radius; x <= MouseLocation.X + Radius; x++)
                         {
-                            if (x < 0 || x >= Width || y < 0 || y >= Height || Cells[x, y].Flag) continue;
+                            if (x < 0 || x >= Width || y < 0 || y >= Height || Cells[x, y].Flag != AttributeSelection) continue;
 
                             Selection.Add(new Point(x, y));
                         }
@@ -2106,14 +2137,14 @@ namespace Server.Views.DirectX
                     for (int y = MouseLocation.Y - Radius; y <= MouseLocation.Y + Radius; y++)
                         for (int x = MouseLocation.X - Radius; x <= MouseLocation.X + Radius; x++)
                         {
-                            if (x < 0 || x >= Width || y < 0 || y >= Height || Cells[x, y].Flag) continue;
+                            if (x < 0 || x >= Width || y < 0 || y >= Height || Cells[x, y].Flag != AttributeSelection) continue;
 
                             Selection.Remove(new Point(x, y));
                         }
                     break;
                 case MouseButtons.Middle:
                     if (MouseLocation.X < 0 || MouseLocation.X >= Width || MouseLocation.Y < 0 || MouseLocation.Y >= Height) return;
-                    if (Cells[MouseLocation.X, MouseLocation.Y].Flag) return;
+                    if (Cells[MouseLocation.X, MouseLocation.Y].Flag != AttributeSelection) return;
 
                     HashSet<Point> doneList = new HashSet<Point> { MouseLocation };
                     Queue<Point> todoList = new Queue<Point>();
@@ -2132,7 +2163,7 @@ namespace Server.Views.DirectX
 
                                 if (nPoint.X < 0 || nPoint.X >= Width || nPoint.Y < 0 || nPoint.Y >= Height) continue;
 
-                                if (Cells[nPoint.X, nPoint.Y].Flag) continue;
+                                if (Cells[nPoint.X, nPoint.Y].Flag != AttributeSelection) continue;
 
                                 if (doneList.Contains(nPoint)) continue;
 
@@ -2158,7 +2189,7 @@ namespace Server.Views.DirectX
 
                                 if (nPoint.X < 0 || nPoint.X >= Width || nPoint.Y < 0 || nPoint.Y >= Height) continue;
 
-                                if (Cells[nPoint.X, nPoint.Y].Flag) continue;
+                                if (Cells[nPoint.X, nPoint.Y].Flag != AttributeSelection) continue;
 
                                 if (doneList.Contains(nPoint)) continue;
 
@@ -2186,7 +2217,7 @@ namespace Server.Views.DirectX
                     for (int y = MouseLocation.Y - Radius; y <= MouseLocation.Y + Radius; y++)
                         for (int x = MouseLocation.X - Radius; x <= MouseLocation.X + Radius; x++)
                         {
-                            if (x < 0 || x >= Width || y < 0 || y >= Height || Cells[x, y].Flag) continue;
+                            if (x < 0 || x >= Width || y < 0 || y >= Height || Cells[x, y].Flag != AttributeSelection) continue;
 
                             Selection.Add(new Point(x, y));
                         }
@@ -2196,7 +2227,7 @@ namespace Server.Views.DirectX
                     for (int y = MouseLocation.Y - Radius; y <= MouseLocation.Y + Radius; y++)
                         for (int x = MouseLocation.X - Radius; x <= MouseLocation.X + Radius; x++)
                         {
-                            if (x < 0 || x >= Width || y < 0 || y >= Height || Cells[x, y].Flag) continue;
+                            if (x < 0 || x >= Width || y < 0 || y >= Height || Cells[x, y].Flag != AttributeSelection) continue;
 
                             Selection.Remove(new Point(x, y));
                         }

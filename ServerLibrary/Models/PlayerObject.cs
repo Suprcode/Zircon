@@ -152,6 +152,16 @@ namespace Server.Models
         public string FiltersRarity;
         public string FiltersItemType;
 
+        public bool HasFishingRod
+        {
+            get { return Equipment[(int)EquipmentSlot.Weapon]?.Info.Effect == ItemEffect.FishingRod; }
+        }
+
+        public bool HasFishingRobe
+        {
+            get { return Equipment[(int)EquipmentSlot.Armour]?.Info.Effect == ItemEffect.FishingRobe; }
+        }
+
         public PlayerObject(CharacterInfo info, SConnection con)
         {
             Character = info;
@@ -319,6 +329,10 @@ namespace Server.Models
                     PacketWaiting = false;
                     Mining((MirDirection)action.Data[0]);
                     return;
+                case ActionType.Fishing:
+                    PacketWaiting = false;
+                    FishingCast((bool)action.Data[0], (MirDirection)action.Data[1], (Point)action.Data[2]);
+                    break;
                 case ActionType.Attack:
                     PacketWaiting = false;
                     Attack((MirDirection)action.Data[0], (MagicType)action.Data[1]);
@@ -346,10 +360,6 @@ namespace Server.Models
                 case ActionType.Mount:
                     PacketWaiting = false;
                     Mount();
-                    break;
-                case ActionType.Fishing:
-                    PacketWaiting = false;
-                    FishingCast(true);
                     break;
             }
 
@@ -12732,7 +12742,7 @@ namespace Server.Models
 
             Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
         }
-        public void FishingCast(bool cast, bool cancel = false)
+        public void FishingCast(bool cast, MirDirection direction, Point location, bool cancel = false)
         {
             //TODO - All logic
 
@@ -12740,7 +12750,7 @@ namespace Server.Models
             {
                 if (!PacketWaiting)
                 {
-                    ActionList.Add(new DelayedAction(ActionTime, ActionType.Fishing));
+                    ActionList.Add(new DelayedAction(ActionTime, ActionType.Fishing, cast, direction, location));
                     PacketWaiting = true;
                 }
                 else
@@ -12749,10 +12759,18 @@ namespace Server.Models
                 return;
             }
 
-            Fishing = cast;
+            if (!cast)
+            {
+                FishFound = false;
+            }
 
-            Broadcast(new S.FishingUpdate { ObjectID = ObjectID, Fishing = cast });
+            if (!FishFound)
+                FishFound = SEnvir.Random.Next(10) == 0;
+
+            Broadcast(new S.FishingUpdate { ObjectID = ObjectID, FishFound = FishFound, Cast = cast, Direction = direction, FloatLocation = location });
         }
+
+        public bool FishFound = false;
 
         public void Move(MirDirection direction, int distance)
         {
@@ -19439,7 +19457,7 @@ namespace Server.Models
 
                 Horse = Horse,
 
-                HelmetShape = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                HelmetShape = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
@@ -19499,7 +19517,7 @@ namespace Server.Models
 
                 Horse = Horse,
 
-                Helmet = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
@@ -19530,6 +19548,7 @@ namespace Server.Models
 
         public void SendShapeUpdate()
         {
+            
             S.PlayerUpdate p = new S.PlayerUpdate
             {
                 ObjectID = ObjectID,
@@ -19544,10 +19563,9 @@ namespace Server.Models
                 EmblemShape = Equipment[(int)EquipmentSlot.Emblem]?.Info.Shape ?? 0,
                 WingsShape = Equipment[(int)EquipmentSlot.Wings]?.Info.Shape ?? 0,
 
-                Helmet = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
 
                 HorseArmour = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
-                //Todo Helmet
 
                 Light = Stats[Stat.Light]
             };

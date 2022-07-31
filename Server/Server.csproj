@@ -118,6 +118,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -137,6 +142,12 @@
     </Compile>
     <Compile Include="Views\DatabaseEncryptionForm.Designer.cs">
       <DependentUpon>DatabaseEncryptionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FishingInfoView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FishingInfoView.Designer.cs">
+      <DependentUpon>FishingInfoView.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\GameStoreSaleView.cs">
       <SubType>Form</SubType>
@@ -355,6 +366,10 @@
       <DependentUpon>UserDropView.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="SMain.resx">
       <DependentUpon>SMain.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -364,6 +379,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\DatabaseEncryptionForm.resx">
       <DependentUpon>DatabaseEncryptionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FishingInfoView.resx">
+      <DependentUpon>FishingInfoView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\GameStoreSaleView.resx">
       <DependentUpon>GameStoreSaleView.cs</DependentUpon>

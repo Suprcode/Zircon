@@ -335,6 +335,7 @@ namespace Client.Envir
                     Globals.InstanceInfoList = Session.GetCollection<InstanceInfo>();
                     Globals.NPCPageList = Session.GetCollection<NPCPage>();
                     Globals.MonsterInfoList = Session.GetCollection<MonsterInfo>();
+                    Globals.FishingInfoList = Session.GetCollection<FishingInfo>();
                     Globals.StoreInfoList = Session.GetCollection<StoreInfo>();
                     Globals.NPCInfoList = Session.GetCollection<NPCInfo>();
                     Globals.MovementInfoList = Session.GetCollection<MovementInfo>();
@@ -460,11 +461,6 @@ namespace Client.Envir
 
             switch (action)
             {
-                //case KeyBindAction.FishingTemp:
-                //    bind.Category = "Temp";
-                //    bind.Key1 = Keys.F;
-                //    bind.Control1 = true;
-                //    break;
                 case KeyBindAction.ConfigWindow:
                     bind.Category = "Windows";
                     bind.Key1 = Keys.O;

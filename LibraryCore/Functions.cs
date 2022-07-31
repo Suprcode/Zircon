@@ -116,12 +116,8 @@ namespace Library
         }
         public static MirAnimation GetAttackAnimation(MirClass c, int w, MagicType m)
         {
-            MirAnimation animation;// = MirAnimation.Combat3;
-            /*
-            if (c == MirClass.Assassin)
-            {
-            }*/
-            
+            MirAnimation animation;
+     
             switch (m)
             {
                 case MagicType.Slaying:

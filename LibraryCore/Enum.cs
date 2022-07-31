@@ -349,7 +349,13 @@ namespace Library
         ItemPart,
         Emblem,
         Shield,
-        Wings
+        Wings,
+
+        //Hook,
+        //Float,
+        //Bait,
+        //Finder,
+        //Reel
     }
 
     public enum MirAction : byte
@@ -368,6 +374,7 @@ namespace Library
         Hide,
         Mount,
         Mining,
+        Fishing
     }
 
     public enum MirAnimation : byte
@@ -1159,6 +1166,9 @@ namespace Library
         FootballArmour = 80,
         FootBallWhistle = 81,
 
+        FishingRod = 82,
+        FishingRobe = 83,
+
         StatExtractor = 90,
         SpiritBlade = 91,
         RefineExtractor = 92,
@@ -1633,6 +1643,11 @@ namespace Library
         Foot2,
         Foot3,
         Foot4,
+
+        FishingCast,
+        FishingBob,
+        FishingReel,
+
         HorseWalk1,
         HorseWalk2,
         HorseRun,

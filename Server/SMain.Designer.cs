@@ -55,11 +55,12 @@
             this.SafeZoneInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.RespawnInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.DropInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.FishingInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.BaseStatButton = new DevExpress.XtraNavBar.NavBarItem();
             this.ItemInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
             this.SetInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.navBarItem5 = new DevExpress.XtraNavBar.NavBarItem();
+            this.WeaponCraftInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.NPCInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.NPCPageButton = new DevExpress.XtraNavBar.NavBarItem();
             this.QuestInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -116,6 +117,7 @@
             this.ribbonControl1.ExpandCollapseItem.Id = 0;
             this.ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbonControl1.ExpandCollapseItem,
+            this.ribbonControl1.SearchEditItem,
             this.skinRibbonGalleryBarItem1,
             this.StartServerButton,
             this.StopServerButton});
@@ -123,12 +125,12 @@
             this.ribbonControl1.MaxItemId = 9;
             this.ribbonControl1.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
             this.ribbonControl1.Name = "ribbonControl1";
+            this.ribbonControl1.OptionsPageCategories.ShowCaptions = false;
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1,
             this.ribbonPage2,
             this.ribbonPage3});
             this.ribbonControl1.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
-            this.ribbonControl1.ShowCategoryInCaption = false;
             this.ribbonControl1.ShowExpandCollapseButton = DevExpress.Utils.DefaultBoolean.True;
             this.ribbonControl1.ShowQatLocationSelector = false;
             this.ribbonControl1.ShowToolbarCustomizeItem = false;
@@ -170,10 +172,10 @@
             // 
             // ribbonPageGroup1
             // 
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.StartServerButton);
             this.ribbonPageGroup1.ItemLinks.Add(this.StopServerButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Control";
             // 
             // ribbonPage2
@@ -236,12 +238,13 @@
             this.navBarItem2,
             this.navBarItem3,
             this.navBarItem4,
-            this.navBarItem5,
-            this.CurrencyInfoButton});
+            this.WeaponCraftInfoButton,
+            this.CurrencyInfoButton,
+            this.FishingInfoButton});
             this.navBarControl1.Location = new System.Drawing.Point(0, 144);
             this.navBarControl1.Name = "navBarControl1";
             this.navBarControl1.OptionsNavPane.ExpandedWidth = 144;
-            this.navBarControl1.Size = new System.Drawing.Size(144, 431);
+            this.navBarControl1.Size = new System.Drawing.Size(144, 433);
             this.navBarControl1.TabIndex = 1;
             this.navBarControl1.Text = "navBarControl1";
             // 
@@ -285,11 +288,12 @@
             new DevExpress.XtraNavBar.NavBarItemLink(this.SafeZoneInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.RespawnInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.DropInfoButton),
+            new DevExpress.XtraNavBar.NavBarItemLink(this.FishingInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.BaseStatButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.ItemInfoStatButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoStatButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.SetInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem5),
+            new DevExpress.XtraNavBar.NavBarItemLink(this.WeaponCraftInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.NPCInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.NPCPageButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.QuestInfoButton),
@@ -371,6 +375,15 @@
             this.DropInfoButton.Name = "DropInfoButton";
             this.DropInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DropInfoButton_LinkClicked);
             // 
+            // FishingInfoButton
+            // 
+            this.FishingInfoButton.Caption = "Fishing Info";
+            this.FishingInfoButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("FishingInfoButton.ImageOptions.LargeImage")));
+            this.FishingInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("FishingInfoButton.ImageOptions.SmallImage")));
+            this.FishingInfoButton.Name = "FishingInfoButton";
+            this.FishingInfoButton.Visible = false;
+            this.FishingInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.FishingInfoButton_LinkClicked);
+            // 
             // BaseStatButton
             // 
             this.BaseStatButton.Caption = "Base Stats";
@@ -399,12 +412,12 @@
             this.SetInfoButton.Name = "SetInfoButton";
             this.SetInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.SetInfoButton_LinkClicked);
             // 
-            // navBarItem5
+            // WeaponCraftInfoButton
             // 
-            this.navBarItem5.Caption = "Weapon Craft Info";
-            this.navBarItem5.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem5.ImageOptions.SmallImage")));
-            this.navBarItem5.Name = "navBarItem5";
-            this.navBarItem5.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem5_LinkClicked);
+            this.WeaponCraftInfoButton.Caption = "Weapon Craft Info";
+            this.WeaponCraftInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("WeaponCraftInfoButton.ImageOptions.SmallImage")));
+            this.WeaponCraftInfoButton.Name = "WeaponCraftInfoButton";
+            this.WeaponCraftInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem5_LinkClicked);
             // 
             // NPCInfoButton
             // 
@@ -686,9 +699,9 @@
             // 
             this.barDockControlBottom.CausesValidation = false;
             this.barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.barDockControlBottom.Location = new System.Drawing.Point(0, 575);
+            this.barDockControlBottom.Location = new System.Drawing.Point(0, 577);
             this.barDockControlBottom.Manager = this.BManager;
-            this.barDockControlBottom.Size = new System.Drawing.Size(1127, 27);
+            this.barDockControlBottom.Size = new System.Drawing.Size(1127, 25);
             // 
             // barDockControlLeft
             // 
@@ -696,7 +709,7 @@
             this.barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.barDockControlLeft.Location = new System.Drawing.Point(0, 0);
             this.barDockControlLeft.Manager = this.BManager;
-            this.barDockControlLeft.Size = new System.Drawing.Size(0, 575);
+            this.barDockControlLeft.Size = new System.Drawing.Size(0, 577);
             // 
             // barDockControlRight
             // 
@@ -704,7 +717,7 @@
             this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
             this.barDockControlRight.Location = new System.Drawing.Point(1127, 0);
             this.barDockControlRight.Manager = this.BManager;
-            this.barDockControlRight.Size = new System.Drawing.Size(0, 575);
+            this.barDockControlRight.Size = new System.Drawing.Size(0, 577);
             // 
             // InterfaceTimer
             // 
@@ -811,9 +824,10 @@
         private DevExpress.XtraNavBar.NavBarItem navBarItem2;
         private DevExpress.XtraNavBar.NavBarItem navBarItem3;
         private DevExpress.XtraNavBar.NavBarItem navBarItem4;
-        private DevExpress.XtraNavBar.NavBarItem navBarItem5;
+        private DevExpress.XtraNavBar.NavBarItem WeaponCraftInfoButton;
         private DevExpress.XtraNavBar.NavBarItem CurrencyInfoButton;
         private DevExpress.XtraNavBar.NavBarItem navBarItem6;
+        private DevExpress.XtraNavBar.NavBarItem FishingInfoButton;
     }
 }
 

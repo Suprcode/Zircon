@@ -23,6 +23,7 @@ namespace Library
         public static DBCollection<InstanceInfo> InstanceInfoList;
         public static DBCollection<NPCPage> NPCPageList;
         public static DBCollection<MonsterInfo> MonsterInfoList;
+        public static DBCollection<FishingInfo> FishingInfoList;
         public static DBCollection<StoreInfo> StoreInfoList;
         public static DBCollection<NPCInfo> NPCInfoList;
         public static DBCollection<MovementInfo> MovementInfoList;

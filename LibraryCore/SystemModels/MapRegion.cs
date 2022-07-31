@@ -92,7 +92,6 @@ namespace Library.SystemModels
 
         public List<Point> PointList;
 
-
         public HashSet<Point> GetPoints(int width)
         {
             HashSet<Point> points = new HashSet<Point>(); 

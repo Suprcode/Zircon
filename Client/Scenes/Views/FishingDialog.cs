@@ -39,6 +39,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Modal = true,
                 Size = library.GetSize(4501),
+                Visible = false
             };
             ProgressBar.BeforeDraw += (o, e) =>
             {
@@ -46,7 +47,7 @@ namespace Client.Scenes.Views
 
                 if (image == null) return;
 
-                //PresentTexture(image.Image, this, new Rectangle(ProgressBar.DisplayArea.X, ProgressBar.DisplayArea.Y, image.Width, image.Height), Color.White, ProgressBar);
+                PresentTexture(image.Image, this, new Rectangle(ProgressBar.DisplayArea.X, ProgressBar.DisplayArea.Y, image.Width, image.Height), Color.White, ProgressBar);
 
                 Texture tex = new Texture(DXManager.Device, ProgressBar.Size.Width + 10, ProgressBar.Size.Height + 10, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                 DataRectangle stream = tex.LockRectangle(0, LockFlags.Discard);
@@ -68,6 +69,7 @@ namespace Client.Scenes.Views
                                 graphics.DrawArc(pen, 2, 4, ProgressBar.Size.Width - 9, ProgressBar.Size.Height - 7, -90, 270);
                             }
                         }
+
                         image.Image.UnlockRectangle(0);
                         graphics.Dispose();
                         stream.Data.Dispose();
