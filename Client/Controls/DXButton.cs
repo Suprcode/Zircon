@@ -319,7 +319,6 @@ namespace Client.Controls
             s = InterfaceLibrary.GetSize(24);
             InterfaceLibrary.Draw(24, x, 0, Color.White, new Rectangle(0, 0, Size.Width - x * 2, s.Height), 1f, ImageType.Image);
 
-
             s = InterfaceLibrary.GetSize(23);
             InterfaceLibrary.Draw(23, Size.Width - s.Width, 0, Color.White, false, 1F, ImageType.Image);
         }
@@ -388,6 +387,6 @@ namespace Client.Controls
         Default,
         SelectedTab,
         DeselectedTab,
-        SmallButton,
+        SmallButton
     }
 }

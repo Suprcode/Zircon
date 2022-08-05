@@ -18,7 +18,7 @@ namespace Client.Controls
 
         public override WindowType Type => WindowType.InputWindow;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
 
         #endregion
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Client.Models.Particles
 {
-    public abstract class ParticleType
+    public abstract class ParticleType : IDisposable
     {
         public MirLibrary Library;
 
@@ -25,5 +25,27 @@ namespace Client.Models.Particles
         public Random random = new();
 
         public abstract Particle CreateParticle(Vector2 emitterLocation, int direction, float angle);
+
+        #region IDisposable
+        public bool IsDisposed { get; private set; }
+        public void Dispose()
+        {
+            Dispose(!IsDisposed);
+            GC.SuppressFinalize(this);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                IsDisposed = true;
+
+                Library = null;
+                Particles = null;
+                Textures = null;
+            }
+        }
+
+        #endregion
     }
 }

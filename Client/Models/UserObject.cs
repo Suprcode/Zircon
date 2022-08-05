@@ -678,6 +678,7 @@ namespace Client.Models
             GameScene.Game.CharacterBox.GuildRankLabel.Text = GuildRank;
 
             GameScene.Game.CharacterBox.CharacterNameLabel.Text = Name;
+
             GameScene.Game.TradeBox.UserLabel.Text = Name;
         }
 

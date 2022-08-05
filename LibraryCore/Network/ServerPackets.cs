@@ -709,15 +709,15 @@ namespace Library.Network.ServerPackets
         public MirClass Class { get; set; }
         public int Level { get; set; }
         public MirGender Gender { get; set; }
-        public Stats Stats { get; set; }
-        public Stats HermitStats { get; set; }
-        public int HermitPoints { get; set; }
+        //public Stats Stats { get; set; }
+        //public Stats HermitStats { get; set; }
+        //public int HermitPoints { get; set; }
         public List<ClientUserItem> Items { get; set; }
         public int Hair { get; set; }
         public Color HairColour { get; set; }
 
-        public int WearWeight { get; set; }
-        public int HandWeight { get; set; }
+        //public int WearWeight { get; set; }
+        //public int HandWeight { get; set; }
     }
     public sealed class Rankings : Packet
     {

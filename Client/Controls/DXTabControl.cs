@@ -43,6 +43,31 @@ namespace Client.Controls
 
         #endregion
 
+        #region MarginLeft
+        public int MarginLeft
+        {
+            get => _MarginLeft;
+            set
+            {
+                if (_MarginLeft == value) return;
+
+                int oldValue = _MarginLeft;
+                _MarginLeft = value;
+
+                OnMarginLeftChanged(oldValue, value);
+            }
+        }
+        private int _MarginLeft;
+        public event EventHandler<EventArgs> MarginLeftChanged;
+        public virtual void OnMarginLeftChanged(int oValue, int nValue)
+        {
+            MarginLeftChanged?.Invoke(this, EventArgs.Empty);
+
+            TabsChanged();
+        }
+        #endregion
+
+
         public List<DXButton> TabButtons = new List<DXButton>();
 
         public override void OnDisplayAreaChanged(Rectangle oValue, Rectangle nValue)
@@ -90,7 +115,6 @@ namespace Client.Controls
         
         public void TabsChanged()
         {
-
             if (SelectedTab == null)
             {
                 foreach (DXControl control in Controls)
@@ -104,7 +128,7 @@ namespace Client.Controls
                 }
             }
 
-            int x = 0;
+            int x = MarginLeft;
             int width = 0;
             foreach (DXButton control in TabButtons)
             {
@@ -273,6 +297,33 @@ namespace Client.Controls
 
         #endregion
 
+        #region MinimumTabWidth
+        public int MinimumTabWidth
+        {
+            get => _MinimumTabWidth;
+            set
+            {
+                if (_MinimumTabWidth == value) return;
+
+                int oldValue = _MinimumTabWidth;
+                _MinimumTabWidth = value;
+
+                OnMinimumTabWidthChanged(oldValue, value);
+            }
+        }
+        private int _MinimumTabWidth;
+        public event EventHandler<EventArgs> MinimumTabWidthChanged;
+        public virtual void OnMinimumTabWidthChanged(int oValue, int nValue)
+        {
+            MinimumTabWidthChanged?.Invoke(this, EventArgs.Empty);
+
+            if (TabButton != null)
+            {
+                TabButton.Size = new Size(Math.Max(MinimumTabWidth, DXLabel.GetSize(TabButton.Label.Text, TabButton.Label.Font, TabButton.Label.Outline).Width), TabHeight);
+            }
+        }
+        #endregion
+
         public DXButton TabButton { get; private set; }
 
         public float? OldOpacity { get; set; }
@@ -358,16 +409,16 @@ namespace Client.Controls
             PassThrough = true;
             Visible = false;
 
+            MinimumTabWidth = 60;
 
             TabButton = new DXButton
             {
                 ButtonType = ButtonType.DeselectedTab,
-                Size = new Size(60, TabHeight),
+                Size = new Size(60, TabHeight)
             };
             TabButton.Label.TextChanged += (o, e) =>
             {
-                TabButton.Size = new Size(Math.Max(60, DXLabel.GetSize(TabButton.Label.Text, TabButton.Label.Font, TabButton.Label.Outline).Width), TabHeight);
-
+                TabButton.Size = new Size(Math.Max(MinimumTabWidth, DXLabel.GetSize(TabButton.Label.Text, TabButton.Label.Font, TabButton.Label.Outline).Width), TabHeight);
             };
             TabButton.MouseClick += (o, e) =>
             {
@@ -416,7 +467,6 @@ namespace Client.Controls
 
                 TabButton.Tag = null;
                 Size = new Size(Parent.Size.Width - Location.X, Parent.Size.Height - Location.Y);
-
 
             }
         }

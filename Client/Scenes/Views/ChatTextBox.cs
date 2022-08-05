@@ -71,7 +71,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.ChatTextBox;
         public override bool CustomSize => true;
-        public override bool AutomaticVisiblity => true;
+        public override bool AutomaticVisibility => true;
 
         #endregion
 

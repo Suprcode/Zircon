@@ -149,6 +149,7 @@ namespace Client.Scenes
         public DXConfigWindow ConfigBox;
         public InventoryDialog InventoryBox;
         public CharacterDialog CharacterBox;
+        public FilterDropDialog FilterDropBox;
         public ExitDialog ExitBox;
         public ChatTextBox ChatTextBox;
         public BeltDialog BeltBox;
@@ -176,7 +177,7 @@ namespace Client.Scenes
         public BuffDialog BuffBox;
         public StorageDialog StorageBox;
         public AutoPotionDialog AutoPotionBox;
-        public InspectDialog InspectBox;
+        public CharacterDialog InspectBox;
         public RankingDialog RankingBox;
         public MarketPlaceDialog MarketPlaceBox;
         public DungeonFinderDialog DungeonFinderBox;
@@ -348,6 +349,7 @@ namespace Client.Scenes
             foreach (DXWindow window in DXWindow.Windows)
                 window.LoadSettings();
 
+            CharacterBox?.LoadSettings();
             InventoryBox?.LoadSettings();
 
             LoadChatTabs();
@@ -401,7 +403,13 @@ namespace Client.Scenes
                 Visible = false,
             };
 
-            CharacterBox = new CharacterDialog
+            CharacterBox = new CharacterDialog(false)
+            {
+                Parent = this,
+                Visible = false,
+            };
+
+            FilterDropBox = new FilterDropDialog
             {
                 Parent = this,
                 Visible = false,
@@ -537,7 +545,7 @@ namespace Client.Scenes
                 Visible = false
             };
 
-            InspectBox = new InspectDialog
+            InspectBox = new CharacterDialog(true)
             {
                 Parent = this,
                 Visible = false
@@ -668,6 +676,7 @@ namespace Client.Scenes
             foreach (DXWindow window in DXWindow.Windows)
                 window.LoadSettings();
 
+            CharacterBox.LoadSettings();
             InventoryBox.LoadSettings();
         }
 
@@ -1046,6 +1055,9 @@ namespace Client.Scenes
                         break;
                     case KeyBindAction.CompanionWindow:
                         CompanionBox.Visible = !CompanionBox.Visible;
+                        break;
+                    case KeyBindAction.FilterDropWindow:
+                        FilterDropBox.Visible = !FilterDropBox.Visible;
                         break;
                     case KeyBindAction.GroupWindow:
                         GroupBox.Visible = !GroupBox.Visible;
@@ -3620,6 +3632,8 @@ namespace Client.Scenes
                 cell.UpdateColours();
 
             CharacterBox.UpdateStats();
+
+            FilterDropBox.UpdateDropFilters();
         }
         public void ExperienceChanged()
         {

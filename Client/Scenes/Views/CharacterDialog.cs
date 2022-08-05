@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
@@ -8,100 +9,241 @@ using Client.Models;
 using Client.UserModels;
 using Library;
 using C = Library.Network.ClientPackets;
+using S = Library.Network.ServerPackets;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
-    public sealed class CharacterDialog : DXWindow
+    public sealed class CharacterDialog : DXImageControl
     {
         #region Properties
+
         private DXTabControl TabControl;
-        private DXTab CharacterTab, StatsTab, HermitTab, FilterDropTab;
+        private DXTab CharacterTab, HermitTab;
         public DXLabel CharacterNameLabel, GuildNameLabel, GuildRankLabel;
+        
+        private DXTabControl StatsTabControl;
+        private DXTab StatsAttackTab, StatsDefenseTab, StatsWeightTab, StatsOtherTab, StatsElementAttackTab, StatsElementAdvantageTab, StatsElementDisadvantageTab;
 
         public DXImageControl MarriageIcon;
 
-        public DXItemCell[] Grid;
+        public DXButton CloseButton;
 
-        public DXCheckBox ShowHelmetBox;
+        public DXItemCell[] Grid;
 
         public DXLabel WearWeightLabel, HandWeightLabel;
         public Dictionary<Stat, DXLabel> DisplayStats = new Dictionary<Stat, DXLabel>();
+
         public Dictionary<Stat, DXLabel> AttackStats = new Dictionary<Stat, DXLabel>();
         public Dictionary<Stat, DXLabel> AdvantageStats = new Dictionary<Stat, DXLabel>();
         public Dictionary<Stat, DXLabel> DisadvantageStats = new Dictionary<Stat, DXLabel>();
 
+        private DXLabel HermitRemainingLabel;
+        private DXCheckBox HermitShowConfirmation;
+
         public Dictionary<Stat, DXLabel> HermitDisplayStats = new Dictionary<Stat, DXLabel>();
         public Dictionary<Stat, DXLabel> HermitAttackStats = new Dictionary<Stat, DXLabel>();
-        public DXLabel RemainingLabel;
-        public Dictionary<int, DXTextBox> DropFiltersMap = new Dictionary<int, DXTextBox>();
 
-        public override WindowType Type => WindowType.CharacterBox;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => true;
-
-        public bool HasFishingRod
+        public ClientUserItem[] Equipment
         {
-            get { return Grid[(int)EquipmentSlot.Weapon]?.Item?.Info.Effect == ItemEffect.FishingRod; }
+            get
+            {
+                return Inspect ? _inspectEquipment : GameScene.Game.Equipment;
+            }
+        }
+        public Stats Stats
+        {
+            get
+            {
+                return Inspect ? _inspectStats : MapObject.User.Stats;
+            }
+        }
+        public Stats HermitStats
+        {
+            get
+            {
+                return Inspect ? _inspectHermitStats : MapObject.User.HermitStats;
+            }
+        }
+        public int HermitPoints
+        {
+            get
+            {
+                return Inspect ? _inspectHermitPoints : MapObject.User.HermitPoints;
+            }
+        }
+        public MirClass Class
+        {
+            get
+            {
+                return Inspect ? _inspectClass : MapObject.User.Class;
+            }
+        }
+        public MirGender Gender
+        {
+            get
+            {
+                return Inspect ? _inspectGender : MapObject.User.Gender;
+            }
+        }
+        public int HairType
+        {
+            get
+            {
+                return Inspect ? _inspectHairType : MapObject.User.HairType;
+            }
+        }
+        public Color HairColour
+        {
+            get
+            {
+                return Inspect ? _inspectHairColour : MapObject.User.HairColour;
+            }
+        }
+        public int Level
+        {
+            get
+            {
+                return Inspect ? _inspectLevel : MapObject.User.Level;
+            }
         }
 
-        public bool HasFishingRobe
+        #region Inspect
+
+        private ClientUserItem[] _inspectEquipment = new ClientUserItem[Globals.EquipmentSize];
+        private Stats _inspectStats = new Stats();
+        public Stats _inspectHermitStats = new Stats();
+        public int _inspectHermitPoints;
+        public MirClass _inspectClass;
+        public MirGender _inspectGender;
+        public int _inspectHairType;
+        public Color _inspectHairColour;
+        public int _inspectLevel;
+
+        #endregion
+
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
-            get { return Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe; }
+            if (IsVisible)
+                BringToFront();
+
+            if (Settings != null)
+                Settings.Visible = nValue;
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
         }
 
         #endregion
 
-        public CharacterDialog()
-        { 
-            HasTitle = false;
-            SetClientSize(new Size(266, 371));
+        #region Settings
 
+        public WindowSetting Settings;
+        public WindowType Type
+        {
+            get { return Inspect ? WindowType.InspectBox : WindowType.CharacterBox; }
+        }
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        public bool Inspect { get; private set; }
+
+        #endregion
+
+        public CharacterDialog(bool inspect)
+        {
+            Inspect = inspect;
+
+            LibraryFile = LibraryFile.Interface;
+            Index = Inspect ? 115 : 110;
+            Movable = true;
+
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.MouseClick += (o, e) => Visible = false;
 
             TabControl = new DXTabControl
             {
                 Parent = this,
-                Location = ClientArea.Location,
-                Size = ClientArea.Size,
+                Location = new Point(0, 21),
+                Size = new Size(DisplayArea.Width, DisplayArea.Height),
+                MarginLeft = 18
             };
             CharacterTab = new DXTab
             {
                 Parent = TabControl,
-                Border = true,
                 TabButton = { Label = { Text = "Character" } },
+                BackColour = Color.Empty,
+                Location = new Point(0, 25)
             };
             CharacterTab.BeforeChildrenDraw += CharacterTab_BeforeChildrenDraw;
-            StatsTab = new DXTab
+            CharacterTab.TabButton.MouseClick += (o, e) =>
             {
-                Parent = TabControl,
-                Border = true,
-                TabButton = { Label = { Text = "Stats" } },
+                Index = Inspect ? 115 : 110;
             };
+
             HermitTab = new DXTab
             {
                 Parent = TabControl,
-                Border = true,
                 TabButton = { Label = { Text = "Hermit" } },
+                BackColour = Color.Empty,
+                Location = new Point(0, 25),
             };
-            FilterDropTab = new DXTab
+
+            HermitTab.TabButton.Visible = !Inspect;
+            HermitTab.TabButton.MouseClick += (o, e) =>
             {
-                Parent = TabControl,
-                Border = true,
-                TabButton = { Label = { Text = "Filter Drop" } },
+                Index = 111;
             };
+
             DXControl namePanel = new DXControl
             {
                 Parent = CharacterTab,
-                Size = new Size(150, 45),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Location = new Point((CharacterTab.Size.Width - 150) / 2, 5),
-
+                Size = new Size(130, 68),
+                Location = new Point((CharacterTab.Size.Width - 135) / 2, 5)
             };
             CharacterNameLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(150, 20),
+                Size = new Size(130, 20),
                 ForeColour = Color.FromArgb(222, 255, 222),
                 Outline = false,
                 Parent = namePanel,
@@ -111,7 +253,7 @@ namespace Client.Scenes.Views
             GuildNameLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(150, 15),
+                Size = new Size(130, 15),
                 ForeColour = Color.FromArgb(255, 255, 181),
                 Outline = false,
                 Parent = namePanel,
@@ -121,1048 +263,1535 @@ namespace Client.Scenes.Views
             GuildRankLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(150, 15),
+                Size = new Size(130, 15),
                 ForeColour = Color.FromArgb(255, 206, 148),
                 Outline = false,
                 Parent = namePanel,
-                Location = new Point(0, CharacterNameLabel.Size.Height+ GuildNameLabel.Size.Height - 4),
+                Location = new Point(0, CharacterNameLabel.Size.Height + GuildNameLabel.Size.Height - 4),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
             };
-
-            TabControl.SelectedTab = CharacterTab;
 
             MarriageIcon = new DXImageControl
             {
                 Parent = namePanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1298,
-                Location = new Point(5, namePanel.Size.Height - 16),
+                Location = new Point(2, namePanel.Size.Height - 14),
                 Visible = false,
             };
+
+            TabControl.SelectedTab = CharacterTab;
+
+            #region Grid
 
             Grid = new DXItemCell[Globals.EquipmentSize];
 
             DXItemCell cell;
             Grid[(int)EquipmentSlot.Weapon] = cell = new DXItemCell
             {
-                Location = new Point(95, 60),
+                Location = new Point(58, 122),
                 Parent = CharacterTab,
-                FixedBorder = true,
-                Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Weapon,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
+                Size = new System.Drawing.Size(65, 90),
+                Hidden = true
             };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell) o, 35);
 
             Grid[(int)EquipmentSlot.Armour] = cell = new DXItemCell
             {
-                Location = new Point(135, 60),
+                Location = new Point(120, 123),
                 Parent = CharacterTab,
-                FixedBorder = true,
-                Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                Border = false,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Armour,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
+                Size = new System.Drawing.Size(70, 150),
+                Hidden = true
             };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 34);
 
             Grid[(int)EquipmentSlot.Shield] = cell = new DXItemCell
             {
-                Location = new Point(175, 60),
+                Location = new Point(170, 170),
                 Parent = CharacterTab,
                 FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Shield,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
+                Hidden = true
             };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 105);
 
             Grid[(int)EquipmentSlot.Helmet] = cell = new DXItemCell
             {
-                Location = new Point(215, 60),
+                Location = new Point(140, 90),
                 Parent = CharacterTab,
                 FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Helmet,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
+                Size = new Size(35, 35),
+                Hidden = true
             };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 37);
+
+            Grid[(int)EquipmentSlot.Emblem] = cell = new DXItemCell
+            {
+                Location = new Point(237, 118),
+                Parent = CharacterTab,
+                Border = true,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.Emblem,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
+            };
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 104);
+
+            Grid[(int)EquipmentSlot.HorseArmour] = cell = new DXItemCell
+            {
+                Location = new Point(276, 118),
+                Parent = CharacterTab,
+                Border = true,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.HorseArmour,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
+            };
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 82);
 
             Grid[(int)EquipmentSlot.Torch] = cell = new DXItemCell
             {
-                Location = new Point(215, 140),
+                Location = new Point(10, 196),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Torch,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 38);
 
             Grid[(int)EquipmentSlot.Necklace] = cell = new DXItemCell
             {
-                Location = new Point(215, 180),
+                Location = new Point(10, 157),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Necklace,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 33);
 
             Grid[(int)EquipmentSlot.BraceletL] = cell = new DXItemCell
             {
-                Location = new Point(15, 220),
+                Location = new Point(237, 157),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.BraceletL,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 32);
 
             Grid[(int)EquipmentSlot.BraceletR] = cell = new DXItemCell
             {
-                Location = new Point(215, 220),
+                Location = new Point(276, 157),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.BraceletR,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 32);
 
             Grid[(int)EquipmentSlot.RingL] = cell = new DXItemCell
             {
-                Location = new Point(15, 260),
+                Location = new Point(237, 196),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.RingL,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 31);
 
             Grid[(int)EquipmentSlot.RingR] = cell = new DXItemCell
             {
-                Location = new Point(215, 260),
+                Location = new Point(276, 196),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.RingR,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 31);
 
-
-            Grid[(int)EquipmentSlot.Emblem] = cell = new DXItemCell
+            Grid[(int)EquipmentSlot.Flower] = cell = new DXItemCell
             {
-                Location = new Point(55, 300),
+                Location = new Point(237, 235),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
-                Slot = (int)EquipmentSlot.Emblem,
-                GridType = GridType.Equipment,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.Flower,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 104);
-
-                     
-            Grid[(int)EquipmentSlot.Shoes] = cell = new DXItemCell
-            {
-                Location = new Point(95, 300),
-                Parent = CharacterTab,
-                FixedBorder = true,
-                Border = true,
-                ItemGrid = GameScene.Game.Equipment,
-                Slot = (int)EquipmentSlot.Shoes,
-                GridType = GridType.Equipment,
-            };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 36);
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 81);
 
             Grid[(int)EquipmentSlot.Poison] = cell = new DXItemCell
             {
-                Location = new Point(135, 300),
+                Location = new Point(237, 274),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Poison,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 40);
 
             Grid[(int)EquipmentSlot.Amulet] = cell = new DXItemCell
             {
-                Location = new Point(175, 300),
+                Location = new Point(276, 235),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Amulet,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
+                Size = new Size(36, 75)
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 39);
 
-
-            Grid[(int)EquipmentSlot.HorseArmour] = cell = new DXItemCell
+            Grid[(int)EquipmentSlot.Shoes] = cell = new DXItemCell
             {
-                Location = new Point(215, 100),
+                Location = new Point(10, 235),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
-                Slot = (int)EquipmentSlot.HorseArmour,
-                GridType = GridType.Equipment,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.Shoes,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
+                Size = new Size(36, 75)
             };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 82);
-
-            Grid[(int)EquipmentSlot.Flower] = cell = new DXItemCell
-            {
-                Location = new Point(215, 300),
-                Parent = CharacterTab,
-                FixedBorder = true,
-                Border = true,
-                ItemGrid = GameScene.Game.Equipment,
-                Slot = (int)EquipmentSlot.Flower,
-                GridType = GridType.Equipment,
-            };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 81);
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 36);
 
             Grid[(int)EquipmentSlot.Wings] = cell = new DXItemCell
             {
-                Location = new Point(15, 300),
+                Location = new Point(10, 118),
                 Parent = CharacterTab,
-                FixedBorder = true,
                 Border = true,
-                ItemGrid = GameScene.Game.Equipment,
+                ItemGrid = Equipment,
                 Slot = (int)EquipmentSlot.Wings,
-                GridType = GridType.Equipment,
+                GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
 
-            ShowHelmetBox = new DXCheckBox
+            #endregion
+
+            #region Stats
+
+            #region Tabs
+
+            StatsTabControl = new DXTabControl
             {
                 Parent = CharacterTab,
-                Hint = "Display Helmet",
-                ReadOnly = true,
-            };
-            ShowHelmetBox.Location = new Point(215 + 39 - ShowHelmetBox.Size.Width, 58 - ShowHelmetBox.Size.Height);
-            ShowHelmetBox.MouseClick += (o, e) =>
-            {
-                CEnvir.Enqueue(new C.HelmetToggle{ HideHelmet = ShowHelmetBox.Checked});
+                Location = new Point(0, 319),
+                Size = new Size(DisplayArea.Width, 120),
+                MarginLeft = 18,
+                Visible = !Inspect
             };
 
-            // start filter drop box
-            for (int i = 0; i < 10; i++)
+            StatsAttackTab = new DXTab
             {
-                DXLabel filterLabel = new DXLabel
-                {
-                    Parent = FilterDropTab,
-                    Text = "Item #" + (i + 1)
-                };
-                filterLabel.Location = new Point(20, 30 + (10 + filterLabel.Size.Height) * i);
-                DropFiltersMap[i] = new DXTextBox
-                {
-                    Parent = FilterDropTab,
-                    Border = true,
-                    BorderColour = Color.FromArgb(198, 166, 99),
-                    Location = new Point(90, filterLabel.Location.Y),
-                    Size = new Size(150, 18)
-                };
-            }
-
-            DXButton filterButton = new DXButton
-            {
-                Parent = FilterDropTab,
-                Label = { Text = "Save settings", },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight)
+                Parent = StatsTabControl,
+                TabButton = { Label = { Text = "Att" } },
+                BackColour = Color.Empty,
+                MinimumTabWidth = 40,
             };
-            filterButton.Location = new Point(100, FilterDropTab.Size.Height - 50);
-            filterButton.MouseClick += (o, e) =>
-            {
-                List<string> dropItems = new List<string>();
-                for (int i = 0; i < 10; i++)
-                {
-                    dropItems.Add(DropFiltersMap[i].TextBox.Text);
-                }
-                Config.HighlightedItems = String.Join(",", dropItems);
-                GameScene.Game.ReceiveChat("Drop filters have been saved to your configuration", MessageType.System);
-            };
-            // end filter drop box
 
-            int y = 0;
+            StatsDefenseTab = new DXTab
+            {
+                Parent = StatsTabControl,
+                TabButton = { Label = { Text = "Def" } },
+                BackColour = Color.Empty,
+                MinimumTabWidth = 40,
+            };
+            StatsWeightTab = new DXTab
+            {
+                Parent = StatsTabControl,
+                TabButton = { Label = { Text = "Wt" } },
+                BackColour = Color.Empty,
+                MinimumTabWidth = 40,
+            };
+            StatsOtherTab = new DXTab
+            {
+                Parent = StatsTabControl,
+                TabButton = { Label = { Text = "Oth" } },
+                BackColour = Color.Empty,
+                MinimumTabWidth = 40,
+            };
+            StatsElementAttackTab = new DXTab
+            {
+                Parent = StatsTabControl,
+                TabButton = { Label = { Text = "E.Att" } },
+                BackColour = Color.Empty,
+                MinimumTabWidth = 40,
+            };
+            StatsElementAdvantageTab = new DXTab
+            {
+                Parent = StatsTabControl,
+                TabButton = { Label = { Text = "E.Adv" } },
+                BackColour = Color.Empty,
+                MinimumTabWidth = 40,
+            };
+            StatsElementDisadvantageTab = new DXTab
+            {
+                Parent = StatsTabControl,
+                TabButton = { Label = { Text = "E.Dis" } },
+                BackColour = Color.Empty,
+                MinimumTabWidth = 40,
+            };
+
+            #endregion
+
+            #region StatsAttackTab
+
+            const int yStart = 6;
+            int y = yStart;
+
+            const int left = 15, right = 163, rowSpacing = 22;
+
+            Size labelValueSize = new Size(100, 16);
+
             DXLabel label = new DXLabel
             {
-                Parent = StatsTab,
-                Text = "AC:"
-            };
-            label.Location = new Point(StatsTab.Size.Width / 4 - label.Size.Width + 25, y += 10);
-
-            DisplayStats[Stat.MaxAC] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
-                ForeColour = Color.White,
-                Text = "0-0"
-            };
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
-                Text = "MR:"
-            };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 2 - label.Size.Width + 25, y);
-
-            DisplayStats[Stat.MaxMR] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
-                ForeColour = Color.White,
-                Text = "0-0"
-            };
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
+                Parent = StatsAttackTab,
                 Text = "DC:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 - label.Size.Width + 25, y += 20);
+            label.Location = new Point(left, y);
 
             DisplayStats[Stat.MaxDC] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsAttackTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0-0"
+                Text = "0-0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
             };
 
             label = new DXLabel
             {
-                Parent = StatsTab,
+                Parent = StatsAttackTab,
                 Text = "MC:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 2 - label.Size.Width + 25, y);
+            label.Location = new Point(left, y += rowSpacing);
 
             DisplayStats[Stat.MaxMC] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsAttackTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0-0"
+                Text = "0-0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right,
             };
 
             label = new DXLabel
             {
-                Parent = StatsTab,
+                Parent = StatsAttackTab,
                 Text = "SC:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 3 - label.Size.Width + 25, y);
+            label.Location = new Point(left, y += rowSpacing);
 
             DisplayStats[Stat.MaxSC] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsAttackTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0-0"
+                Text = "0-0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right,
             };
 
+            y = yStart;
 
             label = new DXLabel
             {
-                Parent = StatsTab,
+                Parent = StatsAttackTab,
                 Text = "Accuracy:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 - label.Size.Width + 25, y += 20);
+            label.Location = new Point(right, y);
 
             DisplayStats[Stat.Accuracy] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsAttackTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0"
-            };
-
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
-                Text = "Agility:"
-            };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 2 - label.Size.Width + 25, y);
-
-            DisplayStats[Stat.Agility] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
-                ForeColour = Color.White,
-                Text = "0"
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
             };
 
             label = new DXLabel
             {
-                Parent = StatsTab,
-                Text = "Body W:"
-            };
-            label.Location = new Point(StatsTab.Size.Width / 4 - label.Size.Width + 25, y += 20);
-
-            WearWeightLabel = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
-                ForeColour = Color.White,
-                Text = "0"
-            };
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
-                Text = "Hand W:"
-            };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 3 - label.Size.Width + 25, y);
-
-            HandWeightLabel = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
-                ForeColour = Color.White,
-                Text = "0"
-            };
-
-
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
+                Parent = StatsAttackTab,
                 Text = "A. Speed:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 - label.Size.Width + 25, y += 20);
+            label.Location = new Point(right, y += rowSpacing);
 
             DisplayStats[Stat.AttackSpeed] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsAttackTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0"
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
             };
-
 
             label = new DXLabel
             {
-                Parent = StatsTab,
+                Parent = StatsAttackTab,
                 Text = "Luck:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 2 - label.Size.Width + 25, y);
+            label.Location = new Point(right, y += rowSpacing);
 
             DisplayStats[Stat.Luck] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsAttackTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0"
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
             };
 
             label = new DXLabel
             {
-                Parent = StatsTab,
-                Text = "Comfort:"
+                Parent = StatsAttackTab,
+                Text = "Crit. Chance:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 3 - label.Size.Width + 25, y);
-
-            DisplayStats[Stat.Comfort] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
-                ForeColour = Color.White,
-                Text = "0"
-            };
-
-
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
-                Text = "Life Steal:"
-            };
-            label.Location = new Point(StatsTab.Size.Width / 4 - label.Size.Width + 25, y += 20);
-
-            DisplayStats[Stat.LifeSteal] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
-                ForeColour = Color.White,
-                Text = "0"
-            };
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
-                Text = "Gold Rate:"
-            };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 3 - label.Size.Width + 25, y);
-
-            DisplayStats[Stat.GoldRate] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
-                ForeColour = Color.White,
-                Text = "0"
-            };
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
-                Text = "Critical Chance:"
-            };
-            label.Location = new Point(StatsTab.Size.Width / 4 - label.Size.Width + 25, y += 20);
+            label.Location = new Point(right, y += rowSpacing);
 
             DisplayStats[Stat.CriticalChance] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsAttackTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0"
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            #endregion
+
+            #region StatsDefenseTab
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsDefenseTab,
+                Text = "AC:"
+            };
+            label.Location = new Point(left, y);
+
+            DisplayStats[Stat.MaxAC] = new DXLabel
+            {
+                Parent = StatsDefenseTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0-0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
             };
 
             label = new DXLabel
             {
-                Parent = StatsTab,
-                Text = "Drop Rate:"
+                Parent = StatsDefenseTab,
+                Text = "MR:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 3 - label.Size.Width + 25, y);
+            label.Location = new Point(left, y += rowSpacing);
 
-            DisplayStats[Stat.DropRate] = new DXLabel
+            DisplayStats[Stat.MaxMR] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsDefenseTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0"
+                Text = "0-0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsDefenseTab,
+                Text = "Agility:"
+            };
+            label.Location = new Point(right, y);
+
+            DisplayStats[Stat.Agility] = new DXLabel
+            {
+                Parent = StatsDefenseTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
             };
 
             label = new DXLabel
             {
-                Parent = StatsTab,
-                Text = "Pick Up Radius:"
+                Parent = StatsDefenseTab,
+                Text = "Life Steal:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4  - label.Size.Width + 25, y += 20);
+            label.Location = new Point(right, y += rowSpacing);
+
+            DisplayStats[Stat.LifeSteal] = new DXLabel
+            {
+                Parent = StatsDefenseTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            #endregion
+
+            #region StatsWeightTab
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsWeightTab,
+                Text = "Body W:"
+            };
+            label.Location = new Point(left, y);
+
+            WearWeightLabel = new DXLabel
+            {
+                Parent = StatsWeightTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0 / 0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsWeightTab,
+                Text = "Hand W:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            HandWeightLabel = new DXLabel
+            {
+                Parent = StatsWeightTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0 / 0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            #endregion
+
+            #region StatsAdditionalTab
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsOtherTab,
+                Text = "Comfort:"
+            };
+            label.Location = new Point(left, y);
+
+            DisplayStats[Stat.Comfort] = new DXLabel
+            {
+                Parent = StatsOtherTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsOtherTab,
+                Text = "Pickup Radius:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
 
             DisplayStats[Stat.PickUpRadius] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsOtherTab,
+                Location = new Point(label.Location.X + 45, y),
                 ForeColour = Color.White,
-                Text = "0"
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
             };
 
+            y = yStart;
 
             label = new DXLabel
             {
-                Parent = StatsTab,
+                Parent = StatsOtherTab,
+                Text = "Gold Rate:"
+            };
+            label.Location = new Point(right, y);
+
+            DisplayStats[Stat.GoldRate] = new DXLabel
+            {
+                Parent = StatsOtherTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsOtherTab,
+                Text = "Drop Rate:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            DisplayStats[Stat.DropRate] = new DXLabel
+            {
+                Parent = StatsOtherTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsOtherTab,
                 Text = "Exp. Rate:"
             };
-            label.Location = new Point(StatsTab.Size.Width / 4 * 3 - label.Size.Width + 25, y);
+            label.Location = new Point(right, y += rowSpacing);
 
             DisplayStats[Stat.ExperienceRate] = new DXLabel
             {
-                Parent = StatsTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, y),
+                Parent = StatsOtherTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
+            #endregion
+
+            #region StatsElementAttackTab
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Text = "Fire:"
+            };
+            label.Location = new Point(left, y);
+
+            DXImageControl icon = new DXImageControl
+            {
+                Parent = StatsElementAttackTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 600,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Fire",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AttackStats[Stat.FireAttack] = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Text = "Ice:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAttackTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 601,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Ice",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AttackStats[Stat.IceAttack] = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Text = "Lightning:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAttackTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 602,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Lightning",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AttackStats[Stat.LightningAttack] = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Text = "Wind:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAttackTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 603,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Wind",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AttackStats[Stat.WindAttack] = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Text = "Holy:"
+            };
+            label.Location = new Point(right, y);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAttackTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 604,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Holy",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AttackStats[Stat.HolyAttack] = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Text = "Dark:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAttackTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 605,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Dark",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AttackStats[Stat.DarkAttack] = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Text = "Phantom:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAttackTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 606,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Phantom",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AttackStats[Stat.PhantomAttack] = new DXLabel
+            {
+                Parent = StatsElementAttackTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            #endregion
+
+            #region StatsElementAdvantageTab
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Text = "Fire:"
+            };
+            label.Location = new Point(left, y);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAdvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 600,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Fire",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AdvantageStats[Stat.FireResistance] = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Text = "Ice:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAdvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 601,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Ice",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AdvantageStats[Stat.IceResistance] = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Text = "Lightning:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAdvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 602,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Lightning",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AdvantageStats[Stat.LightningResistance] = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Text = "Wind:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAdvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 603,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Wind",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AdvantageStats[Stat.WindResistance] = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Text = "Holy:"
+            };
+            label.Location = new Point(right, y);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAdvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 604,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Holy",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AdvantageStats[Stat.HolyResistance] = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Text = "Dark:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAdvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 605,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Dark",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AdvantageStats[Stat.DarkResistance] = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Text = "Phantom:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAdvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 606,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Phantom",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AdvantageStats[Stat.PhantomResistance] = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Text = "Physical:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementAdvantageTab,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 1517,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Physical",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            AdvantageStats[Stat.PhysicalResistance] = new DXLabel
+            {
+                Parent = StatsElementAdvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            #endregion
+
+            #region StatsElementDisadvantageTab
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Text = "Fire:"
+            };
+            label.Location = new Point(left, y);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementDisadvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 600,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Fire",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            DisadvantageStats[Stat.FireResistance] = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Text = "Ice:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementDisadvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 601,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Ice",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            DisadvantageStats[Stat.IceResistance] = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Text = "Lightning:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementDisadvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 602,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Lightning",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            DisadvantageStats[Stat.LightningResistance] = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Text = "Wind:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementDisadvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 603,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Wind",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            DisadvantageStats[Stat.WindResistance] = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            y = yStart;
+
+            label = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Text = "Holy:"
+            };
+            label.Location = new Point(right, y);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementDisadvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 604,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Holy",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            DisadvantageStats[Stat.HolyResistance] = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Text = "Dark:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementDisadvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 605,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Dark",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            DisadvantageStats[Stat.DarkResistance] = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Text = "Phantom:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementDisadvantageTab,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 606,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Phantom",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            DisadvantageStats[Stat.PhantomResistance] = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            label = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Text = "Physical:"
+            };
+            label.Location = new Point(right, y += rowSpacing);
+
+            icon = new DXImageControl
+            {
+                Parent = StatsElementDisadvantageTab,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 1517,
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Hint = "Physical",
+            };
+            icon.Location = new Point(label.Location.X + 75, y - 3);
+
+            DisadvantageStats[Stat.PhysicalResistance] = new DXLabel
+            {
+                Parent = StatsElementDisadvantageTab,
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
+                ForeColour = Color.FromArgb(60, 60, 60),
+                Text = "0",
+                Tag = icon,
+            };
+
+            #endregion
+
+            #endregion
+
+            #region Hermit
+
+            HermitShowConfirmation = new DXCheckBox
+            {
+                Parent = HermitTab,
+                Label = { Text = "Show Confirmation" },
+                Checked = true,
+            };
+            HermitShowConfirmation.Location = new Point(175, 77);
+
+            label = new DXLabel
+            {
+                Parent = HermitTab,
+                Text = "Unspent Points:"
+            };
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 150);
+
+            HermitRemainingLabel = new DXLabel
+            {
+                Parent = HermitTab,
+                Location = new Point(label.Location.X + label.Size.Width - 5, label.Location.Y),
                 ForeColour = Color.White,
                 Text = "0"
             };
 
+            int x = 23;
 
-            #region Attack
+            #region Hermit Buttons
 
-
-            label = new DXLabel
+            var button = new DXButton
             {
-                Parent = StatsTab,
-                Text = "E. Att:"
+                Parent = HermitTab,
+                Location = new Point(x, 97),
+                Label = { Text = "AC" },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(65, SmallButtonHeight)
             };
-            label.Location = new Point(50 - label.Size.Width, 175);
+            button.MouseClick += (o, e) =>
+            {
+                if (HermitPoints == 0) return;
 
-            DXImageControl icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 600,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Fire",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
+                if (HermitShowConfirmation.Checked)
+                {
+                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your AC?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
 
-            AttackStats[Stat.FireAttack] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
-            
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 601,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Ice",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
-
-            AttackStats[Stat.IceAttack] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
+                    box.YesButton.MouseClick += (o1, e1) =>
+                    {
+                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxAC });
+                    };
+                }
+                else
+                {
+                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxAC });
+                }
             };
 
-            icon = new DXImageControl
+            button = new DXButton
             {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 602,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Lightning",
+                Parent = HermitTab,
+                Location = new Point(x, 122),
+                Label = { Text = "MR" },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(65, SmallButtonHeight),
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
-
-            AttackStats[Stat.LightningAttack] = new DXLabel
+            button.MouseClick += (o, e) =>
             {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
+                if (HermitPoints == 0) return;
 
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 603,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Wind",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 150, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
+                if (HermitShowConfirmation.Checked)
+                {
+                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your MR?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
 
-            AttackStats[Stat.WindAttack] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
+                    box.YesButton.MouseClick += (o1, e1) =>
+                    {
+                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxMR });
+                    };
+                }
+                else
+                {
+                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxMR });
+                }
             };
 
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 604,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Holy",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
+            x += button.Size.Width + 5;
 
-            AttackStats[Stat.HolyAttack] = new DXLabel
+            button = new DXButton
             {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
+                Parent = HermitTab,
+                Location = new Point(x, 97),
+                Label = { Text = "Health" },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(65, SmallButtonHeight)
             };
-
-            icon = new DXImageControl
+            button.MouseClick += (o, e) =>
             {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 605,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Dark",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
+                if (HermitPoints == 0) return;
 
-            AttackStats[Stat.DarkAttack] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
+                if (HermitShowConfirmation.Checked)
+                {
+                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your Health?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
+
+                    box.YesButton.MouseClick += (o1, e1) =>
+                    {
+                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.Health });
+                    };
+                }
+                else
+                {
+                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.Health });
+                }
             };
 
-            icon = new DXImageControl
+            button = new DXButton
             {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 606,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Phantom",
+                Parent = HermitTab,
+                Location = new Point(x, 122),
+                Label = { Text = "Mana" },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(65, SmallButtonHeight)
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
-
-            AttackStats[Stat.PhantomAttack] = new DXLabel
+            button.MouseClick += (o, e) =>
             {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
+                if (HermitPoints == 0) return;
 
-            #endregion
+                if (HermitShowConfirmation.Checked)
+                {
+                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your Mana?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
 
-            #region Resistance
-
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
-                Text = "E. Adv:"
-            };
-            label.Location = new Point( 50  - label.Size.Width, 235);
-
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 600,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Fire",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
-
-            AdvantageStats[Stat.FireResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text = "0",
-                Tag = icon,
+                    box.YesButton.MouseClick += (o1, e1) =>
+                    {
+                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.Mana });
+                    };
+                }
+                else
+                {
+                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.Mana });
+                }
             };
 
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 601,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Ice",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
+            x += button.Size.Width + 5;
 
-            AdvantageStats[Stat.IceResistance] = new DXLabel
+            button = new DXButton
             {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
+                Parent = HermitTab,
+                Location = new Point(x, 97),
+                Label = { Text = "DC" },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(65, SmallButtonHeight)
             };
-
-            icon = new DXImageControl
+            button.MouseClick += (o, e) =>
             {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 602,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Lightning",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
+                if (HermitPoints == 0) return;
 
-            AdvantageStats[Stat.LightningResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
+                if (HermitShowConfirmation.Checked)
+                {
+                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your DC?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
+
+                    box.YesButton.MouseClick += (o1, e1) =>
+                    {
+                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxDC });
+                    };
+                }
+                else
+                {
+                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxDC });
+                }
             };
 
-            icon = new DXImageControl
+            button = new DXButton
             {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 603,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Wind",
+                Parent = HermitTab,
+                Location = new Point(x, 122),
+                Label = { Text = "MC" },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(65, SmallButtonHeight)
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 150, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
-
-            AdvantageStats[Stat.WindResistance] = new DXLabel
+            button.MouseClick += (o, e) =>
             {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
+                if (HermitPoints == 0) return;
 
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 604,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Holy",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
+                if (HermitShowConfirmation.Checked)
+                {
+                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your MC?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
 
-            AdvantageStats[Stat.HolyResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
+                    box.YesButton.MouseClick += (o1, e1) =>
+                    {
+                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxMC });
+                    };
+                }
+                else
+                {
+                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxMC });
+                }
             };
 
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 605,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Dark",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
+            x += button.Size.Width + 5;
 
-            AdvantageStats[Stat.DarkResistance] = new DXLabel
+            button = new DXButton
             {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
+                Parent = HermitTab,
+                Location = new Point(x, 97),
+                Label = { Text = "SC" },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(65, SmallButtonHeight)
             };
-
-            icon = new DXImageControl
+            button.MouseClick += (o, e) =>
             {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 606,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Phantom",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
+                if (HermitPoints == 0) return;
 
-            AdvantageStats[Stat.PhantomResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text = "0",
-                Tag = icon,
+                if (HermitShowConfirmation.Checked)
+                {
+                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your SC?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
+
+                    box.YesButton.MouseClick += (o1, e1) =>
+                    {
+                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxSC });
+                    };
+                }
+                else
+                {
+                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxSC });
+                }
             };
 
-            icon = new DXImageControl
+            button = new DXButton
             {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.GameInter,
-                Index = 1517,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Physical",
+                Parent = HermitTab,
+                Location = new Point(x, 122),
+                Label = { Text = "Element" },
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(65, SmallButtonHeight)
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 150, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
-
-            AdvantageStats[Stat.PhysicalResistance] = new DXLabel
+            button.MouseClick += (o, e) =>
             {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text = "0",
-                Tag = icon,
+                if (HermitPoints == 0) return;
+
+                if (HermitShowConfirmation.Checked)
+                {
+                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your Element Attack?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
+
+                    box.YesButton.MouseClick += (o1, e1) =>
+                    {
+                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.WeaponElement });
+                    };
+                }
+                else
+                {
+                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.WeaponElement });
+                }
             };
 
             #endregion
 
-            #region Resistance
-
-
-            label = new DXLabel
-            {
-                Parent = StatsTab,
-                Text = "E. Dis:"
-            };
-            label.Location = new Point(50 - label.Size.Width, 295);
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 600,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Fire",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
-
-            DisadvantageStats[Stat.FireResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 601,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Ice",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
-
-            DisadvantageStats[Stat.IceResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 602,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Lightning",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
-
-            DisadvantageStats[Stat.LightningResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 603,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Wind",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 150, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2);
-
-            DisadvantageStats[Stat.WindResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 604,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Holy",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
-
-            DisadvantageStats[Stat.HolyResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 605,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Dark",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
-
-            DisadvantageStats[Stat.DarkResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.ProgUse,
-                Index = 606,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Phantom",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
-
-            DisadvantageStats[Stat.PhantomResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text ="0",
-                Tag = icon,
-            };
-
-            icon = new DXImageControl
-            {
-                Parent = StatsTab,
-                LibraryFile = LibraryFile.GameInter,
-                Index = 1517,
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Physical",
-            };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 150, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
-
-            DisadvantageStats[Stat.PhysicalResistance] = new DXLabel
-            {
-                Parent = StatsTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
-                ForeColour = Color.FromArgb(60, 60, 60),
-                Text = "0",
-                Tag = icon,
-            };
-
-            #endregion
-
-
+            #region Hermit Stats
 
             label = new DXLabel
             {
                 Parent = HermitTab,
                 Text = "AC:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + 25, 15);
+            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + 25, 175);
 
             HermitDisplayStats[Stat.MaxAC] = new DXLabel
             {
@@ -1177,7 +1806,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "MR:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 15);
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 175);
 
             HermitDisplayStats[Stat.MaxMR] = new DXLabel
             {
@@ -1192,7 +1821,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "DC:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + 25, 35);
+            label.Location = new Point(HermitTab.Size.Width / 5 - label.Size.Width + 25, 205);
 
             HermitDisplayStats[Stat.MaxDC] = new DXLabel
             {
@@ -1207,7 +1836,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "MC:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 35);
+            label.Location = new Point(HermitTab.Size.Width / 5 * 2 - label.Size.Width + 25, 205);
 
             HermitDisplayStats[Stat.MaxMC] = new DXLabel
             {
@@ -1222,7 +1851,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "SC:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 3 - label.Size.Width + 25, 35);
+            label.Location = new Point(HermitTab.Size.Width / 5 * 3 - label.Size.Width + 25, 205);
 
             HermitDisplayStats[Stat.MaxSC] = new DXLabel
             {
@@ -1231,13 +1860,13 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White,
                 Text = "0-0"
             };
-            
+
             label = new DXLabel
             {
                 Parent = HermitTab,
                 Text = "Health:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4  - label.Size.Width + 25, 55);
+            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + 25, 235);
 
             HermitDisplayStats[Stat.Health] = new DXLabel
             {
@@ -1252,7 +1881,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "Mana:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 55);
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 235);
 
             HermitDisplayStats[Stat.Mana] = new DXLabel
             {
@@ -1264,13 +1893,13 @@ namespace Client.Scenes.Views
 
 
             #region Attack
-            
+
             label = new DXLabel
             {
                 Parent = HermitTab,
                 Text = "E. Att:"
             };
-            label.Location = new Point(50 - label.Size.Width, 90);
+            label.Location = new Point(65 - label.Size.Width, 295);
 
             icon = new DXImageControl
             {
@@ -1356,12 +1985,12 @@ namespace Client.Scenes.Views
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = "Holy",
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
+            icon.Location = new Point(label.Location.X + label.Size.Width, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 30);
 
             HermitAttackStats[Stat.HolyAttack] = new DXLabel
             {
                 Parent = HermitTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 30),
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Text = "0",
                 Tag = icon,
@@ -1375,12 +2004,12 @@ namespace Client.Scenes.Views
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = "Dark",
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
+            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 30);
 
             HermitAttackStats[Stat.DarkAttack] = new DXLabel
             {
                 Parent = HermitTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 30),
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Text = "0",
                 Tag = icon,
@@ -1394,12 +2023,12 @@ namespace Client.Scenes.Views
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = "Phantom",
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 25);
+            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 30);
 
             HermitAttackStats[Stat.PhantomAttack] = new DXLabel
             {
                 Parent = HermitTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 25),
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 30),
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Text = "0",
                 Tag = icon,
@@ -1408,264 +2037,11 @@ namespace Client.Scenes.Views
             #endregion
 
 
-            label = new DXLabel
-            {
-                Parent = HermitTab,
-                Text = "Unspent Points:"
-            };
-            label.Location = new Point(HermitTab.Size.Width / 4  * 2- label.Size.Width + 25, 150);
+            #endregion
 
-            RemainingLabel = new DXLabel
-            {
-                Parent = HermitTab,
-                Location = new Point(label.Location.X + label.Size.Width - 5, label.Location.Y),
-                ForeColour = Color.White,
-                Text = "0"
-            };
-
-            DXCheckBox check = new DXCheckBox
-            {
-                Parent = HermitTab,
-                Label = { Text = "Show Confirmation" },
-                Checked = true,
-            };
-            check.Location = new Point(HermitTab.Size.Width - check.Size.Width - 10, HermitTab.Size.Height - check.Size.Height - 10);
-
-            DXButton but = new DXButton
-            {
-                Parent = HermitTab,
-                Location = new Point(50, 180),
-                Label = { Text = "AC" },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight)
-            };
-            but.MouseClick += (o, e) =>
-            {
-                if (MapObject.User.HermitPoints == 0) return;
-
-                if (check.Checked)
-                {
-                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your AC?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
-
-                    box.YesButton.MouseClick += (o1, e1) =>
-                    {
-                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxAC });
-                    };
-                }
-                else
-                {
-                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxAC });
-                }
-            };
-
-            but = new DXButton
-            {
-                Parent = HermitTab,
-                Location = new Point(150, but.Location.Y),
-                Label = { Text = "MR" },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight),
-            };
-            but.MouseClick += (o, e) =>
-            {
-                if (MapObject.User.HermitPoints == 0) return;
-
-                if (check.Checked)
-                {
-                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your MR?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
-
-                    box.YesButton.MouseClick += (o1, e1) =>
-                    {
-                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxMR });
-                    };
-                }
-                else
-                {
-                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxMR });
-                }
-            };
-
-            but = new DXButton
-            {
-                Parent = HermitTab,
-                Location = new Point(50, but.Location.Y + 25),
-                Label = { Text = "Health" },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight)
-            };
-            but.MouseClick += (o, e) =>
-            {
-                if (MapObject.User.HermitPoints == 0) return;
-
-                if (check.Checked)
-                {
-                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your Health?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
-
-                    box.YesButton.MouseClick += (o1, e1) =>
-                    {
-                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.Health });
-                    };
-                }
-                else
-                {
-                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.Health });
-                }
-            };
-
-            but = new DXButton
-            {
-                Parent = HermitTab,
-                Location = new Point(150, but.Location.Y ),
-                Label = { Text = "Mana" },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight)
-            };
-            but.MouseClick += (o, e) =>
-            {
-                if (MapObject.User.HermitPoints == 0) return;
-
-                if (check.Checked)
-                {
-                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your Mana?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
-
-                    box.YesButton.MouseClick += (o1, e1) =>
-                    {
-                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.Mana });
-                    };
-                }
-                else
-                {
-                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.Mana });
-                }
-            };
-
-
-            but = new DXButton
-            {
-                Parent = HermitTab,
-                Location = new Point(50, but.Location.Y + 25),
-                Label = { Text = "DC" },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight)
-            };
-            but.MouseClick += (o, e) =>
-            {
-                if (MapObject.User.HermitPoints == 0) return;
-
-                if (check.Checked)
-                {
-                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your DC?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
-
-                    box.YesButton.MouseClick += (o1, e1) =>
-                    {
-                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxDC });
-                    };
-                }
-                else
-                {
-                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxDC });
-                }
-            };
-
-            but = new DXButton
-            {
-                Parent = HermitTab,
-                Location = new Point(50, but.Location.Y + 25),
-                Label = { Text = "MC" },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight)
-            };
-            but.MouseClick += (o, e) =>
-            {
-                if (MapObject.User.HermitPoints == 0) return;
-
-                if (check.Checked)
-                {
-                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your MC?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
-
-                    box.YesButton.MouseClick += (o1, e1) =>
-                    {
-                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxMC });
-                    };
-                }
-                else
-                {
-                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxMC });
-                }
-            };
-
-            but = new DXButton
-            {
-                Parent = HermitTab,
-                Location = new Point(150, but.Location.Y ),
-                Label = { Text = "SC" },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight)
-            };
-            but.MouseClick += (o, e) =>
-            {
-                if (MapObject.User.HermitPoints == 0) return;
-
-                if (check.Checked)
-                {
-                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your SC?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
-
-                    box.YesButton.MouseClick += (o1, e1) =>
-                    {
-                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxSC });
-                    };
-                }
-                else
-                {
-                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.MaxSC });
-                }
-            };
-
-
-            but = new DXButton
-            {
-                Parent = HermitTab,
-                Location = new Point(100, but.Location.Y + 25),
-                Label = { Text = "Element" },
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(80, SmallButtonHeight)
-            };
-            but.MouseClick += (o, e) =>
-            {
-                if (MapObject.User.HermitPoints == 0) return;
-
-                if (check.Checked)
-                {
-                    DXMessageBox box = new DXMessageBox("Are you sure you want to increase your Element Attack?", "Hermit Confirmation", DXMessageBoxButtons.YesNo);
-
-                    box.YesButton.MouseClick += (o1, e1) =>
-                    {
-                        CEnvir.Enqueue(new C.Hermit { Stat = Stat.WeaponElement });
-                    };
-                }
-                else
-                {
-                    CEnvir.Enqueue(new C.Hermit { Stat = Stat.WeaponElement });
-                }
-            };
-
-
+            #endregion
         }
 
-        #region Methods
-        public void Draw(DXItemCell cell, int index)
-        {
-            if (InterfaceLibrary == null) return;
-
-            if (cell.Item != null) return;
-
-            Size s = InterfaceLibrary.GetSize(index);
-            int x = (cell.Size.Width - s.Width) / 2 + cell.DisplayArea.X;
-            int y = (cell.Size.Height - s.Height) / 2 + cell.DisplayArea.Y;
-
-            InterfaceLibrary.Draw(index, x, y, Color.White, false, 0.2F, ImageType.Image);
-        }
-        
         private void CharacterTab_BeforeChildrenDraw(object sender, EventArgs e)
         {
             MirLibrary library;
@@ -1675,7 +2051,7 @@ namespace Client.Scenes.Views
 
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library)) return;
 
-            if (Grid[(int)EquipmentSlot.Armour].Item != null)
+            if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
             {
                 int index = Grid[(int)EquipmentSlot.Armour].Item.Info.Image;
 
@@ -1799,10 +2175,10 @@ namespace Client.Scenes.Views
 
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out library)) return;
 
-            if (MapObject.User.Class == MirClass.Assassin && MapObject.User.Gender == MirGender.Female && MapObject.User.HairType == 1 && Grid[(int) EquipmentSlot.Helmet].Item == null)
-                library.Draw(1160, DisplayArea.X + x, DisplayArea.Y + y, MapObject.User.HairColour, true, 1F, ImageType.Image);
+            if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && Grid[(int)EquipmentSlot.Helmet].Item == null)
+                library.Draw(1160, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
 
-            switch (MapObject.User.Gender)
+            switch (Gender)
             {
                 case MirGender.Male:
                     library.Draw(0, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
@@ -1815,9 +2191,9 @@ namespace Client.Scenes.Views
 
             if (CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library))
             {
-                if (Grid[(int) EquipmentSlot.Armour].Item != null)
+                if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
                 {
-                    int index = Grid[(int) EquipmentSlot.Armour].Item.Info.Image;
+                    int index = Grid[(int)EquipmentSlot.Armour].Item.Info.Image;
 
                     MirLibrary effectLibrary;
 
@@ -1837,10 +2213,10 @@ namespace Client.Scenes.Views
 
 
                     library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int) EquipmentSlot.Armour].Item.Colour, true, 1F, ImageType.Overlay);
+                    library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Armour].Item.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (Grid[(int)EquipmentSlot.Weapon].Item != null)
+                if (Grid[(int)EquipmentSlot.Weapon]?.Item != null)
                 {
                     int index = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
 
@@ -1848,7 +2224,7 @@ namespace Client.Scenes.Views
                     library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (Grid[(int)EquipmentSlot.Shield].Item != null)
+                if (Grid[(int)EquipmentSlot.Shield]?.Item != null)
                 {
                     int index = Grid[(int)EquipmentSlot.Shield].Item.Info.Image;
 
@@ -1857,43 +2233,43 @@ namespace Client.Scenes.Views
                 }
             }
 
-            if (HasFishingRobe)
-                return;
+            var hasFishingRobe = Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe;
+            if (hasFishingRobe) return;
 
-            if (Grid[(int)EquipmentSlot.Helmet].Item != null && library != null)
+            if (Grid[(int)EquipmentSlot.Helmet]?.Item != null && library != null)
             {
-                int index = Grid[(int) EquipmentSlot.Helmet].Item.Info.Image;
+                int index = Grid[(int)EquipmentSlot.Helmet].Item.Info.Image;
 
                 library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int) EquipmentSlot.Helmet].Item.Colour, true, 1F, ImageType.Overlay);
+                library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Helmet].Item.Colour, true, 1F, ImageType.Overlay);
             }
-            else if (MapObject.User.HairType > 0)
+            else if (HairType > 0)
             {
                 library = CEnvir.LibraryList[LibraryFile.ProgUse];
 
-                switch (MapObject.User.Class)
+                switch (Class)
                 {
                     case MirClass.Warrior:
                     case MirClass.Wizard:
                     case MirClass.Taoist:
-                        switch (MapObject.User.Gender)
+                        switch (Gender)
                         {
                             case MirGender.Male:
-                                library.Draw(60 + MapObject.User.HairType - 1, DisplayArea.X + x, DisplayArea.Y + y, MapObject.User.HairColour, true, 1F, ImageType.Image);
+                                library.Draw(60 + HairType - 1, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
                                 break;
                             case MirGender.Female:
-                                library.Draw(80 + MapObject.User.HairType - 1, DisplayArea.X + x, DisplayArea.Y + y, MapObject.User.HairColour, true, 1F, ImageType.Image);
+                                library.Draw(80 + HairType - 1, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
                                 break;
                         }
                         break;
                     case MirClass.Assassin:
-                        switch (MapObject.User.Gender)
+                        switch (Gender)
                         {
                             case MirGender.Male:
-                                library.Draw(1100 + MapObject.User.HairType - 1, DisplayArea.X + x, DisplayArea.Y + y, MapObject.User.HairColour, true, 1F, ImageType.Image);
+                                library.Draw(1100 + HairType - 1, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
                                 break;
                             case MirGender.Female:
-                                library.Draw(1120 + MapObject.User.HairType - 1, DisplayArea.X + x, DisplayArea.Y + y, MapObject.User.HairColour, true, 1F, ImageType.Image);
+                                library.Draw(1120 + HairType - 1, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
                                 break;
                         }
                         break;
@@ -1902,30 +2278,33 @@ namespace Client.Scenes.Views
             }
         }
 
-        public void UpdateDropFilters()
+
+        #region Methods
+
+        public void Draw(DXItemCell cell, int index)
         {
-            if (Config.HighlightedItems != string.Empty)
-            {
-                string[] items = Config.HighlightedItems.Split(',');
-                for (int i = 0; i < 10; i++)
-                {
-                    DropFiltersMap[i].TextBox.Text = items[i];
-                }
-            }
+            if (InterfaceLibrary == null) return;
+
+            if (cell.Item != null) return;
+
+            Size s = InterfaceLibrary.GetSize(index);
+            int x = (cell.Size.Width - s.Width) / 2 + cell.DisplayArea.X;
+            int y = (cell.Size.Height - s.Height) / 2 + cell.DisplayArea.Y;
+
+            InterfaceLibrary.Draw(index, x, y, Color.White, false, 0.2F, ImageType.Image);
         }
 
         public void UpdateStats()
         {
             foreach (KeyValuePair<Stat, DXLabel> pair in DisplayStats)
-                pair.Value.Text = MapObject.User.Stats.GetFormat(pair.Key);
+                pair.Value.Text = Stats.GetFormat(pair.Key);
 
-            
             foreach (KeyValuePair<Stat, DXLabel> pair in AttackStats)
             {
 
-                if (MapObject.User.Stats[pair.Key] > 0)
+                if (Stats[pair.Key] > 0)
                 {
-                    pair.Value.Text = $"+{MapObject.User.Stats[pair.Key]}";
+                    pair.Value.Text = $"+{Stats[pair.Key]}";
                     pair.Value.ForeColour = Color.DeepSkyBlue;
                     ((DXImageControl)pair.Value.Tag).ForeColour = Color.White;
                 }
@@ -1939,9 +2318,9 @@ namespace Client.Scenes.Views
 
             foreach (KeyValuePair<Stat, DXLabel> pair in AdvantageStats)
             {
-                if (MapObject.User.Stats[pair.Key] > 0)
+                if (Stats[pair.Key] > 0)
                 {
-                    pair.Value.Text = $"x{MapObject.User.Stats[pair.Key]}";
+                    pair.Value.Text = $"x{Stats[pair.Key]}";
                     pair.Value.ForeColour = Color.Lime;
                     ((DXImageControl)pair.Value.Tag).ForeColour = Color.White;
                 }
@@ -1955,11 +2334,11 @@ namespace Client.Scenes.Views
 
             foreach (KeyValuePair<Stat, DXLabel> pair in DisadvantageStats)
             {
-                pair.Value.Text = MapObject.User.Stats.GetFormat(pair.Key);
+                pair.Value.Text = Stats.GetFormat(pair.Key);
 
-                if (MapObject.User.Stats[pair.Key] < 0)
+                if (Stats[pair.Key] < 0)
                 {
-                    pair.Value.Text = $"x{Math.Abs(MapObject.User.Stats[pair.Key])}";
+                    pair.Value.Text = $"x{Math.Abs(Stats[pair.Key])}";
                     pair.Value.ForeColour = Color.IndianRed;
                     ((DXImageControl)pair.Value.Tag).ForeColour = Color.White;
                 }
@@ -1973,15 +2352,15 @@ namespace Client.Scenes.Views
 
 
             foreach (KeyValuePair<Stat, DXLabel> pair in HermitDisplayStats)
-                pair.Value.Text = MapObject.User.HermitStats.GetFormat(pair.Key);
+                pair.Value.Text = HermitStats.GetFormat(pair.Key);
 
 
             foreach (KeyValuePair<Stat, DXLabel> pair in HermitAttackStats)
             {
 
-                if (MapObject.User.HermitStats[pair.Key] > 0)
+                if (HermitStats[pair.Key] > 0)
                 {
-                    pair.Value.Text = $"+{MapObject.User.HermitStats[pair.Key]}";
+                    pair.Value.Text = $"+{HermitStats[pair.Key]}";
                     pair.Value.ForeColour = Color.White;
                     ((DXImageControl)pair.Value.Tag).ForeColour = Color.White;
                 }
@@ -1993,11 +2372,52 @@ namespace Client.Scenes.Views
                 }
             }
 
-            RemainingLabel.Text = MapObject.User.HermitPoints.ToString();
-
-            UpdateDropFilters();
+           HermitRemainingLabel.Text = HermitPoints.ToString();
         }
+
+        public void NewInformation(S.Inspect p)
+        {
+            if (!Inspect) return;
+
+            Visible = true;
+            CharacterNameLabel.Text = p.Name;
+            GuildNameLabel.Text = p.GuildName;
+            GuildRankLabel.Text = p.GuildRank;
+
+            //_inspectStats.Clear();
+            //_inspectStats.Add(p.Stats);
+
+            //_inspectHermitStats.Clear();
+            //_inspectHermitStats.Add(p.HermitStats);
+            //_inspectHermitPoints = p.HermitPoints;
+
+            _inspectGender = p.Gender;
+            _inspectClass = p.Class;
+            _inspectLevel = p.Level;
+
+            MarriageIcon.Visible = !string.IsNullOrEmpty(p.Partner);
+            MarriageIcon.Hint = p.Partner;
+
+            _inspectHairColour = p.HairColour;
+            _inspectHairType = p.Hair;
+
+            foreach (DXItemCell cell in Grid)
+                cell.Item = null;
+
+            foreach (ClientUserItem item in p.Items)
+                Grid[item.Slot].Item = item;
+
+            //WearWeightLabel.Text = $"{p.WearWeight}/{p.Stats[Stat.WearWeight]}";
+            //HandWeightLabel.Text = $"{p.HandWeight}/{p.Stats[Stat.HandWeight]}";
+
+            //WearWeightLabel.ForeColour = p.WearWeight > Stats[Stat.WearWeight] ? Color.Red : Color.White;
+            //HandWeightLabel.ForeColour = p.HandWeight > Stats[Stat.HandWeight] ? Color.Red : Color.White;
+
+            UpdateStats();
+        }
+
         #endregion
+
 
         #region IDisposable
 
@@ -2015,20 +2435,20 @@ namespace Client.Scenes.Views
                     TabControl = null;
                 }
 
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
                 if (CharacterTab != null)
                 {
                     if (!CharacterTab.IsDisposed)
                         CharacterTab.Dispose();
 
                     CharacterTab = null;
-                }
-
-                if (StatsTab != null)
-                {
-                    if (!StatsTab.IsDisposed)
-                        StatsTab.Dispose();
-
-                    StatsTab = null;
                 }
 
                 if (HermitTab != null)
@@ -2069,6 +2489,78 @@ namespace Client.Scenes.Views
                         MarriageIcon.Dispose();
 
                     MarriageIcon = null;
+                }
+
+                if (StatsAttackTab != null)
+                {
+                    if (!StatsAttackTab.IsDisposed)
+                        StatsAttackTab.Dispose();
+
+                    StatsAttackTab = null;
+                }
+
+                if (StatsAttackTab != null)
+                {
+                    if (!StatsAttackTab.IsDisposed)
+                        StatsAttackTab.Dispose();
+
+                    StatsAttackTab = null;
+                }
+
+                if (StatsDefenseTab != null)
+                {
+                    if (!StatsDefenseTab.IsDisposed)
+                        StatsDefenseTab.Dispose();
+
+                    StatsDefenseTab = null;
+                }
+
+                if (StatsWeightTab != null)
+                {
+                    if (!StatsWeightTab.IsDisposed)
+                        StatsWeightTab.Dispose();
+
+                    StatsWeightTab = null;
+                }
+
+                if (StatsOtherTab != null)
+                {
+                    if (!StatsOtherTab.IsDisposed)
+                        StatsOtherTab.Dispose();
+
+                    StatsOtherTab = null;
+                }
+
+                if (StatsElementAttackTab != null)
+                {
+                    if (!StatsElementAttackTab.IsDisposed)
+                        StatsElementAttackTab.Dispose();
+
+                    StatsElementAttackTab = null;
+                }
+
+                if (StatsElementAdvantageTab != null)
+                {
+                    if (!StatsElementAdvantageTab.IsDisposed)
+                        StatsElementAdvantageTab.Dispose();
+
+                    StatsElementAdvantageTab = null;
+                }
+
+                if (StatsElementDisadvantageTab != null)
+                {
+                    if (!StatsElementDisadvantageTab.IsDisposed)
+                        StatsElementDisadvantageTab.Dispose();
+
+                    StatsElementDisadvantageTab = null;
+                }
+
+                if (StatsTabControl != null)
+                {
+                    if (!StatsTabControl.IsDisposed)
+                        StatsTabControl.Dispose();
+
+                    StatsTabControl = null;
                 }
 
                 if (Grid != null)
@@ -2143,6 +2635,22 @@ namespace Client.Scenes.Views
                 DisadvantageStats.Clear();
                 DisadvantageStats = null;
 
+                if (HermitRemainingLabel != null)
+                {
+                    if (!HermitRemainingLabel.IsDisposed)
+                        HermitRemainingLabel.Dispose();
+
+                    HermitRemainingLabel = null;
+                }
+
+                if (HermitShowConfirmation != null)
+                {
+                    if (!HermitShowConfirmation.IsDisposed)
+                        HermitShowConfirmation.Dispose();
+
+                    HermitShowConfirmation = null;
+                }
+
                 foreach (KeyValuePair<Stat, DXLabel> pair in HermitDisplayStats)
                 {
                     if (pair.Value == null) continue;
@@ -2163,16 +2671,12 @@ namespace Client.Scenes.Views
                 HermitAttackStats.Clear();
                 HermitAttackStats = null;
 
-                if (RemainingLabel != null)
-                {
-                    if (!RemainingLabel.IsDisposed)
-                        RemainingLabel.Dispose();
+                _inspectEquipment = null;
+                _inspectStats = null;
+                _inspectHermitStats = null;
 
-                    RemainingLabel = null;
-                }
-
+                Settings = null;
             }
-
         }
 
         #endregion

@@ -165,10 +165,10 @@ namespace Client.Models.Particles
 
             Size size = Library.GetSize(TextureIndex);
 
-            var width = (size.Width * 1) / 2;
-            var height = (size.Height * 1) / 2;
+            var width = (size.Width) / 2;
+            var height = (size.Height) / 2;
 
-            Library.DrawBlend(TextureIndex, Scale, Color, Position.X - width, Position.Y - height, Angle, Opacity, ImageType.Image, false, 0);
+            Library.DrawBlend(TextureIndex, Scale, Color.Gray, Position.X - width, Position.Y - height, Angle, Opacity, ImageType.Image, false, 0);
         }
     }
 }

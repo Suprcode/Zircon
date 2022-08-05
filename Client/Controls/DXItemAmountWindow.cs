@@ -22,7 +22,7 @@ namespace Client.Controls
 
         public override WindowType Type => WindowType.ItemAmountBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
 
         #endregion
 

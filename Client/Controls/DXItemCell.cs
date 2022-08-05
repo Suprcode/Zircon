@@ -534,6 +534,33 @@ namespace Client.Controls
         }
         #endregion
 
+
+        #region Hidden
+
+        public bool Hidden
+        {
+            get => _Hidden;
+            set
+            {
+                if (_Hidden == value) return;
+
+                bool oldValue = _Hidden;
+                _Hidden = value;
+
+                OnHiddenChanged(oldValue, value);
+            }
+        }
+        private bool _Hidden;
+        public event EventHandler<EventArgs> HiddenChanged;
+        public void OnHiddenChanged(bool oValue, bool nValue)
+        {
+            HiddenChanged?.Invoke(this, EventArgs.Empty);
+
+            UpdateBorder();
+        }
+
+        #endregion
+
         public DXItemCell()
         {
             BackColour = Color.Empty;
@@ -625,20 +652,22 @@ namespace Client.Controls
                     drawIndex = info.Image;
                 }
 
-
-                MirImage image = Library.CreateImage(drawIndex, ImageType.Image);
-                if (image != null)
+                if (!Hidden)
                 {
-                    Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
-                    area.Offset((Size.Width - image.Width)/2, (Size.Height - image.Height)/2);
-                    ItemInfo info = Item.Info;
-                    if (info.Effect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
+                    MirImage image = Library.CreateImage(drawIndex, ImageType.Image);
+                    if (image != null)
                     {
-                        info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
-                        PresentTexture(image.Image, this, area, Item.Count >= info.PartCount ? Color.White : Color.Gray, this);
+                        Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
+                        area.Offset((Size.Width - image.Width) / 2, (Size.Height - image.Height) / 2);
+                        ItemInfo info = Item.Info;
+                        if (info.Effect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
+                        {
+                            info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
+                            PresentTexture(image.Image, this, area, Item.Count >= info.PartCount ? Color.White : Color.Gray, this);
+                        }
+                        else
+                            PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
                     }
-                    else
-                        PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
                 }
             }
 
@@ -669,6 +698,13 @@ namespace Client.Controls
         public void UpdateBorder()
         {
             BackColour = Color.Empty;
+
+            if (Hidden)
+            {
+                BackColour = Color.Empty;
+                Border = false;
+                return;
+            }
 
             if (!Enabled)
                 BackColour = Color.FromArgb(125,0,125,125);
@@ -1437,8 +1473,6 @@ namespace Client.Controls
                 else
                     cell = GameScene.Game.InventoryBox.Grid.Grid.FirstOrDefault(x => x?.Item == QuickItem);
 
-
-
                 return cell?.UseItem() == true;
             }
 
@@ -1673,7 +1707,7 @@ namespace Client.Controls
         }
         public override void OnMouseClick(MouseEventArgs e)
         {
-            if (Locked || GameScene.Game.GoldPickedUp || (!Linked && Link != null) || GameScene.Game.Observer) return;
+            if (Locked || GameScene.Game.GoldPickedUp || (!Linked && Link != null) || GameScene.Game.Observer || GridType == GridType.Inspect) return;
 
             base.OnMouseClick(e);
 

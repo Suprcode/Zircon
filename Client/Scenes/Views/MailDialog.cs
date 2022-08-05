@@ -44,7 +44,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.MailBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => true;
+        public override bool AutomaticVisibility => true;
         #endregion
 
         public MailDialog()
@@ -554,7 +554,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.ReadMailBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
         #endregion
 
         public ReadMailDialog()
@@ -864,7 +864,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.SendMailBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
 
         #endregion
 

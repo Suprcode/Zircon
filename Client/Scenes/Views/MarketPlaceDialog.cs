@@ -249,7 +249,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.MarketPlaceBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => true;
+        public override bool AutomaticVisibility => true;
 
         #endregion
 

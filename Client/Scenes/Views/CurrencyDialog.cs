@@ -75,7 +75,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.None;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
 
         #endregion
 

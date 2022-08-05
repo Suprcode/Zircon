@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Client.Models.Particles
 {
-    public abstract class ParticleEmitter
+    public abstract class ParticleEmitter : IDisposable
     {
         protected Point[] CenterPoint;
 
@@ -24,7 +24,7 @@ namespace Client.Models.Particles
 
         public List<ParticleType> ParticleTypes;
 
-        private readonly MirEffect _owner;
+        private MirEffect _owner;
 
         private bool _stopGeneration;
 
@@ -72,7 +72,7 @@ namespace Client.Models.Particles
             {
                 foreach (var particle in ParticleTypes)
                 {
-                    if (particle.Particles.Count <= particle.MaxCount && particle.NextSpawn < CEnvir.Now)
+                    if (particle.Particles.Count < particle.MaxCount && particle.NextSpawn < CEnvir.Now)
                     {
                         particle.Particles.Add(particle.CreateParticle(Location, Direction, Angle));
                         particle.NextSpawn = CEnvir.Now.Add(particle.SpawnFrequency);
@@ -105,11 +105,24 @@ namespace Client.Models.Particles
         {
             if (_startTime > CEnvir.Now) return;
 
-            foreach (var particle in ParticleTypes)
+            foreach (var types in ParticleTypes)
             {
-                for (int i = 0; i < particle.Particles.Count; i++)
+                for (int i = types.Particles.Count - 1; i >= 0; i--)
                 {
-                    particle.Particles[i].Draw();
+                    var p = types.Particles[i];
+
+                    Size size = p.Library.GetSize(p.TextureIndex);
+
+                    var width = ((size.Width) / 2) * p.Scale;
+                    var height = ((size.Height) / 2) * p.Scale;
+
+                    if (p.Position.X - width > Config.GameSize.Width || p.Position.Y - height > Config.GameSize.Height)
+                    {
+                        types.Particles.Remove(p);
+                        continue;
+                    }
+
+                    p.Draw();
                 }
             }
         }
@@ -118,6 +131,22 @@ namespace Client.Models.Particles
         {
             GameScene.Game.MapControl.ParticleEffects.Remove(this);
         }
-    }
 
+        public void Dispose()
+        {
+            if (ParticleTypes != null)
+            {
+                CenterPoint = null;
+                _owner = null;
+
+                foreach (var particle in ParticleTypes)
+                {
+                    particle.Dispose();
+                }
+
+                ParticleTypes.Clear();
+                ParticleTypes = null;
+            }
+        }
+    }
 }

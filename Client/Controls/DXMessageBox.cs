@@ -60,7 +60,7 @@ namespace Client.Controls
 
         public override WindowType Type => WindowType.MessageBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
         #endregion
 
         public DXMessageBox(string message, string caption, DXMessageBoxButtons buttons = DXMessageBoxButtons.OK)

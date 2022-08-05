@@ -490,6 +490,8 @@ namespace Client.Scenes.Views
 
         private void UpdateWeather()
         {
+            //GameScene.Game.MapControl.ParticleEffects.Clear();
+
             //var point = new Point((Size.Width) / 2, (Size.Height) / 2);
 
             //var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Fog), point);
@@ -1256,8 +1258,18 @@ namespace Client.Scenes.Views
                 ViewRangeY = 0;
                 OffSetX = 0;
                 OffSetY = 0;
-            }
 
+                if (ParticleEffects != null)
+                {
+                    foreach (var effect in ParticleEffects)
+                    {
+                        effect.Dispose();
+                    }
+
+                    ParticleEffects.Clear();
+                    ParticleEffects = null;
+                }
+            }
         }
 
         #endregion

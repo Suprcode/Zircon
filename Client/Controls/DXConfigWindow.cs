@@ -30,7 +30,11 @@ namespace Client.Controls
 
         //Game 
         public DXTab GameTab;
-        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox, EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox, DrawParticlesCheckBox;
+        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox, 
+            EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox, 
+            DrawParticlesCheckBox;
+        public DXCheckBox DisplayHelmetCheckBox;
+
         public DXButton KeyBindButton;
 
         //Network
@@ -109,14 +113,14 @@ namespace Client.Controls
 
         public override WindowType Type => WindowType.ConfigBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
         #endregion
 
         public DXConfigWindow()
         {
             ActiveConfig = this;
 
-            Size = new Size(300, 305);
+            Size = new Size(300, 330);
             TitleLabel.Text = "Configuration";
             HasFooter = true;
 
@@ -383,7 +387,7 @@ namespace Client.Controls
 
             DamageNumbersCheckBox = new DXCheckBox
             {
-                Label = { Text = "Damage Numbers:" },
+                Label = { Text = "Dmg Numbers:" },
                 Parent = GameTab,
             };
             DamageNumbersCheckBox.Location = new Point(120 - DamageNumbersCheckBox.Size.Width, 135);
@@ -394,6 +398,17 @@ namespace Client.Controls
                 Parent = GameTab,
             };
             DrawParticlesCheckBox.Location = new Point(120 - DrawParticlesCheckBox.Size.Width, 160);
+
+            DisplayHelmetCheckBox = new DXCheckBox
+            {
+                Label = { Text = "Display Helmet:" },
+                Parent = GameTab,
+            };
+            DisplayHelmetCheckBox.Location = new Point(120 - DisplayHelmetCheckBox.Size.Width, 185);
+            DisplayHelmetCheckBox.MouseClick += (o, e) =>
+            {
+                CEnvir.Enqueue(new C.HelmetToggle { HideHelmet = DisplayHelmetCheckBox.Checked });
+            };
 
             EscapeCloseAllCheckBox = new DXCheckBox
             {

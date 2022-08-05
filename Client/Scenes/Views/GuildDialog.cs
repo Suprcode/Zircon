@@ -295,7 +295,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.GuildBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => true;
+        public override bool AutomaticVisibility => true;
 
         #endregion
 
@@ -2383,7 +2383,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.GuildMemberBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
 
         #endregion
 

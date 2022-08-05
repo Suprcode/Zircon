@@ -35,7 +35,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.TradeBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => false;
+        public override bool AutomaticVisibility => false;
         #endregion
 
         public TradeDialog()

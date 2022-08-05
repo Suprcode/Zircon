@@ -3028,6 +3028,7 @@ namespace Client.Envir
         {
             MapObject.User.InSafeZone = P.InSafeZone;
         }
+
         public void Process(S.CombatTime p)
         {
             GameScene.Game.User.CombatTime = CEnvir.Now;
@@ -3035,11 +3036,9 @@ namespace Client.Envir
 
         public void Process(S.Inspect p)
         {
-
-
             GameScene.Game.InspectBox.NewInformation(p);
-
         }
+
         public void Process(S.Rankings p)
         {
             (DXControl.ActiveScene as LoginScene)?.RankingBox.Update(p);
@@ -4066,7 +4065,7 @@ namespace Client.Envir
 
         public void Process(S.HelmetToggle p)
         {
-            GameScene.Game.CharacterBox.ShowHelmetBox.Checked = !p.HideHelmet;
+            GameScene.Game.ConfigBox.DisplayHelmetCheckBox.Checked = !p.HideHelmet;
         }
 
         public void Process(S.StorageSize p)

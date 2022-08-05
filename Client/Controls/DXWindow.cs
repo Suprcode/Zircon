@@ -124,7 +124,7 @@ namespace Client.Controls
 
         public abstract WindowType Type { get; }
         public abstract bool CustomSize { get; }
-        public abstract bool AutomaticVisiblity { get; }
+        public abstract bool AutomaticVisibility { get; }
 
         public DXButton CloseButton { get; protected set; }
         public DXLabel TitleLabel { get; protected set; }
@@ -171,7 +171,7 @@ namespace Client.Controls
             if (IsVisible)
                 BringToFront();
 
-            if (Settings != null && AutomaticVisiblity)
+            if (Settings != null && AutomaticVisibility)
                 Settings.Visible = nValue;
         }
 
@@ -506,7 +506,7 @@ namespace Client.Controls
 
             Location = Settings.Location;
 
-            if (AutomaticVisiblity)
+            if (AutomaticVisibility)
                 Visible = Settings.Visible;
 
             if (CustomSize)

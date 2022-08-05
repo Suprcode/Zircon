@@ -333,5 +333,8 @@ namespace Client.UserModels
 
         [Description("Currency Window")]
         CurrencyWindow,
+
+        [Description("Filter Drop Window")]
+        FilterDropWindow,
     }
 }

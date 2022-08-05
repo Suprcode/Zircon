@@ -815,6 +815,11 @@ namespace Client.Envir
                     bind.Key1 = Keys.C;
                     bind.Control1 = true;
                     break;
+                case KeyBindAction.FilterDropWindow:
+                    bind.Category = "Windows";
+                    bind.Key1 = Keys.F;
+                    bind.Control1 = true;
+                    break;
             }
         }
 

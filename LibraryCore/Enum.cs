@@ -1207,7 +1207,6 @@ namespace Library
         Black,
         WhiteUnicorn,
         RedUnicorn
-
     }
 
     [Flags]

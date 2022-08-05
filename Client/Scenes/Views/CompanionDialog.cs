@@ -29,7 +29,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.CompanionBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => true;
+        public override bool AutomaticVisibility => true;
 
         #endregion
 

@@ -2319,9 +2319,9 @@ namespace Server.Models
                 Partner = target.Partner?.CharacterName,
                 Class = target.Class,
                 Gender = target.Gender,
-                Stats = target.LastStats,
-                HermitStats = target.HermitStats,
-                HermitPoints = Math.Max(0, target.Level - 39 - target.SpentPoints),
+                //Stats = target.LastStats,
+                //HermitStats = target.HermitStats,
+                //HermitPoints = Math.Max(0, target.Level - 39 - target.SpentPoints),
                 Level = target.Level,
 
                 Hair = target.HairType,
@@ -2336,11 +2336,11 @@ namespace Server.Models
                 packet.GuildRank = target.Account.GuildMember.Rank;
             }
 
-            if (target.Player != null)
-            {
-                packet.WearWeight = target.Player.WearWeight;
-                packet.HandWeight = target.Player.HandWeight;
-            }
+            //if (target.Player != null)
+            //{
+            //    packet.WearWeight = target.Player.WearWeight;
+            //    packet.HandWeight = target.Player.HandWeight;
+            //}
 
 
             foreach (UserItem item in target.Items)

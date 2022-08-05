@@ -4171,9 +4171,9 @@ namespace Client.Models
                 if (Config.HighlightedItems != string.Empty)
                 {
                     string[] items = Config.HighlightedItems.Split(',');
-                    for (int i = 0; i < 10; i++)
+                    for (int i = 0; i < items.Length; i++)
                     {
-                        if (items[i].ToLower() == Name.ToLower())
+                        if (string.Equals(items[i].Replace(" ", ""), Name.Replace(" ", ""), StringComparison.OrdinalIgnoreCase))
                         {
                             NameLabel.ForeColour = Color.OrangeRed;
                             break;

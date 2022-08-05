@@ -19,34 +19,53 @@ namespace Client.Models.Particles
 
             public FogParticle()
             {
-                _velocity = new(1f, 0f);
+                _velocity = new Vector2(1F, 0f);
 
-                MaxCount = 4;
-                SpawnFrequency = TimeSpan.FromMilliseconds(5000);
+                MaxCount = 2;
+                SpawnFrequency = TimeSpan.FromMilliseconds(0);
                 Textures = new List<int> { 550 };
                 Color = Color.White;
 
                 Library = CEnvir.LibraryList[LibraryFile.ProgUse];
+
             }
 
             public override Particle CreateParticle(Vector2 emitterLocation, int direction, float angle)
             {
                 int texture = Textures[random.Next(Textures.Count)];
 
+                float scale = 4F;
+                float scaleRate = 0F;
+
                 Vector2 position = emitterLocation;
 
-                float opacity = 0.3f;
+                if (Particles.Count > 0)
+                {
+                    var particle = Particles.Last();
+
+                    var size = particle.Library.GetSize(particle.TextureIndex);
+
+                    position = new Vector2(particle.Position.X - ((size.Width) * scale), particle.Position.Y);
+
+                    //if (position.X + (size.Width * scale) < particle.Position.X)
+                    //{
+                    //    position.X -= 1F;
+                    //}
+                    //else
+                    //{
+                    //    position.X += 1F;
+                    //}
+                }
+
+                float opacity = 0.1F;
 
                 float startingAngle = angle;
-                float angularVelocity = 0f;
+                float angularVelocity = 0F;
 
-                float scale = 3f;
-                float scaleRate = 0f;
-
-                TimeSpan ttl = TimeSpan.FromMilliseconds(random.Next(15000, 15000));
+                TimeSpan ttl = TimeSpan.FromHours(1);
 
                 bool fade = false;
-                float fadeRate = 0.2F;
+                float fadeRate = 0F;
 
                 return new Particle(Library, texture, opacity, position, _velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate);
             }

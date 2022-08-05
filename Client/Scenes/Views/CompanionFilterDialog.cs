@@ -17,7 +17,7 @@ namespace Client.Scenes.Views
 
         public override WindowType Type => WindowType.CompanionFilterBox;
         public override bool CustomSize => false;
-        public override bool AutomaticVisiblity => true;
+        public override bool AutomaticVisibility => true;
 
         public Dictionary<MirClass, DXCheckBox> FilterClass = new Dictionary<MirClass, DXCheckBox>();
         public Dictionary<Rarity, DXCheckBox> FilterRarity = new Dictionary<Rarity, DXCheckBox>();

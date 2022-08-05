@@ -638,7 +638,7 @@ namespace Client.Scenes
 
             public override WindowType Type => WindowType.None;
             public override bool CustomSize => false;
-            public override bool AutomaticVisiblity => false;
+            public override bool AutomaticVisibility => false;
             #endregion
 
             public LoginDialog()
@@ -1130,7 +1130,7 @@ namespace Client.Scenes
 
             public override WindowType Type => WindowType.None;
             public override bool CustomSize => false;
-            public override bool AutomaticVisiblity => false;
+            public override bool AutomaticVisibility => false;
             #endregion
 
             public NewAccountDialog()
@@ -1769,7 +1769,7 @@ namespace Client.Scenes
 
             public override WindowType Type => WindowType.None;
             public override bool CustomSize => false;
-            public override bool AutomaticVisiblity => false;
+            public override bool AutomaticVisibility => false;
 
             #endregion
 
@@ -2202,7 +2202,7 @@ namespace Client.Scenes
 
             public override WindowType Type => WindowType.None;
             public override bool CustomSize => false;
-            public override bool AutomaticVisiblity => false;
+            public override bool AutomaticVisibility => false;
 
             #endregion
 
@@ -2518,7 +2518,7 @@ namespace Client.Scenes
 
             public override WindowType Type => WindowType.None;
             public override bool CustomSize => false;
-            public override bool AutomaticVisiblity => false;
+            public override bool AutomaticVisibility => false;
 
             #endregion
 
@@ -2883,7 +2883,7 @@ namespace Client.Scenes
 
             public override WindowType Type => WindowType.None;
             public override bool CustomSize => false;
-            public override bool AutomaticVisiblity => false;
+            public override bool AutomaticVisibility => false;
 
             #endregion
 
@@ -3149,7 +3149,7 @@ namespace Client.Scenes
 
             public override WindowType Type => WindowType.None;
             public override bool CustomSize => false;
-            public override bool AutomaticVisiblity => false;
+            public override bool AutomaticVisibility => false;
             #endregion
 
             public RequestActivationKeyDialog()
