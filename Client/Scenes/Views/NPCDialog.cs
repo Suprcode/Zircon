@@ -1121,6 +1121,9 @@ namespace Client.Scenes.Views
                 _Selected = false;
                 SelectedChanged = null;
 
+                _Currency = null;
+                CurrencyChanged = null;
+
                 if (ItemCell != null)
                 {
                     if (!ItemCell.IsDisposed)
@@ -1167,7 +1170,7 @@ namespace Client.Scenes.Views
         #endregion
     }
 
-    public sealed class NPCSellDialog : DXWindow
+    public sealed class NPCSellDialog : DXImageControl
     {
         #region Properties
 
@@ -1190,7 +1193,7 @@ namespace Client.Scenes.Views
 
         public event EventHandler<EventArgs> CurrencyChanged;
         public void OnCurrencyChanged(CurrencyInfo oValue, CurrencyInfo nValue)
-        {     
+        {
             if (GameScene.Game.InventoryBox == null) return;
 
             if (IsVisible)
@@ -1211,7 +1214,7 @@ namespace Client.Scenes.Views
             }
 
             CurrencyIcon.Location = new Point(CurrencyLabel.Location.X + CurrencyLabel.Size.Width - CurrencyIcon.Size.Width - 5, CurrencyLabel.Location.Y + ((CurrencyLabel.Size.Height - CurrencyIcon.Size.Height) / 2));
- 
+
             CurrencyChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -1221,6 +1224,9 @@ namespace Client.Scenes.Views
         }
 
         #endregion
+
+        private DXLabel TitleLabel;
+        public DXButton CloseButton;
 
         public DXItemGrid Grid;
         public DXButton SellButton;
@@ -1241,27 +1247,50 @@ namespace Client.Scenes.Views
                 Grid.ClearLinks();
         }
 
-        public override WindowType Type => WindowType.None;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => false;
+        public WindowType Type => WindowType.None;
 
         #endregion
 
         public NPCSellDialog()
         {
-            TitleLabel.Text = "Sell Items";
+            LibraryFile = LibraryFile.Interface;
+            Index = 135;
+            Movable = false;
+
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
+            {
+                Text = "Sell Items",
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             Grid = new DXItemGrid
             {
-                GridSize = new Size(7, 7),
+                GridSize = new Size(6, 6),
                 Parent = this,
                 GridType = GridType.Sell,
-                Linked = true
+                Linked = true,
+                Location = new Point(20, 39),
+                GridPadding = 1,
+                BackColour = Color.Empty,
+                Border = false
             };
 
             Movable = false;
-            SetClientSize(new Size(Grid.Size.Width, Grid.Size.Height + 50));
-            Grid.Location = ClientArea.Location;
 
             foreach (DXItemCell cell in Grid.Grid)
             {
@@ -1271,29 +1300,15 @@ namespace Client.Scenes.Views
             CurrencyLabel = new DXLabel
             {
                 AutoSize = false,
-                Border = true,
+                Border = false,
                 BorderColour = Color.FromArgb(198, 166, 99),
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
-                Location = new Point(ClientArea.Left + 80, ClientArea.Bottom - 45),
+                Location = new Point(30, 280),
                 Text = "0",
-                Size = new Size(ClientArea.Width - 80, 20),
+                Size = new Size(205, 15),
                 Sound = SoundIndex.GoldPickUp
-            };
-
-            new DXLabel
-            {
-                AutoSize = false,
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                Parent = this,
-                Location = new Point(ClientArea.Left, ClientArea.Bottom - 45),
-                Text = "Sale Total",
-                Size = new Size(79, 20),
-                IsControl = false,
             };
 
             CurrencyIcon = new DXImageControl
@@ -1303,15 +1318,15 @@ namespace Client.Scenes.Views
                 Parent = this,
                 IsControl = false,
             };
-            CurrencyIcon.Location = new Point(ClientArea.Left + 230, ClientArea.Bottom - 45);
+            CurrencyIcon.Location = new Point(10, 10);
 
             DXButton selectAll = new DXButton
             {
                 Label = { Text = "Select All" },
-                Location = new Point(ClientArea.X, CurrencyLabel.Location.Y + CurrencyLabel.Size.Height + 5),
-                ButtonType = ButtonType.SmallButton,
+                Location = new Point(12, CurrencyLabel.Location.Y + CurrencyLabel.Size.Height + 20),
+                ButtonType = ButtonType.Default,
                 Parent = this,
-                Size = new Size(79, SmallButtonHeight)
+                Size = new Size(79, DefaultHeight)
             };
             selectAll.MouseClick += (o, e) =>
             {
@@ -1326,10 +1341,10 @@ namespace Client.Scenes.Views
             SellButton = new DXButton
             {
                 Label = { Text = "Sell" },
-                Location = new Point(ClientArea.Right - 80, CurrencyLabel.Location.Y + CurrencyLabel.Size.Height + 5),
-                ButtonType = ButtonType.SmallButton,
+                Location = new Point(170, CurrencyLabel.Location.Y + CurrencyLabel.Size.Height + 20),
+                ButtonType = ButtonType.Default,
                 Parent = this,
-                Size = new Size(79, SmallButtonHeight),
+                Size = new Size(79, DefaultHeight),
                 Enabled = false,
             };
             SellButton.MouseClick += (o, e) =>
@@ -1371,6 +1386,7 @@ namespace Client.Scenes.Views
         }
 
         #endregion
+
 
         #region IDisposable
 
