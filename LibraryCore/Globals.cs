@@ -381,7 +381,7 @@ namespace Library
 
         public const int InventorySize = 48,
                          EquipmentSize = 17,
-                         CompanionInventorySize = 40,
+                         CompanionInventorySize = 30,
                          CompanionEquipmentSize = 4,
                          PartsStorageOffset = 2000,
                          EquipmentOffSet = 1000,

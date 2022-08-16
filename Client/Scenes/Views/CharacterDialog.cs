@@ -297,6 +297,8 @@ namespace Client.Scenes.Views
                 Size = new System.Drawing.Size(65, 90),
                 Hidden = true
             };
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Armour] = cell = new DXItemCell
             {
@@ -309,6 +311,8 @@ namespace Client.Scenes.Views
                 Size = new System.Drawing.Size(70, 150),
                 Hidden = true
             };
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Shield] = cell = new DXItemCell
             {
@@ -321,6 +325,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
                 Hidden = true
             };
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Helmet] = cell = new DXItemCell
             {
@@ -334,6 +340,8 @@ namespace Client.Scenes.Views
                 Size = new Size(35, 35),
                 Hidden = true
             };
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Emblem] = cell = new DXItemCell
             {
@@ -345,6 +353,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 104);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.HorseArmour] = cell = new DXItemCell
             {
@@ -356,6 +366,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 82);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Torch] = cell = new DXItemCell
             {
@@ -367,6 +379,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 38);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Necklace] = cell = new DXItemCell
             {
@@ -378,6 +392,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 33);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.BraceletL] = cell = new DXItemCell
             {
@@ -389,6 +405,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 32);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.BraceletR] = cell = new DXItemCell
             {
@@ -400,6 +418,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 32);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.RingL] = cell = new DXItemCell
             {
@@ -411,6 +431,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 31);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.RingR] = cell = new DXItemCell
             {
@@ -422,6 +444,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 31);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Flower] = cell = new DXItemCell
             {
@@ -433,6 +457,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 81);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Poison] = cell = new DXItemCell
             {
@@ -444,6 +470,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 40);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Amulet] = cell = new DXItemCell
             {
@@ -456,6 +484,8 @@ namespace Client.Scenes.Views
                 Size = new Size(36, 75)
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 39);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Shoes] = cell = new DXItemCell
             {
@@ -468,6 +498,8 @@ namespace Client.Scenes.Views
                 Size = new Size(36, 75)
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 36);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             Grid[(int)EquipmentSlot.Wings] = cell = new DXItemCell
             {
@@ -479,6 +511,8 @@ namespace Client.Scenes.Views
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
 
             #endregion
 
@@ -2040,6 +2074,54 @@ namespace Client.Scenes.Views
             #endregion
 
             #endregion
+        }
+
+        private void Cell_MouseLeave(object sender, EventArgs e)
+        {
+            foreach (var stat in DisplayStats.Keys)
+                DisplayStats[stat].ForeColour = Color.White;
+
+            foreach (var stat in AttackStats.Keys)
+                AttackStats[stat].ForeColour = Color.White;
+
+            foreach (var stat in AdvantageStats.Keys)
+                AdvantageStats[stat].ForeColour = Color.White;
+
+            foreach (var stat in DisadvantageStats.Keys)
+                DisadvantageStats[stat].ForeColour = Color.White;
+
+            WearWeightLabel.ForeColour = Color.White;
+
+            HandWeightLabel.ForeColour = Color.White;
+        }
+
+        private void Cell_MouseEnter(object sender, EventArgs e)
+        {
+            DXItemCell cell = sender as DXItemCell;
+
+            if (cell.Item != null)
+            {
+                foreach (var stat in DisplayStats.Keys)
+                    DisplayStats[stat].ForeColour = HasStat(cell.Item, stat) ? Color.Orange : Color.White;
+
+                foreach (var stat in AttackStats.Keys)
+                    AttackStats[stat].ForeColour = HasStat(cell.Item, stat) ? Color.Orange : Color.White;
+
+                foreach (var stat in AdvantageStats.Keys)
+                    AdvantageStats[stat].ForeColour = HasStat(cell.Item, stat) ? Color.Orange : Color.White;
+
+                foreach (var stat in DisadvantageStats.Keys)
+                    DisadvantageStats[stat].ForeColour = HasStat(cell.Item, stat) ? Color.Orange : Color.White;
+
+                WearWeightLabel.ForeColour = cell.Item.Weight > 0 && (cell.Item.Info.ItemType != ItemType.Weapon && cell.Item.Info.ItemType != ItemType.Torch) ? Color.Orange : Color.White;
+
+                HandWeightLabel.ForeColour = cell.Item.Weight > 0 && (cell.Item.Info.ItemType == ItemType.Weapon || cell.Item.Info.ItemType == ItemType.Torch) ? Color.Orange : Color.White;
+            }
+        }
+
+        private bool HasStat(ClientUserItem item, Stat stat)
+        {
+            return item.Info.Stats[stat] != 0 || item.AddedStats[stat] != 0;
         }
 
         private void CharacterTab_BeforeChildrenDraw(object sender, EventArgs e)

@@ -1231,6 +1231,7 @@ namespace Server.Envir
         public void Process(C.SendCompanionFilters p)
         {
             if (Stage != GameStage.Game) return;
+
             Player.SetFilters(p);
         }
     }

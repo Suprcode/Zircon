@@ -772,7 +772,7 @@ namespace Client.Envir
 
                         if (!string.IsNullOrEmpty(p.Message)) DXMessageBox.Show(p.Message, "Start Game");
 
-                        GameScene.Game.CompanionFilterBox.Refresh();
+                        GameScene.Game.CompanionBox.RefreshFilter();
 
                         break;
                 }
@@ -4504,6 +4504,11 @@ namespace Client.Envir
 
         public void Process(S.JoinInstance p)
         {
+        }
+
+        public void Process(S.SendCompanionFilters p)
+        {
+
         }
     }
 }

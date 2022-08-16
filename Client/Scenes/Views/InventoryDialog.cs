@@ -267,7 +267,6 @@ namespace Client.Scenes.Views
                     Grid = null;
                 }
 
-
                 if (TitleLabel != null)
                 {
                     if (!TitleLabel.IsDisposed)

@@ -228,7 +228,7 @@ namespace Server.Envir.Translations
         public override string TradeTargetAlreadyHaveRequest { get; set; } = "{0} already has a trade reqeust.";
         public override string TradeNotAllowed { get; set; } = "{0} wishes to trade with you, but you are not allowing trades. @AllowTrade";
         public override string TradeTargetDead { get; set; } = "You cannot trade a dead person.";
-        public override string TradeRequested { get; set; } = "You have send a trade request to {0}...";
+        public override string TradeRequested { get; set; } = "You have sent a trade request to {0}...";
         public override string TradeWaiting { get; set; } = "Waiting for Partner to Accept Trade...";
         public override string TradePartnerWaiting { get; set; } = "Your Partner is waiting for you to Accept Trade...";
         public override string TradeNoGold { get; set; } = "You do not have enough gold To Trade....";

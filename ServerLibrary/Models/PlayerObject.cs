@@ -1424,7 +1424,6 @@ namespace Server.Models
                         break;
                     case "ENABLELEVEL3":
                         CompanionLevelLock3 = !CompanionLevelLock3;
-
                         Connection.ReceiveChat(string.Format(CompanionLevelLock3 ? Connection.Language.CompanionSkillEnabled : Connection.Language.CompanionSkillDisabled, 3), MessageType.System);
                         break;
                     case "ENABLELEVEL5":
@@ -19930,9 +19929,11 @@ namespace Server.Models
             Character.FiltersClass = String.Join(",", p.FilterClass);
             Character.FiltersRarity = String.Join(",", p.FilterRarity);
             Character.FiltersItemType = String.Join(",", p.FilterItemType);
+
             FiltersClass = Character.FiltersClass;
             FiltersItemType = Character.FiltersItemType;
             FiltersRarity = Character.FiltersRarity;
+
             Enqueue(new S.SendCompanionFilters { FilterClass = p.FilterClass, FilterRarity = p.FilterRarity, FilterItemType = p.FilterItemType });
             Connection.ReceiveChat("Companion filters have been updated", MessageType.System);
         }

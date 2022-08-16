@@ -418,7 +418,6 @@ namespace Client.Envir
                 MainPartsStorage = PartsStorage;
             }
 
-
             foreach (ClientUserItem item in items)
                 if (item.Slot >= 2000)
                     PartsStorage[item.Slot - Globals.PartsStorageOffset] = item;

@@ -190,7 +190,6 @@ namespace Client.Scenes
         public QuestDialog QuestBox;
         public QuestTrackerDialog QuestTrackerBox;
         public CompanionDialog CompanionBox;
-        public CompanionFilterDialog CompanionFilterBox;
         public BlockDialog BlockBox;
         public MonsterDialog MonsterBox;
         public MagicBarDialog MagicBarBox;
@@ -351,6 +350,9 @@ namespace Client.Scenes
 
             CharacterBox?.LoadSettings();
             InventoryBox?.LoadSettings();
+            StorageBox?.LoadSettings();
+            TradeBox?.LoadSettings();
+            CompanionBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -617,11 +619,6 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
             };
-            CompanionFilterBox = new CompanionFilterDialog
-            {
-                Parent = this,
-                Visible = false,
-            };
             BlockBox = new BlockDialog
             {
                 Parent = this,
@@ -678,6 +675,9 @@ namespace Client.Scenes
 
             CharacterBox.LoadSettings();
             InventoryBox.LoadSettings();
+            StorageBox.LoadSettings();
+            TradeBox.LoadSettings();
+            CompanionBox.LoadSettings();
         }
 
         #region Methods
@@ -3712,7 +3712,6 @@ namespace Client.Scenes
             InventoryBox.WeightLabel.Text = $"{User.BagWeight} of {User.Stats[Stat.BagWeight]}";
 
             InventoryBox.WeightLabel.ForeColour = User.BagWeight > User.Stats[Stat.BagWeight] ? Color.Red : Color.White;
-
 
             CharacterBox.WearWeightLabel.Text = $"{User.WearWeight}/{User.Stats[Stat.WearWeight]}";
             CharacterBox.HandWeightLabel.Text = $"{User.HandWeight}/{User.Stats[Stat.HandWeight]}";

@@ -92,6 +92,7 @@ namespace Client.Scenes.Views
             }
             Updating = false;
         }
+
         #endregion
 
         #region IDisposable

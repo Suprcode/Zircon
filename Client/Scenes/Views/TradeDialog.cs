@@ -1,26 +1,26 @@
 ﻿using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
-    public sealed class TradeDialog :DXWindow
+    public sealed class TradeDialog : DXImageControl
     {
         #region Properties
 
-        public DXLabel UserLabel, PlayerLabel;
+        public DXLabel TitleLabel, UserLabel, PlayerLabel;
         public DXItemGrid UserGrid, PlayerGrid;
         public DXLabel UserGoldLabel, PlayerGoldLabel;
-        public DXButton ConfirmButton;
+        public DXButton CloseButton, ConfirmButton;
 
         public ClientUserItem[] PlayerItems;
         public bool IsTrading;
-
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -33,24 +33,83 @@ namespace Client.Scenes.Views
             CEnvir.Enqueue(new C.TradeClose());
         }
 
-        public override WindowType Type => WindowType.TradeBox;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => false;
+        #region Settings
+
+        public WindowSetting Settings;
+        public WindowType Type => WindowType.TradeBox;
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        #endregion
+
         #endregion
 
         public TradeDialog()
         {
-            TitleLabel.Text = "Trade Window";
+            LibraryFile = LibraryFile.Interface;
+            Index = 125;
+            Movable = true;
+
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
+            {
+                Text = "Trade Window",
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             Location = new Point(40, 40);
-            
+
             UserGrid = new DXItemGrid
             {
-                GridSize = new Size(5, 3),
+                GridSize = new Size(5, 2),
                 Parent = this,
-                Location = new Point(ClientArea.X + 5, ClientArea.Y + 25),
+                Location = new Point(15, 73),
                 GridType = GridType.TradeUser,
                 Linked = true,
+                GridPadding = 1,
+                BackColour = Color.Empty,
+                Border = false
             };
 
             foreach (DXItemCell cell in UserGrid.Grid)
@@ -70,12 +129,15 @@ namespace Client.Scenes.Views
 
             PlayerGrid = new DXItemGrid
             {
-                GridSize = new Size(5, 3),
+                GridSize = new Size(5, 2),
                 Parent = this,
-                Location = new Point(UserGrid.Location.X + UserGrid.Size.Width + 20, ClientArea.Y + 25),
+                Location = new Point(UserGrid.Location.X + UserGrid.Size.Width + 25, 73),
                 ItemGrid = PlayerItems = new ClientUserItem[15],
                 GridType = GridType.TradePlayer,
-                ReadOnly =  true,
+                ReadOnly = true,
+                GridPadding = 1,
+                BackColour = Color.Empty,
+                Border = false
             };
 
             UserLabel = new DXLabel
@@ -88,9 +150,8 @@ namespace Client.Scenes.Views
                 OutlineColour = Color.Black,
                 IsControl = false,
             };
-            UserLabel.SizeChanged += (o, e) => UserLabel.Location = new Point(UserGrid.Location.X + (UserGrid.Size.Width - UserLabel.Size.Width) / 2, ClientArea.Y);
-            UserLabel.Location = new Point(UserGrid.Location.X + (UserGrid.Size.Width - UserLabel.Size.Width) / 2, ClientArea.Y);
-
+            UserLabel.SizeChanged += (o, e) => UserLabel.Location = new Point(UserGrid.Location.X + (UserGrid.Size.Width - UserLabel.Size.Width) / 2, 38);
+            UserLabel.Location = new Point(UserGrid.Location.X + (UserGrid.Size.Width - UserLabel.Size.Width) / 2, 38);
 
             PlayerLabel = new DXLabel
             {
@@ -102,20 +163,19 @@ namespace Client.Scenes.Views
                 OutlineColour = Color.Black,
                 IsControl = false,
             };
-            PlayerLabel.SizeChanged += (o, e) => PlayerLabel.Location = new Point(PlayerGrid.Location.X + (PlayerGrid.Size.Width - PlayerLabel.Size.Width) / 2, ClientArea.Y);
-            PlayerLabel.Location = new Point(PlayerGrid.Location.X + (PlayerGrid.Size.Width - PlayerLabel.Size.Width) / 2, ClientArea.Y);
+            PlayerLabel.SizeChanged += (o, e) => PlayerLabel.Location = new Point(PlayerGrid.Location.X + (PlayerGrid.Size.Width - PlayerLabel.Size.Width) / 2, 38);
+            PlayerLabel.Location = new Point(PlayerGrid.Location.X + (PlayerGrid.Size.Width - PlayerLabel.Size.Width) / 2, 38);
 
             UserGoldLabel = new DXLabel
             {
                 AutoSize = false,
-                Border = true,
-                BorderColour = Color.FromArgb(99, 83, 50),
+                Border = false,
                 ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.VerticalCenter,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Right,
                 Parent = this,
-                Location = new Point(UserGrid.Location.X + 60, UserGrid.Location.Y + UserGrid.Size.Height + 5),
+                Location = new Point(UserGrid.Location.X + 60, UserGrid.Location.Y + UserGrid.Size.Height + 20),
                 Text = "0",
-                Size = new Size(UserGrid.Size.Width - 61, 20),
+                Size = new Size(UserGrid.Size.Width - 56, 15),
                 Sound = SoundIndex.GoldPickUp
             };
             UserGoldLabel.MouseClick += UserGoldLabel_MouseClick;
@@ -123,50 +183,48 @@ namespace Client.Scenes.Views
             new DXLabel
             {
                 AutoSize = false,
-                Border = true,
-                BorderColour = Color.FromArgb(99, 83, 50),
-                ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Border = false,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
+                ForeColour = Color.Goldenrod,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 Parent = this,
-                Location = new Point(UserGrid.Location.X + 1, UserGrid.Location.Y + UserGrid.Size.Height + 5),
+                Location = new Point(UserGrid.Location.X - 4, UserGrid.Location.Y + UserGrid.Size.Height + 20),
                 Text = "Gold",
-                Size = new Size(58, 20),
+                Size = new Size(63, 15),
                 IsControl = false,
             };
 
             PlayerGoldLabel = new DXLabel
             {
                 AutoSize = false,
-                Border = true,
-                BorderColour = Color.FromArgb(99, 83, 50),
+                Border = false,
                 ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.VerticalCenter,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Right,
                 Parent = this,
-                Location = new Point(PlayerGrid.Location.X + 60, UserGrid.Location.Y + UserGrid.Size.Height + 5),
+                Location = new Point(PlayerGrid.Location.X + 60, UserGrid.Location.Y + UserGrid.Size.Height + 20),
                 Text = "0",
-                Size = new Size(UserGrid.Size.Width - 61, 20),
+                Size = new Size(UserGrid.Size.Width - 56, 15),
                 Sound = SoundIndex.GoldPickUp
             };
-
 
             new DXLabel
             {
                 AutoSize = false,
-                Border = true,
-                BorderColour = Color.FromArgb(99, 83, 50),
-                ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Border = false,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
+                ForeColour = Color.Goldenrod,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 Parent = this,
-                Location = new Point(PlayerGrid.Location.X + 1, UserGrid.Location.Y + UserGrid.Size.Height + 5),
+                Location = new Point(PlayerGrid.Location.X - 4, UserGrid.Location.Y + UserGrid.Size.Height + 20),
                 Text = "Gold",
-                Size = new Size(58, 20),
+                Size = new Size(63, 15),
                 IsControl = false,
             };
 
             ConfirmButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(UserGrid.Location.X + UserGrid.Size.Width - 80, UserGoldLabel.Location.Y + 25),
+                Location = new Point(UserGrid.Location.X + UserGrid.Size.Width - 75, UserGoldLabel.Location.Y + 35),
                 Label = { Text = "Confirm" },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(80, SmallButtonHeight),
@@ -179,8 +237,6 @@ namespace Client.Scenes.Views
 
                 CEnvir.Enqueue(new C.TradeConfirm());
             };
-
-            SetClientSize(new Size(PlayerGrid.Size.Width * 2 + 30, PlayerGrid.Size.Height + UserLabel.Size.Height + 15 + UserGoldLabel.Size.Height + ConfirmButton.Size.Height));
         }
 
         #region Methods
@@ -224,6 +280,14 @@ namespace Client.Scenes.Views
             {
                 IsTrading = false;
                 PlayerItems = null;
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
 
                 if (UserLabel != null)
                 {
@@ -271,6 +335,14 @@ namespace Client.Scenes.Views
                         PlayerGoldLabel.Dispose();
 
                     PlayerGoldLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
                 }
 
                 if (ConfirmButton != null)

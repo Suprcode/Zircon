@@ -118,7 +118,6 @@ namespace Client.Scenes.Views
                 CEnvir.Enqueue(new C.NPCClose());
             }
 
-
             if (IsVisible)
             {
                 if (GameScene.Game.CharacterBox.Location.X < Size.Width)
