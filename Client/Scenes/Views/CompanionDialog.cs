@@ -127,7 +127,7 @@ namespace Client.Scenes.Views
 
             Visible = Settings.Visible;
 
-            ChangeView("Bonus");
+            ChangeView("Bag");
         }
 
         #endregion
@@ -137,8 +137,9 @@ namespace Client.Scenes.Views
         public CompanionDialog()
         {
             LibraryFile = LibraryFile.Interface;
-            Index = 140;
+            Index = 141;
             Movable = true;
+            Sort = true;
 
             CloseButton = new DXButton
             {
@@ -266,6 +267,7 @@ namespace Client.Scenes.Views
                 Parent = CompanionTab,
                 Location = new Point(60, 123),
                 Size = library.GetSize(4375),
+                Visible = false
             };
             HealthBar.BeforeDraw += (o, e) =>
             {
@@ -294,7 +296,8 @@ namespace Client.Scenes.Views
                 IsControl = false,
                 AutoSize = false,
                 Size = new Size(128, 20),
-                Location = new Point(60, 117)
+                Location = new Point(60, 117),
+                Visible = false
             };
 
             NameLabel = new DXLabel
@@ -561,7 +564,7 @@ namespace Client.Scenes.Views
 
             FilterControl = new DXImageControl
             {
-                Index = 142,
+                Index = 143,
                 LibraryFile = LibraryFile.Interface,
                 Parent = CompanionTab,
                 Visible = false,
@@ -637,7 +640,7 @@ namespace Client.Scenes.Views
 
             BagControl = new DXImageControl
             {
-                Index = 141,
+                Index = 142,
                 LibraryFile = LibraryFile.Interface,
                 Parent = CompanionTab,
                 Visible = false,

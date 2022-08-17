@@ -78,19 +78,19 @@ namespace Client.Controls
             {
                 Parent = this,
                 IsControl = false,
-                Location = new Point(0, -1)
+                Location = new Point(0, 0)
             };
 
             Label.DisplayAreaChanged += (o, e) =>
             {
                 Size = new Size(Label.DisplayArea.Width + Box.DisplayArea.Width, Box.DisplayArea.Height);
-                Box.Location = new Point(Label.DisplayArea.Width, 0);
+                Box.Location = new Point(Label.DisplayArea.Width, 1);
             };
 
 
             Box = new DXImageControl
             {
-                Location = new Point(Label.Size.Width + 2, 0),
+                Location = new Point(Label.Size.Width + 2, 1),
                 Index = 161,
                 LibraryFile = LibraryFile.GameInter,
                 Parent = this,
@@ -99,7 +99,7 @@ namespace Client.Controls
             Box.DisplayAreaChanged += (o, e) =>
             {
                 Size = new Size(Label.DisplayArea.Width + Box.DisplayArea.Width, Box.DisplayArea.Height);
-                Box.Location = new Point(Label.DisplayArea.Width, 0);
+                Box.Location = new Point(Label.DisplayArea.Width, 1);
             };
 
 

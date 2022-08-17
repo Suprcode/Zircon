@@ -9,7 +9,9 @@ using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
 using SlimDX.Direct3D9;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
+using Font = System.Drawing.Font;
 
 //Cleaned
 namespace Client.Scenes
@@ -86,7 +88,6 @@ namespace Client.Scenes
         #endregion
 
         public DXMessageBox ConnectionBox;
-        public DXButton ConfigButton;
         public DXConfigWindow ConfigBox;
         public LoginDialog LoginBox;
         public NewAccountDialog AccountBox;
@@ -196,15 +197,6 @@ namespace Client.Scenes
             LogoBackground.Location = new Point((Size.Width - LogoBackground.Size.Width) / 2, 25);
             Logo.Location = new Point(((Size.Width - Logo.Size.Width) / 2) - 270, -27);
 
-            ConfigButton = new DXButton
-            {
-                LibraryFile = LibraryFile.GameInter,
-                Index = 116,
-                Parent = this,
-            };
-            ConfigButton.Location = new Point(Size.Width - ConfigButton.Size.Width - 10, 10);
-            ConfigButton.MouseClick += (o, e) => ConfigBox.Visible = !ConfigBox.Visible;
-
             ConfigBox = new DXConfigWindow
             {
                 Parent = this,
@@ -216,7 +208,7 @@ namespace Client.Scenes
             {
                 Parent = this,
             };
-            LoginBox.Location = new Point((Size.Width - LoginBox.Size.Width) / 2, (Size.Height - LoginBox.Size.Height) / 2);
+            LoginBox.Location = new Point((Size.Width - LoginBox.Size.Width) / 2, Size.Height - LoginBox.Size.Height - 20);
 
             RankingBox = new RankingDialog
             {
@@ -399,7 +391,7 @@ namespace Client.Scenes
             if (ChangeBox != null) ChangeBox.ChangeAttempted = false;
         }
 
-        public void ShowActivationBox(DXWindow window)
+        public void ShowActivationBox(DXControl window)
         {
             window.Visible = false;
             ActivationBox.Visible = true;
@@ -421,14 +413,6 @@ namespace Client.Scenes
                         ConnectionBox.Dispose();
 
                     ConnectionBox = null;
-                }
-
-                if (ConfigButton != null)
-                {
-                    if (!ConfigButton.IsDisposed)
-                        ConfigButton.Dispose();
-
-                    ConfigButton = null;
                 }
 
                 if (ConfigBox != null)
@@ -526,7 +510,7 @@ namespace Client.Scenes
         }
         #endregion
 
-        public sealed class LoginDialog : DXWindow
+        public sealed class LoginDialog : DXImageControl
         {
             #region Properties
 
@@ -614,8 +598,8 @@ namespace Client.Scenes
             public DXLabel EMailHelpLabel, PasswordHelpLabel;
             public DXCheckBox RememberCheckBox;
 
-            public DXButton LoginButton, NewAccountButton, ChangePasswordButton;
-            public DXLabel ForgotPasswordLabel;
+            public DXButton LoginButton, ExitButton, OptionButton, RankingButton, NewAccountButton, ChangePasswordButton;
+            public DXLabel TitleLabel, ForgotPasswordLabel;
 
             public override void OnParentChanged(DXControl oValue, DXControl nValue)
             {
@@ -633,25 +617,37 @@ namespace Client.Scenes
 
                 if (scene == null) return;
 
-                scene.RankingBox.Visible = IsVisible;
+                if (!IsVisible)
+                    scene.RankingBox.Visible = false;
             }
 
-            public override WindowType Type => WindowType.None;
-            public override bool CustomSize => false;
-            public override bool AutomaticVisibility => false;
+            public WindowType Type => WindowType.None;
+
             #endregion
 
             public LoginDialog()
             {
-                Size = new Size(300, 250);
-                TitleLabel.Text = "Login";
-                Visible = false;
+                LibraryFile = LibraryFile.Interface;
+                Index = 151;
+                Movable = false;
+                Sort = false;
+
+                TitleLabel = new DXLabel
+                {
+                    Parent = this,
+                    Text = "Enter your Email and Password",
+                    ForeColour = Color.FromArgb(214, 190, 148)
+                };
+                TitleLabel.Location = new Point(280, 38);
 
                 EMailTextBox = new DXTextBox
                 {
                     Parent = this,
-                    Location = new Point(85, 45),
-                    Size = new Size(180, 20),
+                    Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
+                    Location = new Point(70, 65),
+                    Size = new Size(170, 14),
+                    Border = false,
+                    BackColour = Color.FromArgb(16, 8, 8),
                 };
                 EMailTextBox.SetFocus();
                 EMailTextBox.TextBox.TextChanged += EMailTextBox_TextChanged;
@@ -662,28 +658,17 @@ namespace Client.Scenes
                 PasswordTextBox = new DXTextBox
                 {
                     Parent = this,
-                    Location = new Point(85, 70),
-                    Size = new Size(180, 16),
+                    Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
+                    Location = new Point(357, 65),
+                    Size = new Size(170, 14),
+                    Border = false,
+                    BackColour = Color.FromArgb(16, 8, 8),
                     Password = true,
                 };
                 PasswordTextBox.TextBox.TextChanged += PasswordTextBox_TextChanged;
                 PasswordTextBox.TextBox.GotFocus += (o, e) => PasswordHelpLabel.Visible = true;
                 PasswordTextBox.TextBox.LostFocus += (o, e) => PasswordHelpLabel.Visible = false;
                 PasswordTextBox.TextBox.KeyPress += TextBox_KeyPress;
-
-                DXLabel label = new DXLabel
-                {
-                    Parent = this,
-                    Text = "E-Mail:",
-                };
-                label.Location = new Point(EMailTextBox.Location.X - label.Size.Width - 5, (EMailTextBox.Size.Height - label.Size.Height) / 2 + EMailTextBox.Location.Y);
-
-                label = new DXLabel
-                {
-                    Parent = this,
-                    Text = "Password:",
-                };
-                label.Location = new Point(PasswordTextBox.Location.X - label.Size.Width - 5, (PasswordTextBox.Size.Height - label.Size.Height) / 2 + PasswordTextBox.Location.Y);
 
                 EMailHelpLabel = new DXLabel
                 {
@@ -692,7 +677,7 @@ namespace Client.Scenes
                     Text = "[?]",
                     Hint = $"E-Mail Address.\nFormat: Example@Example.Com.\nMax Length: {Globals.MaxEMailLength} characters.",
                 };
-                EMailHelpLabel.Location = new Point(EMailTextBox.Location.X + EMailTextBox.Size.Width + 2, (EMailTextBox.Size.Height - EMailHelpLabel.Size.Height) / 2 + EMailTextBox.Location.Y);
+                EMailHelpLabel.Location = new Point(EMailTextBox.Location.X + EMailTextBox.Size.Width + 2, EMailTextBox.Location.Y - 2);
 
                 PasswordHelpLabel = new DXLabel
                 {
@@ -701,8 +686,71 @@ namespace Client.Scenes
                     Text = "[?]",
                     Hint = $"Password.\nAccepted characters:Any non-white space character.\nLength: between {Globals.MinPasswordLength} and {Globals.MaxPasswordLength} characters.",
                 };
-                PasswordHelpLabel.Location = new Point(PasswordTextBox.Location.X + PasswordTextBox.Size.Width + 2, (PasswordTextBox.Size.Height - PasswordHelpLabel.Size.Height) / 2 + PasswordTextBox.Location.Y);
+                PasswordHelpLabel.Location = new Point(PasswordTextBox.Location.X + PasswordTextBox.Size.Width + 2, PasswordTextBox.Location.Y - 2);
 
+                LoginButton = new DXButton
+                {
+                    Parent = this,
+                    Location = new Point(550, 60),
+                    Size = new Size(100, DefaultHeight),
+                    Label = { Text = "Log in" },
+                    Enabled = false,
+                };
+                LoginButton.MouseClick += (o, e) => Login();
+
+                ExitButton = new DXButton
+                {
+                    Parent = this,
+                    Location = new Point(660, 60),
+                    Size = new Size(100, DefaultHeight),
+                    Label = { Text = "Exit Game" },
+                    Enabled = true,
+                };
+                ExitButton.MouseClick += (o, e) => CEnvir.Target.Close();
+
+                RankingButton = new DXButton
+                {
+                    Parent = this,
+                    LibraryFile = LibraryFile.Interface,
+                    Index = 153,
+                    Location = new Point(20, 0),
+                    Size = new Size(68, 32),
+                    Label = { Text = "Rankings", ForeColour = Color.FromArgb(255, 227, 165) },
+                };
+                RankingButton.MouseClick += RankingButton_MouseClick;
+
+                OptionButton = new DXButton
+                {
+                    Parent = this,
+                    LibraryFile = LibraryFile.Interface,
+                    Index = 153,
+                    Location = new Point(RankingButton.Location.X + RankingButton.Size.Width + 5, 0),
+                    Size = new Size(68, 32),
+                    Label = { Text = "Options", ForeColour = Color.FromArgb(255, 227, 165) },
+                };
+                OptionButton.MouseClick += OptionButton_MouseClick;
+                
+                NewAccountButton = new DXButton
+                {
+                    Parent = this,
+                    LibraryFile = LibraryFile.Interface,
+                    Index = 152,
+                    Location = new Point(485, 0),
+                    Size = new Size(136, 32),
+                    Label = { Text = "New Account", ForeColour = Color.FromArgb(255, 227, 165) },
+                };
+                NewAccountButton.MouseClick += NewAccountButton_MouseClick;
+
+                ChangePasswordButton = new DXButton
+                {
+                    Parent = this,
+                    LibraryFile = LibraryFile.Interface,
+                    Index = 152,
+                    Location = new Point(625, 0),
+                    Size = new Size(136, 32),
+                    Label = { Text = "Change Password", ForeColour = Color.FromArgb(255, 227, 165) }
+                };
+                ChangePasswordButton.MouseClick += ChangePasswordButton_MouseClick;
 
                 RememberCheckBox = new DXCheckBox
                 {
@@ -710,27 +758,8 @@ namespace Client.Scenes
                     Parent = this,
                     Checked = Config.RememberDetails,
                 };
-                RememberCheckBox.Location = new Point(PasswordTextBox.Location.X + PasswordTextBox.Size.Width - RememberCheckBox.Size.Width + 2, 95);
+                RememberCheckBox.Location = new Point(NewAccountButton.Location.X + 5, 38);
                 RememberCheckBox.CheckedChanged += (o, e) => Config.RememberDetails = RememberCheckBox.Checked;
-
-                LoginButton = new DXButton
-                {
-                    Parent = this,
-                    Location = new Point(85, 120),
-                    Size = new Size(180, DefaultHeight),
-                    Label = { Text = "Log in" },
-                    Enabled = false,
-                };
-                LoginButton.MouseClick += (o, e) => Login();
-
-                ChangePasswordButton = new DXButton
-                {
-                    Parent = this,
-                    Location = new Point(85, 150),
-                    Size = new Size(180, DefaultHeight),
-                    Label = { Text = "Change Password" },
-                };
-                ChangePasswordButton.MouseClick += ChangePasswordButton_MouseClick;
 
                 ForgotPasswordLabel = new DXLabel()
                 {
@@ -740,19 +769,8 @@ namespace Client.Scenes
                 };
                 ForgotPasswordLabel.MouseEnter += (o, e) => ForgotPasswordLabel.ForeColour = Color.White;
                 ForgotPasswordLabel.MouseLeave += (o, e) => ForgotPasswordLabel.ForeColour = Color.FromArgb(198, 166, 99);
-                ForgotPasswordLabel.Location = new Point(85 + (180 - ForgotPasswordLabel.Size.Width) / 2, 180);
+                ForgotPasswordLabel.Location = new Point(ChangePasswordButton.Location.X + 15, 38);
                 ForgotPasswordLabel.MouseClick += ForgotPasswordLabel_MouseClick;
-
-                NewAccountButton = new DXButton
-                {
-                    Parent = this,
-                    Location = new Point(85, 210),
-                    Size = new Size(180, DefaultHeight),
-                    Label = { Text = "New Account" },
-                };
-                NewAccountButton.MouseClick += NewAccountButton_MouseClick;
-                CloseButton.MouseClick += (o, e) => CEnvir.Target.Close();
-
 
                 if (Config.RememberDetails)
                 {
@@ -761,8 +779,24 @@ namespace Client.Scenes
                 }
             }
 
-            #region Methods
+            private void RankingButton_MouseClick(object sender, MouseEventArgs e)
+            {
+                LoginScene scene = ActiveScene as LoginScene;
 
+                if (scene == null) return;
+
+                scene.RankingBox.Visible = !scene.RankingBox.Visible;
+            }
+            private void OptionButton_MouseClick(object sender, MouseEventArgs e)
+            {
+                LoginScene scene = ActiveScene as LoginScene;
+
+                if (scene == null) return;
+
+                scene.ConfigBox.Visible = !scene.ConfigBox.Visible;
+            }
+
+            #region Methods
 
             public void Login()
             {
@@ -798,6 +832,7 @@ namespace Client.Scenes
                 if (LoginButton.IsEnabled)
                     Login();
             }
+
             private void EMailTextBox_TextChanged(object sender, EventArgs e)
             {
                 EMailValid = !string.IsNullOrEmpty(EMailTextBox.TextBox.Text) && EMailTextBox.TextBox.Text.Length >= 3;
@@ -816,6 +851,7 @@ namespace Client.Scenes
                 else
                     PasswordTextBox.BorderColour = PasswordValid ? Color.Green : Color.Red;
             }
+
             private void ChangePasswordButton_MouseClick(object sender, MouseEventArgs e)
             {
                 LoginScene scene = ActiveScene as LoginScene;
@@ -846,6 +882,7 @@ namespace Client.Scenes
                 scene.AccountBox.Visible = true;
                 scene.AccountBox.EMailTextBox.SetFocus();
             }
+
 
             #endregion
 
@@ -899,6 +936,27 @@ namespace Client.Scenes
                         if (!LoginButton.IsDisposed)
                             LoginButton.Dispose();
                         LoginButton = null;
+                    }
+
+                    if (ExitButton != null)
+                    {
+                        if (!ExitButton.IsDisposed)
+                            ExitButton.Dispose();
+                        ExitButton = null;
+                    }
+
+                    if (RankingButton != null)
+                    {
+                        if (!RankingButton.IsDisposed)
+                            RankingButton.Dispose();
+                        RankingButton = null;
+                    }
+
+                    if (OptionButton != null)
+                    {
+                        if (!OptionButton.IsDisposed)
+                            OptionButton.Dispose();
+                        OptionButton = null;
                     }
 
                     if (NewAccountButton != null)
@@ -2866,7 +2924,7 @@ namespace Client.Scenes
 
             public bool CanActivate => ActivationKeyValid && !ActivationAttempted;
 
-            public DXWindow PreviousWindow;
+            public DXControl PreviousWindow;
             public DXButton ActivateButton, CancelButton;
 
             public DXTextBox ActivationKeyTextBox;

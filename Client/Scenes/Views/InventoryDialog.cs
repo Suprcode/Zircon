@@ -85,6 +85,7 @@ namespace Client.Scenes.Views
             LibraryFile = LibraryFile.Interface;
             Index = 130;
             Movable = true;
+            Sort = true;
 
             CloseButton = new DXButton
             {
