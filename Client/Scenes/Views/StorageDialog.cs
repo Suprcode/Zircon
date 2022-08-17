@@ -9,6 +9,7 @@ using Client.Envir;
 using Client.UserModels;
 using Library;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Windows.Forms;
 
 namespace Client.Scenes.Views
 {
@@ -53,6 +54,22 @@ namespace Client.Scenes.Views
                 Settings.Location = nValue;
         }
 
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    if (CloseButton.Visible)
+                    {
+                        CloseButton.InvokeMouseClick();
+                        if (!Config.EscapeCloseAll)
+                            e.Handled = true;
+                    }
+                    break;
+            }
+        }
 
         #region Settings
 

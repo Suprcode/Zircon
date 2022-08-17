@@ -30,7 +30,7 @@ namespace Client.Models.Particles
 
             }
 
-            public override Particle CreateParticle(Vector2 emitterLocation, int direction, float angle)
+            public override Particle CreateParticle(Vector2 emitterLocation, int direction16, float angle)
             {
                 int texture = Textures[random.Next(Textures.Count)];
 
@@ -67,7 +67,7 @@ namespace Client.Models.Particles
                 bool fade = false;
                 float fadeRate = 0F;
 
-                return new Particle(Library, texture, opacity, position, _velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate);
+                return new Particle(Library, texture, opacity, position, direction16, _velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate);
             }
         }
 

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Client.Models.Particles
 {
-    public class Particle
+    public class Particle : IDisposable
     {
         /// <summary>
         /// The texture that will be drawn to represent the particle
@@ -27,6 +27,11 @@ namespace Client.Models.Particles
         /// The current position of the particle 
         /// </summary>
         public Vector2 Position { get; set; }
+
+        /// <summary>
+        /// Direction16 that the particle is facing. 22.5 degrees each direction
+        /// </summary>
+        public int Direction16 { get; set; }
 
         /// <summary>
         /// The speed of the particle at the current instance
@@ -98,12 +103,15 @@ namespace Client.Models.Particles
         /// </summary>
         public DateTime NextUpdate;
 
-        public Particle(MirLibrary lib, int textureIndex, float opacity, Vector2 position, Vector2 velocity,
+        public bool Remove { get; set; }
+
+        public Particle(MirLibrary lib, int textureIndex, float opacity, Vector2 position, int direction16, Vector2 velocity,
             float angle, float angularVelocity, Color color, float scale, float scaleRate, TimeSpan ttl, bool fade, float fadeRate, float maxScale = -1f)
         {
             Library = lib;
             TextureIndex = textureIndex;
             Position = position;
+            Direction16 = direction16;
             Velocity = velocity;
             Angle = angle;
             AngularVelocity = angularVelocity;
@@ -122,7 +130,7 @@ namespace Client.Models.Particles
             NextUpdate = CEnvir.Now.Add(UpdateSpeed);
         }
 
-        public void Update()
+        public bool Update()
         {
             if (NextUpdate <= CEnvir.Now)
             {
@@ -138,6 +146,9 @@ namespace Client.Models.Particles
                     Scale += ScaleRate;
                 }
 
+                if (Scale < 0F)
+                    Scale = 0F;
+
                 NextUpdate = CEnvir.Now.Add(UpdateSpeed);
 
                 if (Expires <= CEnvir.Now)
@@ -148,15 +159,23 @@ namespace Client.Models.Particles
 
                         if (Opacity > 0F)
                         {
-                            return;
+                            return true;
+                        }
+                        else
+                        {
+                            Remove = true;
                         }
                     } 
                     else
                     {
-                        Opacity = 0F;
+                        Remove = true;
                     }
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         public void Draw()
@@ -165,10 +184,31 @@ namespace Client.Models.Particles
 
             Size size = Library.GetSize(TextureIndex);
 
-            var width = (size.Width) / 2;
-            var height = (size.Height) / 2;
+            var centerX = (size.Width) / 2;
+            var centerY = (size.Height) / 2;
 
-            Library.DrawBlend(TextureIndex, Scale, Color.Gray, Position.X - width, Position.Y - height, Angle, Opacity, ImageType.Image, false, 0);
+            Library.DrawBlend(TextureIndex, Scale, Color, Position.X - centerX, Position.Y - centerY, Angle, Opacity, ImageType.Image, false, 0);
         }
+
+        #region IDisposable
+
+        public bool IsDisposed { get; private set; }
+        public void Dispose()
+        {
+            Dispose(!IsDisposed);
+            GC.SuppressFinalize(this);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Library = null;
+
+                IsDisposed = true;
+            }
+        }
+
+        #endregion
     }
 }

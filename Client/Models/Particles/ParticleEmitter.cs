@@ -2,12 +2,14 @@
 using Client.Scenes;
 using Library;
 using SlimDX;
+using SlimDX.X3DAudio;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Client.Models.Particles.Rain;
 
 namespace Client.Models.Particles
 {
@@ -20,7 +22,7 @@ namespace Client.Models.Particles
 
         public Vector2 Location { get; set; }
         public float Angle { get; set; }
-        public int Direction { get; set; }
+        public int Direction16 { get; set; }
 
         public List<ParticleType> ParticleTypes;
 
@@ -51,13 +53,13 @@ namespace Client.Models.Particles
             Location = new Vector2(location.X, location.Y);
         }
 
-        public void SetLocation(int dir, int x, int y)
+        public void SetLocation(int direction16, int x, int y)
         {
-            var center = CenterPoint[dir];
+            var center = CenterPoint[direction16];
 
-            Angle = (float)Functions.DegreesToRadians(dir * 22.5);
+            Angle = (float)Functions.DegreesToRadians(direction16 * 22.5);
 
-            Direction = dir;
+            Direction16 = direction16;
 
             Location = new Vector2(center.X + x, center.Y + y);
         }
@@ -74,22 +76,34 @@ namespace Client.Models.Particles
                 {
                     if (particle.Particles.Count < particle.MaxCount && particle.NextSpawn < CEnvir.Now)
                     {
-                        particle.Particles.Add(particle.CreateParticle(Location, Direction, Angle));
+                        particle.Particles.Add(particle.CreateParticle(Location, Direction16, Angle));
                         particle.NextSpawn = CEnvir.Now.Add(particle.SpawnFrequency);
                     }
                 }
             }
 
-            foreach (var particle in ParticleTypes)
+            foreach (var type in ParticleTypes)
             {
-                for (int i = 0; i < particle.Particles.Count; i++)
+                for (int i = 0; i < type.Particles.Count; i++)
                 {
-                    particle.Particles[i].Update();
+                    var particle = type.Particles[i];
 
-                    if (particle.Particles[i].Opacity <= 0F)
+                    var updated = particle.Update();
+
+                    if (updated)
                     {
-                        particle.Particles.RemoveAt(i);
-                        i--;
+                        type.Update(this, particle);
+                    }
+
+                    if (particle.Remove)
+                    {
+                        type.Complete(this, particle);
+
+                        if (particle.Remove)
+                        {
+                            type.Particles.RemoveAt(i);
+                            i--;
+                        }
                     }
                 }
 
@@ -113,10 +127,10 @@ namespace Client.Models.Particles
 
                     Size size = p.Library.GetSize(p.TextureIndex);
 
-                    var width = ((size.Width) / 2) * p.Scale;
-                    var height = ((size.Height) / 2) * p.Scale;
+                    var centerX = ((size.Width) / 2) * p.Scale;
+                    var centerY = ((size.Height) / 2) * p.Scale;
 
-                    if (p.Position.X - width > Config.GameSize.Width || p.Position.Y - height > Config.GameSize.Height)
+                    if (p.Position.X - centerX > Config.GameSize.Width || p.Position.Y - centerY > Config.GameSize.Height)
                     {
                         types.Particles.Remove(p);
                         continue;
@@ -132,21 +146,42 @@ namespace Client.Models.Particles
             GameScene.Game.MapControl.ParticleEffects.Remove(this);
         }
 
+        public ParticleType GetType(Type type)
+        {
+            return ParticleTypes.FirstOrDefault(x => type == x.GetType());
+        }
+
+        #region IDisposable
+
+        public bool IsDisposed { get; private set; }
         public void Dispose()
         {
-            if (ParticleTypes != null)
+            Dispose(!IsDisposed);
+            GC.SuppressFinalize(this);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (disposing)
             {
                 CenterPoint = null;
                 _owner = null;
 
-                foreach (var particle in ParticleTypes)
+                if (ParticleTypes != null)
                 {
-                    particle.Dispose();
+                    foreach (var particle in ParticleTypes)
+                    {
+                        if (!particle.IsDisposed)
+                            particle.Dispose();
+                    }
+
+                    ParticleTypes = null;
                 }
 
-                ParticleTypes.Clear();
-                ParticleTypes = null;
+                IsDisposed = true;
             }
         }
+
+        #endregion
     }
 }

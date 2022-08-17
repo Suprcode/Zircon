@@ -94,6 +94,23 @@ namespace Client.Scenes.Views
                 Settings.Location = nValue;
         }
 
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    if (CloseButton.Visible)
+                    {
+                        CloseButton.InvokeMouseClick();
+                        if (!Config.EscapeCloseAll)
+                            e.Handled = true;
+                    }
+                    break;
+            }
+        }
+
         #region Settings
 
         public WindowSetting Settings;
@@ -179,7 +196,7 @@ namespace Client.Scenes.Views
                 Location = new Point(0, 24)
             };
 
-            CompanionDisplayPoint = new Point(90, 120);
+            CompanionDisplayPoint = new Point(90, 140);
 
             BonusButton = new DXButton
             {
@@ -1247,40 +1264,34 @@ namespace Client.Scenes.Views
                     SaveFilterButton = null;
                 }
 
-                foreach (var key in FilterClass.Keys)
+                foreach (KeyValuePair<MirClass, DXCheckBox> pair in FilterClass)
                 {
-                    if (FilterClass[key] != null)
-                    {
-                        if (!FilterClass[key].IsDisposed)
-                            FilterClass[key].Dispose();
+                    if (pair.Value == null) continue;
+                    if (pair.Value.IsDisposed) continue;
 
-                        FilterClass[key] = null;
-                    }
+                    pair.Value.Dispose();
                 }
+                FilterClass.Clear();
                 FilterClass = null;
 
-                foreach (var key in FilterRarity.Keys)
+                foreach (KeyValuePair<Rarity, DXCheckBox> pair in FilterRarity)
                 {
-                    if (FilterRarity[key] != null)
-                    {
-                        if (!FilterRarity[key].IsDisposed)
-                            FilterRarity[key].Dispose();
+                    if (pair.Value == null) continue;
+                    if (pair.Value.IsDisposed) continue;
 
-                        FilterRarity[key] = null;
-                    }
+                    pair.Value.Dispose();
                 }
+                FilterRarity.Clear();
                 FilterRarity = null;
 
-                foreach (var key in FilterType.Keys)
+                foreach (KeyValuePair<ItemType, DXCheckBox> pair in FilterType)
                 {
-                    if (FilterType[key] != null)
-                    {
-                        if (!FilterType[key].IsDisposed)
-                            FilterType[key].Dispose();
+                    if (pair.Value == null) continue;
+                    if (pair.Value.IsDisposed) continue;
 
-                        FilterType[key] = null;
-                    }
+                    pair.Value.Dispose();
                 }
+                FilterType.Clear();
                 FilterType = null;
 
                 if (FilterTypeCommon != null)
@@ -1343,7 +1354,6 @@ namespace Client.Scenes.Views
                     InventoryGrid = null;
                 }
             }
-
         }
 
         #endregion

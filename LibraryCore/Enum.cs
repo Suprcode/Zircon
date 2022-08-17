@@ -134,6 +134,16 @@ namespace Library
         Weekend = Saturday | Sunday
     }
 
+    [Flags]
+    public enum Weather
+    {
+        None = 0,
+        Rain = 1,
+        Snow = 2,
+        Fog = 4,
+        Lightning = 8
+    }
+
     public enum GridType
     {
         None,

@@ -25,7 +25,7 @@ namespace Client.Models.Particles
                 Library = CEnvir.LibraryList[LibraryFile.ProgUse];
             }
 
-            public override Particle CreateParticle(Vector2 location, int direction, float angle)
+            public override Particle CreateParticle(Vector2 location, int direction16, float angle)
             {
                 int texture = Textures[random.Next(Textures.Count)];
 
@@ -44,7 +44,7 @@ namespace Client.Models.Particles
                 bool fade = false;
                 float fadeRate = 0.5F;
 
-                return new Particle(Library, texture, opacity, position, velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate);
+                return new Particle(Library, texture, opacity, position, direction16, velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate);
             }
 
         }
@@ -61,7 +61,7 @@ namespace Client.Models.Particles
                 Library = CEnvir.LibraryList[LibraryFile.ProgUse];
             }
 
-            public override Particle CreateParticle(Vector2 location, int direction, float angle)
+            public override Particle CreateParticle(Vector2 location, int direction16, float angle)
             {
                 int texture = Textures[random.Next(Textures.Count)];
 
@@ -81,7 +81,7 @@ namespace Client.Models.Particles
                 bool fade = true;
                 float fadeRate = 0.01F;
 
-                return new Particle(Library, texture, opacity, position, velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate);
+                return new Particle(Library, texture, opacity, position, direction16, velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate);
             }
         }
 

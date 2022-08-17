@@ -1,4 +1,6 @@
 ﻿using Client.Envir;
+using Library;
+using Library.Network.ClientPackets;
 using SlimDX;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,17 @@ namespace Client.Models.Particles
 
         public abstract Particle CreateParticle(Vector2 emitterLocation, int direction, float angle);
 
+        public virtual void Update(ParticleEmitter emitter, Particle updateParticle)
+        {
+
+        }
+
+        public virtual void Complete(ParticleEmitter emitter, Particle completeParticle)
+        {
+        }
+
         #region IDisposable
+
         public bool IsDisposed { get; private set; }
         public void Dispose()
         {
@@ -41,8 +53,17 @@ namespace Client.Models.Particles
                 IsDisposed = true;
 
                 Library = null;
+
+                foreach (var particle in Particles)
+                {
+                    if (!particle.IsDisposed)
+                        particle.Dispose();
+                }
+
                 Particles = null;
                 Textures = null;
+
+                IsDisposed = true;
             }
         }
 

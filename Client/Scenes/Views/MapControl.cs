@@ -494,7 +494,7 @@ namespace Client.Scenes.Views
 
             //var point = new Point((Size.Width) / 2, (Size.Height) / 2);
 
-            //var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Fog), point);
+            //var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Rain), point);
 
             //GameScene.Game.MapControl.ParticleEffects.Add(emitter);
         }
