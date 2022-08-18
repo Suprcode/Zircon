@@ -59,6 +59,7 @@ namespace Client.Envir
         [ConfigSection("Game")]
         public static bool DrawEffects { get; set; } = true;
         public static bool DrawParticles { get; set; } = false;
+        public static bool DrawWeather { get; set; } = true;
         public static bool ShowItemNames { get; set; } = true;
         public static bool ShowMonsterNames { get; set; } = true;
         public static bool ShowPlayerNames { get; set; } = true;

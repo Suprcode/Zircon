@@ -490,13 +490,36 @@ namespace Client.Scenes.Views
 
         private void UpdateWeather()
         {
-            //GameScene.Game.MapControl.ParticleEffects.Clear();
+            GameScene.Game.MapControl.ParticleEffects.Clear();
 
-            //var point = new Point((Size.Width) / 2, (Size.Height) / 2);
+            if (Config.DrawWeather)
+            {
+                var point = new Point((Size.Width) / 2, (Size.Height) / 2);
 
-            //var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Rain), point);
+                if (GameScene.Game.MapControl.MapInfo.Weather.HasFlag(Weather.Rain))
+                {
+                    var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Rain), point);
+                    GameScene.Game.MapControl.ParticleEffects.Add(emitter);
+                }
 
-            //GameScene.Game.MapControl.ParticleEffects.Add(emitter);
+                if (GameScene.Game.MapControl.MapInfo.Weather.HasFlag(Weather.Snow))
+                {
+                    var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Snow), point);
+                    GameScene.Game.MapControl.ParticleEffects.Add(emitter);
+                }
+
+                if (GameScene.Game.MapControl.MapInfo.Weather.HasFlag(Weather.Fog))
+                {
+                    var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Fog), point);
+                    GameScene.Game.MapControl.ParticleEffects.Add(emitter);
+                }
+
+                if (GameScene.Game.MapControl.MapInfo.Weather.HasFlag(Weather.Lightning))
+                {
+                    var emitter = (ParticleEmitter)Activator.CreateInstance(typeof(Lightning), point);
+                    GameScene.Game.MapControl.ParticleEffects.Add(emitter);
+                }
+            }
         }
 
         public override void OnMouseMove(MouseEventArgs e)
@@ -1111,10 +1134,8 @@ namespace Client.Scenes.Views
         {
             Objects.Add(ob);
 
-
             if (ob.CurrentLocation.X < Width && ob.CurrentLocation.Y < Height)
                 Cells[ob.CurrentLocation.X, ob.CurrentLocation.Y].AddObject(ob);
-
         }
 
         public void RemoveObject(MapObject ob)
@@ -1150,7 +1171,6 @@ namespace Client.Scenes.Views
         {
             if (User == null) return;
 
-
             GameScene.Game.MapControl.MapLocation = new Point((GameScene.Game.MapControl.MouseLocation.X - GameScene.Game.Location.X) / CellWidth - OffSetX + User.CurrentLocation.X,
                                                               (GameScene.Game.MapControl.MouseLocation.Y - GameScene.Game.Location.Y) / CellHeight - OffSetY + User.CurrentLocation.Y);
         }
@@ -1168,6 +1188,7 @@ namespace Client.Scenes.Views
 
             return false;
         }
+
         public bool CanEnergyBlast(MirDirection direction)
         {
             return HasTarget(Functions.Move(MapObject.User.CurrentLocation, direction, 2));
@@ -1189,7 +1210,6 @@ namespace Client.Scenes.Views
 
             return false;
         }
-
 
         public bool ValidCell(Point location)
         {

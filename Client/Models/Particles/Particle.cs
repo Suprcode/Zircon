@@ -1,6 +1,7 @@
 ﻿using Client.Envir;
 using Client.Scenes;
 using Library;
+using Newtonsoft.Json.Linq;
 using SlimDX;
 using System;
 using System.Collections.Generic;
@@ -94,6 +95,18 @@ namespace Client.Models.Particles
         public float Opacity { get; set; }
 
         /// <summary>
+        /// Offset the position of the particle based on the original location.
+        /// Used when the emitter has no target to focus on
+        /// </summary>
+        public bool UseMovingOffset { get; set; }
+
+        /// <summary>
+        /// Location of user at the time of particle creation
+        /// </summary>
+        public Point UserLocationOnCreation { get; set; }
+
+
+        /// <summary>
         /// Real expiry time
         /// </summary>
         public DateTime Expires;
@@ -103,10 +116,18 @@ namespace Client.Models.Particles
         /// </summary>
         public DateTime NextUpdate;
 
-        public bool Remove { get; set; }
+        /// <summary>
+        /// Removes the particle from process
+        /// </summary>
+        public bool Remove;
+
+        /// <summary>
+        /// Indicates how many times the particle has been updated
+        /// </summary>
+        public int UpdateCount { get; private set; }
 
         public Particle(MirLibrary lib, int textureIndex, float opacity, Vector2 position, int direction16, Vector2 velocity,
-            float angle, float angularVelocity, Color color, float scale, float scaleRate, TimeSpan ttl, bool fade, float fadeRate, float maxScale = -1f)
+            float angle, float angularVelocity, Color color, float scale, float scaleRate, TimeSpan ttl, bool fade, float fadeRate, float maxScale = -1f, bool useMovingOffset = false, int updateSpeedMS = 10)
         {
             Library = lib;
             TextureIndex = textureIndex;
@@ -120,14 +141,18 @@ namespace Client.Models.Particles
             ScaleRate = scaleRate;
             MaxScale = maxScale;
             TTL = ttl;
-            UpdateSpeed = TimeSpan.FromMilliseconds(10);
+            UpdateSpeed = TimeSpan.FromMilliseconds(updateSpeedMS);
 
             Opacity = opacity;
             Fade = fade;
             FadeRate = fadeRate;
 
+            UseMovingOffset = useMovingOffset;
+            UserLocationOnCreation = MapObject.User.CurrentLocation;
+
             Expires = CEnvir.Now.Add(TTL);
             NextUpdate = CEnvir.Now.Add(UpdateSpeed);
+            Remove = false;
         }
 
         public bool Update()
@@ -172,6 +197,8 @@ namespace Client.Models.Particles
                     }
                 }
 
+                UpdateCount++;
+
                 return true;
             }
 
@@ -184,10 +211,16 @@ namespace Client.Models.Particles
 
             Size size = Library.GetSize(TextureIndex);
 
-            var centerX = (size.Width) / 2;
-            var centerY = (size.Height) / 2;
+            var drawX = Position.X - ((size.Width) / 2);
+            var drawY = Position.Y - ((size.Height) / 2);
 
-            Library.DrawBlend(TextureIndex, Scale, Color, Position.X - centerX, Position.Y - centerY, Angle, Opacity, ImageType.Image, false, 0);
+            if (UseMovingOffset)
+            {
+                drawX -= (UseMovingOffset ? MapObject.User.MovingOffSet.X : 0) + ((MapObject.User.CurrentLocation.X - UserLocationOnCreation.X) * MapObject.CellWidth);
+                drawY -= (UseMovingOffset ? MapObject.User.MovingOffSet.Y : 0) + ((MapObject.User.CurrentLocation.Y - UserLocationOnCreation.Y) * MapObject.CellHeight);
+            }
+
+            Library.DrawBlend(TextureIndex, Scale, Color, drawX, drawY, Angle, Opacity, ImageType.Image, false, 0);
         }
 
         #region IDisposable

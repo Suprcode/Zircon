@@ -141,7 +141,14 @@ namespace Library
         Rain = 1,
         Snow = 2,
         Fog = 4,
-        Lightning = 8
+        Lightning = 8,
+
+        [Description("Rain, Lightning")]
+        RainLightning = 9,
+        [Description("Fog, Lightning")]
+        FogLightning = 12,
+        [Description("Rain, Fog, Lightning")]
+        RainFogLightning = 13
     }
 
     public enum GridType

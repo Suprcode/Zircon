@@ -154,6 +154,7 @@
     <Compile Include="Models\Particles\Spells\IceBladesTrail.cs" />
     <Compile Include="Models\Particles\Spells\IceBoltTrail.cs" />
     <Compile Include="Models\Particles\Weather\Fog.cs" />
+    <Compile Include="Models\Particles\Weather\Lightning.cs" />
     <Compile Include="Models\Particles\Weather\Rain.cs" />
     <Compile Include="Models\Particles\Weather\Snow.cs" />
     <Compile Include="Models\PlayerObject.cs" />

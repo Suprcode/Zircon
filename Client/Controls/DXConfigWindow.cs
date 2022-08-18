@@ -32,7 +32,7 @@ namespace Client.Controls
         public DXTab GameTab;
         private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox, 
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox, 
-            DrawParticlesCheckBox;
+            DrawParticlesCheckBox, DrawWeatherCheckBox;
         public DXCheckBox DisplayHelmetCheckBox;
 
         public DXButton KeyBindButton;
@@ -89,6 +89,7 @@ namespace Client.Controls
             LogChatCheckBox.Checked = Config.LogChat;
             DrawEffectsCheckBox.Checked = Config.DrawEffects;
             DrawParticlesCheckBox.Checked = Config.DrawParticles;
+            DrawWeatherCheckBox.Checked = Config.DrawWeather;
 
             LocalColourBox.BackColour = Config.LocalTextColour;
             GMWhisperInColourBox.BackColour = Config.GMWhisperInTextColour;
@@ -454,10 +455,17 @@ namespace Client.Controls
             };
             DrawEffectsCheckBox.Location = new Point(270 - DrawEffectsCheckBox.Size.Width, 135);
 
+            DrawWeatherCheckBox = new DXCheckBox
+            {
+                Label = { Text = "Draw Weather:" },
+                Parent = GameTab,
+            };
+            DrawWeatherCheckBox.Location = new Point(270 - DrawWeatherCheckBox.Size.Width, 160);
+
             KeyBindButton = new DXButton
             {
                 Parent = GameTab,
-                Location = new Point(190, 160),
+                Location = new Point(190, 185),
                 Size = new Size(80, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
                 Label = { Text = "Key Binds" }

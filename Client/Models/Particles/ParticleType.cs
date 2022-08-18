@@ -18,7 +18,7 @@ namespace Client.Models.Particles
         public List<Particle> Particles = new();
 
         public int MaxCount { get; set; }
-        public TimeSpan SpawnFrequency { get; set; }
+        public virtual TimeSpan SpawnFrequency { get; set; }
         public DateTime NextSpawn { get; set; }
 
         public Color Color;
@@ -28,12 +28,11 @@ namespace Client.Models.Particles
 
         public abstract Particle CreateParticle(Vector2 emitterLocation, int direction, float angle);
 
-        public virtual void Update(ParticleEmitter emitter, Particle updateParticle)
+        public virtual void Updated(ParticleEmitter emitter, Particle updateParticle)
         {
-
         }
 
-        public virtual void Complete(ParticleEmitter emitter, Particle completeParticle)
+        public virtual void Completed(ParticleEmitter emitter, Particle completeParticle)
         {
         }
 

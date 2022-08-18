@@ -88,19 +88,20 @@ namespace Client.Models.Particles
                 {
                     var particle = type.Particles[i];
 
-                    var updated = particle.Update();
-
-                    if (updated)
+                    if (particle.Update())
                     {
-                        type.Update(this, particle);
+                        type.Updated(this, particle);
                     }
 
                     if (particle.Remove)
                     {
-                        type.Complete(this, particle);
+                        type.Completed(this, particle);
 
                         if (particle.Remove)
                         {
+                            if (!particle.IsDisposed)
+                                particle.Dispose();
+
                             type.Particles.RemoveAt(i);
                             i--;
                         }
@@ -143,6 +144,8 @@ namespace Client.Models.Particles
 
         public void Remove()
         {
+            //TODO: Dispose?
+
             GameScene.Game.MapControl.ParticleEffects.Remove(this);
         }
 

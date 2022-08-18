@@ -234,6 +234,7 @@ namespace Client.Controls
                 WindowValid = false;
             }
         }
+
         public override void DisposeTexture()
         {
             base.DisposeTexture();
@@ -253,18 +254,15 @@ namespace Client.Controls
 
                 WindowSurface = null;
             }
-
         }
 
         private void UpdateLocations()
         {
-
             if (CloseButton != null)
                 CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
 
             if (TitleLabel != null)
                 TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
-
         }
 
         protected internal override void UpdateDisplayArea()
@@ -300,6 +298,7 @@ namespace Client.Controls
         {
             Size = GetSize(clientSize);
         }
+
         public Size GetSize(Size clientSize)
         {
             int w = 3 + 6 + 6 + 3; //Border Padding Padding Border
@@ -377,7 +376,6 @@ namespace Client.Controls
 
             DXManager.SetOpacity(Opacity);
             PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
-
 
             DXManager.SetOpacity(oldOpacity);
         }
@@ -476,9 +474,6 @@ namespace Client.Controls
                 s = InterfaceLibrary.GetSize(14);
                 InterfaceLibrary.Draw(14, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
             }
-
-
-
         }
 
         public void LoadSettings()

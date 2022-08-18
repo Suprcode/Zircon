@@ -93,6 +93,8 @@
             this.MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.StartClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.RequiredClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.colWeather = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.WeatherComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.GuardsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DirectionImageComboBox)).BeginInit();
@@ -108,6 +110,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartClassImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RequiredClassImageComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeatherComboBox)).BeginInit();
             this.SuspendLayout();
             // 
             // GuardsGridView
@@ -205,7 +208,8 @@
             this.StartClassImageComboBox,
             this.RequiredClassImageComboBox,
             this.EditButtonEdit,
-            this.ItemLookUpEdit});
+            this.ItemLookUpEdit,
+            this.WeatherComboBox});
             this.MapInfoGridControl.ShowOnlyPredefinedDetails = true;
             this.MapInfoGridControl.Size = new System.Drawing.Size(830, 395);
             this.MapInfoGridControl.TabIndex = 2;
@@ -333,7 +337,8 @@
             this.gridColumn14,
             this.gridColumn28,
             this.gridColumn21,
-            this.gridColumn29});
+            this.gridColumn29,
+            this.colWeather});
             this.MapInfoGridView.GridControl = this.MapInfoGridControl;
             this.MapInfoGridView.Name = "MapInfoGridView";
             this.MapInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -349,7 +354,7 @@
             this.colFileName.Name = "colFileName";
             this.colFileName.Visible = true;
             this.colFileName.VisibleIndex = 0;
-            this.colFileName.Width = 32;
+            this.colFileName.Width = 28;
             // 
             // colDescription
             // 
@@ -357,7 +362,7 @@
             this.colDescription.Name = "colDescription";
             this.colDescription.Visible = true;
             this.colDescription.VisibleIndex = 1;
-            this.colDescription.Width = 32;
+            this.colDescription.Width = 28;
             // 
             // colMiniMap
             // 
@@ -365,7 +370,7 @@
             this.colMiniMap.Name = "colMiniMap";
             this.colMiniMap.Visible = true;
             this.colMiniMap.VisibleIndex = 2;
-            this.colMiniMap.Width = 32;
+            this.colMiniMap.Width = 28;
             // 
             // colLight
             // 
@@ -389,49 +394,49 @@
             this.gridColumn12.FieldName = "Fight";
             this.gridColumn12.Name = "gridColumn12";
             this.gridColumn12.Visible = true;
-            this.gridColumn12.VisibleIndex = 4;
-            this.gridColumn12.Width = 32;
+            this.gridColumn12.VisibleIndex = 5;
+            this.gridColumn12.Width = 27;
             // 
-            // gridColumn12
+            // colRequiredClass
             // 
             this.colRequiredClass.Caption = "Required Class";
             this.colRequiredClass.FieldName = "RequiredClass";
             this.colRequiredClass.Name = "colRequiredClass";
             this.colRequiredClass.Visible = true;
-            this.colRequiredClass.VisibleIndex = 4;
-            this.colRequiredClass.Width = 32;
+            this.colRequiredClass.VisibleIndex = 6;
+            this.colRequiredClass.Width = 27;
             // 
             // colAllowRT
             // 
             this.colAllowRT.FieldName = "AllowRT";
             this.colAllowRT.Name = "colAllowRT";
             this.colAllowRT.Visible = true;
-            this.colAllowRT.VisibleIndex = 5;
-            this.colAllowRT.Width = 32;
+            this.colAllowRT.VisibleIndex = 7;
+            this.colAllowRT.Width = 27;
             // 
             // gridColumn13
             // 
             this.gridColumn13.FieldName = "CanHorse";
             this.gridColumn13.Name = "gridColumn13";
             this.gridColumn13.Visible = true;
-            this.gridColumn13.VisibleIndex = 6;
-            this.gridColumn13.Width = 32;
+            this.gridColumn13.VisibleIndex = 8;
+            this.gridColumn13.Width = 27;
             // 
             // gridColumn15
             // 
             this.gridColumn15.FieldName = "AllowTT";
             this.gridColumn15.Name = "gridColumn15";
             this.gridColumn15.Visible = true;
-            this.gridColumn15.VisibleIndex = 7;
-            this.gridColumn15.Width = 32;
+            this.gridColumn15.VisibleIndex = 9;
+            this.gridColumn15.Width = 27;
             // 
             // gridColumn16
             // 
             this.gridColumn16.FieldName = "SkillDelay";
             this.gridColumn16.Name = "gridColumn16";
             this.gridColumn16.Visible = true;
-            this.gridColumn16.VisibleIndex = 8;
-            this.gridColumn16.Width = 32;
+            this.gridColumn16.VisibleIndex = 10;
+            this.gridColumn16.Width = 27;
             // 
             // gridColumn17
             // 
@@ -439,8 +444,8 @@
             this.gridColumn17.FieldName = "ReconnectMap";
             this.gridColumn17.Name = "gridColumn17";
             this.gridColumn17.Visible = true;
-            this.gridColumn17.VisibleIndex = 9;
-            this.gridColumn17.Width = 32;
+            this.gridColumn17.VisibleIndex = 11;
+            this.gridColumn17.Width = 27;
             // 
             // MapInfoLookUpEdit
             // 
@@ -461,41 +466,40 @@
             this.gridColumn5.FieldName = "MinimumLevel";
             this.gridColumn5.Name = "gridColumn5";
             this.gridColumn5.Visible = true;
-            this.gridColumn5.VisibleIndex = 10;
-            this.gridColumn5.Width = 32;
+            this.gridColumn5.VisibleIndex = 12;
+            this.gridColumn5.Width = 27;
             // 
             // gridColumn24
             // 
             this.gridColumn24.FieldName = "MaximumLevel";
             this.gridColumn24.Name = "gridColumn24";
             this.gridColumn24.Visible = true;
-            this.gridColumn24.VisibleIndex = 11;
-            this.gridColumn24.Width = 32;
-
+            this.gridColumn24.VisibleIndex = 13;
+            this.gridColumn24.Width = 27;
             // 
             // gridColumn6
             // 
             this.gridColumn6.FieldName = "CanMine";
             this.gridColumn6.Name = "gridColumn6";
             this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 13;
-            this.gridColumn6.Width = 32;
+            this.gridColumn6.VisibleIndex = 14;
+            this.gridColumn6.Width = 27;
             // 
             // gridColumn9
             // 
             this.gridColumn9.FieldName = "Music";
             this.gridColumn9.Name = "gridColumn9";
             this.gridColumn9.Visible = true;
-            this.gridColumn9.VisibleIndex = 14;
-            this.gridColumn9.Width = 32;
+            this.gridColumn9.VisibleIndex = 15;
+            this.gridColumn9.Width = 27;
             // 
             // gridColumn10
             // 
             this.gridColumn10.FieldName = "CanMarriageRecall";
             this.gridColumn10.Name = "gridColumn10";
             this.gridColumn10.Visible = true;
-            this.gridColumn10.VisibleIndex = 15;
-            this.gridColumn10.Width = 32;
+            this.gridColumn10.VisibleIndex = 16;
+            this.gridColumn10.Width = 27;
             // 
             // gridColumn22
             // 
@@ -503,8 +507,8 @@
             this.gridColumn22.FieldName = "MonsterHealth";
             this.gridColumn22.Name = "gridColumn22";
             this.gridColumn22.Visible = true;
-            this.gridColumn22.VisibleIndex = 16;
-            this.gridColumn22.Width = 32;
+            this.gridColumn22.VisibleIndex = 17;
+            this.gridColumn22.Width = 27;
             // 
             // gridColumn25
             // 
@@ -512,8 +516,8 @@
             this.gridColumn25.FieldName = "MaxMonsterHealth";
             this.gridColumn25.Name = "gridColumn25";
             this.gridColumn25.Visible = true;
-            this.gridColumn25.VisibleIndex = 17;
-            this.gridColumn25.Width = 32;
+            this.gridColumn25.VisibleIndex = 18;
+            this.gridColumn25.Width = 27;
             // 
             // gridColumn23
             // 
@@ -521,8 +525,8 @@
             this.gridColumn23.FieldName = "MonsterDamage";
             this.gridColumn23.Name = "gridColumn23";
             this.gridColumn23.Visible = true;
-            this.gridColumn23.VisibleIndex = 18;
-            this.gridColumn23.Width = 32;
+            this.gridColumn23.VisibleIndex = 19;
+            this.gridColumn23.Width = 27;
             // 
             // gridColumn26
             // 
@@ -530,8 +534,8 @@
             this.gridColumn26.FieldName = "MaxMonsterDamage";
             this.gridColumn26.Name = "gridColumn26";
             this.gridColumn26.Visible = true;
-            this.gridColumn26.VisibleIndex = 19;
-            this.gridColumn26.Width = 32;
+            this.gridColumn26.VisibleIndex = 20;
+            this.gridColumn26.Width = 27;
             // 
             // gridColumn11
             // 
@@ -539,8 +543,8 @@
             this.gridColumn11.FieldName = "ExperienceRate";
             this.gridColumn11.Name = "gridColumn11";
             this.gridColumn11.Visible = true;
-            this.gridColumn11.VisibleIndex = 20;
-            this.gridColumn11.Width = 32;
+            this.gridColumn11.VisibleIndex = 21;
+            this.gridColumn11.Width = 27;
             // 
             // gridColumn27
             // 
@@ -548,8 +552,8 @@
             this.gridColumn27.FieldName = "MaxExperienceRate";
             this.gridColumn27.Name = "gridColumn27";
             this.gridColumn27.Visible = true;
-            this.gridColumn27.VisibleIndex = 21;
-            this.gridColumn27.Width = 32;
+            this.gridColumn27.VisibleIndex = 22;
+            this.gridColumn27.Width = 27;
             // 
             // gridColumn14
             // 
@@ -557,8 +561,8 @@
             this.gridColumn14.FieldName = "DropRate";
             this.gridColumn14.Name = "gridColumn14";
             this.gridColumn14.Visible = true;
-            this.gridColumn14.VisibleIndex = 22;
-            this.gridColumn14.Width = 32;
+            this.gridColumn14.VisibleIndex = 23;
+            this.gridColumn14.Width = 27;
             // 
             // gridColumn28
             // 
@@ -566,8 +570,8 @@
             this.gridColumn28.FieldName = "MaxDropRate";
             this.gridColumn28.Name = "gridColumn28";
             this.gridColumn28.Visible = true;
-            this.gridColumn28.VisibleIndex = 23;
-            this.gridColumn28.Width = 39;
+            this.gridColumn28.VisibleIndex = 24;
+            this.gridColumn28.Width = 33;
             // 
             // gridColumn21
             // 
@@ -575,8 +579,8 @@
             this.gridColumn21.FieldName = "GoldRate";
             this.gridColumn21.Name = "gridColumn21";
             this.gridColumn21.Visible = true;
-            this.gridColumn21.VisibleIndex = 24;
-            this.gridColumn21.Width = 32;
+            this.gridColumn21.VisibleIndex = 25;
+            this.gridColumn21.Width = 27;
             // 
             // gridColumn29
             // 
@@ -584,8 +588,8 @@
             this.gridColumn29.FieldName = "MaxGoldRate";
             this.gridColumn29.Name = "gridColumn29";
             this.gridColumn29.Visible = true;
-            this.gridColumn29.VisibleIndex = 25;
-            this.gridColumn29.Width = 43;
+            this.gridColumn29.VisibleIndex = 26;
+            this.gridColumn29.Width = 85;
             // 
             // ribbon
             // 
@@ -594,7 +598,8 @@
             this.ribbon.ExpandCollapseItem,
             this.SaveButton,
             this.ClearMapsButton,
-            this.RenameMiniMapButton});
+            this.RenameMiniMapButton,
+            this.ribbon.SearchEditItem});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
             this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
@@ -643,18 +648,18 @@
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
             // ribbonPageGroup2
             // 
             this.ribbonPageGroup2.AllowTextClipping = false;
+            this.ribbonPageGroup2.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup2.ItemLinks.Add(this.ClearMapsButton);
             this.ribbonPageGroup2.ItemLinks.Add(this.RenameMiniMapButton);
             this.ribbonPageGroup2.Name = "ribbonPageGroup2";
-            this.ribbonPageGroup2.ShowCaptionButton = false;
             this.ribbonPageGroup2.Text = "Actions";
             // 
             // MapIconImageComboBox
@@ -682,6 +687,23 @@
             this.RequiredClassImageComboBox.ContextImageOptions.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
             this.RequiredClassImageComboBox.Name = "RequiredClassImageComboBox";
             // 
+            // colWeather
+            // 
+            this.colWeather.Caption = "Weather";
+            this.colWeather.ColumnEdit = this.WeatherComboBox;
+            this.colWeather.FieldName = "Weather";
+            this.colWeather.Name = "colWeather";
+            this.colWeather.Visible = true;
+            this.colWeather.VisibleIndex = 4;
+            this.colWeather.Width = 38;
+            // 
+            // WeatherComboBox
+            // 
+            this.WeatherComboBox.AutoHeight = false;
+            this.WeatherComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.WeatherComboBox.Name = "WeatherComboBox";
+            // 
             // MapInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -708,6 +730,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartClassImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RequiredClassImageComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeatherComboBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -771,5 +794,7 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn27;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn28;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn29;
+        private DevExpress.XtraGrid.Columns.GridColumn colWeather;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox WeatherComboBox;
     }
 }

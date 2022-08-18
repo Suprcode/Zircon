@@ -22,6 +22,7 @@ namespace Server.Views
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
 
             LightComboBox.Items.AddEnum<LightSetting>();
+            WeatherComboBox.Items.AddEnum<Weather>();
             DirectionImageComboBox.Items.AddEnum<MirDirection>();
             MapIconImageComboBox.Items.AddEnum<MapIcon>();
             StartClassImageComboBox.Items.AddEnum<RequiredClass>();

@@ -5,10 +5,6 @@ using SlimDX;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Client.Models.Particles.Rain;
 
 namespace Client.Models.Particles
 {
@@ -46,12 +42,12 @@ namespace Client.Models.Particles
                 bool fade = false;
                 float fadeRate = 0F;
 
-                return new Particle(Library, texture, opacity, position, direction16, velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate);
+                return new Particle(Library, texture, opacity, position, direction16, velocity, startingAngle, angularVelocity, Color, scale, scaleRate, ttl, fade, fadeRate, useMovingOffset: false);
             }
 
-            public override void Complete(ParticleEmitter emitter, Particle completeParticle)
+            public override void Completed(ParticleEmitter emitter, Particle completeParticle)
             {
-                base.Complete(emitter, completeParticle);
+                base.Completed(emitter, completeParticle);
 
                 if (completeParticle.Velocity != Vector2.Zero)
                 {
