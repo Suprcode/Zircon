@@ -146,7 +146,7 @@ namespace Library.SystemModels
 
 
 
-        public int MinAC
+        public float MinAC
         {
             get { return _MinAC; }
             set
@@ -159,9 +159,9 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MinAC");
             }
         }
-        private int _MinAC;
+        private float _MinAC;
 
-        public int MaxAC
+        public float MaxAC
         {
             get { return _MaxAC; }
             set
@@ -174,9 +174,9 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MaxAC");
             }
         }
-        private int _MaxAC;
+        private float _MaxAC;
 
-        public int MinMR
+        public float MinMR
         {
             get { return _MinMR; }
             set
@@ -189,9 +189,9 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MinMR");
             }
         }
-        private int _MinMR;
+        private float _MinMR;
 
-        public int MaxMR
+        public float MaxMR
         {
             get { return _MaxMR; }
             set
@@ -204,10 +204,10 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MaxMR");
             }
         }
-        private int _MaxMR;
+        private float _MaxMR;
         
 
-        public int MinDC
+        public float MinDC
         {
             get { return _MinDC; }
             set
@@ -220,9 +220,9 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MinDC");
             }
         }
-        private int _MinDC;
+        private float _MinDC;
 
-        public int MaxDC
+        public float MaxDC
         {
             get { return _MaxDC; }
             set
@@ -235,10 +235,10 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MaxDC");
             }
         }
-        private int _MaxDC;
+        private float _MaxDC;
         
 
-        public int MinMC
+        public float MinMC
         {
             get { return _MinMC; }
             set
@@ -251,9 +251,9 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MinMC");
             }
         }
-        private int _MinMC;
+        private float _MinMC;
 
-        public int MaxMC
+        public float MaxMC
         {
             get { return _MaxMC; }
             set
@@ -266,9 +266,9 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MaxMC");
             }
         }
-        private int _MaxMC;
+        private float _MaxMC;
 
-        public int MinSC
+        public float MinSC
         {
             get { return _MinSC; }
             set
@@ -281,9 +281,9 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MinSC");
             }
         }
-        private int _MinSC;
+        private float _MinSC;
 
-        public int MaxSC
+        public float MaxSC
         {
             get { return _MaxSC; }
             set
@@ -296,7 +296,7 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "MaxSC");
             }
         }
-        private int _MaxSC;
+        private float _MaxSC;
         
     }
 }

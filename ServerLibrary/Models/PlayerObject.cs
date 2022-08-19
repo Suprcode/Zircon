@@ -143,6 +143,7 @@ namespace Server.Models
         public List<AutoPotionLink> AutoPotions = new List<AutoPotionLink>();
         public CellLinkInfo DelayItemUse;
         public decimal MaxExperience;
+        public int ExperienceIndex;
 
         public bool CanFlamingSword, CanDragonRise, CanBladeStorm;
 
@@ -213,6 +214,8 @@ namespace Server.Models
             FiltersClass = Character.FiltersClass;
             FiltersItemType = Character.FiltersItemType;
             FiltersRarity = Character.FiltersRarity;
+
+            ExperienceIndex = -1;
 
             AddDefaultCurrencies();
         }
@@ -301,6 +304,8 @@ namespace Server.Models
             ProcessAutoPotion();
 
             ProcessItemExpire();
+
+            ProcessLevelUp();
 
             ProcessQuests();
         }
@@ -483,6 +488,38 @@ namespace Server.Models
             }
 
             AutoPotionCheckTime = SEnvir.Now.AddMilliseconds(200);
+        }
+
+        public void ProcessLevelUp()
+        {
+            if (Level < Config.MaxLevel)
+            {
+                bool changed = false;
+                int index = Math.Min(Globals.ExperienceList.Count - 1, ExperienceIndex + 1);
+                while (Experience > MaxExperience)
+                {
+                    Globals.ExperienceData NextExpData = Globals.ExperienceList[index];
+                    if (ExperienceIndex != (Globals.ExperienceList.Count - 1) && (NextExpData.Level - Level) * MaxExperience <= Experience)
+                    {
+                        Experience -= (NextExpData.Level - Level) * MaxExperience;
+                        Level = Math.Min(Config.MaxLevel, NextExpData.Level);
+                        ExperienceIndex++;
+                        index = Math.Min(Globals.ExperienceList.Count - 1, ExperienceIndex + 1);
+                        MaxExperience = NextExpData.Experience;
+                        changed = true;
+                    }
+                    else
+                    {
+                        Level = Math.Min(Config.MaxLevel, Level + (int)Math.Floor(Experience / MaxExperience));
+                        Experience -= (int)Math.Floor(Experience / MaxExperience) * MaxExperience;
+                        changed = true;
+                    }
+                }
+                if (changed)
+                {
+                    LevelUp();
+                }
+            }
         }
 
         public void ProcessItemExpire()
@@ -1612,7 +1649,7 @@ namespace Server.Models
                         }
 
                         if (player == null) return;
-
+                        player.ExperienceIndex = -1;
                         player.Level = value;
                         player.LevelUp();
                         break;
@@ -2389,27 +2426,9 @@ namespace Server.Models
         {
             if (rateEffected)
             {
-                amount *= 1M + Stats[Stat.ExperienceRate] / 100M;
-
+                amount *= 1M + Stats[Stat.ExperienceRate] / 1000M;
                 amount *= 1M + Stats[Stat.BaseExperienceRate] / 100M;
-
-                for (int i = 0; i < Character.Rebirth; i++)
-                    amount *= 0.5M;
             }
-
-            /*
-            if (Level >= 60)
-            {
-    
-                if (Level > gainLevel)
-                    amount -= Math.Min(amount, amount * Math.Min(0.9M, (Level - gainLevel) * 0.10M));
-            }
-            else
-            {
-                if (Level > gainLevel)
-                    amount -= Math.Min(amount, amount * Math.Min(0.3M, (Level - gainLevel) * 0.06M));
-            }
-            */
 
             if (amount == 0) return;
 
@@ -2445,21 +2464,10 @@ namespace Server.Models
                     Enqueue(new S.BuffChanged { Index = buff.Index, Stats = buff.Stats });
                 }
             }
-
-            if (Level >= Config.MaxLevel || Experience < MaxExperience)
-            {
-                SEnvir.RankingSort(Character);
-                return;
-            }
-
-            Experience -= MaxExperience;
-
-
-            Level++;
-            LevelUp();
         }
         public void LevelUp()
         {
+            SEnvir.RankingSort(Character);
             RefreshStats();
 
             SetHP(Stats[Stat.Health]);
@@ -2617,7 +2625,7 @@ namespace Server.Models
                     }
                 }
 
-                if (warrior >= 2 && wizard >= 2 && taoist >= 2 && assassin >= 2)
+                if (warrior >= 2 && wizard >= 2 && taoist >= 2)
                 {
                     Stats[Stat.Health] += Stats[Stat.BaseHealth] / 10;
                     Stats[Stat.Mana] += Stats[Stat.BaseMana] / 10;
@@ -2712,7 +2720,7 @@ namespace Server.Models
                 }
             }
 
-            UserMagic magic;
+            /*UserMagic magic;
             if (Buffs.Any(x => x.Type == BuffType.RagingWind) && Magics.TryGetValue(MagicType.RagingWind, out magic))
             {
                 int power = Stats[Stat.MinAC] + Stats[Stat.MaxAC] + 4 + magic.Level * 6;
@@ -2724,7 +2732,7 @@ namespace Server.Models
 
                 Stats[Stat.MinMR] = power * 3 / 10;
                 Stats[Stat.MaxMR] = power - Stats[Stat.MinMR];
-            }
+            }*/
 
             Stats[Stat.AttackSpeed] += Math.Min(3, Level / 15);
 
@@ -2738,8 +2746,8 @@ namespace Server.Models
             Stats[Stat.PhysicalResistance] = Math.Min(5, Stats[Stat.PhysicalResistance]);
 
 
-            Stats[Stat.Comfort] = Math.Min(20, Stats[Stat.Comfort]);
-            Stats[Stat.AttackSpeed] = Math.Min(15, Stats[Stat.AttackSpeed]);
+            Stats[Stat.Comfort] = Math.Min(22, Stats[Stat.Comfort]);
+            Stats[Stat.AttackSpeed] = Math.Min(18, Stats[Stat.AttackSpeed]);
 
             RegenDelay = TimeSpan.FromMilliseconds(15000 - Stats[Stat.Comfort] * 650);
 
@@ -2791,10 +2799,7 @@ namespace Server.Models
             Stats[Stat.WearWeight] += Stats[Stat.WearWeight] * Stats[Stat.WeightRate];
             Stats[Stat.BagWeight] += Stats[Stat.BagWeight] * Stats[Stat.WeightRate];
 
-            Stats[Stat.Rebirth] = Character.Rebirth;
-
-            Stats[Stat.DropRate] += 20 * Stats[Stat.Rebirth];
-            Stats[Stat.GoldRate] += 20 * Stats[Stat.Rebirth];
+            Stats[Stat.Rebirth] += Character.Rebirth;
 
             Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Character.HermitStats, HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
 
@@ -2814,56 +2819,113 @@ namespace Server.Models
                 AddAllObjects();
             }
         }
+
+        private void SetMaxExperience()
+        {
+            int StartIndex = 0;
+            if (ExperienceIndex != -1)
+            {
+                StartIndex = ExperienceIndex + 1;
+            }
+            for (int i = StartIndex; i < Globals.ExperienceList.Count; i++)
+            {
+                Globals.ExperienceData ExpData = Globals.ExperienceList[i];
+                if (Level >= ExpData.Level)
+                {
+                    MaxExperience = ExpData.Experience;
+                    ExperienceIndex = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        private void AddStatsRange(int FromLevel, int ToLevel, BaseStat stat)
+        {
+            Stats[Stat.Health] += (FromLevel - ToLevel) * stat.Health;
+            Stats[Stat.Mana] += (FromLevel - ToLevel) * stat.Mana;
+
+            Stats[Stat.BagWeight] += (FromLevel - ToLevel) * stat.BagWeight;
+            Stats[Stat.WearWeight] += (FromLevel - ToLevel) * stat.WearWeight;
+            Stats[Stat.HandWeight] += (FromLevel - ToLevel) * stat.HandWeight;
+
+            Stats[Stat.Accuracy] += (FromLevel - ToLevel) * stat.Accuracy;
+
+            Stats[Stat.Agility] += (FromLevel - ToLevel) * stat.Agility;
+
+            Stats[Stat.MinAC] += (int)(((float)FromLevel - (float)ToLevel) * stat.MinAC);
+            Stats[Stat.MaxAC] += (int)(((float)FromLevel - (float)ToLevel) * stat.MaxAC);
+
+            Stats[Stat.MinMR] += (int)(((float)FromLevel - (float)ToLevel) * stat.MinMR);
+            Stats[Stat.MaxMR] += (int)(((float)FromLevel - (float)ToLevel) * stat.MaxMR);
+
+            Stats[Stat.MinDC] += (int)(((float)FromLevel - (float)ToLevel) * stat.MinDC);
+            Stats[Stat.MaxDC] += (int)(((float)FromLevel - (float)ToLevel) * stat.MaxDC);
+
+            Stats[Stat.MinMC] += (int)(((float)FromLevel - (float)ToLevel) * stat.MinMC);
+            Stats[Stat.MaxMC] += (int)(((float)FromLevel - (float)ToLevel) * stat.MaxMC);
+
+            Stats[Stat.MinSC] += (int)(((float)FromLevel - (float)ToLevel) * stat.MinSC);
+            Stats[Stat.MaxSC] += (int)(((float)FromLevel - (float)ToLevel) * stat.MaxSC);
+        }
+
         public void AddBaseStats()
         {
-            MaxExperience = Level < Globals.ExperienceList.Count ? Globals.ExperienceList[Level] : 0;
+            SetMaxExperience();
+
+            Stats[Stat.Health] = 0;
+            Stats[Stat.Mana] = 0;
+
+            Stats[Stat.BagWeight] = 0;
+            Stats[Stat.WearWeight] = 0;
+            Stats[Stat.HandWeight] = 0;
+
+            Stats[Stat.Accuracy] = 0;
+
+            Stats[Stat.Agility] = 0;
+
+            Stats[Stat.MinAC] = 0;
+            Stats[Stat.MaxAC] = 0;
+
+            Stats[Stat.MinMR] = 0;
+            Stats[Stat.MaxMR] = 0;
+
+            Stats[Stat.MinDC] = 0;
+            Stats[Stat.MaxDC] = 0;
+
+            Stats[Stat.MinMC] = 0;
+            Stats[Stat.MaxMC] = 0;
+
+            Stats[Stat.MinSC] = 0;
+            Stats[Stat.MaxSC] = 0;
 
             BaseStat stat = null;
 
             //Get best possible match.
-            foreach (BaseStat bStat in SEnvir.BaseStatList.Binding)
+            for (int i = 0; i < SEnvir.BaseStatList.Binding.Count; i++)
             {
+                BaseStat bStat = SEnvir.BaseStatList.Binding[i];
                 if (bStat.Class != Class) continue;
-                if (bStat.Level > Level) continue;
-                if (stat != null && bStat.Level < stat.Level) continue;
-
-                stat = bStat;
-
-                if (bStat.Level == Level) break;
+                if (bStat.Level <= Level)
+                {
+                    if (stat != null)
+                    {
+                        AddStatsRange(bStat.Level, stat.Level, stat);
+                    }
+                    stat = bStat;
+                }
+                else
+                {
+                    break;
+                }
             }
-
-            if (stat == null) return;
-
-            Stats[Stat.Health] = stat.Health;
-            Stats[Stat.Mana] = stat.Mana;
-
-            Stats[Stat.BagWeight] = stat.BagWeight;
-            Stats[Stat.WearWeight] = stat.WearWeight;
-            Stats[Stat.HandWeight] = stat.HandWeight;
-
-            Stats[Stat.Accuracy] = stat.Accuracy;
-
-            Stats[Stat.Agility] = stat.Agility;
-
-            Stats[Stat.MinAC] = stat.MinAC;
-            Stats[Stat.MaxAC] = stat.MaxAC;
-
-            Stats[Stat.MinMR] = stat.MinMR;
-            Stats[Stat.MaxMR] = stat.MaxMR;
-
-            Stats[Stat.MinDC] = stat.MinDC;
-            Stats[Stat.MaxDC] = stat.MaxDC;
-
-            Stats[Stat.MinMC] = stat.MinMC;
-            Stats[Stat.MaxMC] = stat.MaxMC;
-
-            Stats[Stat.MinSC] = stat.MinSC;
-            Stats[Stat.MaxSC] = stat.MaxSC;
-
-
+            AddStatsRange(Level, stat.Level - 1, stat);
             Stats[Stat.PickUpRadius] = 1;
             Stats[Stat.SkillRate] = 1;
-            Stats[Stat.CriticalChance] = 1;
+            Stats[Stat.CriticalChance] = 0;
+            //Stats[Stat.ProtectionRingPower] = 1;
 
             Stats.Add(Character.HermitStats);
 
@@ -11334,17 +11396,17 @@ namespace Server.Models
 
         public void AdjustRebirth(int rebirth)
         {
-            Level = 1;
-            Experience = Experience / 200;
-
-            Enqueue(new S.LevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
-            Broadcast(new S.ObjectLeveled { ObjectID = ObjectID });
-
+            Level -= Globals.RebirthDataList[rebirth].LevelLoss;
+            Experience = 0;
+            ExperienceIndex = -1;
             Character.Rebirth = rebirth;
             Character.SpentPoints = 0;
             Character.HermitStats.Clear();
 
             RefreshStats();
+
+            Enqueue(new S.LevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
+            Broadcast(new S.ObjectLeveled { ObjectID = ObjectID });
         }
 
         public void NPCMasterRefine(C.NPCMasterRefine p)

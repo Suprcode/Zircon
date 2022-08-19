@@ -123,222 +123,131 @@ namespace Library
             "Chinese",
         };
 
-
-
-
-
-
-
-
-        public static List<decimal> ExperienceList = new List<decimal>
+        public struct RebirthData
         {
-            0,
-            100,
-            200,
-            300,
-            400,
-            600,
-            900,
-            1200,
-            1700,
-            2500,
-            6000,
-            8000,
-            10000,
-            15000,
-            30000,
-            40000,
-            50000,
-            70000,
-            100000,
-            120000,
-            140000,
-            250000,
-            300000,
-            350000,
-            400000,
-            500000,
-            700000,
-            1000000,
-            1400000,
-            1800000,
-            2000000,
-            2400000,
-            2800000,
-            3200000,
-            3600000,
-            4000000,
-            4800000,
-            5600000,
-            8200000,
-            9000000,
-            11000000,
-            14000000,
-            18000000,
-            22000000,
-            25000000,
-            30000000,
-            35000000,
-            40000000,
-            50000000,
-            60000000,
-            70000000,
-            85000000,
-            110000000,
-            135000000,
-            145000000,
-            150000000,
-            175000000,
-            180000000,
-            200000000,
-            220000000,
-            230000000,
-            240000000,
-            250000000,
-            260000000,
-            270000000,
-            280000000,
-            300000000,
-            320000000,
-            340000000,
-            360000000,
-            380000000,
-            400000000,
-            800000000,
-            1400000000,
-            2200000000,
-            6530000000,
-            12000000000,
-            30000000000,
-            75000000000,
-            150000000000,
-            175000000000,
-            300000000000,
-            430000000000,
-            570000000000,
-            700000000000,
-            800000000000,
-            900000000000,
-            3000000000000,
-            6000000000000,
-            9000000000000,
-            13000000000000,
-            17000000000000,
-            1440000000000,
-            1460000000000,
-            1490000000000,
-            1620000000000,
-            1660000000000,
-            1720000000000,
-            1800000000000,
-            1880000000000,
-            2000000000000,
+            public int RequiredLevel;
+            public int LevelLoss;
+            public Dictionary<Stat, int> BonusStatistics;
+            public RebirthData(int _RequiredLevel, int _LevelLoss, Dictionary<Stat, int> _BonusStatistics)
+            {
+                RequiredLevel = _RequiredLevel;
+                LevelLoss = _LevelLoss;
+                BonusStatistics = _BonusStatistics;
+            }
+        }
+
+        public static List<RebirthData> RebirthDataList = new List<RebirthData>
+        {
+            new RebirthData(0, 0, new Dictionary<Stat, int>{}), // This is default 0th rebirth, it has no requirements and gives no bonuses
+            new RebirthData(60, 0, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 588},
+                {Stat.LightningAttack, 5},
+                {Stat.FireAttack, 5},
+                {Stat.IceAttack, 5},
+                {Stat.WindAttack, 5},
+                {Stat.DarkAttack, 5},
+                {Stat.HolyAttack, 5},
+                {Stat.PhantomAttack, 5}}),
+            new RebirthData(150, 50, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 1250},
+                {Stat.LightningAttack, 10},
+                {Stat.FireAttack, 10},
+                {Stat.IceAttack, 10},
+                {Stat.WindAttack, 10},
+                {Stat.DarkAttack, 10},
+                {Stat.HolyAttack, 10},
+                {Stat.PhantomAttack, 10}}),
+            new RebirthData(300, 100, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 2000},
+                {Stat.LightningAttack, 15},
+                {Stat.FireAttack, 15},
+                {Stat.IceAttack, 15},
+                {Stat.WindAttack, 15},
+                {Stat.DarkAttack, 15},
+                {Stat.HolyAttack, 15},
+                {Stat.PhantomAttack, 15}}),
+            new RebirthData(450, 150, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 2857},
+                {Stat.LightningAttack, 20},
+                {Stat.FireAttack, 20},
+                {Stat.IceAttack, 20},
+                {Stat.WindAttack, 20},
+                {Stat.DarkAttack, 20},
+                {Stat.HolyAttack, 20},
+                {Stat.PhantomAttack, 20}}),
+            new RebirthData(600, 200, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 3846},
+                {Stat.LightningAttack, 25},
+                {Stat.FireAttack, 25},
+                {Stat.IceAttack, 25},
+                {Stat.WindAttack, 25},
+                {Stat.DarkAttack, 25},
+                {Stat.HolyAttack, 25},
+                {Stat.PhantomAttack, 25}}),
+            new RebirthData(900, 250, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 5000},
+                {Stat.LightningAttack, 30},
+                {Stat.FireAttack, 30},
+                {Stat.IceAttack, 30},
+                {Stat.WindAttack, 30},
+                {Stat.DarkAttack, 30},
+                {Stat.HolyAttack, 30},
+                {Stat.PhantomAttack, 30}}),
+            new RebirthData(1200, 400, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 6364},
+                {Stat.LightningAttack, 35},
+                {Stat.FireAttack, 35},
+                {Stat.IceAttack, 35},
+                {Stat.WindAttack, 35},
+                {Stat.DarkAttack, 35},
+                {Stat.HolyAttack, 35},
+                {Stat.PhantomAttack, 35}}),
+            new RebirthData(1800, 500, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 8000},
+                {Stat.LightningAttack, 40},
+                {Stat.FireAttack, 40},
+                {Stat.IceAttack, 40},
+                {Stat.WindAttack, 40},
+                {Stat.DarkAttack, 40},
+                {Stat.HolyAttack, 40},
+                {Stat.PhantomAttack, 40}}),
+            new RebirthData(1800, 500, new Dictionary<Stat, int>{
+                {Stat.ExperienceRate, 10000},
+                {Stat.LightningAttack, 50},
+                {Stat.FireAttack, 50},
+                {Stat.IceAttack, 50},
+                {Stat.WindAttack, 50},
+                {Stat.DarkAttack, 50},
+                {Stat.HolyAttack, 50},
+                {Stat.PhantomAttack, 50}})
         };
 
-        public static List<decimal> OldExperienceList = new List<decimal>
+
+        public struct ExperienceData
         {
-            0, // Lv 0
-            100,
-            200,
-            300,
-            400,
-            600,
-            900,
-            1200,
-            1700,
-            2500,
-            6000,
-            8000,
-            10000,
-            15000,
-            30000,
-            40000,
-            50000,
-            70000,
-            100000,
-            120000,
-            140000,
-            250000,
-            300000,
-            350000,
-            400000,
-            500000,
-            700000,
-            1000000,
-            1400000,
-            1800000,
-            2000000,
-            2400000,
-            2800000,
-            3200000,
-            3600000,
-            4000000,
-            4800000,
-            5600000,
-            8200000,
-            9000000,
-            11000000,
-            14000000,
-            25000000,
-            45000000,
-            70000000,
-            90000000,
-            110000000,
-            130000000,
-            150000000,
-            170000000,
-            210000000,
-            230000000,
-            250000000,
-            270000000,
-            310000000,
-            330000000,
-            350000000,
-            370000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            400000000,
-            800000000,
-            1400000000,
-            2200000000,
-            3200000000,
-            3600000000,
-            4000000000,
-            4500000000,
-            5000000000,
-            15000000000,
-            45000000000,
-            50000000000,
-            55000000000,
-            60000000000,
-            100000000000,
-            120000000000,
-            135000000000,
-            150000000000,
-            170000000000,
-            300000000000,
-            400000000000,
-            440000000000,
-            460000000000,
-            490000000000,
-            620000000000,
-            660000000000,
-            720000000000,
-            800000000000,
-            880000000000,
-            1000000000000,
+            public int Level;
+            public decimal Experience;
+            public ExperienceData(int _Level, decimal _Experience)
+            {
+                Level = _Level;
+                Experience = _Experience;
+            }
+
+            public override string ToString()
+            {
+                return Level.ToString() + " " + Experience.ToString();
+            }
+        }
+
+
+        public static List<ExperienceData> ExperienceList = new List<ExperienceData>
+        {
+            new ExperienceData(1, 1),
+            new ExperienceData(100, 10000),
+            new ExperienceData(1000, 1000000)
         };
+
+
 
         public static List<decimal> WeaponExperienceList = new List<decimal>
         {

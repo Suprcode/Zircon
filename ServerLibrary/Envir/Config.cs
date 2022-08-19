@@ -95,7 +95,7 @@ namespace Server.Envir
         public static int MaxViewRange { get; set; } = 18;
         public static TimeSpan ShoutDelay { get; set; } = TimeSpan.FromSeconds(10);
         public static TimeSpan GlobalDelay { get; set; } = TimeSpan.FromSeconds(60);
-        public static int MaxLevel { get; set; } = 10;
+        public static int MaxLevel { get; set; } = 100000;
         public static int DayCycleCount { get; set; } = 3;
         public static int SkillExp { get; set; } = 3;
         public static bool AllowObservation { get; set; } = true;

@@ -121,6 +121,8 @@ namespace Library
                     return description.Title + ": " + string.Format(description.Format, this[description.MinStat], this[stat]);
                 case StatType.Percent:
                     return description.Title + ": " + string.Format(description.Format, this[stat]/100D);
+                case StatType.Promile:
+                    return description.Title + ": " + string.Format(description.Format, this[stat] / 1000D);
                 case StatType.Text:
                     return description.Title;
                 case StatType.Time:
@@ -246,6 +248,8 @@ namespace Library
                     return string.Format(description.Format, this[description.MinStat], this[stat]);
                 case StatType.Percent:
                     return string.Format(description.Format, this[stat] / 100D);
+                case StatType.Promile:
+                    return string.Format(description.Format, this[stat] / 1000D);
                 case StatType.Text:
                     return description.Format;
                 case StatType.Time:
@@ -520,7 +524,7 @@ namespace Library
         [StatDescription(Title = "Life Steal", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         LifeSteal,
 
-        [StatDescription(Title = "Experience Rate", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        [StatDescription(Title = "Experience Rate", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Promile)]
         ExperienceRate,
         [StatDescription(Title = "Drop Rate", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         DropRate,
@@ -793,6 +797,7 @@ namespace Library
         ElementResistance,
         SpellPower,
         Time,
+        Promile,
     }
 
     [AttributeUsage(AttributeTargets.Field)]

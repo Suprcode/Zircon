@@ -353,12 +353,13 @@ namespace Server.Envir
                 {
                     for (int i = 0; i < Globals.ExperienceList.Count; i++)
                     {
-                        file.WriteLine(i == 0 ? "//needed for lvl0" : (Globals.ExperienceList[i].ToString(CultureInfo.InvariantCulture) + " // level " + i));
+                        file.WriteLine(Globals.ExperienceList[i].ToString());
                     }
                 }
             }
             else
             {
+                Globals.ExperienceList.Clear();
                 var lines = File.ReadAllLines(path);
                 for (int i = 0; i < lines.Length; i++)
                 {
@@ -366,11 +367,9 @@ namespace Server.Envir
                     if (lines[i].TrimStart().StartsWith("//")) continue; //ignore comment
                     try
                     {
-                        decimal exp = decimal.Parse(lines[i].Split('/')[0].Trim()); //remove comment
-                        if (Globals.ExperienceList.Count > i)
-                            Globals.ExperienceList.Add(exp);
-                        else
-                            Globals.ExperienceList[i] = exp;
+                        int level = int.Parse(lines[i].Split(' ')[0].Trim());
+                        decimal exp = decimal.Parse(lines[i].Split(' ')[1].Trim());
+                        Globals.ExperienceList.Add(new Globals.ExperienceData(level, exp));
                     }
                     catch (Exception)
                     {
@@ -3422,13 +3421,13 @@ namespace Server.Envir
                     Rank = rank,
                     Index = info.Index,
                     Class = info.Class,
-                    Experience = info.Experience,
-                    MaxExperience = info.Level >= Globals.ExperienceList.Count ? 0 : Globals.ExperienceList[info.Level],
+                    Experience = 0, //info.Experience,
+                    MaxExperience = 0, //info.Level >= Globals.ExperienceList.Count ? 0 : Globals.ExperienceList[info.Level],
                     Level = info.Level,
                     Name = info.CharacterName,
                     Online = info.Player != null,
                     Observable = info.Observable || isGM,
-                    Rebirth = info.Rebirth
+                    Rebirth = info.Player.Stats[Stat.Rebirth]
                 });
             }
 
