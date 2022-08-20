@@ -733,7 +733,7 @@ namespace Client.Scenes.Views
 
             bonus.LevelLabel.Text = $"Lv. {level} Bonus";
             bonus.StatLabel.Text = stats == null ? "Not Gained" : stats.GetDisplay(stats.Values.Keys.First());
-            bonus.StatLabel.ForeColour = stats == null ? Color.Red : Color.LawnGreen;
+            bonus.StatLabel.ForeColour = stats == null ? Color.Red : Color.LimeGreen;
         }
 
         private void ChangeView(string view)

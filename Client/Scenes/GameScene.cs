@@ -350,6 +350,7 @@ namespace Client.Scenes
 
             CharacterBox?.LoadSettings();
             InventoryBox?.LoadSettings();
+            MagicBox?.LoadSettings();
             StorageBox?.LoadSettings();
             TradeBox?.LoadSettings();
             CompanionBox?.LoadSettings();
@@ -674,6 +675,7 @@ namespace Client.Scenes
                 window.LoadSettings();
 
             CharacterBox.LoadSettings();
+            MagicBox.LoadSettings();
             InventoryBox.LoadSettings();
             StorageBox.LoadSettings();
             TradeBox.LoadSettings();

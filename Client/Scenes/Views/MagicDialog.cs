@@ -13,40 +13,148 @@ using Library;
 using Library.SystemModels;
 using C = Library.Network.ClientPackets;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
-    public sealed class MagicDialog : DXWindow
+    public sealed class MagicDialog : DXControl
     {
         #region Properties
+
+        private DXImageControl HeaderImage, BackgroundImage;
+
+        private DXLabel TitleLabel;
+        private DXButton CloseButton;
 
         private DXTabControl TabControl;
         public SortedDictionary<MagicSchool, MagicTab> SchoolTabs = new SortedDictionary<MagicSchool, MagicTab>();
 
         public Dictionary<MagicInfo, MagicCell> Magics = new Dictionary<MagicInfo, MagicCell>();
 
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            if (IsVisible)
+                BringToFront();
 
-        public override WindowType Type => WindowType.MagicBox;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => true;
+            if (Settings != null)
+                Settings.Visible = nValue;
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
+
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    if (CloseButton.Visible)
+                    {
+                        CloseButton.InvokeMouseClick();
+                        if (!Config.EscapeCloseAll)
+                            e.Handled = true;
+                    }
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region Settings
+
+        public WindowSetting Settings;
+        public WindowType Type => WindowType.MagicBox;
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
 
         #endregion
 
         public MagicDialog()
         {
-            TitleLabel.Text = "Magic List";
+            Size = new Size(420, 516);
+            Movable = true;
 
-            HasFooter = false;
+            HeaderImage = new DXImageControl
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.Interface,
+                Location = new Point(0, 0),
+                IsControl = false
+            };
 
-            SetClientSize(new Size(311, 395));
+            BackgroundImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 164,
+                LibraryFile = LibraryFile.Interface,
+                Location = new Point(0, 66),
+                IsControl = false
+            };
+
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
+            {
+                Text = "Magic",
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             TabControl = new DXTabControl
             {
                 Parent = this,
-                Size = ClientArea.Size,
-                Location = ClientArea.Location,
+                Size = new Size(420, 448),
+                Location = new Point(0, 40),
+                MarginLeft = 56,
+                Padding = 2,
+                BackColour = Color.Empty
             };
-
         }
 
         #region Methods
@@ -59,6 +167,22 @@ namespace Client.Scenes.Views
 
             List<MagicInfo> magics = Globals.MagicInfoList.Binding.ToList();
             magics.Sort((x1, x2) => x1.NeedLevel1.CompareTo(x2.NeedLevel1));
+
+            switch (GameScene.Game.User.Class)
+            {
+                case MirClass.Warrior:
+                    HeaderImage.Index = 160;
+                    break;
+                case MirClass.Wizard:
+                    HeaderImage.Index = 161;
+                    break;
+                case MirClass.Taoist:
+                    HeaderImage.Index = 162;
+                    break;
+                case MirClass.Assassin:
+                    HeaderImage.Index = 163;
+                    break;
+            }
 
             foreach (MagicInfo magic in magics)
             {
@@ -77,6 +201,7 @@ namespace Client.Scenes.Views
                 {
                     Parent = tab,
                     Info = magic,
+                    BackColour = Color.Empty
                 };
                 Magics[magic] = cell;
                 cell.MouseWheel += tab.ScrollBar.DoMouseWheel;
@@ -105,6 +230,38 @@ namespace Client.Scenes.Views
                     TabControl = null;
                 }
 
+                if (HeaderImage != null)
+                {
+                    if (!HeaderImage.IsDisposed)
+                        HeaderImage.Dispose();
+
+                    HeaderImage = null;
+                }
+
+                if (BackgroundImage != null)
+                {
+                    if (!BackgroundImage.IsDisposed)
+                        BackgroundImage.Dispose();
+
+                    BackgroundImage = null;
+                }
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
                 if (SchoolTabs != null)
                 {
                     foreach (KeyValuePair<MagicSchool, MagicTab> pair in SchoolTabs)
@@ -130,6 +287,7 @@ namespace Client.Scenes.Views
                     Magics.Clear();
                     Magics = null;
                 }
+
             }
 
         }
@@ -146,16 +304,16 @@ namespace Client.Scenes.Views
         {
             base.OnSizeChanged(oValue, nValue);
 
-            ScrollBar.Size = new Size(14, Size.Height -2 );
-            ScrollBar.Location = new Point(Size.Width - 16, 0);
+            ScrollBar.Size = new Size(20, Size.Height + 6);
+            ScrollBar.Location = new Point(Size.Width - 30, -2);
 
-            int height = 2;
+            int height = 9;
 
             foreach (DXControl control in Controls)
             {
-                if (!(control is MagicCell)) continue;
+                if (control is not MagicCell) continue;
 
-                height += control.Size.Height + 3;
+                height += control.Size.Height + 5;
             }
 
             ScrollBar.MaxValue = height;
@@ -170,69 +328,110 @@ namespace Client.Scenes.Views
         {
             TabButton.LibraryFile = LibraryFile.Interface;
             TabButton.Hint = school.ToString();
-            Border = true;
+
+            BackColour = Color.Empty;
+            Border = false;
+            BorderColour = Color.Red;
+            Location = new Point(10, 30);
 
             switch (school)
             {
                 case MagicSchool.Passive:
-                    TabButton.Index = 54;
+                    TabButton.Index = 168;
+                    TabButton.HoverIndex = 169;
+                    TabButton.PressedIndex = 169;
                     break;
                 case MagicSchool.WeaponSkills:
-                    TabButton.Index = 65;
+                    TabButton.Index = 190;
+                    TabButton.HoverIndex = 191;
+                    TabButton.PressedIndex = 191;
                     break;
                 case MagicSchool.Neutral:
-                    TabButton.Index = 64;
+                    TabButton.Index = 188;
+                    TabButton.HoverIndex = 189;
+                    TabButton.PressedIndex = 189;
                     break;
                 case MagicSchool.Fire:
-                    TabButton.Index = 56;
+                    TabButton.Index = 174;
+                    TabButton.HoverIndex = 175;
+                    TabButton.PressedIndex = 175;
                     break;
                 case MagicSchool.Ice:
-                    TabButton.Index = 57;
+                    TabButton.Index = 176;
+                    TabButton.HoverIndex = 177;
+                    TabButton.PressedIndex = 177;
                     break;
                 case MagicSchool.Lightning:
-                    TabButton.Index = 58;
+                    TabButton.Index = 178;
+                    TabButton.HoverIndex = 179;
+                    TabButton.PressedIndex = 179;
                     break;
                 case MagicSchool.Wind:
-                    TabButton.Index = 59;
+                    TabButton.Index = 180;
+                    TabButton.HoverIndex = 181;
+                    TabButton.PressedIndex = 181;
                     break;
                 case MagicSchool.Holy:
-                    TabButton.Index = 61;
+                    TabButton.Index = 184;
+                    TabButton.HoverIndex = 185;
+                    TabButton.PressedIndex = 185;
                     break;
                 case MagicSchool.Dark:
-                    TabButton.Index = 62;
+                    TabButton.Index = 186;
+                    TabButton.HoverIndex = 187;
+                    TabButton.PressedIndex = 187;
                     break;
                 case MagicSchool.Phantom:
-                    TabButton.Index = 60;
+                    TabButton.Index = 182;
+                    TabButton.HoverIndex = 183;
+                    TabButton.PressedIndex = 183;
                     break;
                 case MagicSchool.Combat:
-                    TabButton.Index = 66;
+                    TabButton.Index = 192;
+                    TabButton.HoverIndex = 193;
+                    TabButton.PressedIndex = 193;
                     break;
                 case MagicSchool.Assassination:
-                    TabButton.Index = 67;
+                    TabButton.Index = 194;
+                    TabButton.HoverIndex = 195;
+                    TabButton.PressedIndex = 195;
                     break;
                 case MagicSchool.None:
-                    TabButton.Index = 55;
+                    TabButton.Index = 170;
+                    TabButton.HoverIndex = 171;
+                    TabButton.PressedIndex = 171;
                     break;
             }
 
             ScrollBar = new DXVScrollBar
             {
                 Parent = this,
+                BackColour = Color.Empty,
+                Border = false
             };
             ScrollBar.ValueChanged += (o, e) => UpdateLocations();
+
+            ScrollBar.UpButton.Index = 61;
+            ScrollBar.UpButton.LibraryFile = LibraryFile.Interface;
+
+            ScrollBar.DownButton.Index = 62;
+            ScrollBar.DownButton.LibraryFile = LibraryFile.Interface;
+
+            ScrollBar.PositionBar.Index = 60;
+            ScrollBar.PositionBar.LibraryFile = LibraryFile.Interface;
         }
 
         #region Methods
         public void UpdateLocations()
         {
-            int y = -ScrollBar.Value + 5;
+            int y = -ScrollBar.Value + 7;
 
             foreach (DXControl control in Controls)
             {
-                if (!(control is MagicCell)) continue;
+                if (control is not MagicCell) continue;
 
                 control.Location = new Point(5, y);
-                y += control.Size.Height + 3;
+                y += control.Size.Height + 5;
             }
         }
 
@@ -260,7 +459,6 @@ namespace Client.Scenes.Views
                     ScrollBar = null;
                 }
             }
-
         }
 
         #endregion
@@ -295,25 +493,31 @@ namespace Client.Scenes.Views
         }
         #endregion
 
-        public DXImageControl Image;
+        public DXImageControl Background, Image;
         public DXImageControl ExperienceBar;
         public DXLabel NameLabel, LevelLabel, ExperienceLabel, KeyLabel;
-
 
         #endregion
 
         public MagicCell()
         {
-            Size = new Size(286, 50);
-
+            Size = new Size(369, 54);
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+
+            Background = new DXImageControl
+            {
+                Parent = this,
+                Index = 165,
+                LibraryFile = LibraryFile.Interface,
+                Location = new Point(0, 0),
+                IsControl = false
+            };
 
             Image = new DXImageControl
             {
                 Parent = this,
                 LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(8, 8),
+                Location = new Point(9, 9)
             };
             Image.MouseClick += Image_MouseClick;
             Image.KeyDown += Image_KeyDown;
@@ -321,17 +525,17 @@ namespace Client.Scenes.Views
             ExperienceBar = new DXImageControl
             {
                 Parent = this,
-                LibraryFile = LibraryFile.Interface,
-                Location = new Point(52, 36),
-                Index = 68,
+                LibraryFile = LibraryFile.GameInter2,
+                Location = new Point(110, 36),
                 IsControl = false
             };
+            ExperienceBar.Size = ExperienceBar.Library.GetSize(812);
             ExperienceBar.AfterDraw += ExperienceBarAfterDraw;
 
             NameLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(48, 6),
+                Location = new Point(55, 1),
                 ForeColour = Color.White,
                 IsControl = false,
             };
@@ -344,24 +548,23 @@ namespace Client.Scenes.Views
                 ForeColour = Color.Aquamarine,
                 AutoSize =  false,
                 Size = new Size(36,36),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
             };
             KeyLabel.SizeChanged += (o, e) => KeyLabel.Location = new Point(Image.Size.Width - KeyLabel.Size.Width, Image.Size.Height - KeyLabel.Size.Height);
             
             LevelLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(48, 20),
+                Location = new Point(57, 30),
                 IsControl = false
             };
-
 
             ExperienceLabel = new DXLabel
             {
                 Parent = this,
                 IsControl = false
             };
-            ExperienceLabel.SizeChanged += (o, e) => ExperienceLabel.Location = new Point(282 - ExperienceLabel.Size.Width, 20);
+            ExperienceLabel.SizeChanged += (o, e) => ExperienceLabel.Location = new Point(Size.Width - ExperienceLabel.Size.Width - 6, 17);
         }
 
         #region Methods
@@ -560,10 +763,8 @@ namespace Client.Scenes.Views
 
             if (!MapObject.User.Magics.TryGetValue(Info, out magic)) return;
 
-            
-            
             //Get percent.
-            MirImage image = ExperienceBar.Library.CreateImage(69, ImageType.Image);
+            MirImage image = ExperienceBar.Library.CreateImage(812, ImageType.Image);
 
             if (image == null) return;
 
@@ -590,13 +791,10 @@ namespace Client.Scenes.Views
                     percent = (float)Math.Min(1, Math.Max(0, magic.Experience / (decimal)((magic.Level - 2) * 500)));
                     break;
             }
-            
+
             if (percent == 0) return;
 
-
-
             PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
-
         }
         
         public void Refresh()
@@ -610,6 +808,7 @@ namespace Client.Scenes.Views
                 Image.IsEnabled = true;
                 LevelLabel.Text = $"Level: {magic.Level}";
                 LevelLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                LevelLabel.Location = new Point(57, 30);
 
                 SpellKey key = SpellKey.None;
                 switch (GameScene.Game.MagicBarBox.SpellSet)
@@ -666,11 +865,12 @@ namespace Client.Scenes.Views
             else
             {
                 Image.IsEnabled = false;
-                LevelLabel.Text = "Not Learned";
+                LevelLabel.Text = "Not\r\nLearned";
                 LevelLabel.ForeColour = Color.Red;
+                LevelLabel.Location = new Point(57, 17);
 
                 ExperienceLabel.Text = $"Required Level: {Info.NeedLevel1}";
-                ExperienceLabel.ForeColour = MapObject.User.Level >= Info.NeedLevel1 ? Color.Green : Color.Red;
+                ExperienceLabel.ForeColour = MapObject.User.Level >= Info.NeedLevel1 ? Color.LimeGreen : Color.Red;
             }
 
             if (this == MouseControl)
