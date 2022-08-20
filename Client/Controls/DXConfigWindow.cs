@@ -873,6 +873,7 @@ namespace Client.Controls
             Config.LogChat = LogChatCheckBox.Checked;
             Config.DrawEffects = DrawEffectsCheckBox.Checked;
             Config.DrawParticles = DrawParticlesCheckBox.Checked;
+            Config.DrawWeather = DrawWeatherCheckBox.Checked;
 
             if (volumeChanged)
                 DXSoundManager.AdjustVolume();

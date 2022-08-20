@@ -185,7 +185,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region LibraryFile
         public MirLibrary Library;
 
@@ -319,6 +319,7 @@ namespace Client.Controls
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
+
         protected internal override void UpdateDisplayArea()
         {
             Rectangle area = new Rectangle(Location, Size);

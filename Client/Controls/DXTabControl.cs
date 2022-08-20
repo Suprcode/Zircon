@@ -6,7 +6,6 @@ using Library;
 using SlimDX;
 using SlimDX.Direct3D9;
 
-//Cleaned
 namespace Client.Controls
 {
     public class DXTabControl : DXControl
@@ -62,6 +61,30 @@ namespace Client.Controls
         public virtual void OnMarginLeftChanged(int oValue, int nValue)
         {
             MarginLeftChanged?.Invoke(this, EventArgs.Empty);
+
+            TabsChanged();
+        }
+        #endregion
+
+        #region Padding
+        public int Padding
+        {
+            get => _Padding;
+            set
+            {
+                if (_Padding == value) return;
+
+                int oldValue = _Padding;
+                _Padding = value;
+
+                OnPaddingChanged(oldValue, value);
+            }
+        }
+        private int _Padding = 1;
+        public event EventHandler<EventArgs> PaddingChanged;
+        public virtual void OnPaddingChanged(int oValue, int nValue)
+        {
+            PaddingChanged?.Invoke(this, EventArgs.Empty);
 
             TabsChanged();
         }
@@ -136,13 +159,13 @@ namespace Client.Controls
 
                 if (control.RightAligned)
                 {
-                    width = control.Size.Width + 1;
+                    width = control.Size.Width + Padding;
                     continue;
                 }
 
                 //control.Visible = true;
                 control.Location = new Point(x, 0);
-                x += control.Size.Width + 1;
+                x += control.Size.Width + Padding;
             }
 
 
@@ -171,10 +194,16 @@ namespace Client.Controls
             {
                 _SelectedTab = null;
                 SelectedTabChanged = null;
-                
+
                 TabButtons.Clear();
                 TabButtons = null;
-                }
+
+                _Padding = 0;
+                _MarginLeft = 0;
+
+                PaddingChanged = null;
+                MarginLeftChanged = null;
+            }
         }
 
         #endregion
@@ -208,7 +237,6 @@ namespace Client.Controls
                 oValue.SelectedTab = null;
                 oValue.SetNewTab();
             }
-
 
             if (oValue != null && nValue != null)
                 TabButton.MovePoint = new Point(TabButton.MovePoint.X - oValue.DisplayArea.X + nValue.DisplayArea.X, TabButton.MovePoint.Y - oValue.DisplayArea.Y + nValue.DisplayArea.Y);
@@ -267,9 +295,10 @@ namespace Client.Controls
             if (Selected)
             {
                 Visible = true;
+                TabButton.Pressed = true;
+
                 if (TabButton.LibraryFile != LibraryFile.None)
                 {
-                    TabButton.Pressed = true;
                 }
                 else
                 {
@@ -280,10 +309,10 @@ namespace Client.Controls
             else
             {
                 Visible = false;
+                TabButton.Pressed = false;
 
                 if (TabButton.LibraryFile != LibraryFile.None)
                 {
-                    TabButton.Pressed = false;
                 }
                 else
                 {
@@ -567,6 +596,7 @@ namespace Client.Controls
                 new Vector2(1 , 1)
             };
         }
+
 
         public override void Draw()
         {

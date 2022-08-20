@@ -6,7 +6,6 @@ using Library;
 using SlimDX;
 using SlimDX.Direct3D9;
 
-//Cleaned
 namespace Client.Controls
 {
     public class DXButton : DXImageControl
@@ -147,6 +146,58 @@ namespace Client.Controls
 
         #endregion
 
+        #region HoverIndex
+
+        public int HoverIndex
+        {
+            get => _HoverIndex;
+            set
+            {
+                if (_HoverIndex == value) return;
+
+                int oldValue = _HoverIndex;
+                _HoverIndex = value;
+
+                OnHoverIndexChanged(oldValue, value);
+            }
+        }
+        private int _HoverIndex;
+        public event EventHandler<EventArgs> HoverIndexChanged;
+        public virtual void OnHoverIndexChanged(int oValue, int nValue)
+        {
+            TextureValid = false;
+            UpdateDisplayArea();
+            HoverIndexChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region PressedIndex
+
+        public int PressedIndex
+        {
+            get => _PressedIndex;
+            set
+            {
+                if (_PressedIndex == value) return;
+
+                int oldValue = _PressedIndex;
+                _PressedIndex = value;
+
+                OnPressedIndexChanged(oldValue, value);
+            }
+        }
+        private int _PressedIndex;
+        public event EventHandler<EventArgs> PressedIndexChanged;
+        public virtual void OnPressedIndexChanged(int oValue, int nValue)
+        {
+            TextureValid = false;
+            UpdateDisplayArea();
+            PressedIndexChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         public DXLabel Label { get; private set; }
 
         public override void OnIsEnabledChanged(bool oValue, bool nValue)
@@ -207,7 +258,7 @@ namespace Client.Controls
         }
         protected override void DrawMirTexture()
         {
-            Texture texture;
+            Texture texture = null;
 
             if (Library == null)
             {
@@ -239,10 +290,23 @@ namespace Client.Controls
             }
             else
             {
-                MirImage image = Library.CreateImage(Index, ImageType.Image);
-                texture = image.Image;
-                image.ExpireTime = CEnvir.Now + Config.CacheDuration;
+                var index = Index;
+
+                if (HoverIndex > 0 && MouseControl == this && IsEnabled && CanBePressed)
+                    index = HoverIndex;
+
+                if (PressedIndex > 0 && Pressed && IsEnabled)
+                    index = PressedIndex;
+
+                if (index > 0)
+                {
+                    MirImage image = Library.CreateImage(index, ImageType.Image);
+                    texture = image.Image;
+                    image.ExpireTime = CEnvir.Now + Config.CacheDuration;
+                }
             }
+
+            if (texture == null) return;
 
             bool oldBlend = DXManager.Blending;
             float oldRate = DXManager.BlendRate;
@@ -252,7 +316,7 @@ namespace Client.Controls
             else
                 DXManager.SetOpacity(Opacity);
 
-            PresentTexture(texture, Parent, DisplayArea, ForeColour, this);
+            PresentTexture(texture, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0);
             
             if (Blend)
                 DXManager.SetBlend(oldBlend, oldRate, BlendMode);
@@ -364,6 +428,9 @@ namespace Client.Controls
                 _RightAligned = false;
                 _ButtonType = 0;
 
+                _HoverIndex = 0;
+                _PressedIndex = 0;
+
                 if (Label != null)
                 {
                     if (!Label.IsDisposed)
@@ -377,6 +444,8 @@ namespace Client.Controls
                 PressedChanged = null;
                 RightAlignedChanged = null;
                 ButtonTypeChanged = null;
+                HoverIndexChanged = null;
+                PressedIndexChanged = null;
             }
         }
         #endregion

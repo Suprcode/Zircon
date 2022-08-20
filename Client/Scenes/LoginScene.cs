@@ -693,7 +693,7 @@ namespace Client.Scenes
                     Parent = this,
                     Location = new Point(550, 60),
                     Size = new Size(100, DefaultHeight),
-                    Label = { Text = "Log in" },
+                    Label = { Text = "Log In" },
                     Enabled = false,
                 };
                 LoginButton.MouseClick += (o, e) => Login();
