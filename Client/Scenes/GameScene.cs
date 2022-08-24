@@ -181,16 +181,13 @@ namespace Client.Scenes
         public RankingDialog RankingBox;
         public MarketPlaceDialog MarketPlaceBox;
         public DungeonFinderDialog DungeonFinderBox;
-        public MailDialog MailBox;
-        public ReadMailDialog ReadMailBox;
-        public SendMailDialog SendMailBox;
+        public CommunicationDialog CommunicationBox;
         public TradeDialog TradeBox;
         public GuildDialog GuildBox;
         public GuildMemberDialog GuildMemberBox;
         public QuestDialog QuestBox;
         public QuestTrackerDialog QuestTrackerBox;
         public CompanionDialog CompanionBox;
-        public BlockDialog BlockBox;
         public MonsterDialog MonsterBox;
         public MagicBarDialog MagicBarBox;
         public EditCharacterDialog EditCharacterBox;
@@ -354,6 +351,7 @@ namespace Client.Scenes
             StorageBox?.LoadSettings();
             TradeBox?.LoadSettings();
             CompanionBox?.LoadSettings();
+            CommunicationBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -573,22 +571,11 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false
             };
-            MailBox = new MailDialog
+            CommunicationBox = new CommunicationDialog
             {
                 Parent = this,
                 Visible = false
             };
-            ReadMailBox = new ReadMailDialog
-            {
-                Parent = this,
-                Visible = false
-            };
-            SendMailBox = new SendMailDialog
-            {
-                Parent = this,
-                Visible = false
-            };
-
             TradeBox = new TradeDialog
             {
                 Parent = this,
@@ -619,11 +606,6 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false,
-            };
-            BlockBox = new BlockDialog
-            {
-                Parent = this,
-                Visible = false
             };
 
             MonsterBox = new MonsterDialog
@@ -680,6 +662,7 @@ namespace Client.Scenes
             StorageBox.LoadSettings();
             TradeBox.LoadSettings();
             CompanionBox.LoadSettings();
+            CommunicationBox.LoadSettings();
         }
 
         #region Methods
@@ -739,15 +722,9 @@ namespace Client.Scenes
 
             MarketPlaceBox.Location = new Point((Size.Width - MarketPlaceBox.Size.Width) / 2, (Size.Height - MarketPlaceBox.Size.Height) / 2);
 
-            MailBox.Location = new Point((Size.Width - MailBox.Size.Width) / 2, (Size.Height - MailBox.Size.Height) / 2);
-
-            ReadMailBox.Location = new Point((Size.Width - ReadMailBox.Size.Width) / 2, (Size.Height - ReadMailBox.Size.Height) / 2);
-
-            SendMailBox.Location = new Point((Size.Width - SendMailBox.Size.Width) / 2, (Size.Height - SendMailBox.Size.Height) / 2);
+            CommunicationBox.Location = new Point((Size.Width - CommunicationBox.Size.Width) / 2, (Size.Height - CommunicationBox.Size.Height) / 2);
 
             CompanionBox.Location = new Point((Size.Width - CompanionBox.Size.Width) / 2, (Size.Height - CompanionBox.Size.Height) / 2);
-
-            BlockBox.Location = new Point((Size.Width - BlockBox.Size.Width) / 2, (Size.Height - BlockBox.Size.Height) / 2);
 
             MonsterBox.Location = new Point((Size.Width - MonsterBox.Size.Width) / 2, 50);
 
@@ -1071,7 +1048,14 @@ namespace Client.Scenes
                         StorageBox.Visible = !StorageBox.Visible;
                         break;
                     case KeyBindAction.BlockListWindow:
-                        BlockBox.Visible = !BlockBox.Visible;
+                        CommunicationBox.Visible = !CommunicationBox.Visible;
+                        if (CommunicationBox.Visible)
+                            CommunicationBox.BlockTab.TabButton.InvokeMouseClick();
+                        break;
+                    case KeyBindAction.MailSendWindow:
+                        CommunicationBox.Visible = !CommunicationBox.Visible;
+                        if (CommunicationBox.Visible)
+                            CommunicationBox.SendTab.TabButton.InvokeMouseClick();
                         break;
                     case KeyBindAction.GuildWindow:
                         GuildBox.Visible = !GuildBox.Visible;
@@ -1128,11 +1112,7 @@ namespace Client.Scenes
                         break;
                     case KeyBindAction.MailBoxWindow:
                         if (Observer) continue;
-                        MailBox.Visible = !MailBox.Visible;
-                        break;
-                    case KeyBindAction.MailSendWindow:
-                        if (Observer) continue;
-                        SendMailBox.Visible = !SendMailBox.Visible;
+                        CommunicationBox.Visible = !CommunicationBox.Visible;
                         break;
                     case KeyBindAction.ChatOptionsWindow:
                         ChatOptionsBox.Visible = !ChatOptionsBox.Visible;
@@ -4402,28 +4382,12 @@ namespace Client.Scenes
                     MarketPlaceBox = null;
                 }
 
-                if (MailBox != null)
+                if (CommunicationBox != null)
                 {
-                    if (!MailBox.IsDisposed)
-                        MailBox.Dispose();
+                    if (!CommunicationBox.IsDisposed)
+                        CommunicationBox.Dispose();
 
-                    MailBox = null;
-                }
-
-                if (ReadMailBox != null)
-                {
-                    if (!ReadMailBox.IsDisposed)
-                        ReadMailBox.Dispose();
-
-                    ReadMailBox = null;
-                }
-
-                if (SendMailBox != null)
-                {
-                    if (!SendMailBox.IsDisposed)
-                        SendMailBox.Dispose();
-
-                    SendMailBox = null;
+                    CommunicationBox = null;
                 }
 
                 if (TradeBox != null)
@@ -4474,14 +4438,6 @@ namespace Client.Scenes
                     CompanionBox = null;
                 }
 
-                if (BlockBox != null)
-                {
-                    if (!BlockBox.IsDisposed)
-                        BlockBox.Dispose();
-
-                    BlockBox = null;
-                }
-                
                 if (MonsterBox != null)
                 {
                     if (!MonsterBox.IsDisposed)

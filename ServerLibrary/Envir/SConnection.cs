@@ -1102,8 +1102,6 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game && Stage != GameStage.Observer) return;
 
-            if (Account == null) return;
-
             CharacterInfo info = SEnvir.GetCharacter(p.Name);
 
             if (info == null)
@@ -1233,6 +1231,59 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.SetFilters(p);
+        }
+
+        public void Process(C.ChangeOnlineState p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.OnlineState = p.State;
+
+            Player.UpdateOnlineState();
+        }
+
+        public void Process(C.FriendAdd p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            CharacterInfo info = SEnvir.GetCharacter(p.Name);
+
+            if (info == null)
+            {
+                ReceiveChat(string.Format(Language.CannotFindPlayer, p.Name), MessageType.System);
+
+                return;
+            }
+
+            foreach (FriendInfo friendInfo in Player.Character.Friends)
+            {
+                if (friendInfo.FriendedCharacter == info)
+                {
+                    ReceiveChat(string.Format(Language.AlreadyFriended, p.Name), MessageType.System);
+                    return;
+                }
+            }
+
+            FriendInfo friend = SEnvir.FriendInfoList.CreateNewObject();
+
+            friend.Character = Player.Character;
+            friend.FriendedCharacter = info;
+            friend.FriendName = info.CharacterName;
+
+            Enqueue(new S.FriendAdd { Info = friend.ToClientInfo(), ObserverPacket = false });
+        }
+
+        public void Process(C.FriendRemove p)
+        {
+            if (Stage != GameStage.Game && Stage != GameStage.Observer) return;
+
+            FriendInfo friend = Player.Character?.Friends.FirstOrDefault(x => x.Index == p.Index);
+
+            if (friend == null) return;
+
+            friend.Delete();
+
+            Enqueue(new S.FriendRemove { Index = p.Index, ObserverPacket = false });
         }
     }
 

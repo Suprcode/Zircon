@@ -1979,9 +1979,9 @@ namespace Client.Controls
                             }
 
 
-                            if (GameScene.Game.SendMailBox.IsVisible)
+                            if (GameScene.Game.CommunicationBox.IsVisible)
                             {
-                                MoveItem(GameScene.Game.SendMailBox.Grid);
+                                MoveItem(GameScene.Game.CommunicationBox.SendGrid);
                                 return;
                             }
 
@@ -2134,9 +2134,9 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.SendMailBox.IsVisible)
+                            if (GameScene.Game.CommunicationBox.IsVisible)
                             {
-                                MoveItem(GameScene.Game.SendMailBox.Grid);
+                                MoveItem(GameScene.Game.CommunicationBox.SendGrid);
                                 return;
                             }
 

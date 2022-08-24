@@ -1225,6 +1225,14 @@ namespace Library
         WhiteUnicorn,
         RedUnicorn
     }
+    
+    public enum OnlineState : byte
+    {
+        Online,
+        Busy,
+        Away,
+        Offline
+    }
 
     [Flags]
     public enum GuildPermission

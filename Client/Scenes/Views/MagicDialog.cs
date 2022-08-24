@@ -107,6 +107,7 @@ namespace Client.Scenes.Views
         {
             Size = new Size(420, 516);
             Movable = true;
+            Sort = true;
 
             HeaderImage = new DXImageControl
             {
@@ -407,18 +408,12 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 BackColour = Color.Empty,
-                Border = false
+                Border = false,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface }
             };
             ScrollBar.ValueChanged += (o, e) => UpdateLocations();
-
-            ScrollBar.UpButton.Index = 61;
-            ScrollBar.UpButton.LibraryFile = LibraryFile.Interface;
-
-            ScrollBar.DownButton.Index = 62;
-            ScrollBar.DownButton.LibraryFile = LibraryFile.Interface;
-
-            ScrollBar.PositionBar.Index = 60;
-            ScrollBar.PositionBar.LibraryFile = LibraryFile.Interface;
         }
 
         #region Methods

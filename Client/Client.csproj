@@ -189,7 +189,6 @@
     <Compile Include="Scenes\Views\ChatTextBox.cs" />
     <Compile Include="Scenes\Views\ChatTab.cs" />
     <Compile Include="Scenes\Views\CompanionDialog.cs" />
-    <Compile Include="Scenes\Views\BlockDialog.cs" />
     <Compile Include="Scenes\Views\CurrencyDialog.cs" />
     <Compile Include="Scenes\Views\DungeonFinderDialog.cs" />
     <Compile Include="Scenes\Views\EditCharacterDialog.cs" />
@@ -198,7 +197,7 @@
     <Compile Include="Scenes\Views\FortuneCheckerDialog.cs" />
     <Compile Include="Scenes\Views\GuildDialog.cs" />
     <Compile Include="Scenes\Views\MagicBarDialog.cs" />
-    <Compile Include="Scenes\Views\MailDialog.cs" />
+    <Compile Include="Scenes\Views\CommunicationDialog.cs" />
     <Compile Include="Scenes\Views\MarketPlaceDialog.cs" />
     <Compile Include="Scenes\Views\GroupDialog.cs" />
     <Compile Include="Scenes\Views\InventoryDialog.cs" />

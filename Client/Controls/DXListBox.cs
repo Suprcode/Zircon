@@ -31,10 +31,8 @@ namespace Client.Controls
             if (oValue != null)
                 oValue.Selected = false;
 
-
             if (nValue != null)
                 nValue.Selected = true;
-
 
             selectedItemChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -86,7 +84,7 @@ namespace Client.Controls
             SelectedItem = null;
         }
 
-        private void ScrollBar_ValueChanged(object sender, EventArgs e)
+        public void ScrollBar_ValueChanged(object sender, EventArgs e)
         {
             UpdateItems();
         }
@@ -223,7 +221,7 @@ namespace Client.Controls
 
         #endregion
 
-        public DXLabel Label { get; private set; }
+        public DXLabel Label { get; protected set; }
 
         public override void OnParentChanged(DXControl oValue, DXControl nValue)
         {
@@ -235,7 +233,6 @@ namespace Client.Controls
             Size = new Size(Parent.Size.Width - listBox.ScrollBar.Size.Width - 1, Label.Size.Height);
 
             UpdateLocation();
-
 
             listBox.UpdateScrollBar();
 
@@ -301,7 +298,7 @@ namespace Client.Controls
         }
         
 
-        public void UpdateColours()
+        public virtual void UpdateColours()
         {
             if (Selected)
             {

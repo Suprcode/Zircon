@@ -3173,50 +3173,40 @@ namespace Client.Envir
         }
         public void Process(S.MarketPlaceStoreBuy p)
         {
-
-
             GameScene.Game.MarketPlaceBox.StoreBuyButton.Enabled = true;
         }
 
-
         public void Process(S.MailList p)
         {
-
-
-            GameScene.Game.MailBox.MailList.AddRange(p.Mail);
-            GameScene.Game.MailBox.UpdateIcon();
+            GameScene.Game.CommunicationBox.ReceivedMailList.AddRange(p.Mail);
+            GameScene.Game.CommunicationBox.UpdateIcon();
         }
+
         public void Process(S.MailNew p)
         {
-
-
-
-            GameScene.Game.MailBox.MailList.Insert(0, p.Mail);
-            GameScene.Game.MailBox.RefreshList();
-            GameScene.Game.MailBox.UpdateIcon();
+            GameScene.Game.CommunicationBox.ReceivedMailList.Insert(0, p.Mail);
+            GameScene.Game.CommunicationBox.RefreshList();
+            GameScene.Game.CommunicationBox.UpdateIcon();
             GameScene.Game.ReceiveChat($"You have received a new mail from {p.Mail.Sender}.", MessageType.System);
         }
+
         public void Process(S.MailDelete p)
         {
-
-
-            ClientMailInfo mail = GameScene.Game.MailBox.MailList.FirstOrDefault(x => x.Index == p.Index);
+            ClientMailInfo mail = GameScene.Game.CommunicationBox.ReceivedMailList.FirstOrDefault(x => x.Index == p.Index);
 
             if (mail == null) return;
 
-            GameScene.Game.MailBox.MailList.Remove(mail);
-            GameScene.Game.MailBox.RefreshList();
-            GameScene.Game.MailBox.UpdateIcon();
+            GameScene.Game.CommunicationBox.ReceivedMailList.Remove(mail);
+            GameScene.Game.CommunicationBox.RefreshList();
+            GameScene.Game.CommunicationBox.UpdateIcon();
 
-            if (mail == GameScene.Game.ReadMailBox.Mail)
-                GameScene.Game.ReadMailBox.Mail = null;
+            if (mail == GameScene.Game.CommunicationBox.ReadMail)
+                GameScene.Game.CommunicationBox.ReadMail = null;
         }
 
         public void Process(S.MailItemDelete p)
         {
-
-
-            ClientMailInfo mail = GameScene.Game.MailBox.MailList.FirstOrDefault(x => x.Index == p.Index);
+            ClientMailInfo mail = GameScene.Game.CommunicationBox.ReceivedMailList.FirstOrDefault(x => x.Index == p.Index);
 
             if (mail == null) return;
 
@@ -3226,7 +3216,7 @@ namespace Client.Envir
             {
                 mail.Items.Remove(item);
 
-                foreach (MailRow row in GameScene.Game.MailBox.Rows)
+                foreach (CommunicationReceivedRow row in GameScene.Game.CommunicationBox.ReceivedRows)
                 {
                     if (row.Mail != mail) continue;
 
@@ -3235,11 +3225,11 @@ namespace Client.Envir
                 }
             }
 
-            GameScene.Game.MailBox.UpdateIcon();
+            GameScene.Game.CommunicationBox.UpdateIcon();
 
-            if (mail != GameScene.Game.ReadMailBox.Mail) return;
+            if (mail != GameScene.Game.CommunicationBox.ReadMail) return;
 
-            foreach (DXItemCell cell in GameScene.Game.ReadMailBox.Grid.Grid)
+            foreach (DXItemCell cell in GameScene.Game.CommunicationBox.ReadGrid.Grid)
             {
                 if (cell.Slot != p.Slot) continue;
 
@@ -3247,17 +3237,14 @@ namespace Client.Envir
                 break;
             }
         }
+
         public void Process(S.MailSend p)
         {
-
-
-            GameScene.Game.SendMailBox.SendAttempted = false;
+            GameScene.Game.CommunicationBox.SendAttempted = false;
         }
 
         public void Process(S.ChangeAttackMode p)
         {
-
-
             GameScene.Game.User.AttackMode = p.Mode;
 
             GameScene.Game.ReceiveChat(GameScene.Game.MainPanel.AttackModeLabel.Text, MessageType.System);
@@ -4052,7 +4039,7 @@ namespace Client.Envir
         {
             CEnvir.BlockList.Add(p.Info);
 
-            GameScene.Game.BlockBox.RefreshList();
+            GameScene.Game.CommunicationBox.RefreshBlockList();
         }
         public void Process(S.BlockRemove p)
         {
@@ -4060,7 +4047,28 @@ namespace Client.Envir
 
             CEnvir.BlockList.Remove(block);
 
-            GameScene.Game.BlockBox.RefreshList();
+            GameScene.Game.CommunicationBox.RefreshBlockList();
+        }
+
+        public void Process(S.FriendAdd p)
+        {
+            GameScene.Game.CommunicationBox.FriendList.Add(p.Info);
+            GameScene.Game.CommunicationBox.RefreshFriendList();
+        }
+        public void Process(S.FriendRemove p)
+        {
+            ClientFriendInfo friend = GameScene.Game.CommunicationBox.FriendList.First(x => x.Index == p.Index);
+
+            GameScene.Game.CommunicationBox.FriendList.Remove(friend);
+
+            GameScene.Game.CommunicationBox.RefreshFriendList();
+        }
+
+        public void Process(S.FriendUpdate p)
+        {
+            GameScene.Game.CommunicationBox.FriendList.RemoveAll(x => x.Name == p.Info.Name);
+            GameScene.Game.CommunicationBox.FriendList.Add(p.Info);
+            GameScene.Game.CommunicationBox.RefreshFriendList();
         }
 
         public void Process(S.HelmetToggle p)

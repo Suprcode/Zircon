@@ -1218,20 +1218,17 @@ namespace Client.Scenes.Views
                 return;
             }
 
-
             if (ItemTypeComboBox.SelectedItem != null && cell.Item != null && cell.Item.Info.ItemType != (ItemType) ItemTypeComboBox.SelectedItem)
             {
                 cell.Enabled = false;
                 return;
             }
 
-
             if (!string.IsNullOrEmpty(ItemNameTextBox.TextBox.Text) && cell.Item != null && cell.Item.Info.ItemName.IndexOf(ItemNameTextBox.TextBox.Text, StringComparison.OrdinalIgnoreCase) < 0)
             {
                 cell.Enabled = false;
                 return;
             }
-
 
             cell.Enabled = true;
         }

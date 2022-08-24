@@ -191,8 +191,6 @@ namespace Client.Models
         private bool _InSafeZone;
 
         public int HermitPoints;
-        
-
 
         public List<ClientBuffInfo> Buffs = new List<ClientBuffInfo>();
         
@@ -359,9 +357,13 @@ namespace Client.Models
             }
             GameScene.Game.AutoPotionBox.UpdateLinks();
 
-            GameScene.Game.MapControl.AddObject(this);
+            GameScene.Game.CommunicationBox.OnlineState = info.OnlineState;
+            GameScene.Game.CommunicationBox.FriendList = info.Friends;
+            GameScene.Game.CommunicationBox.RefreshFriendList();
 
+            GameScene.Game.MapControl.AddObject(this);
         }
+
         public override void LocationChanged()
         {
             base.LocationChanged();

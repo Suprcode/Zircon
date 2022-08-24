@@ -622,6 +622,27 @@ namespace Server.DBModels
         [Association("Quests", true)]
         public DBBindingList<UserQuest> Quests { get; set; }
 
+        [Association("Friends", true)]
+        public DBBindingList<FriendInfo> Friends { get; set; }
+
+        [Association("FriendedBy", true)]
+        public DBBindingList<FriendInfo> FriendedBy { get; set; }
+
+        public OnlineState OnlineState
+        {
+            get { return _OnlineState; }
+            set
+            {
+                if (_OnlineState == value) return;
+
+                var oldValue = _OnlineState;
+                _OnlineState = value;
+
+                OnChanged(oldValue, value, "OnlineState");
+            }
+        }
+        private OnlineState _OnlineState;
+
         [Association("Marriage")]
         public CharacterInfo Partner
         {

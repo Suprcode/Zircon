@@ -1266,7 +1266,20 @@ namespace Library.Network.ServerPackets
         public List<MirClass> FilterClass { get; set; }
         public List<Rarity> FilterRarity { get; set; }
         public List<ItemType> FilterItemType { get; set; }
+    }
 
+    public sealed class FriendUpdate : Packet
+    {
+        public ClientFriendInfo Info { get; set; }
+    }
+
+    public sealed class FriendAdd : Packet
+    {
+        public ClientFriendInfo Info { get; set; }
+    }
+    public sealed class FriendRemove : Packet
+    {
+        public int Index { get; set; }
     }
 }
 

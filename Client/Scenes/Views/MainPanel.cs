@@ -161,7 +161,10 @@ namespace Client.Scenes.Views
                 Location = new Point(806, 23),
                 Hint = "Mail [,]"
             };
-            MailButton.MouseClick += (o, e) => GameScene.Game.MailBox.Visible = !GameScene.Game.MailBox.Visible;
+            MailButton.MouseClick += (o, e) =>
+            {
+                GameScene.Game.CommunicationBox.Visible = !GameScene.Game.CommunicationBox.Visible;
+            };
 
             NewMailIcon = new DXImageControl
             {

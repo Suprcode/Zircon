@@ -646,6 +646,18 @@ namespace Library.Network.ClientPackets
         public List<MirClass> FilterClass { get; set; }
         public List<Rarity> FilterRarity { get; set; }
         public List<ItemType> FilterItemType { get; set; }
+    }
+    public sealed class ChangeOnlineState : Packet
+    {
+        public OnlineState State { get; set; }
+    }
 
+    public sealed class FriendAdd : Packet
+    {
+        public string Name { get; set; }
+    }
+    public sealed class FriendRemove : Packet
+    {
+        public int Index { get; set; }
     }
 }

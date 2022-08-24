@@ -460,10 +460,14 @@ namespace Library
         public AttackMode AttackMode { get; set; }
         public PetMode PetMode { get; set; }
 
+        public OnlineState OnlineState { get; set; }
+
         public int HermitPoints { get; set; }
 
         public float DayTime { get; set; }
         public bool AllowGroup { get; set; }
+
+        public List<ClientFriendInfo> Friends { get; set; }
 
         public List<ClientUserItem> Items { get; set; }
         public List<ClientBeltLink> BeltLinks { get; set; }
@@ -1158,6 +1162,13 @@ namespace Library
     {
         public int Index { get; set; }
         public string Name { get; set; }
+    }
+
+    public class ClientFriendInfo
+    {
+        public int Index { get; set; }
+        public string Name { get; set; }
+        public OnlineState State { get; set; }
     }
 
     public class ClientFortuneInfo

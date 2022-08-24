@@ -63,6 +63,12 @@ namespace Server.Models
             set { Character.PetMode = value; }
         }
 
+        public OnlineState OnlineState
+        {
+            get { return Character.OnlineState; }
+            set { Character.OnlineState = value; }
+        }
+
         public UserCurrency Gold => Character.Account.Gold2;
         public UserCurrency GameGold => Character.Account.GameGold2;
         public UserCurrency HuntGold => Character.Account.HuntGold2;
@@ -702,6 +708,8 @@ namespace Server.Models
                 Character = null;
                 return;
             }
+
+            UpdateOnlineState(true);
         }
 
         public void StopGame()
@@ -752,12 +760,13 @@ namespace Server.Models
             if (Character.Partner?.Player != null)
                 Character.Partner.Player.Enqueue(new S.MarriageOnlineChanged());
 
-
             Despawn();
-
 
             Connection.Player = null;
             Character.Player = null;
+
+            UpdateOnlineState(true);
+
             Connection = null;
             Character = null;
         }
@@ -3901,7 +3910,7 @@ namespace Server.Models
 
             Enqueue(result);
 
-            if (!ParseLinks(p.Links, 0, 6)) return;
+            if (!ParseLinks(p.Links, 0, 5)) return;
 
             AccountInfo account = SEnvir.GetCharacter(p.Recipient)?.Account;
 
@@ -5531,9 +5540,7 @@ namespace Server.Models
         {
             if (links == null || links.Count < minCount || links.Count > maxCount) return false;
 
-
             List<CellLinkInfo> tempLinks = new List<CellLinkInfo>();
-
 
             foreach (CellLinkInfo link in links)
             {
@@ -5547,10 +5554,8 @@ namespace Server.Models
                     continue;
                 }
 
-
                 tempLink.Count += link.Count;
             }
-
 
             links.Clear();
             links.AddRange(tempLinks);
@@ -19438,11 +19443,14 @@ namespace Server.Models
                 AttackMode = AttackMode,
                 PetMode = PetMode,
 
+                OnlineState = OnlineState,
+                Friends = Character.Friends.Select(x => x.ToClientInfo()).ToList(),
+
                 Items = Character.Items.Select(x => x.ToClientInfo()).ToList(),
                 BeltLinks = blinks,
                 AutoPotionLinks = alinks,
-                Magics = Character.Magics.Select(X => X.ToClientInfo()).ToList(),
-                Buffs = Buffs.Select(X => X.ToClientInfo()).ToList(),
+                Magics = Character.Magics.Select(x => x.ToClientInfo()).ToList(),
+                Buffs = Buffs.Select(x => x.ToClientInfo()).ToList(),
                 Currencies = Character.Account.Currencies.Where(x => x.Info != null).Select(x => x.ToClientInfo(x.Info.Type == CurrencyType.GameGold && observer)).ToList(),
 
                 Poison = Poison,
@@ -20266,6 +20274,29 @@ namespace Server.Models
         public UserCurrency GetCurrency(CurrencyInfo info)
         {
             return Character.Account.Currencies.First(x => x.Info == info);
+        }
+
+        #endregion
+
+        #region Friends
+
+        public void UpdateOnlineState(bool sendMessage = false)
+        {
+            foreach (var info in Character.FriendedBy)
+            {
+                if (info.Character.Player == null) continue;
+
+                var clientInfo = info.ToClientInfo();
+
+                info.Character.Player.Enqueue(new S.FriendUpdate { Info = clientInfo });
+
+                if (sendMessage && clientInfo.State == OnlineState.Online)
+                {
+                    info.Character.Player.Connection.ReceiveChat(string.Format(info.Character.Player.Connection.Language.FriendStateChanged, clientInfo.Name, clientInfo.State), MessageType.System);
+                    foreach (SConnection con in info.Character.Player.Connection.Observers)
+                        con.ReceiveChat(string.Format(con.Language.FriendStateChanged, clientInfo.Name, clientInfo.State), MessageType.System);
+                }
+            }
         }
 
         #endregion
