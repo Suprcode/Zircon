@@ -937,6 +937,7 @@ namespace Library
         public bool Online { get; set; }
         public bool Observable { get; set; }
         public int Rebirth { get; set; }
+        public int RankChange { get; set; }
     }
 
     public class ClientMarketPlaceInfo

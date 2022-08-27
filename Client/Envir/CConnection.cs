@@ -3036,7 +3036,10 @@ namespace Client.Envir
 
         public void Process(S.Inspect p)
         {
-            GameScene.Game.InspectBox.NewInformation(p);
+            if (p.Ranking)
+                GameScene.Game.RankingBox.NewInformation(p);
+            else
+                GameScene.Game.InspectBox.NewInformation(p);
         }
 
         public void Process(S.Rankings p)
@@ -3044,6 +3047,13 @@ namespace Client.Envir
             (DXControl.ActiveScene as LoginScene)?.RankingBox.Update(p);
             GameScene.Game?.RankingBox.Update(p);
         }
+
+        public void Process(S.RankSearch p)
+        {
+            (DXControl.ActiveScene as LoginScene)?.RankingBox.Update(p);
+            GameScene.Game?.RankingBox.Update(p);
+        }
+
         public void Process(S.StartObserver p)
         {
             CEnvir.FillStorage(p.Items, true);
@@ -3084,8 +3094,6 @@ namespace Client.Envir
         }
         public void Process(S.ObservableSwitch p)
         {
-
-
             GameScene.Game.RankingBox.Observable = p.Allow;
         }
 

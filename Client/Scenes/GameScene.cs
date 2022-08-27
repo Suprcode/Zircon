@@ -352,6 +352,7 @@ namespace Client.Scenes
             TradeBox?.LoadSettings();
             CompanionBox?.LoadSettings();
             CommunicationBox?.LoadSettings();
+            RankingBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -551,7 +552,7 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false
             };
-            RankingBox = new RankingDialog
+            RankingBox = new RankingDialog(true)
             {
                 Parent = this,
                 Visible = false
@@ -663,6 +664,7 @@ namespace Client.Scenes
             TradeBox.LoadSettings();
             CompanionBox.LoadSettings();
             CommunicationBox.LoadSettings();
+            RankingBox.LoadSettings();
         }
 
         #region Methods

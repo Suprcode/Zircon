@@ -327,6 +327,7 @@ namespace Library.Network.ClientPackets
     public sealed class Inspect : Packet
     {
         public int Index { get; set; }
+        public bool Ranking { get; set; }
     }
 
     public sealed class RankRequest : Packet
@@ -334,6 +335,11 @@ namespace Library.Network.ClientPackets
         public RequiredClass Class { get; set; }
         public bool OnlineOnly { get; set; }
         public int StartIndex { get; set; }
+    }
+
+    public sealed class RankSearch : Packet
+    {
+        public string Name { get; set; }
     }
 
     public sealed class ObserverRequest : Packet

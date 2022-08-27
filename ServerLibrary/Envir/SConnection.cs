@@ -653,16 +653,47 @@ namespace Server.Envir
         public void Process(C.Inspect p)
         {
             if (Stage == GameStage.Game)
-                Player.Inspect(p.Index, this);
+                Player.Inspect(p.Index, p.Ranking, this);
 
             if (Stage == GameStage.Observer)
-                Observed.Player.Inspect(p.Index, this);
+                Observed.Player.Inspect(p.Index, p.Ranking, this);
         }
         public void Process(C.RankRequest p)
         {
             if (Stage != GameStage.Game && Stage != GameStage.Observer && Stage != GameStage.Login) return;
 
             Enqueue(SEnvir.GetRanks(p, Account != null && (Account.TempAdmin || Account.Observer)));
+        }
+
+        public void Process(C.RankSearch p)
+        {
+            if (Stage != GameStage.Game && Stage != GameStage.Observer && Stage != GameStage.Login) return;
+
+            bool isGM = Account != null && (Account.TempAdmin || Account.Observer);
+
+            RankInfo rank = null;
+
+            CharacterInfo info = SEnvir.GetCharacter(p.Name);
+
+            if (info != null)
+            {
+                rank = new RankInfo
+                {
+                    Rank = info.CurrentRank,
+                    Index = info.Index,
+                    Class = info.Class,
+                    Experience = info.Experience,
+                    MaxExperience = info.Level >= Globals.ExperienceList.Count ? 0 : Globals.ExperienceList[info.Level],
+                    Level = info.Level,
+                    Name = info.CharacterName,
+                    Online = info.Player != null,
+                    Observable = info.Observable || isGM,
+                    Rebirth = info.Rebirth,
+                    RankChange = info.LastRank - info.CurrentRank
+                };
+            }
+
+            Enqueue(new S.RankSearch { Rank = rank });
         }
 
         public void Process(C.ObserverRequest p)

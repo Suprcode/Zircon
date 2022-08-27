@@ -332,6 +332,7 @@ namespace Server.Envir
 
         public static LinkedList<CharacterInfo> Rankings;
         public static HashSet<CharacterInfo> TopRankings;
+        public static DateTime NextRankChangeReset;
 
         public static long ConDelay, SaveDelay;
         #endregion
@@ -842,6 +843,7 @@ namespace Server.Envir
             MonsterInfoList = null;
             RespawnInfoList = null;
             MagicInfoList = null;
+            FishingInfoList = null;
 
             BeltLinkList = null;
             UserItemList = null;
@@ -3392,6 +3394,15 @@ namespace Server.Envir
 
             int total = 0;
             int rank = 0;
+
+            bool resetRankChange = false;
+
+            if (NextRankChangeReset < Now)
+            {
+                resetRankChange = true;
+                NextRankChangeReset = Now + Config.RankChangeResetDelay;
+            }
+
             foreach (CharacterInfo info in Rankings)
             {
                 if (info.Deleted) continue;
@@ -3414,8 +3425,14 @@ namespace Server.Envir
 
                 rank++;
 
-                if (p.OnlineOnly && info.Player == null) continue;
+                if (resetRankChange)
+                {
+                    info.LastRank = rank;
+                }
 
+                info.CurrentRank = rank;
+
+                if (p.OnlineOnly && info.Player == null) continue;
 
                 if (total++ < p.StartIndex || result.Ranks.Count > 20) continue;
 
@@ -3430,7 +3447,8 @@ namespace Server.Envir
                     Name = info.CharacterName,
                     Online = info.Player != null,
                     Observable = info.Observable || isGM,
-                    Rebirth = info.Rebirth
+                    Rebirth = info.Rebirth,
+                    RankChange = info.LastRank - rank
                 });
             }
 
@@ -3438,6 +3456,7 @@ namespace Server.Envir
 
             return result;
         }
+
         public static Map GetMap(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0)
         {
             if (instance == null)

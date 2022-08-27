@@ -704,6 +704,12 @@ namespace Server.DBModels
         }
         private string _FiltersItemType;
 
+        [IgnoreProperty]
+        public int LastRank { get; set; }
+
+        [IgnoreProperty]
+        public int CurrentRank { get; set; }
+
         protected override void OnDeleted()
         {
             Account = null;
@@ -712,9 +718,6 @@ namespace Server.DBModels
             
             base.OnDeleted();
         }
-
-
-
 
         public PlayerObject Player;
         public LinkedListNode<CharacterInfo> RankingNode;

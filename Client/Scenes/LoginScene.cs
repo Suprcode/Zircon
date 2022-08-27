@@ -214,9 +214,9 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false,
-                ObserverButton = { Visible = false }
+                ObservableBox = { Visible = false }
             };
-            RankingBox.Location = new Point((LoginBox.Location.X - RankingBox.Size.Width) / 2, (Size.Height - RankingBox.Size.Height) / 2);
+            RankingBox.Location = new Point((Size.Width - RankingBox.Size.Width) / 2, (Size.Height - RankingBox.Size.Height) / 2);
 
 
             AccountBox = new NewAccountDialog

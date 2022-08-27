@@ -180,10 +180,10 @@ namespace Client.Scenes.Views
         private DXImageControl ReadTab;
 
         //Friends
-        private DXComboBox FriendOnlineStateBox, FriendViewStatusBox;//dispose todo
-        private DXListBox FriendListBox;//dispose todo
-        private DXButton FriendAddButton, FriendRemoveButton; //dispose todo
-        private List<FriendRow> FriendListBoxItems = new List<FriendRow>();//dispose todo
+        private DXComboBox FriendOnlineStateBox, FriendViewStatusBox;
+        private DXListBox FriendListBox;
+        private DXButton FriendAddButton, FriendRemoveButton;
+        private List<FriendRow> FriendListBoxItems = new List<FriendRow>();
         public List<ClientFriendInfo> FriendList = new List<ClientFriendInfo>();
 
         //Received
@@ -777,7 +777,8 @@ namespace Client.Scenes.Views
                 Parent = SendTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
                 Location = new Point(86, label.Location.Y + 1),
-                Size = new Size(115, 16)
+                Size = new Size(115, 16),
+                MaxLength = Globals.MaxCharacterNameLength
             };
             SendRecipientBox.TextBox.TextChanged += RecipientBox_TextChanged;
 

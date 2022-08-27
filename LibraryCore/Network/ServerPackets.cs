@@ -718,6 +718,8 @@ namespace Library.Network.ServerPackets
 
         //public int WearWeight { get; set; }
         //public int HandWeight { get; set; }
+
+        public bool Ranking { get; set; }
     }
     public sealed class Rankings : Packet
     {
@@ -727,6 +729,10 @@ namespace Library.Network.ServerPackets
         public int Total { get; set; }
 
         public List<RankInfo> Ranks { get; set; }
+    }
+    public sealed class RankSearch : Packet
+    {
+        public RankInfo Rank { get; set; }
     }
 
     public sealed class StartObserver : Packet

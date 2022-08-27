@@ -7,13 +7,19 @@ using Client.UserModels;
 using Library;
 using S =  Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Linq;
+using Library.Network.ServerPackets;
+using Client.Properties;
 
-//Cleaned
+//Add that config refresh time
+
 namespace Client.Scenes.Views
 {
-    public sealed class RankingDialog : DXWindow
+    public sealed class RankingDialog : DXImageControl
     {
         #region Properties
+
         #region StartIndex
 
         public int StartIndex
@@ -72,24 +78,24 @@ namespace Client.Scenes.Views
 
         #endregion
 
-        #region Class
+        #region FilterClass
 
-        public RequiredClass Class
+        public RequiredClass FilterClass
         {
-            get => _Class;
+            get => _FilterClass;
             set
             {
-                if (_Class == value) return;
+                if (_FilterClass == value) return;
 
-                RequiredClass oldValue = _Class;
-                _Class = value;
+                RequiredClass oldValue = _FilterClass;
+                _FilterClass = value;
 
-                OnClassChanged(oldValue, value);
+                OnFilterClassChanged(oldValue, value);
             }
         }
-        private RequiredClass _Class;
-        public event EventHandler<EventArgs> ClassChanged;
-        public void OnClassChanged(RequiredClass oValue, RequiredClass nValue)
+        private RequiredClass _FilterClass;
+        public event EventHandler<EventArgs> FilterClassChanged;
+        public void OnFilterClassChanged(RequiredClass oValue, RequiredClass nValue)
         {
             ScrollBar.Value = 0;
             UpdateTime = CEnvir.Now;
@@ -97,8 +103,7 @@ namespace Client.Scenes.Views
             foreach (RankingLine line in Lines)
                 line.Loading = true;
 
-
-            ClassChanged?.Invoke(this, EventArgs.Empty);
+            FilterClassChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -153,128 +158,602 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> ObserverableChanged;
         public void OnObserverableChanged(bool oValue, bool nValue)
         {
-            if (Observable)
-            {
-                ObserverButton.Index = 121;
-                ObserverButton.Hint = "Observable Status: Allowing";
-            }
-            else
-            {
-                ObserverButton.Index = 141;
-                ObserverButton.Hint = "Observable Status: Not Allowing";
-            }
+            ObservableBox.Checked = nValue;
 
             ObserverableChanged?.Invoke(this, EventArgs.Empty);
-
         }
 
         #endregion
-        
+
+        #region SelectedRow
+
+        public RankingLine SelectedRow
+        {
+            get => _SelectedRow;
+            set
+            {
+                if (_SelectedRow == value) return;
+
+                RankingLine oldValue = _SelectedRow;
+                _SelectedRow = value;
+
+                OnSelectedRowChanged(oldValue, value);
+            }
+        }
+        private RankingLine _SelectedRow;
+        public event EventHandler<EventArgs> SelectedRowChanged;
+        public void OnSelectedRowChanged(RankingLine oValue, RankingLine nValue)
+        {
+            if (oValue != null)
+                oValue.Selected = false;
+
+            if (nValue != null && nValue.Rank != null)
+                nValue.Selected = true;
+
+            ObserveButton.Enabled = SelectedRow != null && SelectedRow.Rank.Online && SelectedRow.Rank.Observable;
+
+            if (GameScene.Game != null && SelectedRow == null)
+                ClearInformation();
+
+            SelectedRowChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         public DateTime UpdateTime;
 
-        private DXControl Panel;
+        private DXTabControl TabControl;
+        private DXTab GlobalTab;
+
+        private DXControl InspectPanel, RankPanel, RankPanelList;
         private DXVScrollBar ScrollBar;
 
         public DXComboBox RequiredClassBox;
-        public DXCheckBox OnlineOnlyBox;
-        public DXButton ObserverButton;
+        public DXCheckBox OnlineOnlyBox, ObservableBox;
+        public DXButton CloseButton, SearchButton, ObserveButton;
 
+        public DXLabel TitleLabel, LastUpdate;
+
+        public DXTextBox SearchText;
+
+        public RankingLine SearchLine;
         public RankingLine[] Lines;
 
-        public override WindowType Type => WindowType.RankingBox;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => true;
+        #region Inspect
+
+        public DXLabel InspectLabel, CharacterNameLabel, GuildNameLabel, GuildRankLabel;
+        public DXItemCell[] Grid;
+
+        private ClientUserItem[] _inspectEquipment = new ClientUserItem[Globals.EquipmentSize];
+        public MirClass _inspectClass;
+        public MirGender _inspectGender;
+        public int _inspectHairType;
+        public Color _inspectHairColour;
+        public int _inspectLevel;
+
+        public ClientUserItem[] Equipment => _inspectEquipment;
+        public MirClass Class => _inspectClass;
+        public MirGender Gender => _inspectGender;
+        public int HairType => _inspectHairType;
+        public Color HairColour => _inspectHairColour;
+
         #endregion
 
-        public RankingDialog()
-        {
-            SetClientSize(new Size(359, 480));
+        public WindowSetting Settings;
 
-            TitleLabel.Text = "Rankings";
-            
-            Panel = new DXControl
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
             {
-                Location = new Point(ClientArea.Location.X + 1, ClientArea.Location.Y+20),
-                Size = new Size(ClientArea.Size.Width - 1, ClientArea.Size.Height - 20),
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            if (IsVisible)
+                BringToFront();
+
+            if (Settings != null)
+                Settings.Visible = nValue;
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
+
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    if (CloseButton.Visible)
+                    {
+                        CloseButton.InvokeMouseClick();
+                        if (!Config.EscapeCloseAll)
+                            e.Handled = true;
+                    }
+                    break;
+            }
+        }
+
+        public WindowType Type => WindowType.RankingBox;
+
+        #endregion
+
+        public RankingDialog(bool fullRanking = false)
+        {   
+            Index = fullRanking ? 211 : 210;
+            LibraryFile = LibraryFile.Interface;
+            Size = new Size(fullRanking ? 576 : 330, 456);
+            Movable = true;
+            Sort = true;
+
+            CloseButton = new DXButton
+            {
                 Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
+            {
+                Text = "Ranking",
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+
+            RankPanel = new DXControl
+            {
+                Parent = this,
+                Size = new Size(330, 456),
+                PassThrough = true
+            };
+            RankPanel.Location = new Point(DisplayArea.Width - RankPanel.Size.Width, 0);
+
+            #region Inspect
+
+            if (fullRanking)
+            {
+                TabControl = new DXTabControl
+                {
+                    Parent = this,
+                    Location = new Point(12, 39),
+                    Size = new Size(DisplayArea.Width, DisplayArea.Height)
+                };
+
+                GlobalTab = new DXTab
+                {
+                    Parent = TabControl,
+                    TabButton = { Label = { Text = "Global" } },
+                    BackColour = Color.Empty,
+                    Location = new Point(0, 25)
+                };
+
+                InspectPanel = new DXControl
+                {
+                    Parent = this,
+                    Size = new Size(252, 456),
+                    Location = new Point(0, 0),
+                    PassThrough = true
+                };
+                InspectPanel.BeforeChildrenDraw += InspectPanel_BeforeChildrenDraw;
+
+                DXControl namePanel = new DXControl
+                {
+                    Parent = InspectPanel,
+                    Size = new Size(130, 46),
+                    Location = new Point(64, 71)
+                };
+                CharacterNameLabel = new DXLabel
+                {
+                    AutoSize = false,
+                    Size = new Size(130, 20),
+                    ForeColour = Color.FromArgb(222, 255, 222),
+                    Outline = false,
+                    Parent = namePanel,
+                    Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                    DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                };
+                GuildNameLabel = new DXLabel
+                {
+                    AutoSize = false,
+                    Size = new Size(130, 15),
+                    ForeColour = Color.FromArgb(255, 255, 181),
+                    Outline = false,
+                    Parent = namePanel,
+                    Location = new Point(0, CharacterNameLabel.Size.Height - 2),
+                    DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                };
+                GuildRankLabel = new DXLabel
+                {
+                    AutoSize = false,
+                    Size = new Size(130, 15),
+                    ForeColour = Color.FromArgb(255, 206, 148),
+                    Outline = false,
+                    Parent = namePanel,
+                    Location = new Point(0, CharacterNameLabel.Size.Height + GuildNameLabel.Size.Height - 4),
+                    DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                };
+
+                #region Grid
+
+                Grid = new DXItemCell[Globals.EquipmentSize];
+
+                DXItemCell cell;
+                Grid[(int)EquipmentSlot.Weapon] = cell = new DXItemCell
+                {
+                    Location = new Point(28, 142),
+                    Parent = InspectPanel,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Weapon,
+                    GridType = GridType.Inspect,
+                    Size = new System.Drawing.Size(65, 90),
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Armour] = cell = new DXItemCell
+                {
+                    Location = new Point(90, 143),
+                    Parent = InspectPanel,
+                    Border = false,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Armour,
+                    GridType = GridType.Inspect,
+                    Size = new System.Drawing.Size(70, 150),
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Shield] = cell = new DXItemCell
+                {
+                    Location = new Point(140, 230),
+                    Parent = InspectPanel,
+                    FixedBorder = true,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Shield,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Helmet] = cell = new DXItemCell
+                {
+                    Location = new Point(110, 150),
+                    Parent = InspectPanel,
+                    FixedBorder = true,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Helmet,
+                    GridType = GridType.Inspect,
+                    Size = new Size(35, 35),
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Emblem] = cell = new DXItemCell
+                {
+                    Location = new Point(159, 360),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Emblem,
+                    GridType = GridType.Inspect,
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 104);
+
+                Grid[(int)EquipmentSlot.HorseArmour] = cell = new DXItemCell
+                {
+                    Location = new Point(276, 118),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.HorseArmour,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Torch] = cell = new DXItemCell
+                {
+                    Location = new Point(120, 360),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Torch,
+                    GridType = GridType.Inspect,
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 38);
+
+                Grid[(int)EquipmentSlot.Necklace] = cell = new DXItemCell
+                {
+                    Location = new Point(198, 204),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Necklace,
+                    GridType = GridType.Inspect,
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 33);
+
+                Grid[(int)EquipmentSlot.BraceletL] = cell = new DXItemCell
+                {
+                    Location = new Point(24, 243),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.BraceletL,
+                    GridType = GridType.Inspect,
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 32);
+
+                Grid[(int)EquipmentSlot.BraceletR] = cell = new DXItemCell
+                {
+                    Location = new Point(198, 243),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.BraceletR,
+                    GridType = GridType.Inspect,
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 32);
+
+                Grid[(int)EquipmentSlot.RingL] = cell = new DXItemCell
+                {
+                    Location = new Point(24, 282),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.RingL,
+                    GridType = GridType.Inspect,
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 31);
+
+                Grid[(int)EquipmentSlot.RingR] = cell = new DXItemCell
+                {
+                    Location = new Point(198, 282),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.RingR,
+                    GridType = GridType.Inspect,
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 31);
+
+                Grid[(int)EquipmentSlot.Flower] = cell = new DXItemCell
+                {
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Flower,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Poison] = cell = new DXItemCell
+                {
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Poison,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Amulet] = cell = new DXItemCell
+                {
+                    Location = new Point(198, 321),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Amulet,
+                    GridType = GridType.Inspect,
+                    Size = new Size(36, 75)
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 39);
+
+                Grid[(int)EquipmentSlot.Shoes] = cell = new DXItemCell
+                {
+                    Location = new Point(24, 321),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Shoes,
+                    GridType = GridType.Inspect,
+                    Size = new Size(36, 75)
+                };
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 36);
+
+                Grid[(int)EquipmentSlot.Wings] = cell = new DXItemCell
+                {
+                    Location = new Point(24, 204),
+                    Parent = InspectPanel,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Wings,
+                    GridType = GridType.Inspect,
+                };
+                //cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
+
+                #endregion
+
+                InspectLabel = new DXLabel
+                {
+                    Parent = InspectPanel,
+                    AutoSize = false,
+                    ForeColour = Color.White,
+                    DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                    Size = new Size(148, 16),
+                    Location = new Point(77, 419),
+                };
+            }
+
+
+            #endregion
+
+            #region Ranking
+
+            SearchText = new DXTextBox
+            {
+                Border = false,
+                Parent = RankPanel,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
+                Location = new Point(13, 68),
+                Size = new Size(147, 16),
+                MaxLength = Globals.MaxCharacterNameLength
+            };
+            SearchText.TextBox.KeyPress += (o, e) =>
+            {
+                switch (e.KeyChar)
+                {
+                    case (char)Keys.Enter:
+                        if (SearchButton != null && !SearchButton.IsDisposed)
+                            SearchButton.InvokeMouseClick();
+                        break;
+                    default: return;
+                }
+                e.Handled = true;
+            };
+            SearchText.TextBox.TextChanged += (o, e) =>
+            {
+                SearchButton.Enabled = !string.IsNullOrEmpty(SearchText.TextBox.Text);
             };
 
-            Lines = new RankingLine[20];
+            SearchButton = new DXButton
+            {
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(60, SmallButtonHeight),
+                Parent = RankPanel,
+                Label = { Text = "Search" },
+                Visible = true,
+                Location = new Point(164, 66),
+                Enabled = false
+            };
+            SearchButton.MouseClick += (o, e) =>
+            {
+                CEnvir.Enqueue(new C.RankSearch { Name = SearchText.TextBox.Text });
+            };
+
+            ObserveButton = new DXButton
+            {
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(60, SmallButtonHeight),
+                Parent = RankPanel,
+                Label = { Text = "Observe" },
+                Visible = true,
+                Enabled = false,
+                Location = new Point(SearchButton.Location.X + SearchButton.Size.Width + 5, 66)
+            };
+            ObserveButton.MouseClick += (o, e) =>
+            {
+                if (SelectedRow == null)
+                    return;
+
+                if (GameScene.Game != null && CEnvir.Now < GameScene.Game.User.CombatTime.AddSeconds(10) && !GameScene.Game.Observer)
+                {
+                    GameScene.Game.ReceiveChat("Unable to observe whilst in combat.", MessageType.System);
+                    return;
+                }
+
+                CEnvir.Enqueue(new C.ObserverRequest { Name = SelectedRow.Rank.Name });
+            };
+
+            RankPanelList = new DXControl
+            {
+                Location = new Point(0, 122),
+                Size = new Size(330, 286),
+                Parent = RankPanel,
+                Border = true,
+                BackColour = Color.Lime
+            };
+
+            Lines = new RankingLine[11];
             ScrollBar = new DXVScrollBar
             {
-                Parent = Panel,
-                Size = new Size(14, Panel.Size.Height - 3 - 21),
-                Location = new Point(Panel.Size.Width - 16, 1 +22),
+                Parent = RankPanelList,
+                Size = new Size(20, RankPanelList.Size.Height),
+                Location = new Point(RankPanelList.Size.Width - 26, 0),
                 VisibleSize = Lines.Length,
                 Change = 5,
+                BackColour = Color.Empty,
+                Border = false,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface }
             };
-            ScrollBar.ValueChanged += (o, e) => StartIndex = ScrollBar.Value;
+            ScrollBar.ValueChanged += (o, e) =>
+            {
+                StartIndex = ScrollBar.Value;
+                SelectedRow = null;
+            };
             MouseWheel += ScrollBar.DoMouseWheel;
 
-            new RankingLine
+            SearchLine = new RankingLine
             {
-                Parent = Panel,
-                Header = true,
+                Parent = RankPanel,
+                Location = new Point(12, 90),
+                Visible = true,
             };
+            SearchLine.MouseClick += (o, e) => SelectedRow = (RankingLine)o;
 
             for (int i = 0; i < Lines.Length; i++)
             {
                 Lines[i] = new RankingLine
                 {
-                    Parent = Panel,
-                    Location = new Point(0, 22* (i +1)),
+                    Parent = RankPanelList,
+                    Location = new Point(12, 16 + (23 * i)),
                     Visible = false,
                 };
                 Lines[i].MouseWheel += ScrollBar.DoMouseWheel;
+                Lines[i].MouseClick += (o, e) => SelectedRow = (RankingLine)o;
             }
-
-
-            ObserverButton = new DXButton
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.GameInter2,
-                Index = 141,
-                Hint = "Observable Status: Not Allowing",
-            };
-            ObserverButton.MouseClick += (o, e) =>
-            {
-                if (GameScene.Game == null) return;
-                if (GameScene.Game.Observer) return;
-                if (!GameScene.Game.User.InSafeZone)
-                {
-                    GameScene.Game.ReceiveChat("You can only change spectator mode whilst in safezone.", MessageType.System);
-                    return;
-                }
-
-                CEnvir.Enqueue(new C.ObservableSwitch { Allow = !Observable });
-            };
-            ObserverButton.Location = new Point(ClientArea.Right - ObserverButton.Size.Width, ClientArea.Top);
-
-            OnlineOnlyBox = new DXCheckBox
-            {
-                Parent = this,
-                Label = { Text = "Online Only" },
-            };
-            OnlineOnlyBox.CheckedChanged += (o, e) =>
-            {
-                OnlineOnly = OnlineOnlyBox.Checked;
-                Config.RankingOnline = OnlineOnly;
-            };
-            OnlineOnlyBox.Location = new Point(269 - OnlineOnlyBox.Size.Width + ClientArea.X, ClientArea.Y);
 
             RequiredClassBox = new DXComboBox
             {
-                Parent = this,
-                Size = new Size(100, DXComboBox.DefaultNormalHeight),
-                Location = new Point(ClientArea.X + 43, ClientArea.Y)
+                Parent = RankPanel,
+                Size = new Size(122, DXComboBox.DefaultNormalHeight),
+                Location = new Point(12, 39),
+                Border = false
             };
             RequiredClassBox.SelectedItemChanged += (o, e) =>
             {
-                Class = (RequiredClass?) RequiredClassBox.SelectedItem ?? RequiredClass.All;
-                Config.RankingClass = (int)Class;
+                FilterClass = (RequiredClass?) RequiredClassBox.SelectedItem ?? RequiredClass.All;
+                Config.RankingClass = (int)FilterClass;
+                SelectedRow = null;
             };
-            //  RequiredClassBox.Location = new Point(ClientArea.Right - RefineQualityBox.Size.Width - 160, BlackIronGrid.Location.Y);
-
 
             new DXListBoxItem
             {
@@ -309,16 +788,288 @@ namespace Client.Scenes.Views
                 Item = RequiredClass.Assassin
             };
 
+            RequiredClassBox.ListBox.SelectItem((RequiredClass)Config.RankingClass);
 
-            DXLabel label = new DXLabel
+            OnlineOnlyBox = new DXCheckBox
+            {
+                Parent = RankPanel,
+                Label = { Text = "Online Only" }
+            };
+            OnlineOnlyBox.CheckedChanged += (o, e) =>
+            {
+                OnlineOnly = OnlineOnlyBox.Checked;
+                Config.RankingOnline = OnlineOnly;
+                SelectedRow = null;
+            };
+            OnlineOnlyBox.Location = new Point(RequiredClassBox.Location.X + RequiredClassBox.Size.Width + 5, 38);
+            OnlineOnlyBox.Checked = Config.RankingOnline;
+
+            ObservableBox = new DXCheckBox
+            {
+                Parent = RankPanel,
+                Label = { Text = "Observable" }
+            };
+            ObservableBox.CheckedChanged += (o, e) =>
+            {
+                if (ObservableBox.Checked == Observable) return;
+
+                if (GameScene.Game == null) return;
+                if (GameScene.Game.Observer) return;
+                if (!GameScene.Game.User.InSafeZone)
+                {
+                    GameScene.Game.ReceiveChat("You can only change spectator mode whilst in safezone.", MessageType.System);
+                    return;
+                }
+
+                CEnvir.Enqueue(new C.ObservableSwitch { Allow = !Observable });
+            };
+            ObservableBox.Location = new Point(OnlineOnlyBox.Location.X + OnlineOnlyBox.Size.Width + 5, 38);
+            
+            LastUpdate = new DXLabel
             {
                 Parent = this,
-                Text = "Class:",
+                AutoSize = false,
+                ForeColour = Color.White,
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                Size = new Size(fullRanking ? 278 : 176, 16),
+                Location = new Point(fullRanking ? 229 : 77, 419),
             };
-            label.Location = new Point(RequiredClassBox.Location.X - label.Size.Width - 5, RequiredClassBox.Location.Y + (RequiredClassBox.Size.Height - label.Size.Height) / 2);
 
-            RequiredClassBox.ListBox.SelectItem((RequiredClass)Config.RankingClass);
-            OnlineOnlyBox.Checked = Config.RankingOnline;
+            #endregion
+        }
+
+        private void InspectPanel_BeforeChildrenDraw(object sender, EventArgs e)
+        {
+            if (GameScene.Game == null || SelectedRow == null) return;
+
+            MirLibrary library;
+
+            int x = 100;
+            int y = 290;
+
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library)) return;
+
+            if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
+            {
+                int index = Grid[(int)EquipmentSlot.Armour].Item.Info.Image;
+
+                MirLibrary effectLibrary;
+
+                if (CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_UI, out effectLibrary))
+                {
+                    MirImage image = null;
+                    switch (index)
+                    {
+                        //All
+                        case 962:
+                            image = effectLibrary.CreateImage(1700 + (GameScene.Game.MapControl.Animation % 10), ImageType.Image);
+                            break;
+                        case 972:
+                            image = effectLibrary.CreateImage(1720 + (GameScene.Game.MapControl.Animation % 10), ImageType.Image);
+                            break;
+
+                        //War
+                        case 963:
+                            image = effectLibrary.CreateImage(400 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
+                            break;
+                        case 973:
+                            image = effectLibrary.CreateImage(420 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
+                            break;
+
+                        //Wiz
+                        case 964:
+                            image = effectLibrary.CreateImage(300 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
+                            break;
+                        case 974:
+                            image = effectLibrary.CreateImage(320 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
+                            break;
+
+                        //Tao
+                        case 965:
+                            image = effectLibrary.CreateImage(200 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
+                            break;
+                        case 975:
+                            image = effectLibrary.CreateImage(220 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
+                            break;
+
+                        //Ass
+                        case 2007:
+                            image = effectLibrary.CreateImage(500 + (GameScene.Game.MapControl.Animation % 13), ImageType.Image);
+                            break;
+                        case 2017:
+                            image = effectLibrary.CreateImage(520 + (GameScene.Game.MapControl.Animation % 13), ImageType.Image);
+                            break;
+
+                        case 942:
+                            image = effectLibrary.CreateImage(700, ImageType.Image);
+                            break;
+                        case 961:
+                            image = effectLibrary.CreateImage(1600, ImageType.Image);
+                            break;
+                        case 982:
+                            image = effectLibrary.CreateImage(800, ImageType.Image);
+                            break;
+                        case 983:
+                            image = effectLibrary.CreateImage(1200, ImageType.Image);
+                            break;
+                        case 984:
+                            image = effectLibrary.CreateImage(1100, ImageType.Image);
+                            break;
+                        case 1022:
+                            image = effectLibrary.CreateImage(900, ImageType.Image);
+                            break;
+                        case 1023:
+                            image = effectLibrary.CreateImage(1300, ImageType.Image);
+                            break;
+                        case 1002:
+                            image = effectLibrary.CreateImage(1000, ImageType.Image);
+                            break;
+                        case 1003:
+                            image = effectLibrary.CreateImage(1400, ImageType.Image);
+                            break;
+
+                        case 952:
+                            image = effectLibrary.CreateImage(720, ImageType.Image);
+                            break;
+                        case 971:
+                            image = effectLibrary.CreateImage(1620, ImageType.Image);
+                            break;
+                        case 992:
+                            image = effectLibrary.CreateImage(820, ImageType.Image);
+                            break;
+                        case 993:
+                            image = effectLibrary.CreateImage(1220, ImageType.Image);
+                            break;
+                        case 994:
+                            image = effectLibrary.CreateImage(1120, ImageType.Image);
+                            break;
+                        case 1032:
+                            image = effectLibrary.CreateImage(920, ImageType.Image);
+                            break;
+                        case 1033:
+                            image = effectLibrary.CreateImage(1320, ImageType.Image);
+                            break;
+                        case 1012:
+                            image = effectLibrary.CreateImage(1020, ImageType.Image);
+                            break;
+                        case 1013:
+                            image = effectLibrary.CreateImage(1420, ImageType.Image);
+                            break;
+                    }
+
+                    if (image != null)
+                    {
+                        bool oldBlend = DXManager.Blending;
+                        float oldRate = DXManager.BlendRate;
+
+                        DXManager.SetBlend(true, 0.8F);
+
+                        PresentTexture(image.Image, InspectPanel, new Rectangle(InspectPanel.DisplayArea.X + x + image.OffSetX, InspectPanel.DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+
+                        DXManager.SetBlend(oldBlend, oldRate);
+                    }
+                }
+            }
+
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out library)) return;
+
+            if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && Grid[(int)EquipmentSlot.Helmet].Item == null)
+                library.Draw(1160, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
+
+            switch (Gender)
+            {
+                case MirGender.Male:
+                    library.Draw(0, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                    break;
+                case MirGender.Female:
+                    library.Draw(1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                    break;
+            }
+
+            if (CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library))
+            {
+                if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
+                {
+                    int index = Grid[(int)EquipmentSlot.Armour].Item.Info.Image;
+
+                    MirLibrary effectLibrary;
+
+                    if (CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_UI, out effectLibrary))
+                    {
+                        switch (index)
+                        {
+                            case 942:
+                                effectLibrary.Draw(700, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                                break;
+                            case 952:
+                                effectLibrary.Draw(720, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                                break;
+                        }
+                    }
+
+                    library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                    library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Armour].Item.Colour, true, 1F, ImageType.Overlay);
+                }
+
+                if (Grid[(int)EquipmentSlot.Weapon]?.Item != null)
+                {
+                    int index = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
+
+                    library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                    library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
+                }
+
+                if (Grid[(int)EquipmentSlot.Shield]?.Item != null)
+                {
+                    int index = Grid[(int)EquipmentSlot.Shield].Item.Info.Image;
+
+                    library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                    library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Shield].Item.Colour, true, 1F, ImageType.Overlay);
+                }
+            }
+
+            var hasFishingRobe = Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe;
+            if (hasFishingRobe) return;
+
+            if (Grid[(int)EquipmentSlot.Helmet]?.Item != null && library != null)
+            {
+                int index = Grid[(int)EquipmentSlot.Helmet].Item.Info.Image;
+
+                library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Helmet].Item.Colour, true, 1F, ImageType.Overlay);
+            }
+            else if (HairType > 0)
+            {
+                library = CEnvir.LibraryList[LibraryFile.ProgUse];
+
+                switch (Class)
+                {
+                    case MirClass.Warrior:
+                    case MirClass.Wizard:
+                    case MirClass.Taoist:
+                        switch (Gender)
+                        {
+                            case MirGender.Male:
+                                library.Draw(60 + HairType - 1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
+                                break;
+                            case MirGender.Female:
+                                library.Draw(80 + HairType - 1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
+                                break;
+                        }
+                        break;
+                    case MirClass.Assassin:
+                        switch (Gender)
+                        {
+                            case MirGender.Male:
+                                library.Draw(1100 + HairType - 1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
+                                break;
+                            case MirGender.Female:
+                                library.Draw(1120 + HairType - 1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
+                                break;
+                        }
+                        break;
+                }
+            }
         }
 
         #region Methods
@@ -329,18 +1080,26 @@ namespace Client.Scenes.Views
 
             if (CEnvir.Now < UpdateTime) return;
 
-            UpdateTime = CEnvir.Now.AddSeconds(10);
+            LastUpdate.Text = CEnvir.Now.ToString("F");
+
+            UpdateTime = CEnvir.Now.AddMinutes(1);
 
             CEnvir.Enqueue(new C.RankRequest
             {
-                Class = Class,
+                Class = FilterClass,
                 OnlineOnly = OnlineOnly,
                 StartIndex = StartIndex,
             });
         }
+
+        public void Update(S.RankSearch p)
+        {
+            SearchLine.Rank = p.Rank;
+        }
+
         public void Update(S.Rankings p)
         {
-            if (p.Class != Class || p.OnlineOnly != OnlineOnly) return;
+            if (p.Class != FilterClass || p.OnlineOnly != OnlineOnly) return;
 
             ScrollBar.MaxValue = p.Total;
 
@@ -350,6 +1109,61 @@ namespace Client.Scenes.Views
                 Lines[i].Rank = i >= p.Ranks.Count ? null : p.Ranks[i];
             }
         }
+
+        public void NewInformation(S.Inspect p)
+        {
+            InspectLabel.Text = $"Lv. {p.Level} - Class: {p.Class}";
+
+            CharacterNameLabel.Text = p.Name;
+            GuildNameLabel.Text = p.GuildName;
+            GuildRankLabel.Text = p.GuildRank;
+
+            _inspectGender = p.Gender;
+            _inspectClass = p.Class;
+            _inspectLevel = p.Level;
+
+            _inspectHairColour = p.HairColour;
+            _inspectHairType = p.Hair;
+
+            foreach (DXItemCell cell in Grid)
+                cell.Item = null;
+
+            foreach (ClientUserItem item in p.Items)
+                Grid[item.Slot].Item = item;
+        }
+
+        private void ClearInformation()
+        {
+            InspectLabel.Text = string.Empty;
+
+            CharacterNameLabel.Text = string.Empty;
+            GuildNameLabel.Text = string.Empty;
+            GuildRankLabel.Text = string.Empty;
+
+            _inspectGender = MirGender.Male;
+            _inspectClass = MirClass.Warrior;
+            _inspectLevel = 0;
+
+            _inspectHairColour = Color.Empty;
+            _inspectHairType = 0;
+
+            foreach (DXItemCell cell in Grid)
+                cell.Item = null;
+        }
+
+        public void Draw(DXItemCell cell, int index)
+        {
+            if (InterfaceLibrary == null) return;
+
+            if (cell.Item != null) return;
+
+            Size s = InterfaceLibrary.GetSize(index);
+            int x = (cell.Size.Width - s.Width) / 2 + cell.DisplayArea.X;
+            int y = (cell.Size.Height - s.Height) / 2 + cell.DisplayArea.Y;
+
+            InterfaceLibrary.Draw(index, x, y, Color.White, false, 0.2F, ImageType.Image);
+        }
+
         #endregion
 
         #region IDisposable
@@ -363,8 +1177,8 @@ namespace Client.Scenes.Views
                 _StartIndex = 0;
                 StartIndexChanged = null;
 
-                _Class = 0;
-                ClassChanged = null;
+                _FilterClass = 0;
+                FilterClassChanged = null;
 
                 _OnlineOnly = false;
                 OnlineOnlyChanged = null;
@@ -372,14 +1186,49 @@ namespace Client.Scenes.Views
                 _Observable = false;
                 ObserverableChanged = null;
 
+                _SelectedRow = null;
+                SelectedRowChanged = null;
+
                 UpdateTime = DateTime.MinValue;
 
-                if (Panel != null)
+                if (TabControl != null)
                 {
-                    if (!Panel.IsDisposed)
-                        Panel.Dispose();
+                    if (!TabControl.IsDisposed)
+                        TabControl.Dispose();
 
-                    Panel = null;
+                    TabControl = null;
+                }
+
+                if (GlobalTab != null)
+                {
+                    if (!GlobalTab.IsDisposed)
+                        GlobalTab.Dispose();
+
+                    GlobalTab = null;
+                }
+
+                if (InspectPanel != null)
+                {
+                    if (!InspectPanel.IsDisposed)
+                        InspectPanel.Dispose();
+
+                    InspectPanel = null;
+                }
+
+                if (RankPanel != null)
+                {
+                    if (!RankPanel.IsDisposed)
+                        RankPanel.Dispose();
+
+                    RankPanel = null;
+                }
+
+                if (RankPanelList != null)
+                {
+                    if (!RankPanelList.IsDisposed)
+                        RankPanelList.Dispose();
+
+                    RankPanelList = null;
                 }
 
                 if (ScrollBar != null)
@@ -406,12 +1255,68 @@ namespace Client.Scenes.Views
                     OnlineOnlyBox = null;
                 }
 
-                if (ObserverButton != null)
+                if (ObservableBox != null)
                 {
-                    if (!ObserverButton.IsDisposed)
-                        ObserverButton.Dispose();
+                    if (!ObservableBox.IsDisposed)
+                        ObservableBox.Dispose();
 
-                    ObserverButton = null;
+                    ObservableBox = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                if (SearchButton != null)
+                {
+                    if (!SearchButton.IsDisposed)
+                        SearchButton.Dispose();
+
+                    SearchButton = null;
+                }
+
+                if (ObserveButton != null)
+                {
+                    if (!ObserveButton.IsDisposed)
+                        ObserveButton.Dispose();
+
+                    ObserveButton = null;
+                }
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
+                if (LastUpdate != null)
+                {
+                    if (!LastUpdate.IsDisposed)
+                        LastUpdate.Dispose();
+
+                    LastUpdate = null;
+                }
+
+                if (SearchText != null)
+                {
+                    if (!SearchText.IsDisposed)
+                        SearchText.Dispose();
+
+                    SearchText = null;
+                }
+
+                if (SearchLine != null)
+                {
+                    if (!SearchLine.IsDisposed)
+                        SearchLine.Dispose();
+
+                    SearchLine = null;
                 }
 
                 if (Lines != null)
@@ -430,7 +1335,62 @@ namespace Client.Scenes.Views
                     Lines = null;
                 }
 
+                if (InspectLabel != null)
+                {
+                    if (!InspectLabel.IsDisposed)
+                        InspectLabel.Dispose();
 
+                    InspectLabel = null;
+                }
+
+                if (CharacterNameLabel != null)
+                {
+                    if (!CharacterNameLabel.IsDisposed)
+                        CharacterNameLabel.Dispose();
+
+                    CharacterNameLabel = null;
+                }
+
+                if (GuildNameLabel != null)
+                {
+                    if (!GuildNameLabel.IsDisposed)
+                        GuildNameLabel.Dispose();
+
+                    GuildNameLabel = null;
+                }
+
+                if (GuildRankLabel != null)
+                {
+                    if (!GuildRankLabel.IsDisposed)
+                        GuildRankLabel.Dispose();
+
+                    GuildRankLabel = null;
+                }
+
+                _inspectGender = MirGender.Male;
+                _inspectClass = MirClass.Warrior;
+                _inspectLevel = 0;
+
+                _inspectHairColour = Color.Empty;
+                _inspectHairType = 0;
+
+                _inspectEquipment = null;
+
+                if (Grid != null)
+                {
+                    for (int i = 0; i < Grid.Length; i++)
+                    {
+                        if (Grid[i] != null)
+                        {
+                            if (!Grid[i].IsDisposed)
+                                Grid[i].Dispose();
+
+                            Grid[i] = null;
+                        }
+                    }
+
+                    Grid = null;
+                }
             }
 
         }
@@ -441,47 +1401,6 @@ namespace Client.Scenes.Views
     public sealed class RankingLine : DXControl
     {
         #region Properties
-
-        #region Header
-
-        public bool Header
-        {
-            get => _Header;
-            set
-            {
-                if (_Header == value) return;
-
-                bool oldValue = _Header;
-                _Header = value;
-
-                OnHeaderChanged(oldValue, value);
-            }
-        }
-        private bool _Header;
-        public event EventHandler<EventArgs> HeaderChanged;
-        public void OnHeaderChanged(bool oValue, bool nValue)
-        {
-            RankLabel.Text = "#";
-            NameLabel.Text = "Name";
-            ClassLabel.Text = "Class";
-            LevelLabel.Text = "Level";
-            RebirthLabel.Text = "Rebirth";
-
-            DrawTexture = false;
-
-            RankLabel.ForeColour = Color.FromArgb(198, 166, 99);
-            NameLabel.ForeColour = Color.FromArgb(198, 166, 99);
-            ClassLabel.ForeColour = Color.FromArgb(198, 166, 99);
-            LevelLabel.ForeColour = Color.FromArgb(198, 166, 99);
-            RebirthLabel.ForeColour = Color.FromArgb(198, 166, 99);
-
-            OnlineImage.Visible = false;
-
-            ObseverButton.Dispose();
-            HeaderChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
 
         #region Rank
 
@@ -506,33 +1425,41 @@ namespace Client.Scenes.Views
             {
                 RankLabel.Text = "";
                 NameLabel.Text = "";
-                ClassLabel.Text = "";
                 LevelLabel.Text = "";
-                ObseverButton.Enabled = false;
+                ChangeLabel.Text = "";
                 Visible = !Loading;
+                OnlineImage.Visible = false;
             }
             else
             {
                 Visible = true;
+                RankLabel.ForeColour = Color.White;
                 RankLabel.Text = Rank.Rank.ToString();
-                NameLabel.Text = Rank.Name;
-                ClassLabel.Text = Rank.Class.ToString();
-                RebirthLabel.Text = Rank.Rebirth.ToString();
+                NameLabel.Text = $"{Rank.Name}{(Rank.Rebirth > 0 ? $" [Rebirth: {Rank.Rebirth}]" : "")}";
 
-                RankLabel.ForeColour = Color.Silver;
-                NameLabel.ForeColour = Color.Silver;
-                ClassLabel.ForeColour = Color.Silver;
-                LevelLabel.ForeColour = Color.Silver;
-                RebirthLabel.ForeColour = Color.Silver;
+                //decimal percent = 0;
+                //percent = Math.Min(1, Math.Max(0, Rank.MaxExperience > 0 ? Rank.Experience / Rank.MaxExperience : 0));
 
+                LevelLabel.Text = $"Lv. {Rank.Level}";
+
+                var change = Rank.RankChange;
+
+                if (change == 0)
+                {
+                    ChangeLabel.Text = " - ";
+                    ChangeLabel.ForeColour = Color.White;
+                }
+                else {
+                    ChangeLabel.Text = $"{(change > 0 ? "▲" : "▼")}{Math.Abs(Rank.RankChange)}";
+                    ChangeLabel.ForeColour = change > 0 ? Color.OrangeRed : Color.DodgerBlue;
+                }
+
+                NameLabel.ForeColour = Color.White;
+
+                LevelLabel.ForeColour = Color.White;
+
+                OnlineImage.Visible = true;
                 OnlineImage.Index = Rank.Online ? 3625 : 3624;
-
-                ObseverButton.Enabled = Rank.Online && Rank.Observable;
-
-                decimal percent = 0;
-                percent = Math.Min(1, Math.Max(0, Rank.MaxExperience > 0 ? Rank.Experience / Rank.MaxExperience : 0));
-                
-                LevelLabel.Text = $"{Rank.Level} - {percent:0.##%}";
             }
 
             RankChanged?.Invoke(this, EventArgs.Empty);
@@ -563,7 +1490,6 @@ namespace Client.Scenes.Views
             {
                 RankLabel.Text = "";
                 NameLabel.Text = "";
-                ClassLabel.Text = "";
                 LevelLabel.Text = "";
 
                 Visible = false;
@@ -574,63 +1500,73 @@ namespace Client.Scenes.Views
             NameLabel.Text = "Updating...";
             NameLabel.ForeColour = Color.Orange;
             Visible = true;
+            OnlineImage.Visible = false;
 
             LoadingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
 
-        public DXLabel RankLabel, NameLabel, ClassLabel, LevelLabel, RebirthLabel;
-        public DXButton ObseverButton;
+        #region Selected
+
+        public bool Selected
+        {
+            get => _Selected;
+            set
+            {
+                if (_Selected == value) return;
+
+                bool oldValue = _Selected;
+                _Selected = value;
+
+                OnSelectedChanged(oldValue, value);
+            }
+        }
+        private bool _Selected;
+        public event EventHandler<EventArgs> SelectedChanged;
+        public void OnSelectedChanged(bool oValue, bool nValue)
+        {
+            if (Selected)
+            {
+                BackColour = Color.FromArgb(150, 84, 16, 16);
+            }
+            else
+            {
+                BackColour = Color.Empty;
+            }
+
+            SelectedChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        public DXLabel RankLabel, LevelLabel, NameLabel, ChangeLabel;
         public DXImageControl OnlineImage;
 
         #endregion
 
         public RankingLine()
         {
-            Size = new Size(340, 20);
+            Size = new Size(288, 22);
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            BackColour = Color.Empty;
 
             OnlineImage = new DXImageControl
             {
                 Parent = this,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 3624,
-                Location = new Point(8, 4),
+                Location = new Point(2, 6),
                 IsControl = false,
+                Visible = false
             };
 
             RankLabel = new DXLabel
             {
                 Parent = this,
-              //  Border = true,
                 AutoSize = false,
-                Location = new Point(OnlineImage.Location.X + OnlineImage.Size.Width - 4, 0),
-                Size = new Size(40, 18),
-               // BorderColour = Color.FromArgb(198, 166, 98),
-                ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
-                IsControl = false,
-            };
-
-            NameLabel = new DXLabel
-            {
-                Parent = this,
-                AutoSize = false,
-                Location = new Point(RankLabel.Location.X + RankLabel.Size.Width + 1, 0),
-                Size = new Size(70, 18),
-                ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
-                IsControl = false,
-            };
-
-            ClassLabel = new DXLabel
-            {
-                Parent = this,
-                AutoSize = false,
-                Location = new Point(NameLabel.Location.X + NameLabel.Size.Width + 1, 0),
-                Size = new Size(45, 18),
+                Location = new Point(10, 0),
+                Size = new Size(31, 22),
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 IsControl = false,
@@ -640,44 +1576,35 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 AutoSize = false,
-                Location = new Point(ClassLabel.Location.X + ClassLabel.Size.Width + 1, 0),
-                Size = new Size(60, 18),
+                Location = new Point(RankLabel.Location.X + RankLabel.Size.Width - 1, 0),
+                Size = new Size(43, 22),
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 IsControl = false,
             };
 
-            RebirthLabel = new DXLabel
+            NameLabel = new DXLabel
             {
                 Parent = this,
                 AutoSize = false,
-                Location = new Point(LevelLabel.Location.X + LevelLabel.Size.Width + 1, 0),
-                Size = new Size(40, 18),
+                Location = new Point(LevelLabel.Location.X + LevelLabel.Size.Width - 1, 0),
+                Size = new Size(168, 22),
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 IsControl = false,
             };
 
-            ObseverButton = new DXButton
+            ChangeLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(RebirthLabel.Location.X + RebirthLabel.Size.Width + 5, 1),
-                ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Observe" },
-                Enabled = false,
-                Size = new Size(53, SmallButtonHeight)
+                AutoSize = false,
+                Location = new Point(NameLabel.Location.X + NameLabel.Size.Width - 1, 0),
+                Size = new Size(40, 22),
+                ForeColour = Color.White,
+                //Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                IsControl = false,
             };
-            ObseverButton.MouseClick += (o, e) =>
-            {
-                if (GameScene.Game != null && CEnvir.Now < GameScene.Game.User.CombatTime.AddSeconds(10) && !GameScene.Game.Observer)
-                {
-                    GameScene.Game.ReceiveChat("Unable to observe whilst in combat.", MessageType.System);
-                    return;
-                }
-
-                CEnvir.Enqueue(new C.ObserverRequest { Name = Rank.Name });
-            };
-
         }
 
         #region Methods
@@ -688,24 +1615,25 @@ namespace Client.Scenes.Views
 
             if (GameScene.Game == null || Rank == null) return;
 
-            CEnvir.Enqueue(new C.Inspect { Index = Rank.Index });
+            CEnvir.Enqueue(new C.Inspect { Index = Rank.Index, Ranking = true });
         }
 
         public override void OnMouseEnter()
         {
             base.OnMouseEnter();
-            if (Header) return;
-            BackColour = Color.FromArgb(80, 80, 125);
+
+            if (Rank != null)
+                BackColour = Color.FromArgb(150, 84, 16, 16);
         }
 
         public override void OnMouseLeave()
         {
             base.OnMouseLeave();
 
-            if (Header) return;
-
-            BackColour = Color.FromArgb(25, 20, 0);
+            if (!Selected)
+                BackColour = Color.Empty;
         }
+
         #endregion
 
         #region IDisposable
@@ -716,14 +1644,14 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
-                _Header = false;
-                HeaderChanged = null;
-
                 _Rank = null;
                 RankChanged = null;
 
                 _Loading = false;
                 LoadingChanged = null;
+
+                _Selected = false;
+                SelectedChanged = null;
 
                 if (RankLabel != null)
                 {
@@ -741,12 +1669,12 @@ namespace Client.Scenes.Views
                     NameLabel = null;
                 }
 
-                if (ClassLabel != null)
+                if (ChangeLabel != null)
                 {
-                    if (!ClassLabel.IsDisposed)
-                        ClassLabel.Dispose();
+                    if (!ChangeLabel.IsDisposed)
+                        ChangeLabel.Dispose();
 
-                    ClassLabel = null;
+                    ChangeLabel = null;
                 }
 
                 if (LevelLabel != null)
@@ -757,14 +1685,6 @@ namespace Client.Scenes.Views
                     LevelLabel = null;
                 }
 
-                if (ObseverButton != null)
-                {
-                    if (!ObseverButton.IsDisposed)
-                        ObseverButton.Dispose();
-
-                    ObseverButton = null;
-                }
-
                 if (OnlineImage != null)
                 {
                     if (!OnlineImage.IsDisposed)
@@ -773,7 +1693,6 @@ namespace Client.Scenes.Views
                     OnlineImage = null;
                 }
             }
-
         }
 
         #endregion

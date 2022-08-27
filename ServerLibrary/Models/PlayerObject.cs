@@ -2313,9 +2313,9 @@ namespace Server.Models
             }
         }
 
-        public void Inspect(int index, SConnection con)
+        public void Inspect(int index, bool ranking, SConnection con)
         {
-            if (index == Character.Index) return;
+            //if (index == Character.Index) return;
 
             CharacterInfo target = SEnvir.GetCharacter(index);
 
@@ -2336,6 +2336,7 @@ namespace Server.Models
                 HairColour = target.HairColour,
                 Items = new List<ClientUserItem>(),
                 ObserverPacket = false,
+                Ranking = ranking
             };
 
             if (target.Account.GuildMember != null)

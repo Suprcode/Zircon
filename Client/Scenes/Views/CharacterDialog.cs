@@ -528,7 +528,7 @@ namespace Client.Scenes.Views
                 Slot = (int)EquipmentSlot.Wings,
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
-            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
+            //cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
             cell.MouseEnter += Cell_MouseEnter;
             cell.MouseLeave += Cell_MouseLeave;
 

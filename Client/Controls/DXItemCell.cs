@@ -12,7 +12,6 @@ using Library.SystemModels;
 using SlimDX;
 using C = Library.Network.ClientPackets;
 
-//Cleaned
 namespace Client.Controls
 {
     public sealed class DXItemCell : DXControl
@@ -679,12 +678,12 @@ namespace Client.Controls
                     PresentTexture(image.Image, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
                 image = InterfaceLibrary.CreateImage(48, ImageType.Image);
-                if (Item != null && (Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked && image != null)
+                if (Item != null && (Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked && image != null && !Hidden && GridType != GridType.Inspect)
                     PresentTexture(image.Image, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
 
                 image = InterfaceLibrary.CreateImage(49, ImageType.Image);
-                if (Item != null && GameScene.Game != null && !GameScene.Game.CanUseItem(Item) && image != null)
+                if (Item != null && GameScene.Game != null && !GameScene.Game.CanUseItem(Item) && image != null && !Hidden && GridType != GridType.Inspect)
                     PresentTexture(image.Image, this, new Rectangle(DisplayArea.Right - 12, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
                 image = InterfaceLibrary.CreateImage(103, ImageType.Image);
@@ -745,7 +744,7 @@ namespace Client.Controls
                 GameScene.Game.MouseItem = Item;
             }
 
-            CountLabel.Visible = ShowCountLabel && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.Effect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
+            CountLabel.Visible = ShowCountLabel && !Hidden && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.Effect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
             CountLabel.Text = Linked ? LinkedCount.ToString() : Item?.Count.ToString();
         }
         public void MoveItem()

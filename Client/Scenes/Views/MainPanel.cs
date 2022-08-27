@@ -159,7 +159,7 @@ namespace Client.Scenes.Views
                 Index = 97,
                 Parent = this,
                 Location = new Point(806, 23),
-                Hint = "Mail [,]"
+                Hint = "Communication [,]"
             };
             MailButton.MouseClick += (o, e) =>
             {
