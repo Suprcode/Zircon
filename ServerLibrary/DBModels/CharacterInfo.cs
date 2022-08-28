@@ -704,11 +704,8 @@ namespace Server.DBModels
         }
         private string _FiltersItemType;
 
-        [IgnoreProperty]
-        public int LastRank { get; set; }
-
-        [IgnoreProperty]
-        public int CurrentRank { get; set; }
+        public Dictionary<RequiredClass, int> LastRank = new Dictionary<RequiredClass, int>();
+        public Dictionary<RequiredClass, int> CurrentRank = new Dictionary<RequiredClass, int>();
 
         protected override void OnDeleted()
         {

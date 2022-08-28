@@ -677,9 +677,12 @@ namespace Server.Envir
 
             if (info != null)
             {
+                info.CurrentRank.TryGetValue(RequiredClass.All, out int currentRank);
+                info.LastRank.TryGetValue(RequiredClass.All, out int lastRank);
+
                 rank = new RankInfo
                 {
-                    Rank = info.CurrentRank,
+                    Rank = currentRank,
                     Index = info.Index,
                     Class = info.Class,
                     Experience = info.Experience,
@@ -689,7 +692,7 @@ namespace Server.Envir
                     Online = info.Player != null,
                     Observable = info.Observable || isGM,
                     Rebirth = info.Rebirth,
-                    RankChange = info.LastRank - info.CurrentRank
+                    RankChange = lastRank - currentRank
                 };
             }
 

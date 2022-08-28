@@ -3425,12 +3425,14 @@ namespace Server.Envir
 
                 rank++;
 
-                if (resetRankChange)
+                //TODO - Needs changing so it runs this periodicly - instead of just when requested
+                if (resetRankChange || !info.LastRank.TryGetValue(p.Class, out int lastRank))
                 {
-                    info.LastRank = rank;
+                    info.LastRank[p.Class] = rank;
+                    lastRank = rank;
                 }
 
-                info.CurrentRank = rank;
+                info.CurrentRank[p.Class] = rank;
 
                 if (p.OnlineOnly && info.Player == null) continue;
 
@@ -3448,7 +3450,7 @@ namespace Server.Envir
                     Online = info.Player != null,
                     Observable = info.Observable || isGM,
                     Rebirth = info.Rebirth,
-                    RankChange = info.LastRank - rank
+                    RankChange = lastRank - rank
                 });
             }
 

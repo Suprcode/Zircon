@@ -1082,7 +1082,7 @@ namespace Client.Scenes.Views
 
             LastUpdate.Text = CEnvir.Now.ToString("F");
 
-            UpdateTime = CEnvir.Now.AddMinutes(1);
+            UpdateTime = CEnvir.Now.AddSeconds(10);
 
             CEnvir.Enqueue(new C.RankRequest
             {
@@ -1112,7 +1112,7 @@ namespace Client.Scenes.Views
 
         public void NewInformation(S.Inspect p)
         {
-            InspectLabel.Text = $"Lv. {p.Level} - Class: {p.Class}";
+            InspectLabel.Text = $"Lv. {p.Level} - Cl. {p.Class}";
 
             CharacterNameLabel.Text = p.Name;
             GuildNameLabel.Text = p.GuildName;
@@ -1526,14 +1526,7 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> SelectedChanged;
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
-            if (Selected)
-            {
-                BackColour = Color.FromArgb(150, 84, 16, 16);
-            }
-            else
-            {
-                BackColour = Color.Empty;
-            }
+            BackColour = Selected ? Color.FromArgb(50, 255, 16, 16) : Color.Empty;
 
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -1601,7 +1594,6 @@ namespace Client.Scenes.Views
                 Location = new Point(NameLabel.Location.X + NameLabel.Size.Width - 1, 0),
                 Size = new Size(40, 22),
                 ForeColour = Color.White,
-                //Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 IsControl = false,
             };
@@ -1623,7 +1615,7 @@ namespace Client.Scenes.Views
             base.OnMouseEnter();
 
             if (Rank != null)
-                BackColour = Color.FromArgb(150, 84, 16, 16);
+                BackColour = Color.FromArgb(50, 255, 16, 16);
         }
 
         public override void OnMouseLeave()
