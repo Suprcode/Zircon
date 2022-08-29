@@ -2473,21 +2473,21 @@ namespace Client.Scenes
                     Parent = MagicLabel,
                     Text = $"Current Level: {level}",
                 };
-                string text = null;
-                switch (magic.Level)
+
+                string text;
+                if (magic.Level < Globals.MagicMaxLevel)
                 {
-                    case 0:
-                        text = $"{magic.Experience}/{magic.Info.Experience1}";
-                        break;
-                    case 1:
-                        text = $"{magic.Experience}/{magic.Info.Experience2}";
-                        break;
-                    case 2:
-                        text = $"{magic.Experience}/{magic.Info.Experience3}";
-                        break;
-                    default:
-                        text = $"{magic.Experience}/{(magic.Level - 2) * 500}";
-                        break;
+                    text = magic.Level switch
+                    {
+                        0 => $"{magic.Experience}/{magic.Info.Experience1}",
+                        1 => $"{magic.Experience}/{magic.Info.Experience2}",
+                        2 => $"{magic.Experience}/{magic.Info.Experience3}",
+                        _ => $"{magic.Experience}/{(magic.Level - 2) * 500}",
+                    };
+                }
+                else
+                {
+                    text = $"Max Level";
                 }
 
                 width = label.DisplayArea.Right;

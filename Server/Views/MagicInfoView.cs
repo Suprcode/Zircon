@@ -11,7 +11,6 @@ namespace Server.Views
         {
             InitializeComponent();
 
-
             MagicInfoGridControl.DataSource = SMain.Session.GetCollection<MagicInfo>().Binding;
 
             MagicImageComboBox.Items.AddEnum<MagicType>();

@@ -77,6 +77,7 @@ namespace Library
             MaxAutoPotionCount = 8,
 
             MagicRange = 10,
+            MagicMaxLevel = 5,
 
             DuraLossRate = 15,
 
@@ -122,13 +123,6 @@ namespace Library
             "English",
             "Chinese",
         };
-
-
-
-
-
-
-
 
         public static List<decimal> ExperienceList = new List<decimal>
         {

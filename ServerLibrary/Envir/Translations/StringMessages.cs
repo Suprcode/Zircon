@@ -87,6 +87,7 @@ namespace Server.Envir
         public abstract string CannotTownTeleport { get; set; }
         public abstract string CannotRandomTeleport { get; set; }
         public abstract string ConnotResetCompanionSkill { get; set; }
+        public abstract string MagicMaxLevelReached { get; set; }
         public abstract string LearnBookFailed { get; set; }
         public abstract string LearnBookSuccess { get; set; }
         public abstract string LearnBook4Failed { get; set; }

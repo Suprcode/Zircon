@@ -6601,8 +6601,24 @@ namespace Server.Models
                     });
                     break;
                 case ItemType.Book:
-
                     if (SEnvir.Now < UseItemTime || Horse != HorseType.None) return;
+
+                    MagicInfo info = SEnvir.MagicInfoList.Binding.First(x => x.Index == item.Info.Shape);
+
+                    Magics.TryGetValue(info.Magic, out magic);
+
+                    if (magic != null)
+                    {
+                        if (magic.Level >= Globals.MagicMaxLevel)
+                        {
+                            Connection.ReceiveChat(string.Format(Connection.Language.MagicMaxLevelReached, magic.Info.Name), MessageType.System);
+
+                            foreach (SConnection con in Connection.Observers)
+                                con.ReceiveChat(string.Format(con.Language.MagicMaxLevelReached, magic.Info.Name), MessageType.System);
+
+                            return;
+                        }
+                    }
 
                     if (SEnvir.Random.Next(100) >= item.CurrentDurability)
                     {
@@ -6614,15 +6630,11 @@ namespace Server.Models
                         break;
                     }
 
-
-
-                    MagicInfo info = SEnvir.MagicInfoList.Binding.First(x => x.Index == item.Info.Shape);
-
-                    if (Magics.TryGetValue(info.Magic, out magic))
+                    if (magic != null)
                     {
                         int rate = (magic.Level - 2) * 500;
 
-                        magic.Experience++;
+                        magic.Experience += item.CurrentDurability;
 
                         if (magic.Experience >= rate || (magic.Level == 3 && SEnvir.Random.Next(rate) == 0))
                         {
@@ -6640,10 +6652,12 @@ namespace Server.Models
                         }
                         else
                         {
-                            Connection.ReceiveChat(string.Format(Connection.Language.LearnBook4Failed, magic.Level + 1), MessageType.System);
+                            long remaining = rate - magic.Experience;
+
+                            Connection.ReceiveChat(string.Format(Connection.Language.LearnBook4Failed, remaining, magic.Level + 1), MessageType.System);
 
                             foreach (SConnection con in Connection.Observers)
-                                con.ReceiveChat(string.Format(con.Language.LearnBook4Failed, magic.Level + 1), MessageType.System);
+                                con.ReceiveChat(string.Format(con.Language.LearnBook4Failed, remaining, magic.Level + 1), MessageType.System);
 
                             Enqueue(new S.MagicLeveled { InfoIndex = magic.Info.Index, Level = magic.Level, Experience = magic.Experience });
                         }

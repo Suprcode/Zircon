@@ -79,9 +79,10 @@ namespace Server.Envir.Translations
         public override string CannotTownTeleport { get; set; } = "Unable to Town Teleport on this Map.";
         public override string CannotRandomTeleport { get; set; } = "Unable to Random Teleport on this Map.";
         public override string ConnotResetCompanionSkill { get; set; } = "To use {0} please type '@EnableLevel{1}'";
+        public override string MagicMaxLevelReached { get; set; } = "You have already reached max {0} level.";
         public override string LearnBookFailed { get; set; } = "Failed to learn skill, not enough pages";
         public override string LearnBookSuccess { get; set; } = "Congratulations, You have successfully learned {0}.";
-        public override string LearnBook4Failed { get; set; } = "Failed to learn level {0} skill.";
+        public override string LearnBook4Failed { get; set; } = "{0} pages required for level {1} skill.";
         public override string LearnBook4Success { get; set; } = "Congratulations, You have successfully learned level {1} {0}.";
         public override string StorageSafeZone { get; set; } = "You cannot access storage outside of SafeZone.";
         public override string GuildStoragePermission { get; set; } = "You do no have the permissions to take from the guild storage";
