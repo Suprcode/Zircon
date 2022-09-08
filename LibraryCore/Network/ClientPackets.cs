@@ -666,4 +666,8 @@ namespace Library.Network.ClientPackets
     {
         public int Index { get; set; }
     }
+
+    public sealed class IncreaseDiscipline : Packet
+    {
+    }
 }

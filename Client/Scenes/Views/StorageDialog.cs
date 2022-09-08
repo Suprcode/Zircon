@@ -8,7 +8,6 @@ using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using System.Windows.Forms;
 
 namespace Client.Scenes.Views

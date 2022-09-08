@@ -5,12 +5,9 @@ using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
-using S =  Library.Network.ServerPackets;
+using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using System.Linq;
-using Library.Network.ServerPackets;
-using Client.Properties;
 
 //Add that config refresh time
 

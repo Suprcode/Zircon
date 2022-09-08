@@ -93,12 +93,12 @@ namespace Client.Controls
             };
             HintLabel = new DXLabel
             {
-                BackColour = Color.FromArgb(125, 50, 50, 50),
+                BackColour = Color.FromArgb(120, 0, 0, 0),
                 Border = true,
-                BorderColour = Color.Black,
+                BorderColour = Color.Yellow,
                 IsVisible = true,
                 Outline = false,
-                ForeColour = Color.Yellow,
+                ForeColour = Color.Yellow
             };
             PingLabel = new DXLabel
             {

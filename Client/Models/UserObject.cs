@@ -134,6 +134,20 @@ namespace Client.Models
         private int _CurrentMP;
         #endregion
 
+        #region CurrentSP
+        public override int CurrentSP
+        {
+            get { return _CurrentSP; }
+            set
+            {
+                _CurrentSP = value;
+
+                GameScene.Game.StaminaChanged();
+            }
+        }
+        private int _CurrentSP;
+        #endregion
+
         #region AttackMode
         public AttackMode AttackMode
         {
@@ -201,6 +215,8 @@ namespace Client.Models
 
         public ObjectAction MagicAction;
         public bool CanPowerAttack;
+
+        public ClientUserDiscipline Discipline;
 
         public bool CanThrusting
         {
@@ -278,6 +294,7 @@ namespace Client.Models
 
             CurrentHP = info.CurrentHP;
             CurrentMP = info.CurrentMP;
+            CurrentSP = info.CurrentSP;
 
             Level = info.Level;
             Experience = info.Experience;
@@ -328,6 +345,12 @@ namespace Client.Models
                     Info = Globals.CurrencyInfoList.Binding.First(x => x.Index == currency.CurrencyIndex),
                     Amount = currency.Amount
                 });
+            }
+
+            if (info.Discipline != null)
+            {
+                Discipline = info.Discipline;
+                Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == info.Discipline.InfoIndex);
             }
 
             FiltersClass = info.FiltersClass;

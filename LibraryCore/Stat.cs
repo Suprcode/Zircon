@@ -278,7 +278,6 @@ namespace Library
                 this[Stat.FireResistance] <= 0 && this[Stat.IceResistance] <= 0 && this[Stat.LightningResistance] <= 0 && this[Stat.WindResistance] <= 0 && 
                 this[Stat.HolyResistance] <= 0 && this[Stat.DarkResistance] <= 0 &&
                 this[Stat.PhantomResistance] <= 0 && this[Stat.PhysicalResistance] <= 0;
-
         }
 
         public Stat GetWeaponElement()
@@ -766,7 +765,14 @@ namespace Library
         [StatDescription(Title = "Rebirth ", Format = "{0}", Mode = StatType.Default)]
         Rebirth,
 
+        [StatDescription(Title = "Stamina", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
+        Focus,
 
+        [StatDescription(Title = "Size Percent", Mode = StatType.None)]
+        SizePercent,
+
+        [StatDescription(Title = "Growth Level", Format = "{0}", Mode = StatType.Default)]
+        GrowthLevel,
 
         [StatDescription(Title = "Duration", Mode = StatType.Time)]
         Duration = 10000,

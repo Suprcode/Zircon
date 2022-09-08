@@ -80,7 +80,7 @@ namespace Client.Scenes.Views
 
         public DXLabel LevelLabel, NameLabel, HealthLabel, ACLabel, MRLabel, DCLabel;
         public DXLabel FireResistLabel, IceResistLabel, LightningResistLabel, WindResistLabel, HolyResistLabel, DarkResistLabel, PhantomResistLabel, PhysicalResistLabel;
-        public DXImageControl AttackSpeedIcon, MovementSpeedIcon, TamableIcon, UndeadIcon;
+        public DXImageControl AttackSpeedIcon, MovementSpeedIcon, TamableIcon, UndeadIcon, GrowthIcon;
         public DXButton ExpandButton;
 
 
@@ -457,6 +457,16 @@ namespace Client.Scenes.Views
                 Hint = "Mortal",
             };
 
+            GrowthIcon = new DXImageControl
+            {
+                Parent = panel2,
+                LibraryFile = LibraryFile.ProgUse,
+                Index = 630, //TODO - Find new icon!
+                Location = new Point(UndeadIcon.Location.X + UndeadIcon.Size.Width + 2, 87),
+                Hint = "Growth",
+                Visible = false
+            };
+
             Expanded = Config.MonsterBoxExpanded;
         }
 
@@ -504,6 +514,16 @@ namespace Client.Scenes.Views
 
                 TamableIcon.Hint = Monster.MonsterInfo.CanTame ? "Tamable" : "Untamable";
                 TamableIcon.Index = Monster.MonsterInfo.CanTame ? 631 : 632;
+
+                if (Monster.GrowthLevel > 0)
+                {
+                    GrowthIcon.Hint = $"Growth Lv. {Monster.GrowthLevel}";
+                    GrowthIcon.Visible = true;
+                }
+                else
+                {
+                    GrowthIcon.Visible = false;
+                }
 
                 switch (Monster.MonsterInfo.AttackDelay)
                 {
@@ -617,11 +637,9 @@ namespace Client.Scenes.Views
             {
                 HealthLabel.Text = $"{data.Health} / {data.MaxHealth}";
 
-
                 ACLabel.Text = $"{data.Stats[Stat.MinAC]} - {data.Stats[Stat.MaxAC]}";
                 MRLabel.Text = $"{data.Stats[Stat.MinMR]} - {data.Stats[Stat.MaxMR]}";
                 DCLabel.Text = $"{data.Stats[Stat.MinDC]} - {data.Stats[Stat.MaxDC]}";
-
 
                 PopulateLabel(Stat.FireResistance, FireResistLabel, data.Stats);
                 PopulateLabel(Stat.IceResistance, IceResistLabel, data.Stats);
@@ -637,6 +655,16 @@ namespace Client.Scenes.Views
 
                 TamableIcon.Hint = data.MonsterInfo.CanTame ? "Tamable" : "Untamable";
                 TamableIcon.Index = data.MonsterInfo.CanTame ? 631 : 632;
+
+                if (Monster.GrowthLevel > 0)
+                {
+                    GrowthIcon.Hint = $"Growth Lv. {Monster.GrowthLevel}";
+                    GrowthIcon.Visible = true;
+                }
+                else
+                {
+                    GrowthIcon.Visible = false;
+                }
 
                 switch (data.MonsterInfo.AttackDelay)
                 {

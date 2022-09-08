@@ -197,7 +197,6 @@ namespace Server.Models
             return cells;
         }
 
-
         public Point GetRandomLocation()
         {
             return ValidCells.Count > 0 ? ValidCells[SEnvir.Random.Next(ValidCells.Count)].Location : Point.Empty;

@@ -73,6 +73,7 @@ namespace Client.Models
         public virtual int Level { get; set; }
         public virtual int CurrentHP { get; set; }
         public virtual int CurrentMP { get; set; }
+        public virtual int CurrentSP { get; set; }
 
         public uint AttackerID;
 
@@ -858,47 +859,12 @@ namespace Client.Models
 
                         //Teleportation
 
-                        #region Adamantine Fire Ball & Meteor Shower
+                        #region AdamantineFireBall & MeteorShower & FireBounce
 
                         case MagicType.AdamantineFireBall:
                         case MagicType.MeteorShower:
-                            /*
-                             foreach (Point point in MagicLocations)
-                             {
-                                 Effects.Add(spell = new MirProjectile(1500, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour, CurrentLocation)
-                                 {
-                                    // Blend = true,
-                                     MapTarget = point,
-                                 });
-                                 spell.Process();
-                             }
+                        case MagicType.FireBounce:
 
-                             foreach (MapObject attackTarget in AttackTargets)
-                             {
-                                 Effects.Add(spell = new MirProjectile(1500, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour, CurrentLocation)
-                                 {
-                                     //Blend = true,
-                                     Target = attackTarget,
-                                 });
-
-                                 //PARTICLE ?
-
-                                 spell.CompleteAction = () =>
-                                 {
-                                     attackTarget.Effects.Add(spell = new MirEffect(1700 + CEnvir.Random.Next(3) * 10, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
-                                     {
-                                      //   Blend = true,
-                                         Target = attackTarget,
-                                     });
-                                     spell.Process();
-
-                                     DXSoundManager.Play(SoundIndex.GreaterFireBallEnd);
-                                 };
-                                 spell.Process();
-                             }
-
-                             if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
-                                 DXSoundManager.Play(SoundIndex.GreaterFireBallTravel);*/
                             foreach (Point point in MagicLocations)
                             {
                                 Effects.Add(spell = new MirProjectile(1640, 6, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, CurrentLocation, typeof(Client.Models.Particles.FireballTrail))
@@ -916,8 +882,6 @@ namespace Client.Models
                                     Blend = true,
                                     Target = attackTarget,
                                 });
-
-                                //PARTICLE ?
 
                                 spell.CompleteAction += () =>
                                 {
@@ -1317,7 +1281,7 @@ namespace Client.Models
                         case MagicType.ChainLightning:
                             foreach (Point point in MagicLocations)
                             {
-                                spell = new MirEffect(470, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 50, 80, Globals.LightningColour)
+                                spell = new MirEffect(830, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.LightningColour)
                                 {
                                     Blend = true,
                                     MapTarget = point,
@@ -1325,10 +1289,13 @@ namespace Client.Models
                                 spell.Process();
                             }
 
-                            DXSoundManager.Play(SoundIndex.ChainLightningEnd);
+                            if (MagicLocations.Count > 0)
+                                DXSoundManager.Play(SoundIndex.ChainLightningEnd);
                             break;
 
                         #endregion
+
+                        #region Asteroid
 
                         case MagicType.Asteroid:
 
@@ -1355,6 +1322,8 @@ namespace Client.Models
                             }
                             break;
 
+                        #endregion
+
                         //Meteor Shower -> Adam Fire Ball
 
                         //Renounce
@@ -1367,10 +1336,11 @@ namespace Client.Models
 
                         //Mirror Image
 
+
+
                         #endregion
 
                         #region Taoist
-
 
                         #region Heal
 
@@ -1921,6 +1891,8 @@ namespace Client.Models
                                 {
                                     Blend = true,
                                     MapTarget = point,
+                                    Direction = Direction,
+                                    Skip = 10
                                     //  DrawColour = Color.FromArgb(76, 34, 4),
                                 });
                                 spell.Process();
@@ -1932,6 +1904,8 @@ namespace Client.Models
                                 {
                                     Blend = true,
                                     Target = attackTarget,
+                                    Direction = Direction,
+                                    Skip = 10
                                     //   DrawColour = Color.FromArgb(76, 34, 4),
                                 });
 
@@ -2114,7 +2088,8 @@ namespace Client.Models
                             break;
 
                         #endregion
-                        #region Fire Ball
+
+                        #region Green Sludge Ball
 
                         case MagicType.GreenSludgeBall:
                             foreach (Point point in MagicLocations)
@@ -2158,7 +2133,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
 
                         #region Monster Scortched Earth
 
@@ -2226,6 +2200,8 @@ namespace Client.Models
                             break;
 
                         #endregion
+
+                        #region Sama
 
                         case MagicType.SamaGuardianFire:
                             if (Config.DrawEffects)
@@ -2357,6 +2333,9 @@ namespace Client.Models
                             spell.Process();
 
                             break;
+
+                        #endregion
+
                     }
 
                     break;
@@ -2915,10 +2894,11 @@ namespace Client.Models
 
                         #endregion
 
-                        #region Adamantine Fire Ball & MeteorShower
+                        #region AdamantineFireBall & MeteorShower & FireBounce
 
                         case MagicType.AdamantineFireBall:
                         case MagicType.MeteorShower:
+                        case MagicType.FireBounce:
                             Effects.Add(spell = new MirEffect(1560, 9, TimeSpan.FromMilliseconds(65), LibraryFile.Magic, 10, 35, Globals.FireColour)
                             {
                                 Blend = true,
@@ -3213,7 +3193,6 @@ namespace Client.Models
 
                         #endregion
 
-
                         #region Frost Bite
 
                         case MagicType.FrostBite:
@@ -3226,6 +3205,10 @@ namespace Client.Models
                             break;
 
                         #endregion
+
+
+                        //Ice Sonic
+
 
                         #endregion
 
@@ -3753,7 +3736,6 @@ namespace Client.Models
                         #endregion
 
                         #endregion
-
 
                         #region Monster Scortched Earth
 

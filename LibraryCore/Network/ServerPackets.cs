@@ -194,6 +194,17 @@ namespace Library.Network.ServerPackets
 
         public TimeSpan Slow { get; set; }
     }
+    public sealed class ObjectProjectile : Packet
+    {
+        public uint ObjectID { get; set; }
+
+        public MirDirection Direction { get; set; }
+        public Point CurrentLocation { get; set; }
+
+        public MagicType Type { get; set; }
+        public List<uint> Targets { get; set; } = new List<uint>();
+        public List<Point> Locations { get; set; } = new List<Point>();
+    }
     public sealed class ObjectMining : Packet
     {
         public uint ObjectID { get; set; }
@@ -466,6 +477,12 @@ namespace Library.Network.ServerPackets
     }
 
     public sealed class ManaChanged : Packet
+    {
+        public uint ObjectID { get; set; }
+        public int Change { get; set; }
+    }
+
+    public sealed class StaminaChanged : Packet
     {
         public uint ObjectID { get; set; }
         public int Change { get; set; }
@@ -1286,6 +1303,16 @@ namespace Library.Network.ServerPackets
     public sealed class FriendRemove : Packet
     {
         public int Index { get; set; }
+    }
+
+    public sealed class DisciplineUpdate : Packet
+    {
+        public ClientUserDiscipline Discipline { get; set; }
+    }
+
+    public sealed class DisciplineExperienceChanged : Packet
+    {
+        public long Experience { get; set; }
     }
 }
 

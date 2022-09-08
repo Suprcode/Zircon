@@ -7,7 +7,6 @@ namespace Server.Envir.Translations
     {
         public override string BannedWrongPassword { get; set; } = "Too many wrong password login attempts.";
 
-
         public override string PaymentComplete { get; set; } = "Your payment for {0} Game Gold was successful.";
         public override string PaymentFailed { get; set; } = "You have been deduceted {0} Game Gold.";
         public override string ReferralPaymentComplete { get; set; } = "One of your referral's has purchased some game gold, You got a bonus of {0} Hunt Gold.";
@@ -15,7 +14,6 @@ namespace Server.Envir.Translations
         public override string GameGoldLost { get; set; } = "Your {0} Game Gold was removed.";
         public override string GameGoldRefund { get; set; } = "Your {0} Game Gold was refunded.";
         public override string HuntGoldRefund { get; set; } = "Your {0} Hunt Gold was refunded.";
-
 
         public override string Welcome { get; set; } = "Welcome to Zircon Server.";
         public override string WelcomeObserver { get; set; } = "You are now Observing {0}, to stop, please logout.";
@@ -50,20 +48,17 @@ namespace Server.Envir.Translations
         public override string AlreadyFriended { get; set; } = "{0} is already on your friend list.";
         public override string FriendStateChanged { get; set; } = "{0} is {1}.";
 
-
         public override string NeedMaxLevel { get; set; } = "You need to be level {0} or lower to proceed.";
         public override string NeedLevel { get; set; } = "You need to be level {0} to proceed.";
         public override string NeedItem { get; set; } = "You require a '{0}' to proceed.";
         public override string NeedMonster { get; set; } = "The way is blocked...";
         public override string NeedClass { get; set; } = "You need to be class {0} to proceed.";
 
-
         public override string ConquestStarted { get; set; } = "{0} Conquest has started.";
         public override string ConquestFinished { get; set; } = "{0} Conquest has finished.";
         public override string ConquestCapture { get; set; } = "{0} has Captured {1}.";
         public override string ConquestOwner { get; set; } = "{0} are the now the owners of {1}.";
         public override string ConquestLost { get; set; } = "{0} have lost {1}.";
-
 
         public override string BossSpawn { get; set; } = "An evil lurks within {0}.";
         public override string HarvestRare { get; set; } = "Something valuable is hidden inside the {0}.";
@@ -74,7 +69,6 @@ namespace Server.Envir.Translations
         public override string HarvestOwner { get; set; } = "You do not own any nearby carcasses.";
         public override string LairGateOpen { get; set; } = "The gate to the underworld has opened, {0}, {1}";
         public override string LairGateClosed { get; set; } = "The gate to the underworld has closed";
-
 
         public override string Expired { get; set; } = "Your {0} has expired.";
         public override string CannotTownTeleport { get; set; } = "Unable to Town Teleport on this Map.";
@@ -90,7 +84,6 @@ namespace Server.Envir.Translations
         public override string GuildStorageSafeZone { get; set; } = "You cannot use guild storage unless you are in a safe zone";
         public override string CompanionNoRoom { get; set; } = "Your companion cannot carry this many items";
         public override string StorageLimit { get; set; } = "You cannot expand your storage anymore.";
-
 
         public override string MarryAlreadyMarried { get; set; } = "You are already married.";
         public override string MarryNeedLevel { get; set; } = "You need to be atleast level 22 to get married.";
@@ -112,7 +105,6 @@ namespace Server.Envir.Translations
         public override string MarryTeleportMap { get; set; } = "You cannot teleport to your partner on that map.";
         public override string MarryTeleportMapEscape { get; set; } = "You cannot use marraige teleport on this map.";
 
-
         public override string CompanionAppearanceAlready { get; set; } = "The {0} appreanace is already available.";
         public override string CompanionNeedTicket { get; set; } = "You need to have a Companion ticket to unlock a new appearance.";
         public override string CompanionSkillEnabled { get; set; } = "Companion Skill level {0} Enabled.";
@@ -124,7 +116,6 @@ namespace Server.Envir.Translations
         public override string QuestSelectReward { get; set; } = "You must select a reward";
         public override string QuestNeedSpace { get; set; } = "Unable to complete quest, Not enough space in your inventory.";
 
-
         public override string MailSafeZone { get; set; } = "Unable to get item from mail, you are not in a safe zone.";
         public override string MailNeedSpace { get; set; } = "Unable to get item from mail, not enough space.";
         public override string MailHasItems { get; set; } = "Unable to delete mail that contains items.";
@@ -132,7 +123,6 @@ namespace Server.Envir.Translations
         public override string MailSelfMail { get; set; } = "You cannot send mail to yourself.";
         public override string MailMailCost { get; set; } = "You cannot afford to send this mail.";
         public override string MailSendSafeZone { get; set; } = "You cannot send items from your inventory if you are not in SafeZone";
-
 
         public override string ConsignSafeZone { get; set; } = "You cannot Consign items from your inventory outside of safezone";
         public override string ConsignLimit { get; set; } = "You have reached the maximum number of Consignments";
@@ -151,11 +141,9 @@ namespace Server.Envir.Translations
         public override string ConsignBuyGuildFundsUsed { get; set; } = "{0} used {1:#,##0} gold of guild funds to buy {2} x{3}.";
         public override string ConsignBuyCost { get; set; } = "You cannot afford to buy this many items.";
 
-
         public override string StoreNotAvailable { get; set; } = "You cannot buy this item, It is not currently available for purchase.";
         public override string StoreNeedSpace { get; set; } = "You cannot carry this many items, please make room in your inventory.";
         public override string StoreCost { get; set; } = "You cannot afford to buy this many items.";
-
 
         public override string GuildNeedHorn { get; set; } = "Failed to create guild, You do not have the Uma King's Horn.";
         public override string GuildNeedGold { get; set; } = "Failed to create guild, You do not have enough gold.";
@@ -206,7 +194,6 @@ namespace Server.Envir.Translations
         public override string GuildMemberLeave { get; set; } = "{0} has left the guild.";
         public override string GuildWarDeath { get; set; } = "{0} from {1} was killed by {2} from the guild {3}.";
 
-
         public override string GroupNoGroup { get; set; } = "You are not in a group.";
         public override string GroupNotLeader { get; set; } = "You are not the leader of your group";
         public override string GroupMemberNotFound { get; set; } = "Could not find Group Membmer {0} in your group.";
@@ -221,7 +208,6 @@ namespace Server.Envir.Translations
         public override string GroupRecallMemberNotAllowed { get; set; } = "{0} is now allowing group recall";
         public override string GroupRecallFromMap { get; set; } = "You cannot be recalled from this map.";
         public override string GroupRecallMemberFromMap { get; set; } = "{0} cannot be recalled from this map.";
-
 
         public override string TradeAlreadyTrading { get; set; } = "You are already Trading with Someone.";
         public override string TradeAlreadyHaveRequest { get; set; } = "You already have a request to trade with Someone.";
@@ -242,7 +228,6 @@ namespace Server.Envir.Translations
         public override string TradeFailedPartnerItemsChanged { get; set; } = "{0}'s Items were changed, Trade Failed.";
         public override string TradeNotEnoughSpace { get; set; } = "You can not Carry this many items, Please make space in your inventory and try again.";
         public override string TradeComplete { get; set; } = "Trade Complete..";
-
 
         public override string NPCFundsGuild { get; set; } = "You cannot use Guild Funds to buy from a merchant because you are not in a guild.";
         public override string NPCFundsPermission { get; set; } = "You cannot use Guild Funds to buy from a merchant because you do not have permission.";
@@ -282,7 +267,6 @@ namespace Server.Envir.Translations
         public override string AccessoryRefineSuccess { get; set; } = "Congratulations your {0} has been refined with {1} + {2}.";
         public override string AccessoryRefineFailed { get; set; } = "The refine failed and your {0}'s have been destroyed";
 
-
         public override string ChargeExpire { get; set; } = "The energy for {0} has left your weapon.";
         public override string ChargeFail { get; set; } = "Failed to gether the energy to charge {0}.";
         public override string CloakCombat { get; set; } = "You cannot cast Cloak during Combat";
@@ -291,7 +275,6 @@ namespace Server.Envir.Translations
         public override string AbyssLevel { get; set; } = "{0} is too high of a level to be effected by your Abyss.";
         public override string SkillEffort { get; set; } = "Using {0} on this map takes more effort than normal, You cannot use items for a {1}.";
         public override string SkillBadMap { get; set; } = "You are unable to use {0} on this map.";
-
 
         public override string HorseDead { get; set; } = "You cannot ride your horse when dead.";
         public override string HorseOwner { get; set; } = "You do not own a horse to ride.";
@@ -311,5 +294,10 @@ namespace Server.Envir.Translations
         public override string InstanceNoSlots { get; set; } = "No more free slots on instance.";
         public override string InstanceNotGroupLeader { get; set; } = "You must be the group leader to start instance.";
         public override string InstanceNoMap { get; set; } = "Failed to move to instance.";
+
+        public override string DisciplineMaxLevel { get; set; } = "Maximum discipline level already reached.";
+        public override string DisciplineRequiredLevel { get; set; } = "Required level for next discipline is {0}.";
+        public override string DisciplineRequiredGold { get; set; } = "Required gold for next discipline is {0:#,##0}.";
+        public override string DisciplineRequiredExp { get; set; } = "Required experience for next discipline is {0}.";
     }
 }

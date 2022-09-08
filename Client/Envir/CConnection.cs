@@ -774,6 +774,8 @@ namespace Client.Envir
 
                         GameScene.Game.CompanionBox.RefreshFilter();
 
+                        GameScene.Game.CharacterBox.UpdateDiscipline();
+
                         break;
                 }
             }
@@ -1212,6 +1214,75 @@ namespace Client.Envir
                 return;
             }
         }
+        public void Process(S.ObjectProjectile p)
+        {
+            MapObject source = GameScene.Game.MapControl.Objects.FirstOrDefault(x => x.ObjectID == p.ObjectID);
+
+            if (source == null) return;
+
+            var targets = new List<MapObject>();
+            var locations = p.Locations;
+
+            foreach (uint target in p.Targets)
+            {
+                MapObject attackTarget = GameScene.Game.MapControl.Objects.FirstOrDefault(x => x.ObjectID == target);
+
+                if (attackTarget == null) continue;
+
+                targets.Add(attackTarget);
+            }
+
+            MirEffect spell;
+
+            switch (p.Type)
+            {
+                case MagicType.ChainLightning:
+                    {
+                        foreach (Point point in locations)
+                        {
+                            spell = new MirEffect(830, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.LightningColour)
+                            {
+                                Blend = true,
+                                MapTarget = point,
+                            };
+                            spell.Process();
+                        }
+
+                        if (locations.Count > 0)
+                            DXSoundManager.Play(SoundIndex.ChainLightningEnd);
+                    }
+                    break;
+                case MagicType.FireBounce:
+                    {
+                        foreach (MapObject attackTarget in targets)
+                        {
+                            source.Effects.Add(spell = new MirProjectile(1640, 6, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 35, 35, Globals.FireColour, source.CurrentLocation, typeof(Client.Models.Particles.FireballTrail))
+                            {
+                                Blend = true,
+                                Target = attackTarget,
+                            });
+
+                            spell.CompleteAction += () =>
+                            {
+                                attackTarget.Effects.Add(spell = new MirEffect(1800, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 10, 35, Globals.FireColour)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                });
+                                spell.Process();
+
+                                DXSoundManager.Play(SoundIndex.GreaterFireBallEnd);
+                            };
+                            spell.Process();
+                        }
+
+                        if (targets.Count > 0)
+                            DXSoundManager.Play(SoundIndex.GreaterFireBallTravel);
+                    }
+                    break;
+            }
+        }
+
         public void Process(S.ObjectDied p)
         {
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
@@ -1524,14 +1595,25 @@ namespace Client.Envir
         {
             MapObject.User.Magics[p.Magic.Info] = p.Magic;
 
-            GameScene.Game.MagicBox.Magics[p.Magic.Info].Refresh();
+            if (GameScene.Game.MagicBox.Magics.ContainsKey(p.Magic.Info))
+                GameScene.Game.MagicBox.Magics[p.Magic.Info].Refresh();
+
+            if (GameScene.Game.CharacterBox.DisciplineMagics.ContainsKey(p.Magic.Info))
+                GameScene.Game.CharacterBox.DisciplineMagics[p.Magic.Info].Refresh();
         }
+
         public void Process(S.MagicLeveled p)
         {
             MapObject.User.Magics[p.Info].Level = p.Level;
             MapObject.User.Magics[p.Info].Experience = p.Experience;
-            GameScene.Game.MagicBox.Magics[p.Info].Refresh();
+
+            if (GameScene.Game.MagicBox.Magics.ContainsKey(p.Info))
+                GameScene.Game.MagicBox.Magics[p.Info].Refresh();
+
+            if (GameScene.Game.CharacterBox.DisciplineMagics.ContainsKey(p.Info))
+                GameScene.Game.CharacterBox.DisciplineMagics[p.Info].Refresh();
         }
+
         public void Process(S.MagicCooldown p)
         {
             MapObject.User.Magics[p.Info].NextCast = CEnvir.Now.AddMilliseconds(p.Delay);
@@ -1581,7 +1663,6 @@ namespace Client.Envir
             }
         }
 
-
         public void Process(S.ManaChanged p)
         {
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
@@ -1593,6 +1674,19 @@ namespace Client.Envir
                 return;
             }
         }
+
+        public void Process(S.StaminaChanged p)
+        {
+            foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+            {
+                if (ob.ObjectID != p.ObjectID) continue;
+
+                ob.CurrentSP += p.Change;
+
+                return;
+            }
+        }
+
         public void Process(S.InformMaxExperience p)
         {
             MapObject.User.MaxExperience = p.MaxExperience;
@@ -3091,6 +3185,10 @@ namespace Client.Envir
             GameScene.Game.BuffBox.BuffsChanged();
 
             GameScene.Game.RankingBox.StartIndex = index;
+
+            GameScene.Game.CompanionBox.RefreshFilter();
+
+            GameScene.Game.CharacterBox.UpdateDiscipline();
         }
         public void Process(S.ObservableSwitch p)
         {
@@ -4077,6 +4175,21 @@ namespace Client.Envir
             GameScene.Game.CommunicationBox.FriendList.RemoveAll(x => x.Name == p.Info.Name);
             GameScene.Game.CommunicationBox.FriendList.Add(p.Info);
             GameScene.Game.CommunicationBox.RefreshFriendList();
+        }
+
+        public void Process(S.DisciplineUpdate p)
+        {
+            GameScene.Game.User.Discipline = p.Discipline;
+            GameScene.Game.User.Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == p.Discipline.InfoIndex);
+
+            GameScene.Game.CharacterBox.UpdateDiscipline();
+        }
+
+        public void Process(S.DisciplineExperienceChanged p)
+        {
+            GameScene.Game.User.Discipline.Experience = p.Experience;
+
+            GameScene.Game.CharacterBox.UpdateDiscipline();
         }
 
         public void Process(S.HelmetToggle p)

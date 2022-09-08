@@ -96,7 +96,7 @@ namespace Server.Models
 
         public PlayerObject PetOwner;
         public HashSet<UserMagic> Magics = new HashSet<UserMagic>();
-        public int SummonLevel;
+        public int SummonLevel, GrowthLevel;
 
         public int ViewRange
         {
@@ -602,7 +602,7 @@ namespace Server.Models
                         MonsterInfo = monsterInfo,
                         SpawnList =
                         {
-                            [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.Sacrafice)] = 1,
+                            [SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.Sacrifice)] = 1,
                         }
                     };
                 case 127:
@@ -673,7 +673,6 @@ namespace Server.Models
             MoveDelay = MonsterInfo.MoveDelay;
             AttackDelay = MonsterInfo.AttackDelay;
 
-
             if (SummonLevel > 0)
             {
                 Stats[Stat.Health] += Stats[Stat.Health] * SummonLevel / 10;
@@ -697,6 +696,21 @@ namespace Server.Models
                 Stats[Stat.Agility] += Stats[Stat.Agility] * SummonLevel / 10;
             }
 
+            GrowthLevel = Math.Min(Globals.MaxGrowthLevel, Math.Max(0, Stats[Stat.GrowthLevel]));
+
+            if (GrowthLevel > 0)
+            {
+                Stats[Stat.Health] += Stats[Stat.Health] * GrowthLevel / 10;
+
+                Stats[Stat.MinDC] += Stats[Stat.MinDC] * GrowthLevel / 10;
+                Stats[Stat.MaxDC] += Stats[Stat.MaxDC] * GrowthLevel / 10;
+
+                Stats[Stat.MinMC] += Stats[Stat.MinMC] * GrowthLevel / 10;
+                Stats[Stat.MaxMC] += Stats[Stat.MaxMC] * GrowthLevel / 10;
+
+                Stats[Stat.MinSC] += Stats[Stat.MinSC] * GrowthLevel / 10;
+                Stats[Stat.MaxSC] += Stats[Stat.MaxSC] * GrowthLevel / 10;
+            }
 
             Stats[Stat.CriticalChance] = 1;
 
@@ -705,7 +719,6 @@ namespace Server.Models
                 Stats[Stat.MinMR] = 0;
                 Stats[Stat.MaxMR] = 0;
             }
-
 
             foreach (BuffInfo buff in Buffs)
             {
@@ -730,8 +743,6 @@ namespace Server.Models
             }
 
 
-
-
             /*
             Stats[Stat.FireResistance] = Math.Min(5, Stats[Stat.FireResistance]);
             Stats[Stat.IceResistance] = Math.Min(5, Stats[Stat.IceResistance]);
@@ -741,7 +752,6 @@ namespace Server.Models
             Stats[Stat.DarkResistance] = Math.Min(5, Stats[Stat.DarkResistance]);
             Stats[Stat.PhantomResistance] = Math.Min(5, Stats[Stat.PhantomResistance]);
             */
-
 
             Stats[Stat.Health] += (int)(Stats[Stat.Health] * (long)Stats[Stat.HealthPercent] / 100);
             Stats[Stat.Mana] += (int)(Stats[Stat.Mana] * (long)Stats[Stat.ManaPercent] / 100);
@@ -762,7 +772,6 @@ namespace Server.Models
                 Stats[Stat.MinDC] += (int)(Stats[Stat.MinDC] * (long)MapDamageRate / 100);
                 Stats[Stat.MaxDC] += (int)(Stats[Stat.MaxDC] * (long)MapDamageRate / 100);
             }
-
 
             Stats[Stat.Health] = Math.Max(1, Stats[Stat.Health]);
             Stats[Stat.Mana] = Math.Max(1, Stats[Stat.Mana]);
@@ -792,7 +801,6 @@ namespace Server.Models
 
             foreach (PlayerObject player in DataSeenByPlayers)
                 player.Enqueue(p);
-
 
             if (CurrentHP > Stats[Stat.Health]) SetHP(Stats[Stat.Health]);
             if (CurrentMP > Stats[Stat.Mana]) SetMP(Stats[Stat.Mana]);
@@ -2487,7 +2495,6 @@ namespace Server.Models
                 int eWarrior = 0, eWizard = 0, eTaoist = 0, eAssassin = 0;
                 int dWarrior = 0, dWizard = 0, dTaoist = 0, dAssassin = 0;
 
-
                 foreach (PlayerObject ob in EXPOwner.GroupMembers)
                 {
                     if (ob.CurrentMap != CurrentMap || !Functions.InRange(ob.CurrentLocation, CurrentLocation, Config.MaxViewRange)) continue;
@@ -2544,6 +2551,7 @@ namespace Server.Models
                         dRate *= 1.3M;
                         break;
                 }
+
                 switch (Math.Min(eWarrior, Math.Min(eWizard, Math.Min(eTaoist, eAssassin))))
                 {
                     case 1:
@@ -2559,7 +2567,10 @@ namespace Server.Models
             }
 
             if (PetOwner == null && CurrentMap != null)
-                eRate *= 1 + MapExperienceRate / 100M;
+                eRate *= 1M + MapExperienceRate / 100M;
+
+            if (GrowthLevel > 0)
+                eRate *= 1M + (GrowthLevel * 10) / 100M;
 
             decimal exp = Math.Min(Experience * eRate, 500000000);
 
@@ -2571,14 +2582,15 @@ namespace Server.Models
                         exp /= ExtraExperienceRate;
 
                     EXPOwner.GainExperience(exp, PlayerTagged, Level);
+
+                    if (GrowthLevel > 0)
+                        EXPOwner.GainDisciplineExperience(GrowthLevel);
                 }
             }
             else
             {
                 if (ePlayers.Count > 1)
                     exp += exp * 0.06M * ePlayers.Count; //6% per nearby member.
-
-
 
                 foreach (PlayerObject player in ePlayers)
                 {
@@ -2588,6 +2600,9 @@ namespace Server.Models
                         expfinal /= ExtraExperienceRate;
 
                     player.GainExperience(expfinal, PlayerTagged, Level);
+
+                    if (GrowthLevel > 0)
+                        player.GainDisciplineExperience(GrowthLevel);
                 }
             }
 
@@ -2601,7 +2616,6 @@ namespace Server.Models
                 foreach (PlayerObject player in dPlayers)
                     Drop(player, dPlayers.Count, dRate);
             }
-
         }
 
         public virtual void Drop(PlayerObject owner, int players, decimal rate)
@@ -2611,8 +2625,10 @@ namespace Server.Models
             rate *= 1M + owner.Stats[Stat.BaseDropRate] / 100M;
 
             if (PetOwner == null && CurrentMap != null)
-                rate *= 1 + MapDropRate / 100M;
+                rate *= 1M + MapDropRate / 100M;
 
+            if (GrowthLevel > 0)
+                rate *= 1M + (GrowthLevel * 10) / 100M;
 
             bool result = false;
 
@@ -2641,13 +2657,15 @@ namespace Server.Models
                     if (PetOwner == null && CurrentMap != null)
                         amount += (int)(amount * MapGoldRate / 100M);
 
+                    if (GrowthLevel > 0)
+                        amount += (int)(amount * (GrowthLevel * 10) / 100M);
+
                     if (amount == 0) continue;
                 }
                 else
                 {
                     chance = (long)(int.MaxValue / (drop.Chance * players) * rate);
                 }
-
 
                 UserDrop userDrop = owner.Character.Account.UserDrops.FirstOrDefault(x => x.Item == drop.Item);
 
@@ -2684,7 +2702,6 @@ namespace Server.Models
                     item.AddStat(Stat.ItemIndex, drop.Item.Index, StatSource.Added);
                     item.StatsChanged();
 
-
                     item.IsTemporary = true;
 
                     if (NeedHarvest)
@@ -2707,9 +2724,7 @@ namespace Server.Models
                         continue;
                     }
 
-
                     Cell cell = GetDropLocation(Config.DropDistance, owner) ?? CurrentCell;
-
 
                     ItemObject ob = new ItemObject
                     {
@@ -2737,7 +2752,6 @@ namespace Server.Models
 
                     continue;
                 }
-
 
                 if (!SEnvir.IsCurrencyItem(drop.Item) && (Math.Floor(userDrop.Progress) > userDrop.DropCount + amount) && Config.EnableFortune)
                     amount = (long)(userDrop.Progress - userDrop.DropCount);

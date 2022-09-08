@@ -12,10 +12,11 @@ namespace Client.Scenes.Views
     public sealed class MainPanel : DXImageControl
     {
         #region Properties
-        
+
+        public DXControl HealthBar, ManaBar, StaminaBar;
         public DXImageControl ExperienceBar, NewMailIcon, CompletedQuestIcon, AvailableQuestIcon;
 
-        public DXLabel ClassLabel, LevelLabel, ACLabel, MRLabel, DCLabel, MCLabel, SCLabel, AccuracyLabel, AgilityLabel, HealthLabel, ManaLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
+        public DXLabel ClassLabel, LevelLabel, ACLabel, MRLabel, DCLabel, MCLabel, SCLabel, AccuracyLabel, AgilityLabel, HealthLabel, ManaLabel, StaminaLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
 
         #endregion
 
@@ -23,6 +24,8 @@ namespace Client.Scenes.Views
         {
             LibraryFile = LibraryFile.GameInter;
             Index = 50;
+
+            CEnvir.LibraryList.TryGetValue(LibraryFile, out MirLibrary barLibrary);
 
             ExperienceBar = new DXImageControl
             {
@@ -33,13 +36,13 @@ namespace Client.Scenes.Views
             ExperienceBar.Location = new Point((Size.Width - ExperienceBar.Size.Width) / 2 + 1, 2 + 1);
             ExperienceBar.BeforeDraw += (o, e) =>
             {
-                if (ExperienceBar.Library == null) return;
+                if (barLibrary == null) return;
 
-                decimal MaxExperience = MapObject.User.MaxExperience;
-                if (MaxExperience <= 0) return;
+                decimal maxExperience = MapObject.User.MaxExperience;
+                if (maxExperience <= 0) return;
 
                 //Get percent.
-                MirImage image = ExperienceBar.Library.CreateImage(56, ImageType.Image);
+                MirImage image = barLibrary.CreateImage(56, ImageType.Image);
 
                 if (image == null) return;
 
@@ -47,7 +50,7 @@ namespace Client.Scenes.Views
                 int y = (ExperienceBar.Size.Height - image.Height) / 2;
 
 
-                float percent = (float)Math.Min(1, Math.Max(0, MapObject.User.Experience / MaxExperience));
+                float percent = (float)Math.Min(1, Math.Max(0, MapObject.User.Experience / maxExperience));
 
                 if (percent == 0) return;
 
@@ -56,15 +59,15 @@ namespace Client.Scenes.Views
                 PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y - 1, (int) (image.Width * percent), image.Height), Color.White, ExperienceBar);
             };
 
-            DXControl HealthBar = new DXControl
+            HealthBar = new DXControl
             {
                 Parent = this,
                 Location = new Point(35, 22),
-                Size = ExperienceBar.Library.GetSize(52),
+                Size = barLibrary.GetSize(52),
             };
             HealthBar.BeforeDraw += (o, e) =>
             {
-                if (ExperienceBar.Library == null) return;
+                if (barLibrary == null) return;
 
                 if (MapObject.User.Stats[Stat.Health] == 0) return;
 
@@ -72,21 +75,21 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = ExperienceBar.Library.CreateImage(52, ImageType.Image);
+                MirImage image = barLibrary.CreateImage(52, ImageType.Image);
 
                 if (image == null) return;
 
                 PresentTexture(image.Image, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int) (image.Width*percent), image.Height), Color.White, HealthBar);
             };
-            DXControl ManaBar = new DXControl
+            ManaBar = new DXControl
             {
                 Parent = this,
                 Location = new Point(35, 36),
-                Size = ExperienceBar.Library.GetSize(52),
+                Size = barLibrary.GetSize(52),
             };
             ManaBar.BeforeDraw += (o, e) =>
             {
-                if (ExperienceBar.Library == null) return;
+                if (barLibrary == null) return;
 
                 if (MapObject.User.Stats[Stat.Mana] == 0) return;
 
@@ -94,19 +97,37 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = ExperienceBar.Library.CreateImage(54, ImageType.Image);
+                MirImage image = barLibrary.CreateImage(54, ImageType.Image);
 
                 if (image == null) return;
 
                 PresentTexture(image.Image, this, new Rectangle(ManaBar.DisplayArea.X, ManaBar.DisplayArea.Y, (int) (image.Width * percent), image.Height), Color.White, ManaBar);
             };
-            DXImageControl OtherBar =  new DXImageControl
+
+            StaminaBar =  new DXImageControl
             {
                 Parent = this,
                 Location = new Point(35, 50),
                 LibraryFile = LibraryFile.GameInter,
-                Index = 58,
-                Visible = false,
+                Size = barLibrary.GetSize(58),
+            };
+            StaminaBar.BeforeDraw += (o, e) =>
+            {
+                if (barLibrary == null) return;
+
+                if (MapObject.User.Stats[Stat.Mana] == 0) return;
+
+                float percent = Math.Min(1, Math.Max(0, MapObject.User.CurrentSP / (float)MapObject.User.Stats[Stat.Focus]));
+
+                if (percent == 0) return;
+
+                var glow = CEnvir.Now.Second % 2 == 0 && percent == 1;
+
+                MirImage image = barLibrary.CreateImage(glow ? 59 : 58, ImageType.Image);
+
+                if (image == null) return;
+
+                PresentTexture(image.Image, this, new Rectangle(StaminaBar.DisplayArea.X, StaminaBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, StaminaBar);
             };
 
             DXButton CharacterButton = new DXButton
@@ -332,7 +353,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(300, 20),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
@@ -343,7 +364,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(300, 40),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
@@ -354,7 +375,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(385, 20),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
@@ -365,7 +386,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(470, 20),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
@@ -376,7 +397,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(385, 40),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
@@ -387,7 +408,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(470, 40),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
@@ -399,7 +420,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(470, 40),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
@@ -411,7 +432,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(567, 20),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
@@ -422,13 +443,12 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(567, 40),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 ForeColour = Color.White
             };
-
 
             HealthLabel = new DXLabel
             {
@@ -456,6 +476,19 @@ namespace Client.Scenes.Views
                 ManaLabel.Location = new Point(ManaBar.Location.X + (ManaBar.Size.Width - ManaLabel.Size.Width) / 2, ManaBar.Location.Y + (ManaBar.Size.Height - ManaLabel.Size.Height) / 2);
             };
 
+            StaminaLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                Outline = true,
+                OutlineColour = Color.Black,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Visible = false
+            };
+            StaminaLabel.SizeChanged += (o, e) =>
+            {
+                StaminaLabel.Location = new Point(StaminaBar.Location.X + (StaminaBar.Size.Width - StaminaLabel.Size.Width) / 2, StaminaBar.Location.Y + (StaminaBar.Size.Height - StaminaLabel.Size.Height) / 2);
+            };
 
             ExperienceLabel = new DXLabel
             {
@@ -476,11 +509,12 @@ namespace Client.Scenes.Views
                 ForeColour = Color.Cyan,
                 Outline = true,
                 OutlineColour = Color.Black,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Visible = false
             };
             AttackModeLabel.SizeChanged += (o, e) =>
             {
-                AttackModeLabel.Location = new Point(OtherBar.Location.X, OtherBar.Location.Y + (OtherBar.Size.Height - AttackModeLabel.Size.Height) / 2 - 2);
+                AttackModeLabel.Location = new Point(StaminaBar.Location.X, StaminaBar.Location.Y + (StaminaBar.Size.Height - AttackModeLabel.Size.Height) / 2 - 2);
             }; 
 
             PetModeLabel = new DXLabel
@@ -489,13 +523,13 @@ namespace Client.Scenes.Views
                 ForeColour = Color.Cyan,
                 Outline = true,
                 OutlineColour = Color.Black,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Visible = false
             };
             PetModeLabel.SizeChanged += (o, e) =>
             {
-                PetModeLabel.Location = new Point(OtherBar.Location.X + OtherBar.Size.Width - PetModeLabel.Size.Width, OtherBar.Location.Y + (OtherBar.Size.Height - PetModeLabel.Size.Height)/2 - 2);
+                PetModeLabel.Location = new Point(StaminaBar.Location.X + StaminaBar.Size.Width - PetModeLabel.Size.Width, StaminaBar.Location.Y + (StaminaBar.Size.Height - PetModeLabel.Size.Height)/2 - 2);
             };
-
         }
 
         #region IDisposable
@@ -506,6 +540,22 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
+                if (HealthBar != null)
+                {
+                    if (!HealthBar.IsDisposed)
+                        HealthBar.Dispose();
+
+                    HealthBar = null;
+                }
+
+                if (ManaBar != null)
+                {
+                    if (!ManaBar.IsDisposed)
+                        ManaBar.Dispose();
+
+                    ManaBar = null;
+                }
+
                 if (ExperienceBar != null)
                 {
                     if (!ExperienceBar.IsDisposed)
@@ -608,6 +658,14 @@ namespace Client.Scenes.Views
                         ManaLabel.Dispose();
 
                     ManaLabel = null;
+                }
+
+                if (StaminaLabel != null)
+                {
+                    if (!StaminaLabel.IsDisposed)
+                        StaminaLabel.Dispose();
+
+                    StaminaLabel = null;
                 }
 
                 if (ExperienceLabel != null)

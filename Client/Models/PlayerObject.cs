@@ -1337,7 +1337,7 @@ namespace Client.Models
                 MapTarget = FloatLocation,
                 PlayerTarget = CurrentLocation,
                 Direction = Direction,
-                Skip = 0
+                Skip = 0,         
             };
 
             FishingFloatEffect.FrameAction += () =>

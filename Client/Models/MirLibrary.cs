@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Library;
+using Sentry;
 using SlimDX;
 using SlimDX.Direct3D9;
 
@@ -189,9 +191,6 @@ namespace Client.Envir
                                 image.ExpireTime = Time.Now + Config.CacheDuration;
                                 break;
                         }
-
-
-
                         return;
                     }
                     break;
@@ -213,13 +212,15 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
-        public void Draw(int index, float x, float y, Color4 colour, bool useOffSet, float opacity, ImageType type)
+        public void Draw(int index, float x, float y, Color4 colour, bool useOffSet, float opacity, ImageType type, float scale = 1F)
         {
             if (!CheckImage(index)) return;
 
             MirImage image = Images[index];
             
             Texture texture;
+
+            Matrix scaling, rotationZ, translation;
 
             float oldOpacity = DXManager.Opacity;
             switch (type)
@@ -234,59 +235,64 @@ namespace Client.Envir
                     }
                     break;
                 case ImageType.Shadow:
-                    if (!image.ShadowValid) image.CreateShadow(_BReader);
-                    texture = image.Shadow;
-
-                    if (useOffSet)
                     {
-                        x += image.ShadowOffSetX;
-                        y += image.ShadowOffSetY;
-                    }
+                        if (!image.ShadowValid) image.CreateShadow(_BReader);
+                        texture = image.Shadow;
 
-
-                    if (texture == null)
-                    {
-                        if (!image.ImageValid) image.CreateImage(_BReader);
-                        texture = image.Image;
-
-                        switch (image.ShadowType)
+                        if (useOffSet)
                         {
-                            case 177:
-                            case 176:
-                            case 49:
-                                Matrix m = Matrix.Scaling(1F, 0.5f, 0);
-
-                                m.M21 = -0.50F;
-                                DXManager.Sprite.Transform = m * Matrix.Translation(x + image.Height / 2, y, 0);
-
-                                DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
-                                if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
-
-                                DXManager.Sprite.Draw(texture, Vector3.Zero, Vector3.Zero, Color.Black);
-                                CEnvir.DPSCounter++;
-
-                                DXManager.SetOpacity(oldOpacity);
-                                DXManager.Sprite.Transform = Matrix.Identity;
-                                DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
-
-                                image.ExpireTime = Time.Now + Config.CacheDuration;
-                                break;
-                            case 50:
-                                if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
-
-                                DXManager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), Color.Black);
-                                CEnvir.DPSCounter++;
-                                DXManager.SetOpacity(oldOpacity);
-
-                                image.ExpireTime = Time.Now + Config.CacheDuration;
-                                break;
+                            x += image.ShadowOffSetX;
+                            y += image.ShadowOffSetY;
                         }
 
+                        if (texture == null)
+                        {
+                            if (!image.ImageValid) image.CreateImage(_BReader);
+                            texture = image.Image;
 
+                            switch (image.ShadowType)
+                            {
+                                case 177:
+                                case 176:
+                                case 49:
+                                    Matrix m = Matrix.Scaling(1F * scale, 0.5f * scale, 0);
 
-                        return;
+                                    m.M21 = -0.50F;
+                                    DXManager.Sprite.Transform = m * Matrix.Translation(x + image.Height / 2, y, 0);
+
+                                    DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
+                                    if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
+
+                                    DXManager.Sprite.Draw(texture, Vector3.Zero, Vector3.Zero, Color.Black);
+                                    CEnvir.DPSCounter++;
+
+                                    DXManager.SetOpacity(oldOpacity);
+                                    DXManager.Sprite.Transform = Matrix.Identity;
+                                    DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
+
+                                    image.ExpireTime = Time.Now + Config.CacheDuration;
+                                    break;
+                                case 50:
+                                    if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
+
+                                    scaling = Matrix.Scaling(scale, scale, 0f);
+                                    rotationZ = Matrix.RotationZ(0F);
+                                    translation = Matrix.Translation(x + (image.Width / 2), y + (image.Height / 2), 0);
+
+                                    DXManager.Sprite.Transform = scaling * rotationZ * translation;
+
+                                    DXManager.Sprite.Draw(texture, Vector3.Zero, new Vector3((image.Width / 2) * -1, (image.Height / 2) * -1, 0), Color.Black);
+
+                                    CEnvir.DPSCounter++;
+                                    DXManager.SetOpacity(oldOpacity);
+
+                                    image.ExpireTime = Time.Now + Config.CacheDuration;
+                                    break;
+                            }
+
+                            return;
+                        }
                     }
-
                     break;
                 case ImageType.Overlay:
                     if (!image.OverlayValid) image.CreateOverlay(_BReader);
@@ -304,9 +310,18 @@ namespace Client.Envir
 
             if (texture == null) return;
 
+            scaling = Matrix.Scaling(scale, scale, 0f);
+            rotationZ = Matrix.RotationZ(0F);
+            translation = Matrix.Translation(x + (image.Width / 2), y + (image.Height / 2), 0);
+
             DXManager.SetOpacity(opacity);
-            
-            DXManager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), colour);
+
+            DXManager.Sprite.Transform = scaling * rotationZ * translation;
+
+            DXManager.Sprite.Draw(texture, Vector3.Zero, new Vector3((image.Width / 2) * -1, (image.Height / 2) * -1, 0), colour);
+
+            DXManager.Sprite.Transform = Matrix.Identity;
+
             CEnvir.DPSCounter++;
             
             DXManager.SetOpacity(oldOpacity);

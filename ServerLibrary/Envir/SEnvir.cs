@@ -255,6 +255,7 @@ namespace Server.Envir
         public static DBCollection<BuffInfo> BuffInfoList;
         public static DBCollection<MonsterInfo> MonsterInfoList;
         public static DBCollection<FishingInfo> FishingInfoList;
+        public static DBCollection<DisciplineInfo> DisciplineInfoList;
         public static DBCollection<SetInfo> SetInfoList;
         public static DBCollection<AuctionInfo> AuctionInfoList;
         public static DBCollection<MailInfo> MailInfoList;
@@ -285,6 +286,7 @@ namespace Server.Envir
         public static DBCollection<UserConquestStats> UserConquestStatsList;
         public static DBCollection<UserFortuneInfo> UserFortuneInfoList;
         public static DBCollection<WeaponCraftStatInfo> WeaponCraftStatInfoList;
+        public static DBCollection<UserDiscipline> UserDisciplineList;
 
         public static ItemInfo GoldInfo, RefinementStoneInfo, FragmentInfo, Fragment2Info, Fragment3Info, FortuneCheckerInfo, ItemPartInfo;
 
@@ -403,6 +405,7 @@ namespace Server.Envir
             ItemInfoList = Session.GetCollection<ItemInfo>();
             MonsterInfoList = Session.GetCollection<MonsterInfo>();
             FishingInfoList = Session.GetCollection<FishingInfo>();
+            DisciplineInfoList = Session.GetCollection<DisciplineInfo>();
             RespawnInfoList = Session.GetCollection<RespawnInfo>();
             MagicInfoList = Session.GetCollection<MagicInfo>();
             CurrencyInfoList = Session.GetCollection<CurrencyInfo>();
@@ -448,6 +451,7 @@ namespace Server.Envir
             UserConquestStatsList = Session.GetCollection<UserConquestStats>();
             UserFortuneInfoList = Session.GetCollection<UserFortuneInfo>();
             WeaponCraftStatInfoList = Session.GetCollection<WeaponCraftStatInfo>();
+            UserDisciplineList = Session.GetCollection<UserDiscipline>();
 
             GoldInfo = CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
 
@@ -844,6 +848,7 @@ namespace Server.Envir
             RespawnInfoList = null;
             MagicInfoList = null;
             FishingInfoList = null;
+            DisciplineInfoList = null;
 
             BeltLinkList = null;
             UserItemList = null;
@@ -852,6 +857,7 @@ namespace Server.Envir
             UserMagicList = null;
             BuffInfoList = null;
             SetInfoList = null;
+            UserDisciplineList = null;
 
             Rankings = null;
             Random = null;

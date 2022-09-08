@@ -488,7 +488,8 @@ namespace Library
     public enum MagicSchool
     {
         None,
-        Passive,
+
+        Passive = 1,
         WeaponSkills,
         Neutral,
         Fire,
@@ -499,7 +500,10 @@ namespace Library
         Dark,
         Phantom,
         Combat,
-        Assassination
+        Assassination,
+        Horse,
+
+        Discipline = 20
     }
     
     public enum Element : byte
@@ -584,6 +588,7 @@ namespace Library
         AdvancedRenounce = 238,
         FrostBite = 239,
         Asteroid = 240,
+        FireBounce = 241,
 
         Heal = 300,
         SpiritSword = 301,
@@ -695,7 +700,6 @@ namespace Library
 
         PinkFireBall = 530,
         GreenSludgeBall = 540,
-
     }
 
     public enum MonsterImage
@@ -1045,7 +1049,6 @@ namespace Library
         None,
 
         SafeZone,
-
 
         FireWall,
         MonsterFireWall,
@@ -1424,7 +1427,7 @@ namespace Library
         QuartzMiniTurtle = 204,
         QuartzTurtleSub = 205,
 
-        Sacrafice = 210,
+        Sacrifice = 210,
     }
 
     #region Packet Enums

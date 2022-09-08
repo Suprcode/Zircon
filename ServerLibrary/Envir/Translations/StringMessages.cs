@@ -2,12 +2,10 @@
 
 namespace Server.Envir
 {
-
     public abstract class StringMessages
     {
         [ConfigSection("Account")]
         public abstract string BannedWrongPassword { get; set; }
-
 
         [ConfigSection("Payment")]
         public abstract string PaymentComplete { get; set; }
@@ -17,7 +15,6 @@ namespace Server.Envir
         public abstract string GameGoldLost { get; set; }
         public abstract string GameGoldRefund { get; set; }
         public abstract string HuntGoldRefund { get; set; }
-
 
         [ConfigSection("System")]
         public abstract string Welcome { get; set; }
@@ -53,7 +50,6 @@ namespace Server.Envir
         public abstract string AlreadyFriended { get; set; }
         public abstract string FriendStateChanged { get; set; }
 
-
         [ConfigSection("Movement")]
         public abstract string NeedLevel { get; set; }
         public abstract string NeedMaxLevel { get; set; }
@@ -61,14 +57,12 @@ namespace Server.Envir
         public abstract string NeedMonster { get; set; }
         public abstract string NeedClass { get; set; }
 
-
         [ConfigSection("Conquest")]
         public abstract string ConquestStarted { get; set; }
         public abstract string ConquestFinished { get; set; }
         public abstract string ConquestCapture { get; set; }
         public abstract string ConquestOwner { get; set; }
         public abstract string ConquestLost { get; set; }
-
 
         [ConfigSection("Monster")]
         public abstract string BossSpawn { get; set; }
@@ -80,7 +74,6 @@ namespace Server.Envir
         public abstract string HarvestOwner { get; set; }
         public abstract string LairGateOpen { get; set; }
         public abstract string LairGateClosed { get; set; }
-
 
         [ConfigSection("Items")]
         public abstract string Expired { get; set; }
@@ -97,7 +90,6 @@ namespace Server.Envir
         public abstract string GuildStorageSafeZone { get; set; }
         public abstract string CompanionNoRoom { get; set; }
         public abstract string StorageLimit { get; set; }
-
 
         [ConfigSection("Marriage")]
         public abstract string MarryAlreadyMarried { get; set; }
@@ -130,11 +122,9 @@ namespace Server.Envir
         public abstract string CompanionBadName { get; set; }
         public abstract string CompanionRetrieveFailed { get; set; }
 
-
         [ConfigSection("Quest")]
         public abstract string QuestSelectReward { get; set; }
         public abstract string QuestNeedSpace { get; set; }
-
 
         [ConfigSection("Mail")]
         public abstract string MailSafeZone { get; set; }
@@ -144,7 +134,6 @@ namespace Server.Envir
         public abstract string MailSelfMail { get; set; }
         public abstract string MailMailCost { get; set; }
         public abstract string MailSendSafeZone { get; set; }
-
 
         [ConfigSection("Market Place")]
         public abstract string ConsignSafeZone { get; set; }
@@ -166,7 +155,6 @@ namespace Server.Envir
         public abstract string StoreNotAvailable { get; set; }
         public abstract string StoreNeedSpace { get; set; }
         public abstract string StoreCost { get; set; }
-
 
         [ConfigSection("Guild")]
         public abstract string GuildNeedHorn { get; set; }
@@ -234,7 +222,6 @@ namespace Server.Envir
         public abstract string GroupRecallFromMap { get; set; }
         public abstract string GroupRecallMemberFromMap { get; set; }
 
-
         [ConfigSection("Trade")]
         public abstract string TradeAlreadyTrading { get; set; }
         public abstract string TradeAlreadyHaveRequest { get; set; }
@@ -255,7 +242,6 @@ namespace Server.Envir
         public abstract string TradeFailedPartnerItemsChanged { get; set; }
         public abstract string TradeNotEnoughSpace { get; set; }
         public abstract string TradeComplete { get; set; }
-
 
         [ConfigSection("NPC")]
         public abstract string NPCFundsGuild { get; set; }
@@ -296,7 +282,6 @@ namespace Server.Envir
         public abstract string AccessoryRefineSuccess { get; set; }
         public abstract string AccessoryRefineFailed { get; set; }
 
-
         [ConfigSection("Skills")]
         public abstract string ChargeExpire { get; set; }
         public abstract string ChargeFail { get; set; }
@@ -307,8 +292,7 @@ namespace Server.Envir
         public abstract string SkillEffort { get; set; }
         public abstract string SkillBadMap { get; set; }
 
-
-        [ConfigSection("Skills")]
+        [ConfigSection("Horse")]
         public abstract string HorseDead { get; set; }
         public abstract string HorseOwner { get; set; }
         public abstract string HorseMap { get; set; }
@@ -329,7 +313,10 @@ namespace Server.Envir
         public abstract string InstanceNotGroupLeader { get; set; }
         public abstract string InstanceNoMap { get; set; }
 
+        [ConfigSection("Discipline")]
+        public abstract string DisciplineMaxLevel { get; set; }
+        public abstract string DisciplineRequiredLevel { get; set; }
+        public abstract string DisciplineRequiredGold { get; set; }
+        public abstract string DisciplineRequiredExp { get; set; }
     }
-
-
 }

@@ -11,7 +11,6 @@ using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -160,6 +159,7 @@ namespace Client.Scenes.Views
         }
 
         #region Methods
+
         public void CreateTabs()
         {
             foreach (KeyValuePair<MagicSchool, MagicTab> pair in SchoolTabs)
@@ -188,7 +188,7 @@ namespace Client.Scenes.Views
 
             foreach (MagicInfo magic in magics)
             {
-                if (magic.Class != MapObject.User.Class || magic.School == MagicSchool.None) continue;
+                if (magic.Class != MapObject.User.Class || magic.School == MagicSchool.None || magic.School == MagicSchool.Discipline) continue;
 
                 MagicTab tab;
 
@@ -214,6 +214,13 @@ namespace Client.Scenes.Views
                 dxTab.Value.Parent = TabControl;
             }
         }
+
+        public void RefreshMagic(MagicInfo info)
+        {
+            if (Magics.ContainsKey(info))
+                Magics[info].Refresh();
+        }
+
         #endregion
 
         #region IDisposable
@@ -517,6 +524,8 @@ namespace Client.Scenes.Views
                 Location = new Point(4, 4),
                 Visible = false
             };
+            Level4Border.MouseEnter += (o, e) => OnMouseEnter();
+            Level4Border.MouseLeave += (o, e) => OnMouseLeave();
 
             Image = new DXImageControl
             {
@@ -526,6 +535,8 @@ namespace Client.Scenes.Views
             };
             Image.MouseClick += Image_MouseClick;
             Image.KeyDown += Image_KeyDown;
+            Image.MouseEnter += (o, e) => OnMouseEnter();
+            Image.MouseLeave += (o, e) => OnMouseLeave();
 
             ExperienceBar = new DXImageControl
             {
@@ -556,7 +567,9 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
             };
             KeyLabel.SizeChanged += (o, e) => KeyLabel.Location = new Point(Image.Size.Width - KeyLabel.Size.Width, Image.Size.Height - KeyLabel.Size.Height);
-            
+            KeyLabel.MouseEnter += (o, e) => OnMouseEnter();
+            KeyLabel.MouseLeave += (o, e) => OnMouseLeave();
+
             LevelLabel = new DXLabel
             {
                 Parent = this,
@@ -725,25 +738,33 @@ namespace Client.Scenes.Views
                 if (pair.Value.Set1Key == magic.Set1Key && magic.Set1Key != SpellKey.None)
                 {
                     pair.Value.Set1Key = SpellKey.None;
-                    GameScene.Game.MagicBox.Magics[pair.Key].Refresh();
+
+                    GameScene.Game.MagicBox.RefreshMagic(pair.Key);
+                    GameScene.Game.CharacterBox.RefreshDisciplineMagic(pair.Key);
                 }
 
                 if (pair.Value.Set2Key == magic.Set2Key && magic.Set2Key != SpellKey.None)
                 {
                     pair.Value.Set2Key = SpellKey.None;
-                    GameScene.Game.MagicBox.Magics[pair.Key].Refresh();
+
+                    GameScene.Game.MagicBox.RefreshMagic(pair.Key);
+                    GameScene.Game.CharacterBox.RefreshDisciplineMagic(pair.Key);
                 }
 
                 if (pair.Value.Set3Key == magic.Set3Key && magic.Set3Key != SpellKey.None)
                 {
                     pair.Value.Set3Key = SpellKey.None;
-                    GameScene.Game.MagicBox.Magics[pair.Key].Refresh();
+
+                    GameScene.Game.MagicBox.RefreshMagic(pair.Key);
+                    GameScene.Game.CharacterBox.RefreshDisciplineMagic(pair.Key);
                 }
 
                 if (pair.Value.Set4Key == magic.Set4Key && magic.Set4Key != SpellKey.None)
                 {
                     pair.Value.Set4Key = SpellKey.None;
-                    GameScene.Game.MagicBox.Magics[pair.Key].Refresh();
+
+                    GameScene.Game.MagicBox.RefreshMagic(pair.Key);
+                    GameScene.Game.CharacterBox.RefreshDisciplineMagic(pair.Key);
                 }
 
             }
@@ -810,10 +831,17 @@ namespace Client.Scenes.Views
         {
             if (MapObject.User == null) return;
 
-            ClientUserMagic magic;
-
-            if (MapObject.User.Magics.TryGetValue(Info, out magic))
+            if (MapObject.User.Magics.TryGetValue(Info, out ClientUserMagic magic))
             {
+                float opacity = 1F;
+
+                Background.ImageOpacity = opacity;
+                Image.ImageOpacity = opacity;
+                Level4Border.ImageOpacity = opacity;
+                NameLabel.Opacity = opacity;
+                LevelLabel.Opacity = opacity;
+                ExperienceLabel.Opacity = opacity;
+
                 Image.IsEnabled = true;
                 LevelLabel.Text = $"Level: {magic.Level}";
                 LevelLabel.ForeColour = Color.FromArgb(198, 166, 99);
@@ -843,11 +871,8 @@ namespace Client.Scenes.Views
                 DescriptionAttribute description = infos[0].GetCustomAttribute<DescriptionAttribute>();
                 KeyLabel.Text = description?.Description;
 
-                if (magic.Level > 3)
-                {
-                    Level4Border.Visible = true;
-                    Level4Border.Index = UpdateBorder(magic.Info.School);
-                }
+                Level4Border.Visible = true;
+                Level4Border.Index = UpdateBorder(magic.Info.School);
 
                 if (Info.NeedLevel1 > MapObject.User.Level)
                 {
@@ -883,6 +908,15 @@ namespace Client.Scenes.Views
             }
             else
             {
+                float opacity = MapObject.User.Level >= Info.NeedLevel1 ? 1F : 0.3F;
+
+                Background.ImageOpacity = opacity;
+                Image.ImageOpacity = opacity;
+                Level4Border.ImageOpacity = opacity;
+                NameLabel.Opacity = opacity;
+                LevelLabel.Opacity = opacity;
+                ExperienceLabel.Opacity = opacity;
+
                 Level4Border.Visible = false;
                 Image.IsEnabled = false;
                 LevelLabel.Text = "Not\r\nLearned";

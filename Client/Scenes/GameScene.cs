@@ -918,7 +918,6 @@ namespace Client.Scenes
                 CreateItemLabel();
             }
 
-
             MapControl.ProcessInput();
 
             foreach (MapObject ob in MapControl.Objects)
@@ -1462,7 +1461,7 @@ namespace Client.Scenes
             {
                 BackColour = Color.FromArgb(200, 0, 24, 48),
                 Border = true,
-                BorderColour = Color.FromArgb(148, 148, 49), // Color.FromArgb(144, 148, 48),
+                BorderColour = Color.Yellow, // Color.FromArgb(144, 148, 48),
                 DrawTexture = true,
                 IsControl = false,
                 IsVisible = true,
@@ -2449,7 +2448,6 @@ namespace Client.Scenes
                 IsVisible = true,
             };
 
-
             DXLabel label = new DXLabel
             {
                 ForeColour = Color.Yellow,
@@ -2461,14 +2459,22 @@ namespace Client.Scenes
 
             ClientUserMagic magic;
 
-
             int width;
+            bool disciplineSkill = false;
+
             if (User.Magics.TryGetValue(MouseMagic, out magic))
             {
                 int level = magic.Level;
+                disciplineSkill = magic.Info.School == MagicSchool.Discipline;
+
+                if (disciplineSkill)
+                {
+                    MagicLabel.BorderColour = Color.LimeGreen;
+                }
+
                 label = new DXLabel
                 {
-                    ForeColour = Color.Green,
+                    ForeColour = Color.LimeGreen,
                     Location = new Point(4, MagicLabel.DisplayArea.Bottom),
                     Parent = MagicLabel,
                     Text = $"Current Level: {level}",
@@ -2493,7 +2499,7 @@ namespace Client.Scenes
                 width = label.DisplayArea.Right;
                 label = new DXLabel
                 {
-                    ForeColour = Color.Green,
+                    ForeColour = Color.LimeGreen,
                     Location = new Point(width + 4, MagicLabel.DisplayArea.Bottom),
                     Parent = MagicLabel,
                     Text = $"Experience: {text}",
@@ -2506,7 +2512,7 @@ namespace Client.Scenes
                     ForeColour = Color.Red,
                     Location = new Point(4, MagicLabel.DisplayArea.Bottom),
                     Parent = MagicLabel,
-                    Text = $"Not learned.",
+                    Text = $"Not learned",
                 };
             }
             MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
@@ -2564,16 +2570,17 @@ namespace Client.Scenes
             };
             MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
 
-
-            label = new DXLabel
+            if (!disciplineSkill)
             {
-                ForeColour = magic?.Level < 3 ? Color.Red : Color.White,
-                Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = $"Rank 4+ Requirement: Books",
-            };
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
-            
+                label = new DXLabel
+                {
+                    ForeColour = magic?.Level < 3 ? Color.Red : Color.White,
+                    Location = new Point(4, MagicLabel.DisplayArea.Bottom),
+                    Parent = MagicLabel,
+                    Text = $"Rank 4+ Requirement: Books",
+                };
+                MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
+            }
 
             label = new DXLabel
             {
@@ -2583,9 +2590,11 @@ namespace Client.Scenes
                 Parent = MagicLabel,
                 Text = MouseMagic.Description,
             };
-            label.Size = DXLabel.GetHeight(label, MagicLabel.Size.Width );
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom + 4);  
+            label.Size = DXLabel.GetHeight(label, MagicLabel.Size.Width);
+
+            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom + 4);
         }
+
         private void SetItemInfo(SetInfo set)
         {
 
@@ -2972,7 +2981,9 @@ namespace Client.Scenes
                 case MagicType.GustBlast:
                 case MagicType.ElectricShock:
                 case MagicType.AdamantineFireBall:
+                case MagicType.FireBounce:
                 case MagicType.ThunderBolt:
+                case MagicType.ChainLightning:
                 case MagicType.IceBlades:
                 case MagicType.Cyclone:
                 case MagicType.ExpelUndead:
@@ -2996,26 +3007,17 @@ namespace Client.Scenes
                         else
                             MapObject.MagicObject = null;
                     }
-
-                    //    if (target == null) //TODO
-                    //        ;//target = GetCloseesTarget();
                     break;
                 case MagicType.WraithGrip:
                 case MagicType.HellFire:
                 case MagicType.Abyss:
                     if (CanAttackTarget(MouseObject))
                         target = MouseObject;
-
-                    //    if (target == null) //TODO
-                    //        ;//target = GetCloseesTarget();
                     break;
                 case MagicType.Interchange:
                 case MagicType.Beckon:
                     if (CanAttackTarget(MouseObject))
                         target = MouseObject;
-
-                    //    if (target == null) //TODO
-                    //        ;//target = GetCloseesTarget();
                     break;
                 case MagicType.MassBeckon:
                     break;
@@ -3104,7 +3106,6 @@ namespace Client.Scenes
                 case MagicType.DragonTornado:
                 case MagicType.GeoManipulation:
                 case MagicType.Transparency:
-                case MagicType.ChainLightning:
                 case MagicType.MeteorShower:
                 case MagicType.Tempest:
                 case MagicType.Asteroid:
@@ -3169,9 +3170,8 @@ namespace Client.Scenes
                 FocusObject = (MonsterObject) MouseObject;
 
             User.MagicAction = new ObjectAction(MirAction.Spell, direction, MapObject.User.CurrentLocation, magic.Info.Magic, new List<uint> { targetID }, new List<Point> { targetLocation }, false);
-
-
         }
+
         private bool CanAttackTarget(MapObject ob)
         {
             if (ob == null || ob.Dead) return false;
@@ -3548,6 +3548,7 @@ namespace Client.Scenes
             ExperienceChanged();
             HealthChanged();
             ManaChanged();
+            StaminaChanged();
             CurrencyChanged();
             SafeZoneChanged();
             AttackModeChanged();
@@ -3611,6 +3612,7 @@ namespace Client.Scenes
 
             HealthChanged();
             ManaChanged();
+            StaminaChanged();
 
             foreach (NPCGoodsCell cell in NPCGoodsBox.Cells)
                 cell.UpdateColours();
@@ -3640,6 +3642,14 @@ namespace Client.Scenes
 
             MainPanel.ManaLabel.Text = $"{User.CurrentMP}/{User.Stats[Stat.Mana]}";
         }
+        public void StaminaChanged()
+        {
+            if (User == null) return;
+
+            MainPanel.StaminaLabel.Visible = User.Stats[Stat.Focus] > 0;
+            MainPanel.StaminaLabel.Text = $"{User.CurrentSP}/{User.Stats[Stat.Focus]}";
+        }
+
         public void AttackModeChanged()
         {
             if (User == null) return;

@@ -143,6 +143,12 @@
     <Compile Include="Views\DatabaseEncryptionForm.Designer.cs">
       <DependentUpon>DatabaseEncryptionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\DisciplineInfoView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DisciplineInfoView.Designer.cs">
+      <DependentUpon>DisciplineInfoView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\FishingInfoView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -379,6 +385,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\DatabaseEncryptionForm.resx">
       <DependentUpon>DatabaseEncryptionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DisciplineInfoView.resx">
+      <DependentUpon>DisciplineInfoView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FishingInfoView.resx">
       <DependentUpon>FishingInfoView.cs</DependentUpon>

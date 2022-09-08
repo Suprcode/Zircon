@@ -5,7 +5,6 @@ using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views

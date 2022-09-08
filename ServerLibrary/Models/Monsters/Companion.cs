@@ -553,8 +553,10 @@ namespace Server.Models.Monsters
                 }
 
                 //Start Index
-                for (int i = index; i < Stats[Stat.CompanionInventory]; i++)
+                for (int i = index; i < Inventory.Length; i++)
                 {
+                    if (i >= Stats[Stat.CompanionInventory]) break;
+
                     index++;
                     UserItem item = Inventory[i];
                     if (item == null)
@@ -647,8 +649,10 @@ namespace Server.Models.Monsters
                     if (handled) continue;
                 }
 
-                for (int i = 0; i < Stats[Stat.CompanionInventory]; i++)
+                for (int i = 0; i < Inventory.Length; i++)
                 {
+                    if (i >= Stats[Stat.CompanionInventory]) break;
+
                     if (Inventory[i] != null) continue;
 
                     Inventory[i] = item;

@@ -591,11 +591,9 @@ namespace Server.Envir
             Player.NPCAccessoryUpgrade(p);
         }
 
-
         public void Process(C.MagicKey p)
         {
             if (Stage != GameStage.Game) return;
-
 
             foreach (KeyValuePair<MagicType, UserMagic> pair in Player.Magics)
             {
@@ -1141,7 +1139,6 @@ namespace Server.Envir
             if (info == null)
             {
                 ReceiveChat(string.Format(Language.CannotFindPlayer, p.Name), MessageType.System);
-
                 return;
             }
 
@@ -1186,28 +1183,25 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
-
             Player.GenderChange(p);
         }
+
         public void Process(C.HairChange p)
         {
             if (Stage != GameStage.Game) return;
 
-
             Player.HairChange(p);
-
         }
+
         public void Process(C.ArmourDye p)
         {
             if (Stage != GameStage.Game) return;
-
 
             Player.ArmourDye(p.ArmourColour);
         }
         public void Process(C.NameChange p)
         {
             if (Stage != GameStage.Game) return;
-
 
             Player.NameChange(p.Name);
         }
@@ -1218,19 +1212,19 @@ namespace Server.Envir
 
             Player.FortuneCheck(p.ItemIndex);
         }
+
         public void Process(C.TeleportRing p)
         {
             if (Stage != GameStage.Game) return;
 
             Player.TeleportRing(p.Location, p.Index);
-
         }
+
         public void Process(C.JoinStarterGuild p)
         {
             if (Stage != GameStage.Game) return;
 
             Player.JoinStarterGuild();
-
         }
         public void Process(C.NPCAccessoryReset p)
         {
@@ -1285,7 +1279,6 @@ namespace Server.Envir
             if (info == null)
             {
                 ReceiveChat(string.Format(Language.CannotFindPlayer, p.Name), MessageType.System);
-
                 return;
             }
 
@@ -1309,9 +1302,9 @@ namespace Server.Envir
 
         public void Process(C.FriendRemove p)
         {
-            if (Stage != GameStage.Game && Stage != GameStage.Observer) return;
+            if (Stage != GameStage.Game) return;
 
-            FriendInfo friend = Player.Character?.Friends.FirstOrDefault(x => x.Index == p.Index);
+            FriendInfo friend = Player.Character.Friends.FirstOrDefault(x => x.Index == p.Index);
 
             if (friend == null) return;
 
@@ -1319,8 +1312,14 @@ namespace Server.Envir
 
             Enqueue(new S.FriendRemove { Index = p.Index, ObserverPacket = false });
         }
-    }
 
+        public void Process(C.IncreaseDiscipline p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.IncreaseDiscipline();
+        }
+    }
 
     public enum GameStage
     {

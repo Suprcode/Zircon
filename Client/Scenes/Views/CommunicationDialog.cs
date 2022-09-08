@@ -787,14 +787,14 @@ namespace Client.Scenes.Views
                 Parent = SendTab,
                 Text = "Subject:"
             };
-            label.Location = new Point(82 - label.Size.Width, 30);
+            label.Location = new Point(82 - label.Size.Width, 31);
 
             SendSubjectBox = new DXTextBox
             {
                 Border = false,
                 Parent = SendTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
-                Location = new Point(86, label.Location.Y + 1),
+                Location = new Point(86, label.Location.Y),
                 Size = new Size(155, 16),
                 MaxLength = 30
             };

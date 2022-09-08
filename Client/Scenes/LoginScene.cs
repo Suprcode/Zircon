@@ -9,7 +9,6 @@ using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
 using SlimDX.Direct3D9;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 using Font = System.Drawing.Font;
 

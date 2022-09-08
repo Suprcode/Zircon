@@ -191,6 +191,7 @@ namespace Library
                 case MagicType.ScortchedEarth:
                 case MagicType.LightningBeam:
                 case MagicType.AdamantineFireBall:
+                case MagicType.FireBounce:
                 case MagicType.IceBlades:
                 case MagicType.FrozenEarth:
                 case MagicType.MeteorShower:
@@ -208,9 +209,6 @@ namespace Library
                 case MagicType.BloodLust:
                 case MagicType.LifeSteal:
                 case MagicType.ImprovedExplosiveTalisman:
-                    return MirAnimation.Combat1;
-
-
 
                 case MagicType.Interchange:
                     

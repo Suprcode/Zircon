@@ -586,5 +586,10 @@ namespace Server
         {
             ShowView(typeof(FishingInfoView));
         }
+
+        private void DisciplineInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(DisciplineInfoView));
+        }
     }
 }

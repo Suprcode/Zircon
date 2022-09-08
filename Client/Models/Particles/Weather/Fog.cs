@@ -19,7 +19,7 @@ namespace Client.Models.Particles
                 MaxCount = 4;
                 SpawnFrequency = TimeSpan.FromMilliseconds(0);
                 Textures = new List<int> { 550 };
-                Color = Color.White;
+                Color = Color.DarkGray;
 
                 Library = CEnvir.LibraryList[LibraryFile.ProgUse];
             }
@@ -44,7 +44,7 @@ namespace Client.Models.Particles
                     position = new Vector2(particle.Position.X - (size.Width * scale), particle.Position.Y);
                 }
 
-                float opacity = 0.1F;
+                float opacity = 1F;
 
                 float startingAngle = angle;
                 float angularVelocity = 0F;

@@ -127,9 +127,6 @@ namespace Client.Envir
 
             [SoundIndex.SwiftBladeEnd] = new DXSound(SoundPath + @"M131-2.wav", SoundType.Magic),
 
-
-
-
             [SoundIndex.FireBallStart] = new DXSound(SoundPath + @"M1-1.wav", SoundType.Magic),
             [SoundIndex.FireBallTravel] = new DXSound(SoundPath + @"M1-2.wav", SoundType.Magic),
             [SoundIndex.FireBallEnd] = new DXSound(SoundPath + @"M1-3.wav", SoundType.Magic),
@@ -286,6 +283,9 @@ namespace Client.Envir
 
             [SoundIndex.RagingWindStart] = new DXSound(SoundPath + @"M26-1.wav", SoundType.Magic),
             [SoundIndex.EvasionStart] = new DXSound(SoundPath + @"243-5.wav", SoundType.Magic),
+
+            //[SoundIndex.LegBlowStart] = new DXSound(SoundPath + @"m136-2.wav", SoundType.Magic),
+
             #endregion
 
             #region Monsters

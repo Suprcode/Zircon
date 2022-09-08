@@ -63,9 +63,11 @@ namespace Server.Models
 
         public int DisplayHP;
         public int DisplayMP;
+        public int DisplayFP;
 
         public virtual int CurrentHP { get; set; }
         public virtual int CurrentMP { get; set; }
+        public virtual int CurrentFP { get; set; }
 
         public bool Spawned, Dead, CoolEye, Activated;
         public bool InSafeZone;
@@ -177,6 +179,15 @@ namespace Server.Models
                 int change = CurrentMP - DisplayMP;
                 Broadcast(new S.ManaChanged { ObjectID = ObjectID, Change = change });
                 DisplayMP = CurrentMP;
+
+                changed = true;
+            }
+
+            if (DisplayFP != CurrentFP)
+            {
+                int change = CurrentFP - DisplayFP;
+                Broadcast(new S.StaminaChanged { ObjectID = ObjectID, Change = change });
+                DisplayFP = CurrentFP;
 
                 changed = true;
             }
@@ -832,7 +843,7 @@ namespace Server.Models
 
             return Teleport(map, point, leaveEffect);
         }
-        public virtual bool Teleport(Map map, Point location, bool leaveEffect = true)
+        public virtual bool Teleport(Map map, Point location, bool leaveEffect = true, bool enterEffect = true)
         {
             if (Race == ObjectType.Player && map.Info.MinimumLevel > Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
             if (Race == ObjectType.Player && map.Info.MaximumLevel > 0 && map.Info.MaximumLevel < Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
@@ -849,7 +860,9 @@ namespace Server.Models
             AddAllObjects();
 
             Broadcast(new S.ObjectTurn { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
-            Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.TeleportIn });
+
+            if (enterEffect)
+                Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.TeleportIn });
 
             return true;
         }
@@ -1167,7 +1180,6 @@ namespace Server.Models
                 }
             }
 
-
             if (CurrentHP + amount > Stats[Stat.Health])
                 amount = Stats[Stat.Health] - CurrentHP;
 
@@ -1189,16 +1201,30 @@ namespace Server.Models
                 Die();
             }
         }
+
         public void SetMP(int amount)
         {
             CurrentMP = Math.Min(amount, Stats[Stat.Mana]);
         }
+
+        public void SetFP(int amount)
+        {
+            CurrentFP = Math.Min(amount, Stats[Stat.Focus]);
+        }
+
         public void ChangeMP(int amount)
         {
             if (CurrentMP + amount > Stats[Stat.Mana])
                 amount = Stats[Stat.Mana] - CurrentMP;
 
             CurrentMP += amount;
+        }
+        public void ChangeFP(int amount)
+        {
+            if (CurrentFP + amount > Stats[Stat.Focus])
+                amount = Stats[Stat.Focus] - CurrentFP;
+
+            CurrentFP += amount;
         }
 
         public virtual void CelestialLightActivate()

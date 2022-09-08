@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
+using Library.SystemModels;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -18,11 +21,17 @@ namespace Client.Scenes.Views
         #region Properties
 
         private DXTabControl TabControl;
-        private DXTab CharacterTab, HermitTab;
+        private DXTab CharacterTab, HermitTab, DisciplineTab;
         public DXLabel CharacterNameLabel, GuildNameLabel, GuildRankLabel;
         
         private DXTabControl StatsTabControl;
         private DXTab StatsAttackTab, StatsDefenseTab, StatsWeightTab, StatsOtherTab, StatsElementAttackTab, StatsElementAdvantageTab, StatsElementDisadvantageTab;
+
+        private DXImageControl DisciplineLevel;
+        private DXLabel DisciplineLevelLabel, DisciplineUnusedLabel, DisciplineExperienceLabel;
+        private DXButton DisciplineButton;
+
+        public Dictionary<MagicInfo, DisciplineMagicCell> DisciplineMagics = new Dictionary<MagicInfo, DisciplineMagicCell>();
 
         public DXImageControl MarriageIcon;
 
@@ -252,11 +261,25 @@ namespace Client.Scenes.Views
                 Index = 111;
             };
 
+            DisciplineTab = new DXTab
+            {
+                Parent = TabControl,
+                TabButton = { Label = { Text = "Discipline" } },
+                BackColour = Color.Empty,
+                Location = new Point(0, 25),
+            };
+
+            DisciplineTab.TabButton.Visible = !Inspect && Globals.DisciplineInfoList.Binding.Count > 0;
+            DisciplineTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 112;
+            };
+
             DXControl namePanel = new DXControl
             {
-                Parent = CharacterTab,
+                Parent = this,
                 Size = new Size(130, 68),
-                Location = new Point((CharacterTab.Size.Width - 135) / 2, 5)
+                Location = new Point((CharacterTab.Size.Width - 135) / 2, 51)
             };
             CharacterNameLabel = new DXLabel
             {
@@ -2092,6 +2115,99 @@ namespace Client.Scenes.Views
             #endregion
 
             #endregion
+
+            #region Discipline
+
+            DisciplineLevel = new DXImageControl
+            {
+                Parent = DisciplineTab,
+                Index = 215,
+                LibraryFile = LibraryFile.Interface,
+                Size = new Size(256, 192)
+            };
+            DisciplineLevel.Location = new Point((Size.Width - DisciplineLevel.Size.Width) / 2, 63);
+
+            label = new DXLabel
+            {
+                Parent = DisciplineTab,
+                Text = "Discipline Lv:",
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
+            };
+            label.Location = new Point(13, 313);
+
+            DisciplineLevelLabel = new DXLabel
+            {
+                Parent = DisciplineTab,
+                AutoSize = false,
+                Size = new Size(46, 18),
+                Location = new Point(113, 313),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Text = "0",
+                ForeColour = Color.White
+            };
+
+            label = new DXLabel
+            {
+                Parent = DisciplineTab,
+                Text = "Label Unused",
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
+                Visible = false
+            };
+            label.Location = new Point(163, 313);
+
+            DisciplineUnusedLabel = new DXLabel
+            {
+                Parent = DisciplineTab,
+                AutoSize = false,
+                Size = new Size(46, 18),
+                Location = new Point(263, 313),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Text = "???",
+                ForeColour = Color.White,
+                Visible = false
+            }; 
+            
+            label = new DXLabel
+            {
+                Parent = DisciplineTab,
+                Text = "Discipline Exp:",
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left
+            };
+            label.Location = new Point(13, 335);
+
+            DisciplineExperienceLabel = new DXLabel
+            {
+                Parent = DisciplineTab,
+                AutoSize = false,
+                Size = new Size(296, 18),
+                Location = new Point(14, 335),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Text = "0/0",
+                ForeColour = Color.White
+            };
+
+            DisciplineButton = new DXButton
+            {
+                Parent = DisciplineTab,
+                Label = { Text = "Gain Discipline" },
+                Location = new Point(182, 265),
+                Size = new Size(120, DefaultHeight),
+                Enabled = false
+            };
+            DisciplineButton.MouseClick += (o, e) =>
+            {
+                var nextLevel = GetNextDisciplineLevel();
+
+                if (nextLevel != null)
+                {
+                    DXMessageBox box = new DXMessageBox($"Are you sure you want to discipline your character?\n" +
+                                                        $"Disciplining will cost {nextLevel.RequiredGold:n0} Gold", "Discipline Character", DXMessageBoxButtons.YesNo);
+
+                    box.YesButton.MouseClick += (o, e1) => CEnvir.Enqueue(new C.IncreaseDiscipline());
+                }
+            };
+
+            #endregion
         }
 
         private void Cell_MouseLeave(object sender, EventArgs e)
@@ -2516,6 +2632,75 @@ namespace Client.Scenes.Views
             UpdateStats();
         }
 
+        public void UpdateDiscipline()
+        {
+            if (Globals.DisciplineInfoList.Binding.Count == 0)
+            {
+                DisciplineButton.Enabled = false;
+                return;
+            }
+
+            var nextLevel = GetNextDisciplineLevel();
+
+            DisciplineButton.Enabled = nextLevel != null;
+
+            var userDiscipline = GameScene.Game.User.Discipline;
+
+            if (userDiscipline == null)
+            {
+                DisciplineLevel.Index = 215;
+                DisciplineLevelLabel.Text = "0";
+                DisciplineExperienceLabel.Text = $"0/0";
+            }
+            else
+            {
+                DisciplineLevel.Index = 215 + userDiscipline.Level;
+                DisciplineLevelLabel.Text = userDiscipline.Level.ToString();
+
+                if (nextLevel != null)
+                    DisciplineExperienceLabel.Text = $"{userDiscipline.Experience}/{nextLevel.RequiredExperience}";
+                else
+                    DisciplineExperienceLabel.Text = $"{userDiscipline.Experience}/Max";
+
+                int x = 49;
+
+                foreach (var magic in userDiscipline.Magics)
+                {
+                    if (!DisciplineMagics.ContainsKey(magic.Info))
+                    {
+                        DisciplineMagicCell cell = new DisciplineMagicCell
+                        {
+                            Parent = DisciplineTab,
+                            Info = magic.Info,
+                            BackColour = Color.Empty,
+                            Location = new Point(x, 379)
+                        };
+                        DisciplineMagics[magic.Info] = cell;
+                    }
+
+                    x += 61;
+                }
+            }
+        }
+
+        public void RefreshDisciplineMagic(MagicInfo info)
+        {
+            if (DisciplineMagics.ContainsKey(info))
+                DisciplineMagics[info].Refresh();
+        }
+
+        private DisciplineInfo GetNextDisciplineLevel()
+        {
+            int currentLevel = 0;
+
+            if (GameScene.Game.User.Discipline != null)
+                currentLevel = GameScene.Game.User.Discipline.Level;
+
+            var nextLevel = Globals.DisciplineInfoList.Binding.FirstOrDefault(x => x.Level == (currentLevel + 1));
+
+            return nextLevel;
+        }
+
         #endregion
 
 
@@ -2557,6 +2742,14 @@ namespace Client.Scenes.Views
                         HermitTab.Dispose();
 
                     HermitTab = null;
+                }
+
+                if (DisciplineTab != null)
+                {
+                    if (!DisciplineTab.IsDisposed)
+                        DisciplineTab.Dispose();
+
+                    DisciplineTab = null;
                 }
 
                 if (CharacterNameLabel != null)
@@ -2751,6 +2944,46 @@ namespace Client.Scenes.Views
                     HermitShowConfirmation = null;
                 }
 
+                if (DisciplineLevel != null)
+                {
+                    if (!DisciplineLevel.IsDisposed)
+                        DisciplineLevel.Dispose();
+
+                    DisciplineLevel = null;
+                }
+
+                if (DisciplineLevelLabel != null)
+                {
+                    if (!DisciplineLevelLabel.IsDisposed)
+                        DisciplineLevelLabel.Dispose();
+
+                    DisciplineLevelLabel = null;
+                }
+
+                if (DisciplineUnusedLabel != null)
+                {
+                    if (!DisciplineUnusedLabel.IsDisposed)
+                        DisciplineUnusedLabel.Dispose();
+
+                    DisciplineUnusedLabel = null;
+                }
+
+                if (DisciplineExperienceLabel != null)
+                {
+                    if (!DisciplineExperienceLabel.IsDisposed)
+                        DisciplineExperienceLabel.Dispose();
+
+                    DisciplineExperienceLabel = null;
+                }
+
+                if (DisciplineButton != null)
+                {
+                    if (!DisciplineButton.IsDisposed)
+                        DisciplineButton.Dispose();
+
+                    DisciplineButton = null;
+                }
+
                 foreach (KeyValuePair<Stat, DXLabel> pair in HermitDisplayStats)
                 {
                     if (pair.Value == null) continue;
@@ -2776,6 +3009,338 @@ namespace Client.Scenes.Views
                 _inspectHermitStats = null;
 
                 Settings = null;
+            }
+        }
+
+        #endregion
+    }
+
+    public sealed class DisciplineMagicCell : DXControl
+    {
+        #region Properties
+
+        #region Info
+        public MagicInfo Info
+        {
+            get => _Info;
+            set
+            {
+                if (_Info == value) return;
+
+                MagicInfo oldValue = _Info;
+                _Info = value;
+
+                OnInfoChanged(oldValue, value);
+            }
+        }
+        private MagicInfo _Info;
+        public event EventHandler<EventArgs> InfoChanged;
+        public void OnInfoChanged(MagicInfo oValue, MagicInfo nValue)
+        {
+            Image.Index = Info.Icon;
+            Refresh();
+            InfoChanged?.Invoke(this, EventArgs.Empty);
+        }
+        #endregion
+
+        public DXImageControl Image;
+        public DXLabel KeyLabel;
+
+        #endregion
+
+        public DisciplineMagicCell()
+        {
+            Size = new Size(36, 36);
+            DrawTexture = true;
+
+            Image = new DXImageControl
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.MagicIcon,
+                Location = new Point(0, 0)
+            };
+            Image.MouseClick += Image_MouseClick;
+            Image.KeyDown += Image_KeyDown;
+            Image.MouseEnter += (o,e) => OnMouseEnter();
+            Image.MouseLeave += (o, e) => OnMouseLeave();
+
+            KeyLabel = new DXLabel
+            {
+                Parent = Image,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                IsControl = false,
+                ForeColour = Color.Aquamarine,
+                AutoSize = false,
+                Size = new Size(36, 36),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
+            };
+            KeyLabel.SizeChanged += (o, e) => KeyLabel.Location = new Point(Image.Size.Width - KeyLabel.Size.Width, Image.Size.Height - KeyLabel.Size.Height);
+            KeyLabel.MouseEnter += (o, e) => OnMouseEnter();
+            KeyLabel.MouseLeave += (o, e) => OnMouseLeave();
+        }
+
+        #region Methods
+        private void Image_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (GameScene.Game.Observer) return;
+
+            ClientUserMagic magic;
+
+            if (!MapObject.User.Magics.TryGetValue(Info, out magic)) return;
+
+            switch (GameScene.Game.MagicBarBox.SpellSet)
+            {
+                case 1:
+                    magic.Set1Key = SpellKey.None;
+                    break;
+                case 2:
+                    magic.Set2Key = SpellKey.None;
+                    break;
+                case 3:
+                    magic.Set3Key = SpellKey.None;
+                    break;
+                case 4:
+                    magic.Set4Key = SpellKey.None;
+                    break;
+
+            }
+
+            CEnvir.Enqueue(new C.MagicKey { Magic = magic.Info.Magic, Set1Key = magic.Set1Key, Set2Key = magic.Set2Key, Set3Key = magic.Set3Key, Set4Key = magic.Set4Key });
+            Refresh();
+            GameScene.Game.MagicBarBox.UpdateIcons();
+        }
+
+        private void Image_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (GameScene.Game.Observer) return;
+
+            if (e.Handled) return;
+            if (MouseControl != Image) return;
+
+            SpellKey key = SpellKey.None;
+
+            foreach (KeyBindAction action in CEnvir.GetKeyAction(e.KeyCode))
+            {
+                switch (action)
+                {
+                    case KeyBindAction.SpellUse01:
+                        key = SpellKey.Spell01;
+                        break;
+                    case KeyBindAction.SpellUse02:
+                        key = SpellKey.Spell02;
+                        break;
+                    case KeyBindAction.SpellUse03:
+                        key = SpellKey.Spell03;
+                        break;
+                    case KeyBindAction.SpellUse04:
+                        key = SpellKey.Spell04;
+                        break;
+                    case KeyBindAction.SpellUse05:
+                        key = SpellKey.Spell05;
+                        break;
+                    case KeyBindAction.SpellUse06:
+                        key = SpellKey.Spell06;
+                        break;
+                    case KeyBindAction.SpellUse07:
+                        key = SpellKey.Spell07;
+                        break;
+                    case KeyBindAction.SpellUse08:
+                        key = SpellKey.Spell08;
+                        break;
+                    case KeyBindAction.SpellUse09:
+                        key = SpellKey.Spell09;
+                        break;
+                    case KeyBindAction.SpellUse10:
+                        key = SpellKey.Spell10;
+                        break;
+                    case KeyBindAction.SpellUse11:
+                        key = SpellKey.Spell11;
+                        break;
+                    case KeyBindAction.SpellUse12:
+                        key = SpellKey.Spell12;
+                        break;
+                    case KeyBindAction.SpellUse13:
+                        key = SpellKey.Spell13;
+                        break;
+                    case KeyBindAction.SpellUse14:
+                        key = SpellKey.Spell14;
+                        break;
+                    case KeyBindAction.SpellUse15:
+                        key = SpellKey.Spell15;
+                        break;
+                    case KeyBindAction.SpellUse16:
+                        key = SpellKey.Spell16;
+                        break;
+                    case KeyBindAction.SpellUse17:
+                        key = SpellKey.Spell17;
+                        break;
+                    case KeyBindAction.SpellUse18:
+                        key = SpellKey.Spell18;
+                        break;
+                    case KeyBindAction.SpellUse19:
+                        key = SpellKey.Spell19;
+                        break;
+                    case KeyBindAction.SpellUse20:
+                        key = SpellKey.Spell20;
+                        break;
+                    case KeyBindAction.SpellUse21:
+                        key = SpellKey.Spell21;
+                        break;
+                    case KeyBindAction.SpellUse22:
+                        key = SpellKey.Spell22;
+                        break;
+                    case KeyBindAction.SpellUse23:
+                        key = SpellKey.Spell23;
+                        break;
+                    case KeyBindAction.SpellUse24:
+                        key = SpellKey.Spell24;
+                        break;
+                    default:
+                        continue;
+                }
+
+                e.Handled = true;
+            }
+
+            if (key == SpellKey.None) return;
+
+            ClientUserMagic magic;
+
+            if (!MapObject.User.Magics.TryGetValue(Info, out magic)) return;
+
+            switch (GameScene.Game.MagicBarBox.SpellSet)
+            {
+                case 1:
+                    magic.Set1Key = key;
+                    break;
+                case 2:
+                    magic.Set2Key = key;
+                    break;
+                case 3:
+                    magic.Set3Key = key;
+                    break;
+                case 4:
+                    magic.Set4Key = key;
+                    break;
+            }
+
+            foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in MapObject.User.Magics)
+            {
+                if (pair.Key == magic.Info) continue;
+
+                if (pair.Value.Set1Key == magic.Set1Key && magic.Set1Key != SpellKey.None)
+                {
+                    pair.Value.Set1Key = SpellKey.None;
+
+                    GameScene.Game.MagicBox.RefreshMagic(pair.Key);
+                    GameScene.Game.CharacterBox.RefreshDisciplineMagic(pair.Key);
+                }
+
+                if (pair.Value.Set2Key == magic.Set2Key && magic.Set2Key != SpellKey.None)
+                {
+                    pair.Value.Set2Key = SpellKey.None;
+
+                    GameScene.Game.MagicBox.RefreshMagic(pair.Key);
+                    GameScene.Game.CharacterBox.RefreshDisciplineMagic(pair.Key);
+                }
+
+                if (pair.Value.Set3Key == magic.Set3Key && magic.Set3Key != SpellKey.None)
+                {
+                    pair.Value.Set3Key = SpellKey.None;
+
+                    GameScene.Game.MagicBox.RefreshMagic(pair.Key);
+                    GameScene.Game.CharacterBox.RefreshDisciplineMagic(pair.Key);
+                }
+
+                if (pair.Value.Set4Key == magic.Set4Key && magic.Set4Key != SpellKey.None)
+                {
+                    pair.Value.Set4Key = SpellKey.None;
+
+                    GameScene.Game.MagicBox.RefreshMagic(pair.Key);
+                    GameScene.Game.CharacterBox.RefreshDisciplineMagic(pair.Key);
+                }
+            }
+
+            CEnvir.Enqueue(new C.MagicKey { Magic = magic.Info.Magic, Set1Key = magic.Set1Key, Set2Key = magic.Set2Key, Set3Key = magic.Set3Key, Set4Key = magic.Set4Key });
+            Refresh();
+            GameScene.Game.MagicBarBox.UpdateIcons();
+        }
+
+        public override void OnMouseEnter()
+        {
+            GameScene.Game.MouseMagic = Info;
+        }
+        public override void OnMouseLeave()
+        {
+            GameScene.Game.MouseMagic = null;
+        }
+
+        public void Refresh()
+        {
+            if (MapObject.User == null) return;
+
+            if (MapObject.User.Magics.TryGetValue(Info, out ClientUserMagic magic))
+            {
+                SpellKey key = SpellKey.None;
+                switch (GameScene.Game.MagicBarBox.SpellSet)
+                {
+                    case 1:
+                        key = magic.Set1Key;
+                        break;
+                    case 2:
+                        key = magic.Set2Key;
+                        break;
+                    case 3:
+                        key = magic.Set3Key;
+                        break;
+                    case 4:
+                        key = magic.Set4Key;
+                        break;
+                }
+
+                Type type = typeof(SpellKey);
+
+                MemberInfo[] infos = type.GetMember(key.ToString());
+
+                DescriptionAttribute description = infos[0].GetCustomAttribute<DescriptionAttribute>();
+                KeyLabel.Text = description?.Description;
+            }
+
+            if (this == MouseControl)
+            {
+                GameScene.Game.MouseMagic = null;
+                GameScene.Game.MouseMagic = Info;
+            }
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                _Info = null;
+                InfoChanged = null;
+
+                if (Image != null)
+                {
+                    if (!Image.IsDisposed)
+                        Image.Dispose();
+
+                    Image = null;
+                }
+
+                if (KeyLabel != null)
+                {
+                    if (!KeyLabel.IsDisposed)
+                        KeyLabel.Dispose();
+
+                    KeyLabel = null;
+                }
             }
         }
 

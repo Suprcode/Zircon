@@ -25,6 +25,11 @@ namespace Client.Models
         public MirLibrary BodyLibrary;
         public int BodyOffSet = 1000;
         public int BodyShape;
+
+        public float Scale = 1F;
+
+        public int GrowthLevel;
+
         public int BodyFrame => DrawFrame + (BodyShape % 10) * BodyOffSet;
 
         public SoundIndex AttackSound, StruckSound, DieSound;
@@ -71,7 +76,7 @@ namespace Client.Models
             Name = MonsterInfo.MonsterName;
             
             Direction = MirDirection.DownLeft;
-            
+
             UpdateLibraries();
 
             SetAnimation(new ObjectAction(MirAction.Standing, Direction, Point.Empty));
@@ -110,6 +115,7 @@ namespace Client.Models
                 VisibleBuffs.Add(type);
 
             UpdateLibraries();
+            SetScale();
 
             SetFrame(new ObjectAction(!Dead ? MirAction.Standing : MirAction.Dead, MirDirection.Up, CurrentLocation));
             
@@ -131,7 +137,6 @@ namespace Client.Models
             //OtherSounds
 
             Image = MonsterInfo.Image;
-
 
             switch (Image)
             {
@@ -2052,7 +2057,6 @@ namespace Client.Models
                 CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_30, out BodyLibrary);
                 BodyShape = 4;
 
-
                 Frames = new Dictionary<MirAnimation, Frame>(FrameSet.DefaultMonster);
 
                 foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.EasterEvent)
@@ -2063,7 +2067,6 @@ namespace Client.Models
                 CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_1, out BodyLibrary);
                 BodyShape = 1;
 
-
                 Frames = new Dictionary<MirAnimation, Frame>(FrameSet.DefaultMonster);
             }
             else if (ChristmasEvent)
@@ -2071,11 +2074,21 @@ namespace Client.Models
                 CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_20, out BodyLibrary);
                 BodyShape = 0;
 
-
                 Frames = new Dictionary<MirAnimation, Frame>(FrameSet.DefaultMonster);
             }
         }
 
+        public void SetScale()
+        {
+            int sizePercent = Stats[Stat.SizePercent];
+
+            GrowthLevel = Math.Min(Globals.MaxGrowthLevel, Math.Max(0, Stats[Stat.GrowthLevel]));
+
+            if (GrowthLevel > 0)
+                sizePercent = GrowthLevel * 5;
+
+            Scale = (float)(100 + Math.Min(20, Math.Max(-20, sizePercent))) / 100;
+        }
 
         public override void SetAnimation(ObjectAction action)
         {
@@ -2197,12 +2210,12 @@ namespace Client.Models
                 case MonsterImage.DustDevil:
                     break;
                 case MonsterImage.LobsterLord:
-                    BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow);
-                    BodyLibrary.Draw(BodyFrame + 1000, x, y, Color.White, true, 0.5f, ImageType.Shadow);
-                    BodyLibrary.Draw(BodyFrame + 2000, x, y, Color.White, true, 0.5f, ImageType.Shadow);
+                    BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
+                    BodyLibrary.Draw(BodyFrame + 1000, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
+                    BodyLibrary.Draw(BodyFrame + 2000, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
                     break;
                 default:
-                    BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow);
+                    BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
                     break;
             }
 
@@ -2215,12 +2228,12 @@ namespace Client.Models
                     BodyLibrary.DrawBlend(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image);
                     break;
                 case MonsterImage.LobsterLord:
-                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image);
-                    BodyLibrary.Draw(BodyFrame + 1000, x, y, DrawColour, true, Opacity, ImageType.Image);
-                    BodyLibrary.Draw(BodyFrame + 2000, x, y, DrawColour, true, Opacity, ImageType.Image);
+                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
+                    BodyLibrary.Draw(BodyFrame + 1000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
+                    BodyLibrary.Draw(BodyFrame + 2000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
                     break;
                 default:
-                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image);
+                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
                     break;
             }
 
@@ -2248,7 +2261,6 @@ namespace Client.Models
                     if (!CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx6, out library)) break;
                     library.DrawBlend((GameScene.Game.MapControl.Animation % 30) + 1400, x, y, Color.White, true, 1f, ImageType.Image);
                     break;
-
             }
 
             if (CompanionObject != null && CompanionObject.HeadShape > 0)
@@ -2257,7 +2269,7 @@ namespace Client.Models
                 {
                     case MonsterImage.Companion_Pig:
                         if (!CEnvir.LibraryList.TryGetValue(LibraryFile.PEquipH1, out library)) break;
-                        library.Draw(DrawFrame + (CompanionObject.HeadShape * 1000), x, y, Color.White, true, 1f, ImageType.Image);
+                        library.Draw(DrawFrame + (CompanionObject.HeadShape * 1000), x, y, Color.White, true, 1f, ImageType.Image, Scale);
                         break;
                 }
             }
@@ -2268,7 +2280,7 @@ namespace Client.Models
                 {
                     case MonsterImage.Companion_Pig:
                         if (!CEnvir.LibraryList.TryGetValue(LibraryFile.PEquipB1, out library)) break;
-                        library.Draw(DrawFrame + (CompanionObject.BackShape * 1000), x, y, Color.White, true, 1f, ImageType.Image);
+                        library.Draw(DrawFrame + (CompanionObject.BackShape * 1000), x, y, Color.White, true, 1f, ImageType.Image, Scale);
                         break;
                 }
             }
@@ -2287,8 +2299,7 @@ namespace Client.Models
             MirLibrary library;
 
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out library)) return;
-            
-            
+
             float percent = Math.Min(1, Math.Max(0, data.Health / (float)data.MaxHealth));
 
             if (percent == 0) return;
@@ -2298,8 +2309,9 @@ namespace Client.Models
             Color color = !string.IsNullOrEmpty(PetOwner) ? Color.Yellow : Color.FromArgb(0, 200, 74);
 
             library.Draw(80, DrawX, DrawY - 55, Color.White, false, 1F, ImageType.Image);
-            library.Draw(79, DrawX + 1, DrawY - 55 + 1, color, new Rectangle(0, 0, (int) (size.Width*percent), size.Height), 1F, ImageType.Image);
-          }
+            library.Draw(79, DrawX + 1, DrawY - 55 + 1, color, new Rectangle(0, 0, (int)(size.Width * percent), size.Height), 1F, ImageType.Image);
+        }
+
         public override void DrawBlend()
         {
             if (BodyLibrary == null || !Visible) return;
