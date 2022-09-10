@@ -14190,8 +14190,6 @@ namespace Server.Models
 
                     ob = null;
 
-                    magics = new List<UserMagic> { magic };
-
                     realTargets = new HashSet<MapObject>();
 
                     possibleTargets = GetTargets(CurrentMap, p.Location, 3);
@@ -14215,7 +14213,7 @@ namespace Server.Models
                         ActionList.Add(new DelayedAction(
                             SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, target.CurrentLocation) * 48),
                             ActionType.DelayMagic,
-                            magics,
+                            new List<UserMagic> { magic },
                             target));
                     }
 
@@ -14332,17 +14330,6 @@ namespace Server.Models
                             if (!Functions.InRange(CurrentLocation, target.CurrentLocation, Globals.MagicRange)) continue;
 
                             realTargets.Add(target);
-
-                            //Unsure why code was changed to this
-                            //if (target is PlayerObject)
-                            //{
-                            //    var player = (PlayerObject)target;
-                            //    if ((InGroup(player) || InGuild(player)) && target.Dead)
-                            //    {
-                            //        realTargets.Add(target);
-                            //    }
-                            //}
-
                         }
                     }
 
@@ -14353,7 +14340,6 @@ namespace Server.Models
 
                         if (!UsePoison(1, out shape))
                             break;
-
 
                         if (augMagic != null)
                             count++;
@@ -15085,7 +15071,6 @@ namespace Server.Models
                 case MagicType.FlashOfLight:
                     ob = null;
 
-                    magics = new List<UserMagic> { magic };
                     /*   buff = Buffs.FirstOrDefault(x => x.Type == BuffType.TheNewBeginning);
 
                         if (buff != null && Magics.TryGetValue(MagicType.TheNewBeginning, out augMagic) && Level >= augMagic.Info.NeedLevel1)
@@ -15107,7 +15092,7 @@ namespace Server.Models
                         ActionList.Add(new DelayedAction(
                             SEnvir.Now.AddMilliseconds(400),
                             ActionType.DelayMagic,
-                            magics,
+                            new List<UserMagic> { magic },
                             cell));
                     }
                     break;
@@ -18964,10 +18949,8 @@ namespace Server.Models
                 damagePvP += GetElementPower(ObjectType.Player, Stat.PhantomAttack) * 8;
             }
 
-
             foreach (MapObject target in targets)
             {
-
                 ActionList.Add(new DelayedAction(
                     SEnvir.Now.AddMilliseconds(800),
                     ActionType.DelayedMagicDamage,
@@ -19223,7 +19206,6 @@ namespace Server.Models
         {
             if (cell?.Objects == null) return;
 
-
             foreach (MapObject ob in cell.Objects)
                 if (MagicAttack(new List<UserMagic> { magic }, ob, true) > 0) break;
         }
@@ -19295,7 +19277,6 @@ namespace Server.Models
             if (ob?.Node == null || !CanAttackTarget(ob)) return;
 
             if (MagicAttack(new List<UserMagic> { magic }, ob, true) <= 0) return;
-
 
             int power = Math.Min(GetSC(), GetMC()) / 2;
 
