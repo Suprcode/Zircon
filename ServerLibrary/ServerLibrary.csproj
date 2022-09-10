@@ -9,11 +9,4 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\Magics\Assassin\" />
-    <Folder Include="Models\Magics\Taoist\" />
-    <Folder Include="Models\Magics\Wizard\" />
-    <Folder Include="Models\Magics\Warrior\" />
-  </ItemGroup>
-
 </Project>
