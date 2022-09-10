@@ -5852,13 +5852,15 @@ namespace Server.Models
 
                             int health = item.Info.Stats[Stat.Health];
                             int mana = item.Info.Stats[Stat.Mana];
+                            int focus = item.Info.Stats[Stat.Focus];
 
                             if (Magics.TryGetValue(MagicType.PotionMastery, out magic) && Level >= magic.Info.NeedLevel1)
                             {
                                 health += health * magic.GetPower() / 100;
                                 mana += mana * magic.GetPower() / 100;
+                                focus += focus * magic.GetPower() / 100;
 
-                                if (CurrentHP < Stats[Stat.Health] || CurrentMP < Stats[Stat.Mana])
+                                if (CurrentHP < Stats[Stat.Health] || CurrentMP < Stats[Stat.Mana] || CurrentFP < Stats[Stat.Focus])
                                     LevelMagic(magic);
                             }
 
@@ -5866,13 +5868,15 @@ namespace Server.Models
                             {
                                 health += health * magic.GetPower() / 100;
                                 mana += mana * magic.GetPower() / 100;
+                                focus += focus * magic.GetPower() / 100;
 
-                                if (CurrentHP < Stats[Stat.Health] || CurrentMP < Stats[Stat.Mana])
+                                if (CurrentHP < Stats[Stat.Health] || CurrentMP < Stats[Stat.Mana] || CurrentFP < Stats[Stat.Focus])
                                     LevelMagic(magic);
                             }
 
                             ChangeHP(health);
                             ChangeMP(mana);
+                            ChangeFP(focus);
 
                             if (item.Info.Stats[Stat.Experience] > 0) GainExperience(item.Info.Stats[Stat.Experience], false);
                             break;
@@ -13514,8 +13518,6 @@ namespace Server.Models
 
             bool cast = true;
 
-
-
             List<uint> targets = new List<uint>();
             List<Point> locations = new List<Point>();
 
@@ -15794,7 +15796,6 @@ namespace Server.Models
                         power -= power * res / 5;
                 }
 
-
                 if (power < 0) power = 0;
 
                 for (Element ele = Element.Fire; ele <= Element.Phantom; ele++)
@@ -16489,11 +16490,8 @@ namespace Server.Models
             foreach (UserMagic magic in magics)
                 LevelMagic(magic);
 
-            UserMagic temp;
-            if (Buffs.Any(x => x.Type == BuffType.Renounce) && Magics.TryGetValue(MagicType.Renounce, out temp))
-            {
+            if (Buffs.Any(x => x.Type == BuffType.Renounce) && Magics.TryGetValue(MagicType.Renounce, out UserMagic temp))
                 LevelMagic(temp);
-            }
 
             if (Magics.TryGetValue(MagicType.AdvancedRenounce, out temp))
                 LevelMagic(temp);

@@ -292,6 +292,7 @@
             new DevExpress.XtraNavBar.NavBarItemLink(this.DropInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.FishingInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.BaseStatButton),
+            new DevExpress.XtraNavBar.NavBarItemLink(this.DisciplineInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.ItemInfoStatButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoStatButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.SetInfoButton),
@@ -304,7 +305,6 @@
             new DevExpress.XtraNavBar.NavBarItemLink(this.CastleInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.CompanionInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.CurrencyInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.DisciplineInfoButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.ConfigButton)});
             this.navBarGroup2.Name = "navBarGroup2";
             // 
@@ -481,6 +481,7 @@
             // DisciplineInfoButton
             // 
             this.DisciplineInfoButton.Caption = "Discipline Info";
+            this.DisciplineInfoButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("DisciplineInfoButton.ImageOptions.LargeImage")));
             this.DisciplineInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("DisciplineInfoButton.ImageOptions.SmallImage")));
             this.DisciplineInfoButton.Name = "DisciplineInfoButton";
             this.DisciplineInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DisciplineInfoButton_LinkClicked);

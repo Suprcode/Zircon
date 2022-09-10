@@ -765,7 +765,7 @@ namespace Library
         [StatDescription(Title = "Rebirth ", Format = "{0}", Mode = StatType.Default)]
         Rebirth,
 
-        [StatDescription(Title = "Stamina", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
+        [StatDescription(Title = "Focus", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
         Focus,
 
         [StatDescription(Title = "Size Percent", Mode = StatType.None)]

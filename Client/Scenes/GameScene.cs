@@ -3548,7 +3548,7 @@ namespace Client.Scenes
             ExperienceChanged();
             HealthChanged();
             ManaChanged();
-            StaminaChanged();
+            FocusChanged();
             CurrencyChanged();
             SafeZoneChanged();
             AttackModeChanged();
@@ -3612,7 +3612,7 @@ namespace Client.Scenes
 
             HealthChanged();
             ManaChanged();
-            StaminaChanged();
+            FocusChanged();
 
             foreach (NPCGoodsCell cell in NPCGoodsBox.Cells)
                 cell.UpdateColours();
@@ -3642,12 +3642,12 @@ namespace Client.Scenes
 
             MainPanel.ManaLabel.Text = $"{User.CurrentMP}/{User.Stats[Stat.Mana]}";
         }
-        public void StaminaChanged()
+        public void FocusChanged()
         {
             if (User == null) return;
 
-            MainPanel.StaminaLabel.Visible = User.Stats[Stat.Focus] > 0;
-            MainPanel.StaminaLabel.Text = $"{User.CurrentSP}/{User.Stats[Stat.Focus]}";
+            MainPanel.FocusLabel.Visible = User.Stats[Stat.Focus] > 0;
+            MainPanel.FocusLabel.Text = $"{User.CurrentFP}/{User.Stats[Stat.Focus]}";
         }
 
         public void AttackModeChanged()

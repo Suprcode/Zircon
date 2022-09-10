@@ -482,7 +482,7 @@ namespace Library.Network.ServerPackets
         public int Change { get; set; }
     }
 
-    public sealed class StaminaChanged : Packet
+    public sealed class FocusChanged : Packet
     {
         public uint ObjectID { get; set; }
         public int Change { get; set; }

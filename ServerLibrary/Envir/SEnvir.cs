@@ -5,7 +5,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Mail;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -78,6 +77,7 @@ namespace Server.Envir
             if (ChatLogs.Count < 1000)
                 ChatLogs.Enqueue(log);
         }
+
         #endregion
 
         #region Network
@@ -503,9 +503,10 @@ namespace Server.Envir
             }
         }
 
-        //Only works on Increasing EXP, still need to do Rebirth or loss of exp ranking update.
+
         public static void RankingSort(CharacterInfo character, bool updateLead = true)
         {
+            //Only works on Increasing EXP, still need to do Rebirth or loss of exp ranking update.
             bool changed = false;
 
             LinkedListNode<CharacterInfo> node;
@@ -524,7 +525,6 @@ namespace Server.Envir
 
             UpdateLead();
         }
-
 
         public static void UpdateLead()
         {
@@ -3583,12 +3583,11 @@ namespace Server.Envir
     public enum CommandType
     {
         None,
+
         Activation,
         PasswordReset,
         AccountDelete
-
     }
-
 
     public sealed class IPNMessage
     {

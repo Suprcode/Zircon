@@ -13,10 +13,10 @@ namespace Client.Scenes.Views
     {
         #region Properties
 
-        public DXControl HealthBar, ManaBar, StaminaBar;
+        public DXControl HealthBar, ManaBar, FocusBar;
         public DXImageControl ExperienceBar, NewMailIcon, CompletedQuestIcon, AvailableQuestIcon;
 
-        public DXLabel ClassLabel, LevelLabel, ACLabel, MRLabel, DCLabel, MCLabel, SCLabel, AccuracyLabel, AgilityLabel, HealthLabel, ManaLabel, StaminaLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
+        public DXLabel ClassLabel, LevelLabel, ACLabel, MRLabel, DCLabel, MCLabel, SCLabel, AccuracyLabel, AgilityLabel, HealthLabel, ManaLabel, FocusLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
 
         #endregion
 
@@ -104,20 +104,20 @@ namespace Client.Scenes.Views
                 PresentTexture(image.Image, this, new Rectangle(ManaBar.DisplayArea.X, ManaBar.DisplayArea.Y, (int) (image.Width * percent), image.Height), Color.White, ManaBar);
             };
 
-            StaminaBar =  new DXImageControl
+            FocusBar =  new DXImageControl
             {
                 Parent = this,
                 Location = new Point(35, 50),
                 LibraryFile = LibraryFile.GameInter,
                 Size = barLibrary.GetSize(58),
             };
-            StaminaBar.BeforeDraw += (o, e) =>
+            FocusBar.BeforeDraw += (o, e) =>
             {
                 if (barLibrary == null) return;
 
-                if (MapObject.User.Stats[Stat.Mana] == 0) return;
+                if (MapObject.User.Stats[Stat.Focus] == 0) return;
 
-                float percent = Math.Min(1, Math.Max(0, MapObject.User.CurrentSP / (float)MapObject.User.Stats[Stat.Focus]));
+                float percent = Math.Min(1, Math.Max(0, MapObject.User.CurrentFP / (float)MapObject.User.Stats[Stat.Focus]));
 
                 if (percent == 0) return;
 
@@ -127,7 +127,7 @@ namespace Client.Scenes.Views
 
                 if (image == null) return;
 
-                PresentTexture(image.Image, this, new Rectangle(StaminaBar.DisplayArea.X, StaminaBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, StaminaBar);
+                PresentTexture(image.Image, this, new Rectangle(FocusBar.DisplayArea.X, FocusBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, FocusBar);
             };
 
             DXButton CharacterButton = new DXButton
@@ -476,7 +476,7 @@ namespace Client.Scenes.Views
                 ManaLabel.Location = new Point(ManaBar.Location.X + (ManaBar.Size.Width - ManaLabel.Size.Width) / 2, ManaBar.Location.Y + (ManaBar.Size.Height - ManaLabel.Size.Height) / 2);
             };
 
-            StaminaLabel = new DXLabel
+            FocusLabel = new DXLabel
             {
                 Parent = this,
                 ForeColour = Color.White,
@@ -485,9 +485,9 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Visible = false
             };
-            StaminaLabel.SizeChanged += (o, e) =>
+            FocusLabel.SizeChanged += (o, e) =>
             {
-                StaminaLabel.Location = new Point(StaminaBar.Location.X + (StaminaBar.Size.Width - StaminaLabel.Size.Width) / 2, StaminaBar.Location.Y + (StaminaBar.Size.Height - StaminaLabel.Size.Height) / 2);
+                FocusLabel.Location = new Point(FocusBar.Location.X + (FocusBar.Size.Width - FocusLabel.Size.Width) / 2, FocusBar.Location.Y + (FocusBar.Size.Height - FocusLabel.Size.Height) / 2);
             };
 
             ExperienceLabel = new DXLabel
@@ -514,7 +514,7 @@ namespace Client.Scenes.Views
             };
             AttackModeLabel.SizeChanged += (o, e) =>
             {
-                AttackModeLabel.Location = new Point(StaminaBar.Location.X, StaminaBar.Location.Y + (StaminaBar.Size.Height - AttackModeLabel.Size.Height) / 2 - 2);
+                AttackModeLabel.Location = new Point(FocusBar.Location.X, FocusBar.Location.Y + (FocusBar.Size.Height - AttackModeLabel.Size.Height) / 2 - 2);
             }; 
 
             PetModeLabel = new DXLabel
@@ -528,7 +528,7 @@ namespace Client.Scenes.Views
             };
             PetModeLabel.SizeChanged += (o, e) =>
             {
-                PetModeLabel.Location = new Point(StaminaBar.Location.X + StaminaBar.Size.Width - PetModeLabel.Size.Width, StaminaBar.Location.Y + (StaminaBar.Size.Height - PetModeLabel.Size.Height)/2 - 2);
+                PetModeLabel.Location = new Point(FocusBar.Location.X + FocusBar.Size.Width - PetModeLabel.Size.Width, FocusBar.Location.Y + (FocusBar.Size.Height - PetModeLabel.Size.Height)/2 - 2);
             };
         }
 
@@ -660,12 +660,12 @@ namespace Client.Scenes.Views
                     ManaLabel = null;
                 }
 
-                if (StaminaLabel != null)
+                if (FocusLabel != null)
                 {
-                    if (!StaminaLabel.IsDisposed)
-                        StaminaLabel.Dispose();
+                    if (!FocusLabel.IsDisposed)
+                        FocusLabel.Dispose();
 
-                    StaminaLabel = null;
+                    FocusLabel = null;
                 }
 
                 if (ExperienceLabel != null)

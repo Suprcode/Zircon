@@ -1675,13 +1675,13 @@ namespace Client.Envir
             }
         }
 
-        public void Process(S.StaminaChanged p)
+        public void Process(S.FocusChanged p)
         {
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                ob.CurrentSP += p.Change;
+                ob.CurrentFP += p.Change;
 
                 return;
             }

@@ -73,7 +73,7 @@ namespace Client.Models
         public virtual int Level { get; set; }
         public virtual int CurrentHP { get; set; }
         public virtual int CurrentMP { get; set; }
-        public virtual int CurrentSP { get; set; }
+        public virtual int CurrentFP { get; set; }
 
         public uint AttackerID;
 

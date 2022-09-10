@@ -186,7 +186,7 @@ namespace Server.Models
             if (DisplayFP != CurrentFP)
             {
                 int change = CurrentFP - DisplayFP;
-                Broadcast(new S.StaminaChanged { ObjectID = ObjectID, Change = change });
+                Broadcast(new S.FocusChanged { ObjectID = ObjectID, Change = change });
                 DisplayFP = CurrentFP;
 
                 changed = true;
@@ -1219,6 +1219,7 @@ namespace Server.Models
 
             CurrentMP += amount;
         }
+
         public void ChangeFP(int amount)
         {
             if (CurrentFP + amount > Stats[Stat.Focus])

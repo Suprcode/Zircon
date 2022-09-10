@@ -134,18 +134,18 @@ namespace Client.Models
         private int _CurrentMP;
         #endregion
 
-        #region CurrentSP
-        public override int CurrentSP
+        #region CurrentFP
+        public override int CurrentFP
         {
-            get { return _CurrentSP; }
+            get { return _CurrentFP; }
             set
             {
-                _CurrentSP = value;
+                _CurrentFP = value;
 
-                GameScene.Game.StaminaChanged();
+                GameScene.Game.FocusChanged();
             }
         }
-        private int _CurrentSP;
+        private int _CurrentFP;
         #endregion
 
         #region AttackMode
@@ -294,7 +294,7 @@ namespace Client.Models
 
             CurrentHP = info.CurrentHP;
             CurrentMP = info.CurrentMP;
-            CurrentSP = info.CurrentSP;
+            CurrentFP = info.CurrentSP;
 
             Level = info.Level;
             Experience = info.Experience;
