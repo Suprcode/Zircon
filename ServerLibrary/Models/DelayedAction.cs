@@ -29,6 +29,7 @@ namespace Server.Models
         RangeAttack,
         DelayAttack,
         DelayMagic,
+        DelayMagicNew,
         BroadCastPacket,
         Spawn,
         Function,

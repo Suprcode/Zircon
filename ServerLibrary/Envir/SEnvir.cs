@@ -22,6 +22,7 @@ using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
 using System.Reflection;
 using System.Globalization;
+using Server.Models.Magic;
 
 namespace Server.Envir
 {
@@ -312,7 +313,7 @@ namespace Server.Envir
         public static List<MapObject> ActiveObjects = new List<MapObject>();
 
         public static List<PlayerObject> Players = new List<PlayerObject>();
-        public static List<ConquestWar> ConquestWars = new List<ConquestWar>();
+        public static List<ConquestWar> ConquestWars = new List<ConquestWar>(); 
 
         public static List<SpawnInfo> Spawns = new List<SpawnInfo>();
 
@@ -502,7 +503,6 @@ namespace Server.Envir
                 BossList.Add(monster);
             }
         }
-
 
         public static void RankingSort(CharacterInfo character, bool updateLead = true)
         {
