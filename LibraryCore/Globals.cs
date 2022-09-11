@@ -453,7 +453,7 @@ namespace Library
 
         public int CurrentHP { get; set; }
         public int CurrentMP { get; set; }
-        public int CurrentSP { get; set; }
+        public int CurrentFP { get; set; }
 
         public AttackMode AttackMode { get; set; }
         public PetMode PetMode { get; set; }

@@ -19600,7 +19600,7 @@ namespace Server.Models
 
                 CurrentHP = DisplayHP,
                 CurrentMP = DisplayMP,
-                CurrentSP = DisplayFP,
+                CurrentFP = DisplayFP,
 
                 AttackMode = AttackMode,
                 PetMode = PetMode,

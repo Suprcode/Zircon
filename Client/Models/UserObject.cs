@@ -294,7 +294,7 @@ namespace Client.Models
 
             CurrentHP = info.CurrentHP;
             CurrentMP = info.CurrentMP;
-            CurrentFP = info.CurrentSP;
+            CurrentFP = info.CurrentFP;
 
             Level = info.Level;
             Experience = info.Experience;
