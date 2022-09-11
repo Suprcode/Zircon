@@ -31,7 +31,6 @@ namespace Server.Models.Magic
 
         public override void Complete(params object[] data)
         {
-            UserMagic magic = (UserMagic)data[0];
             MapObject target = (MapObject)data[1];
             Point targetLocation = (Point)data[2];
             int bounce = (int)data[3];
@@ -42,11 +41,7 @@ namespace Server.Models.Magic
             if (!Functions.InRange(target.CurrentLocation, targetLocation, Globals.MagicRange))
                 return;
 
-            int power = magic.GetPower() + Player.GetMC();
-
-            Element element = Element.Fire;
-
-            if (Player.MagicAttack(Magic, target, power, element, primary: true) < 1)
+            if (Player.MagicAttack(Type, target, true) < 1)
                 return;
 
             var targets = new List<MapObject>();
@@ -95,7 +90,7 @@ namespace Server.Models.Magic
                 });
             }
 
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Magic, target, target.CurrentLocation, bounce));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, target, target.CurrentLocation, bounce));
 
             return response;
         }

@@ -30,22 +30,16 @@ namespace Server.Models.Magic
 
             var delay = GetDelayFromDistance(500, target);
 
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Magic, target));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, target));
 
             return response;
         }
 
         public override void Complete(params object[] data)
         {
-            UserMagic magic = (UserMagic)data[0];
             MapObject target = (MapObject)data[1];
 
-            var element = Element.Fire;
-            var power = Magic.GetPower() + Player.GetMC();
-
-            power -= target.GetMR();
-
-            Player.MagicAttack(Magic, target, power, element);
+            Player.MagicAttack(Type, target);
         }
     }
 }

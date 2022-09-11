@@ -39,7 +39,7 @@ namespace Server.Models.Magic
             var delay = SEnvir.Now.AddMilliseconds(500);
 
             foreach (Cell cell in cells)
-                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Magic, cell));
+                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
 
             return response;
         }
@@ -57,10 +57,7 @@ namespace Server.Models.Magic
                 MapObject ob = cell.Objects[i];
                 if (!Player.CanAttackTarget(ob)) continue;
 
-                var power = Magic.GetPower() + Player.GetMC();
-                power -= ob.GetMR();
-
-                Player.MagicAttack(Magic, ob, power, Element.Fire, primary: true);
+                Player.MagicAttack(Type, ob);
             }
         }
     }

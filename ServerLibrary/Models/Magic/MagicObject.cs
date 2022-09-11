@@ -9,11 +9,19 @@ namespace Server.Models
 {
     public abstract class MagicObject
     {
-        public PlayerObject Player { get; set; }
-        public UserMagic Magic { get; set; }
-        public virtual bool UpdateCombatTime => true;
+        public PlayerObject Player { get; }
+        public UserMagic Magic { get; }
+        public MagicType Type => Magic.Info.Magic;
 
         public abstract Element Element { get; }
+
+        public virtual bool UpdateCombatTime => true;
+        public virtual bool CanStuck => true;
+        protected virtual int Slow => 0;
+        protected virtual int SlowLevel => 0;
+        protected virtual int Repel => 0;
+        protected virtual int Silence => 0;
+        protected virtual int Shock => 0;
 
         public MagicObject(PlayerObject player, UserMagic magic) 
         {
@@ -24,6 +32,31 @@ namespace Server.Models
         public virtual int GetPower()
         {
             return 0;
+        }
+
+        public virtual int GetSlow()
+        {
+            return Slow;
+        }
+
+        public virtual int GetSlowLevel()
+        {
+            return SlowLevel;
+        }
+
+        public virtual int GetRepel()
+        {
+            return Repel;
+        }
+
+        public virtual int GetSilence()
+        {
+            return Silence;
+        }
+
+        public virtual int GetShock()
+        {
+            return Shock;
         }
 
         public virtual bool CheckCost()
