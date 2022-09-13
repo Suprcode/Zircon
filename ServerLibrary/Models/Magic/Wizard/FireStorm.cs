@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Server.Models.Magic
@@ -15,12 +16,7 @@ namespace Server.Models.Magic
 
         }
 
-        public override int GetPower()
-        {
-            return Magic.GetPower() + Player.GetMC();
-        }
-
-        public override MagicCast Cast(MapObject target, Point location)
+        public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             var response = new MagicCast
             {
@@ -44,7 +40,7 @@ namespace Server.Models.Magic
             return response;
         }
 
-        public override void Complete(params object[] data)
+        public override void MagicComplete(params object[] data)
         {
             Cell cell = (Cell)data[1];
 
@@ -57,8 +53,15 @@ namespace Server.Models.Magic
                 MapObject ob = cell.Objects[i];
                 if (!Player.CanAttackTarget(ob)) continue;
 
-                Player.MagicAttack(Type, ob);
+                Player.MagicAttack(new List<MagicType> { Type }, ob);
             }
+        }
+
+        public override int ModifyPower1(bool primary, int power)
+        {
+            power += Magic.GetPower() + Player.GetMC();
+
+            return power;
         }
     }
 }

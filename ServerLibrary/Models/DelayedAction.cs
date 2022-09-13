@@ -28,6 +28,7 @@ namespace Server.Models
         Magic,
         RangeAttack,
         DelayAttack,
+        DelayAttackNew,
         DelayMagic,
         DelayMagicNew,
         BroadCastPacket,

@@ -13,23 +13,14 @@ namespace Server.Models.Magic
     public class FireWall : MagicObject
     {
         public override Element Element => Element.Fire;
-        public override bool CanStuck => false;
+        public override bool CanStruck => false;
 
         public FireWall(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
 
-        public override int GetPower()
-        {
-            var power = Magic.GetPower() + Player.GetMC();
-
-            power = (int)(power * 0.60F);
-
-            return power;
-        }
-
-        public override MagicCast Cast(MapObject target, Point location)
+        public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             var response = new MagicCast
             {
@@ -56,23 +47,20 @@ namespace Server.Models.Magic
                 break;
             }
 
-            int power = (Magic.Level + 2) * 5;
-
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Up)), power));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Down)), power));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(location), power));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Left)), power));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Right)), power));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Up))));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Down))));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(location)));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Left))));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Right))));
 
             return response;
         }
 
-        public override void Complete(params object[] data)
+        public override void MagicComplete(params object[] data)
         {
-            Cell cell = (Cell)data[2];
-            int power = (int)data[3];
+            Cell cell = (Cell)data[1];
 
             if (cell == null) return;
 
@@ -93,7 +81,7 @@ namespace Server.Models.Magic
             SpellObject ob = new SpellObject
             {
                 DisplayLocation = cell.Location,
-                TickCount = power,
+                TickCount = (Magic.Level + 2) * 5,
                 TickFrequency = TimeSpan.FromSeconds(2),
                 Owner = Player,
                 Effect = SpellEffect.FireWall,
@@ -103,6 +91,20 @@ namespace Server.Models.Magic
             ob.Spawn(cell.Map, cell.Location);
 
             Player.LevelMagic(Magic);
+        }
+
+        public override int ModifyPower1(bool primary, int power)
+        {
+            power += Magic.GetPower() + Player.GetMC();
+
+            return power;
+        }
+
+        public override int ModifyPower2(bool primary, int power)
+        {
+            power = (int)(power * 0.60F);
+
+            return power;
         }
     }
 }

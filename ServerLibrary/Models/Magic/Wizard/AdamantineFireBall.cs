@@ -16,7 +16,7 @@ namespace Server.Models.Magic
 
         }
 
-        public override MagicCast Cast(MapObject target, Point location)
+        public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             var response = new MagicCast();
 
@@ -35,11 +35,18 @@ namespace Server.Models.Magic
             return response;
         }
 
-        public override void Complete(params object[] data)
+        public override void MagicComplete(params object[] data)
         {
             MapObject target = (MapObject)data[1];
 
-            Player.MagicAttack(Type, target);
+            Player.MagicAttack(new List<MagicType> { Type }, target);
+        }
+
+        public override int ModifyPower1(bool primary, int power)
+        {
+            power += Magic.GetPower() + Player.GetMC();
+
+            return power;
         }
     }
 }

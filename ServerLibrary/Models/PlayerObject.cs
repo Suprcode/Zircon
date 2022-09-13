@@ -15,6 +15,7 @@ using System.Threading;
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using Library.Network.ClientPackets;
 
 namespace Server.Models
 {
@@ -298,15 +299,21 @@ namespace Server.Models
             foreach (MonsterObject ob in clearList)
                 ob.EXPOwner = null;
 
-            if (CanFlamingSword && SEnvir.Now >= FlamingSwordTime)
-            {
-                CanFlamingSword = false;
-                Enqueue(new S.MagicToggle { Magic = MagicType.FlamingSword, CanUse = CanFlamingSword });
 
-                Connection.ReceiveChat(string.Format(Connection.Language.ChargeExpire, Magics[MagicType.FlamingSword].Info.Name), MessageType.System);
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.ChargeExpire, Magics[MagicType.FlamingSword].Info.Name), MessageType.System);
+            foreach (MagicType type in MagicObjects.Keys)
+            {
+                MagicObjects[type].Process();
             }
+
+            //if (CanFlamingSword && SEnvir.Now >= FlamingSwordTime)
+            //{
+            //    CanFlamingSword = false;
+            //    Enqueue(new S.MagicToggle { Magic = MagicType.FlamingSword, CanUse = CanFlamingSword });
+
+            //    Connection.ReceiveChat(string.Format(Connection.Language.ChargeExpire, Magics[MagicType.FlamingSword].Info.Name), MessageType.System);
+            //    foreach (SConnection con in Connection.Observers)
+            //        con.ReceiveChat(string.Format(con.Language.ChargeExpire, Magics[MagicType.FlamingSword].Info.Name), MessageType.System);
+            //}
             if (CanDragonRise && SEnvir.Now >= DragonRiseTime)
             {
                 CanDragonRise = false;
@@ -372,6 +379,9 @@ namespace Server.Models
                     return;
                 case ActionType.DelayAttack:
                     Attack((MapObject)action.Data[0], (List<UserMagic>)action.Data[1], (bool)action.Data[2], (int)action.Data[3]);
+                    return;
+                case ActionType.DelayAttackNew:
+                    Attack((MapObject)action.Data[0], (List<MagicType>)action.Data[1], (bool)action.Data[2], (int)action.Data[3]);
                     return;
                 case ActionType.DelayMagic:
                     CompleteMagic(action.Data);
@@ -864,14 +874,19 @@ namespace Server.Models
             if (Level == 0)
                 NewCharacter();
 
-            if (Character.CanThrusting && Magics.ContainsKey(MagicType.Thrusting))
-                Enqueue(new S.MagicToggle { Magic = MagicType.Thrusting, CanUse = true });
+            foreach (var key in MagicObjects.Keys)
+            {
+                MagicObjects[key].RefreshToggle();
+            }
 
-            if (Character.CanHalfMoon && Magics.ContainsKey(MagicType.HalfMoon))
-                Enqueue(new S.MagicToggle { Magic = MagicType.HalfMoon, CanUse = true });
+            //if (Character.CanThrusting && Magics.ContainsKey(MagicType.Thrusting))
+            //    Enqueue(new S.MagicToggle { Magic = MagicType.Thrusting, CanUse = true });
 
-            if (Character.CanDestructiveSurge && Magics.ContainsKey(MagicType.DestructiveSurge))
-                Enqueue(new S.MagicToggle { Magic = MagicType.DestructiveSurge, CanUse = true });
+            //if (Character.CanHalfMoon && Magics.ContainsKey(MagicType.HalfMoon))
+            //    Enqueue(new S.MagicToggle { Magic = MagicType.HalfMoon, CanUse = true });
+
+            //if (Character.CanDestructiveSurge && Magics.ContainsKey(MagicType.DestructiveSurge))
+            //    Enqueue(new S.MagicToggle { Magic = MagicType.DestructiveSurge, CanUse = true });
 
             if (Character.CanFlameSplash && Magics.ContainsKey(MagicType.FlameSplash))
                 Enqueue(new S.MagicToggle { Magic = MagicType.FlameSplash, CanUse = true });
@@ -2671,6 +2686,15 @@ namespace Server.Models
                 }
             }
 
+            foreach (MagicType type in MagicObjects.Keys)
+            {
+                var magicObject = MagicObjects[type];
+
+                if (Level < magicObject.Magic.Info.NeedLevel1) continue;
+
+                Stats.Add(magicObject.GetPassiveStats());
+            }
+
 
             foreach (KeyValuePair<MagicType, UserMagic> pair in Magics)
             {
@@ -2678,17 +2702,17 @@ namespace Server.Models
 
                 switch (pair.Key)
                 {
-                    case MagicType.Swordsmanship:
-                        Stats[Stat.Accuracy] += pair.Value.GetPower();
-                        break;
+                    //case MagicType.Swordsmanship:
+                    //    Stats[Stat.Accuracy] += pair.Value.GetPower();
+                    //    break;
                     case MagicType.SpiritSword:
                         Stats[Stat.Accuracy] += pair.Value.GetPower();
                         break;
-                    case MagicType.Slaying:
-                        Stats[Stat.Accuracy] += pair.Value.Level * 2;
-                        Stats[Stat.MinDC] += pair.Value.Level * 2;
-                        Stats[Stat.MaxDC] += pair.Value.Level * 2;
-                        break;
+                    //case MagicType.Slaying:
+                    //    Stats[Stat.Accuracy] += pair.Value.Level * 2;
+                    //    Stats[Stat.MinDC] += pair.Value.Level * 2;
+                    //    Stats[Stat.MaxDC] += pair.Value.Level * 2;
+                    //    break;
                     case MagicType.WillowDance:
                         Stats[Stat.Agility] += pair.Value.GetPower();
                         break;
@@ -9515,7 +9539,7 @@ namespace Server.Models
             if (Dead || NPC == null || NPCPage == null) return;
 
 
-            foreach (NPCButton button in NPCPage.Buttons)
+            foreach (Library.SystemModels.NPCButton button in NPCPage.Buttons)
             {
                 if (button.ButtonID != ButtonID || button.DestinationPage == null) continue;
 
@@ -12968,73 +12992,85 @@ namespace Server.Models
 
             MagicType validMagic = MagicType.None;
             List<UserMagic> magics = new List<UserMagic>();
+            List<MagicType> newMagics = new List<MagicType>();
 
             UserMagic magic;
 
+            foreach (var key in MagicObjects.Keys)
+            {
+                var magicObject = MagicObjects[key];
+
+                if (magicObject.CanAttack(attackMagic))
+                {
+                    if (magicObject.HasAttackAnimation)
+                        validMagic = magicObject.Type;
+
+                    newMagics.Add(key);
+                }
+            }
+
             #region Warrior
 
-            if (Magics.TryGetValue(MagicType.Swordsmanship, out magic) && Level >= magic.Info.NeedLevel1)
-                magics.Add(magic);
+            //if (Magics.TryGetValue(MagicType.Swordsmanship, out magic) && Level >= magic.Info.NeedLevel1)
+            //    magics.Add(magic);
 
-            if (Magics.TryGetValue(MagicType.Slaying, out magic) && Level >= magic.Info.NeedLevel1)
-            {
-                if (CanPowerAttack && attackMagic == MagicType.Slaying)
-                {
-                    magics.Add(magic);
-                    validMagic = MagicType.Slaying;
-                    Enqueue(new S.MagicToggle { Magic = MagicType.Slaying, CanUse = CanPowerAttack = false });
-                }
+            //if (Magics.TryGetValue(MagicType.Slaying, out magic) && Level >= magic.Info.NeedLevel1)
+            //{
+            //    if (CanPowerAttack && attackMagic == MagicType.Slaying)
+            //    {
+            //        magics.Add(magic);
+            //        validMagic = MagicType.Slaying;
+            //        Enqueue(new S.MagicToggle { Magic = MagicType.Slaying, CanUse = CanPowerAttack = false });
+            //    }
 
-                if (!CanPowerAttack && SEnvir.Random.Next(5) == 0)
-                    Enqueue(new S.MagicToggle { Magic = MagicType.Slaying, CanUse = CanPowerAttack = true });
-            }
+            //    if (!CanPowerAttack && SEnvir.Random.Next(5) == 0)
+            //        Enqueue(new S.MagicToggle { Magic = MagicType.Slaying, CanUse = CanPowerAttack = true });
+            //}
 
-            if (attackMagic == MagicType.Thrusting && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
-            {
-                int cost = magic.Cost;
+            //if (attackMagic == MagicType.Thrusting && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
+            //{
+            //    int cost = magic.Cost;
 
-                if (cost <= CurrentMP)
-                {
-                    validMagic = MagicType.Thrusting;
-                    magics.Add(magic);
-                    ChangeMP(-cost);
-                }
+            //    if (cost <= CurrentMP)
+            //    {
+            //        validMagic = MagicType.Thrusting;
+            //        magics.Add(magic);
+            //        ChangeMP(-cost);
+            //    }
+            //}
 
-            }
+            //if (attackMagic == MagicType.HalfMoon && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
+            //{
+            //    int cost = magic.Cost;
 
-            if (attackMagic == MagicType.HalfMoon && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
-            {
-                int cost = magic.Cost;
+            //    if (cost <= CurrentMP)
+            //    {
+            //        validMagic = MagicType.HalfMoon;
+            //        magics.Add(magic);
+            //        ChangeMP(-cost);
+            //    }
+            //}
 
-                if (cost <= CurrentMP)
-                {
-                    validMagic = MagicType.HalfMoon;
-                    magics.Add(magic);
-                    ChangeMP(-cost);
-                }
-            }
+            //if (attackMagic == MagicType.DestructiveSurge && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
+            //{
+            //    int cost = magic.Cost;
 
-            if (attackMagic == MagicType.DestructiveSurge && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
-            {
-                int cost = magic.Cost;
+            //    if (cost <= CurrentMP)
+            //    {
+            //        DestructiveSurgeLifeSteal = 0;
+            //        validMagic = MagicType.DestructiveSurge;
+            //        magics.Add(magic);
+            //        ChangeMP(-cost);
+            //    }
+            //}
 
-                if (cost <= CurrentMP)
-                {
-                    DestructiveSurgeLifeSteal = 0;
-                    validMagic = MagicType.DestructiveSurge;
-                    magics.Add(magic);
-                    ChangeMP(-cost);
-                }
-            }
-
-            if (CanFlamingSword && attackMagic == MagicType.FlamingSword && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
-            {
-                validMagic = MagicType.FlamingSword;
-                magics.Add(magic);
-                CanFlamingSword = false;
-                Enqueue(new S.MagicToggle { Magic = MagicType.FlamingSword, CanUse = false });
-            }
-
+            //if (CanFlamingSword && attackMagic == MagicType.FlamingSword && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
+            //{
+            //    validMagic = MagicType.FlamingSword;
+            //    magics.Add(magic);
+            //    CanFlamingSword = false;
+            //    Enqueue(new S.MagicToggle { Magic = MagicType.FlamingSword, CanUse = false });
+            //}
 
             if (CanDragonRise && attackMagic == MagicType.DragonRise && Magics.TryGetValue(attackMagic, out magic) && Level >= magic.Info.NeedLevel1)
             {
@@ -13198,127 +13234,138 @@ namespace Server.Models
                 }
             }
 
-            if (AttackLocation(Functions.Move(CurrentLocation, Direction), magics, true))
+            if (newMagics.Any())
             {
-                switch (attackMagic)
+                if (AttackLocation(Functions.Move(CurrentLocation, Direction), newMagics, true))
                 {
-                    case MagicType.FullBloom:
-                        Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
+                    //Set Cooldown (possibly cooldown multiple other skills too)
+                    //Toggle off magic too (do within cooldown?)
+                }
+            }
+            else
+            {
+                if (AttackLocation(Functions.Move(CurrentLocation, Direction), magics, true))
+                {
+                    switch (attackMagic)
+                    {
+                        case MagicType.FullBloom:
+                            Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
 
-                        if (Magics.TryGetValue(MagicType.FullBloom, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
-                        }
-                        if (Magics.TryGetValue(MagicType.WhiteLotus, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        if (Magics.TryGetValue(MagicType.RedLotus, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        if (Magics.TryGetValue(MagicType.SweetBrier, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        break;
-                    case MagicType.WhiteLotus:
-                        Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
+                            if (Magics.TryGetValue(MagicType.FullBloom, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                            }
+                            if (Magics.TryGetValue(MagicType.WhiteLotus, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            if (Magics.TryGetValue(MagicType.RedLotus, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            if (Magics.TryGetValue(MagicType.SweetBrier, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            break;
+                        case MagicType.WhiteLotus:
+                            Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
 
-                        if (Magics.TryGetValue(MagicType.FullBloom, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        if (Magics.TryGetValue(MagicType.WhiteLotus, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
-                        }
-                        if (Magics.TryGetValue(MagicType.RedLotus, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        if (Magics.TryGetValue(MagicType.SweetBrier, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        break;
-                    case MagicType.RedLotus:
-                        Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
+                            if (Magics.TryGetValue(MagicType.FullBloom, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            if (Magics.TryGetValue(MagicType.WhiteLotus, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                            }
+                            if (Magics.TryGetValue(MagicType.RedLotus, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            if (Magics.TryGetValue(MagicType.SweetBrier, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            break;
+                        case MagicType.RedLotus:
+                            Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
 
-                        if (Magics.TryGetValue(MagicType.FullBloom, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        if (Magics.TryGetValue(MagicType.WhiteLotus, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        if (Magics.TryGetValue(MagicType.RedLotus, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
-                        }
-                        if (Magics.TryGetValue(MagicType.SweetBrier, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        break;
-                    case MagicType.SweetBrier:
-                        Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
+                            if (Magics.TryGetValue(MagicType.FullBloom, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            if (Magics.TryGetValue(MagicType.WhiteLotus, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            if (Magics.TryGetValue(MagicType.RedLotus, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                            }
+                            if (Magics.TryGetValue(MagicType.SweetBrier, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            break;
+                        case MagicType.SweetBrier:
+                            Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
 
-                        if (Magics.TryGetValue(MagicType.FullBloom, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
+                            if (Magics.TryGetValue(MagicType.FullBloom, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
 
-                        if (Magics.TryGetValue(MagicType.WhiteLotus, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        if (Magics.TryGetValue(MagicType.RedLotus, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-                        }
-                        if (Magics.TryGetValue(MagicType.SweetBrier, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
-                        }
-                        break;
-                    case MagicType.Karma:
-                        Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
+                            if (Magics.TryGetValue(MagicType.WhiteLotus, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            if (Magics.TryGetValue(MagicType.RedLotus, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                            }
+                            if (Magics.TryGetValue(MagicType.SweetBrier, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                            }
+                            break;
+                        case MagicType.Karma:
+                            Enqueue(new S.MagicToggle { Magic = attackMagic, CanUse = false });
 
-                        UseItemTime = SEnvir.Now.AddSeconds(10);
+                            UseItemTime = SEnvir.Now.AddSeconds(10);
 
-                        if (Magics.TryGetValue(MagicType.Karma, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
-                        }
+                            if (Magics.TryGetValue(MagicType.Karma, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                            }
 
-                        if (Magics.TryGetValue(MagicType.SummonPuppet, out magic))
-                        {
-                            magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
-                        }
-                        break;
-                    default:
+                            if (Magics.TryGetValue(MagicType.SummonPuppet, out magic))
+                            {
+                                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                            }
+                            break;
+                        default:
 
-                        break;
+                            break;
+                    }
                 }
             }
 
@@ -13360,7 +13407,6 @@ namespace Server.Models
                         directions.Remove(dir);
                         if (directions.Count == 0) break;
                     }
-
 
                     break;
             }
@@ -13431,7 +13477,7 @@ namespace Server.Models
                     case MagicType.ThunderBolt:
                     case MagicType.IceBlades:
                     case MagicType.Cyclone:
-                    case MagicType.ScortchedEarth:
+                    //case MagicType.ScortchedEarth:
                     case MagicType.LightningBeam:
                     case MagicType.FrozenEarth:
                     case MagicType.BlowEarth:
@@ -13447,7 +13493,7 @@ namespace Server.Models
                     case MagicType.DragonTornado:
                     case MagicType.GreaterFrozenEarth:
                     case MagicType.ChainLightning:
-                    case MagicType.MeteorShower:
+                    //case MagicType.MeteorShower:
                     case MagicType.Renounce:
                     case MagicType.Tempest:
                     case MagicType.JudgementOfHeaven:
@@ -13788,7 +13834,7 @@ namespace Server.Models
                         ActionType.DelayMagic,
                         new List<UserMagic> { magic }));
                     break;
-                case MagicType.ScortchedEarth:
+                //case MagicType.ScortchedEarth:
                 case MagicType.FrozenEarth:
                     ob = null;
 
@@ -14236,38 +14282,38 @@ namespace Server.Models
                         }
                     }
                     break;
-                case MagicType.MeteorShower:
+                //case MagicType.MeteorShower:
 
-                    ob = null;
+                //    ob = null;
 
-                    realTargets = new HashSet<MapObject>();
+                //    realTargets = new HashSet<MapObject>();
 
-                    possibleTargets = GetTargets(CurrentMap, p.Location, 3);
+                //    possibleTargets = GetTargets(CurrentMap, p.Location, 3);
 
-                    while (realTargets.Count < 6 + magic.Level)
-                    {
-                        if (possibleTargets.Count == 0) break;
+                //    while (realTargets.Count < 6 + magic.Level)
+                //    {
+                //        if (possibleTargets.Count == 0) break;
 
-                        MapObject target = possibleTargets[SEnvir.Random.Next(possibleTargets.Count)];
+                //        MapObject target = possibleTargets[SEnvir.Random.Next(possibleTargets.Count)];
 
-                        possibleTargets.Remove(target);
+                //        possibleTargets.Remove(target);
 
-                        if (!Functions.InRange(CurrentLocation, target.CurrentLocation, Globals.MagicRange)) continue;
+                //        if (!Functions.InRange(CurrentLocation, target.CurrentLocation, Globals.MagicRange)) continue;
 
-                        realTargets.Add(target);
-                    }
+                //        realTargets.Add(target);
+                //    }
 
-                    foreach (MapObject target in realTargets)
-                    {
-                        targets.Add(target.ObjectID);
-                        ActionList.Add(new DelayedAction(
-                            SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, target.CurrentLocation) * 48),
-                            ActionType.DelayMagic,
-                            new List<UserMagic> { magic },
-                            target));
-                    }
+                //    foreach (MapObject target in realTargets)
+                //    {
+                //        targets.Add(target.ObjectID);
+                //        ActionList.Add(new DelayedAction(
+                //            SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, target.CurrentLocation) * 48),
+                //            ActionType.DelayMagic,
+                //            new List<UserMagic> { magic },
+                //            target));
+                //    }
 
-                    break;
+                //    break;
                 case MagicType.Tempest:
 
                     ob = null;
@@ -15152,7 +15198,7 @@ namespace Server.Models
                 default:
                     if (magicObject != null)
                     {
-                        castObject = magicObject.Cast(ob, p.Location);
+                        castObject = magicObject.MagicCast(ob, p.Location, p.Direction);
 
                         cast = castObject.Cast;
                         locations = castObject.Locations;
@@ -15191,7 +15237,7 @@ namespace Server.Models
                 default:
                     if (magicObject != null)
                     {
-                        magicObject.Consume();
+                        magicObject.MagicConsume();
                     }
                     else
                     {
@@ -15216,7 +15262,7 @@ namespace Server.Models
                 default:
                     if (magicObject != null)
                     {
-                        magicObject.Finalise();
+                        magicObject.MagicFinalise();
                     }
                     else
                     {
@@ -15327,20 +15373,26 @@ namespace Server.Models
 
             if (!Magics.TryGetValue(p.Magic, out magic) || Level < magic.Info.NeedLevel1 || Horse != HorseType.None) return;
 
+            if (!MagicObjects.TryGetValue(p.Magic, out MagicObject magicObject))
+            {
+                //Magic not loaded??
+                //return;
+            }
+
             switch (p.Magic)
             {
-                case MagicType.Thrusting:
-                    Character.CanThrusting = p.CanUse;
-                    Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = p.CanUse });
-                    break;
-                case MagicType.HalfMoon:
-                    Character.CanHalfMoon = p.CanUse;
-                    Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = p.CanUse });
-                    break;
-                case MagicType.DestructiveSurge:
-                    Character.CanDestructiveSurge = p.CanUse;
-                    Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = p.CanUse });
-                    break;
+                //case MagicType.Thrusting:
+                //    Character.CanThrusting = p.CanUse;
+                //    Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = p.CanUse });
+                //    break;
+                //case MagicType.HalfMoon:
+                //    Character.CanHalfMoon = p.CanUse;
+                //    Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = p.CanUse });
+                //    break;
+                //case MagicType.DestructiveSurge:
+                //    Character.CanDestructiveSurge = p.CanUse;
+                //    Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = p.CanUse });
+                //    break;
                 case MagicType.FlameSplash:
                     Character.CanFlameSplash = p.CanUse;
                     Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = p.CanUse });
@@ -15357,40 +15409,40 @@ namespace Server.Models
 
                     DemonicRecoveryEnd(magic);
                     break;
-                case MagicType.FlamingSword:
-                    if (magic.Cost > CurrentMP || SEnvir.Now < magic.Cooldown || Dead || (Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
+                //case MagicType.FlamingSword:
+                //    if (magic.Cost > CurrentMP || SEnvir.Now < magic.Cooldown || Dead || (Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
 
-                    ChangeMP(-magic.Cost);
-                    magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                    Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                //    ChangeMP(-magic.Cost);
+                //    magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                //    Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
 
-                    if (CanFlamingSword)
-                    {
-                        Connection.ReceiveChat(string.Format(Connection.Language.ChargeFail, magic.Info.Name), MessageType.System);
+                //    if (CanFlamingSword)
+                //    {
+                //        Connection.ReceiveChat(string.Format(Connection.Language.ChargeFail, magic.Info.Name), MessageType.System);
 
-                        foreach (SConnection con in Connection.Observers)
-                            con.ReceiveChat(string.Format(con.Language.ChargeFail, magic.Info.Name), MessageType.System);
-                    }
-                    else
-                    {
-                        FlamingSwordTime = SEnvir.Now.AddSeconds(12);
-                        CanFlamingSword = true;
-                        Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = CanFlamingSword });
-                    }
+                //        foreach (SConnection con in Connection.Observers)
+                //            con.ReceiveChat(string.Format(con.Language.ChargeFail, magic.Info.Name), MessageType.System);
+                //    }
+                //    else
+                //    {
+                //        FlamingSwordTime = SEnvir.Now.AddSeconds(12);
+                //        CanFlamingSword = true;
+                //        Enqueue(new S.MagicToggle { Magic = p.Magic, CanUse = CanFlamingSword });
+                //    }
 
-                    if (Magics.TryGetValue(MagicType.DragonRise, out magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
-                    {
-                        magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                        Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
-                    }
+                //    if (Magics.TryGetValue(MagicType.DragonRise, out magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
+                //    {
+                //        magic.Cooldown = SEnvir.Now.AddSeconds(2);
+                //        Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
+                //    }
 
-                    if (Magics.TryGetValue(MagicType.BladeStorm, out magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
-                    {
-                        magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                        Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
-                    }
+                //    if (Magics.TryGetValue(MagicType.BladeStorm, out magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
+                //    {
+                //        magic.Cooldown = SEnvir.Now.AddSeconds(2);
+                //        Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
+                //    }
 
-                    break;
+                //    break;
                 case MagicType.DragonRise:
                     if (magic.Cost > CurrentMP || SEnvir.Now < magic.Cooldown || Dead || (Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
 
@@ -15464,6 +15516,12 @@ namespace Server.Models
                     EnduranceEnd(magic);
                     magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
                     Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                    break;
+                default:
+                    if (magicObject != null)
+                    {
+                        magicObject.Toggle(p.CanUse);
+                    }
                     break;
             }
         }
@@ -15578,6 +15636,35 @@ namespace Server.Models
         #endregion
 
         #region Combat
+
+        //New
+        public bool AttackLocation(Point location, List<MagicType> types, bool primary)
+        {
+            Cell cell = CurrentMap.GetCell(location);
+
+            if (cell?.Objects == null) return false;
+
+            bool result = false;
+
+            foreach (MapObject ob in cell.Objects)
+            {
+                if (!CanAttackTarget(ob)) continue;
+
+                int delay = 300;
+
+                foreach (MagicType type in types)
+                {
+                    if (type == MagicType.DragonRise)
+                        delay = 600;
+                }
+
+                ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(delay), ActionType.DelayAttackNew, ob, types, primary, 0));
+
+                result = true;
+            }
+            return result;
+        }
+
         public bool AttackLocation(Point location, List<UserMagic> magics, bool primary)
         {
             Cell cell = CurrentMap.GetCell(location);
@@ -15606,6 +15693,17 @@ namespace Server.Models
                 result = true;
             }
             return result;
+        }
+
+        public void Attack(MapObject ob, List<MagicType> types, bool primary, int extra)
+        {
+            if (ob?.Node == null || ob.Dead) return;
+
+            for (int i = Pets.Count - 1; i >= 0; i--)
+                if (Pets[i].Target == null)
+                    Pets[i].Target = ob;
+
+            int power = GetDC();
         }
 
         public void Attack(MapObject ob, List<UserMagic> magics, bool primary, int extra)
@@ -15670,13 +15768,13 @@ namespace Server.Models
                 int bonus;
                 switch (magic.Info.Magic)
                 {
-                    case MagicType.Slaying:
+                    //case MagicType.Slaying:
                     case MagicType.CalamityOfFullMoon: // Lotus only
                         power += magic.GetPower();
                         break;
-                    case MagicType.FlamingSword:
-                        power = power * magic.GetPower() / 100;
-                        break;
+                    //case MagicType.FlamingSword:
+                    //    power = power * magic.GetPower() / 100;
+                    //    break;
                     case MagicType.DragonRise:
                         power = power * magic.GetPower() / 100;
                         break;
@@ -15684,12 +15782,12 @@ namespace Server.Models
                         power = power * magic.GetPower() / 100;
                         hasBladeStorm = true;
                         break;
-                    case MagicType.Thrusting:
-                    case MagicType.HalfMoon:
-                    case MagicType.DestructiveSurge:
-                        if (!primary)
-                            power = power * magic.GetPower() / 100;
-                        break;
+                    //case MagicType.Thrusting:
+                    //case MagicType.HalfMoon:
+                    //case MagicType.DestructiveSurge:
+                    //    if (!primary)
+                    //        power = power * magic.GetPower() / 100;
+                    //    break;
                     case MagicType.SwiftBlade:
                         power = power * magic.GetPower() / 100;
 
@@ -16042,6 +16140,7 @@ namespace Server.Models
             foreach (UserMagic mag in magics)
                 LevelMagic(mag);
 
+            //Massacre
             if (ob.Dead && ob.Race == ObjectType.Monster && ob.CurrentHP < 0)
             {
                 if (Magics.TryGetValue(MagicType.Massacre, out magic) && Level >= magic.Info.NeedLevel1)
@@ -16069,7 +16168,8 @@ namespace Server.Models
             }
         }
 
-        public int MagicAttack(MagicType type, MapObject ob, bool primary = true, Stats stats = null)
+        //New
+        public int MagicAttack(List<MagicType> types, MapObject ob, bool primary = true, Stats stats = null)
         {
             if (ob?.Node == null || ob.Dead) return 0;
 
@@ -16084,22 +16184,38 @@ namespace Server.Models
                     if (Pets[i].Target == null)
                         Pets[i].Target = ob;
 
-            if (!MagicObjects.TryGetValue(type, out MagicObject magicObject))
+            int power = 0;
+            int slow = 0, slowLevel = 0, repel = 0, silence = 0;
+
+            int shock = 0;
+
+            bool canStruck = true;
+
+            Element element = Element.None;
+
+            foreach (MagicType type in types)
             {
-                return -1;
+                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
+
+                power = magicObject.ModifyPower1(primary, power);
+
+                slow = magicObject.GetSlow();
+                slowLevel = magicObject.GetSlowLevel();
+                repel = magicObject.GetRepel();
+                silence = magicObject.GetSilence();
+                shock = magicObject.GetShock();
+
+                canStruck = magicObject.CanStruck;
+
+                element = magicObject.Element;
             }
 
-            Element element = magicObject.Element;
+            foreach (MagicType type in types)
+            {
+                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-            int slow = magicObject.GetSlow();
-            int slowLevel = magicObject.GetSlowLevel();
-            int repel = magicObject.GetRepel();
-            int silence = magicObject.GetSilence();
-            int shock = magicObject.GetShock();
-
-            bool canStuck = magicObject.CanStuck;
-
-            int power = magicObject.GetPower();
+                power = magicObject.ModifyPower2(primary, power);
+            }
 
             power -= ob.GetMR();
 
@@ -16144,7 +16260,7 @@ namespace Server.Models
                 return 0;
             }
 
-            int damage = ob.Attacked(this, power, element, false, false, true, canStuck);
+            int damage = ob.Attacked(this, power, element, false, false, true, canStruck);
 
             if (damage <= 0) return damage;
 
@@ -16251,7 +16367,15 @@ namespace Server.Models
 
             CheckBrown(ob);
 
-            LevelMagic(magicObject.Magic);
+            foreach (MagicType type in types)
+            {
+                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject))
+                {
+                    continue;
+                }
+
+                LevelMagic(magicObject.Magic);
+            }
 
             if (Buffs.Any(x => x.Type == BuffType.Renounce) && Magics.TryGetValue(MagicType.Renounce, out UserMagic temp))
                 LevelMagic(temp);
@@ -16292,14 +16416,14 @@ namespace Server.Models
                 switch (magic.Info.Magic)
                 {
                     //case MagicType.FireBall:
-                    case MagicType.ScortchedEarth:
+                    //case MagicType.ScortchedEarth:
                     //case MagicType.FireStorm:
                     //case MagicType.AdamantineFireBall:
-                    case MagicType.MeteorShower:
+                    //case MagicType.MeteorShower:
                     //case MagicType.FireBounce:
-                        element = Element.Fire;
-                        power += magic.GetPower() + GetMC();
-                        break;
+                        //element = Element.Fire;
+                        //power += magic.GetPower() + GetMC();
+                        //break;
                     //case MagicType.Asteroid:
                     //    element = Element.Fire;
                     //    asteroid = magic;
@@ -16489,7 +16613,7 @@ namespace Server.Models
             {
                 switch (magic.Info.Magic)
                 {
-                    case MagicType.ScortchedEarth:
+                    //case MagicType.ScortchedEarth:
                     case MagicType.LightningBeam:
                     case MagicType.BlowEarth:
                     case MagicType.FrozenEarth:
@@ -17057,7 +17181,7 @@ namespace Server.Models
 
             if (MagicObjects.TryGetValue(type, out MagicObject magicObject))
             {
-                magicObject.Complete(data);
+                magicObject.MagicComplete(data);
                 return;
             }
         }
@@ -17115,7 +17239,7 @@ namespace Server.Models
                     //case MagicType.AdamantineFireBall:
                     case MagicType.IceBlades:
                     case MagicType.Cyclone:
-                    case MagicType.MeteorShower:
+                    //case MagicType.MeteorShower:
                     case MagicType.ThunderStrike:
                     case MagicType.DragonRepulse:
                         MagicAttack(magics, (MapObject)data[1], true);
@@ -17126,7 +17250,7 @@ namespace Server.Models
                     case MagicType.Repulsion:
                         RepulsionEnd(magic, (Cell)data[1], (MirDirection)data[2]);
                         break;
-                    case MagicType.ScortchedEarth:
+                    //case MagicType.ScortchedEarth:
                     case MagicType.LightningBeam:
                     case MagicType.FrozenEarth:
                     case MagicType.BlowEarth:

@@ -17,7 +17,7 @@ namespace Server.Models.Magic
 
         }
 
-        public override MagicCast Cast(MapObject target, Point location)
+        public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             if (!Player.CanAttackTarget(target))
                 return new MagicCast();
@@ -29,7 +29,7 @@ namespace Server.Models.Magic
             return bounce;
         }
 
-        public override void Complete(params object[] data)
+        public override void MagicComplete(params object[] data)
         {
             MapObject target = (MapObject)data[1];
             Point targetLocation = (Point)data[2];
@@ -41,7 +41,7 @@ namespace Server.Models.Magic
             if (!Functions.InRange(target.CurrentLocation, targetLocation, Globals.MagicRange))
                 return;
 
-            if (Player.MagicAttack(Type, target, true) < 1)
+            if (Player.MagicAttack(new List<MagicType> { Type }, target, true) < 1)
                 return;
 
             var targets = new List<MapObject>();
@@ -93,6 +93,13 @@ namespace Server.Models.Magic
             Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, target, target.CurrentLocation, bounce));
 
             return response;
+        }
+
+        public override int ModifyPower1(bool primary, int power)
+        {
+            power += Magic.GetPower() + Player.GetMC();
+
+            return power;
         }
     }
 }
