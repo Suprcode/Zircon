@@ -95,7 +95,7 @@ namespace Server.Models.Magic
             return response;
         }
 
-        public override int ModifyPower1(bool primary, int power)
+        public override int ModifyPower1(bool primary, int power, MapObject ob)
         {
             power += Magic.GetPower() + Player.GetMC();
 

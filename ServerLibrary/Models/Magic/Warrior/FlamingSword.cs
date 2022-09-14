@@ -1,10 +1,7 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magic
@@ -62,7 +59,7 @@ namespace Server.Models.Magic
                 Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
             }
 
-            //Delay DragonRise
+            //Delay BladeStorm
             if (Player.Magics.TryGetValue(MagicType.BladeStorm, out magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
             {
                 magic.Cooldown = SEnvir.Now.AddSeconds(2);
@@ -84,7 +81,7 @@ namespace Server.Models.Magic
             return true;
         }
 
-        public override int ModifyPower1(bool primary, int power)
+        public override int ModifyPower1(bool primary, int power, MapObject ob)
         {
             power = power * Magic.GetPower() / 100;
 

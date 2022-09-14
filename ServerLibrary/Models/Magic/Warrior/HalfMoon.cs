@@ -1,5 +1,6 @@
 ﻿using Library;
 using Server.DBModels;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magic
@@ -46,7 +47,14 @@ namespace Server.Models.Magic
             return false;
         }
 
-        public override int ModifyPower1(bool primary, int power)
+        public override void Attack(List<MagicType> magics)
+        {
+            Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, -1)), magics, false);
+            Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, 1)), magics, false);
+            Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, 2)), magics, false);
+        }
+
+        public override int ModifyPower1(bool primary, int power, MapObject ob)
         {
             if (!primary)
                 power = power * Magic.GetPower() / 100;

@@ -42,7 +42,7 @@ namespace Server.Models.Magic
             Player.MagicAttack(new List<MagicType> { Type }, target);
         }
 
-        public override int ModifyPower1(bool primary, int power)
+        public override int ModifyPower1(bool primary, int power, MapObject ob)
         {
             power += Magic.GetPower() + Player.GetMC();
 

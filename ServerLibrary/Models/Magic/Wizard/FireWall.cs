@@ -93,7 +93,7 @@ namespace Server.Models.Magic
             Player.LevelMagic(Magic);
         }
 
-        public override int ModifyPower1(bool primary, int power)
+        public override int ModifyPower1(bool primary, int power, MapObject ob)
         {
             power += Magic.GetPower() + Player.GetMC();
 

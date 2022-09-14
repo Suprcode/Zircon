@@ -1,5 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
+using Server.Envir;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magic
@@ -9,7 +11,6 @@ namespace Server.Models.Magic
     {
         public override Element Element => Element.None;
         public override bool PhysicalSkill => true;
-        public override bool HasAttackAnimation => false;
 
         public Thrusting(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -47,7 +48,12 @@ namespace Server.Models.Magic
             return false;
         }
 
-        public override int ModifyPower1(bool primary, int power)
+        public override void Attack(List<MagicType> magics)
+        {
+            Player.AttackLocation(Functions.Move(Player.CurrentLocation, Player.Direction, 2), magics, false);
+        }
+
+        public override int ModifyPower1(bool primary, int power, MapObject ob)
         {
             if (!primary)
                 power = power * Magic.GetPower() / 100;

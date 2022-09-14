@@ -11,7 +11,13 @@ namespace Server.Models
     {
         public PlayerObject Player { get; }
         public UserMagic Magic { get; }
+
         public MagicType Type => Magic.Info.Magic;
+        public List<DelayedAction> ActionList => Player.ActionList;
+        public Map CurrentMap => Player.CurrentMap;
+        public Point CurrentLocation => Player.CurrentLocation;
+        public MirDirection Direction => Player.Direction;
+
 
         public abstract Element Element { get; }
 
@@ -51,6 +57,16 @@ namespace Server.Models
         }
 
         public virtual void MagicComplete(params object[] data)
+        {
+
+        }
+
+        public virtual void Attack(List<MagicType> magics)
+        {
+
+        }
+
+        public virtual void AttackComplete(params object[] data)
         {
 
         }
@@ -103,11 +119,6 @@ namespace Server.Models
             return false;
         }
 
-        public virtual void Attack()
-        {
-
-        }
-
         protected DateTime GetDelayFromDistance(int start, MapObject target)
         {
             var delay = SEnvir.Now.AddMilliseconds(start + Functions.Distance(Player.CurrentLocation, target.CurrentLocation) * 48);
@@ -115,7 +126,7 @@ namespace Server.Models
             return delay;
         }
 
-        public virtual int ModifyPower1(bool primary, int power)
+        public virtual int ModifyPower1(bool primary, int power, MapObject ob)
         {
             return power;
         }
@@ -157,6 +168,7 @@ namespace Server.Models
 
         //TODO - Send list to client of which magics are toggled, casted, targetted etc (allows removing of lots of switches)
         //TODO - Create new Attack method passing in MagicType instead
+        //TODO - Clean up AttackLocation and AttackCell methods (find which skills use them first)
     }
 
     public class MagicCast

@@ -36,7 +36,7 @@ namespace Server.Models.Magic
             return success;
         }
 
-        public override int ModifyPower1(bool primary, int power)
+        public override int ModifyPower1(bool primary, int power, MapObject ob)
         {
             return Magic.GetPower();
         }
