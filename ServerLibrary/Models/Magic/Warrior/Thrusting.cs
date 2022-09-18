@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     public class Thrusting : MagicObject
     {
         public override Element Element => Element.None;
-        public override bool PhysicalSkill => true;
+        public override bool AttackSkill => true;
 
         public Thrusting(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -29,26 +29,30 @@ namespace Server.Models.Magic
             Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = canUse });
         }
 
-        public override bool CanAttack(MagicType attackType)
+        public override AttackCast AttackCast(MagicType attackType)
         {
+            var response = new AttackCast();
+
             if (attackType != Type)
-                return false;
+                return response;
 
             if (Player.Level < Magic.Info.NeedLevel1)
-                return false;
+                return response;
 
             int cost = Magic.Cost;
 
             if (cost <= Player.CurrentMP)
             {
                 Player.ChangeMP(-cost);
-                return true;
+
+                response.Magics.Add(Type);
+                return response;
             }
 
-            return false;
+            return response;
         }
 
-        public override void Attack(List<MagicType> magics)
+        public override void AttackLocations(List<MagicType> magics)
         {
             Player.AttackLocation(Functions.Move(Player.CurrentLocation, Player.Direction, 2), magics, false);
         }

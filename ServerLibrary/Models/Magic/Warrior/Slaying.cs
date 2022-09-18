@@ -9,31 +9,35 @@ namespace Server.Models.Magic
     public class Slaying : MagicObject
     {
         public override Element Element => Element.None;
-        public override bool PhysicalSkill => true;
-        public override bool HasAttackAnimation => false;
+        public override bool AttackSkill => true;
 
         public Slaying(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
 
-        public override bool CanAttack(MagicType attackType)
+        public override AttackCast AttackCast(MagicType attackType)
         {
-            bool success = false;
+            var response = new AttackCast();
 
             if (Player.Level < Magic.Info.NeedLevel1)
-                return success;
+                return response;
 
             if (Player.CanPowerAttack && attackType == Type)
             {
-                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = Player.CanPowerAttack = false });
-                success = true;
+                Player.CanPowerAttack = false;
+                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
+                response.Cast = true;
+                response.Magics.Add(Type);
             }
 
             if (!Player.CanPowerAttack && SEnvir.Random.Next(5) == 0)
-                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = Player.CanPowerAttack = true });
+            {
+                Player.CanPowerAttack = true;
+                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = true });
+            }
 
-            return success;
+            return response;
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob)

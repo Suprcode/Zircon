@@ -1,15 +1,17 @@
 ﻿using Library;
+using Library.Network.ClientPackets;
 using Server.DBModels;
+using Server.Envir;
 
 namespace Server.Models.Magic
 {
-    [MagicType(MagicType.Swordsmanship)]
-    public class Swordsmanship : MagicObject
+    [MagicType(MagicType.WaningMoon)]
+    public class WaningMoon : MagicObject
     {
         public override Element Element => Element.None;
         public override bool AttackSkill => true;
 
-        public Swordsmanship(PlayerObject player, UserMagic magic) : base(player, magic)
+        public WaningMoon(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
@@ -21,18 +23,12 @@ namespace Server.Models.Magic
             if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
-            response.Cast = true;
+            if (SEnvir.Random.Next(2) != 0)
+                return response;
+
+            response.Magics.Add(Type);
 
             return response;
-        }
-
-        public override Stats GetPassiveStats()
-        {
-            var stats = new Stats();
-
-            stats[Stat.Accuracy] = Magic.GetPower();
-
-            return stats;
         }
     }
 }

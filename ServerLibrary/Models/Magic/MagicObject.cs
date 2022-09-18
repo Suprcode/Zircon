@@ -20,14 +20,14 @@ namespace Server.Models
 
 
         public abstract Element Element { get; }
-
         public virtual bool UpdateCombatTime => true;
 
-        //Attack variables
-        public virtual bool PhysicalSkill => false;
-        public virtual bool HasAttackAnimation => true;
 
-        //MagicAttack variables
+        //Attack variables
+        public virtual bool AttackSkill => false;
+
+        //Magic variables
+        public virtual bool MagicSkill => false; //TODO
         public virtual bool CanStruck => true;
         protected virtual int Slow => 0;
         protected virtual int SlowLevel => 0;
@@ -61,12 +61,7 @@ namespace Server.Models
 
         }
 
-        public virtual void Attack(List<MagicType> magics)
-        {
-
-        }
-
-        public virtual void AttackComplete(params object[] data)
+        public virtual void AttackLocations(List<MagicType> magics)
         {
 
         }
@@ -114,9 +109,9 @@ namespace Server.Models
 
         }
 
-        public virtual bool CanAttack(MagicType attackType)
+        public virtual AttackCast AttackCast(MagicType attackType)
         {
-            return false;
+            return new AttackCast();
         }
 
         protected DateTime GetDelayFromDistance(int start, MapObject target)
@@ -177,6 +172,14 @@ namespace Server.Models
         public List<uint> Targets = new List<uint>();
         public MapObject Ob;
         public bool Cast = true;
+
+        public bool Return = false;
+    }
+
+    public class AttackCast
+    {
+        public List<MagicType> Magics = new List<MagicType>();
+        public bool Cast = false;
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]

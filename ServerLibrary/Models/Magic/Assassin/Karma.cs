@@ -1,0 +1,88 @@
+﻿using Library;
+using Library.Network.ClientPackets;
+using Server.DBModels;
+using Server.Envir;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using S = Library.Network.ServerPackets;
+
+namespace Server.Models.Magic
+{
+    [MagicType(MagicType.Karma)]
+    public class Karma : MagicObject
+    {
+        public override Element Element => Element.None;
+        public override bool AttackSkill => true;
+
+        public Karma(PlayerObject player, UserMagic magic) : base(player, magic)
+        {
+
+        }
+
+        public override AttackCast AttackCast(MagicType attackType)
+        {
+            var response = new AttackCast();
+
+            if (attackType != Type)
+                return response;
+
+            if (Player.Level < Magic.Info.NeedLevel1)
+                return response;
+
+            if (SEnvir.Now < Magic.Cooldown)
+                return response;
+
+            if (!Player.Buffs.Any(x => x.Type == BuffType.Cloak))
+                return response;
+
+            int cost = Player.Stats[Stat.Health] * Magic.Cost / 100;
+
+            UserMagic augMagic;
+            if (Player.Magics.TryGetValue(MagicType.Release, out augMagic) && Player.Level >= augMagic.Info.NeedLevel1)
+            {
+                cost -= cost * augMagic.GetPower() / 100;
+                response.Magics.Add(MagicType.Release);
+            }
+
+            if (cost < Player.CurrentHP)
+            {
+                Player.ChangeHP(-cost);
+
+                response.Cast = true;
+                response.Magics.Add(Type);
+
+                return response;
+            }
+
+
+            return response;
+        }
+
+        public override void Cooldown(int attackDelay)
+        {
+            Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
+
+            Player.UseItemTime = SEnvir.Now.AddSeconds(10);
+
+            if (Player.Magics.TryGetValue(MagicType.Karma, out UserMagic magic))
+            {
+                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+            }
+
+            if (Player.Magics.TryGetValue(MagicType.SummonPuppet, out magic))
+            {
+                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+            }
+        }
+
+        public override int ModifyPower1(bool primary, int power, MapObject ob)
+        {
+            
+
+            return power;
+        }
+    }
+}

@@ -11,7 +11,7 @@ namespace Server.Models.Magic
     public class BladeStorm : MagicObject
     {
         public override Element Element => Element.None;
-        public override bool PhysicalSkill => true;
+        public override bool AttackSkill => true;
 
         public BladeStorm(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -65,18 +65,23 @@ namespace Server.Models.Magic
             }
         }
 
-        public override bool CanAttack(MagicType attackType)
+        public override AttackCast AttackCast(MagicType attackType)
         {
+            var response = new AttackCast();
+
             if (attackType != Type || !Player.CanBladeStorm)
-                return false;
+                return response;
 
             if (Player.Level < Magic.Info.NeedLevel1)
-                return false;
+                return response;
 
             Player.CanBladeStorm = false;
             Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
 
-            return true;
+            response.Cast = true;
+            response.Magics.Add(Type);
+
+            return response;
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob)

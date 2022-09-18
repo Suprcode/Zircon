@@ -1,15 +1,16 @@
 ﻿using Library;
+using Library.Network.ClientPackets;
 using Server.DBModels;
 
 namespace Server.Models.Magic
 {
-    [MagicType(MagicType.Swordsmanship)]
-    public class Swordsmanship : MagicObject
+    [MagicType(MagicType.AdvancedBloodyFlower)]
+    public class AdvancedBloodyFlower : MagicObject
     {
         public override Element Element => Element.None;
         public override bool AttackSkill => true;
 
-        public Swordsmanship(PlayerObject player, UserMagic magic) : base(player, magic)
+        public AdvancedBloodyFlower(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
@@ -21,7 +22,7 @@ namespace Server.Models.Magic
             if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
-            response.Cast = true;
+            response.Magics.Add(Type);
 
             return response;
         }
@@ -30,7 +31,7 @@ namespace Server.Models.Magic
         {
             var stats = new Stats();
 
-            stats[Stat.Accuracy] = Magic.GetPower();
+            stats[Stat.LifeSteal] += Magic.GetPower();
 
             return stats;
         }

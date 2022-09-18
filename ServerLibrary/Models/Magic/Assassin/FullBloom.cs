@@ -12,33 +12,39 @@ namespace Server.Models.Magic
     public class FullBloom : MagicObject
     {
         public override Element Element => Element.None;
-        public override bool PhysicalSkill => true;
+        public override bool AttackSkill => true;
 
         public FullBloom(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
 
-        public override bool CanAttack(MagicType attackType)
+        public override AttackCast AttackCast(MagicType attackType)
         {
+            var response = new AttackCast();
+
             if (attackType != Type)
-                return false;
+                return response;
 
             if (Player.Level < Magic.Info.NeedLevel1)
-                return false;
+                return response;
 
             if (SEnvir.Now < Magic.Cooldown)
-                return false;
+                return response;
 
             int cost = Magic.Cost;
 
             if (cost <= Player.CurrentMP)
             {
                 Player.ChangeMP(-cost);
-                return true;
+
+                response.Cast = true;
+                response.Magics.Add(Type);
+
+                return response;
             }
 
-            return false;
+            return response;
         }
 
         public override void Cooldown(int attackDelay)

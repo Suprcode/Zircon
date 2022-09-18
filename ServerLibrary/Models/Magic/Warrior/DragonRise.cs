@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     public class DragonRise : MagicObject
     {
         public override Element Element => Element.None;
-        public override bool PhysicalSkill => true;
+        public override bool AttackSkill => true;
 
         public DragonRise(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -67,21 +67,26 @@ namespace Server.Models.Magic
             }
         }
 
-        public override bool CanAttack(MagicType attackType)
+        public override AttackCast AttackCast(MagicType attackType)
         {
+            var response = new AttackCast();
+
             if (attackType != Type || !Player.CanDragonRise)
-                return false;
+                return response;
 
             if (Player.Level < Magic.Info.NeedLevel1)
-                return false;
+                return response;
 
             Player.CanDragonRise = false;
             Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
 
-            return true;
+            response.Cast = true;
+            response.Magics.Add(Type);
+
+            return response;
         }
 
-        public override void Attack(List<MagicType> magics)
+        public override void AttackLocations(List<MagicType> magics)
         {
             Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, -1)), magics, false);
             Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, 1)), magics, false);
