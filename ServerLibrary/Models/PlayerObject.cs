@@ -5053,7 +5053,6 @@ namespace Server.Models
                 return;
             }
 
-
             CastleInfo castle = SEnvir.CastleInfoList.Binding.FirstOrDefault(x => x.Index == index);
 
             if (castle == null)
@@ -5078,7 +5077,6 @@ namespace Server.Models
 
                 TakeItem(castle.Item, 1);
             }
-
 
             DateTime now = SEnvir.Now;
             DateTime date = new DateTime(now.Ticks - now.TimeOfDay.Ticks + TimeSpan.TicksPerDay * 2);

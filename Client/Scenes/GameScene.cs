@@ -353,6 +353,7 @@ namespace Client.Scenes
             CompanionBox?.LoadSettings();
             CommunicationBox?.LoadSettings();
             RankingBox?.LoadSettings();
+            QuestBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -665,6 +666,7 @@ namespace Client.Scenes
             CompanionBox.LoadSettings();
             CommunicationBox.LoadSettings();
             RankingBox.LoadSettings();
+            QuestBox.LoadSettings();
         }
 
         #region Methods

@@ -230,7 +230,7 @@ namespace Client.Scenes.Views
             TabControl = new DXTabControl
             {
                 Parent = this,
-                Location = new Point(0, 21),
+                Location = new Point(0, 19),
                 Size = new Size(DisplayArea.Width, DisplayArea.Height),
                 MarginLeft = 18
             };
@@ -239,7 +239,7 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 TabButton = { Label = { Text = "Character" } },
                 BackColour = Color.Empty,
-                Location = new Point(0, 25)
+                Location = new Point(0, 27)
             };
             CharacterTab.BeforeChildrenDraw += CharacterTab_BeforeChildrenDraw;
             CharacterTab.TabButton.MouseClick += (o, e) =>
@@ -252,7 +252,7 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 TabButton = { Label = { Text = "Hermit" } },
                 BackColour = Color.Empty,
-                Location = new Point(0, 25),
+                Location = new Point(0, 27),
             };
 
             HermitTab.TabButton.Visible = !Inspect;
@@ -266,7 +266,7 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 TabButton = { Label = { Text = "Discipline" } },
                 BackColour = Color.Empty,
-                Location = new Point(0, 25),
+                Location = new Point(0, 27),
             };
 
             DisciplineTab.TabButton.Visible = !Inspect && Globals.DisciplineInfoList.Binding.Count > 0;
