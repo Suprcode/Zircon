@@ -686,6 +686,24 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.Right,
             };
 
+            label = new DXLabel
+            {
+                Parent = StatsAttackTab,
+                Text = "Crit. Damage:"
+            };
+            label.Location = new Point(left, y += rowSpacing);
+
+            DisplayStats[Stat.CriticalDamage] = new DXLabel
+            {
+                Parent = StatsAttackTab,
+                Location = new Point(label.Location.X + 45, y),
+                ForeColour = Color.White,
+                Text = "0",
+                Size = labelValueSize,
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.Right
+            };
+
             y = yStart;
 
             label = new DXLabel
