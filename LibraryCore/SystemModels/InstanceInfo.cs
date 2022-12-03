@@ -5,7 +5,6 @@ using System.Collections.Generic;
 namespace Library.SystemModels
 {
     //TODO - 
-    //Add instance dialog button to rejoin instance after death (same button, join an existing instance??)
     //Add conquest on instances
     //Add teleporting(player, npc) on instances(figure how to teleport off instances but also through the same instances)
 
@@ -195,6 +194,9 @@ namespace Library.SystemModels
         }
         private int _CooldownTimeInMinutes;
 
+        [Association("InstanceInfoStats", true)]
+        public DBBindingList<InstanceInfoStat> BuffStats { get; set; }
+
         [IgnoreProperty]
         public Dictionary<string, byte> UserRecord { get; set; }
 
@@ -204,6 +206,8 @@ namespace Library.SystemModels
         [IgnoreProperty]
         public Dictionary<string, DateTime> GuildCooldown { get; set; }
 
+        public Stats Stats = new Stats();
+
         protected internal override void OnLoaded()
         {
             base.OnLoaded();
@@ -211,6 +215,15 @@ namespace Library.SystemModels
             UserRecord = new Dictionary<string, byte>();
             UserCooldown = new Dictionary<string, DateTime>();
             GuildCooldown = new Dictionary<string, DateTime>();
+
+            StatsChanged();
+        }
+
+        public void StatsChanged()
+        {
+            Stats.Clear();
+            foreach (InstanceInfoStat stat in BuffStats)
+                Stats[stat.Stat] += stat.Amount;
         }
     }
 
@@ -246,5 +259,54 @@ namespace Library.SystemModels
             }
         }
         private MapInfo _Map;
+    }
+
+    public sealed class InstanceInfoStat : DBObject
+    {
+        [Association("InstanceInfoStats")]
+        public InstanceInfo Instance
+        {
+            get { return _Instance; }
+            set
+            {
+                if (_Instance == value) return;
+
+                var oldValue = _Instance;
+                _Instance = value;
+
+                OnChanged(oldValue, value, "Instance");
+            }
+        }
+        private InstanceInfo _Instance;
+
+        public Stat Stat
+        {
+            get { return _Stat; }
+            set
+            {
+                if (_Stat == value) return;
+
+                var oldValue = _Stat;
+                _Stat = value;
+
+                OnChanged(oldValue, value, "Stat");
+            }
+        }
+        private Stat _Stat;
+
+        public int Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (_Amount == value) return;
+
+                var oldValue = _Amount;
+                _Amount = value;
+
+                OnChanged(oldValue, value, "Amount");
+            }
+        }
+        private int _Amount;
     }
 }

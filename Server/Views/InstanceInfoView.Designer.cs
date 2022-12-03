@@ -29,11 +29,16 @@
         private void InitializeComponent()
         {
             DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InstanceInfoView));
             this.InstanceMapGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.MapInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.InstanceInfoGridControl = new DevExpress.XtraGrid.GridControl();
+            this.InstanceInfoStatsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.colStat = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.StatComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.colAmount = new DevExpress.XtraGrid.Columns.GridColumn();
             this.InstanceInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -56,6 +61,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.InstanceMapGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoStatsGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StatComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RegionLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceTypeImageComboBox)).BeginInit();
@@ -103,8 +110,11 @@
             this.InstanceInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
             gridLevelNode1.LevelTemplate = this.InstanceMapGridView;
             gridLevelNode1.RelationName = "Maps";
+            gridLevelNode2.LevelTemplate = this.InstanceInfoStatsGridView;
+            gridLevelNode2.RelationName = "BuffStats";
             this.InstanceInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode1});
+            gridLevelNode1,
+            gridLevelNode2});
             this.InstanceInfoGridControl.Location = new System.Drawing.Point(0, 144);
             this.InstanceInfoGridControl.MainView = this.InstanceInfoGridView;
             this.InstanceInfoGridControl.MenuManager = this.ribbon;
@@ -112,13 +122,50 @@
             this.InstanceInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.MapInfoLookUpEdit,
             this.RegionLookUpEdit,
-            this.InstanceTypeImageComboBox});
+            this.InstanceTypeImageComboBox,
+            this.StatComboBox});
             this.InstanceInfoGridControl.ShowOnlyPredefinedDetails = true;
             this.InstanceInfoGridControl.Size = new System.Drawing.Size(713, 335);
             this.InstanceInfoGridControl.TabIndex = 2;
             this.InstanceInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.InstanceInfoStatsGridView,
             this.InstanceInfoGridView,
             this.InstanceMapGridView});
+            // 
+            // InstanceInfoStatsGridView
+            // 
+            this.InstanceInfoStatsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.colStat,
+            this.colAmount});
+            this.InstanceInfoStatsGridView.GridControl = this.InstanceInfoGridControl;
+            this.InstanceInfoStatsGridView.Name = "InstanceInfoStatsGridView";
+            this.InstanceInfoStatsGridView.OptionsView.EnableAppearanceEvenRow = true;
+            this.InstanceInfoStatsGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.InstanceInfoStatsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            this.InstanceInfoStatsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            this.InstanceInfoStatsGridView.OptionsView.ShowGroupPanel = false;
+            // 
+            // colStat
+            // 
+            this.colStat.ColumnEdit = this.StatComboBox;
+            this.colStat.FieldName = "Stat";
+            this.colStat.Name = "colStat";
+            this.colStat.Visible = true;
+            this.colStat.VisibleIndex = 0;
+            // 
+            // StatComboBox
+            // 
+            this.StatComboBox.AutoHeight = false;
+            this.StatComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.StatComboBox.Name = "StatComboBox";
+            // 
+            // colAmount
+            // 
+            this.colAmount.FieldName = "Amount";
+            this.colAmount.Name = "colAmount";
+            this.colAmount.Visible = true;
+            this.colAmount.VisibleIndex = 1;
             // 
             // InstanceInfoGridView
             // 
@@ -316,6 +363,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.InstanceMapGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoStatsGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StatComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceInfoGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RegionLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceTypeImageComboBox)).EndInit();
@@ -350,5 +399,9 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox InstanceTypeImageComboBox;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn12;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn13;
+        private DevExpress.XtraGrid.Views.Grid.GridView InstanceInfoStatsGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn colStat;
+        private DevExpress.XtraGrid.Columns.GridColumn colAmount;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox StatComboBox;
     }
 }

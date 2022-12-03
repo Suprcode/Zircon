@@ -240,6 +240,7 @@ namespace Library.Network
                 catch (NotImplementedException ex)
                 {
                     OnException(this, ex);
+                    Disconnecting = true;
                 }
                 catch (Exception ex)
                 {
@@ -336,9 +337,8 @@ namespace Library.Network
 
             if (p.Length > value.LargestSize)
                 value.LargestSize = p.Length;
-
-
         }
+
         public void UpdateTimeOut()
         {
             if (Disconnecting) return;

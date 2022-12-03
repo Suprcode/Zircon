@@ -23,6 +23,7 @@ namespace Server.Views
             RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
 
             InstanceTypeImageComboBox.Items.AddEnum<InstanceType>();
+            StatComboBox.Items.AddEnum<Stat>();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -31,6 +32,7 @@ namespace Server.Views
 
             SMain.SetUpView(InstanceInfoGridView);
             SMain.SetUpView(InstanceMapGridView);
+            SMain.SetUpView(InstanceInfoStatsGridView);
         }
 
         private void SaveDatabaseButton_ItemClick(object sender, ItemClickEventArgs e)

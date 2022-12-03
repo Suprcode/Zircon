@@ -1342,6 +1342,7 @@ namespace Server.Models
                 case BuffType.TheNewBeginning:
                 case BuffType.Server:
                 case BuffType.MapEffect:
+                case BuffType.InstanceEffect:
                 case BuffType.Castle:
                 case BuffType.Guild:
                 case BuffType.Veteran:

@@ -222,6 +222,7 @@ namespace Server.Models
             FiltersRarity = Character.FiltersRarity;
 
             AddDefaultCurrencies();
+            RemoveDeletedCurrencies();
         }
 
         private void AddDefaultCurrencies()
@@ -243,6 +244,18 @@ namespace Server.Models
             }
         }
 
+        private void RemoveDeletedCurrencies()
+        {
+            for (int i = Character.Account.Currencies.Count - 1; i >= 0; i--)
+            {
+                var currency = Character.Account.Currencies[i];
+
+                if (currency.Info == null)
+                {
+                    Character.Account.Currencies.RemoveAt(i);
+                }
+            }
+        }
 
         public override void Process()
         {
@@ -634,7 +647,7 @@ namespace Server.Models
 
             bool cancel = false;
 
-            for (int i = 0; i < Character.Quests.Count; i++)
+            for (int i = Character.Quests.Count - 1; i >= 0; i--)
             {
                 var quest = Character.Quests[i];
 
@@ -8530,6 +8543,7 @@ namespace Server.Models
         public void ApplyMapBuff()
         {
             BuffRemove(BuffType.MapEffect);
+            BuffRemove(BuffType.InstanceEffect);
 
             if (CurrentMap == null) return;
 
@@ -8547,10 +8561,17 @@ namespace Server.Models
             stats[Stat.MaxMonsterDrop] = CurrentMap.Info.MaxDropRate;
             stats[Stat.MaxMonsterGold] = CurrentMap.Info.MaxGoldRate;
 
-            if (stats.Count == 0) return;
+            if (stats.Count != 0)
+            {
+                BuffAdd(BuffType.MapEffect, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
+            }
 
-            BuffAdd(BuffType.MapEffect, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
+            if (CurrentMap.Instance != null && CurrentMap.Instance.Stats.Count != 0)
+            {
+                BuffAdd(BuffType.InstanceEffect, TimeSpan.MaxValue, CurrentMap.Instance.Stats, false, false, TimeSpan.Zero);
+            }
         }
+
         public void ApplyServerBuff()
         {
             BuffRemove(BuffType.Server);

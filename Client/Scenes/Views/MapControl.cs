@@ -1559,12 +1559,16 @@ namespace Client.Scenes.Views
                 switch (GameScene.Game.MapControl.MapInfo.Light)
                 {
                     case LightSetting.Default:
-                        byte shading = (byte) (255*GameScene.Game.DayTime);
+                        byte shading = (byte) (255 * GameScene.Game.DayTime);
                         BackColour = Color.FromArgb(shading, shading, shading);
                         Visible = true;
                         break;
                     case LightSetting.Night:
                         BackColour = Color.FromArgb(15, 15, 15);
+                        Visible = true;
+                        break;
+                    case LightSetting.Twilight:
+                        BackColour = Color.FromArgb(100, 100, 100);
                         Visible = true;
                         break;
                     case LightSetting.Light:

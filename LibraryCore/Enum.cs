@@ -227,9 +227,10 @@ namespace Library
         Veteran = 14,
 
         MapEffect = 15,
-        Guild = 16,
+        InstanceEffect = 16,
+        Guild = 17,
 
-        DeathDrops = 17,
+        DeathDrops = 18,
 
         Defiance = 100,
         Might = 101,

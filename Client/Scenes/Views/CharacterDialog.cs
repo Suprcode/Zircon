@@ -647,7 +647,8 @@ namespace Client.Scenes.Views
                 Text = "0-0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -666,6 +667,7 @@ namespace Client.Scenes.Views
                 Size = labelValueSize,
                 AutoSize = false,
                 DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -684,6 +686,7 @@ namespace Client.Scenes.Views
                 Size = labelValueSize,
                 AutoSize = false,
                 DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -701,7 +704,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             y = yStart;
@@ -721,7 +725,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -739,7 +744,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -757,7 +763,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -775,7 +782,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             #endregion
@@ -799,7 +807,8 @@ namespace Client.Scenes.Views
                 Text = "0-0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -817,7 +826,8 @@ namespace Client.Scenes.Views
                 Text = "0-0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             y = yStart;
@@ -837,7 +847,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -855,7 +866,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             #endregion
@@ -879,7 +891,8 @@ namespace Client.Scenes.Views
                 Text = "0 / 0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -897,7 +910,8 @@ namespace Client.Scenes.Views
                 Text = "0 / 0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             #endregion
@@ -921,7 +935,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -939,7 +954,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             y = yStart;
@@ -959,7 +975,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -977,7 +994,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             label = new DXLabel
@@ -995,7 +1013,8 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = labelValueSize,
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.Right
+                DrawFormat = TextFormatFlags.Right,
+                Tag = label
             };
 
             #endregion
@@ -1423,7 +1442,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 600,
                 ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = "Fire",
+                Hint = "Fire"
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -2531,11 +2550,17 @@ namespace Client.Scenes.Views
         public void UpdateStats()
         {
             foreach (KeyValuePair<Stat, DXLabel> pair in DisplayStats)
+            {
                 pair.Value.Text = Stats.GetFormat(pair.Key);
+
+                if (pair.Value.Tag is DXLabel title)
+                {
+                    title.Text = Stats.GetTitle(pair.Key, false) + ": ";
+                }
+            }
 
             foreach (KeyValuePair<Stat, DXLabel> pair in AttackStats)
             {
-
                 if (Stats[pair.Key] > 0)
                 {
                     pair.Value.Text = $"+{Stats[pair.Key]}";
@@ -2548,6 +2573,11 @@ namespace Client.Scenes.Views
                     pair.Value.ForeColour = Color.FromArgb(60, 60, 60);
                     ((DXImageControl)pair.Value.Tag).ForeColour = Color.FromArgb(60, 60, 60);
                 }
+
+                //if (pair.Value.Tag is DXImageControl icon)
+                //{
+                //    icon.Hint = Stats.GetTitle(pair.Key)?.TrimEnd(':', ' ');
+                //}
             }
 
             foreach (KeyValuePair<Stat, DXLabel> pair in AdvantageStats)
@@ -2591,7 +2621,6 @@ namespace Client.Scenes.Views
 
             foreach (KeyValuePair<Stat, DXLabel> pair in HermitAttackStats)
             {
-
                 if (HermitStats[pair.Key] > 0)
                 {
                     pair.Value.Text = $"+{HermitStats[pair.Key]}";

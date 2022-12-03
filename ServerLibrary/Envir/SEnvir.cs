@@ -915,6 +915,7 @@ namespace Server.Envir
                         if (!NewConnections.TryDequeue(out connection)) break;
 
                         IPCount.TryGetValue(connection.IPAddress, out var ipCount);
+
                         IPCount[connection.IPAddress] = ipCount + 1;
 
                         Connections.Add(connection);
