@@ -1981,16 +1981,19 @@ namespace Server.Models
 
                                 instance = SEnvir.InstanceInfoList.Binding.FirstOrDefault(x => x.Name == instanceName);
 
-                                //Load new index
-                                var (index, result) = GetInstance(instance);
-
-                                if (result != InstanceResult.Success)
+                                if (instance != null)
                                 {
-                                    SendInstanceMessage(instance, result);
-                                    return;
-                                }
+                                    //Load new index
+                                    var (index, result) = GetInstance(instance);
 
-                                instanceSequence = index;
+                                    if (result != InstanceResult.Success)
+                                    {
+                                        SendInstanceMessage(instance, result);
+                                        return;
+                                    }
+
+                                    instanceSequence = index;
+                                }
                             }
 
                             Map map = SEnvir.GetMap(info, instance, instanceSequence ?? 0);
