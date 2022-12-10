@@ -29,6 +29,7 @@ namespace Server.Views
             base.OnLoad(e);
 
             SMain.SetUpView(CurrencyInfoGridView);
+            SMain.SetUpView(CurrencyInfoImageGridView);
         }
 
         public static void AddDefaultCurrencies()
@@ -53,6 +54,57 @@ namespace Server.Views
                 }
             }
 
+            if (string.IsNullOrEmpty(gold.Abbreviation))
+            {
+                gold.Abbreviation = "Gold";
+                needSave = true;
+            }
+
+            if (gold.Images.Count == 0)
+            {
+                var image = SMain.Session.GetCollection<CurrencyInfoImage>().CreateNewObject();
+                image.Image = 120;
+                image.Amount = 0;
+                gold.Images.Add(image);
+
+                image = SMain.Session.GetCollection<CurrencyInfoImage>().CreateNewObject();
+                image.Image = 121;
+                image.Amount = 100;
+                gold.Images.Add(image);
+
+                image = SMain.Session.GetCollection<CurrencyInfoImage>().CreateNewObject();
+                image.Image = 122;
+                image.Amount = 200;
+                gold.Images.Add(image);
+
+                image = SMain.Session.GetCollection<CurrencyInfoImage>().CreateNewObject();
+                image.Image = 123;
+                image.Amount = 500;
+                gold.Images.Add(image);
+
+                image = SMain.Session.GetCollection<CurrencyInfoImage>().CreateNewObject();
+                image.Image = 124;
+                image.Amount = 1000;
+                gold.Images.Add(image);
+
+                image = SMain.Session.GetCollection<CurrencyInfoImage>().CreateNewObject();
+                image.Image = 125;
+                image.Amount = 1000000;
+                gold.Images.Add(image);
+
+                image = SMain.Session.GetCollection<CurrencyInfoImage>().CreateNewObject();
+                image.Image = 126;
+                image.Amount = 5000000;
+                gold.Images.Add(image);
+
+                image = SMain.Session.GetCollection<CurrencyInfoImage>().CreateNewObject();
+                image.Image = 127;
+                image.Amount = 10000000;
+                gold.Images.Add(image);
+
+                needSave = true;
+            }
+
             var gameGold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.GameGold);
 
             if (gameGold == null)
@@ -63,6 +115,12 @@ namespace Server.Views
                 needSave = true;
             }
 
+            if (string.IsNullOrEmpty(gameGold.Abbreviation))
+            {
+                gameGold.Abbreviation = "GG";
+                needSave = true;
+            }
+
             var huntGold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.HuntGold);
 
             if (huntGold == null)
@@ -70,6 +128,12 @@ namespace Server.Views
                 huntGold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 huntGold.Name = "Hunt Gold";
                 huntGold.Type = CurrencyType.HuntGold;
+                needSave = true;
+            }
+
+            if (string.IsNullOrEmpty(huntGold.Abbreviation))
+            {
+                huntGold.Abbreviation = "HG";
                 needSave = true;
             }
 

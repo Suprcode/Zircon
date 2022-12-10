@@ -393,6 +393,7 @@ namespace Client.Controls
                     cell.Link = null;
                 }
         }
+
         #endregion
 
         #region IDisposable

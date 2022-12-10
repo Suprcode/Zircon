@@ -7806,19 +7806,26 @@ namespace Server.Models
 
             ob.Spawn(CurrentMap, cell.Location);
         }
-        public void GoldDrop(C.GoldDrop p)
+        public void CurrencyDrop(C.CurrencyDrop p)
         {
-            if (Dead || p.Amount <= 0 || p.Amount > Gold.Amount) return;
+            var currency = SEnvir.CurrencyInfoList.Binding.First(x => x.Index == p.CurrencyIndex);
 
+            if (currency == null) return;
+
+            var userCurrency = GetCurrency(currency);
+
+            var amount = userCurrency.Amount;
+
+            if (Dead || currency.DropItem == null || p.Amount <= 0 || p.Amount > amount) return;
 
             Cell cell = GetDropLocation(Config.DropDistance, null);
 
             if (cell == null) return;
 
-            Gold.Amount -= p.Amount;
-            GoldChanged();
+            userCurrency.Amount -= p.Amount;
+            CurrencyChanged(userCurrency);
 
-            UserItem dropItem = SEnvir.CreateFreshItem(SEnvir.GoldInfo);
+            UserItem dropItem = SEnvir.CreateFreshItem(currency.DropItem);
             dropItem.Count = p.Amount;
             dropItem.IsTemporary = true;
 

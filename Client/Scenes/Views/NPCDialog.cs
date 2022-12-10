@@ -92,7 +92,6 @@ namespace Client.Scenes.Views
             if (GameScene.Game.NPCMasterRefineBox != null && !IsVisible)
                 GameScene.Game.NPCMasterRefineBox.Visible = false;
 
-
             if (GameScene.Game.NPCItemFragmentBox != null && !IsVisible)
                 GameScene.Game.NPCItemFragmentBox.Visible = false;
 
@@ -110,6 +109,8 @@ namespace Client.Scenes.Views
 
             if (GameScene.Game.NPCAccessoryRefineBox != null && !IsVisible)
                 GameScene.Game.NPCAccessoryRefineBox.Visible = false;
+
+            //GameScene.Game.InventoryBox.ChangeMode(GridMode.Default, null);
 
             if (Opened)
             {
@@ -196,6 +197,8 @@ namespace Client.Scenes.Views
             GameScene.Game.NPCAccessoryResetBox.Visible = false;
             GameScene.Game.NPCWeaponCraftBox.Visible = false;
 
+            //GameScene.Game.InventoryBox.ChangeMode(GridMode.Default, null);
+
             switch (info.Page.DialogType)
             {
                 case NPCDialogType.None:
@@ -204,6 +207,8 @@ namespace Client.Scenes.Views
                     GameScene.Game.NPCGoodsBox.Location = new Point(0, Size.Height);
                     GameScene.Game.NPCGoodsBox.Visible = Page.Goods.Count > 0;
                     GameScene.Game.NPCGoodsBox.NewGoods(Page.Goods, Page.Currency);
+
+                    //GameScene.Game.InventoryBox.ChangeMode(GridMode.Sell, Page.Currency);
                     GameScene.Game.NPCSellBox.Visible = Page.Types.Count > 0;
                     GameScene.Game.NPCSellBox.SetCurrency(Page.Currency);
                     GameScene.Game.NPCSellBox.Location = GameScene.Game.NPCGoodsBox.Visible ? new Point(Size.Width - GameScene.Game.NPCSellBox.Size.Width, Size.Height) : new Point(0, Size.Height);

@@ -594,23 +594,26 @@ namespace Client.Scenes.Views
                 return;
             }
 
-            if (GameScene.Game.GoldPickedUp)
+            if (GameScene.Game.CurrencyPickedUp != null)
             {
                 MapButtons &= ~e.Button;
-                DXItemAmountWindow window = new DXItemAmountWindow("Drop Item", new ClientUserItem(Globals.GoldInfo, User.Gold.Amount));
+
+                int index = GameScene.Game.CurrencyPickedUp.Info.Index;
+
+                DXItemAmountWindow window = new DXItemAmountWindow("Drop Item", new ClientUserItem(GameScene.Game.CurrencyPickedUp.Info.DropItem, GameScene.Game.CurrencyPickedUp.Amount));
 
                 window.ConfirmButton.MouseClick += (o, a) =>
                 {
                     if (window.Amount <= 0) return;
 
-                    CEnvir.Enqueue(new C.GoldDrop
+                    CEnvir.Enqueue(new C.CurrencyDrop
                     {
+                        CurrencyIndex = index,
                         Amount = window.Amount
                     });
-
                 };
 
-                GameScene.Game.GoldPickedUp = false;
+                GameScene.Game.CurrencyPickedUp = null;
                 return;
             }
             

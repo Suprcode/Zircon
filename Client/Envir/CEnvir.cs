@@ -949,5 +949,20 @@ namespace Client.Envir
         {
             return Globals.CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info) != null;
         }
+
+        public static int CurrencyImage(ItemInfo info, long count)
+        {
+            var currency = Globals.CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info);
+
+            if (currency == null)
+                return 0;
+
+            var image = currency.Images.OrderByDescending(x => x.Amount).FirstOrDefault(x => x.Amount <= count);
+
+            if (image != null)
+                return image.Image;
+            else
+                return currency.DropItem.Image;
+        }
     }
 }

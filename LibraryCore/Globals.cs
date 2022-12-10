@@ -1204,6 +1204,12 @@ namespace Library
         public int CurrencyIndex { get; set; }
         public CurrencyInfo Info;
         public long Amount { get; set; }
+
+        [IgnorePropertyPacket]
+        public bool CanPickup
+        {
+            get { return Info != null && Info.DropItem != null; }
+        }
     }
 
     public class ClientUserDiscipline

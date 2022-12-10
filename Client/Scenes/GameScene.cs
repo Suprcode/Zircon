@@ -84,7 +84,7 @@ namespace Client.Scenes
 
         #endregion
 
-        public bool GoldPickedUp;
+        public ClientUserCurrency CurrencyPickedUp = null;
 
         public MapObject MagicObject, MouseObject, TargetObject, FocusObject;
         public DXControl ItemLabel, MagicLabel;
@@ -3207,12 +3207,14 @@ namespace Client.Scenes
 
                 if (info.Effect == ItemEffect.ItemPart)
                     info = Globals.ItemInfoList.Binding.First(x => x.Index == SelectedCell.Item.AddedStats[Stat.ItemIndex]);
-                
+
                 image = info.Image;
                 color = SelectedCell.Item.Colour;
             }
-            else if (GoldPickedUp)
-                image = 124;
+            else if (CurrencyPickedUp != null)
+            {
+                image = CEnvir.CurrencyImage(CurrencyPickedUp.Info.DropItem, CurrencyPickedUp.Amount);
+            }
 
             MirLibrary library;
 
@@ -3680,8 +3682,8 @@ namespace Client.Scenes
         {
             if (User == null) return;
 
-            InventoryBox.GoldLabel.Text = User.Gold.Amount.ToString("#,##0");
-            InventoryBox.GameGoldLabel.Text = User.GameGold.Amount.ToString("#,##0");
+            InventoryBox.RefreshCurrency();
+
             MarketPlaceBox.GameGoldBox.Value = User.GameGold.Amount;
             MarketPlaceBox.HuntGoldBox.Value = User.HuntGold.Amount;
             NPCAdoptCompanionBox.RefreshUnlockButton();
@@ -4094,7 +4096,7 @@ namespace Client.Scenes
                 _MouseItem = null;
                 _MouseMagic = null;
 
-                GoldPickedUp = false;
+                CurrencyPickedUp = null;
 
                 MagicObject = null;
                 MouseObject = null;

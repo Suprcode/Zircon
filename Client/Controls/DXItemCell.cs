@@ -29,7 +29,7 @@ namespace Client.Controls
         #endregion
 
         #region Properties
-        
+
         #region FixedBorder
 
         public bool FixedBorder
@@ -622,24 +622,9 @@ namespace Client.Controls
             {
                 int drawIndex;
 
-                if (Item.Info == Globals.GoldInfo)
+                if (CEnvir.IsCurrencyItem(Item.Info))
                 {
-                    if (Item.Count < 100)
-                        drawIndex = 120;
-                    else if (Item.Count < 200)
-                        drawIndex = 121;
-                    else if (Item.Count < 500)
-                        drawIndex = 122;
-                    else if (Item.Count < 1000)
-                        drawIndex = 123;
-                    else if (Item.Count < 1000000) //1 Million
-                        drawIndex = 124;
-                    else if (Item.Count < 5000000) //5 Million
-                        drawIndex = 125;
-                    else if (Item.Count < 10000000) //10 Million
-                        drawIndex = 126;
-                    else
-                        drawIndex = 127;
+                    drawIndex = CEnvir.CurrencyImage(Item.Info, Item.Count);
                 }
                 else
                 {
@@ -770,8 +755,6 @@ namespace Client.Controls
                 return;
             }
 
-
-
             switch (SelectedCell.GridType) //FROM Grid
             {
                 case GridType.Equipment:
@@ -798,8 +781,7 @@ namespace Client.Controls
                         //Don't want to move items around the character body (no point)
                         return;
                     }
-                    
-                    
+                             
                     if (Item == null || (SelectedCell.Item.Info == Item.Info && SelectedCell.Item.Count < SelectedCell.Item.Info.StackSize))
                         SelectedCell.MoveItem(this);
                     else
@@ -1075,7 +1057,6 @@ namespace Client.Controls
 
                                     if (cell.GridType == GridType.Sell)
                                         window.AmountBox.Value = Item.Count;
-
 
                                     window.ConfirmButton.MouseClick += (o, e) =>
                                     {
@@ -1706,7 +1687,7 @@ namespace Client.Controls
         }
         public override void OnMouseClick(MouseEventArgs e)
         {
-            if (Locked || GameScene.Game.GoldPickedUp || (!Linked && Link != null) || GameScene.Game.Observer || GridType == GridType.Inspect) return;
+            if (Locked || GameScene.Game.CurrencyPickedUp != null || (!Linked && Link != null) || GameScene.Game.Observer || GridType == GridType.Inspect) return;
 
             base.OnMouseClick(e);
 
@@ -1719,12 +1700,10 @@ namespace Client.Controls
                 if (SelectedCell == null)
                     return;
             }
-            
 
             switch (e.Button)
             {
                 case MouseButtons.Left:
-
                     if (CEnvir.Alt)
                     {
                         //Link Item
@@ -1735,19 +1714,19 @@ namespace Client.Controls
                         if (Item == null || (GridType != GridType.Inventory && GridType != GridType.Storage && GridType != GridType.PartsStorage && GridType != GridType.GuildStorage && GridType != GridType.CompanionInventory) || Item.Count <= 1) return;
 
                         DXItemAmountWindow window = new DXItemAmountWindow("Item Split", Item);
-                        
+
                         window.ConfirmButton.MouseClick += (o, e1) =>
                         {
                             Locked = true;
                             CEnvir.Enqueue(new C.ItemSplit { Grid = GridType, Slot = Slot, Count = window.Amount });
                         };
-                        
+
                         return;
                     }
 
                     if (Item != null && SelectedCell == null)
                         PlayItemSound();
-                    
+
                     MoveItem();
                     break;
                 case MouseButtons.Middle:
@@ -1755,7 +1734,6 @@ namespace Client.Controls
                         CEnvir.Enqueue(new C.ItemLock { GridType = GridType, SlotIndex = Slot, Locked = (Item.Flags & UserItemFlags.Locked) != UserItemFlags.Locked });
                     break;
                 case MouseButtons.Right:
-
                     switch (GridType)
                     {
                         case GridType.Belt:
@@ -1882,7 +1860,7 @@ namespace Client.Controls
                                 if (!Item.CanFragment())
                                     GameScene.Game.ReceiveChat($"Unable to Fragment {Item.Info.ItemName}, it cannot be Fragmented.", MessageType.System);
                                 else MoveItem(GameScene.Game.NPCItemFragmentBox.Grid);
-                                
+
                                 return;
                             }
 
@@ -1899,7 +1877,6 @@ namespace Client.Controls
                                 return;
                             }
 
-
                             if (GameScene.Game.NPCAccessoryUpgradeBox.IsVisible)
                             {
 
@@ -1915,7 +1892,6 @@ namespace Client.Controls
                             {
                                 if (!MoveItem(GameScene.Game.NPCAccessoryResetBox.AccessoryGrid))
                                     GameScene.Game.ReceiveChat($"Unable to Reset {Item.Info.ItemName}.", MessageType.System);
-                                
 
                                 return;
                             }
@@ -1977,7 +1953,6 @@ namespace Client.Controls
                                 return;
                             }
 
-
                             if (GameScene.Game.CommunicationBox.IsVisible)
                             {
                                 MoveItem(GameScene.Game.CommunicationBox.SendGrid);
@@ -1989,8 +1964,8 @@ namespace Client.Controls
                                 if (Item.Info.Effect == ItemEffect.ItemPart)
                                     MoveItem(GameScene.Game.StorageBox.PartGrid);
                                 else if (!MoveItem(GameScene.Game.StorageBox.Grid))
-                                        GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
-                                
+                                    GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
+
                                 return;
                             }
 
@@ -2014,7 +1989,6 @@ namespace Client.Controls
                                     GameScene.Game.ReceiveChat("No Free Space in companion's Inventory.", MessageType.System);
                                 return;
                             }
-
 
                             UseItem(); //Try Use Item
                             break;
@@ -2283,7 +2257,7 @@ namespace Client.Controls
                                     GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName} here.", MessageType.System);
                                 return;
                             }
-                            
+
                             if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
                             {
                                 MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
@@ -2295,7 +2269,7 @@ namespace Client.Controls
                         case GridType.Equipment:
 
                             if (Item == null) return;
-                            
+
                             if (GameScene.Game.NPCRepairBox.Visible)
                             {
                                 if (Item.CurrentDurability >= Item.MaxDurability || !Item.Info.CanRepair)
@@ -2361,14 +2335,13 @@ namespace Client.Controls
                             throw new ArgumentOutOfRangeException();
                     }
 
-
                     break;
             }
 
         }
         public override void OnMouseDoubleClick(MouseEventArgs e)
         {
-            if (Locked || GameScene.Game.GoldPickedUp || (!Linked && Link != null) || GameScene.Game.Observer) return;
+            if (Locked || GameScene.Game.CurrencyPickedUp != null || (!Linked && Link != null) || GameScene.Game.Observer) return;
 
             base.OnMouseDoubleClick(e);
 
@@ -2400,8 +2373,6 @@ namespace Client.Controls
 
                     break;
             }
-
-
         }
         public override void OnKeyDown(KeyEventArgs e)
         {
@@ -2414,7 +2385,7 @@ namespace Client.Controls
                 switch (action)
                 {
                     case KeyBindAction.ToggleItemLock:
-                        if (Locked || GameScene.Game.GoldPickedUp || (!Linked && Link != null) || GameScene.Game.Observer) return;
+                        if (Locked || GameScene.Game.CurrencyPickedUp != null || (!Linked && Link != null) || GameScene.Game.Observer) return;
                         if (ReadOnly || !Enabled) return;
 
 
@@ -2429,7 +2400,7 @@ namespace Client.Controls
 
             }
         }
-
+        
         #endregion
 
         #region IDisposable

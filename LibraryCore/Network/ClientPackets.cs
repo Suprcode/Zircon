@@ -156,8 +156,9 @@ namespace Library.Network.ClientPackets
         public CellLinkInfo Link { get; set; }
     }
 
-    public sealed class GoldDrop : Packet
+    public sealed class CurrencyDrop : Packet
     {
+        public int CurrencyIndex { get; set; }
         public long Amount { get; set; }
     }
 

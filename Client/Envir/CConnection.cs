@@ -2042,8 +2042,6 @@ namespace Client.Envir
                         throw new ArgumentOutOfRangeException();
                 }
 
-
-
                 DXItemCell fromCell = grid[cellLinkInfo.Slot];
                 fromCell.Locked = false;
 

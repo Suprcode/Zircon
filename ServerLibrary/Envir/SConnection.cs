@@ -464,11 +464,11 @@ namespace Server.Envir
 
             Player.PickUp();
         }
-        public void Process(C.GoldDrop p)
+        public void Process(C.CurrencyDrop p)
         {
             if (Stage != GameStage.Game) return;
 
-            Player.GoldDrop(p);
+            Player.CurrencyDrop(p);
         }
         public void Process(C.ItemUse p)
         {
