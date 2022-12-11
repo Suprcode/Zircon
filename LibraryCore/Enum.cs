@@ -1271,10 +1271,10 @@ namespace Library
     {
         General = 0,
         Daily = 1,
-        //Weekly = 2,
+        Weekly = 2,
         Repeatable = 3,
         Story = 4,
-        //Account = 5
+        Account = 5
     }
 
     public enum QuestIcon

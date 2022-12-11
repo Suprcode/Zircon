@@ -4008,6 +4008,10 @@ namespace Client.Scenes
                         icon = 76;
                         colour = Color.Blue;
                         break;
+                    case QuestType.Weekly:
+                        icon = 76;
+                        colour = Color.Blue;
+                        break;
                     case QuestType.Repeatable:
                         icon = 16;
                         colour = Color.Yellow;
@@ -4016,10 +4020,10 @@ namespace Client.Scenes
                         icon = 56;
                         colour = Color.Green;
                         break;
-                    //case QuestType.Account:
-                    //    icon = 36;
-                    //    colour = Color.Purple;
-                    //    break;
+                    case QuestType.Account:
+                        icon = 36;
+                        colour = Color.MediumPurple;
+                        break;
                 }
 
                 switch (NPC.CurrentQuest.Icon)

@@ -3510,15 +3510,18 @@ namespace Client.Scenes.Views
                 case QuestType.Daily:
                     startIndex = 76;
                     break;
+                case QuestType.Weekly:
+                    startIndex = 76;
+                    break;
                 case QuestType.Repeatable:
                     startIndex = 16;
                     break;
                 case QuestType.Story:
                     startIndex = 56;
                     break;
-                //case QuestType.Account:
-                //    startIndex = 36;
-                //    break;
+                case QuestType.Account:
+                    startIndex = 36;
+                    break;
             }
 
             switch (icon)

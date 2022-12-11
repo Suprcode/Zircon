@@ -477,19 +477,19 @@ namespace Server.Models
                         if (Level < requirement.IntParameter1) return false;
                         break;
                     case NPCRequirementType.Accepted:
-                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) break;
+                        if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) break;
 
                         return false;
                     case NPCRequirementType.NotAccepted:
-                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) return false;
+                        if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) return false;
 
                         break;
                     case NPCRequirementType.HaveCompleted:
-                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) break;
+                        if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) break;
 
                         return false;
                     case NPCRequirementType.HaveNotCompleted:
-                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) return false;
+                        if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) return false;
 
                         break;
                     case NPCRequirementType.Class:

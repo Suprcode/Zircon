@@ -209,7 +209,9 @@ namespace Server.Models
             if (!Config.DropVisibleOtherPlayers)
             {
                 if (Account != null && ob.Character.Account != Account) return false;
-                if (Item.UserTask != null && Item.UserTask.Quest.Character != ob.Character) return false;
+                if (Item.UserTask != null && 
+                    ((Item.UserTask.Quest.Character != null && Item.UserTask.Quest.Character != ob.Character) || 
+                    (Item.UserTask.Quest.Account != null && Item.UserTask.Quest.Account != ob.Character.Account))) return false;
             }
 
             return base.CanBeSeenBy(ob);

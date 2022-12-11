@@ -1241,28 +1241,64 @@ namespace Client.Scenes.Views
             TrackBox.Visible = false;
             QuestNameLabel.Text = $"[{QuestInfo.QuestType}] {QuestInfo.QuestName}";
 
-            if (UserQuest == null)
+            Color colour = Color.White;
+
+            QuestIcon icon = Library.QuestIcon.None;
+            QuestType type = QuestType.General;
+
+            if (UserQuest != null)
             {
-                QuestIcon.BaseIndex = 83; //Available
-                QuestNameLabel.Location = new Point(40, 2);
+                type = UserQuest.Quest.QuestType;
+                icon = UserQuest.IsComplete ? Library.QuestIcon.Complete : Library.QuestIcon.Incomplete;
             }
-            else if (UserQuest.Completed)
+            else if (QuestInfo != null)
             {
-                QuestIcon.BaseIndex = 91; //Current
-                QuestNameLabel.Location = new Point(40, 2);
+                type = QuestInfo.QuestType;
+
+                icon = Library.QuestIcon.New;
             }
-            else if (!UserQuest.IsComplete)
+
+            int startIndex = 0;
+
+            switch (type)
             {
-                QuestIcon.BaseIndex = 85; //Completed
-                TrackBox.Visible = true;
-                QuestNameLabel.Location = new Point(65, 2);
+                case QuestType.General:
+                    startIndex = 16;
+                    break;
+                case QuestType.Daily:
+                    startIndex = 76;
+                    break;
+                case QuestType.Weekly:
+                    startIndex = 76;
+                    break;
+                case QuestType.Repeatable:
+                    startIndex = 16;
+                    break;
+                case QuestType.Story:
+                    startIndex = 56;
+                    break;
+                case QuestType.Account:
+                    startIndex = 36;
+                    break;
             }
-            else
+
+            switch (icon)
             {
-                QuestIcon.BaseIndex = 93; //Current
-                TrackBox.Visible = true;
-                QuestNameLabel.Location = new Point(65, 2);
+                case Library.QuestIcon.New:
+                    startIndex += 0;
+                    break;
+                case Library.QuestIcon.Incomplete:
+                    startIndex = 2;
+                    break;
+                case Library.QuestIcon.Complete:
+                    startIndex += 2;
+                    break;
             }
+
+            QuestIcon.BaseIndex = startIndex;
+            QuestNameLabel.Location = new Point(40, 2);
+
+            //QuestNameLabel.Location = new Point(65, 2);
 
             TrackBox.Checked = UserQuest != null && UserQuest.Track;
 
@@ -1311,7 +1347,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(20, 2),
                 Loop = true,
-                LibraryFile = LibraryFile.Interface,
+                LibraryFile = LibraryFile.QuestIcon,
                 BaseIndex = 83,
                 FrameCount = 2,
                 AnimationDelay = TimeSpan.FromSeconds(1),

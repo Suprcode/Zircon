@@ -534,7 +534,7 @@ namespace Server.Models
                         player.TakeItem(movement.NeedItem, 1);
                     }
 
-                    foreach (UserQuest quest in player.Character.Quests)
+                    foreach (UserQuest quest in player.Quests)
                     {
                         //For Each Active Quest
                         if (quest.Completed) continue;

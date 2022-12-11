@@ -137,15 +137,18 @@ namespace Client.Models
                 case QuestType.Daily:
                     startIndex = 70;
                     break;
+                case QuestType.Weekly:
+                    startIndex = 70;
+                    break;
                 case QuestType.Repeatable:
                     startIndex = 10;
                     break;
                 case QuestType.Story:
                     startIndex = 50;
                     break;
-                //case QuestType.Account:
-                //    startIndex = 30;
-                //    break;
+                case QuestType.Account:
+                    startIndex = 30;
+                    break;
             }
 
             switch (CurrentQuest.Icon)

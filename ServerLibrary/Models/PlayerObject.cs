@@ -12,6 +12,7 @@ using Server.Models.Monsters;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
 using System.Threading;
+using System.Globalization;
 
 namespace Server.Models
 {
@@ -656,6 +657,18 @@ namespace Server.Models
                     case QuestType.Daily:
                         {
                             if (quest.Completed && quest.DateCompleted.Date != DateTime.UtcNow.Date)
+                            {
+                                Character.Quests.RemoveAt(i);
+                                cancel = true;
+                            }
+                        }
+                        break;
+                    case QuestType.Weekly:
+                        {
+                            CultureInfo cul = CultureInfo.CurrentCulture;
+
+                            if (quest.Completed && 
+                                cul.Calendar.GetWeekOfYear(quest.DateCompleted.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday) != cul.Calendar.GetWeekOfYear(DateTime.UtcNow.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
                             {
                                 Character.Quests.RemoveAt(i);
                                 cancel = true;
@@ -3702,6 +3715,14 @@ namespace Server.Models
 
         #region Quests
 
+        public IEnumerable<UserQuest> Quests
+        {
+            get
+            {
+                return Character.Quests.Concat(Character.Account.Quests);
+            }
+        }
+
         public void QuestAccept(int index)
         {
             if (Dead || NPC == null) return;
@@ -3715,7 +3736,12 @@ namespace Server.Models
                 UserQuest userQuest = SEnvir.UserQuestList.CreateNewObject();
 
                 userQuest.QuestInfo = quest;
-                userQuest.Character = Character;
+
+                if (quest.QuestType == QuestType.Account)
+                    userQuest.Account = Character.Account;
+                else
+                    userQuest.Character = Character;
+
                 userQuest.DateTaken = DateTime.UtcNow;
 
                 Enqueue(new S.QuestChanged { Quest = userQuest.ToClientInfo() });
@@ -3724,7 +3750,7 @@ namespace Server.Models
         }
         public bool QuestCanAccept(QuestInfo quest)
         {
-            if (Character.Quests.Any(x => x.QuestInfo == quest)) return false;
+            if (Quests.Any(x => x.QuestInfo == quest)) return false;
 
             foreach (QuestRequirement requirement in quest.Requirements)
             {
@@ -3737,15 +3763,15 @@ namespace Server.Models
                         if (Level > requirement.IntParameter1) return false;
                         break;
                     case QuestRequirementType.NotAccepted:
-                        if (Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) return false;
+                        if (Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) return false;
 
                         break;
                     case QuestRequirementType.HaveCompleted:
-                        if (Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) break;
+                        if (Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) break;
 
                         return false;
                     case QuestRequirementType.HaveNotCompleted:
-                        if (Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) return false;
+                        if (Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) return false;
 
                         break;
                     case QuestRequirementType.Class:
@@ -3781,7 +3807,7 @@ namespace Server.Models
             {
                 if (quest.Index != p.Index) continue;
 
-                UserQuest userQuest = Character.Quests.FirstOrDefault(x => x.QuestInfo == quest);
+                UserQuest userQuest = Quests.FirstOrDefault(x => x.QuestInfo == quest);
 
                 if (userQuest == null || userQuest.Completed || !userQuest.IsComplete) return;
 
@@ -3862,13 +3888,13 @@ namespace Server.Models
 
         public void QuestTrack(C.QuestTrack p)
         {
-            UserQuest quest = Character.Quests.FirstOrDefault(x => x.Index == p.Index);
+            UserQuest quest = Quests.FirstOrDefault(x => x.Index == p.Index);
 
             if (quest == null || quest.Completed) return;
 
             quest.Track = p.Track;
-
         }
+
         #endregion
 
         #region Mail
@@ -11408,6 +11434,8 @@ namespace Server.Models
             Character.SpentPoints = 0;
             Character.HermitStats.Clear();
 
+            //TODO - Remove Discipline??
+
             RefreshStats();
         }
 
@@ -12683,7 +12711,9 @@ namespace Server.Models
                                     UserItem item = items[i];
                                     if (item.UserTask == null) continue;
 
-                                    if (item.UserTask.Quest.Character == Character && !item.UserTask.Completed) continue;
+                                    if (!item.UserTask.Completed &&
+                                        ((item.UserTask.Quest.Character != null && item.UserTask.Quest.Character == Character) || 
+                                        (item.UserTask.Quest.Account != null && item.UserTask.Quest.Account == Character.Account))) continue;
 
                                     items.Remove(item);
                                     item.Delete();
@@ -19661,7 +19691,7 @@ namespace Server.Models
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
-                Quests = Character.Quests.Select(x => x.ToClientInfo()).ToList(),
+                Quests = Quests.Select(x => x.ToClientInfo()).ToList(),
 
                 CompanionUnlocks = Character.Account.CompanionUnlocks.Select(x => x.CompanionInfo.Index).ToList(),
 

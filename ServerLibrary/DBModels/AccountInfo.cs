@@ -651,6 +651,8 @@ namespace Server.DBModels
         [Association("Fortunes")]
         public DBBindingList<UserFortuneInfo> Fortunes { get; set; }
 
+        [Association("Quests")]
+        public DBBindingList<UserQuest> Quests { get; set; }
 
         public CharacterInfo LastCharacter
         {
