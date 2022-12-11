@@ -19644,7 +19644,7 @@ namespace Server.Models
                 AutoPotionLinks = alinks,
                 Magics = Character.Magics.Select(x => x.ToClientInfo()).ToList(),
                 Buffs = Buffs.Select(x => x.ToClientInfo()).ToList(),
-                Currencies = Character.Account.Currencies.Where(x => x.Info != null).Select(x => x.ToClientInfo(x.Info.Type == CurrencyType.GameGold && observer)).ToList(),
+                Currencies = Character.Account.Currencies.Select(x => x.ToClientInfo(x.Info.Type == CurrencyType.GameGold && observer)).ToList(),
 
                 Poison = Poison,
 
