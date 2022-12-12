@@ -4178,6 +4178,9 @@ namespace Client.Envir
         public void Process(S.DisciplineUpdate p)
         {
             GameScene.Game.User.Discipline = p.Discipline;
+
+            if (GameScene.Game.User.Discipline != null)
+            {
             GameScene.Game.User.Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == p.Discipline.InfoIndex);
 
             GameScene.Game.CharacterBox.UpdateDiscipline();
