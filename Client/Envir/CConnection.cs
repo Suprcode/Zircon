@@ -4181,7 +4181,8 @@ namespace Client.Envir
 
             if (GameScene.Game.User.Discipline != null)
             {
-            GameScene.Game.User.Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == p.Discipline.InfoIndex);
+                GameScene.Game.User.Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == p.Discipline.InfoIndex);
+            }
 
             GameScene.Game.CharacterBox.UpdateDiscipline();
         }

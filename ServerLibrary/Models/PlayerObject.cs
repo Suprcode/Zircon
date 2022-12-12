@@ -11434,7 +11434,13 @@ namespace Server.Models
             Character.SpentPoints = 0;
             Character.HermitStats.Clear();
 
-            //TODO - Remove Discipline??
+            if (Character.Discipline != null)
+            {
+                Character.Discipline.Delete();
+                Character.Discipline = null;
+
+                Enqueue(new S.DisciplineUpdate { Discipline = null });
+            }
 
             RefreshStats();
         }

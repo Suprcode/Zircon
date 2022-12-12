@@ -75,6 +75,7 @@ namespace Server.DBModels
         protected override void OnDeleted()
         {
             Info = null;
+            Character = null;
 
             base.OnDeleted();
         }
