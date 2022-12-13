@@ -471,10 +471,10 @@ namespace Server.Models
                 switch (requirement.Requirement)
                 {
                     case NPCRequirementType.MaxLevel:
-                        if (Level > requirement.IntParameter1) return false;
+                        if (ob.Level > requirement.IntParameter1) return false;
                         break;
                     case NPCRequirementType.MinLevel:
-                        if (Level < requirement.IntParameter1) return false;
+                        if (ob.Level < requirement.IntParameter1) return false;
                         break;
                     case NPCRequirementType.Accepted:
                         if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) break;
