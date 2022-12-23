@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Library.SystemModels;
+using MirDB;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -117,7 +119,7 @@ namespace Library
         public static MirAnimation GetAttackAnimation(MirClass c, int w, MagicType m)
         {
             MirAnimation animation;
-     
+
             switch (m)
             {
                 case MagicType.Slaying:
@@ -152,7 +154,7 @@ namespace Library
                         animation = MirAnimation.Combat12;
                     else if (w >= 1100)
                         animation = MirAnimation.Combat10;
-                    else 
+                    else
                         animation = MirAnimation.Combat3;
                     break;
                 default:
@@ -163,7 +165,7 @@ namespace Library
                                 animation = MirAnimation.Combat11;
                             else if (w >= 1100)
                                 animation = MirAnimation.Combat4;
-                            else 
+                            else
                                 animation = MirAnimation.Combat3;
                             break;
                         default:
@@ -174,7 +176,7 @@ namespace Library
 
                     break;
             }
-            
+
             return animation;
         }
         public static MirAnimation GetMagicAnimation(MagicType m)
@@ -211,7 +213,7 @@ namespace Library
                 case MagicType.ImprovedExplosiveTalisman:
 
                 case MagicType.Interchange:
-                    
+
                 case MagicType.Repulsion:
                 case MagicType.ElectricShock:
                 case MagicType.LightningWave:
@@ -310,7 +312,7 @@ namespace Library
 
             foreach (KeyValuePair<Stat, int> pair in a.Values)
                 if (pair.Value != b[pair.Key]) return false;
-            
+
             return true;
         }
 
@@ -455,7 +457,6 @@ namespace Library
                     return false;
             }
         }
-
         public static bool CorrectSlot(ItemType type, CompanionSlot slot)
         {
             switch (slot)
@@ -518,7 +519,7 @@ namespace Library
             else if (time.Minutes >= 1) textM = $"{time.Minutes} {(small ? "Min" : "Minute")}";
 
             if (time.Seconds >= 2) textS = $"{time.Seconds} {(small ? "Secs" : "Seconds")}";
-            else if (time.Seconds >= 1) textS = $"{ time.Seconds} {(small ? "Sec" : "Second")}";
+            else if (time.Seconds >= 1) textS = $"{time.Seconds} {(small ? "Sec" : "Second")}";
             else if (time.TotalSeconds > 1 && time.Seconds > 0) textS = "less than a second";
 
             if (!details)
@@ -546,6 +547,63 @@ namespace Library
                 str.Append(chars[Random.Next(chars.Length)]);
 
             return str.ToString();
+        }
+
+        public static bool ValidFishingDistance(int throwDistance, int throwLevel)
+        {
+            switch (throwLevel)
+            {
+                default:
+                case 1:
+                    return throwDistance <= 4;
+                case 2:
+                    return throwDistance <= 6;
+                case 3:
+                    return throwDistance <= 8;
+                case 4:
+                    return throwDistance <= 9;
+            }
+        }
+
+        public static int FishingThrowQuality(int throwDistance)
+        {
+            switch (throwDistance)
+            {
+                default:
+                case 4:
+                    return 1;
+                case 5:
+                case 6:
+                    return 2;
+                case 7:
+                case 8:
+                    return 3;
+                case 9:
+                    return 4;
+            }
+        }
+
+        public static FishingInfo FishingZone(DBCollection<FishingInfo> col, MapInfo info, int mapWidth, int mapHeight, Point location)
+        {
+            if (location.X < 0 || location.Y < 0 || location.X > mapWidth || location.Y > mapHeight)
+                return null;
+
+            foreach (var zone in col.Binding)
+            {
+                if (zone.Region != null && zone.Region.Map == info)
+                {
+                    if (zone.Region.PointList == null)
+                        zone.Region.CreatePoints(mapWidth);
+
+                    if (zone.Region.PointList.Contains(location))
+                    {
+                        return zone;
+                    }
+                }
+            }
+
+            return null;
+
         }
     }
 }

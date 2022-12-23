@@ -3567,6 +3567,29 @@ namespace Server.Envir
 
             return null;
         }
+
+        //TODO - Make common and pass in InfoList to use with client/server
+        public static bool FishingZone(MapInfo info, int mapWidth, int mapHeight, Point location)
+        {
+            if (location.X < 0 || location.Y < 0 || location.X > mapWidth || location.Y > mapHeight)
+                return false;
+
+            foreach (var zone in FishingInfoList.Binding)
+            {
+                if (zone.Region != null && zone.Region.Map == info)
+                {
+                    if (zone.Region.PointList == null)
+                        zone.Region.CreatePoints(mapWidth);
+
+                    if (zone.Region.PointList.Contains(location))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 
     public class WebCommand

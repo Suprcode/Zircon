@@ -740,7 +740,7 @@ namespace Client.Scenes
 
             CurrencyBox.Location = new Point((Size.Width - CurrencyBox.Size.Width) / 2, (Size.Height - CurrencyBox.Size.Height) / 2);
 
-            FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2) + 27, ((Size.Height - FishingCatchBox.Size.Height) / 2) + 100);
+            FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2), ((Size.Height - FishingCatchBox.Size.Height) / 2) + 200);
         }
 
         public void SaveChatTabs()
@@ -3520,6 +3520,7 @@ namespace Client.Scenes
 
             return true;
         }
+
         public bool CanCompanionWearItem(ClientUserItem item, CompanionSlot slot)
         {
             if (Companion == null) return false;

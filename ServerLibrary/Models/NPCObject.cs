@@ -510,7 +510,6 @@ namespace Server.Models
                         }
                         break;
                     case NPCRequirementType.DaysOfWeek:
-                        //DaysOfWeek currentDayOfWeek = (DaysOfWeek)Math.Pow(2, (double)DateTime.UtcNow.DayOfWeek);
                         var flag = (DaysOfWeek)Enum.ToObject(typeof(DaysOfWeek), 1 << (int)DateTime.UtcNow.DayOfWeek);
 
                         if (!requirement.DaysOfWeek.HasFlag(flag)) return false;

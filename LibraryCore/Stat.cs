@@ -863,6 +863,23 @@ namespace Library
         [StatDescription(Title = "Growth Level", Format = "{0}", Mode = StatType.Default)]
         GrowthLevel,
 
+
+        [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
+        ThrowDistance = 200,
+        [StatDescription(Title = "Auto Cast", Mode = StatType.Text)]
+        AutoCast,
+        [StatDescription(Title = "Flexibility", Format = "{0}", Mode = StatType.Default)]
+        Flexibility,
+        [StatDescription(Title = "Float Strength", Format = "{0}", Mode = StatType.Default)]
+        FloatStrength,
+        [StatDescription(Title = "Reel Bonus", Format = "{0}", Mode = StatType.Default)]
+        ReelBonus,
+        [StatDescription(Title = "Nibble Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        NibbleChance,
+        [StatDescription(Title = "Finder Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        FinderChance,
+
+
         [StatDescription(Title = "Duration", Mode = StatType.Time)]
         Duration = 10000,
     }
@@ -898,5 +915,6 @@ namespace Library
         public StatType Mode { get; set; }
         public Stat MinStat { get; set; }
         public Stat MaxStat { get; set; }
+        public string UsageHint { get; set; }
     }
 }

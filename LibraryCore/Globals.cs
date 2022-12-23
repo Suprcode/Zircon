@@ -380,9 +380,9 @@ namespace Library
                          EquipmentSize = 17,
                          CompanionInventorySize = 30,
                          CompanionEquipmentSize = 4,
-                         PartsStorageOffset = 2000,
                          EquipmentOffSet = 1000,
-                         StorageSize = 100;
+                         StorageSize = 100,
+                         PartsStorageOffset = 2000;
 
         public const int AttackDelay = 1500,
                          ASpeedRate = 47,
@@ -394,7 +394,6 @@ namespace Library
                                AttackTime = TimeSpan.FromMilliseconds(600),
                                CastTime = TimeSpan.FromMilliseconds(600),
                                MagicDelay = TimeSpan.FromMilliseconds(2000);
-
 
         public static bool RealNameRequired = false,
                            BirthDateRequired = false;
@@ -1115,7 +1114,6 @@ namespace Library
         {
             CompanionInfo = Globals.CompanionInfoList.Binding.First(x => x.Index == CompanionIndex);
 
-
             foreach (ClientUserItem item in Items)
             {
                 if (item.Slot < Globals.EquipmentOffSet)
@@ -1123,7 +1121,6 @@ namespace Library
                 else
                     EquipmentArray[item.Slot - Globals.EquipmentOffSet] = item;
             }
-
         }
 
     }

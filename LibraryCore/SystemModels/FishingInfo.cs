@@ -1,6 +1,7 @@
 ﻿using MirDB;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Library.SystemModels
 {
@@ -88,49 +89,19 @@ namespace Library.SystemModels
         }
         private int _Chance;
 
-        public int Amount
+        public bool PerfectCatch
         {
-            get { return _Amount; }
+            get { return _PerfectCatch; }
             set
             {
-                if (_Amount == value) return;
+                if (_PerfectCatch == value) return;
 
-                var oldValue = _Amount;
-                _Amount = value;
+                var oldValue = _PerfectCatch;
+                _PerfectCatch = value;
 
-                OnChanged(oldValue, value, "Amount");
+                OnChanged(oldValue, value, "PerfectCatch");
             }
         }
-        private int _Amount;
-
-        public int DropSet
-        {
-            get { return _DropSet; }
-            set
-            {
-                if (_DropSet == value) return;
-
-                var oldValue = _DropSet;
-                _DropSet = value;
-
-                OnChanged(oldValue, value, "DropSet");
-            }
-        }
-        private int _DropSet;
-
-        public bool PartOnly
-        {
-            get { return _PartOnly; }
-            set
-            {
-                if (_PartOnly == value) return;
-
-                var oldValue = _PartOnly;
-                _PartOnly = value;
-
-                OnChanged(oldValue, value, "PartOnly");
-            }
-        }
-        private bool _PartOnly;
+        private bool _PerfectCatch;
     }
 }

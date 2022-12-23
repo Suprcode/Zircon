@@ -516,9 +516,9 @@ namespace Client.Models
                     animation = Functions.GetAttackAnimation(Class, LibraryWeaponShape, MagicType.None);
                     break;
                 case MirAction.Fishing:
-                    bool cast = (bool)action.Extra[0];
+                    var state = (FishingState)action.Extra[0];
 
-                    if (cast)
+                    if (state == FishingState.Cast)
                         animation = CurrentAnimation == MirAnimation.FishingWait || CurrentAnimation == MirAnimation.FishingCast ? MirAnimation.FishingWait : MirAnimation.FishingCast;
                     else
                         animation = CurrentAnimation == MirAnimation.FishingWait ? MirAnimation.FishingReel : MirAnimation.Standing;
@@ -736,8 +736,8 @@ namespace Client.Models
                         ActionQueue.Add(new ObjectAction(MirAction.Dead, Direction, CurrentLocation));
                         break;
                     default:
-                        if (Fishing)
-                            ActionQueue.Add(new ObjectAction(MirAction.Fishing, Direction, CurrentLocation, Fishing, FloatLocation, FishFound));
+                        if (FishingState == FishingState.Cast)
+                            ActionQueue.Add(new ObjectAction(MirAction.Fishing, Direction, CurrentLocation, FishingState, FloatLocation, FishFound));
                         else
                             ActionQueue.Add(new ObjectAction(MirAction.Standing, Direction, CurrentLocation));
                         break;
@@ -765,15 +765,15 @@ namespace Client.Models
                             {
                                 if (FishFound)
                                 {
-                                    Effects.Add(new MirEffect(431, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
+                                    Effects.Add(new MirEffect(1400, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
+                                    Effects.Add(new MirEffect(1410, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = false });
 
-                                    FishingFloatCreate(420);
+                                    DXSoundManager.Play(SoundIndex.FishingBob);
                                 }
                                 else
                                 {
-                                    Effects.Add(new MirEffect(410, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
-
-                                    FishingFloatCreate(400);
+                                    Effects.Add(new MirEffect(1420, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
+                                    Effects.Add(new MirEffect(1430, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = false });
                                 }
                             }
                             break;
@@ -1328,26 +1328,6 @@ namespace Client.Models
                     DXSoundManager.Play(SoundIndex.FistSwing);
                     break;
             }
-        }
-
-        public override void FishingFloatCreate(int startIndex)
-        {
-            FishingFloatEffect = new MirFishingFloat(startIndex, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
-            {
-                MapTarget = FloatLocation,
-                PlayerTarget = CurrentLocation,
-                Direction = Direction,
-                Skip = 0,         
-            };
-
-            FishingFloatEffect.FrameAction += () =>
-            {
-                if (FishFound && FishingFloatEffect.FrameIndex == 3)
-                    DXSoundManager.Play(SoundIndex.FishingBob);
-
-                FishingFloatEffect.WeaponLibrary = WeaponLibrary1;
-                FishingFloatEffect.WeaponFrame = WeaponFrame;
-            };
         }
     }
 }

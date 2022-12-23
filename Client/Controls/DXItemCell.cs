@@ -766,6 +766,8 @@ namespace Client.Controls
                         return;
                     }
 
+                    if (GameScene.Game.MapControl.FishingState != FishingState.None) return;
+
                     if (Item == null || (SelectedCell.Item.Info == Item.Info && SelectedCell.Item.Count < SelectedCell.Item.Info.StackSize))
                         SelectedCell.MoveItem(this);
                     else
@@ -817,6 +819,8 @@ namespace Client.Controls
             if (Locked || ReadOnly) return;
 
             if (Item != null && (Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
+
+            if (GameScene.Game.MapControl.FishingState != FishingState.None) return;
 
             if (fromCell == SelectedCell) SelectedCell = null;
 
@@ -1439,7 +1443,7 @@ namespace Client.Controls
 
         public bool UseItem()
         {
-            if (Item == null || Locked || ReadOnly || SelectedCell == this || (!Linked && Link != null) || !GameScene.Game.CanUseItem(Item) || GameScene.Game.Observer) return false;
+            if (Item == null || Locked || ReadOnly || SelectedCell == this || (!Linked && Link != null) || !GameScene.Game.CanUseItem(Item) || GameScene.Game.Observer || GameScene.Game.MapControl.FishingState != FishingState.None) return false;
 
             if (GridType == GridType.Belt || GridType == GridType.Belt)
             {
@@ -2248,7 +2252,6 @@ namespace Client.Controls
                         case GridType.GuildStorage:
                             if (Item == null) return;
 
-
                             if (GameScene.Game.NPCRepairBox.Visible)
                             {
                                 if (Item.CurrentDurability >= Item.MaxDurability || !Item.Info.CanRepair)
@@ -2269,6 +2272,8 @@ namespace Client.Controls
                         case GridType.Equipment:
 
                             if (Item == null) return;
+
+                            if (GameScene.Game.MapControl.FishingState != FishingState.None) return;
 
                             if (GameScene.Game.NPCRepairBox.Visible)
                             {
@@ -2299,14 +2304,12 @@ namespace Client.Controls
                                 return;
                             }
 
-
                             if (Item != null && (Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage)
                             {
                                 if (e.Button == MouseButtons.Right)
                                     CEnvir.Enqueue(new C.MarriageTeleport());
                                 return;
                             }
-
 
                             if (!MoveItem(GameScene.Game.InventoryBox.Grid))
                                 GameScene.Game.ReceiveChat("No Free Space in Inventory.", MessageType.System);

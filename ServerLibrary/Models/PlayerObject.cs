@@ -100,7 +100,7 @@ namespace Server.Models
             set { Character.Direction = value; }
         }
 
-        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, FlamingSwordTime, DragonRiseTime, BladeStormTime, RevivalTime, TeleportTime, DailyQuestTime;
+        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, FlamingSwordTime, DragonRiseTime, BladeStormTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime;
         public bool PacketWaiting;
 
         public bool CanPowerAttack, GameMaster, Observer;
@@ -112,15 +112,13 @@ namespace Server.Models
 
         public HorseType Horse;
 
-        public bool Fishing;
-
         public bool BlockWhisper;
         public bool CompanionLevelLock3, CompanionLevelLock5, CompanionLevelLock7, CompanionLevelLock10, CompanionLevelLock11, CompanionLevelLock13, CompanionLevelLock15;
         public bool ExtractorLock;
 
+        public override bool CanMove => base.CanMove && !Fishing;
         public override bool CanAttack => base.CanAttack && Horse == HorseType.None;
-        public override bool CanCast => base.CanCast && Horse == HorseType.None;
-
+        public override bool CanCast => base.CanCast && Horse == HorseType.None && !Fishing;
 
         public List<MonsterObject> Pets = new List<MonsterObject>();
 
@@ -129,7 +127,8 @@ namespace Server.Models
         public HashSet<MonsterObject> TaggedMonsters = new HashSet<MonsterObject>();
         public HashSet<MapObject> NearByObjects = new HashSet<MapObject>();
 
-        public UserItem[] Inventory = new UserItem[Globals.InventorySize],
+        public UserItem[] 
+            Inventory = new UserItem[Globals.InventorySize],
             Equipment = new UserItem[Globals.EquipmentSize],
             Storage = new UserItem[1000],
             PartsStorage = new UserItem[1000];
@@ -159,11 +158,12 @@ namespace Server.Models
         public string FiltersClass;
         public string FiltersRarity;
         public string FiltersItemType;
+     
+        public bool Fishing = false, FishFound = false;
+        public int FishPointsCurrent = 0, FishAttempts = 0, FishFails = 0;
 
-        public bool HasFishingRod
-        {
-            get { return Equipment[(int)EquipmentSlot.Weapon]?.Info.Effect == ItemEffect.FishingRod; }
-        }
+        public Point FishingLocation;
+        public MirDirection FishingDirection;
 
         public bool HasFishingRobe
         {
@@ -181,12 +181,15 @@ namespace Server.Models
             Character.LastStats = Stats = new Stats();
 
             foreach (UserItem item in Character.Account.Items)
-                if (item.Slot >= 2000)
+            {
+                if (item.Slot >= Globals.PartsStorageOffset)
                 {
                     PartsStorage[item.Slot - Globals.PartsStorageOffset] = item;
+                    continue;
                 }
-                else
-                    Storage[item.Slot] = item;
+                
+                Storage[item.Slot] = item;
+            }
 
             foreach (UserItem item in Character.Items)
             {
@@ -273,6 +276,11 @@ namespace Server.Models
                 Enqueue(new S.CombatTime());
             }
 
+            if (Fishing && FishingCastTime < SEnvir.Now)
+            {
+                ResetFishing();
+            }
+
             ProcessRegen();
 
             HashSet<MonsterObject> clearList = new HashSet<MonsterObject>();
@@ -352,7 +360,7 @@ namespace Server.Models
                     return;
                 case ActionType.Fishing:
                     PacketWaiting = false;
-                    FishingCast((bool)action.Data[0], (MirDirection)action.Data[1], (Point)action.Data[2]);
+                    FishingCast((FishingState)action.Data[0], (MirDirection)action.Data[1], (Point)action.Data[2], (bool)action.Data[3]);
                     break;
                 case ActionType.Attack:
                     PacketWaiting = false;
@@ -3148,6 +3156,8 @@ namespace Server.Models
         {
             bool res = base.Teleport(map, location, leaveEffect, enterEffect);
 
+            if (Fishing) return false;
+
             if (res)
             {
                 BuffRemove(BuffType.Cloak);
@@ -5865,6 +5875,7 @@ namespace Server.Models
             };
             Enqueue(result);
 
+            if (Fishing) return;
 
             if (Buffs.Any(x => x.Type == BuffType.DragonRepulse)) return;
 
@@ -12667,7 +12678,6 @@ namespace Server.Models
 
             Broadcast(new S.ObjectHarvest { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Slow = slow });
 
-
             Point front = Functions.Move(CurrentLocation, Direction, 1);
             int range = Stats[Stat.PickUpRadius];
             bool send = false;
@@ -12841,15 +12851,14 @@ namespace Server.Models
 
             Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
         }
-        public void FishingCast(bool cast, MirDirection direction, Point location, bool cancel = false)
-        {
-            //TODO - All logic
 
-            if (SEnvir.Now < ActionTime)
+        public void FishingCast(FishingState state, MirDirection castDirection, Point floatLocation, bool caught = false)
+        {
+            if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
             {
                 if (!PacketWaiting)
                 {
-                    ActionList.Add(new DelayedAction(ActionTime, ActionType.Fishing, cast, direction, location));
+                    ActionList.Add(new DelayedAction(ActionTime, ActionType.Fishing, state, castDirection, floatLocation, caught));
                     PacketWaiting = true;
                 }
                 else
@@ -12858,18 +12867,189 @@ namespace Server.Models
                 return;
             }
 
-            if (!cast)
+            #region Validation Checks
+
+            if (!CanAttack)
             {
-                FishFound = false;
+                Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+                return;
             }
 
-            if (!FishFound)
-                FishFound = SEnvir.Random.Next(10) == 0;
+            var throwDistance = Functions.Distance(CurrentLocation, floatLocation);
 
-            Broadcast(new S.FishingUpdate { ObjectID = ObjectID, FishFound = FishFound, Cast = cast, Direction = direction, FloatLocation = location });
+            if (Functions.FishingZone(SEnvir.FishingInfoList, CurrentMap.Info, CurrentMap.Width, CurrentMap.Height, floatLocation) == null || !Functions.ValidFishingDistance(throwDistance, Stats[Stat.ThrowDistance]))
+            {
+                Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+                return;
+            }
+
+            if (Equipment[(int)EquipmentSlot.Weapon]?.Info.Effect != ItemEffect.FishingRod || Equipment[(int)EquipmentSlot.Armour]?.Info.Effect != ItemEffect.FishingRobe)
+            {
+                return;
+            }
+
+            //TODO - Damage items
+            //TODO - Check for bait
+            //TODO - Client - Change cursor (hold Alt to change cursor icon on valid cell)
+
+            #endregion
+
+            Direction = castDirection;
+
+            ActionTime = SEnvir.Now + Globals.AttackTime;
+            AttackTime = SEnvir.Now.AddMilliseconds(Globals.AttackDelay);
+
+            if (state == FishingState.Cast)
+            {
+                FishingCastTime = SEnvir.Now.AddMilliseconds(Globals.AttackDelay + 100);
+
+                bool canAutoCast = Stats[Stat.AutoCast] > 0;
+
+                int fishRequiredAccuracy = -1;
+                int fishThrowQuality = -1;
+
+                if (!Fishing)
+                {
+                    #region Calculate Throw Quality (Rod, ThrowDistance Stat)
+
+                    fishThrowQuality = Functions.FishingThrowQuality(throwDistance);
+
+                    #endregion
+
+                    #region Calculate Start Points (Finder, Finder Stat)
+
+                    FishPointsCurrent = SEnvir.Random.Next(Config.FishPointsRequired - 10);
+                    FishPointsCurrent += Math.Min(Config.FishPointsRequired, (FishPointsCurrent * Stats[Stat.FinderChance]) / 100);
+
+                    #endregion
+
+                    #region Calculate Accuracy Required (Hook, Flexibility Stat)
+
+                    fishRequiredAccuracy = 15 + Math.Max(0, Math.Min(Stats[Stat.Flexibility], 25));
+
+                    #endregion
+
+                    Fishing = true;
+
+                    FishingDirection = castDirection;
+                    FishingLocation = floatLocation;
+
+                    //TODO - Take bait
+                }
+
+                if (!FishFound)
+                {
+                    #region Calculate Fish Find Chance (Bait , NibbleChance Stat)
+
+                    FishFound = SEnvir.Random.Next(100) < Math.Max(0, Config.FishNibbleChanceBase + Stats[Stat.NibbleChance]);
+
+                    #endregion
+                }
+
+                if (FishFound)
+                {
+                    FishAttempts++;
+
+                    if (caught)
+                    {
+                        #region Calculate Success Point Increase (Reel, ReelBonus Stat)
+
+                        FishPointsCurrent += Math.Max(Config.FishPointSuccessRewardMin, Math.Min(Config.FishPointSuccessRewardMax, Config.FishPointSuccessRewardMin + Stats[Stat.ReelBonus]));
+
+                        #endregion
+                    }
+                    else
+                    {
+                        #region Calculate Failure Point Deduction (Float, FloatStrength Stat)
+
+                        FishPointsCurrent -= Math.Max(Config.FishPointFailureRewardMin, Math.Min(Config.FishPointFailureRewardMax, Config.FishPointFailureRewardMax - Stats[Stat.FloatStrength]));
+
+                        #endregion
+
+                        FishFails++;
+                    }
+
+                    if (FishPointsCurrent >= Config.FishPointsRequired)
+                    {
+                        //success
+                        state = FishingState.Reel;
+
+                        var perfectCatch = false;
+
+                        if (Config.FishEnablePerfectCatch && FishAttempts > 1 && FishFails == 0 && Functions.FishingThrowQuality(throwDistance) == 4)
+                        {
+                            perfectCatch = true;
+
+                            Connection.ReceiveChat("Perfect Catch!", MessageType.System);
+
+                            foreach (SConnection con in Connection.Observers)
+                                con.ReceiveChat("Perfect Catch!", MessageType.System);
+                        }
+
+                        var zone = Functions.FishingZone(SEnvir.FishingInfoList, CurrentMap.Info, CurrentMap.Width, CurrentMap.Height, floatLocation);
+
+                        foreach (FishingDropInfo info in zone.Drops)
+                        {
+                            if (info.Item == null) continue;
+
+                            if (info.PerfectCatch && !perfectCatch) continue;
+
+                            if (SEnvir.Random.Next(info.Chance) > 0) continue;
+
+                            ItemCheck check = new ItemCheck(info.Item, 1, UserItemFlags.Bound, TimeSpan.Zero);
+
+                            if (!CanGainItems(false, check)) continue;
+
+                            UserItem item = SEnvir.CreateDropItem(check);
+                            GainItem(item);
+
+                            //TODO - Should we stop after one item gained? Or go through whole droplist?
+                        }
+
+                        //TODO - Log Attempts taken, perfect catches etc
+                    }
+                    else if (FishPointsCurrent <= 0)
+                    {
+                        //fail
+                        state = FishingState.Reel;
+                    }
+                }
+
+                Enqueue(new S.FishingStats
+                {
+                    CanAutoCast = canAutoCast,
+                    CurrentPoints = FishPointsCurrent,
+
+                    ThrowQuality = fishThrowQuality,
+                    RequiredPoints = Config.FishPointsRequired,
+                    MovementSpeed = 2,
+                    RequiredAccuracy = fishRequiredAccuracy
+                });
+            }
+
+            if (state != FishingState.Cast)
+            {
+                ResetFishing();
+            }
+
+            Broadcast(new S.ObjectFishing
+            {
+                ObjectID = ObjectID,
+                State = state,
+                Direction = FishingDirection,
+                FloatLocation = FishingLocation,
+                FishFound = FishFound
+            });
         }
 
-        public bool FishFound = false;
+        private void ResetFishing()
+        {
+            Fishing = false;
+            FishFound = false;
+            FishPointsCurrent = 0;
+            FishAttempts = 0;
+            FishFails = 0;
+        }
 
         public void Move(MirDirection direction, int distance)
         {
@@ -19783,8 +19963,7 @@ namespace Server.Models
         }
 
         public void SendShapeUpdate()
-        {
-            
+        {     
             S.PlayerUpdate p = new S.PlayerUpdate
             {
                 ObjectID = ObjectID,

@@ -136,7 +136,6 @@
     <Compile Include="Envir\Translations\ChineseMessages.cs" />
     <Compile Include="Envir\Translations\EnglishMessages.cs" />
     <Compile Include="Envir\Translations\StringMessages.cs" />
-    <Compile Include="Models\MirFishingFloat.cs" />
     <Compile Include="Models\MirLibrary.cs" />
     <Compile Include="Models\DamageInfo.cs" />
     <Compile Include="Models\ItemObject.cs" />

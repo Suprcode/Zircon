@@ -34,9 +34,6 @@
             this.ColItem = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.ColChance = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.ColAmount = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.ColDropSet = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.ColPartOnly = new DevExpress.XtraGrid.Columns.GridColumn();
             this.FishingInfoGridControl = new DevExpress.XtraGrid.GridControl();
             this.FishingInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -46,6 +43,7 @@
             this.SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.FishingDropInfoGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.FishingInfoGridControl)).BeginInit();
@@ -59,9 +57,7 @@
             this.FishingDropInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.ColItem,
             this.ColChance,
-            this.ColAmount,
-            this.ColDropSet,
-            this.ColPartOnly});
+            this.gridColumn3});
             this.FishingDropInfoGridView.GridControl = this.FishingInfoGridControl;
             this.FishingDropInfoGridView.Name = "FishingDropInfoGridView";
             this.FishingDropInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -102,30 +98,6 @@
             this.ColChance.Name = "ColChance";
             this.ColChance.Visible = true;
             this.ColChance.VisibleIndex = 1;
-            // 
-            // ColAmount
-            // 
-            this.ColAmount.Caption = "Amount";
-            this.ColAmount.FieldName = "Amount";
-            this.ColAmount.Name = "ColAmount";
-            this.ColAmount.Visible = true;
-            this.ColAmount.VisibleIndex = 2;
-            // 
-            // ColDropSet
-            // 
-            this.ColDropSet.Caption = "Drop Set";
-            this.ColDropSet.FieldName = "DropSet";
-            this.ColDropSet.Name = "ColDropSet";
-            this.ColDropSet.Visible = true;
-            this.ColDropSet.VisibleIndex = 3;
-            // 
-            // ColPartOnly
-            // 
-            this.ColPartOnly.Caption = "Part Only";
-            this.ColPartOnly.FieldName = "PartOnly";
-            this.ColPartOnly.Name = "ColPartOnly";
-            this.ColPartOnly.Visible = true;
-            this.ColPartOnly.VisibleIndex = 4;
             // 
             // FishingInfoGridControl
             // 
@@ -233,6 +205,14 @@
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "Saving";
             // 
+            // gridColumn3
+            // 
+            this.gridColumn3.Caption = "Perfect Catch";
+            this.gridColumn3.FieldName = "PerfectCatch";
+            this.gridColumn3.Name = "gridColumn3";
+            this.gridColumn3.Visible = true;
+            this.gridColumn3.VisibleIndex = 2;
+            // 
             // FishingInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -268,9 +248,7 @@
         private DevExpress.XtraGrid.Views.Grid.GridView FishingDropInfoGridView;
         private DevExpress.XtraGrid.Columns.GridColumn ColItem;
         private DevExpress.XtraGrid.Columns.GridColumn ColChance;
-        private DevExpress.XtraGrid.Columns.GridColumn ColAmount;
-        private DevExpress.XtraGrid.Columns.GridColumn ColDropSet;
-        private DevExpress.XtraGrid.Columns.GridColumn ColPartOnly;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit ItemLookUpEdit;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
     }
 }

@@ -413,8 +413,9 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
-            Player.FishingCast(p.Cast, p.Direction, p.FloatLocation, true);
+            Player.FishingCast(p.State, p.Direction, p.FloatLocation, p.CaughtFish);
         }
+
         public void Process(C.Attack p)
         {
             if (Stage != GameStage.Game) return;

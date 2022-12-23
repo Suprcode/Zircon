@@ -108,7 +108,7 @@ namespace Library
         HorseArmour = 13,
         Emblem = 14,
         Shield = 15,
-        Wings = 16,
+        Wings = 16
     }
 
     public enum CompanionSlot
@@ -117,6 +117,15 @@ namespace Library
         Head = 1,
         Back = 2,
         Food = 3,
+    }
+
+    public enum FishingSlot
+    {
+        Hook = 0,
+        Float = 1,
+        Bait = 2,
+        Finder = 3,
+        Reel = 4
     }
 
     [Flags]
@@ -198,7 +207,7 @@ namespace Library
         RefineCorundumOre,
         AccessoryRefineCombTarget,
         AccessoryRefineCombItems,
-        PartsStorage,
+        PartsStorage
     }
 
     public enum BuffType
@@ -1429,6 +1438,14 @@ namespace Library
         QuartzTurtleSub = 205,
 
         Sacrifice = 210,
+    }
+
+    public enum FishingState : byte
+    {
+        None,
+        Cast,
+        Reel,
+        Cancel
     }
 
     #region Packet Enums

@@ -942,7 +942,6 @@ namespace Client.Envir
                 {
                     switch (((MonsterObject)ob).Image)
                     {
-
                         case MonsterImage.VoraciousGhost:
                         case MonsterImage.DevouringGhost:
                         case MonsterImage.CorpseRaisingGhost:
@@ -969,15 +968,14 @@ namespace Client.Envir
         {
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer)
             {
-
                 if (MapObject.User.CurrentLocation != p.Location || MapObject.User.Direction != p.Direction)
                     GameScene.Game.Displacement(p.Direction, p.Location);
+
                 MapObject.User.ServerTime = DateTime.MinValue;
 
                 MapObject.User.NextActionTime += p.Slow;
                 return;
             }
-
 
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
@@ -1037,31 +1035,47 @@ namespace Client.Envir
             GameScene.Game.User.Horse = p.Horse;
         }
 
-        public void Process(S.FishingUpdate p)
+        public void Process(S.ObjectFishing p)
         {
-            if (MapObject.User.ObjectID == p.ObjectID)
-            {
-                MapObject.User.ServerTime = DateTime.MinValue;
-
-                MapObject.User.FishFound = p.FishFound;
-                MapObject.User.Fishing = p.Cast;
-                MapObject.User.FloatLocation = p.FloatLocation;
-
-                GameScene.Game.MapControl.Fishing = p.Cast;
-
-                GameScene.Game.FishingCatchBox.Visible = p.Cast;
-
-                return;
-            }
-
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                ob.ActionQueue.Add(new ObjectAction(MirAction.Fishing, p.Direction, ob.CurrentLocation, p.Cast, p.FloatLocation, p.FishFound));
+                if (ob == MapObject.User)
+                {
+                    MapObject.User.ServerTime = DateTime.MinValue;
+
+                    GameScene.Game.MapControl.FishingState = p.State;
+
+                    MapObject.User.FishingState = p.State;
+                    MapObject.User.FishFound = p.FishFound;
+                    MapObject.User.FloatLocation = p.FloatLocation;
+
+                    if (p.State == FishingState.Cancel)
+                        GameScene.Game.MapControl.FishingState = FishingState.None;
+
+                    GameScene.Game.FishingCatchBox.Visible = p.State == FishingState.Cast;
+
+                    if (p.State == FishingState.Reel)
+                    {
+                        if (GameScene.Game.FishingCatchBox.AutoCastCheckBox.Checked)
+                            GameScene.Game.MapControl.AutoCast = true;
+
+                        MapObject.User.ActionQueue.Add(new ObjectAction(MirAction.Fishing, p.Direction, MapObject.User.CurrentLocation, p.State, p.FloatLocation, p.FishFound));
+                    }
+                }
+                else
+                {
+                    ob.ActionQueue.Add(new ObjectAction(MirAction.Fishing, p.Direction, ob.CurrentLocation, p.State, p.FloatLocation, p.FishFound));
+                }
 
                 return;
             }
+        }
+
+        public void Process(S.FishingStats p)
+        {
+            GameScene.Game.FishingCatchBox.Update(p);
         }
 
         public void Process(S.ObjectStruck p)
@@ -1072,6 +1086,9 @@ namespace Client.Envir
 
                 if (ob == MapObject.User) //{
                 {
+                    if (GameScene.Game.MapControl.FishingState != FishingState.None)
+                        GameScene.Game.MapControl.FishingState = FishingState.Cancel;
+
                     GameScene.Game.CanRun = false;
                     //   MapObject.User.NextRunTime = CEnvir.Now.AddMilliseconds(600);
                     //MapObject.User.NextActionTime = CEnvir.Now.AddMilliseconds(300);

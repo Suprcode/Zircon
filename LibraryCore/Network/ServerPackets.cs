@@ -52,7 +52,6 @@ namespace Library.Network.ServerPackets
         public RequestActivationKeyResult Result { get; set; }
         public TimeSpan Duration { get; set; }
     }
-
     public sealed class SelectLogout : Packet
     {
     }
@@ -60,14 +59,12 @@ namespace Library.Network.ServerPackets
     {
         public List<SelectInfo> Characters { get; set; }
     }
-
     public sealed class NewCharacter : Packet
     {
         public NewCharacterResult Result { get; set; }
 
         public SelectInfo Character { get; set; }
     }
-
     public sealed class DeleteCharacter : Packet
     {
         public DeleteCharacterResult Result { get; set; }
@@ -83,8 +80,6 @@ namespace Library.Network.ServerPackets
 
         public StartInformation StartInformation { get; set; }
     }
-
-
     public sealed class MapChanged : Packet
     {
         public int MapIndex { get; set; }
@@ -99,7 +94,6 @@ namespace Library.Network.ServerPackets
     {
         public uint ObjectID { get; set; }
     }
-
     public sealed class ObjectTurn : Packet
     {
         public uint ObjectID { get; set; }
@@ -114,21 +108,28 @@ namespace Library.Network.ServerPackets
         public Point Location { get; set; }
         public TimeSpan Slow { get; set; }
     }
-
     public sealed class ObjectMount : Packet
     {
         public uint ObjectID { get; set; }
         public HorseType Horse { get; set; }
     }
-    public sealed class FishingUpdate : Packet
+    public sealed class ObjectFishing : Packet
     {
         public uint ObjectID { get; set; }
-        public bool Cast { get; set; }
+        public FishingState State { get; set; }
         public MirDirection Direction { get; set; }
-
-        public bool FishFound { get; set; }
-        public int FloatType { get; set; }
         public Point FloatLocation { get; set; }
+        public bool FishFound { get; set; }
+    }
+    public sealed class FishingStats : Packet
+    {
+        public bool CanAutoCast { get; set; }
+        public int CurrentPoints { get; set; }
+
+        public int ThrowQuality { get; set; } //1 time
+        public int RequiredPoints { get; set; } //1 time
+        public int MovementSpeed { get; set; } //1 time
+        public int RequiredAccuracy { get; set; } //1 time
     }
     public sealed class ObjectMove : Packet
     {
@@ -146,14 +147,12 @@ namespace Library.Network.ServerPackets
         public int Distance { get; set; }
         public MagicType Magic { get; set; }
     }
-
     public sealed class ObjectPushed : Packet
     {
         public uint ObjectID { get; set; }
         public MirDirection Direction { get; set; }
         public Point Location { get; set; }
     }
-
     public sealed class ObjectAttack : Packet
     {
         public uint ObjectID { get; set; }
@@ -215,13 +214,11 @@ namespace Library.Network.ServerPackets
         public TimeSpan Slow { get; set; }
         public bool Effect { get; set; }
     }
-
     public sealed class ObjectPetOwnerChanged : Packet
     {
         public uint ObjectID { get; set; }
         public string PetOwner { get; set; }
     }
-
     public sealed class ObjectShow : Packet
     {
         public uint ObjectID { get; set; }
@@ -248,7 +245,6 @@ namespace Library.Network.ServerPackets
         public Effect Effect { get; set; }
         public MirDirection Direction { get; set; }
     }
-
     public sealed class ObjectBuffAdd : Packet
     {
         public uint ObjectID { get; set; }

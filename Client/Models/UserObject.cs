@@ -611,14 +611,13 @@ namespace Client.Models
                     GameScene.Game.CanRun = false;
                     break;
                 case MirAction.Fishing:
-                    attackDelay = Globals.AttackDelay - Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
-                    attackDelay = Math.Max(800, attackDelay);
-                    AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(attackDelay);
+                    AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(Globals.AttackDelay);
 
-                    var cast = (bool)action.Extra[0];
+                    var state = (FishingState)action.Extra[0];
                     var floatLocation = (Point)action.Extra[1];
+                    var caughtFish = GameScene.Game.FishingCatchBox.CaughtFish;
 
-                    CEnvir.Enqueue(new C.FishingCast { Cast = cast, Direction = action.Direction, FloatLocation = floatLocation });
+                    CEnvir.Enqueue(new C.FishingCast { State = state, Direction = action.Direction, FloatLocation = floatLocation, CaughtFish = caughtFish });
                     GameScene.Game.CanRun = false;
                     break;
                 case MirAction.Mining:
@@ -636,8 +635,8 @@ namespace Client.Models
                     GameScene.Game.CanRun = false;
                     break;
             }
-            ServerTime = CEnvir.Now.AddSeconds(5);
 
+            ServerTime = CEnvir.Now.AddSeconds(5);
         }
 
         public override void Process()
