@@ -34,6 +34,7 @@
             this.ColItem = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.ColChance = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.FishingInfoGridControl = new DevExpress.XtraGrid.GridControl();
             this.FishingInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -43,7 +44,7 @@
             this.SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.FishingDropInfoGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.FishingInfoGridControl)).BeginInit();
@@ -57,7 +58,8 @@
             this.FishingDropInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.ColItem,
             this.ColChance,
-            this.gridColumn3});
+            this.gridColumn3,
+            this.gridColumn4});
             this.FishingDropInfoGridView.GridControl = this.FishingInfoGridControl;
             this.FishingDropInfoGridView.Name = "FishingDropInfoGridView";
             this.FishingDropInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -98,6 +100,14 @@
             this.ColChance.Name = "ColChance";
             this.ColChance.Visible = true;
             this.ColChance.VisibleIndex = 1;
+            // 
+            // gridColumn3
+            // 
+            this.gridColumn3.Caption = "Perfect Catch";
+            this.gridColumn3.FieldName = "PerfectCatch";
+            this.gridColumn3.Name = "gridColumn3";
+            this.gridColumn3.Visible = true;
+            this.gridColumn3.VisibleIndex = 3;
             // 
             // FishingInfoGridControl
             // 
@@ -205,13 +215,13 @@
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "Saving";
             // 
-            // gridColumn3
+            // gridColumn4
             // 
-            this.gridColumn3.Caption = "Perfect Catch";
-            this.gridColumn3.FieldName = "PerfectCatch";
-            this.gridColumn3.Name = "gridColumn3";
-            this.gridColumn3.Visible = true;
-            this.gridColumn3.VisibleIndex = 2;
+            this.gridColumn4.Caption = "Throw Quality";
+            this.gridColumn4.FieldName = "ThrowQuality";
+            this.gridColumn4.Name = "gridColumn4";
+            this.gridColumn4.Visible = true;
+            this.gridColumn4.VisibleIndex = 2;
             // 
             // FishingInfoView
             // 
@@ -250,5 +260,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn ColChance;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit ItemLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
     }
 }

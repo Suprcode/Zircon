@@ -89,6 +89,21 @@ namespace Library.SystemModels
         }
         private int _Chance;
 
+        public int ThrowQuality
+        {
+            get { return _ThrowQuality; }
+            set
+            {
+                if (_ThrowQuality == value) return;
+
+                var oldValue = _ThrowQuality;
+                _ThrowQuality = value;
+
+                OnChanged(oldValue, value, "ThrowQuality");
+            }
+        }
+        private int _ThrowQuality;
+
         public bool PerfectCatch
         {
             get { return _PerfectCatch; }

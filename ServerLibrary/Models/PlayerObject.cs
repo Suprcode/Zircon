@@ -12976,7 +12976,7 @@ namespace Server.Models
 
                         var perfectCatch = false;
 
-                        if (Config.FishEnablePerfectCatch && FishAttempts > 1 && FishFails == 0 && Functions.FishingThrowQuality(throwDistance) == 4)
+                        if (Config.FishEnablePerfectCatch && FishAttempts > 1 && FishFails == 0)
                         {
                             perfectCatch = true;
 
@@ -12993,6 +12993,8 @@ namespace Server.Models
                             if (info.Item == null) continue;
 
                             if (info.PerfectCatch && !perfectCatch) continue;
+
+                            if (info.ThrowQuality != 0 && info.ThrowQuality != Functions.FishingThrowQuality(throwDistance)) continue;
 
                             if (SEnvir.Random.Next(info.Chance) > 0) continue;
 
