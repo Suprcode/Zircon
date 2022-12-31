@@ -224,41 +224,6 @@ namespace Server.Models
             FiltersClass = Character.FiltersClass;
             FiltersItemType = Character.FiltersItemType;
             FiltersRarity = Character.FiltersRarity;
-
-            AddDefaultCurrencies();
-            RemoveDeletedCurrencies();
-        }
-
-        private void AddDefaultCurrencies()
-        {
-            foreach (var currency in SEnvir.CurrencyInfoList.Binding)
-            {
-                var userCurrency = Character.Account.Currencies.FirstOrDefault(x => x.Info == currency);
-
-                if (userCurrency == null)
-                {
-                    userCurrency = SEnvir.UserCurrencyList.CreateNewObject();
-                    userCurrency.Account = Character.Account;
-                    userCurrency.Info = currency;
-
-                    if (currency.Type == CurrencyType.Gold) userCurrency.Amount = Character.Account.Gold;
-                    if (currency.Type == CurrencyType.GameGold) userCurrency.Amount = Character.Account.GameGold;
-                    if (currency.Type == CurrencyType.HuntGold) userCurrency.Amount = Character.Account.HuntGold;
-                }
-            }
-        }
-
-        private void RemoveDeletedCurrencies()
-        {
-            for (int i = Character.Account.Currencies.Count - 1; i >= 0; i--)
-            {
-                var currency = Character.Account.Currencies[i];
-
-                if (currency.Info == null)
-                {
-                    Character.Account.Currencies.RemoveAt(i);
-                }
-            }
         }
 
         public override void Process()

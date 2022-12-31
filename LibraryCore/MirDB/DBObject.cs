@@ -27,6 +27,8 @@ namespace MirDB
         }
         private ADBCollection _Collection;
 
+        [IgnoreProperty]
+        protected Session Session { get { return Collection.Session; } }
 
         internal readonly Type ThisType;
 
@@ -299,6 +301,11 @@ namespace MirDB
 
 
             throw new ArgumentException($"Unable to find Association {ThisType.Name}, Link: {link.Identity ?? "Empty"} -> {info.PropertyType.Name}");
+        }
+
+        protected Session GetCurrencySession()
+        {
+            return Collection.Session;
         }
 
         #region OnPropertyChanged
