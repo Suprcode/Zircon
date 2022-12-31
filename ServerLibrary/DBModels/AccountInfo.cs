@@ -688,7 +688,6 @@ namespace Server.DBModels
             buff.Stats = new Stats { [Stat.AvailableHuntGoldCap] = 15 };
             buff.RemainingTime = TimeSpan.MaxValue;
         }
-
         protected override void OnLoaded()
         {
             base.OnLoaded();
@@ -699,43 +698,7 @@ namespace Server.DBModels
             BuffInfo buff = Buffs.FirstOrDefault(x => x.Type == BuffType.HuntGold);
             if (buff != null)
                 buff.Stats = new Stats { [Stat.AvailableHuntGoldCap] = 15 };
-
-            AddDefaultCurrencies();
-            RemoveDeletedCurrencies();
         }
-
-        private void AddDefaultCurrencies()
-        {
-            foreach (var currency in SEnvir.CurrencyInfoList.Binding)
-            {
-                var userCurrency = Currencies.FirstOrDefault(x => x.Info == currency);
-
-                if (userCurrency == null)
-                {
-                    userCurrency = SEnvir.UserCurrencyList.CreateNewObject();
-                    userCurrency.Account = this;
-                    userCurrency.Info = currency;
-
-                    if (currency.Type == CurrencyType.Gold) userCurrency.Amount = Gold;
-                    if (currency.Type == CurrencyType.GameGold) userCurrency.Amount = GameGold;
-                    if (currency.Type == CurrencyType.HuntGold) userCurrency.Amount = HuntGold;
-                }
-            }
-        }
-
-        private void RemoveDeletedCurrencies()
-        {
-            for (int i = Currencies.Count - 1; i >= 0; i--)
-            {
-                var currency = Currencies[i];
-
-                if (currency.Info == null)
-                {
-                    Currencies.RemoveAt(i);
-                }
-            }
-        }
-
 
         public int HighestLevel()
         {

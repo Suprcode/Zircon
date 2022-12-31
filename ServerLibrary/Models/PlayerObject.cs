@@ -225,6 +225,8 @@ namespace Server.Models
             FiltersItemType = Character.FiltersItemType;
             FiltersRarity = Character.FiltersRarity;
 
+            AddDefaultCurrencies();
+            RemoveDeletedCurrencies();
         }
 
         private void AddDefaultCurrencies()
