@@ -259,6 +259,7 @@ namespace Server.Envir
         public static DBCollection<SetInfo> SetInfoList;
         public static DBCollection<AuctionInfo> AuctionInfoList;
         public static DBCollection<MailInfo> MailInfoList;
+        public static DBCollection<QuestInfo> QuestInfoList;
         public static DBCollection<AuctionHistoryInfo> AuctionHistoryInfoList;
         public static DBCollection<UserDrop> UserDropList;
         public static DBCollection<StoreInfo> StoreInfoList;
@@ -423,6 +424,7 @@ namespace Server.Envir
             SetInfoList = Session.GetCollection<SetInfo>();
             AuctionInfoList = Session.GetCollection<AuctionInfo>();
             MailInfoList = Session.GetCollection<MailInfo>();
+            QuestInfoList = Session.GetCollection<QuestInfo>();
             AuctionHistoryInfoList = Session.GetCollection<AuctionHistoryInfo>();
             UserDropList = Session.GetCollection<UserDrop>();
             StoreInfoList = Session.GetCollection<StoreInfo>();
@@ -621,6 +623,8 @@ namespace Server.Envir
             CreateNPCs();
 
             CreateSpawns();
+
+            CreateQuestRegions();
         }
 
         private static void CreateMovements(InstanceInfo instance = null, byte index = 0)
@@ -709,6 +713,48 @@ namespace Server.Envir
 
                 if (!ob.Spawn(info.Region, instance, index))
                     Log($"[NPC] Failed to spawn NPC, Region: {info.Region.ServerDescription}, NPC: {info.NPCName}");
+            }
+        }
+
+        private static void CreateQuestRegions(InstanceInfo instance = null, byte index = 0)
+        {
+            foreach (QuestInfo quest in QuestInfoList.Binding)
+            {
+                foreach (QuestTask task in quest.Tasks)
+                {
+                    if (task.Task != QuestTaskType.Region) continue;
+                    if (task.RegionParameter == null) continue;
+
+                    var sourceMap = GetMap(task.RegionParameter.Map, instance, index);
+
+                    if (sourceMap == null)
+                    {
+                        if (instance == null)
+                        {
+                            Log($"[Quest Region] Bad Map, Map: {task.RegionParameter.ServerDescription}");
+                        }
+
+                        continue;
+                    }
+
+                    foreach (Point sPoint in task.RegionParameter.PointList)
+                    {
+                        Cell source = sourceMap.GetCell(sPoint);
+
+                        if (source == null)
+                        {
+                            Log($"[Quest Region] Bad Quest Region, Source: {task.RegionParameter.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
+                            continue;
+                        }
+
+                        if (source.QuestTasks == null)
+                            source.QuestTasks = new List<QuestTask>();
+
+                        if (source.QuestTasks.Contains(task)) continue;
+
+                        source.QuestTasks.Add(task);
+                    }
+                }
             }
         }
 
@@ -3508,6 +3554,8 @@ namespace Server.Envir
             CreateNPCs(instance, index);
 
             CreateSpawns(instance, index);
+
+            CreateQuestRegions(instance, index);
 
             Log($"Loaded Instance {instance.Name} at index {index}");
 

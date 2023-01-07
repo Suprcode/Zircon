@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -355,8 +356,8 @@ namespace Server.Models
         public SafeZoneInfo SafeZone;
 
         public List<MovementInfo> Movements;
-        public bool HasMovement;
 
+        public List<QuestTask> QuestTasks;
 
         public Cell(Point location)
         {
@@ -407,6 +408,36 @@ namespace Server.Models
 
         public Cell GetMovement(MapObject ob)
         {
+            if (QuestTasks != null && QuestTasks.Count > 0)
+            {
+                if (ob.Race == ObjectType.Player)
+                {
+                    PlayerObject player = (PlayerObject)ob;
+
+                    foreach (var task in QuestTasks)
+                    {
+                        var userQuest = player.Quests.FirstOrDefault(x => x.QuestInfo == task.Quest && !x.Completed);
+
+                        if (userQuest == null) continue;
+
+                        UserQuestTask userTask = userQuest.Tasks.FirstOrDefault(x => x.Task == task);
+
+                        if (userTask == null)
+                        {
+                            userTask = SEnvir.UserQuestTaskList.CreateNewObject();
+                            userTask.Task = task;
+                            userTask.Quest = userQuest;
+                        }
+
+                        if (userTask.Completed) continue;
+
+                        userTask.Amount = 1;
+
+                        player.Enqueue(new S.QuestChanged { Quest = userQuest.ToClientInfo() });
+                    }
+                }
+            }
+
             if (Movements == null || Movements.Count == 0)
                 return this;
 
@@ -532,37 +563,6 @@ namespace Server.Models
                         }
 
                         player.TakeItem(movement.NeedItem, 1);
-                    }
-
-                    foreach (UserQuest quest in player.Quests)
-                    {
-                        //For Each Active Quest
-                        if (quest.Completed) continue;
-                        bool changed = false;
-
-                        foreach (QuestTask task in quest.QuestInfo.Tasks)
-                        {
-                            if (task.Task != QuestTaskType.Region || task.RegionParameter == null) continue;
-
-                            if (task.RegionParameter != movement.SourceRegion) continue;
-
-                            UserQuestTask userTask = quest.Tasks.FirstOrDefault(x => x.Task == task);
-
-                            if (userTask == null)
-                            {
-                                userTask = SEnvir.UserQuestTaskList.CreateNewObject();
-                                userTask.Task = task;
-                                userTask.Quest = quest;
-                            }
-
-                            if (userTask.Completed) continue;
-
-                            userTask.Amount = 1;
-                            changed = true;
-                        }
-
-                        if (changed)
-                            player.Enqueue(new S.QuestChanged { Quest = quest.ToClientInfo() });
                     }
 
                     switch (movement.Effect)
