@@ -6,7 +6,6 @@ namespace Library.SystemModels
 {
     //TODO - 
     //Add conquest on instances
-    //Add teleporting(player, npc) on instances(figure how to teleport off instances but also through the same instances)
 
     public sealed class InstanceInfo : DBObject
     {
@@ -147,6 +146,38 @@ namespace Library.SystemModels
             }
         }
         private byte _MaxPlayerCount;
+
+
+        public ItemInfo RequiredItem
+        {
+            get { return _RequiredItem; }
+            set
+            {
+                if (_RequiredItem == value) return;
+
+                var oldValue = _RequiredItem;
+                _RequiredItem = value;
+
+                OnChanged(oldValue, value, "RequiredItem");
+            }
+        }
+        private ItemInfo _RequiredItem;
+
+        public bool RequiredItemSingleUse
+        {
+            get { return _RequiredItemSingleUse; }
+            set
+            {
+                if (_RequiredItemSingleUse == value) return;
+
+                var oldValue = _RequiredItemSingleUse;
+                _RequiredItemSingleUse = value;
+
+                OnChanged(oldValue, value, "RequiredItemSingleUse");
+            }
+        }
+
+        private bool _RequiredItemSingleUse;
 
         public MapRegion ConnectRegion
         {

@@ -1587,6 +1587,7 @@ namespace Library
         NotGroupLeader,
         UserCooldown,
         GuildCooldown,
+        MissingItem,
         NoMap,
         Success
     }

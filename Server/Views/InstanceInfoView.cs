@@ -21,6 +21,7 @@ namespace Server.Views
             InstanceInfoGridControl.DataSource = SMain.Session.GetCollection<InstanceInfo>().Binding;
             MapInfoLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
             RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
+            ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
 
             InstanceTypeImageComboBox.Items.AddEnum<InstanceType>();
             StatComboBox.Items.AddEnum<Stat>();

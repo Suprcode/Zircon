@@ -20507,6 +20507,15 @@ namespace Server.Models
             if (index == null)
                 return (null, InstanceResult.NoSlots);
 
+            if (instance.RequiredItem != null)
+            {
+                if (GetItemCount(instance.RequiredItem) == 0)
+                    return (null, InstanceResult.MissingItem);
+
+                if (instance.RequiredItemSingleUse && !checkOnly)
+                    TakeItem(instance.RequiredItem, 1);
+            }
+
             if (!checkOnly)
             {
                 SEnvir.LoadInstance(instance, index.Value);
@@ -20591,6 +20600,14 @@ namespace Server.Models
 
                         foreach (SConnection con in Connection.Observers)
                             con.ReceiveChat(con.Language.InstanceNoSlots, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.MissingItem:
+                    {
+                        Connection.ReceiveChat(string.Format(Connection.Language.InstanceMissingItem, instance.RequiredItem.ItemName), MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(string.Format(con.Language.InstanceMissingItem, instance.RequiredItem.ItemName), MessageType.System);
                     }
                     break;
                 case InstanceResult.UserCooldown:
