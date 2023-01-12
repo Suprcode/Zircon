@@ -605,6 +605,66 @@ namespace Client.Scenes.Views
                 };
                 //cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
 
+                Grid[(int)EquipmentSlot.Hook] = cell = new DXItemCell
+                {
+                    Location = new Point(0, 0),
+                    Parent = InspectPanel,
+                    FixedBorder = true,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Hook,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Float] = cell = new DXItemCell
+                {
+                    Location = new Point(0, 0),
+                    Parent = InspectPanel,
+                    FixedBorder = true,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Float,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Bait] = cell = new DXItemCell
+                {
+                    Location = new Point(0, 0),
+                    Parent = InspectPanel,
+                    FixedBorder = true,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Bait,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Finder] = cell = new DXItemCell
+                {
+                    Location = new Point(0, 0),
+                    Parent = InspectPanel,
+                    FixedBorder = true,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Finder,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
+                Grid[(int)EquipmentSlot.Reel] = cell = new DXItemCell
+                {
+                    Location = new Point(0, 0),
+                    Parent = InspectPanel,
+                    FixedBorder = true,
+                    Border = true,
+                    ItemGrid = Equipment,
+                    Slot = (int)EquipmentSlot.Reel,
+                    GridType = GridType.Inspect,
+                    Hidden = true
+                };
+
                 #endregion
 
                 InspectLabel = new DXLabel

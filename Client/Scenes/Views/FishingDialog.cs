@@ -4,6 +4,7 @@ using System.Linq;
 using Client.Controls;
 using Client.Envir;
 using Client.Models;
+using Client.Properties;
 using Client.UserModels;
 using Library;
 using SlimDX;
@@ -12,6 +13,191 @@ using S = Library.Network.ServerPackets;
 
 namespace Client.Scenes.Views
 {
+    public sealed class FishingDialog : DXImageControl
+    {
+        #region Properties
+
+        private CharacterDialog CharacterBox;
+
+        public DXButton CloseButton;
+
+        public ClientUserItem[] Equipment
+        {
+            get
+            {
+                return GameScene.Game.Equipment;
+            }
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
+
+        #endregion
+
+        #region Settings
+
+        public WindowSetting Settings;
+        public WindowType Type
+        {
+            get { return WindowType.FishingBox; }
+        }
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        #endregion
+
+        public FishingDialog(CharacterDialog characterBox)
+        {
+            CharacterBox = characterBox;
+
+            LibraryFile = LibraryFile.Interface;
+            Index = 220;
+            Movable = true;
+            Sort = true;
+
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            DXItemCell cell;
+
+            CharacterBox.Grid[(int)EquipmentSlot.Hook] = cell = new DXItemCell
+            {
+                Location = new Point(14, 169),
+                Parent = this,
+                Border = true,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.Hook,
+                GridType = GridType.Equipment,
+            };
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 221);
+
+            CharacterBox.Grid[(int)EquipmentSlot.Float] = cell = new DXItemCell
+            {
+                Location = new Point(14, 209),
+                Parent = this,
+                Border = true,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.Float,
+                GridType = GridType.Equipment,
+            };
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 222);
+
+            CharacterBox.Grid[(int)EquipmentSlot.Bait] = cell = new DXItemCell
+            {
+                Location = new Point(54, 209),
+                Parent = this,
+                Border = true,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.Bait,
+                GridType = GridType.Equipment,
+            };
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 224);
+
+            CharacterBox.Grid[(int)EquipmentSlot.Finder] = cell = new DXItemCell
+            {
+                Location = new Point(94, 209),
+                Parent = this,
+                Border = true,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.Finder,
+                GridType = GridType.Equipment,
+            };
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 223);
+
+            CharacterBox.Grid[(int)EquipmentSlot.Reel] = cell = new DXItemCell
+            {
+                Location = new Point(134, 209),
+                Parent = this,
+                Border = true,
+                ItemGrid = Equipment,
+                Slot = (int)EquipmentSlot.Reel,
+                GridType = GridType.Equipment,
+            };
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 225);
+        }
+
+        #region Methods
+
+        public void Draw(DXItemCell cell, int index, bool backgroundCell = false)
+        {
+            if (InterfaceLibrary == null) return;
+
+            if (cell.Item != null) return;
+
+            Size s;
+            int x, y;
+
+            s = InterfaceLibrary.GetSize(index);
+            x = (cell.Size.Width - s.Width) / 2 + cell.DisplayArea.X;
+            y = (cell.Size.Height - s.Height) / 2 + cell.DisplayArea.Y;
+
+            InterfaceLibrary.Draw(index, x, y, Color.White, false, 0.2F, ImageType.Image);
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                CharacterBox = null;
+                Settings = null;
+            }
+        }
+
+        #endregion
+    }
+
     public class FishingCatchDialog : DXImageControl
     {
         #region Properties
@@ -19,7 +205,7 @@ namespace Client.Scenes.Views
         private DateTime UpdateTime;
         private TimeSpan UpdateDelay = TimeSpan.FromMilliseconds(50);
 
-        private const int PointerXStart = 10, PlayerPointerYStart = 65, FishPointerYStart = 82;
+        private const int PointerXStart = 10, PlayerPointerYStart = 65, ThrowDistancePointerY = 82;
 
         private const int FishBlockSize = 25;
         private const int FishBlocksTotal = 4;
@@ -44,13 +230,16 @@ namespace Client.Scenes.Views
         private int MovementSpeed;
         private int RequiredAccuracy;
 
+        //Change this to swap between fish/player being the bar/pointer
+        private const bool FishAsBar = true;
+
         #endregion
 
         public DXImageControl FishFoundBase, FishFoundCircle, FishFoundButton;
 
-        public DXImageControl PlayerPointer;
-        public DXImageControl FishPointer;
-        public DXControl FishBar;
+        public DXImageControl MovingPointer;
+        public DXImageControl CatchBarTexture, ThrowDistancePointer;
+        public DXControl CatchBar, CatchInnerBar;
         public DXControl ProgressBar;
 
         public DXButton CloseButton;
@@ -93,38 +282,68 @@ namespace Client.Scenes.Views
 
             CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary library);
 
-            FishBar = new DXControl
+            var barImage = library.GetSize(231);
+
+            CatchBar = new DXControl
             {
                 Parent = this,
                 Location = new Point(19, 76),
                 Size = library.GetSize(231),
             };
-            FishBar.BeforeDraw += (o, e) =>
+            CatchBar.BeforeDraw += (o, e) =>
             {
-                if (library == null) return;
-
                 if (GameScene.Game.User.FishingState != FishingState.Cast || !GameScene.Game.User.FishFound)
                 {
+                    MovingPointer.Visible = false;
+                    CatchInnerBar.Visible = false;
                     return;
                 }
 
-                var count = FishLocation;
+                MovingPointer.Visible = true;
+                CatchInnerBar.Visible = true;
 
-                float percent = Math.Min(1, Math.Max(0, count / (float)FishMaxTotal));
+                var w = (int)(barImage.Width * (FishMaxCurrent / (float)FishMaxTotal));
 
-                if (percent == 0) return;
-
-                MirImage image = library.CreateImage(231, ImageType.Image);
-
-                PresentTexture(image.Image, this, new Rectangle(FishBar.DisplayArea.X, FishBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, FishBar);
+                CatchBar.Size = new Size(w, barImage.Height);
             };
 
-            FishPointer = new DXImageControl
+            CatchInnerBar = new DXControl
+            {
+                Parent = CatchBar,
+                Location = new Point(0, 0),
+                Size = new Size(1, 1),
+                Visible = false
+            };
+            CatchInnerBar.BeforeDraw += (o, e) =>
+            {
+                var currentLocation = FishAsBar ? FishLocation : PlayerLocation;
+
+                float left = currentLocation - (float)(RequiredAccuracy);
+                float right = currentLocation + (float)(RequiredAccuracy);
+
+                var x = (int)(barImage.Width * (left / (float)FishMaxTotal));
+                var w = (int)(barImage.Width * ((RequiredAccuracy * 2) / (float)FishMaxTotal));
+
+                CatchInnerBar.Location = new Point(x, 0);
+                CatchInnerBar.Size = new Size(w, barImage.Height);
+
+                CatchBarTexture.Location = new Point(0 - x, 0);
+            };
+
+            CatchBarTexture = new DXImageControl
+            {
+                Index = 231,
+                LibraryFile = LibraryFile.Interface,
+                Parent = CatchInnerBar,
+                Location = new Point(0, 0)
+            };
+
+            ThrowDistancePointer = new DXImageControl
             {
                 Index = 234,
                 LibraryFile = LibraryFile.Interface,
                 Parent = this,
-                Location = new Point(PointerXStart, FishPointerYStart)
+                Location = new Point(PointerXStart, ThrowDistancePointerY)
             };
 
             ProgressBar = new DXControl
@@ -155,7 +374,7 @@ namespace Client.Scenes.Views
                 PresentTexture(image.Image, this, new Rectangle(ProgressBar.DisplayArea.X, ProgressBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ProgressBar);
             };
 
-            PlayerPointer = new DXImageControl
+            MovingPointer = new DXImageControl
             {
                 Index = 233,
                 LibraryFile = LibraryFile.Interface,
@@ -243,7 +462,7 @@ namespace Client.Scenes.Views
 
             float percent = Math.Min(1, Math.Max(0, FishMaxCurrent / (float)FishMaxTotal));
 
-            FishPointer.Location = new Point(PointerXStart + (int)(percent * 216), FishPointerYStart);
+            ThrowDistancePointer.Location = new Point(PointerXStart + (int)(percent * 216), ThrowDistancePointerY);
 
             if (UpdateTime < CEnvir.Now)
             {
@@ -266,16 +485,14 @@ namespace Client.Scenes.Views
 
             FishFoundButton.Visible = false;
 
-            PlayerPointer.Location = new Point(PointerXStart, PlayerPointerYStart);
-            FishPointer.Location = new Point(PointerXStart, FishPointerYStart);
+            MovingPointer.Location = new Point(PointerXStart, PlayerPointerYStart);
+            ThrowDistancePointer.Location = new Point(PointerXStart, ThrowDistancePointerY);
         }
 
         private void ProcessUser()
         {
             if (!FishingStarted)
-            {
                 return;
-            }
 
             if (Pressed)
             {
@@ -286,9 +503,12 @@ namespace Client.Scenes.Views
                 PlayerLocation = Math.Max(PlayerLocation - MovementSpeed, 0);
             }
 
-            float percent = Math.Min(1, Math.Max(0, PlayerLocation / (float)FishMaxTotal));
+            if (FishAsBar)
+            {
+                float percent = Math.Min(1, Math.Max(0, PlayerLocation / (float)FishMaxTotal));
 
-            PlayerPointer.Location = new Point(PointerXStart + (int)(percent * 215), PlayerPointerYStart);
+                MovingPointer.Location = new Point(PointerXStart + (int)(percent * 215), PlayerPointerYStart);
+            }
         }
 
         private void ProcessFish()
@@ -311,6 +531,13 @@ namespace Client.Scenes.Views
             {
                 FishLocation = Math.Max(FishLocation - MovementSpeed, 0);
             }
+
+            if (!FishAsBar)
+            {
+                float percent = Math.Min(1, Math.Max(0, FishLocation / (float)FishMaxTotal));
+
+                MovingPointer.Location = new Point(PointerXStart + (int)(percent * 215), PlayerPointerYStart);
+            }
         }
 
         public void Update(S.FishingStats p)
@@ -332,36 +559,108 @@ namespace Client.Scenes.Views
                 AutoCastCheckBox.Checked = false;
         }
 
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                if (FishFoundBase != null)
+                {
+                    if (!FishFoundBase.IsDisposed)
+                        FishFoundBase.Dispose();
+
+                    FishFoundBase = null;
+                }
+
+                if (FishFoundCircle != null)
+                {
+                    if (!FishFoundCircle.IsDisposed)
+                        FishFoundCircle.Dispose();
+
+                    FishFoundCircle = null;
+                }
+
+                if (FishFoundButton != null)
+                {
+                    if (!FishFoundButton.IsDisposed)
+                        FishFoundButton.Dispose();
+
+                    FishFoundButton = null;
+                }
+
+                if (MovingPointer != null)
+                {
+                    if (!MovingPointer.IsDisposed)
+                        MovingPointer.Dispose();
+
+                    MovingPointer = null;
+                }
+
+                if (CatchBarTexture != null)
+                {
+                    if (!CatchBarTexture.IsDisposed)
+                        CatchBarTexture.Dispose();
+
+                    CatchBarTexture = null;
+                }
+
+                if (ThrowDistancePointer != null)
+                {
+                    if (!ThrowDistancePointer.IsDisposed)
+                        ThrowDistancePointer.Dispose();
+
+                    ThrowDistancePointer = null;
+                }
+
+                if (CatchBar != null)
+                {
+                    if (!CatchBar.IsDisposed)
+                        CatchBar.Dispose();
+
+                    CatchBar = null;
+                }
+
+                if (CatchInnerBar != null)
+                {
+                    if (!CatchInnerBar.IsDisposed)
+                        CatchInnerBar.Dispose();
+
+                    CatchInnerBar = null;
+                }
+
+                if (ProgressBar != null)
+                {
+                    if (!ProgressBar.IsDisposed)
+                        ProgressBar.Dispose();
+
+                    ProgressBar = null;
+                }
+
+                if (AutoCastCheckBox != null)
+                {
+                    if (!AutoCastCheckBox.IsDisposed)
+                        AutoCastCheckBox.Dispose();
+
+                    AutoCastCheckBox = null;
+                }
+            }
+}
+
+        #endregion
+
         #region TestCode
-        //Arrow.BeforeDraw += (o, e) =>
-        //{
-        //    if (library == null) return;
-
-        //    MirImage image = library.CreateImage(5110, ImageType.Image);
-
-        //    if (image == null) return;
-
-        //    if (timerCount < CEnvir.Now)
-        //    {
-        //        timerCount = CEnvir.Now.Add(TimeSpan.FromMilliseconds(200));
-        //        count += 0.1F;
-        //    }
-
-        //    var l = Vector3.Lerp(new Vector3(0, 0, 0), new Vector3(0, 90, 0), 1);
-
-        //    //var angle = Math.Atan2(4 * -1, 2) * 180 / Math.PI;
-
-        //    //var degree = (float)((angle + 360) % 360);
-
-        //    //TODO Lerp!
-
-        //    FishActionLabel.Text = l.X + " " + l.Y + " " + l.Z;
-
-        //    library.DrawBlend(5110, 1f, Color.White, 20, 20, count, 1F, ImageType.Image, false, 0);
-
-        //    //PresentTexture(image.Image, this, new Rectangle(Arrow.DisplayArea.X, Arrow.DisplayArea.Y, image.Width, image.Height), Color.White, Arrow);
-        //};
-
 
         //CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out library);
 

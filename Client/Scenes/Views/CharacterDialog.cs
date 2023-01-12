@@ -8,9 +8,11 @@ using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
 using Client.Models;
+using Client.Properties;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -116,6 +118,16 @@ namespace Client.Scenes.Views
             }
         }
 
+        private bool HasFishingRobe
+        {
+            get { return Grid != null && Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe; }
+        }
+
+        private bool HasFishingRod
+        {
+            get { return Grid != null && Grid[(int)EquipmentSlot.Weapon]?.Item?.Info.Effect == ItemEffect.FishingRod; }
+        }
+
         #region Inspect
 
         private ClientUserItem[] _inspectEquipment = new ClientUserItem[Globals.EquipmentSize];
@@ -137,6 +149,11 @@ namespace Client.Scenes.Views
 
             if (Settings != null)
                 Settings.Visible = nValue;
+
+            if (!Inspect)
+            {
+                GameScene.Game.FishingBox.Visible = HasFishingRod && IsVisible;
+            }
 
             base.OnIsVisibleChanged(oValue, nValue);
         }
@@ -278,13 +295,13 @@ namespace Client.Scenes.Views
             DXControl namePanel = new DXControl
             {
                 Parent = this,
-                Size = new Size(130, 68),
+                Size = new Size(137, 68),
                 Location = new Point((CharacterTab.Size.Width - 135) / 2, 51)
             };
             CharacterNameLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(130, 20),
+                Size = new Size(137, 20),
                 ForeColour = Color.FromArgb(222, 255, 222),
                 Outline = false,
                 Parent = namePanel,
@@ -294,7 +311,7 @@ namespace Client.Scenes.Views
             GuildNameLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(130, 15),
+                Size = new Size(137, 15),
                 ForeColour = Color.FromArgb(255, 255, 181),
                 Outline = false,
                 Parent = namePanel,
@@ -304,7 +321,7 @@ namespace Client.Scenes.Views
             GuildRankLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(130, 15),
+                Size = new Size(137, 15),
                 ForeColour = Color.FromArgb(255, 206, 148),
                 Outline = false,
                 Parent = namePanel,
@@ -340,6 +357,10 @@ namespace Client.Scenes.Views
             };
             cell.MouseEnter += Cell_MouseEnter;
             cell.MouseLeave += Cell_MouseLeave;
+            cell.ItemChanged += (o, e) =>
+            {
+                GameScene.Game.FishingBox.Visible = Visible && ((DXItemCell)o).Item?.Info.Effect == ItemEffect.FishingRod;
+            };
 
             Grid[(int)EquipmentSlot.Armour] = cell = new DXItemCell
             {
@@ -386,7 +407,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.Emblem] = cell = new DXItemCell
             {
-                Location = new Point(237, 118),
+                Location = new Point(244, 118),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -399,7 +420,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.HorseArmour] = cell = new DXItemCell
             {
-                Location = new Point(276, 118),
+                Location = new Point(283, 118),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -438,7 +459,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.BraceletL] = cell = new DXItemCell
             {
-                Location = new Point(237, 157),
+                Location = new Point(244, 157),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -451,7 +472,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.BraceletR] = cell = new DXItemCell
             {
-                Location = new Point(276, 157),
+                Location = new Point(283, 157),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -464,7 +485,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.RingL] = cell = new DXItemCell
             {
-                Location = new Point(237, 196),
+                Location = new Point(244, 196),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -477,7 +498,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.RingR] = cell = new DXItemCell
             {
-                Location = new Point(276, 196),
+                Location = new Point(283, 196),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -490,7 +511,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.Flower] = cell = new DXItemCell
             {
-                Location = new Point(237, 235),
+                Location = new Point(244, 235),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -503,7 +524,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.Poison] = cell = new DXItemCell
             {
-                Location = new Point(237, 274),
+                Location = new Point(244, 274),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -516,7 +537,7 @@ namespace Client.Scenes.Views
 
             Grid[(int)EquipmentSlot.Amulet] = cell = new DXItemCell
             {
-                Location = new Point(276, 235),
+                Location = new Point(283, 235),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
@@ -555,6 +576,9 @@ namespace Client.Scenes.Views
             cell.MouseEnter += Cell_MouseEnter;
             cell.MouseLeave += Cell_MouseLeave;
 
+            cell.MouseEnter += Cell_MouseEnter;
+            cell.MouseLeave += Cell_MouseLeave;
+
             #endregion
 
             #region Stats
@@ -566,7 +590,7 @@ namespace Client.Scenes.Views
                 Parent = CharacterTab,
                 Location = new Point(0, 319),
                 Size = new Size(DisplayArea.Width, 120),
-                MarginLeft = 18,
+                MarginLeft = 21,
                 Visible = !Inspect
             };
 
@@ -628,7 +652,7 @@ namespace Client.Scenes.Views
             const int yStart = 6;
             int y = yStart;
 
-            const int left = 15, right = 163, rowSpacing = 22;
+            const int left = 15, right = 168, rowSpacing = 22;
 
             Size labelValueSize = new Size(100, 16);
 
@@ -1658,7 +1682,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "Unspent Points:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 150);
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 28, 150);
 
             HermitRemainingLabel = new DXLabel
             {
@@ -1668,7 +1692,7 @@ namespace Client.Scenes.Views
                 Text = "0"
             };
 
-            int x = 23;
+            int x = 26;
 
             #region Hermit Buttons
 
@@ -1897,13 +1921,14 @@ namespace Client.Scenes.Views
             #endregion
 
             #region Hermit Stats
+            int xOffset = 40;
 
             label = new DXLabel
             {
                 Parent = HermitTab,
                 Text = "AC:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + 25, 175);
+            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + xOffset, 175);
 
             HermitDisplayStats[Stat.MaxAC] = new DXLabel
             {
@@ -1918,7 +1943,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "MR:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 175);
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + xOffset, 175);
 
             HermitDisplayStats[Stat.MaxMR] = new DXLabel
             {
@@ -1933,7 +1958,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "DC:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 5 - label.Size.Width + 25, 205);
+            label.Location = new Point(HermitTab.Size.Width / 5 - label.Size.Width + xOffset, 205);
 
             HermitDisplayStats[Stat.MaxDC] = new DXLabel
             {
@@ -1948,7 +1973,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "MC:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 5 * 2 - label.Size.Width + 25, 205);
+            label.Location = new Point(HermitTab.Size.Width / 5 * 2 - label.Size.Width + xOffset, 205);
 
             HermitDisplayStats[Stat.MaxMC] = new DXLabel
             {
@@ -1963,7 +1988,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "SC:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 5 * 3 - label.Size.Width + 25, 205);
+            label.Location = new Point(HermitTab.Size.Width / 5 * 3 - label.Size.Width + xOffset, 205);
 
             HermitDisplayStats[Stat.MaxSC] = new DXLabel
             {
@@ -1978,7 +2003,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "Health:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + 25, 235);
+            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + xOffset, 235);
 
             HermitDisplayStats[Stat.Health] = new DXLabel
             {
@@ -1993,7 +2018,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = "Mana:"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 25, 235);
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + xOffset, 235);
 
             HermitDisplayStats[Stat.Mana] = new DXLabel
             {
@@ -2177,7 +2202,7 @@ namespace Client.Scenes.Views
                 Parent = DisciplineTab,
                 AutoSize = false,
                 Size = new Size(46, 18),
-                Location = new Point(113, 313),
+                Location = new Point(116, 313),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Text = "0",
                 ForeColour = Color.White
@@ -2190,14 +2215,14 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 Visible = false
             };
-            label.Location = new Point(163, 313);
+            label.Location = new Point(166, 313);
 
             DisciplineUnusedLabel = new DXLabel
             {
                 Parent = DisciplineTab,
                 AutoSize = false,
-                Size = new Size(46, 18),
-                Location = new Point(263, 313),
+                Size = new Size(49, 18),
+                Location = new Point(266, 313),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Text = "???",
                 ForeColour = Color.White,
@@ -2216,7 +2241,7 @@ namespace Client.Scenes.Views
             {
                 Parent = DisciplineTab,
                 AutoSize = false,
-                Size = new Size(296, 18),
+                Size = new Size(303, 18),
                 Location = new Point(14, 335),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Text = "0/0",
@@ -2441,7 +2466,6 @@ namespace Client.Scenes.Views
                     break;
             }
 
-
             if (CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library))
             {
                 if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
@@ -2486,8 +2510,7 @@ namespace Client.Scenes.Views
                 }
             }
 
-            var hasFishingRobe = Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe;
-            if (hasFishingRobe) return;
+            if (HasFishingRobe) return;
 
             if (Grid[(int)EquipmentSlot.Helmet]?.Item != null && library != null)
             {
@@ -2534,15 +2557,27 @@ namespace Client.Scenes.Views
 
         #region Methods
 
-        public void Draw(DXItemCell cell, int index)
+        public void Draw(DXItemCell cell, int index, bool backgroundCell = false, bool visible = true)
         {
             if (InterfaceLibrary == null) return;
 
+            Size s;
+            int x, y;
+
+            if (backgroundCell)
+            {
+                s = InterfaceLibrary.GetSize(65);
+                x = (cell.Size.Width - s.Width) / 2 + cell.DisplayArea.X;
+                y = (cell.Size.Height - s.Height) / 2 + cell.DisplayArea.Y;
+
+                InterfaceLibrary.Draw(65, x, y, Color.White, false, 1F, ImageType.Image);
+            }
+
             if (cell.Item != null) return;
 
-            Size s = InterfaceLibrary.GetSize(index);
-            int x = (cell.Size.Width - s.Width) / 2 + cell.DisplayArea.X;
-            int y = (cell.Size.Height - s.Height) / 2 + cell.DisplayArea.Y;
+            s = InterfaceLibrary.GetSize(index);
+            x = (cell.Size.Width - s.Width) / 2 + cell.DisplayArea.X;
+            y = (cell.Size.Height - s.Height) / 2 + cell.DisplayArea.Y;
 
             InterfaceLibrary.Draw(index, x, y, Color.White, false, 0.2F, ImageType.Image);
         }
@@ -2665,10 +2700,18 @@ namespace Client.Scenes.Views
             _inspectHairType = p.Hair;
 
             foreach (DXItemCell cell in Grid)
+            {
+                if (cell == null) continue;
+
                 cell.Item = null;
+            }
 
             foreach (ClientUserItem item in p.Items)
+            {
+                if (Grid[item.Slot] == null) continue;
+
                 Grid[item.Slot].Item = item;
+            }
 
             //WearWeightLabel.Text = $"{p.WearWeight}/{p.Stats[Stat.WearWeight]}";
             //HandWeightLabel.Text = $"{p.HandWeight}/{p.Stats[Stat.HandWeight]}";
@@ -2698,6 +2741,16 @@ namespace Client.Scenes.Views
                 DisciplineLevel.Index = 215;
                 DisciplineLevelLabel.Text = "0";
                 DisciplineExperienceLabel.Text = $"0/0";
+
+                List<MagicInfo> keys = new(DisciplineMagics.Keys);
+
+                foreach (var key in keys)
+                {
+                    DisciplineMagics[key].Dispose();
+                    DisciplineMagics[key] = null;
+                }
+
+                DisciplineMagics.Clear();
             }
             else
             {
@@ -2709,7 +2762,7 @@ namespace Client.Scenes.Views
                 else
                     DisciplineExperienceLabel.Text = $"{userDiscipline.Experience}/Max";
 
-                int x = 49;
+                int x = 51;
 
                 foreach (var magic in userDiscipline.Magics)
                 {
@@ -2725,7 +2778,7 @@ namespace Client.Scenes.Views
                         DisciplineMagics[magic.Info] = cell;
                     }
 
-                    x += 61;
+                    x += 62;
                 }
             }
         }
@@ -3050,6 +3103,16 @@ namespace Client.Scenes.Views
                 }
                 HermitAttackStats.Clear();
                 HermitAttackStats = null;
+
+                List<MagicInfo> keys = new(DisciplineMagics.Keys);
+
+                foreach (var key in keys)
+                {
+                    DisciplineMagics[key].Dispose();
+                    DisciplineMagics[key] = null;
+                }
+
+                DisciplineMagics.Clear();
 
                 _inspectEquipment = null;
                 _inspectStats = null;

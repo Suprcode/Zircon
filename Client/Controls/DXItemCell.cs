@@ -1514,6 +1514,21 @@ namespace Client.Controls
                 case ItemType.HorseArmour:
                     GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.HorseArmour].ToEquipment(this);
                     break;
+                case ItemType.Hook:
+                    GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Hook].ToEquipment(this);
+                    break;
+                case ItemType.Float:
+                    GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Float].ToEquipment(this);
+                    break;
+                case ItemType.Bait:
+                    GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Bait].ToEquipment(this);
+                    break;
+                case ItemType.Finder:
+                    GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Finder].ToEquipment(this);
+                    break;
+                case ItemType.Reel:
+                    GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Reel].ToEquipment(this);
+                    break;
                 case ItemType.CompanionBag:
                     if (GameScene.Game.Companion != null)
                         GameScene.Game.CompanionBox.EquipmentGrid[(int)CompanionSlot.Bag].ToEquipment(this);

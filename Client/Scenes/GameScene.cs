@@ -196,6 +196,7 @@ namespace Client.Scenes
         public NPCAccessoryRefineDialog NPCAccessoryRefineBox;
         public CurrencyDialog CurrencyBox;
 
+        public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
 
         public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
@@ -354,6 +355,7 @@ namespace Client.Scenes
             CommunicationBox?.LoadSettings();
             RankingBox?.LoadSettings();
             QuestBox?.LoadSettings();
+            FishingBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -645,6 +647,12 @@ namespace Client.Scenes
                 Visible = false,
             };
 
+            FishingBox = new FishingDialog(CharacterBox)
+            {
+                Parent = this,
+                Visible = false,
+            };
+
             FishingCatchBox = new FishingCatchDialog
             {
                 Parent = this,
@@ -667,6 +675,7 @@ namespace Client.Scenes
             CommunicationBox.LoadSettings();
             RankingBox.LoadSettings();
             QuestBox.LoadSettings();
+            FishingBox.LoadSettings();
         }
 
         #region Methods
@@ -739,6 +748,8 @@ namespace Client.Scenes
             NPCWeaponCraftBox.Location = new Point((Size.Width - NPCWeaponCraftBox.Size.Width) / 2, (Size.Height - NPCWeaponCraftBox.Size.Height) / 2);
 
             CurrencyBox.Location = new Point((Size.Width - CurrencyBox.Size.Width) / 2, (Size.Height - CurrencyBox.Size.Height) / 2);
+
+            FishingBox.Location = new Point(CharacterBox.Location.X + CharacterBox.Size.Width, CharacterBox.Location.Y);
 
             FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2), ((Size.Height - FishingCatchBox.Size.Height) / 2) + 200);
         }
@@ -3509,6 +3520,17 @@ namespace Client.Scenes
                         return false;
                     }
                     break;
+                case EquipmentSlot.Hook:
+                case EquipmentSlot.Float:
+                case EquipmentSlot.Bait:
+                case EquipmentSlot.Finder:
+                case EquipmentSlot.Reel:
+                    if (Equipment[(int)EquipmentSlot.Weapon]?.Info.Effect != ItemEffect.FishingRod)
+                    {
+                        ReceiveChat($"Unable to hold {item.Info.ItemName}, must be holding fishing rod.", MessageType.System);
+                        return false;
+                    }
+                    break;
                 default:
                     if (User.WearWeight - (Equipment[(int) slot]?.Info.Weight ?? 0) + item.Weight > User.Stats[Stat.WearWeight])
                     {
@@ -4481,6 +4503,22 @@ namespace Client.Scenes
                         NPCAccessoryRefineBox.Dispose();
 
                     NPCAccessoryRefineBox = null;
+                }
+
+                if (FishingBox != null)
+                {
+                    if (!FishingBox.IsDisposed)
+                        FishingBox.Dispose();
+
+                    FishingBox = null;
+                }
+
+                if (FishingCatchBox != null)
+                {
+                    if (!FishingCatchBox.IsDisposed)
+                        FishingCatchBox.Dispose();
+
+                    FishingCatchBox = null;
                 }
 
                 Inventory = null;

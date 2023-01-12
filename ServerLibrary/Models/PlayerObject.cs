@@ -2154,6 +2154,25 @@ namespace Server.Models
                         }
 
                         break;
+                    case "RESETDISCIPLINE":
+                        if (!Character.Account.TempAdmin) return;
+
+                        if (parts.Length < 2) return;
+
+                        character = SEnvir.GetCharacter(parts[1]);
+
+                        if (character == null) return;
+
+                        if (character.Discipline != null)
+                        {
+                            character.Discipline.Delete();
+                            character.Discipline = null;
+
+                            character.Player?.Enqueue(new S.DisciplineUpdate { Discipline = null });
+                        }
+
+                        character.Player?.RefreshStats();
+                        break;
 
                 }
 
@@ -7951,6 +7970,13 @@ namespace Server.Models
                 case ItemType.Shield:
                     if (HandWeight - (Equipment[(int)slot]?.Info.Weight ?? 0) + item.Weight > Stats[Stat.HandWeight]) return false;
                     break;
+                case ItemType.Hook:
+                case ItemType.Float:
+                case ItemType.Bait:
+                case ItemType.Finder:
+                case ItemType.Reel:
+                    if (Equipment[(int)EquipmentSlot.Weapon]?.Info.Effect != ItemEffect.FishingRod) return false;
+                    break;
                 default:
                     if (WearWeight - (Equipment[(int)slot]?.Info.Weight ?? 0) + item.Weight > Stats[Stat.WearWeight]) return false;
                     break;
@@ -12853,8 +12879,15 @@ namespace Server.Models
                 return;
             }
 
-            //TODO - Damage items
-            //TODO - Check for bait
+            if (Equipment[(int)EquipmentSlot.Weapon].CurrentDurability > 0 || Equipment[(int)EquipmentSlot.Weapon].Info.Durability == 0)
+            {
+                DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon, 1);
+            }
+            else
+            {
+                state = FishingState.Reel;
+            }
+
             //TODO - Client - Change cursor (hold Alt to change cursor icon on valid cell)
 
             #endregion
@@ -12890,7 +12923,7 @@ namespace Server.Models
 
                     #region Calculate Accuracy Required (Hook, Flexibility Stat)
 
-                    fishRequiredAccuracy = 15 + Math.Max(0, Math.Min(Stats[Stat.Flexibility], 25));
+                    fishRequiredAccuracy = 10 + Math.Max(0, Math.Min(Stats[Stat.Flexibility], 15));
 
                     #endregion
 
@@ -12899,10 +12932,23 @@ namespace Server.Models
                     FishingDirection = castDirection;
                     FishingLocation = floatLocation;
 
-                    //TODO - Take bait
+                    DamageItem(GridType.Equipment, (int)EquipmentSlot.Hook, 4);
+                    DamageItem(GridType.Equipment, (int)EquipmentSlot.Float, 4);
+                    DamageItem(GridType.Equipment, (int)EquipmentSlot.Finder, 4);
+                    DamageItem(GridType.Equipment, (int)EquipmentSlot.Reel, 4);
+
+                    if (!UseBait(1, 0, out _))
+                    {
+                        state = FishingState.Reel;
+
+                        Connection.ReceiveChat("Not enough bait.", MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat("Not enough bait.", MessageType.System);
+                    }
                 }
 
-                if (!FishFound)
+                if (!FishFound && state == FishingState.Cast)
                 {
                     #region Calculate Fish Find Chance (Bait , NibbleChance Stat)
 
@@ -12911,7 +12957,7 @@ namespace Server.Models
                     #endregion
                 }
 
-                if (FishFound)
+                if (FishFound && state == FishingState.Cast)
                 {
                     FishAttempts++;
 
@@ -12971,6 +13017,7 @@ namespace Server.Models
                             GainItem(item);
 
                             //TODO - Should we stop after one item gained? Or go through whole droplist?
+                            //TODO - Limit drops by bait type used?
                         }
 
                         //TODO - Log Attempts taken, perfect catches etc
@@ -13007,6 +13054,35 @@ namespace Server.Models
                 FloatLocation = FishingLocation,
                 FishFound = FishFound
             });
+        }
+
+        public bool UseBait(int count, int shape, out Stats stats)
+        {
+            stats = null;
+            UserItem bait = Equipment[(int)EquipmentSlot.Bait];
+
+            if (bait == null || bait.Info.ItemType != ItemType.Bait || bait.Count < count || bait.Info.Shape != shape) return false;
+
+            bait.Count -= count;
+
+            Enqueue(new S.ItemChanged
+            {
+                Link = new CellLinkInfo { GridType = GridType.Equipment, Slot = (int)EquipmentSlot.Bait, Count = bait.Count },
+                Success = true
+            });
+
+            stats = new Stats(bait.Info.Stats);
+
+            if (bait.Count != 0) return true;
+
+            RemoveItem(bait);
+            Equipment[(int)EquipmentSlot.Bait] = null;
+            bait.Delete();
+
+            RefreshStats();
+            RefreshWeight();
+
+            return true;
         }
 
         private void ResetFishing()
@@ -15659,7 +15735,7 @@ namespace Server.Models
             {
                 UserItem weap = Equipment[(int)EquipmentSlot.Weapon];
 
-                if (weap != null && weap.Info.Effect == ItemEffect.PickAxe && (weap.CurrentDurability > 0 || weap.Info.Durability > 0))
+                if (weap != null && weap.Info.Effect == ItemEffect.PickAxe && (weap.CurrentDurability > 0 || weap.Info.Durability == 0))
                 {
                     DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon, 4);
 
@@ -15674,7 +15750,6 @@ namespace Server.Models
                         UserItem item = SEnvir.CreateDropItem(check);
                         GainItem(item);
                     }
-
 
                     bool hasRubble = false;
 
@@ -20756,6 +20831,12 @@ namespace Server.Models
 
             uFocus.Info = nextLevel;
             uFocus.Level = nextLevel.Level;
+
+            var mInfo2 = SEnvir.MagicInfoList.Binding.Where(x =>
+                x.School == MagicSchool.Discipline &&
+                x.NeedLevel1 <= nextLevel.RequiredLevel &&
+                x.Class == Class &&
+                !Magics.ContainsKey(x.Magic));
 
             var mInfo = SEnvir.MagicInfoList.Binding.FirstOrDefault(x =>
                 x.School == MagicSchool.Discipline &&

@@ -453,6 +453,16 @@ namespace Library
                     return type == ItemType.Shield;
                 case EquipmentSlot.Wings:
                     return type == ItemType.Wings;
+                case EquipmentSlot.Hook:
+                    return type == ItemType.Hook;
+                case EquipmentSlot.Float:
+                    return type == ItemType.Float;
+                case EquipmentSlot.Bait:
+                    return type == ItemType.Bait;
+                case EquipmentSlot.Finder:
+                    return type == ItemType.Finder;
+                case EquipmentSlot.Reel:
+                    return type == ItemType.Reel;
                 default:
                     return false;
             }

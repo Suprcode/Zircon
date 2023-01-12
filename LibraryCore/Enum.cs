@@ -108,7 +108,13 @@ namespace Library
         HorseArmour = 13,
         Emblem = 14,
         Shield = 15,
-        Wings = 16
+        Wings = 16,
+
+        Hook = 17,
+        Float = 18,
+        Bait = 19,
+        Finder = 20,
+        Reel = 21
     }
 
     public enum CompanionSlot
@@ -117,15 +123,6 @@ namespace Library
         Head = 1,
         Back = 2,
         Food = 3,
-    }
-
-    public enum FishingSlot
-    {
-        Hook = 0,
-        Float = 1,
-        Bait = 2,
-        Finder = 3,
-        Reel = 4
     }
 
     [Flags]
@@ -313,6 +310,16 @@ namespace Library
         Twilight,
     }
 
+    public enum TimeOfDay : byte
+    {
+        None,
+
+        Dawn,
+        Day,
+        Dusk,
+        Night
+    }
+
     public enum FightSetting : byte
     {
         None,
@@ -377,12 +384,11 @@ namespace Library
         Emblem,
         Shield,
         Wings,
-
-        //Hook,
-        //Float,
-        //Bait,
-        //Finder,
-        //Reel
+        Hook,
+        Float,
+        Bait,
+        Finder,
+        Reel
     }
 
     public enum MirAction : byte
