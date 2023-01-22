@@ -29,7 +29,11 @@ namespace Client.Models
             [0] = LibraryFile.M_Shield1,
             [1] = LibraryFile.M_Shield2,
             [0 + FemaleOffSet] = LibraryFile.WM_Shield1,
-            [1 + FemaleOffSet] = LibraryFile.WM_Shield2
+            [1 + FemaleOffSet] = LibraryFile.WM_Shield2,
+
+            [100] = LibraryFile.EquipEffect_Part,
+
+            [100 + FemaleOffSet] = LibraryFile.EquipEffect_Part,
         };
         #endregion
 
@@ -80,7 +84,6 @@ namespace Client.Models
             [114] = LibraryFile.M_WeaponAOH4,
             [115] = LibraryFile.M_WeaponAOH5,
             [116] = LibraryFile.M_WeaponAOH6,
-
 
             [120 + FemaleOffSet] = LibraryFile.WM_WeaponADL1,
             [122 + FemaleOffSet] = LibraryFile.WM_WeaponADL2,
@@ -205,8 +208,18 @@ namespace Client.Models
         public int WeaponShape, LibraryWeaponShape;
         public int WeaponFrame => DrawFrame + (WeaponShape % 10) * WeaponShapeOffSet;
 
+        public MirLibrary ShieldLibrary;
         public int ShieldShape;
-        public int ShieldFrame => DrawFrame + (ShieldShape % 10) * WeaponShapeOffSet;
+        public int ShieldFrame
+        {
+            get
+            {
+                if (ShieldShape < 1000)
+                    return DrawFrame + (ShieldShape % 10) * ArmourShapeOffSet + ArmourShift;
+                else
+                    return 900 + 200 * (ShieldShape % 10) + 10 * (byte)Direction + (GameScene.Game.MapControl.Animation % 4);
+            }
+        }
 
         public MirLibrary BodyLibrary;
         public int ArmourShapeOffSet;
@@ -365,7 +378,7 @@ namespace Client.Models
                             if (ShieldShape >= 0)
                             {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
                             break;
                         case MirGender.Female:
@@ -388,7 +401,7 @@ namespace Client.Models
                             if (ShieldShape >= 0)
                             {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
                             break;
                     }
@@ -417,16 +430,16 @@ namespace Client.Models
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (LibraryWeaponShape >= 1200)
-                            {
-                                if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
-                            }
-                            else if (ShieldShape >= 0)
+                            if (ShieldShape >= 0)
                             {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
+
+                            if (LibraryWeaponShape < 1200) break;
+
+                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
+                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             break;
                         case MirGender.Female:
                             if (!ArmourList.TryGetValue(ArmourShape / 11 + AssassinOffSet + FemaleOffSet, out file))
@@ -444,16 +457,16 @@ namespace Client.Models
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (LibraryWeaponShape >= 1200)
-                            {
-                                if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
-                            }
-                            else if (ShieldShape >= 0)
+                            if (ShieldShape >= 0)
                             {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
+
+                            if (LibraryWeaponShape < 1200) break;
+
+                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
+                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             break;
                     }
                     break;
@@ -790,56 +803,21 @@ namespace Client.Models
         {
             if (BodyLibrary == null) return;
 
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    break;
-                case MirDirection.DownRight:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                    switch (ArmourImage)
-                    {
-                        //All
-                        case 962:
-                        case 972:
-                            break;
-                        default:
-                            DrawWings();
-                            break;
+            if (DrawWingsBehind())
+                DrawWings();
 
-                    }
-                    break;
-            }
+            if (DrawShieldEffectBehind())
+                DrawShieldEffect();
 
             DrawBody(true);
 
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    DrawWings();
-                    break;
-                case MirDirection.DownRight:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                    switch (ArmourImage)
-                    {
-                        //All
-                        case 962:
-                        case 972:
-                            DrawWings();
-                            break;
-                    }
-                    break;
-            }
+            if (DrawWingsInfront())
+                DrawWings();
+
+            if (DrawShieldEffectInfront())
+                DrawShieldEffect();
         }
+
         public override void DrawBlend()
         {
             if (BodyLibrary == null) return;
@@ -878,18 +856,36 @@ namespace Client.Models
                     break;
                 default:
                     if (!DrawWeapon) break;
-
-                    var frame = ShieldShape >= 0 ? ShieldFrame : WeaponFrame;
-                    image = WeaponLibrary2?.GetImage(frame);
-
+                    image = WeaponLibrary2?.GetImage(WeaponFrame);
                     if (image == null) break;
 
-                    WeaponLibrary2.Draw(frame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
                     l = Math.Min(l, DrawX + image.OffSetX);
                     t = Math.Min(t, DrawY + image.OffSetY);
                     r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                     b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    break;
+            }
+
+            switch (Direction)
+            {
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.DownRight:
+                    if (ShieldShape >= 0 && ShieldShape < 1000)
+                    {
+                        image = ShieldLibrary?.GetImage(ShieldFrame);
+                        if (image != null)
+                        {
+                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                            l = Math.Min(l, DrawX + image.OffSetX);
+                            t = Math.Min(t, DrawY + image.OffSetY);
+                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        }
+                    }
                     break;
             }
 
@@ -953,18 +949,38 @@ namespace Client.Models
                     break;
                 default:
                     if (!DrawWeapon) break;
-
-                    var frame = ShieldShape >= 0 ? ShieldFrame : WeaponFrame;
-                    image = WeaponLibrary2?.GetImage(frame);
-
+                    image = WeaponLibrary2?.GetImage(WeaponFrame);
                     if (image == null) break;
 
-                    WeaponLibrary2.Draw(frame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
                     l = Math.Min(l, DrawX + image.OffSetX);
                     t = Math.Min(t, DrawY + image.OffSetY);
                     r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                     b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    break;
+            }
+
+            switch (Direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    if (ShieldShape >= 0 && ShieldShape < 1000)
+                    {
+                        image = ShieldLibrary?.GetImage(ShieldFrame);
+                        if (image != null)
+                        {
+                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                            l = Math.Min(l, DrawX + image.OffSetX);
+                            t = Math.Min(t, DrawY + image.OffSetY);
+                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        }
+                    }
                     break;
             }
 
@@ -1116,6 +1132,27 @@ namespace Client.Models
             }
         }
 
+        public void DrawShieldEffect()
+        {
+            if (!Config.DrawEffects) return;
+            if (Horse != HorseType.None) return;
+
+            switch (CurrentAction)
+            {
+                case MirAction.Die:
+                case MirAction.Dead:
+                    break;
+                default:
+                    if (ShieldShape >= 1000)
+                    {
+                        ShieldLibrary.DrawBlend(ShieldFrame + 100, DrawX, DrawY, Color.White, true, 0.8f, ImageType.Image);
+                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                    }
+
+                    break;
+            }
+        }
+
         private void DrawWings()
         {
             if (!Config.DrawEffects)
@@ -1240,6 +1277,84 @@ namespace Client.Models
 
         }
 
+        public bool DrawShieldEffectBehind()
+        {
+            switch (Direction)
+            {
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.DownRight:
+                    return true;
+            }
+            return false;
+        }
+
+        public bool DrawWingsBehind()
+        {
+            switch (Direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return false;
+                case MirDirection.DownRight:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                    return ArmourImage switch
+                    {
+                        //All
+                        962 or 972 => false,
+                        _ => true,
+                    };
+                default:
+                    break;
+            }
+            return false;
+        }
+
+        public bool DrawShieldEffectInfront()
+        {
+            switch (Direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return true;
+            }
+            return false;
+        }
+
+        public bool DrawWingsInfront()
+        {
+            switch (Direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return true;
+                case MirDirection.DownRight:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                    return ArmourImage switch
+                    {
+                        //All
+                        962 or 972 => true,
+                        _ => false,
+                    };
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+
         public override bool MouseOver(Point p)
         {
             if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
@@ -1257,6 +1372,8 @@ namespace Client.Models
             if (LibraryWeaponShape >= 0 && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
                 return true;
 
+            if (ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+                return true;
 
 
             switch (CurrentAnimation)
