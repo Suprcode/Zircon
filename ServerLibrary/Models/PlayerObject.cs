@@ -160,7 +160,7 @@ namespace Server.Models
         public string FiltersItemType;
      
         public bool Fishing = false, FishFound = false;
-        public int FishPointsCurrent = 0, FishAttempts = 0, FishFails = 0;
+        public int FishThrowQuality = 0, FishPointsCurrent = 0, FishAttempts = 0, FishFails = 0;
 
         public Point FishingLocation;
         public MirDirection FishingDirection;
@@ -8861,7 +8861,7 @@ namespace Server.Models
 
             bool change = false;
 
-            bool pause = InSafeZone;
+            bool pause = InSafeZone || Fishing;
 
             foreach (MapObject ob in CurrentCell.Objects)
             {
@@ -12904,13 +12904,12 @@ namespace Server.Models
                 bool canAutoCast = Stats[Stat.AutoCast] > 0;
 
                 int fishRequiredAccuracy = -1;
-                int fishThrowQuality = -1;
 
                 if (!Fishing)
                 {
                     #region Calculate Throw Quality (Rod, ThrowDistance Stat)
 
-                    fishThrowQuality = Functions.FishingThrowQuality(throwDistance);
+                    FishThrowQuality = Functions.FishingThrowQuality(throwDistance);
 
                     #endregion
 
@@ -12931,6 +12930,8 @@ namespace Server.Models
 
                     FishingDirection = castDirection;
                     FishingLocation = floatLocation;
+
+                    PauseBuffs();
 
                     DamageItem(GridType.Equipment, (int)EquipmentSlot.Hook, 4);
                     DamageItem(GridType.Equipment, (int)EquipmentSlot.Float, 4);
@@ -12999,13 +13000,13 @@ namespace Server.Models
 
                         var zone = Functions.FishingZone(SEnvir.FishingInfoList, CurrentMap.Info, CurrentMap.Width, CurrentMap.Height, floatLocation);
 
-                        foreach (FishingDropInfo info in zone.Drops)
+                        foreach (FishingDropInfo info in zone.Drops.OrderByDescending(x => x.Chance))
                         {
                             if (info.Item == null) continue;
 
                             if (info.PerfectCatch && !perfectCatch) continue;
 
-                            if (info.ThrowQuality != 0 && info.ThrowQuality != Functions.FishingThrowQuality(throwDistance)) continue;
+                            if (info.ThrowQuality != 0 && info.ThrowQuality != FishThrowQuality) continue;
 
                             if (SEnvir.Random.Next(info.Chance) > 0) continue;
 
@@ -13015,8 +13016,8 @@ namespace Server.Models
 
                             UserItem item = SEnvir.CreateDropItem(check);
                             GainItem(item);
+                            break; //One item gained, to stop rewarding any more
 
-                            //TODO - Should we stop after one item gained? Or go through whole droplist?
                             //TODO - Limit drops by bait type used?
                         }
 
@@ -13034,7 +13035,7 @@ namespace Server.Models
                     CanAutoCast = canAutoCast,
                     CurrentPoints = FishPointsCurrent,
 
-                    ThrowQuality = fishThrowQuality,
+                    ThrowQuality = FishThrowQuality,
                     RequiredPoints = Config.FishPointsRequired,
                     MovementSpeed = 2,
                     RequiredAccuracy = fishRequiredAccuracy
@@ -13089,9 +13090,12 @@ namespace Server.Models
         {
             Fishing = false;
             FishFound = false;
+            FishThrowQuality = 0;
             FishPointsCurrent = 0;
             FishAttempts = 0;
             FishFails = 0;
+
+            PauseBuffs();
         }
 
         public void Move(MirDirection direction, int distance)

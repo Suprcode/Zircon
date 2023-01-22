@@ -223,8 +223,6 @@ namespace Library
 
         Castle = 9,
 
-
-
         ItemBuff = 10,
         ItemBuffPermanent = 11,
 
@@ -238,16 +236,18 @@ namespace Library
 
         DeathDrops = 18,
 
+        //War
         Defiance = 100,
         Might = 101,
         Endurance = 102,
         ReflectDamage = 103,
 
+        //Wiz
         Renounce = 200,
         MagicShield = 201,
         JudgementOfHeaven = 202,
 
-
+        //Tao
         Heal = 300,
         Invisibility = 301,
         MagicResistance = 302,
@@ -259,8 +259,8 @@ namespace Library
         Transparency = 308,
         LifeSteal = 309,
 
+        //Ass
         PoisonousCloud = 400,
-
         FullBloom = 401, 
         WhiteLotus = 402,
         RedLotus = 403,

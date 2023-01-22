@@ -231,7 +231,7 @@ namespace Client.Scenes.Views
         private int RequiredAccuracy;
 
         //Change this to swap between fish/player being the bar/pointer
-        private const bool FishAsBar = true;
+        private bool FishAsBar = false;
 
         #endregion
 
@@ -302,9 +302,9 @@ namespace Client.Scenes.Views
                 MovingPointer.Visible = true;
                 CatchInnerBar.Visible = true;
 
-                var w = (int)(barImage.Width * (FishMaxCurrent / (float)FishMaxTotal));
+                //var w = (int)(barImage.Width * (FishMaxCurrent / (float)FishMaxTotal));
 
-                CatchBar.Size = new Size(w, barImage.Height);
+                CatchBar.Size = new Size(barImage.Width, barImage.Height);
             };
 
             CatchInnerBar = new DXControl
@@ -328,6 +328,7 @@ namespace Client.Scenes.Views
                 CatchInnerBar.Size = new Size(w, barImage.Height);
 
                 CatchBarTexture.Location = new Point(0 - x, 0);
+                CatchBarTexture.ImageOpacity = CaughtFish ? 1F : 0.5F;
             };
 
             CatchBarTexture = new DXImageControl
@@ -343,7 +344,8 @@ namespace Client.Scenes.Views
                 Index = 234,
                 LibraryFile = LibraryFile.Interface,
                 Parent = this,
-                Location = new Point(PointerXStart, ThrowDistancePointerY)
+                Location = new Point(PointerXStart, ThrowDistancePointerY),
+                Visible = true
             };
 
             ProgressBar = new DXControl
@@ -376,7 +378,7 @@ namespace Client.Scenes.Views
 
             MovingPointer = new DXImageControl
             {
-                Index = 233,
+                Index = 0,
                 LibraryFile = LibraryFile.Interface,
                 Parent = this,
                 Location = new Point(0, 0)
@@ -496,7 +498,7 @@ namespace Client.Scenes.Views
 
             if (Pressed)
             {
-                PlayerLocation = Math.Min(PlayerLocation + MovementSpeed, FishMaxCurrent);
+                PlayerLocation = Math.Min(PlayerLocation + MovementSpeed, FishMaxTotal);
             }
             else
             {
@@ -525,7 +527,7 @@ namespace Client.Scenes.Views
 
             if (FishDirectionRight)
             {
-                FishLocation = Math.Min(FishLocation + MovementSpeed, FishMaxCurrent);
+                FishLocation = Math.Min(FishLocation + MovementSpeed, FishMaxTotal);
             }
             else
             {
@@ -557,8 +559,25 @@ namespace Client.Scenes.Views
 
             if (!AutoCastCheckBox.Enabled)
                 AutoCastCheckBox.Checked = false;
+
+            var movingPointerImage = GetMovingPointerImage();
+
+            MovingPointer.Index = movingPointerImage.Index;
+            MovingPointer.LibraryFile = movingPointerImage.File;
         }
 
+        public (int Index, LibraryFile File) GetMovingPointerImage()
+        {
+            if (FishAsBar)
+            {
+                return (233, LibraryFile.Interface);
+            }
+            else
+            {
+                //Change icon to show as fish?
+                return (233, LibraryFile.Interface);
+            }
+        }
 
         #region IDisposable
 
