@@ -689,6 +689,8 @@ namespace Server.DBModels
             buff.TickFrequency = TimeSpan.FromMinutes(1);
             buff.Stats = new Stats { [Stat.AvailableHuntGoldCap] = 15 };
             buff.RemainingTime = TimeSpan.MaxValue;
+
+            AddDefaultCurrencies();
         }
         protected override void OnLoaded()
         {
