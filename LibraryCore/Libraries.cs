@@ -128,8 +128,8 @@ namespace Library
             [LibraryFile.M_WeaponAOH2] = @"Data\M-WeaponAOH2.Zl",
             [LibraryFile.M_WeaponAOH3] = @"Data\M-WeaponAOH3.Zl",
             [LibraryFile.M_WeaponAOH4] = @"Data\M-WeaponAOH4.Zl",
-            [LibraryFile.M_WeaponAOH5] = @"Data\WM-WeaponAOH5.Zl",
-            [LibraryFile.M_WeaponAOH6] = @"Data\WM-WeaponAOH6.Zl",
+            [LibraryFile.M_WeaponAOH5] = @"Data\M-WeaponAOH5.Zl",
+            [LibraryFile.M_WeaponAOH6] = @"Data\M-WeaponAOH6.Zl",
 
 
             [LibraryFile.WM_WeaponADL1] = @"Data\WM-WeaponADL1.Zl",
@@ -143,8 +143,8 @@ namespace Library
             [LibraryFile.WM_WeaponAOH2] = @"Data\WM-WeaponAOH2.Zl",
             [LibraryFile.WM_WeaponAOH3] = @"Data\WM-WeaponAOH3.Zl",
             [LibraryFile.WM_WeaponAOH4] = @"Data\WM-WeaponAOH4.Zl",
-            [LibraryFile.WM_WeaponAOH5] = @"Data\WWM-WeaponAOH5.Zl",
-            [LibraryFile.WM_WeaponAOH6] = @"Data\WWM-WeaponAOH6.Zl",
+            [LibraryFile.WM_WeaponAOH5] = @"Data\WM-WeaponAOH5.Zl",
+            [LibraryFile.WM_WeaponAOH6] = @"Data\WM-WeaponAOH6.Zl",
 
 
             [LibraryFile.M_Helmet1] = @"Data\M-Helmet1.Zl",
