@@ -23,7 +23,8 @@ namespace Library
             [LibraryFile.NPC] = @"Data\NPC.Zl",
             [LibraryFile.GameInter2] = @"Data\GameInter2.Zl",
             [LibraryFile.MiniMap] = @"Data\MiniMap.Zl",
-            
+            [LibraryFile.Fmmap] = @"Data\Fmmap.Zl",
+
             [LibraryFile.MagicIcon] = @"Data\MIcon.Zl",
             [LibraryFile.CBIcon] = @"Data\CBIcons.Zl",
             [LibraryFile.QuestIcon] = @"Data\QuestIcons.Zl",
@@ -71,6 +72,7 @@ namespace Library
             [LibraryFile.WM_HairA] = @"Data\WM-HairA.Zl",
 
             [LibraryFile.Horse] = @"Data\Horse.Zl",
+            [LibraryFile.HorseS] = @"Data\HorseS.Zl",
             [LibraryFile.HorseIron] = @"Data\Horse_Iron.Zl",
             [LibraryFile.HorseSilver] = @"Data\Horse_Silver.Zl",
             [LibraryFile.HorseGold] = @"Data\Horse_Golden.Zl",
@@ -436,6 +438,7 @@ namespace Library
         Ground,
         NPC,
         MiniMap,
+        Fmmap,
         MagicIcon,
         CBIcon,
         QuestIcon,
@@ -481,6 +484,7 @@ namespace Library
         WM_HairA,
 
         Horse,
+        HorseS,
 
         HorseIron,
         HorseSilver,
