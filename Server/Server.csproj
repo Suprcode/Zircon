@@ -63,8 +63,8 @@
     <Reference Include="DevExpress.XtraTreeList.v21.2">
       <HintPath>..\Components\DevExpress\DevExpress.XtraTreeList.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="SlimDX">
-      <HintPath>..\..\Debug\Server\SlimDX.dll</HintPath>
+    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64">
+      <HintPath>..\Components\SlimDX.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
