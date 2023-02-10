@@ -739,6 +739,11 @@ namespace Server.DBModels
             }
         }
 
+        public bool IsAdmin(bool includeTemp = false)
+        {
+            return Admin || (includeTemp && TempAdmin);
+        }
+
         public int HighestLevel()
         {
             int count = 0;
