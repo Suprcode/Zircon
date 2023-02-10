@@ -1407,8 +1407,13 @@ namespace Server.Models
         {
             if (info.Type == BuffType.TheNewBeginning)
             {
-                Buffs.FirstOrDefault(x => x.Type == info.Type).Stats[Stat.TheNewBeginning] --;
-                RefreshStats();
+                var buff = Buffs.SingleOrDefault(x => x.Type == info.Type);
+
+                if (buff != null)
+                {
+                    buff.Stats[Stat.TheNewBeginning]--;
+                    RefreshStats();
+                }
             }
         }
         public virtual void BuffRemove(BuffInfo info)

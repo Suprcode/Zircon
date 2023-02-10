@@ -16443,8 +16443,7 @@ namespace Server.Models
 
                         if (buff != null && Magics.TryGetValue(MagicType.TheNewBeginning, out augMagic) && Level >= augMagic.Info.NeedLevel1)
                         {
-
-                            for(int i =0; i <= buff.Stats[Stat.TheNewBeginning]; i++)
+                            for(int i = 0; i <= buff.Stats[Stat.TheNewBeginning]; i++)
                             {
                                 power += 80;
                             }  
@@ -16457,8 +16456,7 @@ namespace Server.Models
                             else
                             {
                                 BuffRemove(buff);
-                            }
-                            
+                            }                
 
                             LevelMagic(augMagic);
                         }
