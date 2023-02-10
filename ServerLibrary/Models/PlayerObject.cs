@@ -4019,7 +4019,7 @@ namespace Server.Models
                 item = fromArray[link.Slot];
 
                 if (item == null || link.Count > item.Count) return;
-                if (((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound || !item.Info.CanTrade) && !account.Admin && !Character.Account.Admin) return;
+                if (((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound || !item.Info.CanTrade) && !account.Admin && !Character.Account.TempAdmin) return;
                 if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
                 //Success
             }
@@ -9114,7 +9114,7 @@ namespace Server.Models
 
             UserItem fromItem = fromArray[cell.Slot];
 
-            if (fromItem == null || cell.Count > fromItem.Count || (!TradePartner.Character.Account.Admin && !Character.Account.Admin && ((fromItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound || !fromItem.Info.CanTrade))) return;
+            if (fromItem == null || cell.Count > fromItem.Count || (!TradePartner.Character.Account.Admin && !Character.Account.TempAdmin && ((fromItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound || !fromItem.Info.CanTrade))) return;
             if ((fromItem.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
 
             if (TradeItems.ContainsKey(fromItem)) return;
@@ -15378,15 +15378,6 @@ namespace Server.Models
                     ob = null;
 
                     magics = new List<UserMagic> { magic };
-                    /*   buff = Buffs.FirstOrDefault(x => x.Type == BuffType.TheNewBeginning);
-
-                        if (buff != null && Magics.TryGetValue(MagicType.TheNewBeginning, out augMagic) && Level >= augMagic.Info.NeedLevel1)
-                        {
-                            BuffRemove(buff);
-                            magics.Add(augMagic);
-                            if (buff.Stats[Stat.TheNewBeginning] > 1)
-                                BuffAdd(BuffType.TheNewBeginning, TimeSpan.FromMinutes(1), new Stats { [Stat.TheNewBeginning] = buff.Stats[Stat.TheNewBeginning] - 1 }, false, false, TimeSpan.Zero);
-                        }*/
 
                     for (int i = 1; i <= 2; i++)
                     {
@@ -16446,24 +16437,35 @@ namespace Server.Models
                         element = Element.None;
                         power = GetDC() * magic.GetPower() / 100;
 
-                        /* 
-                           BuffInfo buff = Buffs.FirstOrDefault(x => x.Type == BuffType.TheNewBeginning);
-                           UserMagic augMagic;
 
-                           if (buff != null && Magics.TryGetValue(MagicType.TheNewBeginning, out augMagic) && Level >= augMagic.Info.NeedLevel1)
-                           {
-                               power *= 2;
-                               LevelMagic(augMagic);
-                               BuffRemove(buff);
-                               if (buff.Stats[Stat.TheNewBeginning] > 1)
-                                   BuffAdd(BuffType.TheNewBeginning, TimeSpan.FromMinutes(1), new Stats { [Stat.TheNewBeginning] = buff.Stats[Stat.TheNewBeginning] - 1 }, false, false, TimeSpan.Zero);
-                           }*/
+                        BuffInfo buff = Buffs.FirstOrDefault(x => x.Type == BuffType.TheNewBeginning);
+                        UserMagic augMagic;
+
+                        if (buff != null && Magics.TryGetValue(MagicType.TheNewBeginning, out augMagic) && Level >= augMagic.Info.NeedLevel1)
+                        {
+
+                            for(int i =0; i <= buff.Stats[Stat.TheNewBeginning]; i++)
+                            {
+                                power += 80;
+                            }  
+
+                            if (buff.Stats[Stat.TheNewBeginning] > 1)
+                            {
+                                DecreaseBuffCharge(buff);
+                                Enqueue(new S.BuffChanged { Index = buff.Index, Stats = buff.Stats });
+                            }
+                            else
+                            {
+                                BuffRemove(buff);
+                            }
+                            
+
+                            LevelMagic(augMagic);
+                        }
 
                         ob.Broadcast(new S.ObjectEffect { ObjectID = ob.ObjectID, Effect = Effect.FlashOfLight });
                         break;
-                    /*case MagicType.TheNewBeginning:
-                        power += 2;
-                        break;*/
+
                     case MagicType.ElementalPuppet:
                         if (stats.Count == 0) break;
 

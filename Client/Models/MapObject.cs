@@ -3647,12 +3647,11 @@ namespace Client.Models
                         #region The New Beginning
 
                         case MagicType.TheNewBeginning:
-                            Effects.Add(spell = new MirEffect(2300, 9, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 60, 60, Globals.NoneColour)
+                            Effects.Add(spell = new MirEffect(2200, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 60, 60, Globals.NoneColour)
                             {
                                 Blend = true,
-                                Target = this,
-                                Direction = action.Direction
-                            });
+                                MapTarget = CurrentLocation              
+                            }) ;
                             DXSoundManager.Play(SoundIndex.TheNewBeginning);
                             break;
 

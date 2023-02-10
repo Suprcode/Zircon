@@ -1402,6 +1402,15 @@ namespace Server.Models
 
             return info;
         }
+
+        public virtual void DecreaseBuffCharge(BuffInfo info)
+        {
+            if (info.Type == BuffType.TheNewBeginning)
+            {
+                Buffs.FirstOrDefault(x => x.Type == info.Type).Stats[Stat.TheNewBeginning] --;
+                RefreshStats();
+            }
+        }
         public virtual void BuffRemove(BuffInfo info)
         {
             if (info.Visible)
