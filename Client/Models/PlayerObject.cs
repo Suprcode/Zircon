@@ -256,7 +256,7 @@ namespace Client.Models
             CharacterIndex = info.Index;
 
             ObjectID = info.ObjectID;
-
+            Caption = info.Caption;
             Name = info.Name;
             NameColour = info.NameColour;
 

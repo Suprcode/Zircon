@@ -28,6 +28,12 @@ namespace Server.Models
             get { return Character.CharacterName; }
             set { Character.CharacterName = value; }
         }
+        
+        public string Caption
+        {
+            get { return Character.Caption; }
+            set { Character.Caption = value; }
+        }
         public override int Level
         {
             get { return Character.Level; }
@@ -8452,6 +8458,53 @@ namespace Server.Models
 
             SendChangeUpdate();
         }
+
+        public void CaptionChange(string newCaption)
+        {
+            int index = 0;
+            UserItem item = null;
+
+            for (int i = 0; i < Inventory.Length; i++)
+            {
+                if (Inventory[i] == null || Inventory[i].Info.Effect != ItemEffect.Caption) continue;
+
+                if (!CanUseItem(Inventory[i])) continue;
+
+                index = i;
+                item = Inventory[i];
+                break;
+            }
+
+            if (item == null) return;
+
+            S.ItemChanged result = new S.ItemChanged
+            {
+                Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = index },
+                Success = true
+            };
+            Enqueue(result);
+
+            if (item.Count > 1)
+            {
+                item.Count--;
+                result.Link.Count = item.Count;
+            }
+            else
+            {
+                RemoveItem(item);
+                Inventory[index] = null;
+                item.Delete();
+
+                result.Link.Count = 0;
+            }
+            Character.Caption = newCaption;
+            Caption = newCaption;
+            SEnvir.Log($"[NAME CHANGED] caption changed to: {Caption}", true);
+            Connection.ReceiveChat($"Your caption changed to: {Caption}.", MessageType.System);
+
+
+            SendChangeUpdate();
+        }
         public void NameChange(string newName)
         {
             if (!Globals.CharacterReg.IsMatch(newName))
@@ -15339,8 +15392,9 @@ namespace Server.Models
                         SEnvir.Now.AddMilliseconds(500),
                         ActionType.DelayMagic,
                         new List<UserMagic> { magic }));
-                    break;
+                    break; 
                 case MagicType.SummonPuppet:
+                case MagicType.ChangeOfSeasons:
                 case MagicType.Evasion:
                 case MagicType.RagingWind:
                     ob = null;
@@ -15438,7 +15492,6 @@ namespace Server.Models
                 case MagicType.Evasion:
                 case MagicType.RagingWind:
                 case MagicType.DarkConversion:
-                case MagicType.ChangeOfSeasons:
                 case MagicType.TheNewBeginning:
                 case MagicType.Transparency:
                     break;
@@ -19857,6 +19910,7 @@ namespace Server.Models
                 Index = Character.Index,
                 ObjectID = ObjectID,
                 Name = Name,
+                Caption = Caption,
                 GuildName = Character.Account.GuildMember?.Guild.GuildName,
                 GuildRank = Character.Account.GuildMember?.Rank,
                 NameColour = NameColour,
@@ -19949,6 +20003,7 @@ namespace Server.Models
 
                 ObjectID = ObjectID,
                 Name = Name,
+                Caption = Character.Caption,
                 GuildName = Character.Account.GuildMember?.Guild.GuildName,
                 NameColour = NameColour,
                 Location = CurrentLocation,
@@ -20041,7 +20096,7 @@ namespace Server.Models
                 ObjectID = ObjectID,
 
                 Name = Name,
-
+                Caption = Caption,
                 Gender = Gender,
                 HairType = HairType,
                 HairColour = HairColour,

@@ -1640,6 +1640,9 @@ namespace Client.Controls
 
                             GameScene.Game.EditCharacterBox.CharacterNameTextBox.TextBox.Text = GameScene.Game.User.Name;
                             break;
+                        case ItemEffect.Caption:
+                            GameScene.Game.CaptionBox.Visible = true;
+                            break;
                         case ItemEffect.FortuneChecker:
                             GameScene.Game.FortuneCheckerBox.Visible = true;
                             break;

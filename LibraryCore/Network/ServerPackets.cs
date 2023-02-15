@@ -263,8 +263,8 @@ namespace Library.Network.ServerPackets
     public sealed class ObjectPlayer : Packet
     {
         public int Index { get; set; }
-
         public uint ObjectID { get; set; }
+        public string Caption { get; set; }
         public string Name { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
@@ -1140,7 +1140,6 @@ namespace Library.Network.ServerPackets
         public Point CurrentLocation { get; set; }
 
         public string Name { get; set; }
-
         public int Health { get; set; }
         public int Mana { get; set; }
         public bool Dead { get; set; }
@@ -1232,6 +1231,7 @@ namespace Library.Network.ServerPackets
 
         public uint ObjectID { get; set; }
         public string Name { get; set; }
+        public string Caption { get; set; }
         public MirGender Gender { get; set; }
         public int HairType { get; set; }
 

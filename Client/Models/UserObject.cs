@@ -40,7 +40,7 @@ namespace Client.Models
             set
             {
                 if (_HermitStats == value) return;
-                
+
                 _HermitStats = value;
 
                 GameScene.Game.StatsChanged();
@@ -91,10 +91,10 @@ namespace Client.Models
         }
         private decimal _Experience;
         #endregion
-        
+
         #region MaxExperience
         public decimal MaxExperience
-        { 
+        {
             get { return _MaxExperience; }
             set
             {
@@ -196,7 +196,7 @@ namespace Client.Models
             set
             {
                 if (_InSafeZone == value) return;
-                
+
                 _InSafeZone = value;
 
                 GameScene.Game.SafeZoneChanged();
@@ -207,7 +207,7 @@ namespace Client.Models
         public int HermitPoints;
 
         public List<ClientBuffInfo> Buffs = new List<ClientBuffInfo>();
-        
+
         public Dictionary<MagicInfo, ClientUserMagic> Magics = new Dictionary<MagicInfo, ClientUserMagic>();
 
         public DateTime NextActionTime, ServerTime, AttackTime, NextRunTime, NextMagicTime, BuffTime = CEnvir.Now, LotusTime, CombatTime, MoveTime;
@@ -224,7 +224,7 @@ namespace Client.Models
             set
             {
                 if (_canThrusting == value) return;
-                
+
                 _canThrusting = value;
 
                 GameScene.Game.ReceiveChat(CanThrusting ? "Use Thrusting." : "Do not use Thrusting.", MessageType.Hint);
@@ -281,6 +281,7 @@ namespace Client.Models
             ObjectID = info.ObjectID;
 
             Name = info.Name;
+            Caption = info.Caption;
             NameColour = info.NameColour;
 
             Class = info.Class;

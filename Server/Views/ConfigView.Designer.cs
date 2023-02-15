@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigView));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
             this.ReloadButton = new DevExpress.XtraBars.BarButtonItem();
@@ -225,8 +227,12 @@
             this.labelControl56 = new DevExpress.XtraEditors.LabelControl();
             this.ExperienceRateEdit = new DevExpress.XtraEditors.TextEdit();
             this.labelControl55 = new DevExpress.XtraEditors.LabelControl();
+            this.xtraTabPage10 = new DevExpress.XtraTab.XtraTabPage();
+            this.CharCaptionGridView = new System.Windows.Forms.DataGridView();
             this.OpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.FolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.CharacterName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Caption = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
             this.xtraTabControl1.SuspendLayout();
@@ -328,6 +334,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.GoldRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DropRateEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ExperienceRateEdit.Properties)).BeginInit();
+            this.xtraTabPage10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CharCaptionGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // ribbon
@@ -335,6 +343,7 @@
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
+            this.ribbon.SearchEditItem,
             this.SaveButton,
             this.ReloadButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
@@ -342,7 +351,7 @@
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(769, 144);
+            this.ribbon.Size = new System.Drawing.Size(769, 158);
             // 
             // SaveButton
             // 
@@ -372,19 +381,17 @@
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
-            this.ribbonPageGroup1.ItemLinks.Add(this.ReloadButton);
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Actions";
             // 
             // xtraTabControl1
             // 
             this.xtraTabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.xtraTabControl1.Location = new System.Drawing.Point(0, 144);
+            this.xtraTabControl1.Location = new System.Drawing.Point(0, 158);
             this.xtraTabControl1.Name = "xtraTabControl1";
             this.xtraTabControl1.SelectedTabPage = this.xtraTabPage1;
-            this.xtraTabControl1.Size = new System.Drawing.Size(769, 420);
+            this.xtraTabControl1.Size = new System.Drawing.Size(769, 406);
             this.xtraTabControl1.TabIndex = 2;
             this.xtraTabControl1.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
             this.xtraTabPage1,
@@ -395,7 +402,8 @@
             this.xtraTabPage6,
             this.xtraTabPage7,
             this.xtraTabPage8,
-            this.xtraTabPage9});
+            this.xtraTabPage9,
+            this.xtraTabPage10});
             // 
             // xtraTabPage1
             // 
@@ -416,7 +424,7 @@
             this.xtraTabPage1.Controls.Add(this.IPAddressEdit);
             this.xtraTabPage1.Controls.Add(this.labelControl1);
             this.xtraTabPage1.Name = "xtraTabPage1";
-            this.xtraTabPage1.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage1.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage1.Text = "Network";
             // 
             // PacketBanTimeEdit
@@ -618,7 +626,7 @@
             this.xtraTabPage2.Controls.Add(this.labelControl7);
             this.xtraTabPage2.Controls.Add(this.AllowNewAccountEdit);
             this.xtraTabPage2.Name = "xtraTabPage2";
-            this.xtraTabPage2.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage2.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage2.Text = "Control";
             // 
             // labelControl16
@@ -635,7 +643,7 @@
             this.AllowRequestActivationEdit.MenuManager = this.ribbon;
             this.AllowRequestActivationEdit.Name = "AllowRequestActivationEdit";
             this.AllowRequestActivationEdit.Properties.Caption = "";
-            this.AllowRequestActivationEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowRequestActivationEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowRequestActivationEdit.TabIndex = 94;
             // 
             // labelControl22
@@ -652,7 +660,7 @@
             this.AllowWebActivationEdit.MenuManager = this.ribbon;
             this.AllowWebActivationEdit.Name = "AllowWebActivationEdit";
             this.AllowWebActivationEdit.Properties.Caption = "";
-            this.AllowWebActivationEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowWebActivationEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowWebActivationEdit.TabIndex = 92;
             // 
             // labelControl17
@@ -669,7 +677,7 @@
             this.AllowManualActivationEdit.MenuManager = this.ribbon;
             this.AllowManualActivationEdit.Name = "AllowManualActivationEdit";
             this.AllowManualActivationEdit.Properties.Caption = "";
-            this.AllowManualActivationEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowManualActivationEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowManualActivationEdit.TabIndex = 90;
             // 
             // labelControl18
@@ -686,7 +694,7 @@
             this.AllowDeleteAccountEdit.MenuManager = this.ribbon;
             this.AllowDeleteAccountEdit.Name = "AllowDeleteAccountEdit";
             this.AllowDeleteAccountEdit.Properties.Caption = "";
-            this.AllowDeleteAccountEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowDeleteAccountEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowDeleteAccountEdit.TabIndex = 88;
             // 
             // labelControl19
@@ -703,7 +711,7 @@
             this.AllowManualResetPasswordEdit.MenuManager = this.ribbon;
             this.AllowManualResetPasswordEdit.Name = "AllowManualResetPasswordEdit";
             this.AllowManualResetPasswordEdit.Properties.Caption = "";
-            this.AllowManualResetPasswordEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowManualResetPasswordEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowManualResetPasswordEdit.TabIndex = 86;
             // 
             // labelControl20
@@ -720,7 +728,7 @@
             this.AllowWebResetPasswordEdit.MenuManager = this.ribbon;
             this.AllowWebResetPasswordEdit.Name = "AllowWebResetPasswordEdit";
             this.AllowWebResetPasswordEdit.Properties.Caption = "";
-            this.AllowWebResetPasswordEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowWebResetPasswordEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowWebResetPasswordEdit.TabIndex = 84;
             // 
             // labelControl21
@@ -737,7 +745,7 @@
             this.AllowRequestPasswordResetEdit.MenuManager = this.ribbon;
             this.AllowRequestPasswordResetEdit.Name = "AllowRequestPasswordResetEdit";
             this.AllowRequestPasswordResetEdit.Properties.Caption = "";
-            this.AllowRequestPasswordResetEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowRequestPasswordResetEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowRequestPasswordResetEdit.TabIndex = 82;
             // 
             // labelControl40
@@ -754,7 +762,7 @@
             this.AllowWizardEdit.MenuManager = this.ribbon;
             this.AllowWizardEdit.Name = "AllowWizardEdit";
             this.AllowWizardEdit.Properties.Caption = "";
-            this.AllowWizardEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowWizardEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowWizardEdit.TabIndex = 80;
             // 
             // labelControl39
@@ -771,7 +779,7 @@
             this.AllowTaoistEdit.MenuManager = this.ribbon;
             this.AllowTaoistEdit.Name = "AllowTaoistEdit";
             this.AllowTaoistEdit.Properties.Caption = "";
-            this.AllowTaoistEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowTaoistEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowTaoistEdit.TabIndex = 78;
             // 
             // labelControl38
@@ -788,7 +796,7 @@
             this.AllowAssassinEdit.MenuManager = this.ribbon;
             this.AllowAssassinEdit.Name = "AllowAssassinEdit";
             this.AllowAssassinEdit.Properties.Caption = "";
-            this.AllowAssassinEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowAssassinEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowAssassinEdit.TabIndex = 76;
             // 
             // labelControl36
@@ -805,7 +813,7 @@
             this.AllowWarriorEdit.MenuManager = this.ribbon;
             this.AllowWarriorEdit.Name = "AllowWarriorEdit";
             this.AllowWarriorEdit.Properties.Caption = "";
-            this.AllowWarriorEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowWarriorEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowWarriorEdit.TabIndex = 72;
             // 
             // labelControl15
@@ -843,7 +851,7 @@
             this.AllowStartGameEdit.MenuManager = this.ribbon;
             this.AllowStartGameEdit.Name = "AllowStartGameEdit";
             this.AllowStartGameEdit.Properties.Caption = "";
-            this.AllowStartGameEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowStartGameEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowStartGameEdit.TabIndex = 68;
             // 
             // labelControl12
@@ -860,7 +868,7 @@
             this.AllowDeleteCharacterEdit.MenuManager = this.ribbon;
             this.AllowDeleteCharacterEdit.Name = "AllowDeleteCharacterEdit";
             this.AllowDeleteCharacterEdit.Properties.Caption = "";
-            this.AllowDeleteCharacterEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowDeleteCharacterEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowDeleteCharacterEdit.TabIndex = 66;
             // 
             // labelControl11
@@ -877,7 +885,7 @@
             this.AllowNewCharacterEdit.MenuManager = this.ribbon;
             this.AllowNewCharacterEdit.Name = "AllowNewCharacterEdit";
             this.AllowNewCharacterEdit.Properties.Caption = "";
-            this.AllowNewCharacterEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowNewCharacterEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowNewCharacterEdit.TabIndex = 64;
             // 
             // labelControl9
@@ -894,7 +902,7 @@
             this.AllowLoginEdit.MenuManager = this.ribbon;
             this.AllowLoginEdit.Name = "AllowLoginEdit";
             this.AllowLoginEdit.Properties.Caption = "";
-            this.AllowLoginEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowLoginEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowLoginEdit.TabIndex = 62;
             // 
             // labelControl8
@@ -911,7 +919,7 @@
             this.AllowChangePasswordEdit.MenuManager = this.ribbon;
             this.AllowChangePasswordEdit.Name = "AllowChangePasswordEdit";
             this.AllowChangePasswordEdit.Properties.Caption = "";
-            this.AllowChangePasswordEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowChangePasswordEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowChangePasswordEdit.TabIndex = 60;
             // 
             // labelControl7
@@ -928,7 +936,7 @@
             this.AllowNewAccountEdit.MenuManager = this.ribbon;
             this.AllowNewAccountEdit.Name = "AllowNewAccountEdit";
             this.AllowNewAccountEdit.Properties.Caption = "";
-            this.AllowNewAccountEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowNewAccountEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowNewAccountEdit.TabIndex = 58;
             // 
             // xtraTabPage3
@@ -951,7 +959,7 @@
             this.xtraTabPage3.Controls.Add(this.labelControl4);
             this.xtraTabPage3.Controls.Add(this.CheckVersionEdit);
             this.xtraTabPage3.Name = "xtraTabPage3";
-            this.xtraTabPage3.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage3.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage3.Text = "System";
             // 
             // RabbitEventEndEdit
@@ -1116,7 +1124,7 @@
             this.CheckVersionEdit.MenuManager = this.ribbon;
             this.CheckVersionEdit.Name = "CheckVersionEdit";
             this.CheckVersionEdit.Properties.Caption = "";
-            this.CheckVersionEdit.Size = new System.Drawing.Size(100, 19);
+            this.CheckVersionEdit.Size = new System.Drawing.Size(100, 20);
             this.CheckVersionEdit.TabIndex = 22;
             // 
             // xtraTabPage4
@@ -1136,7 +1144,7 @@
             this.xtraTabPage4.Controls.Add(this.MailServerEdit);
             this.xtraTabPage4.Controls.Add(this.labelControl26);
             this.xtraTabPage4.Name = "xtraTabPage4";
-            this.xtraTabPage4.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage4.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage4.Text = "Mail";
             // 
             // MailDisplayNameEdit
@@ -1226,7 +1234,7 @@
             this.MailUseSSLEdit.MenuManager = this.ribbon;
             this.MailUseSSLEdit.Name = "MailUseSSLEdit";
             this.MailUseSSLEdit.Properties.Caption = "";
-            this.MailUseSSLEdit.Size = new System.Drawing.Size(100, 19);
+            this.MailUseSSLEdit.Size = new System.Drawing.Size(100, 20);
             this.MailUseSSLEdit.TabIndex = 62;
             // 
             // labelControl25
@@ -1299,7 +1307,7 @@
             this.xtraTabPage5.Controls.Add(this.WebPrefixEdit);
             this.xtraTabPage5.Controls.Add(this.labelControl42);
             this.xtraTabPage5.Name = "xtraTabPage5";
-            this.xtraTabPage5.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage5.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage5.Text = "Web Server";
             // 
             // labelControl81
@@ -1316,7 +1324,7 @@
             this.AllowBuyGameGoldEdit.MenuManager = this.ribbon;
             this.AllowBuyGameGoldEdit.Name = "AllowBuyGameGoldEdit";
             this.AllowBuyGameGoldEdit.Properties.Caption = "";
-            this.AllowBuyGameGoldEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowBuyGameGoldEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowBuyGameGoldEdit.TabIndex = 100;
             // 
             // labelControl80
@@ -1333,7 +1341,7 @@
             this.ProcessGameGoldEdit.MenuManager = this.ribbon;
             this.ProcessGameGoldEdit.Name = "ProcessGameGoldEdit";
             this.ProcessGameGoldEdit.Properties.Caption = "";
-            this.ProcessGameGoldEdit.Size = new System.Drawing.Size(100, 19);
+            this.ProcessGameGoldEdit.Size = new System.Drawing.Size(100, 20);
             this.ProcessGameGoldEdit.TabIndex = 98;
             // 
             // ReceiverEMailEdit
@@ -1586,7 +1594,7 @@
             this.xtraTabPage6.Controls.Add(this.MaxViewRangeEdit);
             this.xtraTabPage6.Controls.Add(this.labelControl23);
             this.xtraTabPage6.Name = "xtraTabPage6";
-            this.xtraTabPage6.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage6.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage6.Text = "Players";
             // 
             // labelControl69
@@ -1750,7 +1758,7 @@
             this.AllowObservationEdit.MenuManager = this.ribbon;
             this.AllowObservationEdit.Name = "AllowObservationEdit";
             this.AllowObservationEdit.Properties.Caption = "";
-            this.AllowObservationEdit.Size = new System.Drawing.Size(100, 19);
+            this.AllowObservationEdit.Size = new System.Drawing.Size(100, 20);
             this.AllowObservationEdit.TabIndex = 82;
             // 
             // SkillExpEdit
@@ -1890,7 +1898,7 @@
             this.xtraTabPage7.Controls.Add(this.labelControl47);
             this.xtraTabPage7.Controls.Add(this.DeadDurationEdit);
             this.xtraTabPage7.Name = "xtraTabPage7";
-            this.xtraTabPage7.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage7.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage7.Text = "Monsters";
             // 
             // LairRegionIndexEdit
@@ -2014,7 +2022,7 @@
             this.xtraTabPage8.Controls.Add(this.labelControl48);
             this.xtraTabPage8.Controls.Add(this.DropDurationEdit);
             this.xtraTabPage8.Name = "xtraTabPage8";
-            this.xtraTabPage8.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage8.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage8.Text = "Items";
             // 
             // StrengthLossRateEdit
@@ -2282,7 +2290,7 @@
             this.xtraTabPage9.Controls.Add(this.ExperienceRateEdit);
             this.xtraTabPage9.Controls.Add(this.labelControl55);
             this.xtraTabPage9.Name = "xtraTabPage9";
-            this.xtraTabPage9.Size = new System.Drawing.Size(763, 392);
+            this.xtraTabPage9.Size = new System.Drawing.Size(767, 381);
             this.xtraTabPage9.Text = "Rates";
             // 
             // CompanionRateEdit
@@ -2390,6 +2398,37 @@
             this.labelControl55.TabIndex = 80;
             this.labelControl55.Text = "Experience Rate:";
             // 
+            // xtraTabPage10
+            // 
+            this.xtraTabPage10.Appearance.PageClient.BackColor = System.Drawing.Color.White;
+            this.xtraTabPage10.Appearance.PageClient.Options.UseBackColor = true;
+            this.xtraTabPage10.Controls.Add(this.CharCaptionGridView);
+            this.xtraTabPage10.Name = "xtraTabPage10";
+            this.xtraTabPage10.Size = new System.Drawing.Size(767, 381);
+            this.xtraTabPage10.Text = "Players Caption";
+            // 
+            // CharCaptionGridView
+            // 
+            this.CharCaptionGridView.AllowUserToAddRows = false;
+            this.CharCaptionGridView.AllowUserToDeleteRows = false;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.CharCaptionGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.CharCaptionGridView.BackgroundColor = System.Drawing.Color.White;
+            this.CharCaptionGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.CharCaptionGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.CharCaptionGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.CharacterName,
+            this.Caption});
+            this.CharCaptionGridView.Cursor = System.Windows.Forms.Cursors.Default;
+            this.CharCaptionGridView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.CharCaptionGridView.Location = new System.Drawing.Point(0, 0);
+            this.CharCaptionGridView.Name = "CharCaptionGridView";
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.CharCaptionGridView.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            this.CharCaptionGridView.Size = new System.Drawing.Size(364, 381);
+            this.CharCaptionGridView.TabIndex = 0;
+            this.CharCaptionGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.CharCaptionGridView_CellEndEdit);
+            // 
             // OpenDialog
             // 
             this.OpenDialog.FileName = "Zircon.exe";
@@ -2398,6 +2437,22 @@
             // FolderDialog
             // 
             this.FolderDialog.SelectedPath = ".\\";
+            // 
+            // CharacterName
+            // 
+            this.CharacterName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.CharacterName.DataPropertyName = "CharacterName";
+            this.CharacterName.HeaderText = "Character";
+            this.CharacterName.Name = "CharacterName";
+            this.CharacterName.ReadOnly = true;
+            // 
+            // Caption
+            // 
+            this.Caption.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Caption.DataPropertyName = "Caption";
+            this.Caption.HeaderText = "Caption";
+            this.Caption.MaxInputLength = 40;
+            this.Caption.Name = "Caption";
             // 
             // ConfigView
             // 
@@ -2519,6 +2574,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.GoldRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DropRateEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ExperienceRateEdit.Properties)).EndInit();
+            this.xtraTabPage10.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.CharCaptionGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2724,5 +2781,9 @@
         private DevExpress.XtraEditors.LabelControl labelControl86;
         private DevExpress.XtraEditors.LabelControl labelControl87;
         private DevExpress.XtraEditors.TextEdit MaxPacketEdit;
+        private DevExpress.XtraTab.XtraTabPage xtraTabPage10;
+        private System.Windows.Forms.DataGridView CharCaptionGridView;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CharacterName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Caption;
     }
 }

@@ -147,6 +147,7 @@ namespace Client.Scenes
         public MainPanel MainPanel;
 
         public DXConfigWindow ConfigBox;
+        public CaptionDialog CaptionBox;
         public InventoryDialog InventoryBox;
         public CharacterDialog CharacterBox;
         public FilterDropDialog FilterDropBox;
@@ -408,6 +409,12 @@ namespace Client.Scenes
                 Visible = false,
             };
 
+            CaptionBox = new CaptionDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+
             CharacterBox = new CharacterDialog(false)
             {
                 Parent = this,
@@ -498,6 +505,7 @@ namespace Client.Scenes
             BuffBox = new BuffDialog
             {
                 Parent = this,
+                Visible = true,
             };
             StorageBox = new StorageDialog
             {
@@ -697,6 +705,8 @@ namespace Client.Scenes
 
             InventoryBox.Location = new Point(Size.Width - InventoryBox.Size.Width, MiniMapBox.Size.Height);
             
+            CaptionBox.Location = new Point((Size.Width - CaptionBox.Size.Width) / 2, (Size.Height - CaptionBox.Size.Height) / 2);
+
             CharacterBox.Location = Point.Empty;
 
             MapControl.Size = Size;

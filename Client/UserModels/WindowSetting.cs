@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MirDB;
 
 namespace Client.UserModels
@@ -156,6 +153,7 @@ namespace Client.UserModels
         InputWindow,
         FilterDropBox,
         CommunicationBox,
-        FishingBox
+        FishingBox,
+        CaptionBox,
     }
 }

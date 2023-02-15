@@ -42,6 +42,21 @@ namespace Server.DBModels
         }
         private string _CharacterName;
 
+        public string Caption
+        {
+            get { return _Caption; }
+            set
+            {
+                if (_Caption == value) return;
+
+                var oldValue = _Caption;
+                _Caption = value;
+
+                OnChanged(oldValue, value, "Caption");
+            }
+        }
+        private string _Caption;
+
         public MirClass Class
         {
             get { return _Class; }

@@ -106,6 +106,19 @@ namespace Client.Models
 
         public MirDirection Direction;
 
+        public virtual string Caption
+        {
+            get { return _Caption; }
+            set
+            {
+                if (_Caption == value) return;
+
+                _Caption = value;
+
+                NameChanged();
+            }
+        }
+        private string _Caption;
         public virtual string Name
         {
             get { return _Name; }
@@ -184,7 +197,7 @@ namespace Client.Models
         private Color _NameColour;
 
         public DateTime ChatTime;
-        public DXLabel NameLabel, ChatLabel, TitleNameLabel;
+        public DXLabel NameLabel, ChatLabel, TitleNameLabel, CaptionLabel;
         public List<DamageInfo> DamageList = new List<DamageInfo>();
         public List<MirEffect> Effects = new List<MirEffect>();
 
@@ -4059,6 +4072,7 @@ namespace Client.Models
 
         public virtual void NameChanged()
         {
+
             if (string.IsNullOrEmpty(Name))
             {
                 NameLabel = null;
@@ -4130,6 +4144,7 @@ namespace Client.Models
         }
         public virtual void DrawName()
         {
+
             if (NameLabel != null)
             {
                 int x = DrawX + (48 - NameLabel.Size.Width) / 2;
@@ -4157,7 +4172,39 @@ namespace Client.Models
                         }
                     }
                 }
+
                 NameLabel.Draw();
+            }
+
+            if (Race == ObjectType.Player)
+            {
+                CaptionLabel = new DXLabel
+                {
+                    BackColour = Color.Empty,
+                    ForeColour = NameColour,
+                    Outline = true,
+                    OutlineColour = Color.Black,
+                    Text = Caption,
+                    IsControl = false,
+                    IsVisible = true,
+            
+                };
+
+                int x = DrawX + (48 - CaptionLabel.Size.Width) / 2;
+                int y = (DrawY - (32 - CaptionLabel.Size.Height) / 2) - 13;
+
+                if (Dead)
+                    y += 21;
+                else
+                    y -= 6;
+
+                if (TitleNameLabel != null)
+                {
+                    y -= 13;
+                }
+
+                CaptionLabel.Location = new Point(x, y);
+                CaptionLabel.Draw();
             }
 
             if (TitleNameLabel != null)

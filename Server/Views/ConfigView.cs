@@ -1,11 +1,11 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Forms;
-using DevExpress.XtraBars;
+﻿using DevExpress.XtraBars;
 using Library;
 using Library.SystemModels;
 using Server.Envir;
-using Server.Models;
+using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows.Forms;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Views
@@ -19,6 +19,12 @@ namespace Server.Views
             this.DatabaseEncryptionButton.Click += DatabaseEncryptionButton_Click;
             MysteryShipRegionIndexEdit.Properties.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             LairRegionIndexEdit.Properties.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
+
+            CharCaptionGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            CharCaptionGridView.AutoGenerateColumns = false;
+
+            CharCaptionGridView.DataSource = SEnvir.CharacterInfoList?.Binding.
+                Where(x => !string.IsNullOrWhiteSpace(x.Caption)).ToList();
         }
 
         private void DatabaseEncryptionButton_Click(object sender, EventArgs e)
@@ -317,6 +323,34 @@ namespace Server.Views
             if (FolderDialog.ShowDialog() != DialogResult.OK) return;
 
             ClientPathEdit.EditValue = FolderDialog.SelectedPath;
+        }
+
+        private void CharCaptionGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            string caption = (string)CharCaptionGridView.CurrentCell.Value;
+            string character = (string)CharCaptionGridView.CurrentRow.Cells[0].Value;
+
+            if (caption != null)
+            {
+                var charInfo = SEnvir.CharacterInfoList.Binding
+                     .FirstOrDefault(x => x.CharacterName == character);
+
+                if (charInfo != null)
+                {
+                    charInfo.Caption = caption;
+                    SEnvir.CharacterInfoList.RaisePropertyChanges = true;
+                    CharCaptionGridView.Refresh();
+
+                    var activePlayer = SEnvir.Players.FirstOrDefault(x => x.Name == character);
+
+                    if (activePlayer != null)
+                    {
+                        activePlayer.SendChangeUpdate();
+                    }
+                }
+            }
+            CharCaptionGridView.RefreshEdit();
+
         }
     }
 }
