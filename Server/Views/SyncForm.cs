@@ -11,7 +11,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Windows.Forms;
 
 namespace Server.Views
@@ -27,14 +26,17 @@ namespace Server.Views
 
         private void btnSync_Click(object sender, EventArgs e)
         {
-            using (var wc = new WebClient())
+            //TODO!!
+
+            WebClient webClient = new WebClient();
+            using (var wc = webClient)
             {
                 SMain.Session.Save(true);
                 try
                 {
                     var content = File.ReadAllBytes(SMain.Session.SystemPath);
 
-                    wc.UploadData(txtRemoteIP.Text + $"?Type={WebServer.SystemDBSyncCommand}&Key={HttpUtility.UrlEncode(txtKey.Text)}", content);
+                    //wc.UploadData(txtRemoteIP.Text + $"?Type={WebServer.SystemDBSyncCommand}&Key={HttpUtility.UrlEncode(txtKey.Text)}", content);
 
                     MessageBox.Show("Syncronization completed", "Sync", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
