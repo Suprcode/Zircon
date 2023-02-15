@@ -4037,6 +4037,7 @@ namespace Client.Envir
                 Location = p.CurrentLocation,
 
                 Name = p.Name,
+
                 Health = p.Health,
                 MaxHealth = p.MaxHealth,
                 Dead = p.Dead,
