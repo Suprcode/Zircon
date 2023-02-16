@@ -800,7 +800,7 @@ namespace Server.Envir
 
                 if (p.ItemTypeFilter && info.Item.Info.ItemType != p.ItemType) continue;
 
-                switch (info.Item.Info.Effect)
+                switch (info.Item.Info.ItemEffect)
                 {
                     case ItemEffect.ItemPart:
                         if (!matches.Contains(info.Item.Stats[Stat.ItemIndex])) continue;

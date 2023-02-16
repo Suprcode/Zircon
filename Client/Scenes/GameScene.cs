@@ -1482,7 +1482,7 @@ namespace Client.Scenes
 
             ItemInfo displayInfo = MouseItem.Info;
 
-            if (MouseItem.Info.Effect == ItemEffect.ItemPart)
+            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
                 displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == MouseItem.AddedStats[Stat.ItemIndex]);
             
 
@@ -1494,7 +1494,7 @@ namespace Client.Scenes
                 Text = displayInfo.ItemName 
             };
 
-            if (MouseItem.Info.Effect == ItemEffect.ItemPart)
+            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
                 label.Text += " - [Part]";
             ItemLabel.Size = new Size(label.DisplayArea.Right + 4, label.DisplayArea.Bottom);
 
@@ -1558,7 +1558,7 @@ namespace Client.Scenes
             if (needSpacer)
                 ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
 
-            if (CEnvir.IsCurrencyItem(MouseItem.Info) || MouseItem.Info.Effect == ItemEffect.Experience)
+            if (CEnvir.IsCurrencyItem(MouseItem.Info) || MouseItem.Info.ItemEffect == ItemEffect.Experience)
             {
                 label = new DXLabel
                 {
@@ -1572,7 +1572,7 @@ namespace Client.Scenes
             }
 
 
-            if (MouseItem.Info.Effect == ItemEffect.ItemPart)
+            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
             {
                 label = new DXLabel
                 {
@@ -1600,7 +1600,7 @@ namespace Client.Scenes
             {
                 case ItemType.Consumable:
                 case ItemType.Scroll:
-                    if (MouseItem.Info.Effect == ItemEffect.StatExtractor || MouseItem.Info.Effect == ItemEffect.RefineExtractor)
+                    if (MouseItem.Info.ItemEffect == ItemEffect.StatExtractor || MouseItem.Info.ItemEffect == ItemEffect.RefineExtractor)
                         EquipmentItemInfo();
                     else
                         CreatePotionLabel();
@@ -2012,7 +2012,7 @@ namespace Client.Scenes
                     Text = displayInfo.Description,
                 };
 
-                if (displayInfo.Effect == ItemEffect.FootBallWhistle)
+                if (displayInfo.ItemEffect == ItemEffect.FootBallWhistle)
                     label.ForeColour = Color.Red;
 
                 ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
@@ -2076,7 +2076,7 @@ namespace Client.Scenes
                     Parent = ItemLabel,
                 };
 
-                DateTime value = MouseItem.Info.Effect == ItemEffect.PillOfReincarnation ? ReincarnationPillTime : ItemReviveTime;
+                DateTime value = MouseItem.Info.ItemEffect == ItemEffect.PillOfReincarnation ? ReincarnationPillTime : ItemReviveTime;
 
                 if (CEnvir.Now >= value)
                 {
@@ -2203,7 +2203,7 @@ namespace Client.Scenes
 
             ItemInfo displayInfo = MouseItem.Info;
 
-            if (MouseItem.Info.Effect == ItemEffect.ItemPart)
+            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
                 displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == MouseItem.AddedStats[Stat.ItemIndex]);
 
             stats.Add(displayInfo.Stats, displayInfo.ItemType != ItemType.Weapon);
@@ -3216,7 +3216,7 @@ namespace Client.Scenes
             {
                 ItemInfo info = SelectedCell.Item.Info;
 
-                if (info.Effect == ItemEffect.ItemPart)
+                if (info.ItemEffect == ItemEffect.ItemPart)
                     info = Globals.ItemInfoList.Binding.First(x => x.Index == SelectedCell.Item.AddedStats[Stat.ItemIndex]);
 
                 image = info.Image;
@@ -3288,7 +3288,7 @@ namespace Client.Scenes
         {
             foreach (ClientUserItem item in items)
             {
-                if (item.Info.Effect == ItemEffect.Experience) continue;
+                if (item.Info.ItemEffect == ItemEffect.Experience) continue;
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
                 var currency = User.GetCurrency(item.Info);
@@ -3346,7 +3346,7 @@ namespace Client.Scenes
         {
             foreach (ClientUserItem item in items)
             {
-                if (item.Info.Effect == ItemEffect.Experience) continue;
+                if (item.Info.ItemEffect == ItemEffect.Experience) continue;
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
                 var currency = User.GetCurrency(item.Info);
@@ -3525,7 +3525,7 @@ namespace Client.Scenes
                 case EquipmentSlot.Bait:
                 case EquipmentSlot.Finder:
                 case EquipmentSlot.Reel:
-                    if (Equipment[(int)EquipmentSlot.Weapon]?.Info.Effect != ItemEffect.FishingRod)
+                    if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod)
                     {
                         ReceiveChat($"Unable to hold {item.Info.ItemName}, must be holding fishing rod.", MessageType.System);
                         return false;

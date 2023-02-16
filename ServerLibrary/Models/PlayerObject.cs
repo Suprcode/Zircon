@@ -168,7 +168,7 @@ namespace Server.Models
 
         public bool HasFishingRobe
         {
-            get { return Equipment[(int)EquipmentSlot.Armour]?.Info.Effect == ItemEffect.FishingRobe; }
+            get { return Equipment[(int)EquipmentSlot.Armour]?.Info.ItemEffect == ItemEffect.FishingRobe; }
         }
 
         public PlayerObject(CharacterInfo info, SConnection con)
@@ -1695,7 +1695,7 @@ namespace Server.Models
 
             UserItem weapon = Equipment[(int)EquipmentSlot.Weapon];
 
-            if (weapon != null && weapon.Info.Effect != ItemEffect.PickAxe && (weapon.Flags & UserItemFlags.Refinable) != UserItemFlags.Refinable && (weapon.Flags & UserItemFlags.NonRefinable) != UserItemFlags.NonRefinable && weapon.Level < Globals.WeaponExperienceList.Count && rateEffected)
+            if (weapon != null && weapon.Info.ItemEffect != ItemEffect.PickAxe && (weapon.Flags & UserItemFlags.Refinable) != UserItemFlags.Refinable && (weapon.Flags & UserItemFlags.NonRefinable) != UserItemFlags.NonRefinable && weapon.Level < Globals.WeaponExperienceList.Count && rateEffected)
             {
                 weapon.Experience += amount / 10;
 
@@ -2720,7 +2720,7 @@ namespace Server.Models
 
             for (int i = 0; i < Inventory.Length; i++)
             {
-                if (Inventory[i] == null || Inventory[i].Info.Effect != ItemEffect.CompanionTicket) continue;
+                if (Inventory[i] == null || Inventory[i].Info.ItemEffect != ItemEffect.CompanionTicket) continue;
 
 
                 item = Inventory[i];
@@ -3653,7 +3653,7 @@ namespace Server.Models
 
             string itemName;
 
-            if (item.Info.Effect == ItemEffect.ItemPart)
+            if (item.Info.ItemEffect == ItemEffect.ItemPart)
                 itemName = SEnvir.ItemInfoList.Binding.First(x => x.Index == partIndex).ItemName + " - [Part]";
             else
                 itemName = item.Info.ItemName;
@@ -3884,7 +3884,7 @@ namespace Server.Models
                 bool result = false;
                 for (int i = 0; i < Inventory.Length; i++)
                 {
-                    if (Inventory[i] == null || Inventory[i].Info.Effect != ItemEffect.UmaKingHorn) continue;
+                    if (Inventory[i] == null || Inventory[i].Info.ItemEffect != ItemEffect.UmaKingHorn) continue;
 
                     result = true;
                     break;
@@ -3940,7 +3940,7 @@ namespace Server.Models
                 for (int i = 0; i < Inventory.Length; i++)
                 {
                     UserItem item = Inventory[i];
-                    if (Inventory[i] == null || Inventory[i].Info.Effect != ItemEffect.UmaKingHorn) continue;
+                    if (Inventory[i] == null || Inventory[i].Info.ItemEffect != ItemEffect.UmaKingHorn) continue;
 
                     if (item.Count > 1)
                     {
@@ -4894,7 +4894,7 @@ namespace Server.Models
                     continue;
                 }
 
-                if (check.Info.Effect == ItemEffect.Experience) continue;
+                if (check.Info.ItemEffect == ItemEffect.Experience) continue;
 
                 if (checkWeight)
                 {
@@ -4952,7 +4952,7 @@ namespace Server.Models
         }
         public void GainItem(params UserItem[] items)
         {
-            Enqueue(new S.ItemsGained { Items = items.Where(x => x.Info.Effect != ItemEffect.Experience).Select(x => x.ToClientInfo()).ToList() });
+            Enqueue(new S.ItemsGained { Items = items.Where(x => x.Info.ItemEffect != ItemEffect.Experience).Select(x => x.ToClientInfo()).ToList() });
 
             HashSet<UserQuest> changedQuests = new HashSet<UserQuest>();
 
@@ -4991,7 +4991,7 @@ namespace Server.Models
                     continue;
                 }
 
-                if (item.Info.Effect == ItemEffect.Experience)
+                if (item.Info.ItemEffect == ItemEffect.Experience)
                 {
                     GainExperience(item.Count, false);
                     item.IsTemporary = true;
@@ -5080,7 +5080,7 @@ namespace Server.Models
 
             if (item == null) return;
 
-            if (SEnvir.Now < AutoPotionTime && item.Info.Effect != ItemEffect.ElixirOfPurification)
+            if (SEnvir.Now < AutoPotionTime && item.Info.ItemEffect != ItemEffect.ElixirOfPurification)
             {
                 if (DelayItemUse != null)
                     Enqueue(new S.ItemChanged
@@ -5104,7 +5104,7 @@ namespace Server.Models
 
             if (!CanUseItem(item)) return;
 
-            if (Dead && item.Info.Effect != ItemEffect.PillOfReincarnation) return;
+            if (Dead && item.Info.ItemEffect != ItemEffect.PillOfReincarnation) return;
 
             int useCount = 1;
 
@@ -5114,7 +5114,7 @@ namespace Server.Models
             switch (item.Info.ItemType)
             {
                 case ItemType.Consumable:
-                    if ((SEnvir.Now < UseItemTime && item.Info.Effect != ItemEffect.ElixirOfPurification) || Horse != HorseType.None) return;
+                    if ((SEnvir.Now < UseItemTime && item.Info.ItemEffect != ItemEffect.ElixirOfPurification) || Horse != HorseType.None) return;
 
                     bool work;
                     bool hasSpace;
@@ -5550,7 +5550,7 @@ namespace Server.Models
                                 }
 
                                 //Give armour
-                                ItemInfo armourInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.Effect == ItemEffect.FootballArmour && CanStartWith(x));
+                                ItemInfo armourInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.FootballArmour && CanStartWith(x));
 
                                 if (armourInfo != null)
                                 {
@@ -5633,7 +5633,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Info.Effect == ItemEffect.SpiritBlade)
+                            if (weapon.Info.ItemEffect == ItemEffect.SpiritBlade)
                             {
                                 Connection.ReceiveChat($"You can not extract a {weapon.Info.ItemName}.", MessageType.System);
                                 return;
@@ -5668,7 +5668,7 @@ namespace Server.Models
                             }
 
                             //Give armour
-                            extractorInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.Effect == ItemEffect.StatExtractor);
+                            extractorInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.StatExtractor);
 
                             if (extractorInfo == null) return;
 
@@ -5704,7 +5704,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Info.Effect == ItemEffect.SpiritBlade)
+                            if (weapon.Info.ItemEffect == ItemEffect.SpiritBlade)
                             {
                                 Connection.ReceiveChat($"You can not apply to a {weapon.Info.ItemName}.", MessageType.System);
                                 return;
@@ -5792,7 +5792,7 @@ namespace Server.Models
                             }
 
                             //Give armour
-                            extractorInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.Effect == ItemEffect.RefineExtractor);
+                            extractorInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.RefineExtractor);
 
                             if (extractorInfo == null) return;
 
@@ -5860,7 +5860,7 @@ namespace Server.Models
                             break;
                     }
 
-                    if (item.Info.Effect != ItemEffect.ElixirOfPurification || UseItemTime < SEnvir.Now)
+                    if (item.Info.ItemEffect != ItemEffect.ElixirOfPurification || UseItemTime < SEnvir.Now)
                         UseItemTime = SEnvir.Now.AddMilliseconds(item.Info.Durability);
                     else
                         UseItemTime = UseItemTime.AddMilliseconds(item.Info.Durability);
@@ -7214,7 +7214,7 @@ namespace Server.Models
                 case ItemType.Bait:
                 case ItemType.Finder:
                 case ItemType.Reel:
-                    if (Equipment[(int)EquipmentSlot.Weapon]?.Info.Effect != ItemEffect.FishingRod) return false;
+                    if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod) return false;
                     break;
                 default:
                     if (WearWeight - (Equipment[(int)slot]?.Info.Weight ?? 0) + item.Weight > Stats[Stat.WearWeight]) return false;
@@ -7529,7 +7529,7 @@ namespace Server.Models
 
             for (int i = 0; i < Inventory.Length; i++)
             {
-                if (Inventory[i] == null || Inventory[i].Info.Effect != ItemEffect.GenderChange) continue;
+                if (Inventory[i] == null || Inventory[i].Info.ItemEffect != ItemEffect.GenderChange) continue;
 
                 if (!CanUseItem(Inventory[i])) continue;
 
@@ -7595,7 +7595,7 @@ namespace Server.Models
 
             for (int i = 0; i < Inventory.Length; i++)
             {
-                if (Inventory[i] == null || Inventory[i].Info.Effect != ItemEffect.HairChange) continue;
+                if (Inventory[i] == null || Inventory[i].Info.ItemEffect != ItemEffect.HairChange) continue;
 
                 if (!CanUseItem(Inventory[i])) continue;
 
@@ -7654,7 +7654,7 @@ namespace Server.Models
 
             for (int i = 0; i < Inventory.Length; i++)
             {
-                if (Inventory[i] == null || Inventory[i].Info.Effect != ItemEffect.ArmourDye) continue;
+                if (Inventory[i] == null || Inventory[i].Info.ItemEffect != ItemEffect.ArmourDye) continue;
 
                 if (!CanUseItem(Inventory[i])) continue;
 
@@ -7720,7 +7720,7 @@ namespace Server.Models
 
             for (int i = 0; i < Inventory.Length; i++)
             {
-                if (Inventory[i] == null || Inventory[i].Info.Effect != ItemEffect.NameChange) continue;
+                if (Inventory[i] == null || Inventory[i].Info.ItemEffect != ItemEffect.NameChange) continue;
 
                 if (!CanUseItem(Inventory[i])) continue;
 
@@ -7960,7 +7960,7 @@ namespace Server.Models
 
         public bool ItemBuffAdd(ItemInfo info)
         {
-            switch (info.Effect)
+            switch (info.ItemEffect)
             {
                 case ItemEffect.DestructionElixir:
                 case ItemEffect.HasteElixir:
@@ -7976,7 +7976,7 @@ namespace Server.Models
 
                         ItemInfo buffItemInfo = SEnvir.ItemInfoList.Binding.First(x => x.Index == buff.ItemIndex);
 
-                        if (buffItemInfo.Effect == info.Effect)
+                        if (buffItemInfo.ItemEffect == info.ItemEffect)
                             BuffRemove(buff);
                     }
                     break;
@@ -9856,7 +9856,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.IronOre) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.IronOre) return;
 
                 ironPurity += item.CurrentDurability;
             }
@@ -9883,7 +9883,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.SilverOre) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.SilverOre) return;
 
                 silverPurity += item.CurrentDurability;
             }
@@ -9910,7 +9910,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.Diamond) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.Diamond) return;
 
                 diamondPurity += item.CurrentDurability;
             }
@@ -9937,7 +9937,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.GoldOre) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.GoldOre) return;
 
                 goldPurity += item.CurrentDurability;
             }
@@ -9964,7 +9964,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.Crystal) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.Crystal) return;
             }
 
             long chance = p.Gold / 25000; // 250k / 10%, 2,500,000 for 100%
@@ -10238,7 +10238,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.BlackIronOre) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.BlackIronOre) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
 
@@ -10764,7 +10764,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.Fragment1) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.Fragment1) return;
                 if (item.Count < 10) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
@@ -10794,7 +10794,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.Fragment2) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.Fragment2) return;
                 if (item.Count < 10) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
@@ -10824,7 +10824,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.Fragment3) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.Fragment3) return;
                 if (item.Count < link.Count) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
@@ -10857,7 +10857,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.RefinementStone) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.RefinementStone) return;
                 if (item.Count < link.Count) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
@@ -11272,7 +11272,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.Fragment1) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.Fragment1) return;
                 if (item.Count < 10) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
@@ -11302,7 +11302,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.Fragment2) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.Fragment2) return;
                 if (item.Count < 10) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
@@ -11332,7 +11332,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.Fragment3) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.Fragment3) return;
                 if (item.Count < link.Count) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
@@ -11364,7 +11364,7 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= array.Length) return;
                 UserItem item = array[link.Slot];
 
-                if (item == null || item.Info.Effect != ItemEffect.RefinementStone) return;
+                if (item == null || item.Info.ItemEffect != ItemEffect.RefinementStone) return;
                 if (item.Count < link.Count) return;
 
                 if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
@@ -11493,11 +11493,11 @@ namespace Server.Models
 
             if (Inventory[p.Template.Slot] == null) return;
 
-            if (Inventory[p.Template.Slot].Info.Effect == ItemEffect.WeaponTemplate)
+            if (Inventory[p.Template.Slot].Info.ItemEffect == ItemEffect.WeaponTemplate)
             {
                 isTemplate = true;
             }
-            else if (Inventory[p.Template.Slot].Info.ItemType != ItemType.Weapon || Inventory[p.Template.Slot].Info.Effect == ItemEffect.SpiritBlade) return;
+            else if (Inventory[p.Template.Slot].Info.ItemType != ItemType.Weapon || Inventory[p.Template.Slot].Info.ItemEffect == ItemEffect.SpiritBlade) return;
 
             #endregion
 
@@ -11530,7 +11530,7 @@ namespace Server.Models
 
                 if (p.Yellow.Count != 1) return;
 
-                if (Inventory[p.Yellow.Slot] == null || Inventory[p.Yellow.Slot].Info.Effect != ItemEffect.YellowSlot) return;
+                if (Inventory[p.Yellow.Slot] == null || Inventory[p.Yellow.Slot].Info.ItemEffect != ItemEffect.YellowSlot) return;
 
                 statCount += Inventory[p.Yellow.Slot].Info.Shape;
             }
@@ -11547,7 +11547,7 @@ namespace Server.Models
 
                 if (p.Blue.Count != 1) return;
 
-                if (Inventory[p.Blue.Slot] == null || Inventory[p.Blue.Slot].Info.Effect != ItemEffect.BlueSlot) return;
+                if (Inventory[p.Blue.Slot] == null || Inventory[p.Blue.Slot].Info.ItemEffect != ItemEffect.BlueSlot) return;
 
                 statCount += Inventory[p.Blue.Slot].Info.Shape;
             }
@@ -11564,7 +11564,7 @@ namespace Server.Models
 
                 if (p.Red.Count != 1) return;
 
-                if (Inventory[p.Red.Slot] == null || Inventory[p.Red.Slot].Info.Effect != ItemEffect.RedSlot) return;
+                if (Inventory[p.Red.Slot] == null || Inventory[p.Red.Slot].Info.ItemEffect != ItemEffect.RedSlot) return;
 
                 statCount += Inventory[p.Red.Slot].Info.Shape;
             }
@@ -11581,7 +11581,7 @@ namespace Server.Models
 
                 if (p.Purple.Count != 1) return;
 
-                if (Inventory[p.Purple.Slot] == null || Inventory[p.Purple.Slot].Info.Effect != ItemEffect.PurpleSlot) return;
+                if (Inventory[p.Purple.Slot] == null || Inventory[p.Purple.Slot].Info.ItemEffect != ItemEffect.PurpleSlot) return;
 
                 statCount += Inventory[p.Purple.Slot].Info.Shape;
             }
@@ -11598,7 +11598,7 @@ namespace Server.Models
 
                 if (p.Green.Count != 1) return;
 
-                if (Inventory[p.Green.Slot] == null || Inventory[p.Green.Slot].Info.Effect != ItemEffect.GreenSlot) return;
+                if (Inventory[p.Green.Slot] == null || Inventory[p.Green.Slot].Info.ItemEffect != ItemEffect.GreenSlot) return;
 
                 statCount += Inventory[p.Green.Slot].Info.Shape;
             }
@@ -11615,7 +11615,7 @@ namespace Server.Models
 
                 if (p.Grey.Count != 1) return;
 
-                if (Inventory[p.Grey.Slot] == null || Inventory[p.Grey.Slot].Info.Effect != ItemEffect.GreySlot) return;
+                if (Inventory[p.Grey.Slot] == null || Inventory[p.Grey.Slot].Info.ItemEffect != ItemEffect.GreySlot) return;
 
                 statCount += Inventory[p.Grey.Slot].Info.Shape;
             }
@@ -11630,16 +11630,16 @@ namespace Server.Models
                 switch (p.Class)
                 {
                     case RequiredClass.Warrior:
-                        weap = SEnvir.ItemInfoList.Binding.First(x => x.Effect == ItemEffect.WarriorWeapon);
+                        weap = SEnvir.ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.WarriorWeapon);
                         break;
                     case RequiredClass.Wizard:
-                        weap = SEnvir.ItemInfoList.Binding.First(x => x.Effect == ItemEffect.WizardWeapon);
+                        weap = SEnvir.ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.WizardWeapon);
                         break;
                     case RequiredClass.Taoist:
-                        weap = SEnvir.ItemInfoList.Binding.First(x => x.Effect == ItemEffect.TaoistWeapon);
+                        weap = SEnvir.ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.TaoistWeapon);
                         break;
                     case RequiredClass.Assassin:
-                        weap = SEnvir.ItemInfoList.Binding.First(x => x.Effect == ItemEffect.AssassinWeapon);
+                        weap = SEnvir.ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.AssassinWeapon);
                         break;
                     default:
                         return;
@@ -12113,7 +12113,7 @@ namespace Server.Models
                 return;
             }
 
-            if (Equipment[(int)EquipmentSlot.Weapon]?.Info.Effect != ItemEffect.FishingRod || Equipment[(int)EquipmentSlot.Armour]?.Info.Effect != ItemEffect.FishingRobe)
+            if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod || Equipment[(int)EquipmentSlot.Armour]?.Info.ItemEffect != ItemEffect.FishingRobe)
             {
                 return;
             }
@@ -14969,7 +14969,7 @@ namespace Server.Models
             {
                 UserItem weap = Equipment[(int)EquipmentSlot.Weapon];
 
-                if (weap != null && weap.Info.Effect == ItemEffect.PickAxe && (weap.CurrentDurability > 0 || weap.Info.Durability == 0))
+                if (weap != null && weap.Info.ItemEffect == ItemEffect.PickAxe && (weap.CurrentDurability > 0 || weap.Info.Durability == 0))
                 {
                     DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon, 4);
 
@@ -19118,10 +19118,10 @@ namespace Server.Models
 
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
-                ArmourImage = Equipment[(int)EquipmentSlot.Armour]?.Info.Image ?? 0,
+                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
 
                 EmblemShape = Equipment[(int)EquipmentSlot.Emblem]?.Info.Shape ?? 0,
-                WingsShape = Equipment[(int)EquipmentSlot.Wings]?.Info.Shape ?? 0,
+                WingsShape = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
 
                 Experience = Experience,
 
@@ -19208,9 +19208,9 @@ namespace Server.Models
 
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
-                ArmourImage = Equipment[(int)EquipmentSlot.Armour]?.Info.Image ?? 0,
+                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemShape = Equipment[(int)EquipmentSlot.Emblem]?.Info.Shape ?? 0,
-                Wings = Equipment[(int)EquipmentSlot.Wings]?.Info.Shape ?? 0,
+                WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
 
                 Poison = Poison,
 
@@ -19259,9 +19259,9 @@ namespace Server.Models
 
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
-                ArmourImage = Equipment[(int)EquipmentSlot.Armour]?.Info.Image ?? 0,
+                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemShape = Equipment[(int)EquipmentSlot.Emblem]?.Info.Shape ?? 0,
-                WingsShape = Equipment[(int)EquipmentSlot.Wings]?.Info.Shape ?? 0,
+                WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
 
                 Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
 

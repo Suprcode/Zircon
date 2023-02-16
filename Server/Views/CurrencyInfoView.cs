@@ -50,7 +50,7 @@ namespace Server.Views
                 if (goldItem != null)
                 {
                     gold.DropItem = goldItem;
-                    goldItem.Effect = ItemEffect.None;
+                    goldItem.ItemEffect = ItemEffect.None;
                 }
             }
 

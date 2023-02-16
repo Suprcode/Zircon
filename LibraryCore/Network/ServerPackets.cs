@@ -281,9 +281,9 @@ namespace Library.Network.ServerPackets
         public int Shield { get; set; }
         public int Armour { get; set; }
         public Color ArmourColour { get; set; }
-        public int ArmourImage { get; set; }
+        public ExteriorEffect ArmourEffect { get; set; }
         public int EmblemShape { get; set; }
-        public int Wings { get; set; }
+        public ExteriorEffect WingsEffect { get; set; }
 
         public int Light { get; set; }
 
@@ -374,12 +374,12 @@ namespace Library.Network.ServerPackets
         public int Shield { get; set; }
         public int Armour { get; set; }
         public Color ArmourColour { get; set; }
-        public int ArmourImage { get; set; }
+        public ExteriorEffect ArmourEffect { get; set; }
         public int EmblemShape { get; set; }
 
         public int HorseArmour { get; set; }
         public int Helmet { get; set; }
-        public int WingsShape { get; set; }
+        public ExteriorEffect WingsEffect { get; set; }
         public int Light { get; set; }
     }
 

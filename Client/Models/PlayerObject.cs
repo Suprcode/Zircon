@@ -233,11 +233,11 @@ namespace Client.Models
         public int HorseFrame => DrawFrame + ((int)Horse - 1) * 5000;
         public HorseType Horse;
 
-        public int ArmourImage;
+        public ExteriorEffect ArmourEffect;
 
         public int EmblemShape;
 
-        public int WingsShape;
+        public ExteriorEffect WingsEffect;
 
         public bool DrawWeapon;
 
@@ -283,9 +283,9 @@ namespace Client.Models
             HelmetShape = info.Helmet;
             ShieldShape = info.Shield;
 
-            ArmourImage = info.ArmourImage;
+            ArmourEffect = info.ArmourEffect;
             EmblemShape = info.EmblemShape;
-            WingsShape = info.Wings;
+            WingsEffect = info.WingsEffect;
 
             Light = info.Light;
 
@@ -804,7 +804,7 @@ namespace Client.Models
             if (BodyLibrary == null) return;
 
             if (DrawWingsBehind())
-                DrawWings();
+                DrawExteriorEffects();
 
             if (DrawShieldEffectBehind())
                 DrawShieldEffect();
@@ -812,7 +812,7 @@ namespace Client.Models
             DrawBody(true);
 
             if (DrawWingsInfront())
-                DrawWings();
+                DrawExteriorEffects();
 
             if (DrawShieldEffectInfront())
                 DrawShieldEffect();
@@ -1153,106 +1153,107 @@ namespace Client.Models
             }
         }
 
-        private void DrawWings()
+        private void DrawExteriorEffect(MirLibrary library, ExteriorEffect effect)
+        {
+            switch(effect)
+            {
+                case ExteriorEffect.WhiteAura:
+                    library.DrawBlend(800 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.BlueAura:
+                    library.DrawBlend(840 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.FlameAura:
+                    library.DrawBlend(820 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.GreenWings:
+                    library.DrawBlend(400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.LionWings:
+                    library.DrawBlend(2830 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.FlameWings:
+                    library.DrawBlend(200 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.BlueWings:
+                    library.DrawBlend(GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.RedSinWings:
+                    library.DrawBlend(600 + GameScene.Game.MapControl.Animation / 2 % 13 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                //case 9177 or 9178: //??? i'm missing something from EquipEffect-Part.Zl?
+                //    library.DrawBlend(4874 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                //    library.DrawBlend(4898 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                //    break;
+                case ExteriorEffect.AngelicWings:
+                    library.DrawBlend(2942 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.BlueDragonWings:
+                    library.DrawBlend(3054 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.RedWings2:
+                    library.DrawBlend(3166 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.FireDragonWings:
+                    library.DrawBlend(3278 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.SmallYellowWings:
+                    library.DrawBlend(3390 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.GreenFeatherWings:
+                    library.DrawBlend(3502 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.RedFeatherWings:
+                    library.DrawBlend(3614 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.BlueFeatherWings:
+                    library.DrawBlend(3726 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.WhiteFeatherWings:
+                    library.DrawBlend(3838 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.PurpleTentacles:
+                    library.DrawBlend(3950 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.PurpleTentacles2:
+                    library.DrawBlend(4454 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.DiamondFireWings:
+                    library.DrawBlend(4566 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.PhoenixWings:
+                    library.DrawBlend(4062 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.IceKingWings:
+                    library.DrawBlend(4258 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.BlueButterflyWings:
+                    library.DrawBlend(4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+            }
+        }
+
+        private void DrawExteriorEffects()
         {
             if (!Config.DrawEffects)
             {
                 return;
             }
+
             MirAction currentAction = CurrentAction;
             MirAction mirAction = currentAction;
-            if (mirAction - 7 <= MirAction.Moving || !CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out MirLibrary library))
+            if (mirAction - 7 <= MirAction.Moving)
             {
                 return;
-            }
-            switch (ArmourImage)
-            {
-                case 962:
-                case 972:
-                    library.DrawBlend(820 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
-                    break;
-                case 963:
-                case 973:
-                    library.DrawBlend(400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 9057:
-                case 9058:
-                    library.DrawBlend(2830 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 964:
-                case 974:
-                    library.DrawBlend(200 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 965:
-                case 975:
-                    library.DrawBlend(GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 2007:
-                case 2017:
-                    library.DrawBlend(600 + GameScene.Game.MapControl.Animation / 2 % 13 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 9177:
-                case 9178:
-                    library.DrawBlend(4874 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    library.DrawBlend(4898 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-            }
-            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out library))
-            {
-                return;
-            }
-            switch (WingsShape)
-            {
-                case 1:
-                    library.DrawBlend(2830 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 2:
-                    library.DrawBlend(2942 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 3:
-                    library.DrawBlend(3054 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 4:
-                    library.DrawBlend(3166 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 5:
-                    library.DrawBlend(3278 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 6:
-                    library.DrawBlend(3390 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 7:
-                    library.DrawBlend(3502 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 8:
-                    library.DrawBlend(3614 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 9:
-                    library.DrawBlend(3726 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 10:
-                    library.DrawBlend(3838 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 11:
-                    library.DrawBlend(3950 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 12:
-                    library.DrawBlend(4454 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 13:
-                    library.DrawBlend(4566 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 14:
-                    library.DrawBlend(4062 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 15:
-                    library.DrawBlend(4258 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 16:
-                    library.DrawBlend(4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
             }
 
+            if (CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out MirLibrary library))
+            {
+                DrawExteriorEffect(library, ArmourEffect);
+                DrawExteriorEffect(library, WingsEffect);
+            }
+
+            //Ducky: manage emblem drawing, it is a different library maybe it can be merged into EquipEffect_Part aswell
             if (CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx26, out library))
             {
                 switch (EmblemShape)
@@ -1302,10 +1303,11 @@ namespace Client.Models
                 case MirDirection.DownRight:
                 case MirDirection.Down:
                 case MirDirection.DownLeft:
-                    return ArmourImage switch
+                    return ArmourEffect switch
                     {
-                        //All
-                        962 or 972 => false,
+                        ExteriorEffect.BlueAura or 
+                        ExteriorEffect.FlameAura or 
+                        ExteriorEffect.WhiteAura => false,
                         _ => true,
                     };
                 default:
@@ -1341,10 +1343,11 @@ namespace Client.Models
                 case MirDirection.DownRight:
                 case MirDirection.Down:
                 case MirDirection.DownLeft:
-                    return ArmourImage switch
+                    return ArmourEffect switch
                     {
-                        //All
-                        962 or 972 => true,
+                        ExteriorEffect.BlueAura or
+                        ExteriorEffect.FlameAura or
+                        ExteriorEffect.WhiteAura => true,
                         _ => false,
                     };
                 default:

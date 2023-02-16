@@ -1143,6 +1143,37 @@ namespace Library
         Precise,
     }
 
+    public enum ExteriorEffect : byte
+    {
+        None,
+
+        WhiteAura,
+        FlameAura,
+        BlueAura,
+
+        GreenWings,
+        FlameWings,
+        BlueWings,
+        RedSinWings,
+
+        LionWings,
+        AngelicWings,
+        BlueDragonWings,
+        RedWings2,
+        FireDragonWings,
+        SmallYellowWings,
+        GreenFeatherWings,
+        RedFeatherWings,
+        BlueFeatherWings,
+        WhiteFeatherWings,
+        PurpleTentacles,
+        PurpleTentacles2,
+        DiamondFireWings,
+        PhoenixWings,
+        IceKingWings,
+        BlueButterflyWings,
+    }
+
     public enum ItemEffect : byte
     {
         None,

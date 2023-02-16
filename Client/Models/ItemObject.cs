@@ -33,7 +33,7 @@ namespace Client.Models
 
             ItemInfo itemInfo = info.Item.Info;
 
-            if (info.Item.Info.Effect == ItemEffect.ItemPart)
+            if (info.Item.Info.ItemEffect == ItemEffect.ItemPart)
             {
                 itemInfo = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
 
@@ -50,7 +50,7 @@ namespace Client.Models
             switch (itemInfo.Rarity)
             {
                 case Rarity.Common:
-                    if (Item.AddedStats.Values.Count > 0 && Item.Info.Effect != ItemEffect.ItemPart)
+                    if (Item.AddedStats.Values.Count > 0 && Item.Info.ItemEffect != ItemEffect.ItemPart)
                     {
                         NameColour = Color.LightSkyBlue;
 
@@ -123,7 +123,7 @@ namespace Client.Models
             {
                 ItemInfo info = Item.Info;
 
-                if (info.Effect == ItemEffect.ItemPart)
+                if (info.ItemEffect == ItemEffect.ItemPart)
                     info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
 
                 drawIndex = info.Image;

@@ -120,12 +120,12 @@ namespace Client.Scenes.Views
 
         private bool HasFishingRobe
         {
-            get { return Grid != null && Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe; }
+            get { return Grid != null && Grid[(int)EquipmentSlot.Armour]?.Item?.Info.ItemEffect == ItemEffect.FishingRobe; }
         }
 
         private bool HasFishingRod
         {
-            get { return Grid != null && Grid[(int)EquipmentSlot.Weapon]?.Item?.Info.Effect == ItemEffect.FishingRod; }
+            get { return Grid != null && Grid[(int)EquipmentSlot.Weapon]?.Item?.Info.ItemEffect == ItemEffect.FishingRod; }
         }
 
         #region Inspect
@@ -359,7 +359,7 @@ namespace Client.Scenes.Views
             cell.MouseLeave += Cell_MouseLeave;
             cell.ItemChanged += (o, e) =>
             {
-                GameScene.Game.FishingBox.Visible = Visible && ((DXItemCell)o).Item?.Info.Effect == ItemEffect.FishingRod;
+                GameScene.Game.FishingBox.Visible = Visible && ((DXItemCell)o).Item?.Info.ItemEffect == ItemEffect.FishingRod;
             };
 
             Grid[(int)EquipmentSlot.Armour] = cell = new DXItemCell
@@ -2331,6 +2331,7 @@ namespace Client.Scenes.Views
 
             if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
             {
+                //Ducky: should this change based on ExteriorEffect? It may not match armour plate
                 int index = Grid[(int)EquipmentSlot.Armour].Item.Info.Image;
 
                 MirLibrary effectLibrary;

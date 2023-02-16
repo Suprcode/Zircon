@@ -1466,13 +1466,13 @@ namespace Client.Scenes.Views
 
             ItemInfo displayInfo = SelectedRow.MarketInfo.Item.Info;
 
-            if (SelectedRow.MarketInfo.Item.Info.Effect == ItemEffect.ItemPart)
+            if (SelectedRow.MarketInfo.Item.Info.ItemEffect == ItemEffect.ItemPart)
                 displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == SelectedRow.MarketInfo.Item.AddedStats[Stat.ItemIndex]);
 
 
             message.Append($"Item: {displayInfo.ItemName}");
 
-            if (SelectedRow.MarketInfo.Item.Info.Effect == ItemEffect.ItemPart)
+            if (SelectedRow.MarketInfo.Item.Info.ItemEffect == ItemEffect.ItemPart)
                 message.Append(" - [Part]");
 
 
@@ -1590,13 +1590,13 @@ namespace Client.Scenes.Views
 
             ItemInfo displayInfo = cell.Item.Info;
 
-            if (cell.Item.Info.Effect == ItemEffect.ItemPart)
+            if (cell.Item.Info.ItemEffect == ItemEffect.ItemPart)
                 displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == cell.Item.AddedStats[Stat.ItemIndex]);
 
 
             message.Append($"Item: {displayInfo.ItemName}");
 
-            if (cell.Item.Info.Effect == ItemEffect.ItemPart)
+            if (cell.Item.Info.ItemEffect == ItemEffect.ItemPart)
                 message.Append(" - [Part]");
 
 
@@ -2194,12 +2194,12 @@ namespace Client.Scenes.Views
 
             ItemInfo displayInfo = MarketInfo.Item?.Info;
 
-            if (MarketInfo.Item != null && MarketInfo.Item.Info.Effect == ItemEffect.ItemPart)
+            if (MarketInfo.Item != null && MarketInfo.Item.Info.ItemEffect == ItemEffect.ItemPart)
                 displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == MarketInfo.Item.AddedStats[Stat.ItemIndex]);
 
             string name = displayInfo?.ItemName ?? "Item has been Sold.";
 
-            if (MarketInfo.Item != null && MarketInfo.Item.Info.Effect == ItemEffect.ItemPart)
+            if (MarketInfo.Item != null && MarketInfo.Item.Info.ItemEffect == ItemEffect.ItemPart)
                 name += " - [Part]";
 
             NameLabel.Text = name;

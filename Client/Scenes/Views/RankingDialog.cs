@@ -912,6 +912,7 @@ namespace Client.Scenes.Views
 
                 MirLibrary effectLibrary;
 
+                //Ducky: why is this code duplicate of CharacterDialog?
                 if (CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_UI, out effectLibrary))
                 {
                     MirImage image = null;
@@ -1085,7 +1086,7 @@ namespace Client.Scenes.Views
                 }
             }
 
-            var hasFishingRobe = Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe;
+            var hasFishingRobe = Grid[(int)EquipmentSlot.Armour]?.Item?.Info.ItemEffect == ItemEffect.FishingRobe;
             if (hasFishingRobe) return;
 
             if (Grid[(int)EquipmentSlot.Helmet]?.Item != null && library != null)

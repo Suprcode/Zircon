@@ -109,7 +109,9 @@ namespace Library.SystemModels
         }
         private int _Shape;
 
-
+        /** Ducky: I have to have this for backwards compatibility... 
+         * @Suprcode this should removed at some point in favour of _ItemEffect
+        **/
         public ItemEffect Effect
         {
             get { return _Effect; }
@@ -121,9 +123,40 @@ namespace Library.SystemModels
                 _Effect = value;
 
                 OnChanged(oldValue, value, "Effect");
+                ItemEffect = value;
             }
         }
         private ItemEffect _Effect;
+
+        public ItemEffect ItemEffect
+        {
+            get { return _ItemEffect; }
+            set
+            {
+                if (_ItemEffect == value) return;
+
+                var oldValue = _ItemEffect;
+                _ItemEffect = value;
+
+                OnChanged(oldValue, value, "ItemEffect");
+            }
+        }
+        private ItemEffect _ItemEffect;
+
+        public ExteriorEffect ExteriorEffect
+        {
+            get { return _ExteriorEffect; }
+            set
+            {
+                if (_ExteriorEffect == value) return;
+
+                var oldValue = _ExteriorEffect;
+                _ExteriorEffect = value;
+
+                OnChanged(oldValue, value, "ExteriorEffect");
+            }
+        }
+        private ExteriorEffect _ExteriorEffect;
 
         public int Image
         {
