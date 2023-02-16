@@ -1303,12 +1303,13 @@ namespace Client.Models
                 case MirDirection.DownRight:
                 case MirDirection.Down:
                 case MirDirection.DownLeft:
-                    return ArmourEffect switch
+                    switch (ArmourEffect)
                     {
-                        ExteriorEffect.BlueAura or 
-                        ExteriorEffect.FlameAura or 
-                        ExteriorEffect.WhiteAura => false,
-                        _ => true,
+                        case ExteriorEffect.BlueAura:
+                        case ExteriorEffect.FlameAura:
+                        case ExteriorEffect.WhiteAura:
+                            return false;
+                        default: return true;
                     };
                 default:
                     break;
@@ -1342,13 +1343,14 @@ namespace Client.Models
                     return true;
                 case MirDirection.DownRight:
                 case MirDirection.Down:
-                case MirDirection.DownLeft:
-                    return ArmourEffect switch
+                case MirDirection.DownLeft:         
+                    switch(ArmourEffect)
                     {
-                        ExteriorEffect.BlueAura or
-                        ExteriorEffect.FlameAura or
-                        ExteriorEffect.WhiteAura => true,
-                        _ => false,
+                        case ExteriorEffect.BlueAura:
+                        case ExteriorEffect.FlameAura:
+                        case ExteriorEffect.WhiteAura: 
+                         return true;
+                        default: return false;
                     };
                 default:
                     break;
