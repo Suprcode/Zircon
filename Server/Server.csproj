@@ -29,31 +29,40 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.BonusSkins.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.BonusSkins.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.BonusSkins.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Data.Desktop.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.Data.Desktop.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.Data.Desktop.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Data.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Standard\DevExpress.Data.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.Data.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Images.v21.2">
+      <HintPath>..\..\Source Map Editor\Plugin.MapEditor\Components\DevExpress\DevExpress.Images.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Utils.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.Utils.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.Utils.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraBars.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraBars.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.XtraBars.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraEditors.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraEditors.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.XtraEditors.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraGrid.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraGrid.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.XtraGrid.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraLayout.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraLayout.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.XtraLayout.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraNavBar.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraNavBar.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.XtraNavBar.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraPrinting.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraPrinting.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraTreeList.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraTreeList.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="SlimDX">
       <HintPath>..\..\Debug\Server\SlimDX.dll</HintPath>

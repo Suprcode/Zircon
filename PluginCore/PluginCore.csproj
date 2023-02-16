@@ -6,14 +6,23 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
+  <PropertyGroup>  
+   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>  
+  </PropertyGroup> 
+  <PropertyGroup>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\Debug\Server\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
+    <Compile Remove="Inject\**" />
+    <EmbeddedResource Remove="Inject\**" />
+    <None Remove="Inject\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Inject\" />
+    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -22,10 +31,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DevExpress.XtraBars.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraBars.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.XtraBars.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraEditors.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraEditors.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.XtraEditors.v21.2.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

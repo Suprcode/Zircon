@@ -17,6 +17,7 @@ namespace PluginStandalone
         static void Main()
         {
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
 
             try
@@ -39,13 +40,13 @@ namespace PluginStandalone
                     throw new Exception($"Failed to load {pluginFilename}.");
                 }
 
-                if (!plugin.SupportsStandaloneLoading)
+                if (plugin.Type is not IPluginForm form || !form.SupportsStandaloneLoading)
                 {
                     throw new Exception($"{pluginFilename} does not support being loaded as a standalone application.");
                 }
 
                 Console.WriteLine($"Loading {pluginFilename}...");
-                Application.Run(plugin.CreateStandaloneForm());
+                Application.Run(form.CreateStandaloneForm());
             }
             catch (Exception ex)
             {

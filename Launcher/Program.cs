@@ -22,6 +22,7 @@ namespace Launcher
             ConfigReader.Load();
 
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
 
             BonusSkins.Register();
