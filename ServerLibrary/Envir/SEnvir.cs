@@ -22,6 +22,8 @@ using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
 using System.Reflection;
 using System.Globalization;
+using Server.Envir.Commands.Handler;
+using Server.Envir.Commands;
 
 namespace Server.Envir
 {
@@ -227,6 +229,10 @@ namespace Server.Envir
         public static long TotalBytesSent, TotalBytesReceived;
         public static long DownloadSpeed, UploadSpeed;
 
+        public static CommandHandler CommandHandler = new ErrorHandlingCommandHandler(
+            new PlayerCommandHandler(),
+            new AdminCommandHandler()
+        );
 
         public static bool ServerBuffChanged;
 
