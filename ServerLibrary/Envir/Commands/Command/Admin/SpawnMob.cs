@@ -7,7 +7,7 @@ namespace Server.Envir.Commands.Command.Admin
 {
     class SpawnMob : AbstractParameterizedUserCommand
     {
-        public override string VALUE => "MOB";
+        public override string VALUE => "MONSTER";
         public override int PARAMS_LENGTH => 2;
 
         public override void Action(PlayerObject player, string[] vals)
