@@ -234,9 +234,7 @@ namespace Client.Models
         public HorseType Horse;
 
         public ExteriorEffect ArmourEffect;
-
-        public int EmblemShape;
-
+        public ExteriorEffect EmblemEffect;
         public ExteriorEffect WingsEffect;
 
         public bool DrawWeapon;
@@ -284,7 +282,7 @@ namespace Client.Models
             ShieldShape = info.Shield;
 
             ArmourEffect = info.ArmourEffect;
-            EmblemShape = info.EmblemShape;
+            EmblemEffect = info.EmblemEffect;
             WingsEffect = info.WingsEffect;
 
             Light = info.Light;
@@ -1153,8 +1151,12 @@ namespace Client.Models
             }
         }
 
-        private void DrawExteriorEffect(MirLibrary library, ExteriorEffect effect)
+        private void DrawExteriorEffect(ExteriorEffect effect)
         {
+            LibraryFile libraryFile = (byte)effect >= 200 ?
+                LibraryFile.MonMagicEx26 : LibraryFile.EquipEffect_Part;
+            if (!CEnvir.LibraryList.TryGetValue(libraryFile, out MirLibrary library)) return;
+
             switch(effect)
             {
                 case ExteriorEffect.WhiteAura:
@@ -1230,6 +1232,21 @@ namespace Client.Models
                 case ExteriorEffect.BlueButterflyWings:
                     library.DrawBlend(4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                     break;
+                case ExteriorEffect.RedEyeRing:
+                    library.DrawBlend(90 + GameScene.Game.MapControl.Animation / 2 % 24, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    library.DrawBlend(140 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.BlueEyeRing:
+                    library.DrawBlend(220 + GameScene.Game.MapControl.Animation / 2 % 25, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    library.DrawBlend(180 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.GreenSpiralRing:
+                    library.DrawBlend(330 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    library.DrawBlend(270 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
+                case ExteriorEffect.Fireworks:
+                    library.DrawBlend(360 + GameScene.Game.MapControl.Animation / 2 % 10, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    break;
             }
         }
 
@@ -1247,35 +1264,9 @@ namespace Client.Models
                 return;
             }
 
-            if (CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out MirLibrary library))
-            {
-                DrawExteriorEffect(library, ArmourEffect);
-                DrawExteriorEffect(library, WingsEffect);
-            }
-
-            //Ducky: manage emblem drawing, it is a different library maybe it can be merged into EquipEffect_Part aswell
-            if (CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx26, out library))
-            {
-                switch (EmblemShape)
-                {
-                    case 1:
-                        library.DrawBlend(90 + GameScene.Game.MapControl.Animation / 2 % 24, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(140 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        break;
-                    case 2:
-                        library.DrawBlend(220 + GameScene.Game.MapControl.Animation / 2 % 25, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(180 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        break;
-                    case 3:
-                        library.DrawBlend(330 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(270 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        break;
-                    case 4:
-                        library.DrawBlend(360 + GameScene.Game.MapControl.Animation / 2 % 10, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        break;
-                }
-            }
-
+            DrawExteriorEffect(ArmourEffect);
+            DrawExteriorEffect(WingsEffect);
+            DrawExteriorEffect(EmblemEffect);
         }
 
         public bool DrawShieldEffectBehind()

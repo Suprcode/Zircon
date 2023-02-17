@@ -880,7 +880,7 @@ namespace Client.Envir
                 player.HorseShape = p.HorseArmour;
                 player.ArmourEffect = p.ArmourEffect;
                 player.ShieldShape = p.Shield;
-                player.EmblemShape = p.EmblemShape;
+                player.EmblemEffect = p.EmblemEffect;
                 player.WingsEffect = p.WingsEffect;
 
                 player.Light = p.Light;

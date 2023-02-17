@@ -1147,34 +1147,44 @@ namespace Library
     {
         None,
 
-        //Auras [1~90]
+        //EquipEffect_Part [1~99] 
         WhiteAura = 1,
         FlameAura = 2,
         FlameAura2 = 3,
         BlueAura = 4,
 
-        //Wings [100~200]
-        GreenWings = 100,
-        FlameWings = 101,
-        BlueWings = 102,
-        RedSinWings = 103,
-        LionWings = 104,
-        FireDragonWings = 105,
-        SmallYellowWings = 106,
-        PurpleTentacles = 107,
-        GreenFeatherWings = 108,
-        RedFeatherWings = 109,
-        BlueFeatherWings = 110,
-        WhiteFeatherWings = 111,
-        BlueDragonWings = 112,
-        RedWings2 = 113,
-        DiamondFireWings = 114,
-        PurpleTentacles2 = 115,
-        PhoenixWings = 116,
-        IceKingWings = 117,
-        BlueButterflyWings = 118,
-        AngelicWings = 119,
+        GreenWings = 10,
+        FlameWings = 11,
+        BlueWings = 12,
+        RedSinWings = 13,
+        LionWings = 14,
+        FireDragonWings = 15,
+        SmallYellowWings = 16,
+        PurpleTentacles = 17,
+        GreenFeatherWings = 18,
+        RedFeatherWings = 19,
+        BlueFeatherWings = 20,
+        WhiteFeatherWings = 21,
+        BlueDragonWings = 22,
+        RedWings2 = 23,
+        DiamondFireWings = 24,
+        PurpleTentacles2 = 25,
+        PhoenixWings = 26,
+        IceKingWings = 27,
+        BlueButterflyWings = 28,
+        AngelicWings = 29,
 
+        //EquipEffect_Full [100~119]
+        //EquipEffect_FullEx1 [120~139] 
+        //EquipEffect_FullEx2 [140~159] 
+        //EquipEffect_FullEx3 [160~179]
+        //EquipEffect_Item [180~199]
+
+        //MonMagicEx26 [200~250] 
+        RedEyeRing = 200,
+        BlueEyeRing = 201,
+        GreenSpiralRing = 202,
+        Fireworks = 203
     }
 
     public enum ItemEffect : byte

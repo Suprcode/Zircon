@@ -307,7 +307,7 @@ namespace Client.Models
             ArmourColour = info.ArmourColour;
             LibraryWeaponShape = info.Weapon;
             WingsEffect = info.WingsShape;
-            EmblemShape = info.EmblemShape;
+            EmblemEffect = info.EmblemEffect;
 
             Poison = info.Poison;
 
