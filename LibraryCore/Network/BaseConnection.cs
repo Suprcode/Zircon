@@ -245,7 +245,7 @@ namespace Library.Network
                 catch (Exception ex)
                 {
                     OnException(this, ex);
-                    throw ex;
+                    throw;
                 }
             }
 

@@ -9,6 +9,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -70,7 +72,7 @@ namespace Launcher
 
             Progress<string> progress = new Progress<string>(s => StatusLabel.Text = s);
 
-            List<PatchInformation> liveVersion = await Task.Run(() => GetPatchInformation(progress));
+            List<PatchInformation> liveVersion = await GetPatchInformation(progress);
 
             if (liveVersion == null)
             {
@@ -80,20 +82,19 @@ namespace Launcher
                 return;
             }
 
-            List<PatchInformation> currentVersion = repair ? null : await Task.Run(() => LoadVersion(progress));
-            List<PatchInformation> patch = await Task.Run(() => CalculatePatch(liveVersion, currentVersion, progress));
+            List<PatchInformation> currentVersion = repair ? null : await LoadVersion(progress);
+            List<PatchInformation> patch = await CalculatePatch(liveVersion, currentVersion, progress);
 
             StatusLabel.Text = "Downloading";
             CreateSizeLabel();
 
-            Task task = Task.Run(() => DownloadPatch(patch, progress));
-
-            while (!task.IsCompleted)
+            Task task = DownloadPatch(patch, progress, new Progress<int>(percent =>
             {
+                // Update progress bar or label with the percentage downloaded
                 CreateSizeLabel();
+            }));
 
-                await Task.Delay(100);
-            }
+            await task;
 
             CreateSizeLabel();
 
@@ -171,14 +172,15 @@ namespace Launcher
             LastSpeedCheck = Time.Now;
         }
 
-        private List<PatchInformation> LoadVersion(IProgress<string> progress)
+        private async Task<List<PatchInformation>> LoadVersion(IProgress<string> progress)
         {
             List<PatchInformation> list = new List<PatchInformation>();
+
             try
             {
                 if (File.Exists(ClientPath + "Version.bin"))
                 {
-                    using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(ClientPath + "Version.bin")))
+                    using (MemoryStream mStream = new MemoryStream(await File.ReadAllBytesAsync(ClientPath + "Version.bin")))
                     using (BinaryReader reader = new BinaryReader(mStream))
                         while (reader.BaseStream.Position < reader.BaseStream.Length)
                             list.Add(new PatchInformation(reader));
@@ -187,9 +189,7 @@ namespace Launcher
                     return list;
                 }
 
-
                 progress.Report("Version Info is missing, Running Repairing");
-
             }
             catch (Exception ex)
             {
@@ -198,27 +198,34 @@ namespace Launcher
 
             return null;
         }
-        private List<PatchInformation> GetPatchInformation(IProgress<string> progress)
+        private async Task<List<PatchInformation>> GetPatchInformation(IProgress<string> progress)
         {
             try
             {
                 progress.Report("Downloading Patch Information");
 
-                using (WebClient client = new WebClient())
+                using (HttpClient client = new HttpClient())
                 {
                     if (Config.UseLogin)
-                        client.Credentials = new NetworkCredential(Config.Username, Config.Password);
-
-
-                    using (MemoryStream mStream = new MemoryStream(client.DownloadData(Config.Host + PListFileName)))
-                    using (BinaryReader reader = new BinaryReader(mStream))
                     {
-                        List<PatchInformation> list = new List<PatchInformation>();
+                        var byteArray = Encoding.ASCII.GetBytes($"{Config.Username}:{Config.Password}");
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                    }
 
-                        while (reader.BaseStream.Position < reader.BaseStream.Length)
-                            list.Add(new PatchInformation(reader));
+                    using (HttpResponseMessage response = await client.GetAsync(Config.Host + PListFileName))
+                    {
+                        response.EnsureSuccessStatusCode();
 
-                        return list;
+                        using (Stream contentStream = await response.Content.ReadAsStreamAsync())
+                        using (BinaryReader reader = new BinaryReader(contentStream))
+                        {
+                            List<PatchInformation> list = new List<PatchInformation>();
+
+                            while (reader.BaseStream.Position < reader.BaseStream.Length)
+                                list.Add(new PatchInformation(reader));
+
+                            return list;
+                        }
                     }
                 }
 
@@ -230,7 +237,7 @@ namespace Launcher
 
             return null;
         }
-        private List<PatchInformation> CalculatePatch(IReadOnlyList<PatchInformation> list, List<PatchInformation> current, IProgress<string> progress)
+        private async Task<List<PatchInformation>> CalculatePatch(IReadOnlyList<PatchInformation> list, List<PatchInformation> current, IProgress<string> progress)
         {
             List<PatchInformation> patch = new List<PatchInformation>();
 
@@ -249,7 +256,7 @@ namespace Launcher
                     using (MD5 md5 = MD5.Create())
                     {
                         using (FileStream stream = File.OpenRead(ClientPath + file.FileName))
-                            CheckSum = md5.ComputeHash(stream);
+                            CheckSum = await md5.ComputeHashAsync(stream);
                     }
 
                     if (IsMatch(CheckSum, file.CheckSum))
@@ -262,6 +269,7 @@ namespace Launcher
 
             return patch;
         }
+
         public bool IsMatch(byte[] a, byte[] b, long offSet = 0)
         {
             if (b == null || a == null || b.Length + offSet > a.Length || offSet < 0) return false;
@@ -283,23 +291,25 @@ namespace Launcher
             }
 
         }
-        private void DownloadPatch(List<PatchInformation> patch, IProgress<string> progress)
+
+        private async Task DownloadPatch(List<PatchInformation> patch, IProgress<string> progress, IProgress<int> downloadProgress)
         {
             List<Task> tasks = new List<Task>();
 
             foreach (PatchInformation file in patch)
             {
-                if (!Download(file)) continue;
+                if (!await Download(file, downloadProgress)) continue;
 
-                tasks.Add(Task.Run(() => Extract(file)));
+                tasks.Add(Extract(file));
             }
 
             if (tasks.Count == 0) return;
 
             progress.Report("Downloaded, Extracting.");
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
         }
+
 
         private void StartGameButton_Click(object sender, EventArgs e)
         {
@@ -314,33 +324,51 @@ namespace Launcher
             }
         }
 
-        private bool Download(PatchInformation file)
+        private async Task<bool> Download(PatchInformation file, IProgress<int> progress)
         {
             string webFileName = file.FileName.Replace("\\", "-") + ".gz";
 
             try
             {
-                using (WebClient client = new WebClient())
+                using (HttpClient client = new HttpClient())
                 {
-                    if (Config.UseLogin) client.Credentials = new NetworkCredential(Config.Username, Config.Password);
+                    if (Config.UseLogin)
+                    {
+                        var byteArray = Encoding.ASCII.GetBytes($"{Config.Username}:{Config.Password}");
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                    }
 
-                    bool downloading = true;
-                    client.DownloadProgressChanged += (o, e) => CurrentProgress = e.BytesReceived;
-                    client.DownloadFileCompleted += (o, e) => downloading = false;
+                    client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                    HttpResponseMessage response = await client.GetAsync(Config.Host + webFileName, HttpCompletionOption.ResponseHeadersRead);
 
-                    if (!Directory.Exists(ClientPath + "Patch\\"))
-                        Directory.CreateDirectory(ClientPath + "Patch\\");
+                    using (Stream contentStream = await response.Content.ReadAsStreamAsync())
+                    {
+                        response.EnsureSuccessStatusCode();
 
-                    client.DownloadFileAsync(new Uri(Config.Host + webFileName), $"{ClientPath}Patch\\{webFileName}");
+                        if (!Directory.Exists(ClientPath + "Patch\\"))
+                            Directory.CreateDirectory(ClientPath + "Patch\\");
 
-                    while (downloading)
-                        Thread.Sleep(1);
+                        using (FileStream fileStream = new FileStream($"{ClientPath}Patch\\{webFileName}", FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
+                        {
+                            long totalBytes = response.Content.Headers.ContentLength ?? -1;
+                            long totalDownloadedBytes = 0;
+                            byte[] buffer = new byte[8192];
+                            int bytesRead;
+                            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                            {
+                                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                                totalDownloadedBytes += bytesRead;
+                                if (totalBytes > 0)
+                                    progress.Report((int)(totalDownloadedBytes * 100 / totalBytes));
+                            }
+                        }
+                    }
 
                     CurrentProgress = 0;
                     TotalProgress += file.CompressedLength;
-                }
 
-                return true;
+                    return true;
+                }
             }
             catch (Exception)
             {
@@ -349,7 +377,8 @@ namespace Launcher
 
             return false;
         }
-        private void Extract(PatchInformation file)
+
+        private async Task Extract(PatchInformation file)
         {
             string webFileName = file.FileName.Replace("\\", "-") + ".gz";
 
@@ -366,8 +395,7 @@ namespace Launcher
                
                  if (File.Exists(toPath)) File.Delete(toPath);
 
-                Decompress($"{ClientPath}Patch\\{webFileName}", toPath);
-
+                await Decompress($"{ClientPath}Patch\\{webFileName}", toPath);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -382,7 +410,7 @@ namespace Launcher
                 file.CheckSum = new byte[8];
             }
         }
-        private static void Decompress(string sourceFile, string destFile)
+        private static async Task Decompress(string sourceFile, string destFile)
         {
             if (!Directory.Exists(Path.GetDirectoryName(destFile)))
                 Directory.CreateDirectory(Path.GetDirectoryName(destFile));
@@ -391,7 +419,7 @@ namespace Launcher
             using (FileStream fromfile = File.OpenRead(sourceFile))
             using (GZipStream gStream = new GZipStream(fromfile, CompressionMode.Decompress))
             {
-                gStream.CopyTo(tofile);
+                await gStream.CopyToAsync(tofile);
             }
         }
     }

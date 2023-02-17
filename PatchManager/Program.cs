@@ -21,6 +21,7 @@ namespace PatchManager
             ConfigReader.Load(Assembly.GetAssembly(typeof(Config)));
 
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
 
             BonusSkins.Register();

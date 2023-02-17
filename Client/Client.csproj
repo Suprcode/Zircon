@@ -1,268 +1,66 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{96CA9837-F7B2-4835-BCF9-40D8C8D4981E}</ProjectGuid>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Client</RootNamespace>
     <AssemblyName>Zircon</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+	<SupportedOSPlatformAttribute>windows</SupportedOSPlatformAttribute>
+  </PropertyGroup>
+  <PropertyGroup>  
+   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>  
+</PropertyGroup> 
+  <PropertyGroup>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\..\Debug\Client\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>default</LangVersion>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
     <OutputPath>..\..\Debug\Client\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>default</LangVersion>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Zircon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
+    <Company>$(Authors)</Company>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Sentry, Version=3.26.2.0, Culture=neutral, PublicKeyToken=fba2ec45388e2af0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sentry.3.26.2\lib\net461\Sentry.dll</HintPath>
-    </Reference>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Components\SlimDX.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.6.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=6.0.0.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.Metadata.6.0.1\lib\net461\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Json, Version=6.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Json.6.0.5\lib\net461\System.Text.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\DXInputWindow.cs" />
-    <Compile Include="Controls\DXItemAmountWindow.cs" />
-    <Compile Include="Controls\DXAnimatedControl.cs" />
-    <Compile Include="Controls\DXButton.cs" />
-    <Compile Include="Controls\DXCheckBox.cs" />
-    <Compile Include="Controls\DXColourControl.cs" />
-    <Compile Include="Controls\DXComboBox.cs" />
-    <Compile Include="Controls\DXConfigWindow.cs" />
-    <Compile Include="Controls\DXControl.cs" />
-    <Compile Include="Controls\DXKeyBindWindow.cs" />
-    <Compile Include="Controls\DXListBox.cs" />
-    <Compile Include="Controls\DXNumberTextBox.cs" />
-    <Compile Include="Controls\DXVScrollBar.cs" />
-    <Compile Include="Envir\CConnection.cs" />
-    <Compile Include="Envir\CEnvir.cs" />
-    <Compile Include="Envir\Config.cs" />
-    <Compile Include="Envir\DXManager.cs" />
-    <Compile Include="Envir\DXSound.cs" />
-    <Compile Include="Envir\DXSoundManager.cs" />
-    <Compile Include="Envir\Translations\ChineseMessages.cs" />
-    <Compile Include="Envir\Translations\EnglishMessages.cs" />
-    <Compile Include="Envir\Translations\StringMessages.cs" />
-    <Compile Include="Models\MirLibrary.cs" />
-    <Compile Include="Models\DamageInfo.cs" />
-    <Compile Include="Models\ItemObject.cs" />
-    <Compile Include="Models\MapObject.cs" />
-    <Compile Include="Models\MirEffect.cs" />
-    <Compile Include="Models\MirProjectile.cs" />
-    <Compile Include="Models\MonsterObject.cs" />
-    <Compile Include="Models\NPCObject.cs" />
-    <Compile Include="Models\ObjectAction.cs" />
-    <Compile Include="Models\Particles\Particle.cs" />
-    <Compile Include="Models\Particles\ParticleEmitter.cs" />
-    <Compile Include="Models\Particles\ParticleType.cs" />
-    <Compile Include="Models\Particles\Spells\FireballTrail.cs" />
-    <Compile Include="Models\Particles\Spells\GustTrail.cs" />
-    <Compile Include="Models\Particles\Spells\IceBladesTrail.cs" />
-    <Compile Include="Models\Particles\Spells\IceBoltTrail.cs" />
-    <Compile Include="Models\Particles\Weather\Fog.cs" />
-    <Compile Include="Models\Particles\Weather\Lightning.cs" />
-    <Compile Include="Models\Particles\Weather\Rain.cs" />
-    <Compile Include="Models\Particles\Weather\Snow.cs" />
-    <Compile Include="Models\PlayerObject.cs" />
-    <Compile Include="Models\SpellObject.cs" />
-    <Compile Include="Models\UserObject.cs" />
-    <Compile Include="Controls\DXImageControl.cs" />
-    <Compile Include="Controls\DXItemCell.cs" />
-    <Compile Include="Controls\DXItemGrid.cs" />
-    <Compile Include="Controls\DXLabel.cs" />
-    <Compile Include="Controls\DXMessageBox.cs" />
-    <Compile Include="Controls\DXNumberBox.cs" />
-    <Compile Include="Controls\DXScene.cs" />
-    <Compile Include="Controls\DXTabControl.cs" />
-    <Compile Include="Controls\DXTextBox.cs" />
-    <Compile Include="Controls\DXWindow.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Scenes\GameScene.cs" />
-    <Compile Include="Scenes\LoginScene.cs" />
-    <Compile Include="Scenes\SelectScene.cs" />
-    <Compile Include="Scenes\Views\AutoPotionDialog.cs" />
-    <Compile Include="Scenes\Views\BeltDialog.cs" />
-    <Compile Include="Scenes\Views\BigMapDialog.cs" />
-    <Compile Include="Scenes\Views\BuffDialog.cs" />
-    <Compile Include="Scenes\Views\CharacterDialog.cs" />
-    <Compile Include="Scenes\Views\ChatOptionsDialog.cs" />
-    <Compile Include="Scenes\Views\ChatTextBox.cs" />
-    <Compile Include="Scenes\Views\ChatTab.cs" />
-    <Compile Include="Scenes\Views\CompanionDialog.cs" />
-    <Compile Include="Scenes\Views\CurrencyDialog.cs" />
-    <Compile Include="Scenes\Views\DungeonFinderDialog.cs" />
-    <Compile Include="Scenes\Views\EditCharacterDialog.cs" />
-    <Compile Include="Scenes\Views\FilterDropDialog.cs" />
-    <Compile Include="Scenes\Views\FishingDialog.cs" />
-    <Compile Include="Scenes\Views\FortuneCheckerDialog.cs" />
-    <Compile Include="Scenes\Views\GuildDialog.cs" />
-    <Compile Include="Scenes\Views\MagicBarDialog.cs" />
-    <Compile Include="Scenes\Views\CommunicationDialog.cs" />
-    <Compile Include="Scenes\Views\MarketPlaceDialog.cs" />
-    <Compile Include="Scenes\Views\GroupDialog.cs" />
-    <Compile Include="Scenes\Views\InventoryDialog.cs" />
-    <Compile Include="Scenes\Views\ExitDialog.cs" />
-    <Compile Include="Scenes\Views\MagicDialog.cs" />
-    <Compile Include="Scenes\Views\MainPanel.cs" />
-    <Compile Include="Scenes\Views\MapControl.cs" />
-    <Compile Include="Scenes\Views\MiniMapDialog.cs" />
-    <Compile Include="Scenes\Views\MonsterDialog.cs" />
-    <Compile Include="Scenes\Views\NPCDialog.cs" />
-    <Compile Include="Scenes\Views\QuestDialog.cs" />
-    <Compile Include="Scenes\Views\QuestTrackerDialog.cs" />
-    <Compile Include="Scenes\Views\RankingDialog.cs" />
-    <Compile Include="Scenes\Views\StorageDialog.cs" />
-    <Compile Include="Scenes\Views\TradeDialog.cs" />
-    <Compile Include="TargetForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UserModels\ChatTabControlSetting.cs" />
-    <Compile Include="UserModels\ChatTabPageSetting.cs" />
-    <Compile Include="UserModels\WindowSetting.cs" />
-    <Compile Include="UserModels\KeyBindInfo.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TargetForm.resx">
-      <DependentUpon>TargetForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj">
-      <Project>{c47f32fa-4c04-4143-b4fe-623d4b014d0d}</Project>
-      <Name>LibraryCore</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zircon.ico" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Text.Json.6.0.5\build\System.Text.Json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Text.Json.6.0.5\build\System.Text.Json.targets'))" />
-    <Error Condition="!Exists('..\packages\Sentry.3.26.2\build\Sentry.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Sentry.3.26.2\build\Sentry.targets'))" />
-  </Target>
-  <Import Project="..\packages\System.Text.Json.6.0.5\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.5\build\System.Text.Json.targets')" />
-  <Import Project="..\packages\Sentry.3.26.2\build\Sentry.targets" Condition="Exists('..\packages\Sentry.3.26.2\build\Sentry.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Sentry" Version="3.26.2" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
+    <PackageReference Include="System.Reflection.Metadata" Version="6.0.1" />
+    <PackageReference Include="System.Text.Json" Version="6.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>
