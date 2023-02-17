@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <OutputType>WinExe</OutputType>
     <AssemblyName>Zircon</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+	<SupportedOSPlatformAttribute>windows</SupportedOSPlatformAttribute>
   </PropertyGroup>
   <PropertyGroup>  
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>  
@@ -20,11 +21,13 @@
     <OutputPath>..\..\Debug\Client\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>default</LangVersion>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\Debug\Client\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>default</LangVersion>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Zircon.ico</ApplicationIcon>
@@ -32,6 +35,7 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
+    <Company>$(Authors)</Company>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
@@ -48,7 +52,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />

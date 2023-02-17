@@ -9,6 +9,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -26,26 +27,23 @@ namespace Server.Views
 
         private void btnSync_Click(object sender, EventArgs e)
         {
-            //TODO!!
+            using var client = new HttpClient();
 
-            WebClient webClient = new WebClient();
-            using (var wc = webClient)
+            var content = new ByteArrayContent(File.ReadAllBytes(SMain.Session.SystemPath));
+
+            string key = Uri.EscapeDataString(txtKey.Text);
+
+            var url = $"{txtRemoteIP.Text}?Type={WebServer.SystemDBSyncCommand}&Key={key}";
+            try
             {
-                SMain.Session.Save(true);
-                try
-                {
-                    var content = File.ReadAllBytes(SMain.Session.SystemPath);
-
-                    //wc.UploadData(txtRemoteIP.Text + $"?Type={WebServer.SystemDBSyncCommand}&Key={HttpUtility.UrlEncode(txtKey.Text)}", content);
-
-                    MessageBox.Show("Syncronization completed", "Sync", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                HttpResponseMessage response = client.PostAsync(url, content).Result;
+                response.EnsureSuccessStatusCode();
+                MessageBox.Show("Syncronization completed", "Sync", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show(ex.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

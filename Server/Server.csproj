@@ -21,11 +21,13 @@
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>..\..\Debug\Server\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>..\..\Release\Server\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.BonusSkins.v21.2">
@@ -81,7 +83,6 @@
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="Views\LocationView.resx" />
