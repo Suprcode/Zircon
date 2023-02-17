@@ -1,4 +1,6 @@
-﻿namespace Server.Views
+﻿using DevExpress.XtraGrid.Columns;
+
+namespace Server.Views
 {
     partial class ItemInfoView
     {
@@ -387,11 +389,11 @@
             // 
             // colExteriorEffect
             // 
-            this.colImage.FieldName = "ExteriorEffect";
-            this.colImage.Name = "colExteriorEffect";
-            this.colImage.Visible = true;
-            this.colImage.VisibleIndex = 9;
-            this.colImage.Width = 24;
+            this.colExteriorEffect.FieldName = "ExteriorEffect";
+            this.colExteriorEffect.Name = "colExteriorEffect";
+            this.colExteriorEffect.Visible = true;
+            this.colExteriorEffect.VisibleIndex = 9;
+            this.colExteriorEffect.Width = 24;
             // 
             // colWeight
             // 
