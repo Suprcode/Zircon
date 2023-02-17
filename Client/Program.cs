@@ -40,6 +40,7 @@ namespace Client
         static void Init()
         {
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
 
             foreach (KeyValuePair<LibraryFile, string> pair in Libraries.LibraryList)
