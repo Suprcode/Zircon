@@ -10,7 +10,7 @@ namespace Server.Envir.Commands.Admin {
         public override string VALUE => "TAKEGAMEGOLD";
         public override int PARAMS_LENGTH => 3;
 
-        public override void Action(PlayerObject player, String[] vals) {
+        public override void Action(PlayerObject player, string[] vals) {
             if (vals.Length < PARAMS_LENGTH)
                 ThrowNewInvalidParametersException();
 

@@ -10,7 +10,7 @@ namespace Server.Envir.Commands.Admin {
         public override string VALUE => "GIVEGAMEGOLD";
         public override int PARAMS_LENGTH => 3;
 
-        public override void Action(PlayerObject player, String[] vals) {
+        public override void Action(PlayerObject player, string[] vals) {
             CharacterInfo character = SEnvir.GetCharacter(vals[1]);
             if (character == null)
                 throw new UserCommandException(string.Format("Could not find player: {0}.", vals[1]));

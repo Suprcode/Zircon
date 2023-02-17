@@ -12,7 +12,7 @@ namespace Server.Envir.Commands {
         public abstract string VALUE { get; }
         public abstract int PARAMS_LENGTH { get; }
 
-        public abstract void Action(PlayerObject player, String[] vals);
+        public abstract void Action(PlayerObject player, string[] vals);
 
         public UserCommandException ThrowNewInvalidParametersException() {
             throw new UserCommandException(string.Format("Invalid Parameters for command @{0}", VALUE));
@@ -20,7 +20,7 @@ namespace Server.Envir.Commands {
     }
 
     public interface UserCommand {
-        String VALUE { get; }
+        string VALUE { get; }
     }
 
     public interface ParameterizedUserCommand : UserCommand {

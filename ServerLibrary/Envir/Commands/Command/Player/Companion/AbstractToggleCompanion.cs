@@ -3,7 +3,7 @@ using Server.Envir.Commands.Exceptions;
 using Server.Models;
 
 namespace Server.Envir.Commands.Player {
-    class AbstractToggleCompanion : AbstractUserCommand {
+    abstract class AbstractToggleCompanion : AbstractUserCommand {
         public override string VALUE => "ENABLELEVEL{0}";
 
         public override void Action(PlayerObject player) {
