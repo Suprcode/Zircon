@@ -1149,6 +1149,7 @@ namespace Library
 
         WhiteAura,
         FlameAura,
+        FlameAura2,
         BlueAura,
 
         GreenWings,
