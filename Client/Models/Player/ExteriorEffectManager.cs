@@ -191,7 +191,7 @@ namespace Client.Models.Player
                 case MirAnimation.Combat2:
                     return indexStart + 640 + GameScene.Game.MapControl.Animation / animationSpeed % 5 + (int)direction * 10;
                 case MirAnimation.Combat3:
-                    return indexStart + 723 + GameScene.Game.MapControl.Animation / animationSpeed % 3 + (int)direction * 10;
+                    return indexStart + 722 + GameScene.Game.MapControl.Animation / animationSpeed % 4 + (int)direction * 10;
                 case MirAnimation.Combat4:
                     return indexStart + 800 + GameScene.Game.MapControl.Animation / animationSpeed % 6 + (int)direction * 10;
                 case MirAnimation.Combat5:
