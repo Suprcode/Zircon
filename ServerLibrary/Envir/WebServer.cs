@@ -373,23 +373,16 @@ namespace Server.Envir
                     rawMessage = readStream.ReadToEnd();
 
 
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
                     string data = "cmd=_notify-validate&" + rawMessage;
 
-                    HttpWebRequest wRequest = (HttpWebRequest)WebRequest.Create(LiveURL);
-
-                    wRequest.Method = "POST";
-                    wRequest.ContentType = "application/x-www-form-urlencoded";
-                    wRequest.ContentLength = data.Length;
-
-                    using (StreamWriter writer = new StreamWriter(wRequest.GetRequestStream(), Encoding.ASCII))
-                        writer.Write(data);
-
-                    using (StreamReader reader = new StreamReader(wRequest.GetResponse().GetResponseStream()))
+                    using (var httpClient = new HttpClient())
                     {
-                        IPNMessage message = new IPNMessage { Message = rawMessage, Verified = reader.ReadToEnd() == verified };
+                        var content = new StringContent(data, Encoding.ASCII, "application/x-www-form-urlencoded");
+                        var response = await httpClient.PostAsync(LiveURL, content);
 
+                        IPNMessage message = new IPNMessage { Message = rawMessage, Verified = await response.Content.ReadAsStringAsync() == verified };
 
                         if (!Directory.Exists(VerifiedPath))
                             Directory.CreateDirectory(VerifiedPath);
@@ -402,7 +395,6 @@ namespace Server.Envir
                         File.WriteAllText(path, message.Message);
 
                         message.FileName = path;
-
 
                         Messages.Enqueue(message);
                     }

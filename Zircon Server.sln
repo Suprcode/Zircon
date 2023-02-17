@@ -1,21 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29209.62
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher", "Launcher\Launcher.csproj", "{776863D5-D1CD-487F-83CD-B5470D64DB74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Launcher", "Launcher\Launcher.csproj", "{776863D5-D1CD-487F-83CD-B5470D64DB74}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchManager", "PatchManager\PatchManager.csproj", "{08448D7C-1B78-4C7B-819C-FC852C7C6D14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{96CA9837-F7B2-4835-BCF9-40D8C8D4981E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{96CA9837-F7B2-4835-BCF9-40D8C8D4981E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{96AB70CE-1B6A-4511-BDD3-3AADD4DAD15A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{96AB70CE-1B6A-4511-BDD3-3AADD4DAD15A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageManager", "ImageManager\ImageManager.csproj", "{AFE88EDC-61A2-429B-A338-14B3163797F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageManager", "ImageManager\ImageManager.csproj", "{AFE88EDC-61A2-429B-A338-14B3163797F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patcher", "Patcher\Patcher.csproj", "{9D96CE9C-EBA1-4293-B9BD-ADCAB5DFB900}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Patcher", "Patcher\Patcher.csproj", "{9D96CE9C-EBA1-4293-B9BD-ADCAB5DFB900}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryEditor", "LibraryEditor\LibraryEditor.csproj", "{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryEditor", "LibraryEditor\LibraryEditor.csproj", "{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{C951172F-95CE-41EC-861A-E8A26A13B962}"
 EndProject
@@ -27,9 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryCore", "LibraryCore\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B8DD8844-BBCD-4781-9CD1-81888964AEF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginCore", "PluginCore\PluginCore.csproj", "{9EC9F47E-A443-471E-B0D5-1367772B2A0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginCore", "PluginCore\PluginCore.csproj", "{9EC9F47E-A443-471E-B0D5-1367772B2A0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginStandalone", "PluginStandalone\PluginStandalone.csproj", "{6EA8BC75-47C2-4E1F-96D3-3132F1665D10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginStandalone", "PluginStandalone\PluginStandalone.csproj", "{6EA8BC75-47C2-4E1F-96D3-3132F1665D10}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugin", "Plugin", "{1B4B2D41-ABFA-4DD1-9E4E-81F0E0FCA3A4}"
 EndProject
@@ -117,8 +117,8 @@ Global
 		{9D96CE9C-EBA1-4293-B9BD-ADCAB5DFB900}.Release|x86.Build.0 = Release|Any CPU
 		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Debug|Any CPU.Build.0 = Debug|x86
-		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Debug|x64.ActiveCfg = Debug|x64
-		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Debug|x64.Build.0 = Debug|x64
+		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Debug|x64.Build.0 = Debug|Any CPU
 		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Debug|x86.ActiveCfg = Debug|x86
 		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Debug|x86.Build.0 = Debug|x86
 		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E}.Release|Any CPU.ActiveCfg = Release|x86
