@@ -1,11 +1,5 @@
 ﻿using Client.Envir;
 using Library;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Client.Scenes.Views.Character
 {
@@ -52,7 +46,6 @@ namespace Client.Scenes.Views.Character
 
         private static MirImage PresetItemEffectImage(ClientUserItem item, MirLibrary effectLibrary)
         {
-            
             return item.Info.Image switch
             {
                 //LightArmour
@@ -82,6 +75,9 @@ namespace Client.Scenes.Views.Character
                 //44TaoRobe
                 1003 => effectLibrary.CreateImage(1400, ImageType.Image),
                 1013 => effectLibrary.CreateImage(1420, ImageType.Image),
+                //DivineRobe
+                //? => effectLibrary.CreateImage(1500, ImageType.Image),
+                //? => effectLibrary.CreateImage(1520, ImageType.Image),
                 //Other
                 _ => null
             };
