@@ -10,10 +10,10 @@ namespace Client.Models.Player
     {
         public static void DrawExteriorEffects(PlayerObject player)
         {
-            //if (!Config.DrawEffects)
-            //{
-            //    return;
-            //}
+            if (!Config.DrawEffects)
+            {
+                return;
+            }
 
             MirAction currentAction = player.CurrentAction;
             MirAction mirAction = currentAction;
@@ -131,7 +131,6 @@ namespace Client.Models.Player
                     case ExteriorEffect.A_FlameAura:
                         library.DrawBlend(820 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
                         break;
-
                     case ExteriorEffect.A_GreenWings:
                         library.DrawBlend(400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
@@ -148,8 +147,6 @@ namespace Client.Models.Player
                     //    library.DrawBlend(4874 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                     //    library.DrawBlend(4898 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                     //    break;
-
-
                     case ExteriorEffect.A_PurpleTentacles2:
                         library.DrawBlend(4454 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)direction * 9, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
@@ -193,8 +190,8 @@ namespace Client.Models.Player
                     return indexStart + 560 + GameScene.Game.MapControl.Animation / animationSpeed % 5 + (int)direction * 10;
                 case MirAnimation.Combat2:
                     return indexStart + 640 + GameScene.Game.MapControl.Animation / animationSpeed % 5 + (int)direction * 10;
-                case MirAnimation.Combat3: //Ducky: this looks glitchy i think this one is wrong.
-                    return indexStart + 720 + GameScene.Game.MapControl.Animation / animationSpeed % 6 + (int)direction * 10;
+                case MirAnimation.Combat3:
+                    return indexStart + 723 + GameScene.Game.MapControl.Animation / animationSpeed % 3 + (int)direction * 10;
                 case MirAnimation.Combat4:
                     return indexStart + 800 + GameScene.Game.MapControl.Animation / animationSpeed % 6 + (int)direction * 10;
                 case MirAnimation.Combat5:
