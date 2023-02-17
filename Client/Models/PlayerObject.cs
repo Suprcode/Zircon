@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
+using Client.Models.Player;
 using Client.Scenes;
 using Library;
 using SlimDX;
@@ -802,7 +803,7 @@ namespace Client.Models
             if (BodyLibrary == null) return;
 
             if (DrawWingsBehind())
-                DrawExteriorEffects();
+                ExteriorEffectManager.DrawExteriorEffects(this);
 
             if (DrawShieldEffectBehind())
                 DrawShieldEffect();
@@ -810,7 +811,7 @@ namespace Client.Models
             DrawBody(true);
 
             if (DrawWingsInfront())
-                DrawExteriorEffects();
+                ExteriorEffectManager.DrawExteriorEffects(this);
 
             if (DrawShieldEffectInfront())
                 DrawShieldEffect();
@@ -1151,124 +1152,6 @@ namespace Client.Models
             }
         }
 
-        private void DrawExteriorEffect(ExteriorEffect effect)
-        {
-            LibraryFile libraryFile = (byte)effect >= 200 ?
-                LibraryFile.MonMagicEx26 : LibraryFile.EquipEffect_Part;
-            if (!CEnvir.LibraryList.TryGetValue(libraryFile, out MirLibrary library)) return;
-
-            switch(effect)
-            {
-                case ExteriorEffect.WhiteAura:
-                    library.DrawBlend(800 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.BlueAura:
-                    library.DrawBlend(840 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.FlameAura:
-                    library.DrawBlend(820 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.GreenWings:
-                    library.DrawBlend(400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.LionWings:
-                    library.DrawBlend(2830 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.FlameWings:
-                    library.DrawBlend(200 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.BlueWings:
-                    library.DrawBlend(GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.RedSinWings:
-                    library.DrawBlend(600 + GameScene.Game.MapControl.Animation / 2 % 13 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                //case 9177 or 9178: //??? i'm missing something from EquipEffect-Part.Zl?
-                //    library.DrawBlend(4874 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                //    library.DrawBlend(4898 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                //    break;
-                case ExteriorEffect.AngelicWings:
-                    library.DrawBlend(2942 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.BlueDragonWings:
-                    library.DrawBlend(3054 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.RedWings2:
-                    library.DrawBlend(3166 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.FireDragonWings:
-                    library.DrawBlend(3278 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.SmallYellowWings:
-                    library.DrawBlend(3390 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.GreenFeatherWings:
-                    library.DrawBlend(3502 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.RedFeatherWings:
-                    library.DrawBlend(3614 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.BlueFeatherWings:
-                    library.DrawBlend(3726 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.WhiteFeatherWings:
-                    library.DrawBlend(3838 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.PurpleTentacles:
-                    library.DrawBlend(3950 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.PurpleTentacles2:
-                    library.DrawBlend(4454 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.DiamondFireWings:
-                    library.DrawBlend(4566 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.PhoenixWings:
-                    library.DrawBlend(4062 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.IceKingWings:
-                    library.DrawBlend(4258 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.BlueButterflyWings:
-                    library.DrawBlend(4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.RedEyeRing:
-                    library.DrawBlend(90 + GameScene.Game.MapControl.Animation / 2 % 24, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    library.DrawBlend(140 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.BlueEyeRing:
-                    library.DrawBlend(220 + GameScene.Game.MapControl.Animation / 2 % 25, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    library.DrawBlend(180 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.GreenSpiralRing:
-                    library.DrawBlend(330 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    library.DrawBlend(270 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case ExteriorEffect.Fireworks:
-                    library.DrawBlend(360 + GameScene.Game.MapControl.Animation / 2 % 10, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-            }
-        }
-
-        private void DrawExteriorEffects()
-        {
-            if (!Config.DrawEffects)
-            {
-                return;
-            }
-
-            MirAction currentAction = CurrentAction;
-            MirAction mirAction = currentAction;
-            if (mirAction - 7 <= MirAction.Moving)
-            {
-                return;
-            }
-
-            DrawExteriorEffect(ArmourEffect);
-            DrawExteriorEffect(WingsEffect);
-            DrawExteriorEffect(EmblemEffect);
-        }
-
         public bool DrawShieldEffectBehind()
         {
             switch (Direction)
@@ -1296,9 +1179,9 @@ namespace Client.Models
                 case MirDirection.DownLeft:
                     switch (ArmourEffect)
                     {
-                        case ExteriorEffect.BlueAura:
-                        case ExteriorEffect.FlameAura:
-                        case ExteriorEffect.WhiteAura:
+                        case ExteriorEffect.A_BlueAura:
+                        case ExteriorEffect.A_FlameAura:
+                        case ExteriorEffect.A_WhiteAura:
                             return false;
                         default: return true;
                     };
@@ -1337,9 +1220,9 @@ namespace Client.Models
                 case MirDirection.DownLeft:         
                     switch(ArmourEffect)
                     {
-                        case ExteriorEffect.BlueAura:
-                        case ExteriorEffect.FlameAura:
-                        case ExteriorEffect.WhiteAura: 
+                        case ExteriorEffect.A_BlueAura:
+                        case ExteriorEffect.A_FlameAura:
+                        case ExteriorEffect.A_WhiteAura: 
                          return true;
                         default: return false;
                     };

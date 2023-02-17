@@ -25,27 +25,27 @@ namespace Client.Scenes.Views.Character
             int animationIndex = GameScene.Game.MapControl.Animation;
             return Item.Info.ExteriorEffect switch
             {
-                ExteriorEffect.GreenFeatherWings => effectLibrary.CreateImage(2100, ImageType.Image),
-                ExteriorEffect.RedFeatherWings => effectLibrary.CreateImage(2101, ImageType.Image),
-                ExteriorEffect.BlueFeatherWings => effectLibrary.CreateImage(2102, ImageType.Image),
-                ExteriorEffect.WhiteFeatherWings => effectLibrary.CreateImage(2103, ImageType.Image),
-                ExteriorEffect.AngelicWings => effectLibrary.CreateImage(3000, ImageType.Image),
+                ExteriorEffect.A_GreenFeatherWings => effectLibrary.CreateImage(2100, ImageType.Image),
+                ExteriorEffect.A_RedFeatherWings => effectLibrary.CreateImage(2101, ImageType.Image),
+                ExteriorEffect.A_BlueFeatherWings => effectLibrary.CreateImage(2102, ImageType.Image),
+                ExteriorEffect.A_WhiteFeatherWings => effectLibrary.CreateImage(2103, ImageType.Image),
+                ExteriorEffect.A_AngelicWings => effectLibrary.CreateImage(3000, ImageType.Image),
 
-                ExteriorEffect.BlueAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 602 : 622, ImageType.Image),
-                ExteriorEffect.FlameAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 601 : 621, ImageType.Image),
-                ExteriorEffect.WhiteAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 600 : 620, ImageType.Image),
-                ExteriorEffect.SmallYellowWings => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 1800 : 1820, ImageType.Image),
+                ExteriorEffect.A_BlueAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 602 : 622, ImageType.Image),
+                ExteriorEffect.A_FlameAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 601 : 621, ImageType.Image),
+                ExteriorEffect.A_WhiteAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 600 : 620, ImageType.Image),
+                ExteriorEffect.A_SmallYellowWings => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 1800 : 1820, ImageType.Image),
 
-                ExteriorEffect.PurpleTentacles => effectLibrary.CreateImage(2200 + (animationIndex % 11), ImageType.Image),
-                ExteriorEffect.LionWings => effectLibrary.CreateImage(2300 + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.BlueDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 2400 : 2500) + (animationIndex % 14), ImageType.Image),
-                ExteriorEffect.RedWings2 => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 2600 : 2700) + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.FlameAura2 => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 1700 : 1720) + (animationIndex % 10), ImageType.Image),
-                ExteriorEffect.GreenWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 400 : 420) + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.FlameWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 300 : 320) + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.BlueWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 200 : 220) + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.RedSinWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 500 : 520) + (animationIndex % 13), ImageType.Image),
-                ExteriorEffect.FireDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 100 : 120) + (animationIndex % 10), ImageType.Image),
+                ExteriorEffect.A_PurpleTentacles => effectLibrary.CreateImage(2200 + (animationIndex % 11), ImageType.Image),
+                ExteriorEffect.A_LionWings => effectLibrary.CreateImage(2300 + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_BlueDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 2400 : 2500) + (animationIndex % 14), ImageType.Image),
+                ExteriorEffect.A_RedWings2 => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 2600 : 2700) + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_FlameAura2 => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 1700 : 1720) + (animationIndex % 10), ImageType.Image),
+                ExteriorEffect.A_GreenWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 400 : 420) + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_FlameWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 300 : 320) + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_BlueWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 200 : 220) + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_RedSinWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 500 : 520) + (animationIndex % 13), ImageType.Image),
+                ExteriorEffect.A_FireDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 100 : 120) + (animationIndex % 10), ImageType.Image),
                 _ => null
             };
         }
