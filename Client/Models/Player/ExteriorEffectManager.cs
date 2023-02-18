@@ -17,7 +17,7 @@ namespace Client.Models.Player
 
             MirAction currentAction = player.CurrentAction;
             MirAction mirAction = currentAction;
-            if (mirAction - 7 <= MirAction.Moving)
+            if (mirAction - 7 <= MirAction.Moving) //TODO - Probably name all the compatible enums instead, as MirActions are not numbers so can easily change
             {
                 return;
             }
@@ -33,7 +33,7 @@ namespace Client.Models.Player
             int drawX = DetermineDrawX(player, effect, direction),
                 drawY = DetermineDrawY(player, effect, direction);
 
-            if ((byte)effect >= 200 && player.Horse == HorseType.None) //MonMagicEx26 - Emblem
+            if (effect >= ExteriorEffect.E_RedEyeRing && player.Horse == HorseType.None) //MonMagicEx26 - Emblem
             {
                 if (!CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx26, out MirLibrary library)) return;
                 switch (effect)
@@ -55,7 +55,7 @@ namespace Client.Models.Player
                         break;
                 }
             }
-            else if ((byte)effect >= 160)
+            else if (effect >= ExteriorEffect.A_RedWings2)
             {
                 if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_FullEx3, out MirLibrary library)) return;
                 switch (effect)
@@ -65,7 +65,7 @@ namespace Client.Models.Player
                         break;
                 }
             }
-            else if ((byte)effect >= 140)
+            else if (effect >= ExteriorEffect.A_BlueDragonWings)
             {
                 if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_FullEx2, out MirLibrary library)) return;
                 switch (effect)
@@ -75,7 +75,7 @@ namespace Client.Models.Player
                         break;
                 }
             }
-            else if ((byte)effect >= 120)
+            else if (effect >= ExteriorEffect.A_LionWings)
             {
                 if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_FullEx1, out MirLibrary library)) return;
                 switch(effect)
@@ -88,7 +88,7 @@ namespace Client.Models.Player
                         break;
                 }
             }
-            else if ((byte)effect >= 100) //EquipEffect_Full
+            else if (effect >= ExteriorEffect.A_FireDragonWings) //EquipEffect_Full
             {
                 if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Full, out MirLibrary library)) return;
                 switch (effect)

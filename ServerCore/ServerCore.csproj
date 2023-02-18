@@ -4,6 +4,10 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Server</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\Debug\ServerCore\</OutputPath>
   </PropertyGroup>

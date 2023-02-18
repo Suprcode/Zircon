@@ -802,7 +802,7 @@ namespace Client.Models
         {
             if (BodyLibrary == null) return;
 
-            if (DrawWingsBehind())
+            if (DrawExteriorEffectBehind())
                 ExteriorEffectManager.DrawExteriorEffects(this);
 
             if (DrawShieldEffectBehind())
@@ -810,7 +810,7 @@ namespace Client.Models
 
             DrawBody(true);
 
-            if (DrawWingsInfront())
+            if (DrawExteriorEffectInfront())
                 ExteriorEffectManager.DrawExteriorEffects(this);
 
             if (DrawShieldEffectInfront())
@@ -1164,7 +1164,7 @@ namespace Client.Models
             return false;
         }
 
-        public bool DrawWingsBehind()
+        public bool DrawExteriorEffectBehind()
         {
             switch (Direction)
             {
@@ -1205,7 +1205,7 @@ namespace Client.Models
             return false;
         }
 
-        public bool DrawWingsInfront()
+        public bool DrawExteriorEffectInfront()
         {
             switch (Direction)
             {
