@@ -86,7 +86,7 @@ namespace PluginCore
                             Loader.Log?.Invoke(o, e);
                         };
 
-                        pluginStart.SetupMenu(ribbonPage);
+                        pluginStart.Type.SetupMenu(ribbonPage);
 
                         Loader.Plugins.Add(pluginStart);
                     }
@@ -94,6 +94,66 @@ namespace PluginCore
                 catch (Exception ex)
                 {
                     Loader.LogMessage(ex.ToString());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Send data to all plugins
+        /// </summary>
+        /// <param name="value"></param>
+        public void SendMessage(object value)
+        {
+            var names = Plugins.Select(x => x.Name).ToArray();
+
+            Send(names, value);
+        }
+
+        /// <summary>
+        /// Send data to multiple plugins
+        /// </summary>
+        /// <param name="names"></param>
+        /// <param name="value"></param>
+        public void Send(string[] names, object value)
+        {
+            if (names == null || names.Length == 0) return;
+
+            foreach (var name in names)
+            {
+                Send(name, value);
+            }
+        }
+
+        /// <summary>
+        /// Send data to specific plugin
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public void Send(string name, object value)
+        {
+            foreach (var plugin in Loader.Plugins)
+            {
+                try
+                {
+                    if (!(plugin.Type is IPluginMessage message)) continue;
+
+                    if (string.IsNullOrEmpty(name)) continue;
+
+                    if (string.Compare(name, plugin.Name, StringComparison.OrdinalIgnoreCase) != 0) continue;
+
+                    message.ReceiveMessage(value);
+                }
+                catch (NotImplementedException)
+                {
+
+                }
+                catch (NotSupportedException)
+                {
+
+                }
+                catch (Exception ex)
+                {
+                    LogMessage(ex.Message);
                 }
             }
         }

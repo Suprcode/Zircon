@@ -23,7 +23,8 @@ namespace Client.Scenes.Views
     {
         #region Properties
 
-        public static Regex R = new Regex(@"\[(?<Text>.*?):(?<ID>.+?)\]", RegexOptions.Compiled);
+        public static Regex B = new Regex(@"\[(?<Text>.*?):(?<ID>.+?)\]", RegexOptions.Compiled);
+        public static Regex C = new Regex(@"\{(?<Text>.*?):(?<Colour>.+?)\}", RegexOptions.Compiled);
 
         public NPCPage Page;
         public DXLabel PageText;
@@ -50,7 +51,6 @@ namespace Client.Scenes.Views
             PageText.Size = new Size(ClientArea.Width - 20, ClientArea.Height - 20);
 
             ProcessText();
-
 
             base.OnIsResizingChanged(oValue, nValue);
         }
@@ -92,7 +92,6 @@ namespace Client.Scenes.Views
             if (GameScene.Game.NPCMasterRefineBox != null && !IsVisible)
                 GameScene.Game.NPCMasterRefineBox.Visible = false;
 
-
             if (GameScene.Game.NPCItemFragmentBox != null && !IsVisible)
                 GameScene.Game.NPCItemFragmentBox.Visible = false;
 
@@ -111,6 +110,8 @@ namespace Client.Scenes.Views
             if (GameScene.Game.NPCAccessoryRefineBox != null && !IsVisible)
                 GameScene.Game.NPCAccessoryRefineBox.Visible = false;
 
+            GameScene.Game.InventoryBox.SetPrimaryCurrency(null);
+
             if (Opened)
             {
                 GameScene.Game.NPCID = 0;
@@ -128,7 +129,7 @@ namespace Client.Scenes.Views
             else if (GameScene.Game.CharacterBox.Location.X == Size.Width)
             {
                 GameScene.Game.CharacterBox.ApplySettings();
-                GameScene.Game.StorageBox.ApplySettings();//.Location = new Point(GameScene.Game.Size.Width - GameScene.Game.StorageBox.Size.Width - GameScene.Game.InventoryBox.Size.Width, 0);
+                GameScene.Game.StorageBox.ApplySettings();
             }
         }
         
@@ -165,8 +166,12 @@ namespace Client.Scenes.Views
             GameScene.Game.NPCBox.Visible = true;
 
             Page = info.Page;
-            //  RawPageText = info.Page.Say.Replace("\n", "");
-            PageText.Text = R.Replace(Page.Say, @"${Text}");
+
+            var text = Page.Say;
+            text = B.Replace(text, @"${Text}");
+            text = C.Replace(text, @"${Text}");
+
+            PageText.Text = text;
 
             int height = DXLabel.GetHeight(PageText, ClientArea.Width).Height;
             if (height > ClientArea.Height)
@@ -192,6 +197,8 @@ namespace Client.Scenes.Views
             GameScene.Game.NPCAccessoryResetBox.Visible = false;
             GameScene.Game.NPCWeaponCraftBox.Visible = false;
 
+            GameScene.Game.InventoryBox.SetPrimaryCurrency(null);
+
             switch (info.Page.DialogType)
             {
                 case NPCDialogType.None:
@@ -200,8 +207,10 @@ namespace Client.Scenes.Views
                     GameScene.Game.NPCGoodsBox.Location = new Point(0, Size.Height);
                     GameScene.Game.NPCGoodsBox.Visible = Page.Goods.Count > 0;
                     GameScene.Game.NPCGoodsBox.NewGoods(Page.Goods, Page.Currency);
+
                     GameScene.Game.NPCSellBox.Visible = Page.Types.Count > 0;
                     GameScene.Game.NPCSellBox.SetCurrency(Page.Currency);
+                    GameScene.Game.InventoryBox.SetPrimaryCurrency(Page.Currency);
                     GameScene.Game.NPCSellBox.Location = GameScene.Game.NPCGoodsBox.Visible ? new Point(Size.Width - GameScene.Game.NPCSellBox.Size.Width, Size.Height) : new Point(0, Size.Height);
                     break;
                 case NPCDialogType.Repair:
@@ -268,23 +277,44 @@ namespace Client.Scenes.Views
                 label.Dispose();
 
             Buttons.Clear();
-            //string rawText = RawPageText.Replace("\n", "");
 
-            MatchCollection matches = R.Matches(Page.Say);
-            List<CharacterRange> ranges = new List<CharacterRange>();
+            List<ButtonIndex> buttonRanges = new();
+
+            List<Match> matchList = new();
+            matchList.AddRange(B.Matches(Page.Say).Cast<Match>());
+            matchList.AddRange(C.Matches(Page.Say).Cast<Match>());
+
+            matchList = matchList.OrderBy(x => x.Groups["Text"].Index).ToList();
 
             int offset = 1;
-            foreach (Match match in matches)
+            foreach (Match match in matchList)
             {
-                ranges.Add(new CharacterRange(match.Groups["Text"].Index - offset, match.Groups["Text"].Length));
-                offset += 3 + match.Groups["ID"].Length;
+                ButtonIndex index = new()
+                {
+                    Range = new CharacterRange(match.Groups["Text"].Index - offset, match.Groups["Text"].Length)
+                };
+
+                buttonRanges.Add(index);
+
+                if (!string.IsNullOrEmpty(match.Groups["ID"].Value))
+                {
+                    index.Type = ButtonType.Button;
+                    offset += 3 + match.Groups["ID"].Length;
+                }
+                else if (!string.IsNullOrEmpty(match.Groups["Colour"].Value))
+                {
+                    index.Type = ButtonType.Label;
+                    offset += 3 + match.Groups["Colour"].Length;
+                }
             }
 
-            for (int i = 0; i < ranges.Count; i++)
+            for (int i = 0; i < buttonRanges.Count; i++)
             {
-                List<ButtonInfo> buttons = GetWordRegionsNew(DXManager.Graphics, PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, ranges[i].First, ranges[i].Length);
+                var buttonIndex = buttonRanges[i];
 
-                List<DXLabel> labels = new List<DXLabel>();
+                List<ButtonInfo> buttons = GetWordRegionsNew(DXManager.Graphics, PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
+
+                List<DXLabel> labels = new();
 
                 foreach (ButtonInfo info in buttons)
                 {
@@ -292,14 +322,12 @@ namespace Client.Scenes.Views
                     {
                         AutoSize = false,
                         Parent = PageText,
-                        ForeColour = Color.Yellow,
                         Location = info.Region.Location,
                         DrawFormat = PageText.DrawFormat,
                         Text = PageText.Text.Substring(info.Index, info.Length),
-                        Font = new Font(PageText.Font.FontFamily, PageText.Font.Size),
+                        Font = PageText.Font,
                         Size = info.Region.Size,
-                        Outline = false,
-                        Sound = SoundIndex.ButtonC,
+                        Outline = false
                     });
                 }
 
@@ -307,40 +335,53 @@ namespace Client.Scenes.Views
                 DateTime NextButtonTime = DateTime.MinValue;
                 foreach (DXLabel label in labels)
                 {
-                    label.MouseEnter += (o, e) =>
+                    switch (buttonIndex.Type)
                     {
-                        if (GameScene.Game.Observer) return;
-                        foreach (DXLabel l in labels)
-                            l.ForeColour = Color.Red;
-                    };
+                        case ButtonType.Button:
+                            {
+                                label.ForeColour = Color.Yellow;
+                                label.Sound = SoundIndex.ButtonC;
 
-                    label.MouseLeave += (o, e) =>
-                    {
-                        if (GameScene.Game.Observer) return;
-                        foreach (DXLabel l in labels)
-                            l.ForeColour = Color.Yellow;
-                    };
-                    label.MouseClick += (o, e) =>
-                    {
-                        if (GameScene.Game.Observer) return;
+                                label.MouseEnter += (o, e) =>
+                                {
+                                    if (GameScene.Game.Observer) return;
+                                    foreach (DXLabel l in labels)
+                                        l.ForeColour = Color.Red;
+                                };
+                                label.MouseLeave += (o, e) =>
+                                {
+                                    if (GameScene.Game.Observer) return;
+                                    foreach (DXLabel l in labels)
+                                        l.ForeColour = Color.Yellow;
+                                };
+                                label.MouseClick += (o, e) =>
+                                {
+                                    if (GameScene.Game.Observer) return;
 
-                        if (matches[index].Groups["ID"].Value == "0")
-                        {
-                            Visible = false;
-                            return;
-                        }
+                                    if (matchList[index].Groups["ID"].Value == "0")
+                                    {
+                                        Visible = false;
+                                        return;
+                                    }
 
-                        if (CEnvir.Now < NextButtonTime) return;
+                                    if (CEnvir.Now < NextButtonTime) return;
 
-                        NextButtonTime = CEnvir.Now.AddSeconds(1);
+                                    NextButtonTime = CEnvir.Now.AddSeconds(1);
 
-                        CEnvir.Enqueue(new C.NPCButton { ButtonID = int.Parse(matches[index].Groups["ID"].Value) });
-                    };
+                                    CEnvir.Enqueue(new C.NPCButton { ButtonID = int.Parse(matchList[index].Groups["ID"].Value) });
+                                };
+                            }
+                            break;
+                        case ButtonType.Label:
+                            {
+                                label.ForeColour = Color.FromName(matchList[index].Groups["Colour"].Value);
+                            }
+                            break;
+                    }
 
                     Buttons.Add(label);
                 }
             }
-
         }
 
         public static List<ButtonInfo> GetWordRegionsNew(Graphics graphics, string text, Font font, TextFormatFlags flags, int width, int index, int length)
@@ -354,8 +395,6 @@ namespace Client.Scenes.Views
             int lineStart = 0;
             int lastHeight = h;
 
-            //IfWord Wrap ?
-            //{
             Regex regex = new Regex(@"(?<Words>\S+)", RegexOptions.Compiled);
 
             MatchCollection matches = regex.Matches(text);
@@ -365,10 +404,7 @@ namespace Client.Scenes.Views
             foreach (Match match in matches)
                 ranges.Add(new CharacterRange(match.Index, match.Length));
 
-
             ButtonInfo currentInfo = null;
-
-
 
             //If Word Wrap enabled.
             foreach (CharacterRange range in ranges)
@@ -399,7 +435,6 @@ namespace Client.Scenes.Views
                         currentInfo = new ButtonInfo { Region = region, Index = range.First, Length = range.Length };
                         regions.Add(currentInfo);
                     }
-
                 }
                 else
                 {
@@ -434,61 +469,8 @@ namespace Client.Scenes.Views
                     }
                 }
             }
-            //}
 
             return regions;
-            /*
-            for (int i = 0; i < text.Length; i++)
-            {
-                Size size = TextRenderer.MeasureText(graphics, text.Substring(lineStart, i  - lineStart + 1), font, new Size(width, 9999), flags); // +1 Because its pointless measuring a 0 length string.
-                int height = TextRenderer.MeasureText(graphics, text.Substring(0, i + 1), font, new Size(width, 9999), flags).Height;
-
-                if (i == text.Length - 1 || i == index + length)
-                {
-                    current.Width = lastSize.Width - current.X;
-                    regions.Add(new ButtonInfo { Region = current, Text = text.Substring(textStart, i - textStart).Replace("\r", "") });
-                    break;
-                }
-
-                if (height > lastHeight)
-                {
-                    x = 0;
-                    y += lastSize.Height;
-                    
-                    lineStart = i;
-                    size = TextRenderer.MeasureText(graphics, text.Substring(lineStart, i - lineStart + 1), font, new Size(width, 9999), flags);
-                    if (size.Height > h)
-                        size = new Size(size.Width, h);
-
-                    if (i > index)
-                    {
-                        current.Width = lastSize.Width - current.X;
-                        regions.Add(new ButtonInfo { Region =  current, Text = text.Substring(textStart, i - textStart).Replace("\r", "") });
-
-                        current.X = x;
-                        current.Y = y;
-                        current.Height = h;
-                        textStart = i;
-                    }
-                }
-                if (i == index)
-                {
-                    current.X = x;
-                    current.Y = y;
-                    current.Height = h;
-                    textStart = i;
-                }
-
-                x += size.Width;
-
-                lastSize = size;
-                lastHeight = height;
-            }
-
-
-
-
-            return regions;*/
         }
 
         #endregion
@@ -541,6 +523,18 @@ namespace Client.Scenes.Views
             public int Index;
             public int Length;
         }
+
+        public class ButtonIndex
+        {
+            public CharacterRange Range;
+            public ButtonType Type;
+        };
+
+        public enum ButtonType
+        {
+            Button,
+            Label
+        };
     }
 
     public sealed class NPCGoodsDialog : DXWindow
@@ -3516,15 +3510,18 @@ namespace Client.Scenes.Views
                 case QuestType.Daily:
                     startIndex = 76;
                     break;
+                case QuestType.Weekly:
+                    startIndex = 76;
+                    break;
                 case QuestType.Repeatable:
                     startIndex = 16;
                     break;
                 case QuestType.Story:
                     startIndex = 56;
                     break;
-                //case QuestType.Account:
-                //    startIndex = 36;
-                //    break;
+                case QuestType.Account:
+                    startIndex = 36;
+                    break;
             }
 
             switch (icon)
@@ -3934,7 +3931,7 @@ namespace Client.Scenes.Views
         }
         private void UnlockButton_MouseClick(object sender, MouseEventArgs e)
         {
-            if (GameScene.Game.Inventory.All(x => x == null || x.Info.Effect != ItemEffect.CompanionTicket))
+            if (GameScene.Game.Inventory.All(x => x == null || x.Info.ItemEffect != ItemEffect.CompanionTicket))
             {
                 GameScene.Game.ReceiveChat("You need a Companion Ticket to unlock a new appearance", MessageType.System);
                 return;
@@ -6708,7 +6705,7 @@ namespace Client.Scenes.Views
         public virtual void OnRequiredClassChanged(RequiredClass oValue, RequiredClass nValue)
         {
 
-            if (TemplateCell.Grid[0].Item == null || TemplateCell.Grid[0].Item.Info.Effect == ItemEffect.WeaponTemplate)
+            if (TemplateCell.Grid[0].Item == null || TemplateCell.Grid[0].Item.Info.ItemEffect == ItemEffect.WeaponTemplate)
             {
                 switch (RequiredClass)
                 {
@@ -6750,7 +6747,7 @@ namespace Client.Scenes.Views
 
                 long cost = Globals.CraftWeaponPercentCost;
 
-                if (TemplateCell.Grid[0].Item != null && TemplateCell.Grid[0].Item.Info.Effect != ItemEffect.WeaponTemplate)
+                if (TemplateCell.Grid[0].Item != null && TemplateCell.Grid[0].Item.Info.ItemEffect != ItemEffect.WeaponTemplate)
                 {
                     switch (TemplateCell.Grid[0].Item.Info.Rarity)
                     {
@@ -6798,7 +6795,7 @@ namespace Client.Scenes.Views
             TemplateCell.Location = new Point(label.Location.X + (label.Size.Width - TemplateCell.Size.Width) / 2, label.Location.Y + label.Size.Height + 5);
             TemplateCell.Grid[0].LinkChanged += (o, e) =>
             {
-                if (TemplateCell.Grid[0].Item == null || TemplateCell.Grid[0].Item.Info.Effect == ItemEffect.WeaponTemplate)
+                if (TemplateCell.Grid[0].Item == null || TemplateCell.Grid[0].Item.Info.ItemEffect == ItemEffect.WeaponTemplate)
                 {
                     ClassLabel.Text = "Class:";
                     switch (RequiredClass)

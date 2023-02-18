@@ -1,530 +1,93 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{96AB70CE-1B6A-4511-BDD3-3AADD4DAD15A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Server</RootNamespace>
-    <AssemblyName>Server</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <StartupObject></StartupObject>
+    <BaseOutputPath></BaseOutputPath>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+  </PropertyGroup>
+  <PropertyGroup>  
+   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>  
+  </PropertyGroup> 
+  <PropertyGroup>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\..\Debug\Server\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
     <OutputPath>..\..\Release\Server\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
+    <Reference Include="DevExpress.BonusSkins.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.BonusSkins.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.BonusSkins.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.BonusSkins.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.Data.Desktop.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.Data.Desktop.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Data.Desktop.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.Data.Desktop.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.Data.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.Data.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Data.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.Data.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.Images.v21.2">
+      <HintPath>..\..\Source Map Editor\Plugin.MapEditor\Components\DevExpress\DevExpress.Images.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Printing.v21.2.Core, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.Printing.v21.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Utils.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.Utils.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Utils.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.Utils.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraBars.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraBars.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraBars.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.XtraBars.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraEditors.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraEditors.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraEditors.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.XtraEditors.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraGrid.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraGrid.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraGrid.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.XtraGrid.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraLayout.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraLayout.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraLayout.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.XtraLayout.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraNavBar.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraNavBar.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraNavBar.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.XtraNavBar.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraPrinting.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraPrinting.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraPrinting.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Framework\DevExpress.XtraPrinting.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraTreeList.v21.2">
+      <HintPath>..\Components\DevExpress\DevExpress.XtraTreeList.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    <Reference Include="SlimDX">
+      <HintPath>..\..\Debug\Server\SlimDX.dll</HintPath>
     </Reference>
-    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64" />
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="SMain.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SMain.Designer.cs">
-      <DependentUpon>SMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Views\CurrencyInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\CurrencyInfoView.Designer.cs">
-      <DependentUpon>CurrencyInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DatabaseEncryptionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\DatabaseEncryptionForm.Designer.cs">
-      <DependentUpon>DatabaseEncryptionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DisciplineInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\DisciplineInfoView.Designer.cs">
-      <DependentUpon>DisciplineInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\FishingInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\FishingInfoView.Designer.cs">
-      <DependentUpon>FishingInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\GameStoreSaleView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\GameStoreSaleView.Designer.cs">
-      <DependentUpon>GameStoreSaleView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\GameGoldPaymentView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\GameGoldPaymentView.Designer.cs">
-      <DependentUpon>GameGoldPaymentView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AccountView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\AccountView.Designer.cs">
-      <DependentUpon>AccountView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\BaseStatView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\BaseStatView.Designer.cs">
-      <DependentUpon>BaseStatView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CharacterView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\CharacterView.Designer.cs">
-      <DependentUpon>CharacterView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CompanionInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\CompanionInfoView.Designer.cs">
-      <DependentUpon>CompanionInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ConfigView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\ConfigView.Designer.cs">
-      <DependentUpon>ConfigView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DropInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\DropInfoView.Designer.cs">
-      <DependentUpon>DropInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CastleInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\CastleInfoView.Designer.cs">
-      <DependentUpon>CastleInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EventInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\EventInfoView.Designer.cs">
-      <DependentUpon>EventInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DiagnosticView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\DiagnosticView.designer.cs">
-      <DependentUpon>DiagnosticView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\InstanceInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\InstanceInfoView.Designer.cs">
-      <DependentUpon>InstanceInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SyncForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\SyncForm.Designer.cs">
-      <DependentUpon>SyncForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ChatLogView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\ChatLogView.Designer.cs">
-      <DependentUpon>ChatLogView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WeaponCraftStatInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\WeaponCraftStatInfoView.designer.cs">
-      <DependentUpon>WeaponCraftStatInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MonsterInfoStatView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\MonsterInfoStatView.designer.cs">
-      <DependentUpon>MonsterInfoStatView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ItemInfoStatView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\ItemInfoStatView.designer.cs">
-      <DependentUpon>ItemInfoStatView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ItemInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\ItemInfoView.Designer.cs">
-      <DependentUpon>ItemInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MagicInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\MagicInfoView.Designer.cs">
-      <DependentUpon>MagicInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MapInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\MapInfoView.Designer.cs">
-      <DependentUpon>MapInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MapRegionView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\MapRegionView.Designer.cs">
-      <DependentUpon>MapRegionView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MapViewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\MapViewer.Designer.cs">
-      <DependentUpon>MapViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MonsterInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\MonsterInfoView.Designer.cs">
-      <DependentUpon>MonsterInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MovementInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\MovementInfoView.Designer.cs">
-      <DependentUpon>MovementInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\NPCInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\NPCInfoView.Designer.cs">
-      <DependentUpon>NPCInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\NPCPageView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\NPCPageView.Designer.cs">
-      <DependentUpon>NPCPageView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\QuestInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\QuestInfoView.Designer.cs">
-      <DependentUpon>QuestInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RespawnInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\RespawnInfoView.Designer.cs">
-      <DependentUpon>RespawnInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SafeZoneInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\SafeZoneInfoView.Designer.cs">
-      <DependentUpon>SafeZoneInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SetInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\SetInfoView.Designer.cs">
-      <DependentUpon>SetInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\StoreInfoView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\StoreInfoView.Designer.cs">
-      <DependentUpon>StoreInfoView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SystemLogView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\SystemLogView.Designer.cs">
-      <DependentUpon>SystemLogView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\UserConquestStatsView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\UserConquestStatsView.Designer.cs">
-      <DependentUpon>UserConquestStatsView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\UserMailView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\UserMailView.Designer.cs">
-      <DependentUpon>UserMailView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\UserItemView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\UserItemView.Designer.cs">
-      <DependentUpon>UserItemView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\UserDropView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\UserDropView.Designer.cs">
-      <DependentUpon>UserDropView.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Properties\licenses.licx" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SMain.resx">
-      <DependentUpon>SMain.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\CurrencyInfoView.resx">
-      <DependentUpon>CurrencyInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DatabaseEncryptionForm.resx">
-      <DependentUpon>DatabaseEncryptionForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DisciplineInfoView.resx">
-      <DependentUpon>DisciplineInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\FishingInfoView.resx">
-      <DependentUpon>FishingInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\GameStoreSaleView.resx">
-      <DependentUpon>GameStoreSaleView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\GameGoldPaymentView.resx">
-      <DependentUpon>GameGoldPaymentView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\AccountView.resx">
-      <DependentUpon>AccountView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\BaseStatView.resx">
-      <DependentUpon>BaseStatView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\CharacterView.resx">
-      <DependentUpon>CharacterView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\CompanionInfoView.resx">
-      <DependentUpon>CompanionInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\ConfigView.resx">
-      <DependentUpon>ConfigView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DropInfoView.resx">
-      <DependentUpon>DropInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\CastleInfoView.resx">
-      <DependentUpon>CastleInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\EventInfoView.resx">
-      <DependentUpon>EventInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DiagnosticView.resx">
-      <DependentUpon>DiagnosticView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\InstanceInfoView.resx">
-      <DependentUpon>InstanceInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SyncForm.resx">
-      <DependentUpon>SyncForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\ChatLogView.resx">
-      <DependentUpon>ChatLogView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\WeaponCraftStatInfoView.resx">
-      <DependentUpon>WeaponCraftStatInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\MonsterInfoStatView.resx">
-      <DependentUpon>MonsterInfoStatView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\ItemInfoStatView.resx">
-      <DependentUpon>ItemInfoStatView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\ItemInfoView.resx">
-      <DependentUpon>ItemInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\MagicInfoView.resx">
-      <DependentUpon>MagicInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\MapInfoView.resx">
-      <DependentUpon>MapInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\MapRegionView.resx">
-      <DependentUpon>MapRegionView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\MapViewer.resx">
-      <DependentUpon>MapViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\MonsterInfoView.resx">
-      <DependentUpon>MonsterInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\MovementInfoView.resx">
-      <DependentUpon>MovementInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\NPCInfoView.resx">
-      <DependentUpon>NPCInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\NPCPageView.resx">
-      <DependentUpon>NPCPageView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\QuestInfoView.resx">
-      <DependentUpon>QuestInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\RespawnInfoView.resx">
-      <DependentUpon>RespawnInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SafeZoneInfoView.resx">
-      <DependentUpon>SafeZoneInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SetInfoView.resx">
-      <DependentUpon>SetInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\StoreInfoView.resx">
-      <DependentUpon>StoreInfoView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SystemLogView.resx">
-      <DependentUpon>SystemLogView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\UserConquestStatsView.resx">
-      <DependentUpon>UserConquestStatsView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\UserMailView.resx">
-      <DependentUpon>UserMailView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\UserItemView.resx">
-      <DependentUpon>UserItemView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\UserDropView.resx">
-      <DependentUpon>UserDropView.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj">
-      <Project>{c47f32fa-4c04-4143-b4fe-623d4b014d0d}</Project>
-      <Name>LibraryCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PluginCore\PluginCore.csproj">
-      <Project>{9ec9f47e-a443-471e-b0d5-1367772b2a0e}</Project>
-      <Name>PluginCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj">
-      <Project>{42e44f8e-c98b-4008-958a-5c8cb3d02b8d}</Project>
-      <Name>ServerLibrary</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
+    <ProjectReference Include="..\PluginCore\PluginCore.csproj" />
+    <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\LocationView.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>

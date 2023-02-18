@@ -70,10 +70,12 @@ namespace Server.Views
 
         private void btnGenerateRandomKey_Click(object sender, EventArgs e)
         {
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            byte[] random = new byte[32];
-            rng.GetBytes(random);
-            txtEncryptionKey.Text = Convert.ToBase64String(random);
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                byte[] random = new byte[32];
+                rng.GetBytes(random);
+                txtEncryptionKey.Text = Convert.ToBase64String(random);
+            }
         }
     }
 }

@@ -2812,7 +2812,7 @@ namespace Server.Models
                 }
             }
 
-            foreach (UserQuest quest in owner.Character.Quests)
+            foreach (UserQuest quest in owner.Quests)
             {
                 //For Each Active Quest
                 if (quest.Completed) continue;

@@ -377,12 +377,12 @@ namespace Library
         };
 
         public const int InventorySize = 48,
-                         EquipmentSize = 17,
+                         EquipmentSize = 22,
                          CompanionInventorySize = 30,
                          CompanionEquipmentSize = 4,
-                         PartsStorageOffset = 2000,
                          EquipmentOffSet = 1000,
-                         StorageSize = 100;
+                         StorageSize = 100,
+                         PartsStorageOffset = 2000;
 
         public const int AttackDelay = 1500,
                          ASpeedRate = 47,
@@ -394,7 +394,6 @@ namespace Library
                                AttackTime = TimeSpan.FromMilliseconds(600),
                                CastTime = TimeSpan.FromMilliseconds(600),
                                MagicDelay = TimeSpan.FromMilliseconds(2000);
-
 
         public static bool RealNameRequired = false,
                            BirthDateRequired = false;
@@ -444,16 +443,16 @@ namespace Library
         public int Armour { get; set; }
         public int Shield { get; set; }
         public Color ArmourColour { get; set; }
-        public int ArmourImage { get; set; }
+        public ExteriorEffect ArmourEffect { get; set; }
 
-        public int EmblemShape { get; set; }
-        public int WingsShape { get; set; }
+        public ExteriorEffect EmblemEffect { get; set; }
+        public ExteriorEffect WingsShape { get; set; }
         
         public decimal Experience { get; set; }
 
         public int CurrentHP { get; set; }
         public int CurrentMP { get; set; }
-        public int CurrentSP { get; set; }
+        public int CurrentFP { get; set; }
 
         public AttackMode AttackMode { get; set; }
         public PetMode PetMode { get; set; }
@@ -1115,7 +1114,6 @@ namespace Library
         {
             CompanionInfo = Globals.CompanionInfoList.Binding.First(x => x.Index == CompanionIndex);
 
-
             foreach (ClientUserItem item in Items)
             {
                 if (item.Slot < Globals.EquipmentOffSet)
@@ -1123,7 +1121,6 @@ namespace Library
                 else
                     EquipmentArray[item.Slot - Globals.EquipmentOffSet] = item;
             }
-
         }
 
     }
@@ -1204,6 +1201,12 @@ namespace Library
         public int CurrencyIndex { get; set; }
         public CurrencyInfo Info;
         public long Amount { get; set; }
+
+        [IgnorePropertyPacket]
+        public bool CanPickup
+        {
+            get { return Info != null && Info.DropItem != null; }
+        }
     }
 
     public class ClientUserDiscipline

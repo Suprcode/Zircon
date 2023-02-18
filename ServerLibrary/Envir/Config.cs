@@ -138,6 +138,15 @@ namespace Server.Envir
         public static int SkillRate { get; set; } = 0;
         public static int CompanionRate { get; set; } = 0;
 
+        [ConfigSection("Fishing")]
+        public static bool FishEnablePerfectCatch { get; set; } = true;
+        public static int FishNibbleChanceBase { get; set; } = 10;
+        public static int FishPointsRequired { get; set; } = 50;
+        public static int FishPointSuccessRewardMin { get; set; } = 2; 
+        public static int FishPointSuccessRewardMax { get; set; } = 5;
+        public static int FishPointFailureRewardMin { get; set; } = 0;
+        public static int FishPointFailureRewardMax { get; set; } = 5;
+
         public static void LoadVersion()
         {
             try

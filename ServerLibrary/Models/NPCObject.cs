@@ -471,25 +471,25 @@ namespace Server.Models
                 switch (requirement.Requirement)
                 {
                     case NPCRequirementType.MaxLevel:
-                        if (Level > requirement.IntParameter1) return false;
+                        if (ob.Level > requirement.IntParameter1) return false;
                         break;
                     case NPCRequirementType.MinLevel:
-                        if (Level < requirement.IntParameter1) return false;
+                        if (ob.Level < requirement.IntParameter1) return false;
                         break;
                     case NPCRequirementType.Accepted:
-                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) break;
+                        if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) break;
 
                         return false;
                     case NPCRequirementType.NotAccepted:
-                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) return false;
+                        if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter)) return false;
 
                         break;
                     case NPCRequirementType.HaveCompleted:
-                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) break;
+                        if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) break;
 
                         return false;
                     case NPCRequirementType.HaveNotCompleted:
-                        if (ob.Character.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) return false;
+                        if (ob.Quests.Any(x => x.QuestInfo == requirement.QuestParameter && x.Completed)) return false;
 
                         break;
                     case NPCRequirementType.Class:
@@ -510,7 +510,6 @@ namespace Server.Models
                         }
                         break;
                     case NPCRequirementType.DaysOfWeek:
-                        //DaysOfWeek currentDayOfWeek = (DaysOfWeek)Math.Pow(2, (double)DateTime.UtcNow.DayOfWeek);
                         var flag = (DaysOfWeek)Enum.ToObject(typeof(DaysOfWeek), 1 << (int)DateTime.UtcNow.DayOfWeek);
 
                         if (!requirement.DaysOfWeek.HasFlag(flag)) return false;

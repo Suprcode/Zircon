@@ -33,7 +33,7 @@ namespace Client.Models
 
             ItemInfo itemInfo = info.Item.Info;
 
-            if (info.Item.Info.Effect == ItemEffect.ItemPart)
+            if (info.Item.Info.ItemEffect == ItemEffect.ItemPart)
             {
                 itemInfo = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
 
@@ -50,7 +50,7 @@ namespace Client.Models
             switch (itemInfo.Rarity)
             {
                 case Rarity.Common:
-                    if (Item.AddedStats.Values.Count > 0 && Item.Info.Effect != ItemEffect.ItemPart)
+                    if (Item.AddedStats.Values.Count > 0 && Item.Info.ItemEffect != ItemEffect.ItemPart)
                     {
                         NameColour = Color.LightSkyBlue;
 
@@ -115,30 +115,15 @@ namespace Client.Models
 
             int drawIndex;
 
-            if (Item.Info == Globals.GoldInfo)
+            if (CEnvir.IsCurrencyItem(Item.Info))
             {
-                if (Item.Count < 100)
-                    drawIndex = 120;
-                else if (Item.Count < 200)
-                    drawIndex = 121;
-                else if (Item.Count < 500)
-                    drawIndex = 122;
-                else if (Item.Count < 1000)
-                    drawIndex = 123;
-                else if (Item.Count < 1000000) //1 Million
-                    drawIndex = 124;
-                else if (Item.Count < 5000000) //5 Million
-                    drawIndex = 125;
-                else if (Item.Count < 10000000) //10 Million
-                    drawIndex = 126;
-                else
-                    drawIndex = 127;
+                drawIndex = CEnvir.CurrencyImage(Item.Info, Item.Count);
             }
             else
             {
                 ItemInfo info = Item.Info;
 
-                if (info.Effect == ItemEffect.ItemPart)
+                if (info.ItemEffect == ItemEffect.ItemPart)
                     info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
 
                 drawIndex = info.Image;

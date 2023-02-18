@@ -155,6 +155,7 @@ namespace Client.UserModels
         ItemAmountBox,
         InputWindow,
         FilterDropBox,
-        CommunicationBox
+        CommunicationBox,
+        FishingBox
     }
 }

@@ -413,8 +413,9 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
-            Player.FishingCast(p.Cast, p.Direction, p.FloatLocation, true);
+            Player.FishingCast(p.State, p.Direction, p.FloatLocation, p.CaughtFish);
         }
+
         public void Process(C.Attack p)
         {
             if (Stage != GameStage.Game) return;
@@ -464,11 +465,11 @@ namespace Server.Envir
 
             Player.PickUp();
         }
-        public void Process(C.GoldDrop p)
+        public void Process(C.CurrencyDrop p)
         {
             if (Stage != GameStage.Game) return;
 
-            Player.GoldDrop(p);
+            Player.CurrencyDrop(p);
         }
         public void Process(C.ItemUse p)
         {
@@ -799,7 +800,7 @@ namespace Server.Envir
 
                 if (p.ItemTypeFilter && info.Item.Info.ItemType != p.ItemType) continue;
 
-                switch (info.Item.Info.Effect)
+                switch (info.Item.Info.ItemEffect)
                 {
                     case ItemEffect.ItemPart:
                         if (!matches.Contains(info.Item.Stats[Stat.ItemIndex])) continue;

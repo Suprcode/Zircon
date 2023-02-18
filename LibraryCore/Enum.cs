@@ -109,6 +109,12 @@ namespace Library
         Emblem = 14,
         Shield = 15,
         Wings = 16,
+
+        Hook = 17,
+        Float = 18,
+        Bait = 19,
+        Finder = 20,
+        Reel = 21
     }
 
     public enum CompanionSlot
@@ -198,7 +204,7 @@ namespace Library
         RefineCorundumOre,
         AccessoryRefineCombTarget,
         AccessoryRefineCombItems,
-        PartsStorage,
+        PartsStorage
     }
 
     public enum BuffType
@@ -217,8 +223,6 @@ namespace Library
 
         Castle = 9,
 
-
-
         ItemBuff = 10,
         ItemBuffPermanent = 11,
 
@@ -227,20 +231,23 @@ namespace Library
         Veteran = 14,
 
         MapEffect = 15,
-        Guild = 16,
+        InstanceEffect = 16,
+        Guild = 17,
 
-        DeathDrops = 17,
+        DeathDrops = 18,
 
+        //War
         Defiance = 100,
         Might = 101,
         Endurance = 102,
         ReflectDamage = 103,
 
+        //Wiz
         Renounce = 200,
         MagicShield = 201,
         JudgementOfHeaven = 202,
 
-
+        //Tao
         Heal = 300,
         Invisibility = 301,
         MagicResistance = 302,
@@ -252,8 +259,8 @@ namespace Library
         Transparency = 308,
         LifeSteal = 309,
 
+        //Ass
         PoisonousCloud = 400,
-
         FullBloom = 401, 
         WhiteLotus = 402,
         RedLotus = 403,
@@ -301,6 +308,16 @@ namespace Library
         Light,
         Night,
         Twilight,
+    }
+
+    public enum TimeOfDay : byte
+    {
+        None,
+
+        Dawn,
+        Day,
+        Dusk,
+        Night
     }
 
     public enum FightSetting : byte
@@ -367,12 +384,11 @@ namespace Library
         Emblem,
         Shield,
         Wings,
-
-        //Hook,
-        //Float,
-        //Bait,
-        //Finder,
-        //Reel
+        Hook,
+        Float,
+        Bait,
+        Finder,
+        Reel
     }
 
     public enum MirAction : byte
@@ -1005,7 +1021,6 @@ namespace Library
         TeleportOut,
         TeleportIn,
 
-        //??
         FullBloom,
         WhiteLotus,
         RedLotus,
@@ -1126,6 +1141,56 @@ namespace Library
         Standard,
         Careful,
         Precise,
+    }
+
+    public enum ExteriorEffect : byte
+    {
+        None,
+
+        //EquipEffect_Part [1~99] 
+        A_WhiteAura = 1,
+        A_FlameAura = 2,
+        A_FlameAura2 = 3,
+        A_BlueAura = 4,
+
+        A_GreenWings = 10,
+        A_FlameWings = 11,
+        A_BlueWings = 12,
+        A_RedSinWings = 13,
+
+        A_DiamondFireWings = 14,
+        A_PurpleTentacles2 = 15,
+        A_PhoenixWings = 16,
+        A_IceKingWings = 17,
+        A_BlueButterflyWings = 18,
+        
+        //EquipEffect_Full [100~119]
+        A_FireDragonWings = 100,
+        A_SmallYellowWings = 101,
+        A_GreenFeatherWings = 102,
+        A_RedFeatherWings = 103,
+        A_BlueFeatherWings = 104,
+        A_WhiteFeatherWings = 105,
+        A_PurpleTentacles = 106,
+
+        //EquipEffect_FullEx1 [120~139] 
+        A_LionWings = 120,
+        A_AngelicWings = 121,
+
+        //EquipEffect_FullEx2 [140~159] 
+        A_BlueDragonWings = 140,
+
+        //EquipEffect_FullEx3 [160~179]
+        A_RedWings2 = 160,
+
+        //EquipEffect_Item [180~199]
+        //Reserved
+
+        //MonMagicEx26 [200~250] 
+        E_RedEyeRing = 200,
+        E_BlueEyeRing = 201,
+        E_GreenSpiralRing = 202,
+        E_Fireworks = 203
     }
 
     public enum ItemEffect : byte
@@ -1270,10 +1335,10 @@ namespace Library
     {
         General = 0,
         Daily = 1,
-        //Weekly = 2,
+        Weekly = 2,
         Repeatable = 3,
         Story = 4,
-        //Account = 5
+        Account = 5
     }
 
     public enum QuestIcon
@@ -1430,6 +1495,14 @@ namespace Library
         Sacrifice = 210,
     }
 
+    public enum FishingState : byte
+    {
+        None,
+        Cast,
+        Reel,
+        Cancel
+    }
+
     #region Packet Enums
 
     public enum NewAccountResult : byte
@@ -1569,6 +1642,7 @@ namespace Library
         NotGroupLeader,
         UserCooldown,
         GuildCooldown,
+        MissingItem,
         NoMap,
         Success
     }

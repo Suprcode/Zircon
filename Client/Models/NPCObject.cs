@@ -50,34 +50,22 @@ namespace Client.Models
             NPCs[NPCInfo] = this;
 
             CEnvir.LibraryList.TryGetValue(LibraryFile.NPC, out BodyLibrary);
-            switch (NPCInfo.Image)
+            Frames = NPCInfo.Image switch
             {
-                case 93:
-                    Frames = new Dictionary<MirAnimation, Frame>
-                    {
-                        [MirAnimation.Standing] = new Frame(0, 1, 0, TimeSpan.FromHours(1))
-                    };
-                    break;
-                case 56:
-                case 57:
-                    Frames = new Dictionary<MirAnimation, Frame>
-                    {
-                        [MirAnimation.Standing] = new Frame(0, 12, 0, TimeSpan.FromMilliseconds(200))
-                    };
-                    break;
-                case 156:
-                    Frames = new Dictionary<MirAnimation, Frame>
-                    {
-                        [MirAnimation.Standing] = new Frame(0, 16, 0, TimeSpan.FromMilliseconds(200))
-                    };
-                    break;
-                default:
-                    Frames = FrameSet.DefaultNPC;
-                    break;
-
-            }
-
-
+                64 or 65 or 91 or 92 or 93 or 157 or 158 or 160 or 165 or 166 or 168 or 208 or 209 or 210 or 211 or 212 or 213 or 214 or 231 or 234 => new Dictionary<MirAnimation, Frame>
+                {
+                    [MirAnimation.Standing] = new Frame(0, 1, 0, TimeSpan.FromHours(1))
+                },
+                56 or 57 => new Dictionary<MirAnimation, Frame>
+                {
+                    [MirAnimation.Standing] = new Frame(0, 12, 0, TimeSpan.FromMilliseconds(200))
+                },
+                156 => new Dictionary<MirAnimation, Frame>
+                {
+                    [MirAnimation.Standing] = new Frame(0, 16, 0, TimeSpan.FromMilliseconds(200))
+                },
+                _ => FrameSet.DefaultNPC,
+            };
             SetFrame(new ObjectAction(MirAction.Standing, MirDirection.Up, CurrentLocation));
 
             GameScene.Game.MapControl.AddObject(this);
@@ -149,15 +137,18 @@ namespace Client.Models
                 case QuestType.Daily:
                     startIndex = 70;
                     break;
+                case QuestType.Weekly:
+                    startIndex = 70;
+                    break;
                 case QuestType.Repeatable:
                     startIndex = 10;
                     break;
                 case QuestType.Story:
                     startIndex = 50;
                     break;
-                //case QuestType.Account:
-                //    startIndex = 30;
-                //    break;
+                case QuestType.Account:
+                    startIndex = 30;
+                    break;
             }
 
             switch (CurrentQuest.Icon)

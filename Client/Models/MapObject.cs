@@ -85,7 +85,8 @@ namespace Client.Models
         public MirGender Gender;
         public bool MiningEffect;
 
-        public bool Fishing, FishFound;
+        public FishingState FishingState;
+        public bool FishFound;
         public Point FloatLocation;
 
         public Point CurrentLocation
@@ -244,8 +245,6 @@ namespace Client.Models
 
         public MirEffect MagicShieldEffect, WraithGripEffect, WraithGripEffect2, AssaultEffect, CelestialLightEffect, LifeStealEffect, SilenceEffect, BlindEffect, AbyssEffect, DragonRepulseEffect, DragonRepulseEffect1,
                          RankingEffect, DeveloperEffect, FrostBiteEffect, InfectionEffect;
-
-        public MirFishingFloat FishingFloatEffect;
 
         public bool CanShowWraithGrip = true;
 
@@ -459,12 +458,6 @@ namespace Client.Models
             }
             else if (FrostBiteEffect != null)
                 FrostBiteEnd();
-
-            if (CurrentAnimation != MirAnimation.FishingWait)
-            {
-                if (FishingFloatEffect != null)
-                    FishingFloatEnd();
-            }
         }
 
         public virtual void UpdateFrame()
@@ -2357,9 +2350,12 @@ namespace Client.Models
             switch (action.Action)
             {
                 case MirAction.Fishing:
-                    Fishing = (bool)action.Extra[0];
+                    FishingState = (FishingState)action.Extra[0];
                     FloatLocation = (Point)action.Extra[1];
                     FishFound = (bool)action.Extra[2];
+
+                    if (FishingState == FishingState.Reel)
+                        FishingState = FishingState.None;
                     break;
                 case MirAction.Mining:
                     MiningEffect = (bool)action.Extra[0];
@@ -3651,12 +3647,11 @@ namespace Client.Models
                         #region The New Beginning
 
                         case MagicType.TheNewBeginning:
-                            Effects.Add(spell = new MirEffect(2300, 9, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 60, 60, Globals.NoneColour)
+                            Effects.Add(spell = new MirEffect(2200, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 60, 60, Globals.NoneColour)
                             {
                                 Blend = true,
-                                Target = this,
-                                Direction = action.Direction
-                            });
+                                MapTarget = CurrentLocation              
+                            }) ;
                             DXSoundManager.Play(SoundIndex.TheNewBeginning);
                             break;
 
@@ -4499,17 +4494,6 @@ namespace Client.Models
             DeveloperEffect = null;
         }
 
-        public virtual void FishingFloatCreate(int startIndex)
-        {
-
-        }
-
-        public void FishingFloatEnd()
-        {
-            FishingFloatEffect?.Remove();
-            FishingFloatEffect = null;
-        }
-
         public virtual void Remove()
         {
             GameScene.Game.MapControl.RemoveObject(this);
@@ -4526,7 +4510,6 @@ namespace Client.Models
             AssaultEnd();
             FrostBiteEnd();
             InfectionEnd();
-            FishingFloatEnd();
 
             for (int i = Effects.Count - 1; i >= 0; i--)
             {

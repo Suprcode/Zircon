@@ -16,9 +16,13 @@ namespace Library
             get { return _cryptoKey != null && _cryptoKey.Length > 0; }
         }
 
-        private readonly static SymmetricAlgorithm _algorithm = new RijndaelManaged() { KeySize = 256 };
-        private readonly static RandomNumberGenerator _randomNumberGenerator = new RNGCryptoServiceProvider();
+        private readonly static Aes _algorithm;
 
+        static Encryption()
+        {
+            _algorithm = Aes.Create();
+            _algorithm.KeySize = 256;
+        }
 
         private static bool IsEncrypted(Stream stream)
         {
@@ -47,6 +51,7 @@ namespace Library
                 stream.Read(iv, 0, 16);
 
                 var decryptor = _algorithm.CreateDecryptor(_cryptoKey, iv);
+
                 var decStream = new CryptoStream(stream, decryptor, CryptoStreamMode.Read);
                 reader = new BinaryReader(decStream);
             }
@@ -62,13 +67,21 @@ namespace Library
         {
             if (!HasCryptoKey) return new BinaryWriter(stream);
 
-            var iv = new byte[16];
-
-            _randomNumberGenerator.GetNonZeroBytes(iv);
+            byte[] iv = GenerateIV(16);
             stream.Write(iv, 0, iv.Length);
 
             var encryptor = _algorithm.CreateEncryptor(_cryptoKey, iv);
             return new BinaryWriter(new CryptoStream(stream, encryptor, CryptoStreamMode.Write));
+        }
+
+        private static byte[] GenerateIV(int length)
+        {
+            byte[] iv = new byte[length];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(iv);
+            }
+            return iv;
         }
 
         public static void SetKey(byte[] databaseKey)

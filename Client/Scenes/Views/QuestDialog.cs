@@ -1,66 +1,169 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
 using Client.Models;
+using Client.Properties;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
-    public sealed class QuestDialog : DXWindow
+    public sealed class QuestDialog : DXImageControl
     {
         #region Properties
 
         public DXTabControl TabControl;
         public QuestTab AvailableTab, CurrentTab, CompletedTab;
 
-        public override WindowType Type => WindowType.QuestBox;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => true;
+        public DXLabel TitleLabel;
+        public DXButton CloseButton;
+
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            if (IsVisible)
+                BringToFront();
+
+            if (Settings != null)
+                Settings.Visible = nValue;
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
+
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    if (CloseButton.Visible)
+                    {
+                        CloseButton.InvokeMouseClick();
+                        if (!Config.EscapeCloseAll)
+                            e.Handled = true;
+                    }
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region Settings
+
+        public WindowSetting Settings;
+        public WindowType Type => WindowType.QuestBox;
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
         #endregion
 
         public QuestDialog()
         {
-            TitleLabel.Text = "Quest Log";
+            LibraryFile = LibraryFile.Interface;
+            Index = 214;
+            Movable = true;
+            Sort = true;
 
-            SetClientSize(new Size(608, 380));
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
+            {
+                Text = "Quest Log",
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             TabControl = new DXTabControl
             {
                 Parent = this,
-                Location = ClientArea.Location,
-                Size = ClientArea.Size,
+                Size = new Size(732, 459),
+                Location = new Point(0, 21),
+                MarginLeft = 18
             };
 
             CurrentTab = new QuestTab
             {
                 TabButton = { Label = { Text = "Current" } },
                 Parent = TabControl,
-                Border = true,
-                ChoiceGrid = { ReadOnly = true }
+                Border = false,
+                ChoiceGrid = { ReadOnly = true },
+                BackColour = Color.Empty,
+                Location = new Point(0, 22)
             };
 
             AvailableTab = new QuestTab
             {
                 TabButton = { Label = { Text = "Available" } },
                 Parent = TabControl,
-                Border = true,
-                ShowTrackerBox = { Visible = false }
+                Border = false,
+                ShowTrackerBox = { Visible = false },
+                BackColour = Color.Empty,
+                Location = new Point(0, 22)
             };
-
 
             CompletedTab = new QuestTab
             {
                 TabButton = { Label = { Text = "Completed" } },
                 Parent = TabControl,
-                Border = true,
-                ShowTrackerBox = { Visible = false }
+                Border = false,
+                ShowTrackerBox = { Visible = false },
+                BackColour = Color.Empty,
+                Location = new Point(0, 22)
             };
         }
 
@@ -199,6 +302,22 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
                 if (TabControl != null)
                 {
                     if (!TabControl.IsDisposed)
@@ -413,27 +532,28 @@ namespace Client.Scenes.Views
 
             UpdateQuestTree();
         }
-        
-        public override void OnSizeChanged(Size oValue, Size nValue)
-        {
-            base.OnSizeChanged(oValue, nValue);
-
-            if (Tree == null) return;
-
-            Tree.Size = new Size(290, Size.Height - 10);
-        }
 
         #endregion
 
         public QuestTab()
         {
-            int width = 300;
+            int width = 380;
 
             Tree = new QuestTree
             {
                 Parent = this,
-                Location = new Point(5, 5)
+                Border = false,
+                Location = new Point(10, 8),
+                Size = new Size(355, 380),
+                ScrollBar = {
+                    BackColour = Color.Empty,
+                    Border = false,
+                    UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                    DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                    PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface }
+                }
             };
+            
             Tree.SelectedEntryChanged += (o, e) => SelectedQuest = Tree.SelectedEntry;
 
             DXLabel label = new DXLabel
@@ -445,29 +565,27 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Location = new Point(width, 4)
+                Location = new Point(width, 28)
             };
 
             ShowTrackerBox = new DXCheckBox
             {
                 Label = { Text = "Show Quest Tracker" },
                 Parent = this,
-                Checked = Config.QuestTrackerVisible
+                Checked = Config.QuestTrackerVisible,
             };
-            ShowTrackerBox.Location = new Point(width + 303 - ShowTrackerBox.Size.Width, 7);
+            ShowTrackerBox.Location = new Point(width + 340 - ShowTrackerBox.Size.Width, 9);
             ShowTrackerBox.CheckedChanged += (o, e) =>
             {
                 Config.QuestTrackerVisible = ShowTrackerBox.Checked;
                 GameScene.Game.QuestTrackerBox.PopulateQuests();
             };
 
-
             DescriptionLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(300 - 4, 80),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                Size = new Size(313, 81),
+                Border = false,
                 ForeColour = Color.White,
                 Location = new Point(width + 3, label.Location.Y + label.Size.Height + 5),
                 Parent = this,
@@ -482,16 +600,14 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Location = new Point(width + 0, DescriptionLabel.Location.Y + DescriptionLabel.Size.Height + 5),
+                Location = new Point(width + 0, DescriptionLabel.Location.Y + DescriptionLabel.Size.Height + 9),
             };
-
 
             TasksLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(300 - 4, 80),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                Size = new Size(332, 61),
+                Border = false,
                 ForeColour = Color.White,
                 Location = new Point(width + 3, label.Location.Y + label.Size.Height + 5),
                 Parent = this,
@@ -502,11 +618,10 @@ namespace Client.Scenes.Views
                 Text = "Rewards",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Location = new Point(width + 0, TasksLabel.Location.Y + TasksLabel.Size.Height + 5),
+                Location = new Point(width + 0, TasksLabel.Location.Y + TasksLabel.Size.Height + 9),
             };
 
             RewardArray = new ClientUserItem[5];
@@ -528,7 +643,7 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Location = new Point(RewardGrid.Location.X + 13 + RewardGrid.Size.Width, TasksLabel.Location.Y + TasksLabel.Size.Height + 5),
+                Location = new Point(RewardGrid.Location.X + 13 + RewardGrid.Size.Width, TasksLabel.Location.Y + TasksLabel.Size.Height + 9),
             };
 
             ChoiceArray = new ClientUserItem[3];
@@ -781,7 +896,8 @@ namespace Client.Scenes.Views
 
         public Dictionary<MapInfo, List<QuestInfo>> TreeList = new Dictionary<MapInfo, List<QuestInfo>>();
 
-        private DXVScrollBar ScrollBar;
+        public DXControl Container;
+        public DXVScrollBar ScrollBar;
 
         public List<DXControl> Lines = new List<DXControl>();
         
@@ -789,16 +905,22 @@ namespace Client.Scenes.Views
         {
             base.OnSizeChanged(oValue, nValue);
 
-            ScrollBar.Size = new Size(14, Size.Height);
-            ScrollBar.Location = new Point(Size.Width - 14, 0);
-            ScrollBar.VisibleSize = Size.Height;
+            ScrollBar.Size = new Size(20, Size.Height);
+            ScrollBar.Location = new Point(Size.Width - 20, 0);
+            ScrollBar.VisibleSize = Size.Height - 7;
+
+            Container.Size = new Size(Size.Width, Size.Height - 7);
         }
+
         #endregion
         
         public QuestTree()
         {
-            Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            Container = new DXControl
+            {
+                Parent = this,
+                Location = new Point(0, 2),
+            };
 
             ScrollBar = new DXVScrollBar
             {
@@ -816,7 +938,7 @@ namespace Client.Scenes.Views
             ScrollBar.MaxValue = Lines.Count * 22;
             
             for (int i = 0; i < Lines.Count; i++)
-                Lines[i].Location = new Point(Lines[i].Location.X, i*22 - ScrollBar.Value);
+                Lines[i].Location = new Point(Lines[i].Location.X, i * 22 - ScrollBar.Value);
         }
 
         public void ListChanged()
@@ -835,8 +957,8 @@ namespace Client.Scenes.Views
             {
                 QuestTreeHeader header = new QuestTreeHeader
                 {
-                    Parent = this,
-                    Location = new Point(1, Lines.Count*22),
+                    Parent = Container,
+                    Location = new Point(1, Lines.Count * 22),
                     Size = new Size(Size.Width - 17, 20),
                     Map = pair.Key
                 };
@@ -851,9 +973,9 @@ namespace Client.Scenes.Views
                 {
                     QuestTreeEntry entry = new QuestTreeEntry
                     {
-                        Parent = this,
-                        Location = new Point(1, Lines.Count*22),
-                        Size = new Size(Size.Width - 17, 20),
+                        Parent = Container,
+                        Location = new Point(1, Lines.Count * 22),
+                        Size = new Size(Size.Width - 22, 20),
                         QuestInfo = quest,
                         Selected = quest == selectedQuest,
                     };
@@ -904,6 +1026,14 @@ namespace Client.Scenes.Views
 
                 _SelectedEntry = null;
                 SelectedEntryChanged = null;
+
+                if (Container != null)
+                {
+                    if (!Container.IsDisposed)
+                        Container.Dispose();
+
+                    Container = null;
+                }
 
                 if (ScrollBar != null)
                 {
@@ -1111,28 +1241,64 @@ namespace Client.Scenes.Views
             TrackBox.Visible = false;
             QuestNameLabel.Text = $"[{QuestInfo.QuestType}] {QuestInfo.QuestName}";
 
-            if (UserQuest == null)
+            Color colour = Color.White;
+
+            QuestIcon icon = Library.QuestIcon.None;
+            QuestType type = QuestType.General;
+
+            if (UserQuest != null)
             {
-                QuestIcon.BaseIndex = 83; //Available
-                QuestNameLabel.Location = new Point(40, 2);
+                type = UserQuest.Quest.QuestType;
+                icon = UserQuest.IsComplete ? Library.QuestIcon.Complete : Library.QuestIcon.Incomplete;
             }
-            else if (UserQuest.Completed)
+            else if (QuestInfo != null)
             {
-                QuestIcon.BaseIndex = 91; //Current
-                QuestNameLabel.Location = new Point(40, 2);
+                type = QuestInfo.QuestType;
+
+                icon = Library.QuestIcon.New;
             }
-            else if (!UserQuest.IsComplete)
+
+            int startIndex = 0;
+
+            switch (type)
             {
-                QuestIcon.BaseIndex = 85; //Completed
-                TrackBox.Visible = true;
-                QuestNameLabel.Location = new Point(65, 2);
+                case QuestType.General:
+                    startIndex = 16;
+                    break;
+                case QuestType.Daily:
+                    startIndex = 76;
+                    break;
+                case QuestType.Weekly:
+                    startIndex = 76;
+                    break;
+                case QuestType.Repeatable:
+                    startIndex = 16;
+                    break;
+                case QuestType.Story:
+                    startIndex = 56;
+                    break;
+                case QuestType.Account:
+                    startIndex = 36;
+                    break;
             }
-            else
+
+            switch (icon)
             {
-                QuestIcon.BaseIndex = 93; //Current
-                TrackBox.Visible = true;
-                QuestNameLabel.Location = new Point(65, 2);
+                case Library.QuestIcon.New:
+                    startIndex += 0;
+                    break;
+                case Library.QuestIcon.Incomplete:
+                    startIndex = 2;
+                    break;
+                case Library.QuestIcon.Complete:
+                    startIndex += 2;
+                    break;
             }
+
+            QuestIcon.BaseIndex = startIndex;
+            QuestNameLabel.Location = new Point(40, 2);
+
+            //QuestNameLabel.Location = new Point(65, 2);
 
             TrackBox.Checked = UserQuest != null && UserQuest.Track;
 
@@ -1181,7 +1347,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(20, 2),
                 Loop = true,
-                LibraryFile = LibraryFile.Interface,
+                LibraryFile = LibraryFile.QuestIcon,
                 BaseIndex = 83,
                 FrameCount = 2,
                 AnimationDelay = TimeSpan.FromSeconds(1),

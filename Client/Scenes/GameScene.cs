@@ -84,7 +84,7 @@ namespace Client.Scenes
 
         #endregion
 
-        public bool GoldPickedUp;
+        public ClientUserCurrency CurrencyPickedUp = null;
 
         public MapObject MagicObject, MouseObject, TargetObject, FocusObject;
         public DXControl ItemLabel, MagicLabel;
@@ -196,6 +196,7 @@ namespace Client.Scenes
         public NPCAccessoryRefineDialog NPCAccessoryRefineBox;
         public CurrencyDialog CurrencyBox;
 
+        public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
 
         public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
@@ -353,6 +354,8 @@ namespace Client.Scenes
             CompanionBox?.LoadSettings();
             CommunicationBox?.LoadSettings();
             RankingBox?.LoadSettings();
+            QuestBox?.LoadSettings();
+            FishingBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -644,6 +647,12 @@ namespace Client.Scenes
                 Visible = false,
             };
 
+            FishingBox = new FishingDialog(CharacterBox)
+            {
+                Parent = this,
+                Visible = false,
+            };
+
             FishingCatchBox = new FishingCatchDialog
             {
                 Parent = this,
@@ -665,6 +674,8 @@ namespace Client.Scenes
             CompanionBox.LoadSettings();
             CommunicationBox.LoadSettings();
             RankingBox.LoadSettings();
+            QuestBox.LoadSettings();
+            FishingBox.LoadSettings();
         }
 
         #region Methods
@@ -738,7 +749,9 @@ namespace Client.Scenes
 
             CurrencyBox.Location = new Point((Size.Width - CurrencyBox.Size.Width) / 2, (Size.Height - CurrencyBox.Size.Height) / 2);
 
-            FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2) + 27, ((Size.Height - FishingCatchBox.Size.Height) / 2) + 100);
+            FishingBox.Location = new Point(CharacterBox.Location.X + CharacterBox.Size.Width, CharacterBox.Location.Y);
+
+            FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2), ((Size.Height - FishingCatchBox.Size.Height) / 2) + 200);
         }
 
         public void SaveChatTabs()
@@ -1469,7 +1482,7 @@ namespace Client.Scenes
 
             ItemInfo displayInfo = MouseItem.Info;
 
-            if (MouseItem.Info.Effect == ItemEffect.ItemPart)
+            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
                 displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == MouseItem.AddedStats[Stat.ItemIndex]);
             
 
@@ -1481,7 +1494,7 @@ namespace Client.Scenes
                 Text = displayInfo.ItemName 
             };
 
-            if (MouseItem.Info.Effect == ItemEffect.ItemPart)
+            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
                 label.Text += " - [Part]";
             ItemLabel.Size = new Size(label.DisplayArea.Right + 4, label.DisplayArea.Bottom);
 
@@ -1545,7 +1558,7 @@ namespace Client.Scenes
             if (needSpacer)
                 ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
 
-            if (CEnvir.IsCurrencyItem(MouseItem.Info) || MouseItem.Info.Effect == ItemEffect.Experience)
+            if (CEnvir.IsCurrencyItem(MouseItem.Info) || MouseItem.Info.ItemEffect == ItemEffect.Experience)
             {
                 label = new DXLabel
                 {
@@ -1559,7 +1572,7 @@ namespace Client.Scenes
             }
 
 
-            if (MouseItem.Info.Effect == ItemEffect.ItemPart)
+            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
             {
                 label = new DXLabel
                 {
@@ -1587,7 +1600,7 @@ namespace Client.Scenes
             {
                 case ItemType.Consumable:
                 case ItemType.Scroll:
-                    if (MouseItem.Info.Effect == ItemEffect.StatExtractor || MouseItem.Info.Effect == ItemEffect.RefineExtractor)
+                    if (MouseItem.Info.ItemEffect == ItemEffect.StatExtractor || MouseItem.Info.ItemEffect == ItemEffect.RefineExtractor)
                         EquipmentItemInfo();
                     else
                         CreatePotionLabel();
@@ -1999,7 +2012,7 @@ namespace Client.Scenes
                     Text = displayInfo.Description,
                 };
 
-                if (displayInfo.Effect == ItemEffect.FootBallWhistle)
+                if (displayInfo.ItemEffect == ItemEffect.FootBallWhistle)
                     label.ForeColour = Color.Red;
 
                 ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
@@ -2063,7 +2076,7 @@ namespace Client.Scenes
                     Parent = ItemLabel,
                 };
 
-                DateTime value = MouseItem.Info.Effect == ItemEffect.PillOfReincarnation ? ReincarnationPillTime : ItemReviveTime;
+                DateTime value = MouseItem.Info.ItemEffect == ItemEffect.PillOfReincarnation ? ReincarnationPillTime : ItemReviveTime;
 
                 if (CEnvir.Now >= value)
                 {
@@ -2190,7 +2203,7 @@ namespace Client.Scenes
 
             ItemInfo displayInfo = MouseItem.Info;
 
-            if (MouseItem.Info.Effect == ItemEffect.ItemPart)
+            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
                 displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == MouseItem.AddedStats[Stat.ItemIndex]);
 
             stats.Add(displayInfo.Stats, displayInfo.ItemType != ItemType.Weapon);
@@ -3203,14 +3216,16 @@ namespace Client.Scenes
             {
                 ItemInfo info = SelectedCell.Item.Info;
 
-                if (info.Effect == ItemEffect.ItemPart)
+                if (info.ItemEffect == ItemEffect.ItemPart)
                     info = Globals.ItemInfoList.Binding.First(x => x.Index == SelectedCell.Item.AddedStats[Stat.ItemIndex]);
-                
+
                 image = info.Image;
                 color = SelectedCell.Item.Colour;
             }
-            else if (GoldPickedUp)
-                image = 124;
+            else if (CurrencyPickedUp != null)
+            {
+                image = CEnvir.CurrencyImage(CurrencyPickedUp.Info.DropItem, CurrencyPickedUp.Amount);
+            }
 
             MirLibrary library;
 
@@ -3273,7 +3288,7 @@ namespace Client.Scenes
         {
             foreach (ClientUserItem item in items)
             {
-                if (item.Info.Effect == ItemEffect.Experience) continue;
+                if (item.Info.ItemEffect == ItemEffect.Experience) continue;
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
                 var currency = User.GetCurrency(item.Info);
@@ -3331,7 +3346,7 @@ namespace Client.Scenes
         {
             foreach (ClientUserItem item in items)
             {
-                if (item.Info.Effect == ItemEffect.Experience) continue;
+                if (item.Info.ItemEffect == ItemEffect.Experience) continue;
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
                 var currency = User.GetCurrency(item.Info);
@@ -3505,6 +3520,17 @@ namespace Client.Scenes
                         return false;
                     }
                     break;
+                case EquipmentSlot.Hook:
+                case EquipmentSlot.Float:
+                case EquipmentSlot.Bait:
+                case EquipmentSlot.Finder:
+                case EquipmentSlot.Reel:
+                    if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod)
+                    {
+                        ReceiveChat($"Unable to hold {item.Info.ItemName}, must be holding fishing rod.", MessageType.System);
+                        return false;
+                    }
+                    break;
                 default:
                     if (User.WearWeight - (Equipment[(int) slot]?.Info.Weight ?? 0) + item.Weight > User.Stats[Stat.WearWeight])
                     {
@@ -3516,6 +3542,7 @@ namespace Client.Scenes
 
             return true;
         }
+
         public bool CanCompanionWearItem(ClientUserItem item, CompanionSlot slot)
         {
             if (Companion == null) return false;
@@ -3678,8 +3705,8 @@ namespace Client.Scenes
         {
             if (User == null) return;
 
-            InventoryBox.GoldLabel.Text = User.Gold.Amount.ToString("#,##0");
-            InventoryBox.GameGoldLabel.Text = User.GameGold.Amount.ToString("#,##0");
+            InventoryBox.RefreshCurrency();
+
             MarketPlaceBox.GameGoldBox.Value = User.GameGold.Amount;
             MarketPlaceBox.HuntGoldBox.Value = User.HuntGold.Amount;
             NPCAdoptCompanionBox.RefreshUnlockButton();
@@ -4004,6 +4031,10 @@ namespace Client.Scenes
                         icon = 76;
                         colour = Color.Blue;
                         break;
+                    case QuestType.Weekly:
+                        icon = 76;
+                        colour = Color.Blue;
+                        break;
                     case QuestType.Repeatable:
                         icon = 16;
                         colour = Color.Yellow;
@@ -4012,10 +4043,10 @@ namespace Client.Scenes
                         icon = 56;
                         colour = Color.Green;
                         break;
-                    //case QuestType.Account:
-                    //    icon = 36;
-                    //    colour = Color.Purple;
-                    //    break;
+                    case QuestType.Account:
+                        icon = 36;
+                        colour = Color.MediumPurple;
+                        break;
                 }
 
                 switch (NPC.CurrentQuest.Icon)
@@ -4092,7 +4123,7 @@ namespace Client.Scenes
                 _MouseItem = null;
                 _MouseMagic = null;
 
-                GoldPickedUp = false;
+                CurrencyPickedUp = null;
 
                 MagicObject = null;
                 MouseObject = null;
@@ -4472,6 +4503,22 @@ namespace Client.Scenes
                         NPCAccessoryRefineBox.Dispose();
 
                     NPCAccessoryRefineBox = null;
+                }
+
+                if (FishingBox != null)
+                {
+                    if (!FishingBox.IsDisposed)
+                        FishingBox.Dispose();
+
+                    FishingBox = null;
+                }
+
+                if (FishingCatchBox != null)
+                {
+                    if (!FishingCatchBox.IsDisposed)
+                        FishingCatchBox.Dispose();
+
+                    FishingCatchBox = null;
                 }
 
                 Inventory = null;

@@ -720,6 +720,22 @@ namespace Server.DBModels
         public Dictionary<RequiredClass, int> LastRank = new Dictionary<RequiredClass, int>();
         public Dictionary<RequiredClass, int> CurrentRank = new Dictionary<RequiredClass, int>();
 
+        protected override void OnLoaded()
+        {
+            var removeList = new List<UserItem>();
+
+            foreach (var item in Items)
+            {
+                if (item.Info == null)
+                    removeList.Add(item);
+            }
+
+            foreach (var item in removeList)
+                Items.Remove(item);
+
+            base.OnLoaded();
+        }
+
         protected override void OnDeleted()
         {
             Account = null;

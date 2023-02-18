@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -7,6 +8,7 @@ using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
+using Library.SystemModels;
 
 namespace Client.Scenes.Views
 {
@@ -16,8 +18,74 @@ namespace Client.Scenes.Views
 
         public DXItemGrid Grid;
 
-        public DXLabel TitleLabel, GoldLabel, GameGoldLabel, WeightLabel, CurrencyLabel, GoldTitle, GameGoldTitle;
+        public DXLabel TitleLabel, PrimaryCurrencyLabel, SecondaryCurrencyLabel, WeightLabel, WalletLabel, PrimaryCurrencyTitle, SecondaryCurrencyTitle;
         public DXButton CloseButton, SortButton, TrashButton;
+
+        #region PrimaryCurrency
+
+        public CurrencyInfo PrimaryCurrency
+        {
+            get => _PrimaryCurrency;
+            set
+            {
+                if (_PrimaryCurrency == value) return;
+
+                CurrencyInfo oldValue = _PrimaryCurrency;
+                _PrimaryCurrency = value;
+
+                OnPrimaryCurrencyChanged(oldValue, value);
+            }
+        }
+        private CurrencyInfo _PrimaryCurrency;
+
+        public event EventHandler<EventArgs> PrimaryCurrencyChanged;
+        public void OnPrimaryCurrencyChanged(CurrencyInfo oValue, CurrencyInfo nValue)
+        {
+            if (GameScene.Game.User == null)
+                return;
+
+            foreach (DXItemCell cell in Grid.Grid)
+                cell.Selected = false;
+
+            RefreshPrimaryCurrency();
+
+            PrimaryCurrencyChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region SecondaryCurrency
+
+        public CurrencyInfo SecondaryCurrency
+        {
+            get => _SecondaryCurrency;
+            set
+            {
+                if (_SecondaryCurrency == value) return;
+
+                CurrencyInfo oldValue = _SecondaryCurrency;
+                _SecondaryCurrency = value;
+
+                OnPrimaryCurrencyChanged(oldValue, value);
+            }
+        }
+        private CurrencyInfo _SecondaryCurrency;
+
+        public event EventHandler<EventArgs> SecondaryCurrencyChanged;
+        public void OnSecondaryCurrencyChanged(CurrencyInfo oValue, CurrencyInfo nValue)
+        {
+            if (GameScene.Game.User == null)
+                return;
+
+            foreach (DXItemCell cell in Grid.Grid)
+                cell.Selected = false;
+
+            RefreshSecondaryCurrency();
+
+            SecondaryCurrencyChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -175,7 +243,7 @@ namespace Client.Scenes.Views
                 WeightLabel.Location = new Point(WeightBar.Location.X + (WeightBar.Size.Width - WeightLabel.Size.Width) / 2, WeightBar.Location.Y - 1 + (WeightBar.Size.Height - WeightLabel.Size.Height) / 2);
             };
 
-            GoldTitle = new DXLabel
+            PrimaryCurrencyTitle = new DXLabel
             {
                 AutoSize = false,
                 ForeColour = Color.Goldenrod,
@@ -187,20 +255,19 @@ namespace Client.Scenes.Views
                 Size = new Size(97, 20)
             };
 
-            GoldLabel = new DXLabel
+            PrimaryCurrencyLabel = new DXLabel
             {
                 AutoSize = false,
                 ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.VerticalCenter  | TextFormatFlags.Right,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Right,
                 Parent = this,
                 Location = new Point(80, 381),
                 Text = "0",
-                Size = new Size(97, 20),
-                Sound = SoundIndex.GoldPickUp
+                Size = new Size(97, 20)
             };
-            GoldLabel.MouseClick += GoldLabel_MouseClick;
+            PrimaryCurrencyLabel.MouseClick += PrimaryCurrencyLabel_MouseClick;
 
-            GameGoldTitle = new DXLabel
+            SecondaryCurrencyTitle = new DXLabel
             {
                 AutoSize = false,
                 ForeColour = Color.DarkOrange,
@@ -212,7 +279,7 @@ namespace Client.Scenes.Views
                 Size = new Size(97, 20)
             };
 
-            GameGoldLabel = new DXLabel
+            SecondaryCurrencyLabel = new DXLabel
             {
                 AutoSize = false,
                 ForeColour = Color.White,
@@ -222,6 +289,7 @@ namespace Client.Scenes.Views
                 Text = "0",
                 Size = new Size(97, 20)
             };
+            SecondaryCurrencyLabel.MouseClick += SecondaryCurrencyLabel_MouseClick;
 
             SortButton = new DXButton
             {
@@ -243,7 +311,7 @@ namespace Client.Scenes.Views
                 Enabled = false
             };
 
-            CurrencyLabel = new DXLabel
+            WalletLabel = new DXLabel
             {
                 Parent = this,
                 Location = new Point(8, 380),
@@ -251,21 +319,88 @@ namespace Client.Scenes.Views
                 Size = new Size(45, 40),
                 Sound = SoundIndex.GoldPickUp
             };
-            CurrencyLabel.MouseClick += CurrencyLabel_MouseClick;
+            WalletLabel.MouseClick += WalletLabel_MouseClick;
+        }
+
+
+        private void PrimaryCurrencyLabel_MouseClick(object sender, MouseEventArgs e)
+        {
+            DXSoundManager.Play(SoundIndex.GoldPickUp);
+
+            if (GameScene.Game.SelectedCell == null)
+            {
+                var userCurrency = GameScene.Game.User.GetCurrency(PrimaryCurrency);
+
+                if (!userCurrency.CanPickup) return;
+                DXSoundManager.Play(SoundIndex.GoldPickUp);
+
+                if (GameScene.Game.CurrencyPickedUp == null && userCurrency.Amount > 0)
+                    GameScene.Game.CurrencyPickedUp = userCurrency;
+                else
+                    GameScene.Game.CurrencyPickedUp = null;
+            }
+        }
+
+        private void SecondaryCurrencyLabel_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (GameScene.Game.SelectedCell == null)
+            {
+                var userCurrency = GameScene.Game.User.GetCurrency(SecondaryCurrency);
+
+                if (!userCurrency.CanPickup) return;
+                DXSoundManager.Play(SoundIndex.GoldPickUp);
+
+                if (GameScene.Game.CurrencyPickedUp == null && userCurrency.Amount > 0)
+                    GameScene.Game.CurrencyPickedUp = userCurrency;
+                else
+                    GameScene.Game.CurrencyPickedUp = null;
+            }
+        }
+
+        private void WalletLabel_MouseClick(object sender, MouseEventArgs e)
+        {
+            GameScene.Game.CurrencyBox.Visible = !GameScene.Game.CurrencyBox.Visible;
         }
 
         #region Methods
 
-        private void GoldLabel_MouseClick(object sender, MouseEventArgs e)
+        public void RefreshCurrency()
         {
-            if (GameScene.Game.SelectedCell == null)
-                GameScene.Game.GoldPickedUp = !GameScene.Game.GoldPickedUp && MapObject.User.Gold.Amount > 0;
+            RefreshPrimaryCurrency();
+            RefreshSecondaryCurrency();
         }
 
-        private void CurrencyLabel_MouseClick(object sender, MouseEventArgs e)
+        public void SetPrimaryCurrency(CurrencyInfo currency)
         {
-            GameScene.Game.CurrencyBox.Visible = !GameScene.Game.CurrencyBox.Visible;
+            PrimaryCurrency = currency ?? Globals.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold);
         }
+
+        private void RefreshPrimaryCurrency()
+        {
+            SetPrimaryCurrency(PrimaryCurrency);
+
+            var userCurrency = GameScene.Game.User.GetCurrency(PrimaryCurrency);
+
+            PrimaryCurrencyTitle.Text = userCurrency.Info.Abbreviation;
+            PrimaryCurrencyLabel.Text = userCurrency.Amount.ToString("#,##0");
+        }
+
+        //TODO - Allow secondary currency to change its default??
+        private void SetSecondaryCurrency(CurrencyInfo currency)
+        {
+            SecondaryCurrency = currency ?? Globals.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.GameGold);
+        }
+
+        private void RefreshSecondaryCurrency()
+        {
+            SetSecondaryCurrency(SecondaryCurrency);
+
+            var userCurrency = GameScene.Game.User.GetCurrency(SecondaryCurrency);
+
+            SecondaryCurrencyTitle.Text = userCurrency.Info.Abbreviation;
+            SecondaryCurrencyLabel.Text = userCurrency.Amount.ToString("#,##0");
+        }
+
 
         #endregion
 
@@ -293,20 +428,36 @@ namespace Client.Scenes.Views
                     TitleLabel = null;
                 }
 
-                if (GoldLabel != null)
+                if (PrimaryCurrencyLabel != null)
                 {
-                    if (!GoldLabel.IsDisposed)
-                        GoldLabel.Dispose();
+                    if (!PrimaryCurrencyLabel.IsDisposed)
+                        PrimaryCurrencyLabel.Dispose();
 
-                    GoldLabel = null;
+                    PrimaryCurrencyLabel = null;
                 }
 
-                if (GameGoldLabel != null)
+                if (SecondaryCurrencyLabel != null)
                 {
-                    if (!GameGoldLabel.IsDisposed)
-                        GameGoldLabel.Dispose();
+                    if (!SecondaryCurrencyLabel.IsDisposed)
+                        SecondaryCurrencyLabel.Dispose();
 
-                    GameGoldLabel = null;
+                    SecondaryCurrencyLabel = null;
+                }
+
+                if (PrimaryCurrencyTitle != null)
+                {
+                    if (!PrimaryCurrencyTitle.IsDisposed)
+                        PrimaryCurrencyTitle.Dispose();
+
+                    PrimaryCurrencyTitle = null;
+                }
+
+                if (SecondaryCurrencyTitle != null)
+                {
+                    if (!SecondaryCurrencyTitle.IsDisposed)
+                        SecondaryCurrencyTitle.Dispose();
+
+                    SecondaryCurrencyTitle = null;
                 }
 
                 if (WeightLabel != null)
@@ -317,12 +468,12 @@ namespace Client.Scenes.Views
                     WeightLabel = null;
                 }
 
-                if (CurrencyLabel != null)
+                if (WalletLabel != null)
                 {
-                    if (!CurrencyLabel.IsDisposed)
-                        CurrencyLabel.Dispose();
+                    if (!WalletLabel.IsDisposed)
+                        WalletLabel.Dispose();
 
-                    CurrencyLabel = null;
+                    WalletLabel = null;
                 }
 
                 if (CloseButton != null)
@@ -349,20 +500,20 @@ namespace Client.Scenes.Views
                     TrashButton = null;
                 }
 
-                if (GoldTitle != null)
+                if (PrimaryCurrencyTitle != null)
                 {
-                    if (!GoldTitle.IsDisposed)
-                        GoldTitle.Dispose();
+                    if (!PrimaryCurrencyTitle.IsDisposed)
+                        PrimaryCurrencyTitle.Dispose();
 
-                    GameGoldTitle = null;
+                    SecondaryCurrencyTitle = null;
                 }
 
-                if (GameGoldTitle != null)
+                if (SecondaryCurrencyTitle != null)
                 {
-                    if (!GameGoldTitle.IsDisposed)
-                        GameGoldTitle.Dispose();
+                    if (!SecondaryCurrencyTitle.IsDisposed)
+                        SecondaryCurrencyTitle.Dispose();
 
-                    GameGoldTitle = null;
+                    SecondaryCurrencyTitle = null;
                 }
             }
         }

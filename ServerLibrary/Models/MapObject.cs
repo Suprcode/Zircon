@@ -1342,6 +1342,7 @@ namespace Server.Models
                 case BuffType.TheNewBeginning:
                 case BuffType.Server:
                 case BuffType.MapEffect:
+                case BuffType.InstanceEffect:
                 case BuffType.Castle:
                 case BuffType.Guild:
                 case BuffType.Veteran:
@@ -1400,6 +1401,20 @@ namespace Server.Models
             Broadcast(new S.ObjectBuffAdd { ObjectID = ObjectID, Type = type });
 
             return info;
+        }
+
+        public virtual void DecreaseBuffCharge(BuffInfo info)
+        {
+            if (info.Type == BuffType.TheNewBeginning)
+            {
+                var buff = Buffs.SingleOrDefault(x => x.Type == info.Type);
+
+                if (buff != null)
+                {
+                    buff.Stats[Stat.TheNewBeginning]--;
+                    RefreshStats();
+                }
+            }
         }
         public virtual void BuffRemove(BuffInfo info)
         {

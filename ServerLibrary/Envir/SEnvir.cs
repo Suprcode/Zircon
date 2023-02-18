@@ -22,6 +22,8 @@ using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
 using System.Reflection;
 using System.Globalization;
+using Server.Envir.Commands.Handler;
+using Server.Envir.Commands;
 using Server.Models.Magic;
 
 namespace Server.Envir
@@ -228,6 +230,10 @@ namespace Server.Envir
         public static long TotalBytesSent, TotalBytesReceived;
         public static long DownloadSpeed, UploadSpeed;
 
+        public static ICommandHandler CommandHandler = new ErrorHandlingCommandHandler(
+            new PlayerCommandHandler(),
+            new AdminCommandHandler()
+        );
 
         public static bool ServerBuffChanged;
 
@@ -260,6 +266,7 @@ namespace Server.Envir
         public static DBCollection<SetInfo> SetInfoList;
         public static DBCollection<AuctionInfo> AuctionInfoList;
         public static DBCollection<MailInfo> MailInfoList;
+        public static DBCollection<QuestInfo> QuestInfoList;
         public static DBCollection<AuctionHistoryInfo> AuctionHistoryInfoList;
         public static DBCollection<UserDrop> UserDropList;
         public static DBCollection<StoreInfo> StoreInfoList;
@@ -424,6 +431,7 @@ namespace Server.Envir
             SetInfoList = Session.GetCollection<SetInfo>();
             AuctionInfoList = Session.GetCollection<AuctionInfo>();
             MailInfoList = Session.GetCollection<MailInfo>();
+            QuestInfoList = Session.GetCollection<QuestInfo>();
             AuctionHistoryInfoList = Session.GetCollection<AuctionHistoryInfo>();
             UserDropList = Session.GetCollection<UserDrop>();
             StoreInfoList = Session.GetCollection<StoreInfo>();
@@ -456,13 +464,13 @@ namespace Server.Envir
 
             GoldInfo = CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
 
-            RefinementStoneInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.RefinementStone);
-            FragmentInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment1);
-            Fragment2Info = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment2);
-            Fragment3Info = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.Fragment3);
+            RefinementStoneInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.RefinementStone);
+            FragmentInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment1);
+            Fragment2Info = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment2);
+            Fragment3Info = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment3);
 
-            ItemPartInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.ItemPart);
-            FortuneCheckerInfo = ItemInfoList.Binding.First(x => x.Effect == ItemEffect.FortuneChecker);
+            ItemPartInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.ItemPart);
+            FortuneCheckerInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.FortuneChecker);
 
             MysteryShipMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.MysteryShipRegionIndex);
             LairMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.LairRegionIndex);
@@ -621,6 +629,8 @@ namespace Server.Envir
             CreateNPCs();
 
             CreateSpawns();
+
+            CreateQuestRegions();
         }
 
         private static void CreateMovements(InstanceInfo instance = null, byte index = 0)
@@ -709,6 +719,48 @@ namespace Server.Envir
 
                 if (!ob.Spawn(info.Region, instance, index))
                     Log($"[NPC] Failed to spawn NPC, Region: {info.Region.ServerDescription}, NPC: {info.NPCName}");
+            }
+        }
+
+        private static void CreateQuestRegions(InstanceInfo instance = null, byte index = 0)
+        {
+            foreach (QuestInfo quest in QuestInfoList.Binding)
+            {
+                foreach (QuestTask task in quest.Tasks)
+                {
+                    if (task.Task != QuestTaskType.Region) continue;
+                    if (task.RegionParameter == null) continue;
+
+                    var sourceMap = GetMap(task.RegionParameter.Map, instance, index);
+
+                    if (sourceMap == null)
+                    {
+                        if (instance == null)
+                        {
+                            Log($"[Quest Region] Bad Map, Map: {task.RegionParameter.ServerDescription}");
+                        }
+
+                        continue;
+                    }
+
+                    foreach (Point sPoint in task.RegionParameter.PointList)
+                    {
+                        Cell source = sourceMap.GetCell(sPoint);
+
+                        if (source == null)
+                        {
+                            Log($"[Quest Region] Bad Quest Region, Source: {task.RegionParameter.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
+                            continue;
+                        }
+
+                        if (source.QuestTasks == null)
+                            source.QuestTasks = new List<QuestTask>();
+
+                        if (source.QuestTasks.Contains(task)) continue;
+
+                        source.QuestTasks.Add(task);
+                    }
+                }
             }
         }
 
@@ -915,6 +967,7 @@ namespace Server.Envir
                         if (!NewConnections.TryDequeue(out connection)) break;
 
                         IPCount.TryGetValue(connection.IPAddress, out var ipCount);
+
                         IPCount[connection.IPAddress] = ipCount + 1;
 
                         Connections.Add(connection);
@@ -1455,7 +1508,7 @@ namespace Server.Envir
             item.Flags = check.Flags;
             item.ExpireTime = check.ExpireTime;
 
-            if (IsCurrencyItem(item.Info) || item.Info.Effect == ItemEffect.Experience)
+            if (IsCurrencyItem(item.Info) || item.Info.ItemEffect == ItemEffect.Experience)
                 item.Count = check.Count;
             else
                 item.Count = Math.Min(check.Info.StackSize, check.Count);
@@ -1483,7 +1536,7 @@ namespace Server.Envir
             item.Flags = check.Flags;
             item.ExpireTime = check.ExpireTime;
 
-            if (IsCurrencyItem(item.Info) || item.Info.Effect == ItemEffect.Experience)
+            if (IsCurrencyItem(item.Info) || item.Info.ItemEffect == ItemEffect.Experience)
                 item.Count = check.Count;
             else
                 item.Count = Math.Min(check.Info.StackSize, check.Count);
@@ -3303,12 +3356,12 @@ namespace Server.Envir
 
         public static byte[] CreateHash(string password)
         {
-            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
             {
                 byte[] salt = new byte[SaltSize];
                 rng.GetBytes(salt);
 
-                using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, salt, Iterations))
+                using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256))
                 {
                     byte[] hash = rfc.GetBytes(hashSize);
 
@@ -3326,7 +3379,7 @@ namespace Server.Envir
             byte[] salt = new byte[SaltSize];
             Buffer.BlockCopy(totalHash, 0, salt, 0, SaltSize);
 
-            using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, salt, Iterations))
+            using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256))
             {
                 byte[] hash = rfc.GetBytes(hashSize);
 
@@ -3508,6 +3561,8 @@ namespace Server.Envir
 
             CreateSpawns(instance, index);
 
+            CreateQuestRegions(instance, index);
+
             Log($"Loaded Instance {instance.Name} at index {index}");
 
             return index;
@@ -3565,6 +3620,29 @@ namespace Server.Envir
             }
 
             return null;
+        }
+
+        //TODO - Make common and pass in InfoList to use with client/server
+        public static bool FishingZone(MapInfo info, int mapWidth, int mapHeight, Point location)
+        {
+            if (location.X < 0 || location.Y < 0 || location.X > mapWidth || location.Y > mapHeight)
+                return false;
+
+            foreach (var zone in FishingInfoList.Binding)
+            {
+                if (zone.Region != null && zone.Region.Map == info)
+                {
+                    if (zone.Region.PointList == null)
+                        zone.Region.CreatePoints(mapWidth);
+
+                    if (zone.Region.PointList.Contains(location))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 

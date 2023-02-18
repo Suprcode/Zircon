@@ -310,6 +310,7 @@ namespace Server.Envir
         public abstract string InstanceUserCooldown { get; set; }
         public abstract string InstanceGuildCooldown { get; set; }
         public abstract string InstanceNoSlots { get; set; }
+        public abstract string InstanceMissingItem { get; set; }
         public abstract string InstanceNotGroupLeader { get; set; }
         public abstract string InstanceNoMap { get; set; }
 

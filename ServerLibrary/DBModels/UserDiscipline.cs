@@ -1,6 +1,8 @@
 ﻿using Library;
+using Library.Network.ClientPackets;
 using Library.SystemModels;
 using MirDB;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Server.DBModels
@@ -74,7 +76,14 @@ namespace Server.DBModels
 
         protected override void OnDeleted()
         {
+            for (int i = Magics.Count - 1; i >= 0; i--)
+            {
+                Character.Player?.Magics.Remove(Magics[i].Info.Magic);
+                Magics[i].Delete();
+            }
+
             Info = null;
+            Character = null;
 
             base.OnDeleted();
         }

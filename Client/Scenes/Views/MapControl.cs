@@ -155,10 +155,11 @@ namespace Client.Scenes.Views
         public Point MiningPoint;
         public MirDirection MiningDirection;
 
-        public bool Fishing;
+        public FishingState FishingState;
         public Point FloatLocation;
         public MirDirection FishingDirection;
-        
+        public bool AutoCast;
+
         public Floor FLayer;
         public Light LLayer;
 
@@ -594,23 +595,26 @@ namespace Client.Scenes.Views
                 return;
             }
 
-            if (GameScene.Game.GoldPickedUp)
+            if (GameScene.Game.CurrencyPickedUp != null)
             {
                 MapButtons &= ~e.Button;
-                DXItemAmountWindow window = new DXItemAmountWindow("Drop Item", new ClientUserItem(Globals.GoldInfo, User.Gold.Amount));
+
+                int index = GameScene.Game.CurrencyPickedUp.Info.Index;
+
+                DXItemAmountWindow window = new DXItemAmountWindow("Drop Item", new ClientUserItem(GameScene.Game.CurrencyPickedUp.Info.DropItem, GameScene.Game.CurrencyPickedUp.Amount));
 
                 window.ConfirmButton.MouseClick += (o, a) =>
                 {
                     if (window.Amount <= 0) return;
 
-                    CEnvir.Enqueue(new C.GoldDrop
+                    CEnvir.Enqueue(new C.CurrencyDrop
                     {
+                        CurrencyIndex = index,
                         Amount = window.Amount
                     });
-
                 };
 
-                GameScene.Game.GoldPickedUp = false;
+                GameScene.Game.CurrencyPickedUp = null;
                 return;
             }
             
@@ -746,7 +750,6 @@ namespace Client.Scenes.Views
 
             if (User.Dead || (User.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || User.Buffs.Any(x => x.Type == BuffType.DragonRepulse || x.Type == BuffType.FrostBite)) return; //Para or Frozen??
 
-
             if (User.MagicAction != null)
             {
                 if (CEnvir.Now < MapObject.User.NextActionTime || MapObject.User.ActionQueue.Count != 0) return;
@@ -793,10 +796,10 @@ namespace Client.Scenes.Views
 
                         if (CEnvir.Shift && MapObject.TargetObject == null)
                         {
-                            if (Fishing) return;
+                            if (FishingState != FishingState.None) return;
 
                             if (CEnvir.Now > User.AttackTime && User.Horse == HorseType.None)
-                                MapObject.User.AttemptAction(new ObjectAction( MirAction.Attack, direction, MapObject.User.CurrentLocation, 0, MagicType.None, Element.None));
+                                MapObject.User.AttemptAction(new ObjectAction(MirAction.Attack, direction, MapObject.User.CurrentLocation, 0, MagicType.None, Element.None));
 
                             return;
                         }
@@ -806,50 +809,33 @@ namespace Client.Scenes.Views
 
                         if (CEnvir.Alt)
                         {
-                            if (Fishing) return;
+                            if (User.Horse != HorseType.None) return;
+                            if (FishingState != FishingState.None) return;
 
-                            if (weap != null && weap.Info.Effect == ItemEffect.FishingRod && armour != null && armour.Info.Effect == ItemEffect.FishingRobe)
+                            if (weap?.Info.Effect == ItemEffect.FishingRod && armour?.Info.Effect == ItemEffect.FishingRobe)
                             {
                                 FloatLocation = MapLocation;
                                 FishingDirection = Functions.DirectionFromPoint(MapObject.User.CurrentLocation, FloatLocation);
 
                                 var distance = Functions.Distance(MapObject.User.CurrentLocation, FloatLocation);
-                                var canFish = false;
 
-                                foreach (var info in Globals.FishingInfoList.Binding)
+                                if (Functions.FishingZone(Globals.FishingInfoList, MapInfo, Width, Height, FloatLocation) != null && Functions.ValidFishingDistance(distance, User.Stats[Stat.ThrowDistance]))
                                 {
-                                    if (info.Region != null && info.Region.Map == MapInfo)
-                                    {
-                                        if (info.Region.PointList == null)
-                                            info.Region.CreatePoints(Width);
-
-                                        if (info.Region.PointList.Contains(FloatLocation))
-                                        {
-                                            canFish = true;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if (canFish && distance > 3 && distance < 10 && FloatLocation.X >= 0 && FloatLocation.Y >= 0 && FloatLocation.X < Width && FloatLocation.Y < Height)
-                                {
-                                    Fishing = true;
+                                    FishingState = FishingState.Cast;
                                     break;
                                 }
                             }
                             else
                             {
-                                if (User.Horse == HorseType.None)
-                                    MapObject.User.AttemptAction(new ObjectAction( MirAction.Harvest, direction, MapObject.User.CurrentLocation));
-
+                                MapObject.User.AttemptAction(new ObjectAction(MirAction.Harvest, direction, MapObject.User.CurrentLocation));
                                 return;
                             }
                         }
 
-                        if (Fishing)
+                        if (FishingState != FishingState.None)
                         {
-                            MapObject.User.AttemptAction(new ObjectAction(MirAction.Fishing, FishingDirection, MapObject.User.CurrentLocation, false, FloatLocation, false));
-                            return;
+                            FishingState = FishingState.Cancel;
+                            break;
                         }
 
                         if (MapLocation == MapObject.User.CurrentLocation)
@@ -864,7 +850,7 @@ namespace Client.Scenes.Views
 
                         if (MapObject.MouseObject != null && MapObject.MouseObject.Race != ObjectType.Item && !MapObject.MouseObject.Dead) break;
 
-                        if (MapInfo.CanMine && weap != null && weap.Info.Effect == ItemEffect.PickAxe)
+                        if (MapInfo.CanMine && weap != null && weap.Info.ItemEffect == ItemEffect.PickAxe)
                         {
                             MiningPoint = Functions.Move(User.CurrentLocation, direction);
 
@@ -894,10 +880,10 @@ namespace Client.Scenes.Views
                     case MouseButtons.Right:
                         Mining = false;
 
-                        if (Fishing)
+                        if (FishingState != FishingState.None)
                         {
-                            MapObject.User.AttemptAction(new ObjectAction(MirAction.Fishing, MapObject.User.Direction, MapObject.User.CurrentLocation, false, FloatLocation, false));
-                            return;
+                            FishingState = FishingState.Cancel;
+                            break;
                         }
 
                         if (MapObject.MouseObject is PlayerObject && MapObject.MouseObject != MapObject.User && CEnvir.Ctrl) break;
@@ -921,7 +907,7 @@ namespace Client.Scenes.Views
             {
                 ClientUserItem weap = GameScene.Game.Equipment[(int)EquipmentSlot.Weapon];
 
-                if (MapInfo.CanMine && weap != null && (weap.CurrentDurability > 0 || weap.Info.Durability == 0) && weap.Info.Effect == ItemEffect.PickAxe &&
+                if (MapInfo.CanMine && weap != null && (weap.CurrentDurability > 0 || weap.Info.Durability == 0) && weap.Info.ItemEffect == ItemEffect.PickAxe &&
                     MiningPoint.X >= 0 && MiningPoint.Y >= 0 && MiningPoint.X < Width && MiningPoint.Y < Height && Cells[MiningPoint.X, MiningPoint.Y].Flag &&
                     Functions.Distance(MiningPoint, MapObject.User.CurrentLocation) == 1 && User.Horse == HorseType.None)
                 {
@@ -940,11 +926,24 @@ namespace Client.Scenes.Views
                 }
             }
 
-            if (Fishing)
+            if (FishingState != FishingState.None || AutoCast)
             {
                 if (CEnvir.Now > User.AttackTime)
                 {
-                    MapObject.User.AttemptAction(new ObjectAction(MirAction.Fishing, FishingDirection, MapObject.User.CurrentLocation, true, FloatLocation, false));
+                    if (FishingState == FishingState.Reel)
+                    {
+                        FishingState = FishingState.None;
+                    }
+                    else
+                    {
+                        if (AutoCast)
+                        {
+                            FishingState = FishingState.Cast;
+                            AutoCast = false;
+                        }
+
+                        MapObject.User.AttemptAction(new ObjectAction(MirAction.Fishing, FishingDirection, MapObject.User.CurrentLocation, FishingState, FloatLocation, MapObject.User.FishFound));
+                    }
                 }
             }
 
@@ -1240,10 +1239,11 @@ namespace Client.Scenes.Views
                 Mining = false;
                 MiningPoint = Point.Empty;
                 MiningDirection = 0;
-                Fishing = false;
+
+                FishingState = FishingState.None;
                 FloatLocation = Point.Empty;
                 FishingDirection = 0;
-
+                AutoCast = false;
 
                 if (FLayer != null)
                 {
@@ -1559,12 +1559,16 @@ namespace Client.Scenes.Views
                 switch (GameScene.Game.MapControl.MapInfo.Light)
                 {
                     case LightSetting.Default:
-                        byte shading = (byte) (255*GameScene.Game.DayTime);
+                        byte shading = (byte) (255 * GameScene.Game.DayTime);
                         BackColour = Color.FromArgb(shading, shading, shading);
                         Visible = true;
                         break;
                     case LightSetting.Night:
                         BackColour = Color.FromArgb(15, 15, 15);
+                        Visible = true;
+                        break;
+                    case LightSetting.Twilight:
+                        BackColour = Color.FromArgb(100, 100, 100);
                         Visible = true;
                         break;
                     case LightSetting.Light:

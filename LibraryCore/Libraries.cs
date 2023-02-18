@@ -16,6 +16,10 @@ namespace Library
             [LibraryFile.Equip] = @"Data\Equip.Zl",
             [LibraryFile.EquipEffect_UI] = @"Data\EquipEffect-UI.Zl",
             [LibraryFile.EquipEffect_Part] = @"Data\EquipEffect-Part.Zl",
+            [LibraryFile.EquipEffect_Full] = @"Data\EquipEffect-Full.Zl",
+            [LibraryFile.EquipEffect_FullEx1] = @"Data\EquipEffect-FullEx1.Zl",
+            [LibraryFile.EquipEffect_FullEx2] = @"Data\EquipEffect-FullEx2.Zl",
+            [LibraryFile.EquipEffect_FullEx3] = @"Data\EquipEffect-FullEx3.Zl",
             [LibraryFile.ProgUse] = @"Data\ProgUse.Zl",
             [LibraryFile.StoreItems] = @"Data\StoreItems.Zl",
             [LibraryFile.Inventory] = @"Data\Inventory.Zl",
@@ -23,7 +27,8 @@ namespace Library
             [LibraryFile.NPC] = @"Data\NPC.Zl",
             [LibraryFile.GameInter2] = @"Data\GameInter2.Zl",
             [LibraryFile.MiniMap] = @"Data\MiniMap.Zl",
-            
+            [LibraryFile.Fmmap] = @"Data\Fmmap.Zl",
+
             [LibraryFile.MagicIcon] = @"Data\MIcon.Zl",
             [LibraryFile.CBIcon] = @"Data\CBIcons.Zl",
             [LibraryFile.QuestIcon] = @"Data\QuestIcons.Zl",
@@ -71,6 +76,7 @@ namespace Library
             [LibraryFile.WM_HairA] = @"Data\WM-HairA.Zl",
 
             [LibraryFile.Horse] = @"Data\Horse.Zl",
+            [LibraryFile.HorseS] = @"Data\HorseS.Zl",
             [LibraryFile.HorseIron] = @"Data\Horse_Iron.Zl",
             [LibraryFile.HorseSilver] = @"Data\Horse_Silver.Zl",
             [LibraryFile.HorseGold] = @"Data\Horse_Golden.Zl",
@@ -128,8 +134,8 @@ namespace Library
             [LibraryFile.M_WeaponAOH2] = @"Data\M-WeaponAOH2.Zl",
             [LibraryFile.M_WeaponAOH3] = @"Data\M-WeaponAOH3.Zl",
             [LibraryFile.M_WeaponAOH4] = @"Data\M-WeaponAOH4.Zl",
-            [LibraryFile.M_WeaponAOH5] = @"Data\WM-WeaponAOH5.Zl",
-            [LibraryFile.M_WeaponAOH6] = @"Data\WM-WeaponAOH6.Zl",
+            [LibraryFile.M_WeaponAOH5] = @"Data\M-WeaponAOH5.Zl",
+            [LibraryFile.M_WeaponAOH6] = @"Data\M-WeaponAOH6.Zl",
 
 
             [LibraryFile.WM_WeaponADL1] = @"Data\WM-WeaponADL1.Zl",
@@ -143,8 +149,8 @@ namespace Library
             [LibraryFile.WM_WeaponAOH2] = @"Data\WM-WeaponAOH2.Zl",
             [LibraryFile.WM_WeaponAOH3] = @"Data\WM-WeaponAOH3.Zl",
             [LibraryFile.WM_WeaponAOH4] = @"Data\WM-WeaponAOH4.Zl",
-            [LibraryFile.WM_WeaponAOH5] = @"Data\WWM-WeaponAOH5.Zl",
-            [LibraryFile.WM_WeaponAOH6] = @"Data\WWM-WeaponAOH6.Zl",
+            [LibraryFile.WM_WeaponAOH5] = @"Data\WM-WeaponAOH5.Zl",
+            [LibraryFile.WM_WeaponAOH6] = @"Data\WM-WeaponAOH6.Zl",
 
 
             [LibraryFile.M_Helmet1] = @"Data\M-Helmet1.Zl",
@@ -430,12 +436,17 @@ namespace Library
         Equip,
         EquipEffect_UI,
         EquipEffect_Part,
+        EquipEffect_Full,
+        EquipEffect_FullEx1,
+        EquipEffect_FullEx2,
+        EquipEffect_FullEx3,
         ProgUse,
         StoreItems,
         Inventory,
         Ground,
         NPC,
         MiniMap,
+        Fmmap,
         MagicIcon,
         CBIcon,
         QuestIcon,
@@ -481,6 +492,7 @@ namespace Library
         WM_HairA,
 
         Horse,
+        HorseS,
 
         HorseIron,
         HorseSilver,

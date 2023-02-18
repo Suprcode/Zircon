@@ -376,28 +376,28 @@ namespace Client.Controls
         }
         private void DrawSelectedTab()
         {
-            Size s = InterfaceLibrary.GetSize(22);
-            InterfaceLibrary.Draw(22, 0, 0, Color.White, false, 1F, ImageType.Image);
+            Size s = InterfaceLibrary.GetSize(56);
+            InterfaceLibrary.Draw(56, 0, 0, Color.White, false, 1F, ImageType.Image);
 
             int x = s.Width;
-            s = InterfaceLibrary.GetSize(24);
-            InterfaceLibrary.Draw(24, x, 0, Color.White, new Rectangle(0, 0, Size.Width - x * 2, s.Height), 1f, ImageType.Image);
+            s = InterfaceLibrary.GetSize(58);
+            InterfaceLibrary.Draw(58, x, 0, Color.White, new Rectangle(0, 0, Size.Width - x * 2, s.Height), 1f, ImageType.Image);
 
-            s = InterfaceLibrary.GetSize(23);
-            InterfaceLibrary.Draw(23, Size.Width - s.Width, 0, Color.White, false, 1F, ImageType.Image);
+            s = InterfaceLibrary.GetSize(57);
+            InterfaceLibrary.Draw(57, Size.Width - s.Width, 0, Color.White, false, 1F, ImageType.Image);
         }
         private void DrawDeselectedTab()
         {
-            Size s = InterfaceLibrary.GetSize(19);
-            InterfaceLibrary.Draw(19, 0, 0, Color.White, false, 1F, ImageType.Image);
+            Size s = InterfaceLibrary.GetSize(53);
+            InterfaceLibrary.Draw(53, 0, 0, Color.White, false, 1F, ImageType.Image);
 
             int x = s.Width;
-            s = InterfaceLibrary.GetSize(21);
-            InterfaceLibrary.Draw(21, x, 0, Color.White, new Rectangle(0, 0, Size.Width - x * 2, s.Height), 1f, ImageType.Image);
+            s = InterfaceLibrary.GetSize(55);
+            InterfaceLibrary.Draw(55, x, 0, Color.White, new Rectangle(0, 0, Size.Width - x * 2, s.Height), 1f, ImageType.Image);
 
 
-            s = InterfaceLibrary.GetSize(20);
-            InterfaceLibrary.Draw(20, Size.Width - s.Width, 0, Color.White, false, 1F, ImageType.Image);
+            s = InterfaceLibrary.GetSize(54);
+            InterfaceLibrary.Draw(54, Size.Width - s.Width, 0, Color.White, false, 1F, ImageType.Image);
         }
         private void DrawSmallButton()
         {

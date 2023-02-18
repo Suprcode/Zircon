@@ -878,10 +878,10 @@ namespace Client.Envir
                 player.ArmourColour = p.ArmourColour;
                 player.HelmetShape = p.Helmet;
                 player.HorseShape = p.HorseArmour;
-                player.ArmourImage = p.ArmourImage;
+                player.ArmourEffect = p.ArmourEffect;
                 player.ShieldShape = p.Shield;
-                player.EmblemShape = p.EmblemShape;
-                player.WingsShape = p.WingsShape;
+                player.EmblemEffect = p.EmblemEffect;
+                player.WingsEffect = p.WingsEffect;
 
                 player.Light = p.Light;
                 if (player == MapObject.User)
@@ -942,7 +942,6 @@ namespace Client.Envir
                 {
                     switch (((MonsterObject)ob).Image)
                     {
-
                         case MonsterImage.VoraciousGhost:
                         case MonsterImage.DevouringGhost:
                         case MonsterImage.CorpseRaisingGhost:
@@ -969,15 +968,14 @@ namespace Client.Envir
         {
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer)
             {
-
                 if (MapObject.User.CurrentLocation != p.Location || MapObject.User.Direction != p.Direction)
                     GameScene.Game.Displacement(p.Direction, p.Location);
+
                 MapObject.User.ServerTime = DateTime.MinValue;
 
                 MapObject.User.NextActionTime += p.Slow;
                 return;
             }
-
 
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
@@ -1037,31 +1035,47 @@ namespace Client.Envir
             GameScene.Game.User.Horse = p.Horse;
         }
 
-        public void Process(S.FishingUpdate p)
+        public void Process(S.ObjectFishing p)
         {
-            if (MapObject.User.ObjectID == p.ObjectID)
-            {
-                MapObject.User.ServerTime = DateTime.MinValue;
-
-                MapObject.User.FishFound = p.FishFound;
-                MapObject.User.Fishing = p.Cast;
-                MapObject.User.FloatLocation = p.FloatLocation;
-
-                GameScene.Game.MapControl.Fishing = p.Cast;
-
-                GameScene.Game.FishingCatchBox.Visible = p.Cast;
-
-                return;
-            }
-
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                ob.ActionQueue.Add(new ObjectAction(MirAction.Fishing, p.Direction, ob.CurrentLocation, p.Cast, p.FloatLocation, p.FishFound));
+                if (ob == MapObject.User)
+                {
+                    MapObject.User.ServerTime = DateTime.MinValue;
+
+                    GameScene.Game.MapControl.FishingState = p.State;
+
+                    MapObject.User.FishingState = p.State;
+                    MapObject.User.FishFound = p.FishFound;
+                    MapObject.User.FloatLocation = p.FloatLocation;
+
+                    if (p.State == FishingState.Cancel)
+                        GameScene.Game.MapControl.FishingState = FishingState.None;
+
+                    GameScene.Game.FishingCatchBox.Visible = p.State == FishingState.Cast;
+
+                    if (p.State == FishingState.Reel)
+                    {
+                        if (GameScene.Game.FishingCatchBox.AutoCastCheckBox.Checked)
+                            GameScene.Game.MapControl.AutoCast = true;
+
+                        MapObject.User.ActionQueue.Add(new ObjectAction(MirAction.Fishing, p.Direction, MapObject.User.CurrentLocation, p.State, p.FloatLocation, p.FishFound));
+                    }
+                }
+                else
+                {
+                    ob.ActionQueue.Add(new ObjectAction(MirAction.Fishing, p.Direction, ob.CurrentLocation, p.State, p.FloatLocation, p.FishFound));
+                }
 
                 return;
             }
+        }
+
+        public void Process(S.FishingStats p)
+        {
+            GameScene.Game.FishingCatchBox.Update(p);
         }
 
         public void Process(S.ObjectStruck p)
@@ -1072,6 +1086,9 @@ namespace Client.Envir
 
                 if (ob == MapObject.User) //{
                 {
+                    if (GameScene.Game.MapControl.FishingState != FishingState.None)
+                        GameScene.Game.MapControl.FishingState = FishingState.Cancel;
+
                     GameScene.Game.CanRun = false;
                     //   MapObject.User.NextRunTime = CEnvir.Now.AddMilliseconds(600);
                     //MapObject.User.NextActionTime = CEnvir.Now.AddMilliseconds(300);
@@ -1714,7 +1731,7 @@ namespace Client.Envir
 
             string message = $"Experience Gained {p.Amount:#,##0.#}";
 
-            if (weapon != null && weapon.Info.Effect != ItemEffect.PickAxe && (weapon.Flags & UserItemFlags.Refinable) != UserItemFlags.Refinable && (weapon.Flags & UserItemFlags.NonRefinable) != UserItemFlags.NonRefinable && weapon.Level < Globals.WeaponExperienceList.Count)
+            if (weapon != null && weapon.Info.ItemEffect != ItemEffect.PickAxe && (weapon.Flags & UserItemFlags.Refinable) != UserItemFlags.Refinable && (weapon.Flags & UserItemFlags.NonRefinable) != UserItemFlags.NonRefinable && weapon.Level < Globals.WeaponExperienceList.Count)
             {
                 weapon.Experience += p.Amount / 10;
 
@@ -1779,7 +1796,7 @@ namespace Client.Envir
             {
                 ItemInfo displayInfo = item.Info;
 
-                if (item.Info.Effect == ItemEffect.ItemPart)
+                if (item.Info.ItemEffect == ItemEffect.ItemPart)
                     displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == item.AddedStats[Stat.ItemIndex]);
 
                 item.New = true;
@@ -1788,7 +1805,7 @@ namespace Client.Envir
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem)
                     text += " (Quest)";
 
-                if (item.Info.Effect == ItemEffect.ItemPart)
+                if (item.Info.ItemEffect == ItemEffect.ItemPart)
                     text += " [Part]";
 
                 GameScene.Game.ReceiveChat(text, MessageType.Combat);
@@ -2041,8 +2058,6 @@ namespace Client.Envir
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-
-
 
                 DXItemCell fromCell = grid[cellLinkInfo.Slot];
                 fromCell.Locked = false;
@@ -3928,7 +3943,7 @@ namespace Client.Envir
             {
                 ItemInfo displayInfo = item.Info;
 
-                if (item.Info.Effect == ItemEffect.ItemPart)
+                if (item.Info.ItemEffect == ItemEffect.ItemPart)
                     displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == item.AddedStats[Stat.ItemIndex]);
 
                 item.New = true;
@@ -3937,7 +3952,7 @@ namespace Client.Envir
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem)
                     text += " (Quest)";
 
-                if (item.Info.Effect == ItemEffect.ItemPart)
+                if (item.Info.ItemEffect == ItemEffect.ItemPart)
                     text += " [Part]";
 
                 GameScene.Game.ReceiveChat(text, MessageType.Combat);
@@ -4180,7 +4195,11 @@ namespace Client.Envir
         public void Process(S.DisciplineUpdate p)
         {
             GameScene.Game.User.Discipline = p.Discipline;
-            GameScene.Game.User.Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == p.Discipline.InfoIndex);
+
+            if (GameScene.Game.User.Discipline != null)
+            {
+                GameScene.Game.User.Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == p.Discipline.InfoIndex);
+            }
 
             GameScene.Game.CharacterBox.UpdateDiscipline();
         }

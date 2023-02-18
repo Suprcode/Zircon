@@ -318,8 +318,8 @@ namespace Client.Scenes.Views
             TabControl = new DXTabControl
             {
                 Parent = this,
-                Location = new Point(0, 40),
-                Size = new Size(296, 336),
+                Location = new Point(0, 37),
+                Size = new Size(296, 340),
                 MarginLeft = 10,
                 Border = false
             };
@@ -329,7 +329,7 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 Index = 201,
                 LibraryFile = LibraryFile.Interface,
-                Location = new Point(0, 20),
+                Location = new Point(0, 23),
                 Size = new Size(296, 316),
                 Visible = true
             };
@@ -338,7 +338,8 @@ namespace Client.Scenes.Views
             {
                 Parent = TabControl,
                 TabButton = { Label = { Text = "Friends" } },
-                BackColour = Color.Empty
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
             };
             FriendTab.TabButton.MouseClick += (o, e) =>
             {
@@ -365,7 +366,8 @@ namespace Client.Scenes.Views
             {
                 Parent = TabControl,
                 TabButton = { Label = { Text = "Received Mail" } },
-                BackColour = Color.Empty
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
             };
             ReceivedTab.TabButton.MouseClick += (o, e) =>
             {
@@ -392,7 +394,8 @@ namespace Client.Scenes.Views
             {
                 Parent = TabControl,
                 TabButton = { Label = { Text = "Send Mail" } },
-                BackColour = Color.Empty
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
             };
             SendTab.TabButton.MouseClick += (o, e) =>
             {
@@ -424,12 +427,14 @@ namespace Client.Scenes.Views
             {
                 Parent = TabControl,
                 TabButton = { Label = { Text = "Blocked" } },
-                BackColour = Color.Empty
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
             };
             BlockTab.TabButton.MouseClick += (o, e) =>
             {
                 BackgroundImage.Index = 204;
 
+                FriendAddButton.Visible = false;
                 FriendAddButton.Visible = false;
                 FriendRemoveButton.Visible = false;
 
@@ -554,7 +559,7 @@ namespace Client.Scenes.Views
                 Label = { Text = "Add Friend" },
                 Visible = true
             };
-            FriendAddButton.Location = new Point(43, FriendTab.Location.Y + FriendTab.Size.Height + 47);
+            FriendAddButton.Location = new Point(43, FriendTab.Location.Y + FriendTab.Size.Height + 43);
             FriendAddButton.MouseClick += (o, e) =>
             {
                 DXInputWindow window = new DXInputWindow("Please enter the name of the person you wish to Friend.", "Friend Player")
@@ -581,7 +586,7 @@ namespace Client.Scenes.Views
                 Visible = true,
                 Enabled = false
             };
-            FriendRemoveButton.Location = new Point(43 + FriendAddButton.Size.Width + 10, FriendTab.Location.Y + FriendTab.Size.Height + 47);
+            FriendRemoveButton.Location = new Point(43 + FriendAddButton.Size.Width + 10, FriendTab.Location.Y + FriendTab.Size.Height + 43);
             FriendRemoveButton.MouseClick += (o, e) =>
             {
                 if (FriendListBox.SelectedItem == null) return;
@@ -695,7 +700,7 @@ namespace Client.Scenes.Views
                 Label = { Text = "Collect All" },
                 Visible = false
             };
-            ReceivedCollectAllButton.Location = new Point(15, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 47);
+            ReceivedCollectAllButton.Location = new Point(15, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 43);
             ReceivedCollectAllButton.MouseClick += (o, e) =>
             {
                 int count = 15;
@@ -733,7 +738,7 @@ namespace Client.Scenes.Views
                 Label = { Text = "Delete All" },
                 Visible = false
             };
-            ReceivedDeleteAll.Location = new Point(15 + ReceivedCollectAllButton.Size.Width + 10, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 47);
+            ReceivedDeleteAll.Location = new Point(15 + ReceivedCollectAllButton.Size.Width + 10, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 43);
             ReceivedDeleteAll.MouseClick += (o, e) =>
             {
                 int count = 15;
@@ -754,7 +759,7 @@ namespace Client.Scenes.Views
                 Label = { Text = "New Mail" },
                 Visible = false
             };
-            ReceivedNewButton.Location = new Point(15 + ReceivedCollectAllButton.Size.Width + 10 + ReceivedDeleteAll.Size.Width + 10, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 47);
+            ReceivedNewButton.Location = new Point(15 + ReceivedCollectAllButton.Size.Width + 10 + ReceivedDeleteAll.Size.Width + 10, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 43);
             ReceivedNewButton.MouseClick += (o, e) =>
             {
                 SendTab.TabButton.InvokeMouseClick();
@@ -861,7 +866,7 @@ namespace Client.Scenes.Views
                 Enabled = false,
                 Visible = false
             };
-            SendButton.Location = new Point((Size.Width - SendButton.Size.Width) / 2, SendTab.Location.Y + SendTab.Size.Height + 47);
+            SendButton.Location = new Point((Size.Width - SendButton.Size.Width) / 2, SendTab.Location.Y + SendTab.Size.Height + 43);
             SendButton.MouseClick += (o, e) => SendMail();
 
             GoldValid = true;
@@ -934,8 +939,8 @@ namespace Client.Scenes.Views
                     CEnvir.Enqueue(new C.BlockRemove { Index = (int)BlockListBox.SelectedItem.Item });
                 };
             };
-            BlockAddButton.Location = new Point(43, BlockTab.Location.Y + 60);
-            BlockRemoveButton.Location = new Point(43 + BlockAddButton.Size.Width + 10, BlockTab.Location.Y + 60);
+            BlockAddButton.Location = new Point(43, BlockTab.Location.Y + 56);
+            BlockRemoveButton.Location = new Point(43 + BlockAddButton.Size.Width + 10, BlockTab.Location.Y + 56);
 
             BlockListBox.selectedItemChanged += (o, e) =>
             {

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
+using Client.Models.Player;
 using Client.Scenes;
 using Library;
 using SlimDX;
@@ -29,7 +30,11 @@ namespace Client.Models
             [0] = LibraryFile.M_Shield1,
             [1] = LibraryFile.M_Shield2,
             [0 + FemaleOffSet] = LibraryFile.WM_Shield1,
-            [1 + FemaleOffSet] = LibraryFile.WM_Shield2
+            [1 + FemaleOffSet] = LibraryFile.WM_Shield2,
+
+            [100] = LibraryFile.EquipEffect_Part,
+
+            [100 + FemaleOffSet] = LibraryFile.EquipEffect_Part,
         };
         #endregion
 
@@ -80,7 +85,6 @@ namespace Client.Models
             [114] = LibraryFile.M_WeaponAOH4,
             [115] = LibraryFile.M_WeaponAOH5,
             [116] = LibraryFile.M_WeaponAOH6,
-
 
             [120 + FemaleOffSet] = LibraryFile.WM_WeaponADL1,
             [122 + FemaleOffSet] = LibraryFile.WM_WeaponADL2,
@@ -205,8 +209,18 @@ namespace Client.Models
         public int WeaponShape, LibraryWeaponShape;
         public int WeaponFrame => DrawFrame + (WeaponShape % 10) * WeaponShapeOffSet;
 
+        public MirLibrary ShieldLibrary;
         public int ShieldShape;
-        public int ShieldFrame => DrawFrame + (ShieldShape % 10) * WeaponShapeOffSet;
+        public int ShieldFrame
+        {
+            get
+            {
+                if (ShieldShape < 1000)
+                    return DrawFrame + (ShieldShape % 10) * ArmourShapeOffSet + ArmourShift;
+                else
+                    return 900 + 200 * (ShieldShape % 10) + 10 * (byte)Direction + (GameScene.Game.MapControl.Animation % 4);
+            }
+        }
 
         public MirLibrary BodyLibrary;
         public int ArmourShapeOffSet;
@@ -220,11 +234,9 @@ namespace Client.Models
         public int HorseFrame => DrawFrame + ((int)Horse - 1) * 5000;
         public HorseType Horse;
 
-        public int ArmourImage;
-
-        public int EmblemShape;
-
-        public int WingsShape;
+        public ExteriorEffect ArmourEffect;
+        public ExteriorEffect EmblemEffect;
+        public ExteriorEffect WingsEffect;
 
         public bool DrawWeapon;
 
@@ -270,9 +282,9 @@ namespace Client.Models
             HelmetShape = info.Helmet;
             ShieldShape = info.Shield;
 
-            ArmourImage = info.ArmourImage;
-            EmblemShape = info.EmblemShape;
-            WingsShape = info.Wings;
+            ArmourEffect = info.ArmourEffect;
+            EmblemEffect = info.EmblemEffect;
+            WingsEffect = info.WingsEffect;
 
             Light = info.Light;
 
@@ -365,7 +377,7 @@ namespace Client.Models
                             if (ShieldShape >= 0)
                             {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
                             break;
                         case MirGender.Female:
@@ -388,7 +400,7 @@ namespace Client.Models
                             if (ShieldShape >= 0)
                             {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
                             break;
                     }
@@ -417,16 +429,16 @@ namespace Client.Models
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (LibraryWeaponShape >= 1200)
-                            {
-                                if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
-                            }
-                            else if (ShieldShape >= 0)
+                            if (ShieldShape >= 0)
                             {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
+
+                            if (LibraryWeaponShape < 1200) break;
+
+                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
+                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             break;
                         case MirGender.Female:
                             if (!ArmourList.TryGetValue(ArmourShape / 11 + AssassinOffSet + FemaleOffSet, out file))
@@ -444,16 +456,16 @@ namespace Client.Models
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (LibraryWeaponShape >= 1200)
-                            {
-                                if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
-                            }
-                            else if (ShieldShape >= 0)
+                            if (ShieldShape >= 0)
                             {
                                 if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
+
+                            if (LibraryWeaponShape < 1200) break;
+
+                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
+                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
                             break;
                     }
                     break;
@@ -516,9 +528,9 @@ namespace Client.Models
                     animation = Functions.GetAttackAnimation(Class, LibraryWeaponShape, MagicType.None);
                     break;
                 case MirAction.Fishing:
-                    bool cast = (bool)action.Extra[0];
+                    var state = (FishingState)action.Extra[0];
 
-                    if (cast)
+                    if (state == FishingState.Cast)
                         animation = CurrentAnimation == MirAnimation.FishingWait || CurrentAnimation == MirAnimation.FishingCast ? MirAnimation.FishingWait : MirAnimation.FishingCast;
                     else
                         animation = CurrentAnimation == MirAnimation.FishingWait ? MirAnimation.FishingReel : MirAnimation.Standing;
@@ -736,8 +748,8 @@ namespace Client.Models
                         ActionQueue.Add(new ObjectAction(MirAction.Dead, Direction, CurrentLocation));
                         break;
                     default:
-                        if (Fishing)
-                            ActionQueue.Add(new ObjectAction(MirAction.Fishing, Direction, CurrentLocation, Fishing, FloatLocation, FishFound));
+                        if (FishingState == FishingState.Cast)
+                            ActionQueue.Add(new ObjectAction(MirAction.Fishing, Direction, CurrentLocation, FishingState, FloatLocation, FishFound));
                         else
                             ActionQueue.Add(new ObjectAction(MirAction.Standing, Direction, CurrentLocation));
                         break;
@@ -765,15 +777,15 @@ namespace Client.Models
                             {
                                 if (FishFound)
                                 {
-                                    Effects.Add(new MirEffect(431, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
+                                    Effects.Add(new MirEffect(1400, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
+                                    Effects.Add(new MirEffect(1410, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = false });
 
-                                    FishingFloatCreate(420);
+                                    DXSoundManager.Play(SoundIndex.FishingBob);
                                 }
                                 else
                                 {
-                                    Effects.Add(new MirEffect(410, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
-
-                                    FishingFloatCreate(400);
+                                    Effects.Add(new MirEffect(1420, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = true });
+                                    Effects.Add(new MirEffect(1430, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour) { MapTarget = FloatLocation, Blend = false });
                                 }
                             }
                             break;
@@ -790,56 +802,21 @@ namespace Client.Models
         {
             if (BodyLibrary == null) return;
 
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    break;
-                case MirDirection.DownRight:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                    switch (ArmourImage)
-                    {
-                        //All
-                        case 962:
-                        case 972:
-                            break;
-                        default:
-                            DrawWings();
-                            break;
+            if (DrawExteriorEffectBehind())
+                ExteriorEffectManager.DrawExteriorEffects(this);
 
-                    }
-                    break;
-            }
+            if (DrawShieldEffectBehind())
+                DrawShieldEffect();
 
             DrawBody(true);
 
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    DrawWings();
-                    break;
-                case MirDirection.DownRight:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                    switch (ArmourImage)
-                    {
-                        //All
-                        case 962:
-                        case 972:
-                            DrawWings();
-                            break;
-                    }
-                    break;
-            }
+            if (DrawExteriorEffectInfront())
+                ExteriorEffectManager.DrawExteriorEffects(this);
+
+            if (DrawShieldEffectInfront())
+                DrawShieldEffect();
         }
+
         public override void DrawBlend()
         {
             if (BodyLibrary == null) return;
@@ -878,18 +855,36 @@ namespace Client.Models
                     break;
                 default:
                     if (!DrawWeapon) break;
-
-                    var frame = ShieldShape >= 0 ? ShieldFrame : WeaponFrame;
-                    image = WeaponLibrary2?.GetImage(frame);
-
+                    image = WeaponLibrary2?.GetImage(WeaponFrame);
                     if (image == null) break;
 
-                    WeaponLibrary2.Draw(frame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
                     l = Math.Min(l, DrawX + image.OffSetX);
                     t = Math.Min(t, DrawY + image.OffSetY);
                     r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                     b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    break;
+            }
+
+            switch (Direction)
+            {
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.DownRight:
+                    if (ShieldShape >= 0 && ShieldShape < 1000)
+                    {
+                        image = ShieldLibrary?.GetImage(ShieldFrame);
+                        if (image != null)
+                        {
+                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                            l = Math.Min(l, DrawX + image.OffSetX);
+                            t = Math.Min(t, DrawY + image.OffSetY);
+                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        }
+                    }
                     break;
             }
 
@@ -953,18 +948,38 @@ namespace Client.Models
                     break;
                 default:
                     if (!DrawWeapon) break;
-
-                    var frame = ShieldShape >= 0 ? ShieldFrame : WeaponFrame;
-                    image = WeaponLibrary2?.GetImage(frame);
-
+                    image = WeaponLibrary2?.GetImage(WeaponFrame);
                     if (image == null) break;
 
-                    WeaponLibrary2.Draw(frame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
                     l = Math.Min(l, DrawX + image.OffSetX);
                     t = Math.Min(t, DrawY + image.OffSetY);
                     r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                     b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    break;
+            }
+
+            switch (Direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    if (ShieldShape >= 0 && ShieldShape < 1000)
+                    {
+                        image = ShieldLibrary?.GetImage(ShieldFrame);
+                        if (image != null)
+                        {
+                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                            l = Math.Min(l, DrawX + image.OffSetX);
+                            t = Math.Min(t, DrawY + image.OffSetY);
+                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        }
+                    }
                     break;
             }
 
@@ -1116,129 +1131,108 @@ namespace Client.Models
             }
         }
 
-        private void DrawWings()
+        public void DrawShieldEffect()
         {
-            if (!Config.DrawEffects)
-            {
-                return;
-            }
-            MirAction currentAction = CurrentAction;
-            MirAction mirAction = currentAction;
-            if (mirAction - 7 <= MirAction.Moving || !CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out MirLibrary library))
-            {
-                return;
-            }
-            switch (ArmourImage)
-            {
-                case 962:
-                case 972:
-                    library.DrawBlend(820 + GameScene.Game.MapControl.Animation / 2 % 13, DrawX, DrawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
-                    break;
-                case 963:
-                case 973:
-                    library.DrawBlend(400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 9057:
-                case 9058:
-                    library.DrawBlend(2830 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 964:
-                case 974:
-                    library.DrawBlend(200 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 965:
-                case 975:
-                    library.DrawBlend(GameScene.Game.MapControl.Animation / 2 % 15 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 2007:
-                case 2017:
-                    library.DrawBlend(600 + GameScene.Game.MapControl.Animation / 2 % 13 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 9177:
-                case 9178:
-                    library.DrawBlend(4874 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    library.DrawBlend(4898 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-            }
-            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out library))
-            {
-                return;
-            }
-            switch (WingsShape)
-            {
-                case 1:
-                    library.DrawBlend(2830 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 2:
-                    library.DrawBlend(2942 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 3:
-                    library.DrawBlend(3054 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 4:
-                    library.DrawBlend(3166 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 5:
-                    library.DrawBlend(3278 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 6:
-                    library.DrawBlend(3390 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 7:
-                    library.DrawBlend(3502 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 8:
-                    library.DrawBlend(3614 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 9:
-                    library.DrawBlend(3726 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 10:
-                    library.DrawBlend(3838 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 11:
-                    library.DrawBlend(3950 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 12:
-                    library.DrawBlend(4454 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 13:
-                    library.DrawBlend(4566 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)Direction * 9, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 14:
-                    library.DrawBlend(4062 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 15:
-                    library.DrawBlend(4258 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-                case 16:
-                    library.DrawBlend(4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)Direction * 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    break;
-            }
+            if (!Config.DrawEffects) return;
+            if (Horse != HorseType.None) return;
 
-            if (CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx26, out library))
+            switch (CurrentAction)
             {
-                switch (EmblemShape)
-                {
-                    case 1:
-                        library.DrawBlend(90 + GameScene.Game.MapControl.Animation / 2 % 24, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(140 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        break;
-                    case 2:
-                        library.DrawBlend(220 + GameScene.Game.MapControl.Animation / 2 % 25, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(180 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        break;
-                    case 3:
-                        library.DrawBlend(330 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(270 + GameScene.Game.MapControl.Animation / 2 % 28, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        break;
-                    case 4:
-                        library.DrawBlend(360 + GameScene.Game.MapControl.Animation / 2 % 10, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        break;
-                }
-            }
+                case MirAction.Die:
+                case MirAction.Dead:
+                    break;
+                default:
+                    if (ShieldShape >= 1000)
+                    {
+                        ShieldLibrary.DrawBlend(ShieldFrame + 100, DrawX, DrawY, Color.White, true, 0.8f, ImageType.Image);
+                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                    }
 
+                    break;
+            }
         }
+
+        public bool DrawShieldEffectBehind()
+        {
+            switch (Direction)
+            {
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.DownRight:
+                    return true;
+            }
+            return false;
+        }
+
+        public bool DrawExteriorEffectBehind()
+        {
+            switch (Direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return false;
+                case MirDirection.DownRight:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                    switch (ArmourEffect)
+                    {
+                        case ExteriorEffect.A_BlueAura:
+                        case ExteriorEffect.A_FlameAura:
+                        case ExteriorEffect.A_WhiteAura:
+                            return false;
+                        default: return true;
+                    };
+                default:
+                    break;
+            }
+            return false;
+        }
+
+        public bool DrawShieldEffectInfront()
+        {
+            switch (Direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return true;
+            }
+            return false;
+        }
+
+        public bool DrawExteriorEffectInfront()
+        {
+            switch (Direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return true;
+                case MirDirection.DownRight:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:         
+                    switch(ArmourEffect)
+                    {
+                        case ExteriorEffect.A_BlueAura:
+                        case ExteriorEffect.A_FlameAura:
+                        case ExteriorEffect.A_WhiteAura: 
+                         return true;
+                        default: return false;
+                    };
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
 
         public override bool MouseOver(Point p)
         {
@@ -1257,6 +1251,8 @@ namespace Client.Models
             if (LibraryWeaponShape >= 0 && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
                 return true;
 
+            if (ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+                return true;
 
 
             switch (CurrentAnimation)
@@ -1328,26 +1324,6 @@ namespace Client.Models
                     DXSoundManager.Play(SoundIndex.FistSwing);
                     break;
             }
-        }
-
-        public override void FishingFloatCreate(int startIndex)
-        {
-            FishingFloatEffect = new MirFishingFloat(startIndex, 6, TimeSpan.FromMilliseconds(120), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
-            {
-                MapTarget = FloatLocation,
-                PlayerTarget = CurrentLocation,
-                Direction = Direction,
-                Skip = 0,         
-            };
-
-            FishingFloatEffect.FrameAction += () =>
-            {
-                if (FishFound && FishingFloatEffect.FrameIndex == 3)
-                    DXSoundManager.Play(SoundIndex.FishingBob);
-
-                FishingFloatEffect.WeaponLibrary = WeaponLibrary1;
-                FishingFloatEffect.WeaponFrame = WeaponFrame;
-            };
         }
     }
 }

@@ -155,6 +155,7 @@ namespace Server.DBModels
         {
             Info = null;
             Character = null;
+            Discipline = null;
 
             base.OnDeleted();
         }

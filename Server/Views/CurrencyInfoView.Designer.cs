@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CurrencyInfoView));
-            this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.SavingButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.CurrencyInfoImageGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.CurrencyInfoGridControl = new DevExpress.XtraGrid.GridControl();
             this.CurrencyInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -41,65 +41,67 @@
             this.CurrencyTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
+            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            this.SavingButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoImageGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyTypeImageComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             this.SuspendLayout();
             // 
-            // ribbon
+            // CurrencyInfoImageGridView
             // 
-            this.ribbon.ExpandCollapseItem.Id = 0;
-            this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
-            this.ribbon.ExpandCollapseItem,
-            this.SavingButton});
-            this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
-            this.ribbon.Name = "ribbon";
-            this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
-            this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(694, 143);
+            this.CurrencyInfoImageGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.gridColumn6,
+            this.gridColumn7});
+            this.CurrencyInfoImageGridView.GridControl = this.CurrencyInfoGridControl;
+            this.CurrencyInfoImageGridView.Name = "CurrencyInfoImageGridView";
+            this.CurrencyInfoImageGridView.OptionsView.EnableAppearanceEvenRow = true;
+            this.CurrencyInfoImageGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.CurrencyInfoImageGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            this.CurrencyInfoImageGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            this.CurrencyInfoImageGridView.OptionsView.ShowGroupPanel = false;
             // 
-            // SavingButton
+            // gridColumn6
             // 
-            this.SavingButton.Caption = "Save Database";
-            this.SavingButton.Id = 1;
-            this.SavingButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SavingButton.ImageOptions.Image")));
-            this.SavingButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SavingButton.ImageOptions.LargeImage")));
-            this.SavingButton.LargeWidth = 60;
-            this.SavingButton.Name = "SavingButton";
-            this.SavingButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SavingButton_ItemClick);
+            this.gridColumn6.Caption = "Image";
+            this.gridColumn6.FieldName = "Image";
+            this.gridColumn6.Name = "gridColumn6";
+            this.gridColumn6.Visible = true;
+            this.gridColumn6.VisibleIndex = 0;
             // 
-            // ribbonPage1
+            // gridColumn7
             // 
-            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
-            this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "Home";
-            // 
-            // ribbonPageGroup1
-            // 
-            this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.ItemLinks.Add(this.SavingButton);
-            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
-            this.ribbonPageGroup1.Text = "Saving";
+            this.gridColumn7.Caption = "Amount";
+            this.gridColumn7.FieldName = "Amount";
+            this.gridColumn7.Name = "gridColumn7";
+            this.gridColumn7.Visible = true;
+            this.gridColumn7.VisibleIndex = 1;
             // 
             // CurrencyInfoGridControl
             // 
             this.CurrencyInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CurrencyInfoGridControl.Location = new System.Drawing.Point(0, 143);
+            gridLevelNode1.LevelTemplate = this.CurrencyInfoImageGridView;
+            gridLevelNode1.RelationName = "Images";
+            this.CurrencyInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode1});
+            this.CurrencyInfoGridControl.Location = new System.Drawing.Point(0, 144);
             this.CurrencyInfoGridControl.MainView = this.CurrencyInfoGridView;
             this.CurrencyInfoGridControl.MenuManager = this.ribbon;
             this.CurrencyInfoGridControl.Name = "CurrencyInfoGridControl";
             this.CurrencyInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.ItemLookUpEdit,
             this.CurrencyTypeImageComboBox});
-            this.CurrencyInfoGridControl.Size = new System.Drawing.Size(694, 433);
+            this.CurrencyInfoGridControl.Size = new System.Drawing.Size(694, 432);
             this.CurrencyInfoGridControl.TabIndex = 1;
             this.CurrencyInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.CurrencyInfoGridView});
+            this.CurrencyInfoGridView,
+            this.CurrencyInfoImageGridView});
             // 
             // CurrencyInfoGridView
             // 
@@ -107,7 +109,8 @@
             this.gridColumn3,
             this.gridColumn2,
             this.gridColumn1,
-            this.gridColumn4});
+            this.gridColumn4,
+            this.gridColumn5});
             this.CurrencyInfoGridView.GridControl = this.CurrencyInfoGridControl;
             this.CurrencyInfoGridView.Name = "CurrencyInfoGridView";
             this.CurrencyInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -125,7 +128,7 @@
             this.gridColumn3.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.gridColumn3.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
             this.gridColumn3.Visible = true;
-            this.gridColumn3.VisibleIndex = 2;
+            this.gridColumn3.VisibleIndex = 3;
             // 
             // ItemLookUpEdit
             // 
@@ -152,7 +155,7 @@
             this.gridColumn2.FieldName = "Type";
             this.gridColumn2.Name = "gridColumn2";
             this.gridColumn2.Visible = true;
-            this.gridColumn2.VisibleIndex = 1;
+            this.gridColumn2.VisibleIndex = 2;
             // 
             // CurrencyTypeImageComboBox
             // 
@@ -175,7 +178,54 @@
             this.gridColumn4.FieldName = "ExchangeRate";
             this.gridColumn4.Name = "gridColumn4";
             this.gridColumn4.Visible = true;
-            this.gridColumn4.VisibleIndex = 3;
+            this.gridColumn4.VisibleIndex = 4;
+            // 
+            // gridColumn5
+            // 
+            this.gridColumn5.Caption = "Abbreviation";
+            this.gridColumn5.FieldName = "Abbreviation";
+            this.gridColumn5.Name = "gridColumn5";
+            this.gridColumn5.Visible = true;
+            this.gridColumn5.VisibleIndex = 1;
+            // 
+            // ribbon
+            // 
+            this.ribbon.ExpandCollapseItem.Id = 0;
+            this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
+            this.ribbon.ExpandCollapseItem,
+            this.ribbon.SearchEditItem,
+            this.SavingButton});
+            this.ribbon.Location = new System.Drawing.Point(0, 0);
+            this.ribbon.MaxItemId = 2;
+            this.ribbon.Name = "ribbon";
+            this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
+            this.ribbonPage1});
+            this.ribbon.Size = new System.Drawing.Size(694, 144);
+            // 
+            // SavingButton
+            // 
+            this.SavingButton.Caption = "Save Database";
+            this.SavingButton.Id = 1;
+            this.SavingButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SavingButton.ImageOptions.Image")));
+            this.SavingButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SavingButton.ImageOptions.LargeImage")));
+            this.SavingButton.LargeWidth = 60;
+            this.SavingButton.Name = "SavingButton";
+            this.SavingButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SavingButton_ItemClick);
+            // 
+            // ribbonPage1
+            // 
+            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
+            this.ribbonPageGroup1});
+            this.ribbonPage1.Name = "ribbonPage1";
+            this.ribbonPage1.Text = "Home";
+            // 
+            // ribbonPageGroup1
+            // 
+            this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
+            this.ribbonPageGroup1.ItemLinks.Add(this.SavingButton);
+            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
+            this.ribbonPageGroup1.Text = "Saving";
             // 
             // CurrencyInfoView
             // 
@@ -187,11 +237,12 @@
             this.Name = "CurrencyInfoView";
             this.Ribbon = this.ribbon;
             this.Text = "Currency Info View";
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoImageGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyTypeImageComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -211,5 +262,9 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox CurrencyTypeImageComboBox;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
+        private DevExpress.XtraGrid.Views.Grid.GridView CurrencyInfoImageGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn6;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
     }
 }

@@ -94,6 +94,95 @@ namespace Library
 
         }
 
+        public string GetTitle(Stat stat, bool groupSpellPower = true)
+        {
+            Type type = stat.GetType();
+
+            MemberInfo[] infos = type.GetMember(stat.ToString());
+
+            StatDescription description = infos[0].GetCustomAttribute<StatDescription>();
+
+            if (description == null) return null;
+
+            List<Stat> list;
+            string value;
+            switch (description.Mode)
+            {
+                case StatType.None:
+                    return null;
+                case StatType.Default:
+                    return description.Title;
+                case StatType.Min:
+                    if (this[description.MaxStat] != 0) return null;
+
+                    return description.Title;
+                case StatType.Max:
+                    return description.Title;
+                case StatType.Percent:
+                    return description.Title;
+                case StatType.Text:
+                    return description.Title;
+                case StatType.Time:
+                    if (this[stat] < 0)
+                        return description.Title;
+
+                    return description.Title;
+                case StatType.SpellPower:
+                    if (description.MinStat == stat && this[description.MaxStat] != 0) return null;
+
+                    if (this[Stat.MinMC] != this[Stat.MinSC] || this[Stat.MaxMC] != this[Stat.MaxSC] || !groupSpellPower)
+                        return description.Title;
+
+                    if (stat != Stat.MaxSC) return null;
+
+                    return "Spell Power";
+                case StatType.AttackElement:
+                    return $"E. Atk";
+                case StatType.ElementResistance:
+
+                    list = new List<Stat>();
+                    foreach (KeyValuePair<Stat, int> pair in Values)
+                    {
+                        if (type.GetMember(pair.Key.ToString())[0].GetCustomAttribute<StatDescription>().Mode == StatType.ElementResistance) list.Add(pair.Key);
+                    }
+
+                    if (list.Count == 0)
+                        return null;
+
+                    bool ei;
+                    bool hasAdv = false, hasDis = false;
+
+                    foreach (Stat s in list)
+                    {
+                        if (this[s] > 0)
+                            hasAdv = true;
+
+                        if (this[s] < 0)
+                            hasDis = true;
+                    }
+
+                    if (!hasAdv) // EV Online
+                    {
+                        ei = false;
+
+                        if (list[0] != stat) return null;
+                    }
+                    else
+                    {
+                        if (!hasDis && list[0] != stat) return null;
+
+                        ei = list[0] == stat;
+
+                        if (!ei && list[1] != stat) return null; //Impossible to be false and have less than 2 stats.
+                    }
+
+                    value = ei ? $"E. Adv" : $"E. Dis";
+         
+                    return value;
+                default: return null;
+            }
+        }
+
         public string GetDisplay(Stat stat)
         {
             Type type = stat.GetType();
@@ -456,13 +545,13 @@ namespace Library
         MinDC,
         [StatDescription(Title = "DC", Format = "{0}-{1}", Mode = StatType.Max, MinStat = MinDC, MaxStat = MaxDC)]
         MaxDC,
-        [StatDescription(Title = "SP (Nature)", Format = "{0}-0", Mode = StatType.SpellPower, MinStat = MinMC, MaxStat = MaxMC)]
+        [StatDescription(Title = "MC", Format = "{0}-0", Mode = StatType.SpellPower, MinStat = MinMC, MaxStat = MaxMC)]
         MinMC,
-        [StatDescription(Title = "SP (Nature)", Format = "{0}-{1}", Mode = StatType.SpellPower, MinStat = MinMC, MaxStat = MaxMC)]
+        [StatDescription(Title = "MC", Format = "{0}-{1}", Mode = StatType.SpellPower, MinStat = MinMC, MaxStat = MaxMC)]
         MaxMC,
-        [StatDescription(Title = "SP (Spirit)", Format = "{0}-0", Mode = StatType.SpellPower, MinStat = MinSC, MaxStat = MaxSC)]
+        [StatDescription(Title = "SC", Format = "{0}-0", Mode = StatType.SpellPower, MinStat = MinSC, MaxStat = MaxSC)]
         MinSC,
-        [StatDescription(Title = "SP (Spirit)", Format = "{0}-{1}", Mode = StatType.SpellPower, MinStat = MinSC, MaxStat = MaxSC)]
+        [StatDescription(Title = "SC", Format = "{0}-{1}", Mode = StatType.SpellPower, MinStat = MinSC, MaxStat = MaxSC)]
         MaxSC,
 
         [StatDescription(Title = "Accuracy", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
@@ -722,7 +811,7 @@ namespace Library
         [StatDescription(Title = "Max Regular Monster's Base Health", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         MaxMonsterHealth,
 
-        [StatDescription(Title = "Critical Damage (PvE)", Format = "x{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        [StatDescription(Title = "Critical Dmg (PvE)", Format = "x{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         CriticalDamage,
 
         [StatDescription(Title = "Experience", Format = "{0}", Mode = StatType.Default)]
@@ -774,6 +863,23 @@ namespace Library
         [StatDescription(Title = "Growth Level", Format = "{0}", Mode = StatType.Default)]
         GrowthLevel,
 
+
+        [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
+        ThrowDistance = 200,
+        [StatDescription(Title = "Auto Cast", Mode = StatType.Text)]
+        AutoCast,
+        [StatDescription(Title = "Flexibility", Format = "{0}", Mode = StatType.Default)]
+        Flexibility,
+        [StatDescription(Title = "Float Strength", Format = "{0}", Mode = StatType.Default)]
+        FloatStrength,
+        [StatDescription(Title = "Reel Bonus", Format = "{0}", Mode = StatType.Default)]
+        ReelBonus,
+        [StatDescription(Title = "Nibble Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        NibbleChance,
+        [StatDescription(Title = "Finder Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        FinderChance,
+
+
         [StatDescription(Title = "Duration", Mode = StatType.Time)]
         Duration = 10000,
     }
@@ -809,5 +915,6 @@ namespace Library
         public StatType Mode { get; set; }
         public Stat MinStat { get; set; }
         public Stat MaxStat { get; set; }
+        public string UsageHint { get; set; }
     }
 }

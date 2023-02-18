@@ -68,10 +68,10 @@ namespace Client
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if (GameScene.Game != null && e.Button == MouseButtons.Right && (GameScene.Game.SelectedCell != null || GameScene.Game.GoldPickedUp))
+            if (GameScene.Game != null && e.Button == MouseButtons.Right && (GameScene.Game.SelectedCell != null || GameScene.Game.CurrencyPickedUp != null))
             {
                 GameScene.Game.SelectedCell = null;
-                GameScene.Game.GoldPickedUp = false;
+                GameScene.Game.CurrencyPickedUp = null;
                 return;
             }
 

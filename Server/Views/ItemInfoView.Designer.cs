@@ -1,4 +1,6 @@
-﻿namespace Server.Views
+﻿using DevExpress.XtraGrid.Columns;
+
+namespace Server.Views
 {
     partial class ItemInfoView
     {
@@ -56,7 +58,8 @@
             this.RequiredTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colShape = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colEffect = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colItemEffect = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colExteriorEffect = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colImage = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colWeight = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colDurability = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -244,7 +247,8 @@
             this.gridColumn1,
             this.gridColumn2,
             this.colShape,
-            this.colEffect,
+            this.colItemEffect,
+            this.colExteriorEffect,
             this.colImage,
             this.colWeight,
             this.colDurability,
@@ -367,13 +371,13 @@
             this.colShape.VisibleIndex = 6;
             this.colShape.Width = 24;
             // 
-            // colEffect
+            // colItemEffect
             // 
-            this.colEffect.FieldName = "Effect";
-            this.colEffect.Name = "colEffect";
-            this.colEffect.Visible = true;
-            this.colEffect.VisibleIndex = 7;
-            this.colEffect.Width = 24;
+            this.colItemEffect.FieldName = "ItemEffect";
+            this.colItemEffect.Name = "colItemEffect";
+            this.colItemEffect.Visible = true;
+            this.colItemEffect.VisibleIndex = 7;
+            this.colItemEffect.Width = 24;
             // 
             // colImage
             // 
@@ -383,12 +387,20 @@
             this.colImage.VisibleIndex = 8;
             this.colImage.Width = 24;
             // 
+            // colExteriorEffect
+            // 
+            this.colExteriorEffect.FieldName = "ExteriorEffect";
+            this.colExteriorEffect.Name = "colExteriorEffect";
+            this.colExteriorEffect.Visible = true;
+            this.colExteriorEffect.VisibleIndex = 9;
+            this.colExteriorEffect.Width = 24;
+            // 
             // colWeight
             // 
             this.colWeight.FieldName = "Weight";
             this.colWeight.Name = "colWeight";
             this.colWeight.Visible = true;
-            this.colWeight.VisibleIndex = 9;
+            this.colWeight.VisibleIndex = 10;
             this.colWeight.Width = 24;
             // 
             // colDurability
@@ -396,7 +408,7 @@
             this.colDurability.FieldName = "Durability";
             this.colDurability.Name = "colDurability";
             this.colDurability.Visible = true;
-            this.colDurability.VisibleIndex = 10;
+            this.colDurability.VisibleIndex = 11;
             this.colDurability.Width = 24;
             // 
             // colPrice
@@ -404,7 +416,7 @@
             this.colPrice.FieldName = "Price";
             this.colPrice.Name = "colPrice";
             this.colPrice.Visible = true;
-            this.colPrice.VisibleIndex = 11;
+            this.colPrice.VisibleIndex = 12;
             this.colPrice.Width = 24;
             // 
             // colStackSize
@@ -412,7 +424,7 @@
             this.colStackSize.FieldName = "StackSize";
             this.colStackSize.Name = "colStackSize";
             this.colStackSize.Visible = true;
-            this.colStackSize.VisibleIndex = 12;
+            this.colStackSize.VisibleIndex = 13;
             this.colStackSize.Width = 24;
             // 
             // colSellRate
@@ -420,7 +432,7 @@
             this.colSellRate.FieldName = "SellRate";
             this.colSellRate.Name = "colSellRate";
             this.colSellRate.Visible = true;
-            this.colSellRate.VisibleIndex = 13;
+            this.colSellRate.VisibleIndex = 14;
             this.colSellRate.Width = 24;
             // 
             // colStartItem
@@ -428,7 +440,7 @@
             this.colStartItem.FieldName = "StartItem";
             this.colStartItem.Name = "colStartItem";
             this.colStartItem.Visible = true;
-            this.colStartItem.VisibleIndex = 14;
+            this.colStartItem.VisibleIndex = 15;
             this.colStartItem.Width = 24;
             // 
             // colCanRepair
@@ -436,7 +448,7 @@
             this.colCanRepair.FieldName = "CanRepair";
             this.colCanRepair.Name = "colCanRepair";
             this.colCanRepair.Visible = true;
-            this.colCanRepair.VisibleIndex = 15;
+            this.colCanRepair.VisibleIndex = 16;
             this.colCanRepair.Width = 24;
             // 
             // colCanSell
@@ -444,7 +456,7 @@
             this.colCanSell.FieldName = "CanSell";
             this.colCanSell.Name = "colCanSell";
             this.colCanSell.Visible = true;
-            this.colCanSell.VisibleIndex = 16;
+            this.colCanSell.VisibleIndex = 17;
             this.colCanSell.Width = 24;
             // 
             // colCanStore
@@ -452,7 +464,7 @@
             this.colCanStore.FieldName = "CanStore";
             this.colCanStore.Name = "colCanStore";
             this.colCanStore.Visible = true;
-            this.colCanStore.VisibleIndex = 17;
+            this.colCanStore.VisibleIndex = 18;
             this.colCanStore.Width = 24;
             // 
             // colCanTrade
@@ -460,7 +472,7 @@
             this.colCanTrade.FieldName = "CanTrade";
             this.colCanTrade.Name = "colCanTrade";
             this.colCanTrade.Visible = true;
-            this.colCanTrade.VisibleIndex = 18;
+            this.colCanTrade.VisibleIndex = 19;
             this.colCanTrade.Width = 24;
             // 
             // colCanDrop
@@ -468,7 +480,7 @@
             this.colCanDrop.FieldName = "CanDrop";
             this.colCanDrop.Name = "colCanDrop";
             this.colCanDrop.Visible = true;
-            this.colCanDrop.VisibleIndex = 19;
+            this.colCanDrop.VisibleIndex = 20;
             this.colCanDrop.Width = 24;
             // 
             // ColCanDeathDrop
@@ -476,7 +488,7 @@
             this.ColCanDeathDrop.FieldName = "CanDeathDrop";
             this.ColCanDeathDrop.Name = "ColCanDeathDrop";
             this.ColCanDeathDrop.Visible = true;
-            this.ColCanDeathDrop.VisibleIndex = 20;
+            this.ColCanDeathDrop.VisibleIndex = 21;
             this.ColCanDeathDrop.Width = 24;
             // 
             // gridColumn4
@@ -484,7 +496,7 @@
             this.gridColumn4.FieldName = "CanAutoPot";
             this.gridColumn4.Name = "gridColumn4";
             this.gridColumn4.Visible = true;
-            this.gridColumn4.VisibleIndex = 21;
+            this.gridColumn4.VisibleIndex = 22;
             this.gridColumn4.Width = 24;
             // 
             // colRarity
@@ -492,7 +504,7 @@
             this.colRarity.FieldName = "Rarity";
             this.colRarity.Name = "colRarity";
             this.colRarity.Visible = true;
-            this.colRarity.VisibleIndex = 22;
+            this.colRarity.VisibleIndex = 23;
             this.colRarity.Width = 24;
             // 
             // colDescription
@@ -500,7 +512,7 @@
             this.colDescription.FieldName = "Description";
             this.colDescription.Name = "colDescription";
             this.colDescription.Visible = true;
-            this.colDescription.VisibleIndex = 23;
+            this.colDescription.VisibleIndex = 24;
             this.colDescription.Width = 24;
             // 
             // gridColumn5
@@ -509,7 +521,7 @@
             this.gridColumn5.FieldName = "Set";
             this.gridColumn5.Name = "gridColumn5";
             this.gridColumn5.Visible = true;
-            this.gridColumn5.VisibleIndex = 24;
+            this.gridColumn5.VisibleIndex = 25;
             this.gridColumn5.Width = 24;
             // 
             // SetLookUpEdit
@@ -530,7 +542,7 @@
             this.gridColumn6.FieldName = "BuffIcon";
             this.gridColumn6.Name = "gridColumn6";
             this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 25;
+            this.gridColumn6.VisibleIndex = 26;
             this.gridColumn6.Width = 24;
             // 
             // gridColumn7
@@ -538,7 +550,7 @@
             this.gridColumn7.FieldName = "PartCount";
             this.gridColumn7.Name = "gridColumn7";
             this.gridColumn7.Visible = true;
-            this.gridColumn7.VisibleIndex = 26;
+            this.gridColumn7.VisibleIndex = 27;
             this.gridColumn7.Width = 87;
             // 
             // ribbon
@@ -673,7 +685,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn colChance;
         private DevExpress.XtraGrid.Columns.GridColumn colDAmount;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit MonsterLookUpEdit;
-        private DevExpress.XtraGrid.Columns.GridColumn colEffect;
+        private DevExpress.XtraGrid.Columns.GridColumn colItemEffect;
+        private DevExpress.XtraGrid.Columns.GridColumn colExteriorEffect;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;

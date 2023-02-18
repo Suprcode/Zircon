@@ -68,14 +68,14 @@ namespace Client.Scenes
             ConnectionAttemptChanged?.Invoke(this, EventArgs.Empty);
 
             string message = $"Attempting to connect to the server.\nAttempt:{ConnectionAttempt}";
+
             if (ConnectionBox == null)
             {
                 ConnectionBox = new DXMessageBox(message, "Connecting", DXMessageBoxButtons.Cancel);
                 ConnectionBox.Disposing += (o, e1) => ConnectionBox = null;
                 ConnectionBox.CancelButton.MouseClick += (o, e1) => CEnvir.Target.Close();
                 ConnectionBox.CloseButton.Visible = false;
-                //ConnectionBox.Size = new Size(ConnectionBox.Size.Width, ConnectionBox.Size.Height - 70);
-                //ConnectionBox.Label.Size = new Size(ConnectionBox.Label.Size.Width, ConnectionBox.Label.Size.Height - 70);
+
                 ConnectionBox.Modal = false;
 
                 LoginBox.Visible = false;
@@ -269,18 +269,23 @@ namespace Client.Scenes
 
             Loaded = CEnvir.Loaded;
 
-            if (!CEnvir.Loaded && ConnectionBox == null)
+            if (!CEnvir.Loaded)
             {
+                string message = "Loading Client Information...\nPlease wait...";
 
-                ConnectionBox = new DXMessageBox("Loading Client Information...\n" +
-                                                 "Please wait...", "Loading", DXMessageBoxButtons.Cancel);
+                if (ConnectionBox == null)
+                {
+                    ConnectionBox = new DXMessageBox(message, "Loading", DXMessageBoxButtons.Cancel);
 
-                ConnectionBox.Disposing += (o, e1) => ConnectionBox = null;
-                ConnectionBox.CancelButton.MouseClick += (o, e1) => CEnvir.Target.Close();
-                ConnectionBox.CloseButton.Visible = false;
-                ConnectionBox.Modal = false;
+                    ConnectionBox.Disposing += (o, e1) => ConnectionBox = null;
+                    ConnectionBox.CancelButton.MouseClick += (o, e1) => CEnvir.Target.Close();
+                    ConnectionBox.CloseButton.Visible = false;
+                    ConnectionBox.Modal = false;
 
-                LoginBox.Visible = false;
+                    LoginBox.Visible = false;
+                }
+                else
+                    ConnectionBox.Label.Text = message;
             }
 
             if (CEnvir.WrongVersion)
@@ -374,7 +379,6 @@ namespace Client.Scenes
 
         public void LoadDatabase()
         {
-            ConnectionBox.Label.Text = "Loading Client Information...\nPlease wait...";
             CEnvir.LoadDatabase();
         }
 
