@@ -1,11 +1,10 @@
 ﻿using Server.Envir.Commands.Exceptions;
 using Server.Models;
-using System;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class SetCompanionLevel : AbstractParameterizedUserCommand
+    class SetCompanionLevel : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "SETCOMPANIONLEVEL";
         public override int PARAMS_LENGTH => 2;

@@ -1,10 +1,9 @@
 ﻿using Library;
 using Server.Models;
-using System;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class RecallPlayer : AbstractParameterizedUserCommand
+    class RecallPlayer : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "RECALL";
         public override int PARAMS_LENGTH => 2;

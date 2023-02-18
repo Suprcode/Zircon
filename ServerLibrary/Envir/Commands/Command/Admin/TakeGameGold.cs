@@ -1,16 +1,18 @@
 ﻿using Library;
 using Server.DBModels;
+using Server.Envir.Commands.Command;
+using Server.Envir.Commands.Command.Admin;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
-using System;
-using S = Library.Network.ServerPackets;
 
 namespace Server.Envir.Commands.Admin {
-    class TakeGameGold : AbstractParameterizedUserCommand {
+    class TakeGameGold : AbstractParameterizedCommand<IAdminCommand> 
+    {
         public override string VALUE => "TAKEGAMEGOLD";
         public override int PARAMS_LENGTH => 3;
 
-        public override void Action(PlayerObject player, string[] vals) {
+        public override void Action(PlayerObject player, string[] vals) 
+        {
             if (vals.Length < PARAMS_LENGTH)
                 ThrowNewInvalidParametersException();
 

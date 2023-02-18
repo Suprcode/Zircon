@@ -2,13 +2,12 @@
 using Library.SystemModels;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
-using System;
 using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class LevelSkill : AbstractParameterizedUserCommand
+    class LevelSkill : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "LEVELSKILL";
         public override int PARAMS_LENGTH => 4;

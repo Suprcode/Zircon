@@ -1,9 +1,11 @@
 ﻿using Library;
+using Server.Envir.Commands.Command;
+using Server.Envir.Commands.Command.Player;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
 
 namespace Server.Envir.Commands.Player {
-    abstract class AbstractToggleCompanion : AbstractUserCommand {
+    abstract class AbstractToggleCompanion : AbstractCommand<IPlayerCommand> {
         public override string VALUE => "ENABLELEVEL{0}";
 
         public override void Action(PlayerObject player) {

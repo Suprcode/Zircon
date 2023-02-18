@@ -1,11 +1,10 @@
 ﻿using Library;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
-using System;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class SpawnMob : AbstractParameterizedUserCommand
+    class SpawnMonster : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "MONSTER";
         public override int PARAMS_LENGTH => 2;

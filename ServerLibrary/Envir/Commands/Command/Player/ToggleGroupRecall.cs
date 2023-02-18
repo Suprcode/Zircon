@@ -3,7 +3,7 @@ using Server.Models;
 
 namespace Server.Envir.Commands.Command.Player
 {
-    class ToggleGroupRecall : AbstractUserCommand
+    class ToggleGroupRecall : AbstractCommand<IPlayerCommand>
     {
         public override string VALUE => "ALLOWRECALL";
 

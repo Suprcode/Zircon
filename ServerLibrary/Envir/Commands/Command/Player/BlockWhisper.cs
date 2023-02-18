@@ -1,8 +1,10 @@
 ﻿using Library;
 using Server.Models;
+using Server.Envir.Commands.Command;
+using Server.Envir.Commands.Command.Player;
 
 namespace Server.Envir.Commands.Player {
-    class BlockWhisper : AbstractUserCommand {
+    class BlockWhisper : AbstractCommand<IPlayerCommand> {
         public override string VALUE => "BLOCKWHISPER";
 
         public override void Action(PlayerObject player) {

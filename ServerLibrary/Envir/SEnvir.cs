@@ -229,7 +229,7 @@ namespace Server.Envir
         public static long TotalBytesSent, TotalBytesReceived;
         public static long DownloadSpeed, UploadSpeed;
 
-        public static CommandHandler CommandHandler = new ErrorHandlingCommandHandler(
+        public static ICommandHandler CommandHandler = new ErrorHandlingCommandHandler(
             new PlayerCommandHandler(),
             new AdminCommandHandler()
         );

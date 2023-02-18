@@ -1,17 +1,27 @@
-﻿using Server.Envir.Commands.Exceptions;
+﻿using Server.Envir.Commands.Command;
+using Server.Envir.Commands.Exceptions;
 using Server.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Server.Envir.Commands.Handler
 {
-    public abstract class AbstractCommandHandler : ValidatingCommandHandler
+    public abstract class AbstractCommandHandler<CommandType> : IValidatingCommandHandler 
+        where CommandType : ICommand
     {
 
-        public List<UserCommand> Commands = new List<UserCommand>();
+        public readonly List<ICommand> Commands = new List<ICommand>();
 
-        public void InitializeCommands(List<UserCommand> Commands)
+        public AbstractCommandHandler()
         {
-            this.Commands = Commands;
+            this.Commands = Assembly.GetAssembly(typeof(CommandType)).GetTypes()
+                .Where(type => type.IsClass)
+                .Where(type => !type.IsAbstract)
+                .Where(type => type.IsSubclassOf(typeof(AbstractCommand<CommandType>)) || type.IsSubclassOf(typeof(AbstractParameterizedCommand<CommandType>)))
+                .Select(type => (ICommand)Activator.CreateInstance(type))
+                .ToList();
         }
 
         public virtual bool IsAllowedByPlayer(PlayerObject player)
@@ -30,14 +40,15 @@ namespace Server.Envir.Commands.Handler
             {
                 string CommandInput = input[0].ToUpper();
 
-                UserCommand command = Commands.Find(userCommand => userCommand.VALUE.Equals(CommandInput));
+                ICommand command = Commands.Find(userCommand => userCommand.VALUE.Equals(CommandInput));
                 if (command == null)
                     throw new UserCommandException(string.Format("Command @{0} does not exist.", CommandInput));
 
-                if (command is AbstractUserCommand)
-                    (command as AbstractUserCommand).Action(player);
-                else if (command is AbstractParameterizedUserCommand)
-                    (command as AbstractParameterizedUserCommand).Action(player, input);
+                if (command is AbstractParameterizedCommand<CommandType>)
+                    (command as AbstractParameterizedCommand<CommandType>).Action(player, input);
+                else if (command is AbstractCommand<CommandType>)
+                    (command as AbstractCommand<CommandType>).Action(player);
+
             }
         }
     }

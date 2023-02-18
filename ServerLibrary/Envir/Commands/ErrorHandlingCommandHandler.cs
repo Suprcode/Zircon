@@ -8,11 +8,11 @@ using System.Linq;
 
 namespace Server.Envir.Commands
 {
-    public class ErrorHandlingCommandHandler : CommandHandler
+    public class ErrorHandlingCommandHandler : ICommandHandler
     {
-        private readonly List<ValidatingCommandHandler> CommandHandlers;
+        private readonly List<IValidatingCommandHandler> CommandHandlers;
 
-        public ErrorHandlingCommandHandler(params ValidatingCommandHandler[] CommandHandlers)
+        public ErrorHandlingCommandHandler(params IValidatingCommandHandler[] CommandHandlers)
         {
             this.CommandHandlers = CommandHandlers.ToList();
         }
@@ -22,7 +22,7 @@ namespace Server.Envir.Commands
             try
             {
                 string commandIdentifier = commandParts[0].ToUpper();
-                ValidatingCommandHandler matchingHandler = CommandHandlers
+                IValidatingCommandHandler matchingHandler = CommandHandlers
                     .Where(handler => handler.IsAllowedByPlayer(player))
                     .Where(handler => handler.CommandExists(commandIdentifier))
                     .FirstOrDefault();

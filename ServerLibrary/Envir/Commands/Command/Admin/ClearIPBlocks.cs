@@ -2,7 +2,7 @@
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class ClearIPBlocks : AbstractUserCommand
+    class ClearIPBlocks : AbstractCommand<IAdminCommand>
     {
         public override string VALUE => "CLEARIPBLOCKS";
 

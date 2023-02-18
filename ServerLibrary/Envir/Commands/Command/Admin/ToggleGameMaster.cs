@@ -2,7 +2,7 @@
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class ToggleGameMaster : AbstractUserCommand
+    class ToggleGameMaster : AbstractCommand<IAdminCommand>
     {
         public override string VALUE => "GAMEMASTER";
 

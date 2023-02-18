@@ -1,10 +1,9 @@
 ﻿using Server.Envir.Commands.Exceptions;
 using Server.Models;
-using System;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class Level : AbstractParameterizedUserCommand
+    class Level : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "LEVEL";
         public override int PARAMS_LENGTH => 2;

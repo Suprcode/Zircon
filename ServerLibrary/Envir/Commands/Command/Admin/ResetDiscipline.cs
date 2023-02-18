@@ -5,7 +5,7 @@ using Server.Models;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class ResetDiscipline : AbstractParameterizedUserCommand
+    class ResetDiscipline : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "RESETDISCIPLINE";
         public override int PARAMS_LENGTH => 2;

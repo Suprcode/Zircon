@@ -2,7 +2,7 @@
 
 namespace Server.Envir.Commands.Handler
 {
-    public interface CommandHandler
+    public interface ICommandHandler
     { 
         void Handle(PlayerObject player, string[] input);
     }

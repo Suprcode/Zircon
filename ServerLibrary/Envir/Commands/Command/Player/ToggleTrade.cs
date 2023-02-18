@@ -1,8 +1,11 @@
 ﻿using Library;
+using Server.Envir.Commands.Command;
+using Server.Envir.Commands.Command.Player;
 using Server.Models;
 
 namespace Server.Envir.Commands.Player {
-    class ToggleTrade : AbstractUserCommand {
+    class ToggleTrade : AbstractCommand<IPlayerCommand>
+    {
         public override string VALUE => "ALLOWTRADE";
 
         public override void Action(PlayerObject player) {

@@ -1,7 +1,10 @@
-﻿using Server.Models;
+﻿using Server.Envir.Commands.Command;
+using Server.Envir.Commands.Command.Player;
+using Server.Models;
 
 namespace Server.Envir.Commands.Player {
-    class ClearBelt : AbstractUserCommand {
+    class ClearBelt : AbstractCommand<IPlayerCommand>
+    {
         public override string VALUE => "CLEARBELT";
 
         public override void Action(PlayerObject player) {

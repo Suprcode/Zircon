@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class CreateGuild : AbstractParameterizedUserCommand
+    class CreateGuild : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "CREATEGUILD";
         public override int PARAMS_LENGTH => 2;

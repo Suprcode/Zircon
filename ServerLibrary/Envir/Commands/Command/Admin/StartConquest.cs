@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class StartConquest : AbstractParameterizedUserCommand
+    class StartConquest : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "STARTCONQUEST";
         public override int PARAMS_LENGTH => 2;

@@ -2,7 +2,7 @@
 
 namespace Server.Envir.Commands.Command.Player
 {
-    class LeaveGuild : AbstractUserCommand
+    class LeaveGuild : AbstractCommand<IPlayerCommand>
     {
         public override string VALUE => "LEAVEGUILD";
 

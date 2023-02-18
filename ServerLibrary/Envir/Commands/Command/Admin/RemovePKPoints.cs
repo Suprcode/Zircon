@@ -2,12 +2,11 @@
 using Server.DBModels;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
-using System;
 using System.Linq;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class RemovePKPoints : AbstractParameterizedUserCommand
+    class RemovePKPoints : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "REMOVEPKPOINTS";
         public override int PARAMS_LENGTH => 2;

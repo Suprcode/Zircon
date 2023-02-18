@@ -1,12 +1,12 @@
 ﻿using Library;
 using Server.DBModels;
+using Server.Envir.Commands.Command;
+using Server.Envir.Commands.Command.Admin;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
-using System;
-using S = Library.Network.ServerPackets;
 
 namespace Server.Envir.Commands.Admin {
-    class GiveGameGold : AbstractParameterizedUserCommand {
+    class GiveGameGold : AbstractParameterizedCommand<IAdminCommand> {
         public override string VALUE => "GIVEGAMEGOLD";
         public override int PARAMS_LENGTH => 3;
 

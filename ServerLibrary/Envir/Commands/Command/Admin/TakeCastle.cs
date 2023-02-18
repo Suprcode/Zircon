@@ -9,7 +9,7 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Envir.Commands.Command.Admin
 {
-    class TakeCastle : AbstractParameterizedUserCommand
+    class TakeCastle : AbstractParameterizedCommand<IAdminCommand>
     {
         public override string VALUE => "TAKECASTLE";
         public override int PARAMS_LENGTH => 2;

@@ -3,7 +3,7 @@ using Server.Models;
 
 namespace Server.Envir.Commands.Command.Player
 {
-    class ToggleGuildInvite : AbstractUserCommand
+    class ToggleGuildInvite : AbstractCommand<IPlayerCommand>
     {
         public override string VALUE => "ALLOWGUILD";
 

@@ -1,8 +1,11 @@
 ﻿using Library;
+using Server.Envir.Commands.Command;
+using Server.Envir.Commands.Command.Player;
 using Server.Models;
 
 namespace Server.Envir.Commands.Player {
-    class ToggleExtractorLock : AbstractUserCommand {
+    class ToggleExtractorLock : AbstractCommand<IPlayerCommand>
+    {
         public override string VALUE => "EXTRACTORLOCK";
 
         public override void Action(PlayerObject player) {
