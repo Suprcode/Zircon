@@ -25,16 +25,16 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Data.Desktop.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.Data.Desktop.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.Data.Desktop.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Data.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Standard\DevExpress.Data.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.Data.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Utils.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.Utils.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.Utils.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraEditors.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraEditors.v21.2.dll</HintPath>
+      <HintPath>..\Components\DevExpress\DevExpress.XtraEditors.v21.2.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

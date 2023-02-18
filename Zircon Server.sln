@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Launcher", "Launcher\Launcher.csproj", "{776863D5-D1CD-487F-83CD-B5470D64DB74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchManager", "PatchManager\PatchManager.csproj", "{08448D7C-1B78-4C7B-819C-FC852C7C6D14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatchManager", "PatchManager\PatchManager.csproj", "{08448D7C-1B78-4C7B-819C-FC852C7C6D14}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{96CA9837-F7B2-4835-BCF9-40D8C8D4981E}"
 EndProject
@@ -24,8 +24,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerLibrary", "ServerLibrary\ServerLibrary.csproj", "{42E44F8E-C98B-4008-958A-5C8CB3D02B8D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryCore", "LibraryCore\LibraryCore.csproj", "{C47F32FA-4C04-4143-B4FE-623D4B014D0D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B8DD8844-BBCD-4781-9CD1-81888964AEF5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginCore", "PluginCore\PluginCore.csproj", "{9EC9F47E-A443-471E-B0D5-1367772B2A0E}"
 EndProject
