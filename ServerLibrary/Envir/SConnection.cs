@@ -168,6 +168,7 @@ namespace Server.Envir
             //   ItemList.Clear();
             //    MagicList.Clear();
         }
+
         public override void Process()
         {
             if (SEnvir.Now >= PingTime && !PingSent && Stage != GameStage.None)

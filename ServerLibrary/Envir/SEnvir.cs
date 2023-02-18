@@ -2773,9 +2773,11 @@ namespace Server.Envir
                 con.Enqueue(new S.NewAccount { Result = NewAccountResult.BadRealName });
                 return;
             }
+
             var list = AccountInfoList.Binding.Where(e => e.CreationIP == con.IPAddress).ToList();
             int nowcount = 0;
             int todaycount = 0;
+
             for (int i = 0; i < list.Count; i++)
             {
                 AccountInfo info = list[i];
@@ -2794,13 +2796,14 @@ namespace Server.Envir
                         break;
                 }
             }
+
             if (nowcount > 2 || todaycount > 5)
             {
                 IPBlocks[con.IPAddress] = Now.AddDays(7);
 
                 for (int i = Connections.Count - 1; i >= 0; i--)
                     if (Connections[i].IPAddress == con.IPAddress)
-                        Connections[i].TryDisconnect();
+                        Connections[i].Disconnecting = true;
 
                 Log($"{con.IPAddress} Disconnected and banned for trying too many accounts");
                 return;
