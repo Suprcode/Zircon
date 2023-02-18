@@ -878,10 +878,10 @@ namespace Client.Envir
                 player.ArmourColour = p.ArmourColour;
                 player.HelmetShape = p.Helmet;
                 player.HorseShape = p.HorseArmour;
-                player.ArmourImage = p.ArmourImage;
+                player.ArmourEffect = p.ArmourEffect;
                 player.ShieldShape = p.Shield;
-                player.EmblemShape = p.EmblemShape;
-                player.WingsShape = p.WingsShape;
+                player.EmblemEffect = p.EmblemEffect;
+                player.WingsEffect = p.WingsEffect;
 
                 player.Light = p.Light;
                 if (player == MapObject.User)
@@ -1731,7 +1731,7 @@ namespace Client.Envir
 
             string message = $"Experience Gained {p.Amount:#,##0.#}";
 
-            if (weapon != null && weapon.Info.Effect != ItemEffect.PickAxe && (weapon.Flags & UserItemFlags.Refinable) != UserItemFlags.Refinable && (weapon.Flags & UserItemFlags.NonRefinable) != UserItemFlags.NonRefinable && weapon.Level < Globals.WeaponExperienceList.Count)
+            if (weapon != null && weapon.Info.ItemEffect != ItemEffect.PickAxe && (weapon.Flags & UserItemFlags.Refinable) != UserItemFlags.Refinable && (weapon.Flags & UserItemFlags.NonRefinable) != UserItemFlags.NonRefinable && weapon.Level < Globals.WeaponExperienceList.Count)
             {
                 weapon.Experience += p.Amount / 10;
 
@@ -1796,7 +1796,7 @@ namespace Client.Envir
             {
                 ItemInfo displayInfo = item.Info;
 
-                if (item.Info.Effect == ItemEffect.ItemPart)
+                if (item.Info.ItemEffect == ItemEffect.ItemPart)
                     displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == item.AddedStats[Stat.ItemIndex]);
 
                 item.New = true;
@@ -1805,7 +1805,7 @@ namespace Client.Envir
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem)
                     text += " (Quest)";
 
-                if (item.Info.Effect == ItemEffect.ItemPart)
+                if (item.Info.ItemEffect == ItemEffect.ItemPart)
                     text += " [Part]";
 
                 GameScene.Game.ReceiveChat(text, MessageType.Combat);
@@ -3943,7 +3943,7 @@ namespace Client.Envir
             {
                 ItemInfo displayInfo = item.Info;
 
-                if (item.Info.Effect == ItemEffect.ItemPart)
+                if (item.Info.ItemEffect == ItemEffect.ItemPart)
                     displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == item.AddedStats[Stat.ItemIndex]);
 
                 item.New = true;
@@ -3952,7 +3952,7 @@ namespace Client.Envir
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem)
                     text += " (Quest)";
 
-                if (item.Info.Effect == ItemEffect.ItemPart)
+                if (item.Info.ItemEffect == ItemEffect.ItemPart)
                     text += " [Part]";
 
                 GameScene.Game.ReceiveChat(text, MessageType.Combat);

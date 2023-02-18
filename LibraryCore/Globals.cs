@@ -443,10 +443,10 @@ namespace Library
         public int Armour { get; set; }
         public int Shield { get; set; }
         public Color ArmourColour { get; set; }
-        public int ArmourImage { get; set; }
+        public ExteriorEffect ArmourEffect { get; set; }
 
-        public int EmblemShape { get; set; }
-        public int WingsShape { get; set; }
+        public ExteriorEffect EmblemEffect { get; set; }
+        public ExteriorEffect WingsShape { get; set; }
         
         public decimal Experience { get; set; }
 

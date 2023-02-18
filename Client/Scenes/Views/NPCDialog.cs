@@ -3931,7 +3931,7 @@ namespace Client.Scenes.Views
         }
         private void UnlockButton_MouseClick(object sender, MouseEventArgs e)
         {
-            if (GameScene.Game.Inventory.All(x => x == null || x.Info.Effect != ItemEffect.CompanionTicket))
+            if (GameScene.Game.Inventory.All(x => x == null || x.Info.ItemEffect != ItemEffect.CompanionTicket))
             {
                 GameScene.Game.ReceiveChat("You need a Companion Ticket to unlock a new appearance", MessageType.System);
                 return;
@@ -6705,7 +6705,7 @@ namespace Client.Scenes.Views
         public virtual void OnRequiredClassChanged(RequiredClass oValue, RequiredClass nValue)
         {
 
-            if (TemplateCell.Grid[0].Item == null || TemplateCell.Grid[0].Item.Info.Effect == ItemEffect.WeaponTemplate)
+            if (TemplateCell.Grid[0].Item == null || TemplateCell.Grid[0].Item.Info.ItemEffect == ItemEffect.WeaponTemplate)
             {
                 switch (RequiredClass)
                 {
@@ -6747,7 +6747,7 @@ namespace Client.Scenes.Views
 
                 long cost = Globals.CraftWeaponPercentCost;
 
-                if (TemplateCell.Grid[0].Item != null && TemplateCell.Grid[0].Item.Info.Effect != ItemEffect.WeaponTemplate)
+                if (TemplateCell.Grid[0].Item != null && TemplateCell.Grid[0].Item.Info.ItemEffect != ItemEffect.WeaponTemplate)
                 {
                     switch (TemplateCell.Grid[0].Item.Info.Rarity)
                     {
@@ -6795,7 +6795,7 @@ namespace Client.Scenes.Views
             TemplateCell.Location = new Point(label.Location.X + (label.Size.Width - TemplateCell.Size.Width) / 2, label.Location.Y + label.Size.Height + 5);
             TemplateCell.Grid[0].LinkChanged += (o, e) =>
             {
-                if (TemplateCell.Grid[0].Item == null || TemplateCell.Grid[0].Item.Info.Effect == ItemEffect.WeaponTemplate)
+                if (TemplateCell.Grid[0].Item == null || TemplateCell.Grid[0].Item.Info.ItemEffect == ItemEffect.WeaponTemplate)
                 {
                     ClassLabel.Text = "Class:";
                     switch (RequiredClass)

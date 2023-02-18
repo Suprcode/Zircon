@@ -476,7 +476,7 @@ namespace Server.Models.Monsters
             hasClass = true;
             hasRarity = true;
 
-            if (check.Info.Effect == ItemEffect.ItemPart && check.Item.Stats[Stat.ItemIndex] > 0)
+            if (check.Info.ItemEffect == ItemEffect.ItemPart && check.Item.Stats[Stat.ItemIndex] > 0)
             {
                 itemType = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).ItemType;
                 itemRarity = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).Rarity;
@@ -512,7 +512,7 @@ namespace Server.Models.Monsters
 
                 long count = check.Count;
 
-                if (check.Info.Effect == ItemEffect.Experience) continue;
+                if (check.Info.ItemEffect == ItemEffect.Experience) continue;
 
                 if (SEnvir.IsCurrencyItem(check.Info)) continue;
 
@@ -574,7 +574,7 @@ namespace Server.Models.Monsters
         }
         public void GainItem(params UserItem[] items)
         {
-            CompanionOwner.Enqueue(new S.CompanionItemsGained { Items = items.Where(x => x.Info.Effect != ItemEffect.Experience).Select(x => x.ToClientInfo()).ToList() });
+            CompanionOwner.Enqueue(new S.CompanionItemsGained { Items = items.Where(x => x.Info.ItemEffect != ItemEffect.Experience).Select(x => x.ToClientInfo()).ToList() });
 
             HashSet<UserQuest> changedQuests = new HashSet<UserQuest>();
 
@@ -612,7 +612,7 @@ namespace Server.Models.Monsters
                     continue;
                 }
 
-                if (item.Info.Effect == ItemEffect.Experience)
+                if (item.Info.ItemEffect == ItemEffect.Experience)
                 {
                     CompanionOwner.GainExperience(item.Count, false);
                     item.IsTemporary = true;

@@ -630,7 +630,7 @@ namespace Client.Controls
                 {
                     ItemInfo info = Item.Info;
 
-                    if (info.Effect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
+                    if (info.ItemEffect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
                         info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
 
                     drawIndex = info.Image;
@@ -644,7 +644,7 @@ namespace Client.Controls
                         Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
                         area.Offset((Size.Width - image.Width) / 2, (Size.Height - image.Height) / 2);
                         ItemInfo info = Item.Info;
-                        if (info.Effect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
+                        if (info.ItemEffect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
                         {
                             info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
                             PresentTexture(image.Image, this, area, Item.Count >= info.PartCount ? Color.White : Color.Gray, this);
@@ -672,7 +672,7 @@ namespace Client.Controls
                     PresentTexture(image.Image, this, new Rectangle(DisplayArea.Right - 12, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
                 image = InterfaceLibrary.CreateImage(103, ImageType.Image);
-                if (Item != null && GameScene.Game != null && image != null && Item.Info.Effect == ItemEffect.ItemPart)
+                if (Item != null && GameScene.Game != null && image != null && Item.Info.ItemEffect == ItemEffect.ItemPart)
                     PresentTexture(image.Image, this, new Rectangle(DisplayArea.Right - 16, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
             }
 
@@ -729,7 +729,7 @@ namespace Client.Controls
                 GameScene.Game.MouseItem = Item;
             }
 
-            CountLabel.Visible = ShowCountLabel && !Hidden && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.Effect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
+            CountLabel.Visible = ShowCountLabel && !Hidden && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.ItemEffect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
             CountLabel.Text = Linked ? LinkedCount.ToString() : Item?.Count.ToString();
         }
         public void MoveItem()
@@ -796,7 +796,7 @@ namespace Client.Controls
             switch (GridType) //To Grid
             {
                 case GridType.PartsStorage:
-                    if (SelectedCell.Item.Info.Effect != ItemEffect.ItemPart) return;
+                    if (SelectedCell.Item.Info.ItemEffect != ItemEffect.ItemPart) return;
                     break;
                 case GridType.Equipment:
                     if (!Functions.CorrectSlot(SelectedCell.Item.Info.ItemType, (EquipmentSlot)Slot) || SelectedCell.GridType == GridType.Belt) return;
@@ -958,7 +958,7 @@ namespace Client.Controls
                 return;
             }
 
-            if (GridType == GridType.PartsStorage && toCell.Item != null && toCell.Item.Info.Effect != ItemEffect.ItemPart) return;
+            if (GridType == GridType.PartsStorage && toCell.Item != null && toCell.Item.Info.ItemEffect != ItemEffect.ItemPart) return;
 
             if (toCell.Linked)
             {
@@ -1155,7 +1155,7 @@ namespace Client.Controls
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
                     if (!MapObject.User.InSafeZone) return false;
                     if (GridType != GridType.Inventory) return false;
-                    if (Item.Info.Effect != ItemEffect.ItemPart) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.ItemPart) return false;
                     break;
 
                 case GridType.Storage:
@@ -1167,32 +1167,32 @@ namespace Client.Controls
 
                 case GridType.RefinementStoneIronOre:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.IronOre || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.IronOre || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
 
                 case GridType.RefinementStoneSilverOre:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.SilverOre || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.SilverOre || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
 
                 case GridType.RefinementStoneDiamond:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.Diamond || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.Diamond || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
 
                 case GridType.RefinementStoneGoldOre:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.GoldOre || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.GoldOre || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
 
                 case GridType.RefinementStoneCrystal:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.Crystal || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.Crystal || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
 
                 case GridType.RefineBlackIronOre:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.BlackIronOre || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.BlackIronOre || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
 
                 case GridType.RefineAccessory:
@@ -1336,19 +1336,19 @@ namespace Client.Controls
                     break;
                 case GridType.MasterRefineFragment1:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.Fragment1 || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.Fragment1 || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
                 case GridType.MasterRefineFragment2:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.Fragment2 || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.Fragment2 || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
                 case GridType.MasterRefineFragment3:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.Fragment3 || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.Fragment3 || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
                 case GridType.MasterRefineStone:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.RefinementStone || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.RefinementStone || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
                 case GridType.MasterRefineSpecial:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
@@ -1364,29 +1364,29 @@ namespace Client.Controls
                     }
                     break;
                 case GridType.WeaponCraftTemplate:
-                    if (Item.Info.ItemType != ItemType.Weapon && Item.Info.Effect != ItemEffect.WeaponTemplate) return false;
+                    if (Item.Info.ItemType != ItemType.Weapon && Item.Info.ItemEffect != ItemEffect.WeaponTemplate) return false;
                     break;
                 case GridType.WeaponCraftBlue:
-                    if (Item.Info.Effect != ItemEffect.BlueSlot) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.BlueSlot) return false;
                     break;
                 case GridType.WeaponCraftGreen:
-                    if (Item.Info.Effect != ItemEffect.GreenSlot) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.GreenSlot) return false;
                     break;
                 case GridType.WeaponCraftGrey:
-                    if (Item.Info.Effect != ItemEffect.GreySlot) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.GreySlot) return false;
                     break;
                 case GridType.WeaponCraftPurple:
-                    if (Item.Info.Effect != ItemEffect.PurpleSlot) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.PurpleSlot) return false;
                     break;
                 case GridType.WeaponCraftRed:
-                    if (Item.Info.Effect != ItemEffect.RedSlot) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.RedSlot) return false;
                     break;
                 case GridType.WeaponCraftYellow:
-                    if (Item.Info.Effect != ItemEffect.YellowSlot) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.YellowSlot) return false;
                     break;
                 case GridType.RefineCorundumOre:
                     if ((Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return false;
-                    if (Item.Info.Effect != ItemEffect.Corundum || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
+                    if (Item.Info.ItemEffect != ItemEffect.Corundum || (Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     break;
                 case GridType.AccessoryRefineCombTarget:
                     if ((Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
@@ -1548,7 +1548,7 @@ namespace Client.Controls
                     if (!GameScene.Game.CanUseItem(Item) || 
                         GridType != GridType.Inventory && GridType != GridType.PartsStorage && GridType != GridType.CompanionEquipment && GridType != GridType.CompanionInventory) return false;
 
-                    if ((CEnvir.Now < GameScene.Game.UseItemTime && Item.Info.Effect != ItemEffect.ElixirOfPurification) || MapObject.User.Horse != HorseType.None) return false;
+                    if ((CEnvir.Now < GameScene.Game.UseItemTime && Item.Info.ItemEffect != ItemEffect.ElixirOfPurification) || MapObject.User.Horse != HorseType.None) return false;
 
 
                     GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(Math.Max(250, Item.Info.Durability));
@@ -1574,7 +1574,7 @@ namespace Client.Controls
                 case ItemType.System:
                     if (!GameScene.Game.CanUseItem(Item) || GridType != GridType.Inventory) return false;
 
-                    switch (Item.Info.Effect)
+                    switch (Item.Info.ItemEffect)
                     {
                         case ItemEffect.GenderChange:
                             if (GameScene.Game.CharacterBox.Grid[(int) EquipmentSlot.Armour].Item != null)
@@ -1784,7 +1784,7 @@ namespace Client.Controls
 
                             if (GameScene.Game.NPCMasterRefineBox.IsVisible)
                             {
-                                switch (Item.Info.Effect)
+                                switch (Item.Info.ItemEffect)
                                 {
                                     case ItemEffect.Fragment1:
                                         if (MoveItem(GameScene.Game.NPCMasterRefineBox.Fragment1Grid))
@@ -1816,7 +1816,7 @@ namespace Client.Controls
                             }
                             if (GameScene.Game.NPCRefinementStoneBox.IsVisible)
                             {
-                                switch (Item.Info.Effect)
+                                switch (Item.Info.ItemEffect)
                                 {
                                     case ItemEffect.IronOre:
                                         MoveItem(GameScene.Game.NPCRefinementStoneBox.IronOreGrid);
@@ -1839,7 +1839,7 @@ namespace Client.Controls
                             }
                             if (GameScene.Game.NPCWeaponCraftBox.IsVisible)
                             {
-                                switch (Item.Info.Effect)
+                                switch (Item.Info.ItemEffect)
                                 {
                                     case ItemEffect.WeaponTemplate:
                                         MoveItem(GameScene.Game.NPCWeaponCraftBox.TemplateCell);
@@ -1920,7 +1920,7 @@ namespace Client.Controls
                                 switch (Item.Info.ItemType)
                                 {
                                     case ItemType.Ore:
-                                        if (Item.Info.Effect != ItemEffect.BlackIronOre)
+                                        if (Item.Info.ItemEffect != ItemEffect.BlackIronOre)
                                             GameScene.Game.ReceiveChat($"Only Black Iron Ore can be used.", MessageType.System);
                                         else
                                             MoveItem(GameScene.Game.NPCRefineBox.BlackIronGrid);
@@ -1980,7 +1980,7 @@ namespace Client.Controls
 
                             if (GameScene.Game.StorageBox.IsVisible)
                             {
-                                if (Item.Info.Effect == ItemEffect.ItemPart)
+                                if (Item.Info.ItemEffect == ItemEffect.ItemPart)
                                     MoveItem(GameScene.Game.StorageBox.PartGrid);
                                 else if (!MoveItem(GameScene.Game.StorageBox.Grid))
                                     GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
@@ -2037,7 +2037,7 @@ namespace Client.Controls
                                 switch (Item.Info.ItemType)
                                 {
                                     case ItemType.Ore:
-                                        if (Item.Info.Effect != ItemEffect.BlackIronOre)
+                                        if (Item.Info.ItemEffect != ItemEffect.BlackIronOre)
                                             GameScene.Game.ReceiveChat($"Only Black Iron Ore can be used.", MessageType.System);
                                         else
                                             MoveItem(GameScene.Game.NPCRefineBox.BlackIronGrid);
@@ -2057,7 +2057,7 @@ namespace Client.Controls
 
                             if (GameScene.Game.NPCMasterRefineBox.IsVisible)
                             {
-                                switch (Item.Info.Effect)
+                                switch (Item.Info.ItemEffect)
                                 {
                                     case ItemEffect.Fragment1:
                                         if (MoveItem(GameScene.Game.NPCMasterRefineBox.Fragment1Grid))
@@ -2134,7 +2134,7 @@ namespace Client.Controls
 
                             if (GameScene.Game.StorageBox.IsVisible)
                             {
-                                if (Item.Info.Effect == ItemEffect.ItemPart)
+                                if (Item.Info.ItemEffect == ItemEffect.ItemPart)
                                     MoveItem(GameScene.Game.StorageBox.PartGrid);
                                 else if (!MoveItem(GameScene.Game.StorageBox.Grid))
                                     GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
@@ -2178,7 +2178,7 @@ namespace Client.Controls
 
                             if (GameScene.Game.NPCMasterRefineBox.IsVisible)
                             {
-                                switch (Item.Info.Effect)
+                                switch (Item.Info.ItemEffect)
                                 {
                                     case ItemEffect.Fragment1:
                                         if (MoveItem(GameScene.Game.NPCMasterRefineBox.Fragment1Grid))
@@ -2213,7 +2213,7 @@ namespace Client.Controls
                                 switch (Item.Info.ItemType)
                                 {
                                     case ItemType.Ore:
-                                        if (Item.Info.Effect != ItemEffect.BlackIronOre)
+                                        if (Item.Info.ItemEffect != ItemEffect.BlackIronOre)
                                             GameScene.Game.ReceiveChat($"Only Black Iron Ore can be used.", MessageType.System);
                                         else
                                             MoveItem(GameScene.Game.NPCRefineBox.BlackIronGrid);

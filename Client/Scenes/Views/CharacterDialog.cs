@@ -9,6 +9,7 @@ using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.Properties;
+using Client.Scenes.Views.Character;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
@@ -120,12 +121,12 @@ namespace Client.Scenes.Views
 
         private bool HasFishingRobe
         {
-            get { return Grid != null && Grid[(int)EquipmentSlot.Armour]?.Item?.Info.Effect == ItemEffect.FishingRobe; }
+            get { return Grid != null && Grid[(int)EquipmentSlot.Armour]?.Item?.Info.ItemEffect == ItemEffect.FishingRobe; }
         }
 
         private bool HasFishingRod
         {
-            get { return Grid != null && Grid[(int)EquipmentSlot.Weapon]?.Item?.Info.Effect == ItemEffect.FishingRod; }
+            get { return Grid != null && Grid[(int)EquipmentSlot.Weapon]?.Item?.Info.ItemEffect == ItemEffect.FishingRod; }
         }
 
         #region Inspect
@@ -359,7 +360,7 @@ namespace Client.Scenes.Views
             cell.MouseLeave += Cell_MouseLeave;
             cell.ItemChanged += (o, e) =>
             {
-                GameScene.Game.FishingBox.Visible = Visible && ((DXItemCell)o).Item?.Info.Effect == ItemEffect.FishingRod;
+                GameScene.Game.FishingBox.Visible = Visible && ((DXItemCell)o).Item?.Info.ItemEffect == ItemEffect.FishingRod;
             };
 
             Grid[(int)EquipmentSlot.Armour] = cell = new DXItemCell
@@ -2322,132 +2323,23 @@ namespace Client.Scenes.Views
 
         private void CharacterTab_BeforeChildrenDraw(object sender, EventArgs e)
         {
-            MirLibrary library;
-
             int x = 130;
             int y = 270;
 
-            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library)) return;
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out MirLibrary library)) return;
 
-            if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
+            ClientUserItem armour = Grid[(int)EquipmentSlot.Armour]?.Item;
+            if (armour != null)
             {
-                int index = Grid[(int)EquipmentSlot.Armour].Item.Info.Image;
-
-                MirLibrary effectLibrary;
-
-                if (CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_UI, out effectLibrary))
+                MirImage image = ArmourEffectDecider.GetArmourEffectImageOrNull(armour, Gender);
+                if (image != null)
                 {
-                    MirImage image = null;
-                    switch (index)
-                    {
-                        //All
-                        case 962:
-                            image = effectLibrary.CreateImage(1700 + (GameScene.Game.MapControl.Animation % 10), ImageType.Image);
-                            break;
-                        case 972:
-                            image = effectLibrary.CreateImage(1720 + (GameScene.Game.MapControl.Animation % 10), ImageType.Image);
-                            break;
+                    bool oldBlend = DXManager.Blending;
+                    float oldRate = DXManager.BlendRate;
 
-                        //War
-                        case 963:
-                            image = effectLibrary.CreateImage(400 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
-                            break;
-                        case 973:
-                            image = effectLibrary.CreateImage(420 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
-                            break;
-
-                        //Wiz
-                        case 964:
-                            image = effectLibrary.CreateImage(300 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
-                            break;
-                        case 974:
-                            image = effectLibrary.CreateImage(320 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
-                            break;
-
-                        //Tao
-                        case 965:
-                            image = effectLibrary.CreateImage(200 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
-                            break;
-                        case 975:
-                            image = effectLibrary.CreateImage(220 + (GameScene.Game.MapControl.Animation % 15), ImageType.Image);
-                            break;
-
-                        //Ass
-                        case 2007:
-                            image = effectLibrary.CreateImage(500 + (GameScene.Game.MapControl.Animation % 13), ImageType.Image);
-                            break;
-                        case 2017:
-                            image = effectLibrary.CreateImage(520 + (GameScene.Game.MapControl.Animation % 13), ImageType.Image);
-                            break;
-
-                        case 942:
-                            image = effectLibrary.CreateImage(700, ImageType.Image);
-                            break;
-                        case 961:
-                            image = effectLibrary.CreateImage(1600, ImageType.Image);
-                            break;
-                        case 982:
-                            image = effectLibrary.CreateImage(800, ImageType.Image);
-                            break;
-                        case 983:
-                            image = effectLibrary.CreateImage(1200, ImageType.Image);
-                            break;
-                        case 984:
-                            image = effectLibrary.CreateImage(1100, ImageType.Image);
-                            break;
-                        case 1022:
-                            image = effectLibrary.CreateImage(900, ImageType.Image);
-                            break;
-                        case 1023:
-                            image = effectLibrary.CreateImage(1300, ImageType.Image);
-                            break;
-                        case 1002:
-                            image = effectLibrary.CreateImage(1000, ImageType.Image);
-                            break;
-                        case 1003:
-                            image = effectLibrary.CreateImage(1400, ImageType.Image);
-                            break;
-
-                        case 952:
-                            image = effectLibrary.CreateImage(720, ImageType.Image);
-                            break;
-                        case 971:
-                            image = effectLibrary.CreateImage(1620, ImageType.Image);
-                            break;
-                        case 992:
-                            image = effectLibrary.CreateImage(820, ImageType.Image);
-                            break;
-                        case 993:
-                            image = effectLibrary.CreateImage(1220, ImageType.Image);
-                            break;
-                        case 994:
-                            image = effectLibrary.CreateImage(1120, ImageType.Image);
-                            break;
-                        case 1032:
-                            image = effectLibrary.CreateImage(920, ImageType.Image);
-                            break;
-                        case 1033:
-                            image = effectLibrary.CreateImage(1320, ImageType.Image);
-                            break;
-                        case 1012:
-                            image = effectLibrary.CreateImage(1020, ImageType.Image);
-                            break;
-                        case 1013:
-                            image = effectLibrary.CreateImage(1420, ImageType.Image);
-                            break;
-                    }
-                    if (image != null)
-                    {
-
-                        bool oldBlend = DXManager.Blending;
-                        float oldRate = DXManager.BlendRate;
-
-                        DXManager.SetBlend(true, 0.8F);
-
-                        PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
-
-                        DXManager.SetBlend(oldBlend, oldRate);
-                    }
+                    DXManager.SetBlend(true, 0.8F);
+                    PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                    DXManager.SetBlend(oldBlend, oldRate);
                 }
             }
 
@@ -2468,45 +2360,25 @@ namespace Client.Scenes.Views
 
             if (CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library))
             {
-                if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
+                if (armour != null)
                 {
-                    int index = Grid[(int)EquipmentSlot.Armour].Item.Info.Image;
-
-                    MirLibrary effectLibrary;
-
-                    if (CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_UI, out effectLibrary))
-                    {
-                        switch (index)
-                        {
-                            case 942:
-                                effectLibrary.Draw(700, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                                break;
-                            case 952:
-                                effectLibrary.Draw(720, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                                break;
-                        }
-                    }
-
-
-
-                    library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Armour].Item.Colour, true, 1F, ImageType.Overlay);
+                    int armourIndex = armour.Info.Image;
+                    library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                    library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Armour].Item.Colour, true, 1F, ImageType.Overlay);
                 }
 
                 if (Grid[(int)EquipmentSlot.Weapon]?.Item != null)
                 {
-                    int index = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
-
-                    library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
+                    int weaponIndex = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
+                    library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                    library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
                 }
 
                 if (Grid[(int)EquipmentSlot.Shield]?.Item != null)
                 {
-                    int index = Grid[(int)EquipmentSlot.Shield].Item.Info.Image;
-
-                    library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Shield].Item.Colour, true, 1F, ImageType.Overlay);
+                    int shieldIndex = Grid[(int)EquipmentSlot.Shield].Item.Info.Image;
+                    library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                    library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Shield].Item.Colour, true, 1F, ImageType.Overlay);
                 }
             }
 
