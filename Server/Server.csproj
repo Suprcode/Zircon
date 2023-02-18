@@ -39,9 +39,6 @@
     <Reference Include="DevExpress.Data.v21.2">
       <HintPath>..\Components\DevExpress\DevExpress.Data.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Images.v21.2">
-      <HintPath>..\..\Source Map Editor\Plugin.MapEditor\Components\DevExpress\DevExpress.Images.v21.2.dll</HintPath>
-    </Reference>
     <Reference Include="DevExpress.Utils.v21.2">
       <HintPath>..\Components\DevExpress\DevExpress.Utils.v21.2.dll</HintPath>
     </Reference>
@@ -69,9 +66,6 @@
     <Reference Include="SlimDX">
       <HintPath>..\..\Debug\Server\SlimDX.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\licenses.licx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
