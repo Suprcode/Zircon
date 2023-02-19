@@ -98,7 +98,7 @@ namespace Client.Controls
                         Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
                         Parent = this,
-                        Label = { Text = "OK" }
+                        Label = { Text = CEnvir.Language.CommonControlOk }
                     };
                     OKButton.MouseClick += (o, e) => Dispose();
                     break;
@@ -108,7 +108,7 @@ namespace Client.Controls
                         Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
                         Parent = this,
-                        Label = { Text = "Yes" }
+                        Label = { Text = CEnvir.Language.CommonControlYes }
                     };
                     YesButton.MouseClick += (o, e) => Dispose();
                     NoButton = new DXButton
@@ -116,7 +116,7 @@ namespace Client.Controls
                         Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
                         Parent = this,
-                        Label = { Text = "No" }
+                        Label = { Text = CEnvir.Language.CommonControlNo }
                     };
                     NoButton.MouseClick += (o, e) => Dispose();
                     break;
@@ -126,7 +126,7 @@ namespace Client.Controls
                         Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
                         Parent = this,
-                        Label = { Text = "Cancel" }
+                        Label = { Text = CEnvir.Language.CommonControlCancel }
                     };
                     CancelButton.MouseClick += (o, e) => Dispose();
                     break;

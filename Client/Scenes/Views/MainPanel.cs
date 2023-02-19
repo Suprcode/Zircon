@@ -136,7 +136,7 @@ namespace Client.Scenes.Views
                 Index = 82,
                 Parent = this,
                 Location = new Point(650, 23),
-                Hint = "Character [Q]"
+                Hint = CEnvir.Language.MainPanelCharacterButtonHint
             };
             CharacterButton.MouseClick += (o, e) =>
             {
@@ -149,8 +149,7 @@ namespace Client.Scenes.Views
                 Index = 87,
                 Parent = this,
                 Location = new Point(689, 23),
-                Hint = "Inventory [W]\n" +
-                       "Companion [U]"
+                Hint = CEnvir.Language.MainPanelInventoryButtonHint
             };
             InventoryButton.MouseClick += (o, e) => GameScene.Game.InventoryBox.Visible = !GameScene.Game.InventoryBox.Visible;
 
@@ -160,7 +159,7 @@ namespace Client.Scenes.Views
                 Index = 92,
                 Parent = this,
                 Location = new Point(728, 23),
-                Hint = "Spells [E]"
+                Hint = CEnvir.Language.MainPanelSpellButtonHint
             };
             SpellButton.MouseClick += (o, e) => GameScene.Game.MagicBox.Visible = !GameScene.Game.MagicBox.Visible;
 
@@ -170,7 +169,7 @@ namespace Client.Scenes.Views
                 Index = 112,
                 Parent = this,
                 Location = new Point(767, 23),
-                Hint = "Quests [J]"
+                Hint = CEnvir.Language.MainPanelQuestButtonHint
             };
             QuestButton.MouseClick += (o, e) => GameScene.Game.QuestBox.Visible = !GameScene.Game.QuestBox.Visible;
 
@@ -180,7 +179,7 @@ namespace Client.Scenes.Views
                 Index = 97,
                 Parent = this,
                 Location = new Point(806, 23),
-                Hint = "Communication [,]"
+                Hint = CEnvir.Language.MainPanelMailButtonHint
             };
             MailButton.MouseClick += (o, e) =>
             {
@@ -230,7 +229,7 @@ namespace Client.Scenes.Views
                 Index = 107,
                 Parent = this,
                 Location = new Point(845, 23),
-                Hint = "Belt [Z]"
+                Hint = CEnvir.Language.MainPanelBeltButtonHint
             };
             BeltButton.MouseClick += (o, e) => GameScene.Game.BeltBox.Visible = !GameScene.Game.BeltBox.Visible;
 
@@ -240,7 +239,7 @@ namespace Client.Scenes.Views
                 Index = 102,
                 Parent = this,
                 Location = new Point(884, 23),
-                Hint = "Group [P]"
+                Hint = CEnvir.Language.MainPanelGroupButtonHint
             };
             GroupButton.MouseClick += (o,e) => GameScene.Game.GroupBox.Visible = !GameScene.Game.GroupBox.Visible;
 
@@ -250,7 +249,7 @@ namespace Client.Scenes.Views
                 Index = 117,
                 Parent = this,
                 Location = new Point(923, 23),
-                Hint = "Settings [O]"
+                Hint = CEnvir.Language.MainPanelConfigButtonHint
             };
             ConfigButton.MouseClick += (o, e) => GameScene.Game.ConfigBox.Visible = !GameScene.Game.ConfigBox.Visible;
 
@@ -260,7 +259,7 @@ namespace Client.Scenes.Views
                 Index = 122,
                 Parent = this,
                 Location = new Point(972, 16),
-                Hint = "Cash Shop [Y]"
+                Hint = CEnvir.Language.MainPanelCashShopButtonHint
             };
             CashShopButton.MouseClick += (o, e) =>
             {
@@ -277,8 +276,8 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "Cl",
-                Hint = "Class",
+                Text = CEnvir.Language.MainPanelClassLabel,
+                Hint = CEnvir.Language.MainPanelClassHint,
             };
             label.Location = new Point(300 - label.Size.Width, 20);
 
@@ -286,8 +285,8 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "Lv",
-                Hint = "Level",
+                Text = CEnvir.Language.MainPanelLevelLabel,
+                Hint = CEnvir.Language.MainPanelLevelHint,
             };
             label.Location = new Point(300 - label.Size.Width, 40);
 
@@ -295,7 +294,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "AC",
+                Text = CEnvir.Language.MainPanelACLabel,
             };
             label.Location = new Point(385 - label.Size.Width, 20);
 
@@ -303,7 +302,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "MR",
+                Text = CEnvir.Language.MainPanelMRLabel,
             };
             label.Location = new Point(470 - label.Size.Width, 20);
 
@@ -311,7 +310,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "DC",
+                Text = CEnvir.Language.MainPanelDCLabel,
             };
             label.Location = new Point(385 - label.Size.Width, 40);
 
@@ -319,7 +318,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "MC",
+                Text = CEnvir.Language.MainPanelMCLabel,
             };
             MCLabelLabel.Location = new Point(470 - MCLabelLabel.Size.Width, 40);
 
@@ -327,7 +326,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "SC",
+                Text = CEnvir.Language.MainPanelSCLabel,
             };
             SCLabelLabel.Location = new Point(470 - SCLabelLabel.Size.Width, 40);
 
@@ -335,8 +334,8 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "Acc",
-                Hint = "Accuracy",
+                Text = CEnvir.Language.MainPanelAccuracyLabel,
+                Hint = CEnvir.Language.MainPanelAccuracyHint,
             };
             label.Location = new Point(567 - label.Size.Width, 20);
 
@@ -344,8 +343,8 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = "Agl",
-                Hint = "Agility",
+                Text = CEnvir.Language.MainPanelAgilityLabel,
+                Hint = CEnvir.Language.MainPanelAgilityHint,
             };
             label.Location = new Point(567 - label.Size.Width, 40);
 

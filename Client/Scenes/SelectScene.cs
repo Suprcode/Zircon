@@ -469,7 +469,7 @@ namespace Client.Scenes
             {
                 Size = new Size(320, 425);
                 HasFooter = true;
-                TitleLabel.Text = "Select Character";
+                TitleLabel.Text = CEnvir.Language.SelectTitle;
                 Movable = false;
 
                 CloseButton.MouseClick += (o, e) => LogOut();
@@ -477,7 +477,7 @@ namespace Client.Scenes
                 StartButton = new DXButton
                 {
                     Parent = this,
-                    Label = { Text = "Start Game" },
+                    Label = { Text = CEnvir.Language.SelectStartButtonLabel },
                     Location = new Point((Size.Width - 260)/4 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
                     Enabled = false,
@@ -487,7 +487,7 @@ namespace Client.Scenes
                 CreateButton = new DXButton
                 {
                     Parent = this,
-                    Label = { Text = "Create" },
+                    Label = { Text = CEnvir.Language.SelectCreateButtonLabel },
                     Location = new Point((Size.Width - 260)/4*2 + 90, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
                 };
@@ -496,7 +496,7 @@ namespace Client.Scenes
                 DeleteButton = new DXButton
                 {
                     Parent = this,
-                    Label = { Text = "Delete" },
+                    Label = { Text = CEnvir.Language.SelectDeleteButtonLabel },
                     Location = new Point((Size.Width - 260)/4*3 + 170, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
                     Enabled = false,
@@ -942,7 +942,7 @@ namespace Client.Scenes
             {
                 Size = new Size(260, 650);
                 HasFooter = true;
-                TitleLabel.Text = "Create Character";
+                TitleLabel.Text = CEnvir.Language.NewCharacterTitle;
                 Movable = false;
                 Visible = false;
                 CloseButton.MouseClick += (o, e) => Close();
@@ -951,7 +951,7 @@ namespace Client.Scenes
                 {
                     Parent = this,
                     Enabled = false,
-                    Label = { Text = "Create" },
+                    Label = { Text = CEnvir.Language.NewCharacterCreateButtonLabel },
                     Location = new Point((Size.Width - 80)/2, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
                 };
@@ -975,7 +975,7 @@ namespace Client.Scenes
                 {
                     Parent = panel,
                     Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                    Text = "Select Class",
+                    Text = CEnvir.Language.NewCharacterSelectClassLabel,
                 };
                 label.Location = new Point((panel.Size.Width - label.Size.Width)/2, 0);
 
@@ -1027,7 +1027,7 @@ namespace Client.Scenes
                     DrawFormat = TextFormatFlags.HorizontalCenter,
                     Size = new Size(80, 15),
                     Parent = panel,
-                    Text = "Warrior",
+                    Text = CEnvir.Language.NewCharacterSelectedClassLabel,
                     BackColour = Color.FromArgb(16, 8, 8),
                     Border = true,
                     BorderColour = Color.FromArgb(198, 166, 99)
@@ -1054,7 +1054,7 @@ namespace Client.Scenes
                 {
                     Parent = panel,
                     Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                    Text = "Select Gender",
+                    Text = CEnvir.Language.NewCharacterSelectGenderLabel,
                 };
                 label.Location = new Point((panel.Size.Width - label.Size.Width)/2, 0);
 
@@ -1085,7 +1085,7 @@ namespace Client.Scenes
                     DrawFormat = TextFormatFlags.HorizontalCenter,
                     Size = new Size(80, 15),
                     Parent = panel,
-                    Text = "Male",
+                    Text = CEnvir.Language.NewCharacterSelectedGenderLabel,
                     BackColour = Color.FromArgb(16, 8, 8),
                     Border = true,
                     BorderColour = Color.FromArgb(198, 166, 99)
@@ -1112,7 +1112,7 @@ namespace Client.Scenes
                 {
                     Parent = panel,
                     Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                    Text = "Customization",
+                    Text = CEnvir.Language.NewCharacterCustomizationLabel,
                 };
                 label.Location = new Point((panel.Size.Width - label.Size.Width)/2, 0);
 
@@ -1132,7 +1132,7 @@ namespace Client.Scenes
                 label = new DXLabel
                 {
                     Parent = panel,
-                    Text = "Hair Type:",
+                    Text = CEnvir.Language.NewCharacterHairTypeLabel,
                 };
                 label.Location = new Point(HairNumberBox.Location.X - label.Size.Width - 5, (HairNumberBox.Size.Height - label.Size.Height)/2 + HairNumberBox.Location.Y);
 
@@ -1146,7 +1146,7 @@ namespace Client.Scenes
                 HairColourLabel = new DXLabel
                 {
                     Parent = panel,
-                    Text = "Hair Colour:",
+                    Text = CEnvir.Language.NewCharacterHairColorLabel
                 };
                 HairColourLabel.Location = new Point(HairNumberBox.Location.X - HairColourLabel.Size.Width - 5, (HairColour.Size.Height - HairColourLabel.Size.Height)/2 + HairColour.Location.Y);
 
@@ -1160,7 +1160,7 @@ namespace Client.Scenes
                 ArmourColourLabel = new DXLabel
                 {
                     Parent = panel,
-                    Text = "Armour Colour:",
+                    Text = CEnvir.Language.NewCharacterArmourColorLabel,
                 };
                 ArmourColourLabel.Location = new Point(HairNumberBox.Location.X - ArmourColourLabel.Size.Width - 5, (ArmourColour.Size.Height - ArmourColourLabel.Size.Height)/2 + ArmourColour.Location.Y);
 
@@ -1181,7 +1181,7 @@ namespace Client.Scenes
                 {
                     Parent = previewPanel,
                     Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                    Text = "Preview",
+                    Text = CEnvir.Language.NewCharacterPreviewLabel,
                 };
                 label.Location = new Point((panel.Size.Width - label.Size.Width)/2, 0);
 
@@ -1202,7 +1202,7 @@ namespace Client.Scenes
                 label = new DXLabel
                 {
                     Parent = this,
-                    Text = "Name:",
+                    Text = CEnvir.Language.NewCharacterCharacterNameLabel,
                 };
                 label.Location = new Point(CharacterNameTextBox.Location.X - label.Size.Width - 5, (CharacterNameTextBox.Size.Height - label.Size.Height)/2 + CharacterNameTextBox.Location.Y);
 
@@ -1211,7 +1211,7 @@ namespace Client.Scenes
                     Visible = false,
                     Parent = this,
                     Text = "[?]",
-                    Hint = $"Character Name.\nAccepted characters: a-z A-Z 0-9.\nLength: between {Globals.MinCharacterNameLength} and {Globals.MaxCharacterNameLength} characters.\nCan use previous names on same account.",
+                    Hint = string.Format(CEnvir.Language.NewCharacterCharacterNameHelpHint, Globals.MinCharacterNameLength, Globals.MaxCharacterNameLength),
                 };
                 CharacterNameHelpLabel.Location = new Point(CharacterNameTextBox.Location.X + CharacterNameTextBox.Size.Width + 2, (CharacterNameTextBox.Size.Height - CharacterNameHelpLabel.Size.Height)/2 + CharacterNameTextBox.Location.Y);
 
@@ -1656,7 +1656,7 @@ namespace Client.Scenes
                 DXLabel label = new DXLabel
                 {
                     Parent = this,
-                    Text = "Name",
+                    Text = CEnvir.Language.SelectNameLabel,
                     IsControl = false,
 
                 };
@@ -1678,7 +1678,7 @@ namespace Client.Scenes
                 label = new DXLabel
                 {
                     Parent = this,
-                    Text = "Class",
+                    Text = CEnvir.Language.SelectClassLabel,
                     IsControl = false,
                 };
                 label.Location = new Point(ClassLabel.Location.X - label.Size.Width - 5, 28);
@@ -1699,7 +1699,7 @@ namespace Client.Scenes
                 label = new DXLabel
                 {
                     Parent = this,
-                    Text = "Level",
+                    Text = CEnvir.Language.SelectLevelLabel,
                     IsControl = false,
                 };
                 label.Location = new Point(LevelLabel.Location.X - label.Size.Width - 5, 28);
@@ -1720,7 +1720,7 @@ namespace Client.Scenes
                 label = new DXLabel
                 {
                     Parent = this,
-                    Text = "Location",
+                    Text = CEnvir.Language.SelectLocationLabel,
                     IsControl = false,
                 };
                 label.Location = new Point(LocationLabel.Location.X - label.Size.Width - 5, 48);

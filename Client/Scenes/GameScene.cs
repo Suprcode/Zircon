@@ -226,7 +226,7 @@ namespace Client.Scenes
                 if (_AutoRun == value) return;
                 _AutoRun = value;
                 
-                ReceiveChat(value ? "[AutoRun: On]" : "[AutoRun: Off]", MessageType.Hint);
+                ReceiveChat(value ? CEnvir.Language.GameSceneAutoRunOn : CEnvir.Language.GameSceneAutoRunOff, MessageType.Hint);
             }
         }
         private bool _AutoRun;
@@ -861,7 +861,7 @@ namespace Client.Scenes
             }
 
             if (result)
-                Game.ReceiveChat("Chat Layout Loaded", MessageType.Announcement);
+                Game.ReceiveChat(CEnvir.Language.ChatLayoutLoaded, MessageType.Announcement);
             else
                 ChatOptionsBox.CreateDefaultWindows();
         }
@@ -2835,7 +2835,7 @@ namespace Client.Scenes
 
                     if (User.AttackMagic != magic.Info.Magic)
                     {
-                        ReceiveChat($"{magic.Info.Name} is now Ready.", MessageType.Hint);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneSkillReady, magic.Info.Name), MessageType.Hint);
                         int attackDelay = Globals.AttackDelay - MapObject.User.Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
                         attackDelay = Math.Max(800, attackDelay);
 
@@ -2854,7 +2854,7 @@ namespace Client.Scenes
 
                     if (User.AttackMagic != magic.Info.Magic)
                     {
-                        ReceiveChat($"{magic.Info.Name} is now Ready.", MessageType.Hint);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneSkillReady, magic.Info.Name), MessageType.Hint);
                         ToggleTime = CEnvir.Now + TimeSpan.FromMilliseconds(500);
 
                         User.AttackMagic = magic.Info.Magic;
@@ -2873,7 +2873,7 @@ namespace Client.Scenes
                 if (CEnvir.Now >= OutputTime)
                 {
                     OutputTime = CEnvir.Now.AddSeconds(1);
-                    ReceiveChat($"Unable to cast {magic.Info.Name}, it is still on Cooldown.", MessageType.Hint);
+                    ReceiveChat(string.Format(CEnvir.Language.GameSceneCastInCooldown, magic.Info.Name), MessageType.Hint);
                 }
                 return;
             }
@@ -2887,7 +2887,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name} whilst in combat", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastInCombat, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2897,7 +2897,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Health.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughHealth, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2910,7 +2910,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Mana.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughMana, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2921,7 +2921,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Health.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughHealth, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2930,7 +2930,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Mana.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughMana, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2942,7 +2942,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Mana.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughMana, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2976,7 +2976,7 @@ namespace Client.Scenes
                     {
                         if (CEnvir.Now < OutputTime) return;
                         OutputTime = CEnvir.Now.AddSeconds(1);
-                        ReceiveChat($"Unable to cast {magic.Info.Name}, Your target is too far.", MessageType.Hint);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneCastTooFar, magic.Info.Name), MessageType.Hint);
                         return;
                     }
 
@@ -3136,7 +3136,7 @@ namespace Client.Scenes
                     {
                         if (CEnvir.Now < OutputTime) return;
                         OutputTime = CEnvir.Now.AddSeconds(1);
-                        ReceiveChat($"Unable to cast {magic.Info.Name}, Your target is too far.", MessageType.Hint);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneCastTooFar, magic.Info.Name), MessageType.Hint);
                         return;
                     }
                     break;
@@ -3148,7 +3148,7 @@ namespace Client.Scenes
             {
                 if (CEnvir.Now < OutputTime) return;
                 OutputTime = CEnvir.Now.AddSeconds(1);
-                ReceiveChat($"Unable to cast {magic.Info.Name}, Your target is too far.", MessageType.Hint);
+                ReceiveChat(string.Format(CEnvir.Language.GameSceneCastTooFar, magic.Info.Name), MessageType.Hint);
                 return;
             }
 
@@ -3516,7 +3516,7 @@ namespace Client.Scenes
                 case EquipmentSlot.Shield:
                     if (User.HandWeight - (Equipment[(int) slot]?.Info.Weight ?? 0) + item.Weight > User.Stats[Stat.HandWeight])
                     {
-                        ReceiveChat($"Unable to hold {item.Info.ItemName}, it is too heavy.", MessageType.System);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneHoldTooHeavy, item.Info.ItemName), MessageType.System);
                         return false;
                     }
                     break;
@@ -3527,14 +3527,14 @@ namespace Client.Scenes
                 case EquipmentSlot.Reel:
                     if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod)
                     {
-                        ReceiveChat($"Unable to hold {item.Info.ItemName}, must be holding fishing rod.", MessageType.System);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneNeedFishingRod, item.Info.ItemName), MessageType.System);
                         return false;
                     }
                     break;
                 default:
                     if (User.WearWeight - (Equipment[(int) slot]?.Info.Weight ?? 0) + item.Weight > User.Stats[Stat.WearWeight])
                     {
-                        ReceiveChat($"Unable to wear {item.Info.ItemName}, it is too heavy.", MessageType.System);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneWearTooHeavy, item.Info.ItemName), MessageType.System);
                         return false;
                     }
                     break;

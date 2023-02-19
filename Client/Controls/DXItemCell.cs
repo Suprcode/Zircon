@@ -1579,7 +1579,7 @@ namespace Client.Controls
                         case ItemEffect.GenderChange:
                             if (GameScene.Game.CharacterBox.Grid[(int) EquipmentSlot.Armour].Item != null)
                             {
-                                GameScene.Game.ReceiveChat("You cannot change gender whilst you are wearing armour.", MessageType.System);
+                                GameScene.Game.ReceiveChat(CEnvir.Language.CannotChangeGenderWhileWearingArmour, MessageType.System);
                                 return false;
                             }
 
@@ -1608,7 +1608,7 @@ namespace Client.Controls
                         case ItemEffect.ArmourDye:
                             if (GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Armour].Item == null)
                             {
-                                GameScene.Game.ReceiveChat("You need to be wearing an armour before you can apply a dye.", MessageType.System);
+                                GameScene.Game.ReceiveChat(CEnvir.Language.WearingArmourBeforeDye, MessageType.System);
                                 return false;
                             }
 
@@ -1767,18 +1767,18 @@ namespace Client.Controls
                             if (GameScene.Game.NPCRepairBox.IsVisible)
                             {
                                 if (Item.CurrentDurability >= Item.MaxDurability || !Item.Info.CanRepair)
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName}, it is already fully repaired.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairFullyRepaired, Item.Info.ItemName), MessageType.System);
                                 else if (!MoveItem(GameScene.Game.NPCRepairBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName} here.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairHere, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
                             if (GameScene.Game.NPCSellBox.IsVisible)
                             {
                                 if (!Item.Info.CanSell)
-                                    GameScene.Game.ReceiveChat($"Unable to Sell {Item.Info.ItemName}, it cannot be sold.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToSellHereCannotSold, Item.Info.ItemName), MessageType.System);
                                 else if (!MoveItem(GameScene.Game.NPCSellBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to Sell {Item.Info.ItemName} here.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToSellHere, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -1811,7 +1811,7 @@ namespace Client.Controls
                                             return;
                                         break;
                                 }
-                                GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to refine.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineIncorrectItem, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
                             if (GameScene.Game.NPCRefinementStoneBox.IsVisible)
@@ -1834,7 +1834,7 @@ namespace Client.Controls
                                         MoveItem(GameScene.Game.NPCRefinementStoneBox.CrystalGrid);
                                         return;
                                 }
-                                GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to refine.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineIncorrectItem, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
                             if (GameScene.Game.NPCWeaponCraftBox.IsVisible)
@@ -1869,7 +1869,7 @@ namespace Client.Controls
                                         MoveItem(GameScene.Game.NPCWeaponCraftBox.TemplateCell);
                                         return;
                                 }
-                                GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to Craft.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToCraft, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -1877,7 +1877,7 @@ namespace Client.Controls
                             {
 
                                 if (!Item.CanFragment())
-                                    GameScene.Game.ReceiveChat($"Unable to Fragment {Item.Info.ItemName}, it cannot be Fragmented.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToFragment, Item.Info.ItemName), MessageType.System);
                                 else MoveItem(GameScene.Game.NPCItemFragmentBox.Grid);
 
                                 return;
@@ -1888,10 +1888,10 @@ namespace Client.Controls
                                 if (GameScene.Game.NPCAccessoryLevelBox.TargetCell.Grid[0].Link == null)
                                 {
                                     if (!MoveItem(GameScene.Game.NPCAccessoryLevelBox.TargetCell))
-                                        GameScene.Game.ReceiveChat($"Unable to Level {Item.Info.ItemName}.", MessageType.System);
+                                        GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToLevel, Item.Info.ItemName), MessageType.System);
                                 }
                                 else if (!MoveItem(GameScene.Game.NPCAccessoryLevelBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to level.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToUseToLevel, Item.Info.ItemName), MessageType.System);
 
                                 return;
                             }
@@ -1900,7 +1900,7 @@ namespace Client.Controls
                             {
 
                                 if (!Item.CanAccessoryUpgrade())
-                                    GameScene.Game.ReceiveChat($"Unable to Upgrade {Item.Info.ItemName}.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToUpgrade, Item.Info.ItemName), MessageType.System);
                                 else
                                     MoveItem(GameScene.Game.NPCAccessoryUpgradeBox.TargetCell);
 
@@ -1910,7 +1910,7 @@ namespace Client.Controls
                             if (GameScene.Game.NPCAccessoryResetBox.IsVisible)
                             {
                                 if (!MoveItem(GameScene.Game.NPCAccessoryResetBox.AccessoryGrid))
-                                    GameScene.Game.ReceiveChat($"Unable to Reset {Item.Info.ItemName}.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToReset, Item.Info.ItemName), MessageType.System);
 
                                 return;
                             }
@@ -1921,7 +1921,7 @@ namespace Client.Controls
                                 {
                                     case ItemType.Ore:
                                         if (Item.Info.ItemEffect != ItemEffect.BlackIronOre)
-                                            GameScene.Game.ReceiveChat($"Only Black Iron Ore can be used.", MessageType.System);
+                                            GameScene.Game.ReceiveChat(CEnvir.Language.OnlyBlackIronOreCanBeUsed, MessageType.System);
                                         else
                                             MoveItem(GameScene.Game.NPCRefineBox.BlackIronGrid);
                                         return;
@@ -1934,7 +1934,7 @@ namespace Client.Controls
                                         MoveItem(GameScene.Game.NPCRefineBox.SpecialGrid);
                                         return;
                                 }
-                                GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to refine.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineIncorrectItem, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -1942,14 +1942,14 @@ namespace Client.Controls
                             {
                                 if (Item.Level > 1)
                                 {
-                                    GameScene.Game.ReceiveChat($"Unable to refine {Item.Info.ItemName} because it has been levelled.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineHasBeenLevelled, Item.Info.ItemName), MessageType.System);
                                 }
                                 else
                                 {
                                     if (Item.Info.ItemType == ItemType.Ore)
                                     {
                                         if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.OreTargetCell))
-                                            GameScene.Game.ReceiveChat($"You cannot use {Item.Info.ItemName}, you must use Corundum Ore.", MessageType.System);
+                                            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineNeedCorundumOre, Item.Info.ItemName), MessageType.System);
                                     }
                                     else
                                     {
@@ -1957,10 +1957,10 @@ namespace Client.Controls
                                         {
 
                                             if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.TargetCell))
-                                                GameScene.Game.ReceiveChat($"Unable to refine {Item.Info.ItemName}.", MessageType.System);
+                                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefine, Item.Info.ItemName), MessageType.System);
                                         }
                                         else if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.Grid))
-                                            GameScene.Game.ReceiveChat($"{Item.Info.ItemName} doesnt have the same stats as the main accessory.", MessageType.System);
+                                            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.DoesntHaveSameStats, Item.Info.ItemName), MessageType.System);
                                     }
                                 }
                                 return;
@@ -1983,7 +1983,7 @@ namespace Client.Controls
                                 if (Item.Info.ItemEffect == ItemEffect.ItemPart)
                                     MoveItem(GameScene.Game.StorageBox.PartGrid);
                                 else if (!MoveItem(GameScene.Game.StorageBox.Grid))
-                                    GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(CEnvir.Language.NoFreeSpaceInStorage, MessageType.System);
 
                                 return;
                             }
@@ -1991,21 +1991,21 @@ namespace Client.Controls
                             if (GameScene.Game.TradeBox.IsVisible)
                             {
                                 if (!MoveItem(GameScene.Game.TradeBox.UserGrid))
-                                    GameScene.Game.ReceiveChat("Unable to trade this item.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(CEnvir.Language.UnableToTrade, MessageType.System);
                                 return;
                             }
 
                             if (GameScene.Game.GuildBox.StorageTab.IsVisible)
                             {
                                 if (!MoveItem(GameScene.Game.GuildBox.StorageGrid))
-                                    GameScene.Game.ReceiveChat("Unable to store this item in guild storage.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(CEnvir.Language.UnableToStoreInGuildStorage, MessageType.System);
                                 return;
                             }
 
                             if (GameScene.Game.CompanionBox.IsVisible)
                             {
                                 if (!MoveItem(GameScene.Game.CompanionBox.InventoryGrid))
-                                    GameScene.Game.ReceiveChat("No Free Space in companion's Inventory.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(CEnvir.Language.NoFreeSpaceInCompanionInventory, MessageType.System);
                                 return;
                             }
 
@@ -2017,18 +2017,18 @@ namespace Client.Controls
                             if (GameScene.Game.NPCRepairBox.IsVisible)
                             {
                                 if (Item.CurrentDurability >= Item.MaxDurability || !Item.Info.CanRepair)
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName}, it is already fully repaired.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairFullyRepaired, Item.Info.ItemName), MessageType.System);
                                 else if (!MoveItem(GameScene.Game.NPCRepairBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName} here.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairHere, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
                             if (GameScene.Game.NPCSellBox.IsVisible)
                             {
                                 if (!Item.Info.CanSell)
-                                    GameScene.Game.ReceiveChat($"Unable to Sell {Item.Info.ItemName}, it cannot be sold.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToSellHereCannotSold, Item.Info.ItemName), MessageType.System);
                                 else if (!MoveItem(GameScene.Game.NPCSellBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to Sell {Item.Info.ItemName} here.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToSellHere, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -2038,7 +2038,7 @@ namespace Client.Controls
                                 {
                                     case ItemType.Ore:
                                         if (Item.Info.ItemEffect != ItemEffect.BlackIronOre)
-                                            GameScene.Game.ReceiveChat($"Only Black Iron Ore can be used.", MessageType.System);
+                                            GameScene.Game.ReceiveChat(CEnvir.Language.OnlyBlackIronOreCanBeUsed, MessageType.System);
                                         else
                                             MoveItem(GameScene.Game.NPCRefineBox.BlackIronGrid);
                                         return;
@@ -2051,7 +2051,7 @@ namespace Client.Controls
                                         MoveItem(GameScene.Game.NPCRefineBox.SpecialGrid);
                                         return;
                                 }
-                                GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to refine.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineIncorrectItem, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -2084,7 +2084,7 @@ namespace Client.Controls
                                             return;
                                         break;
                                 }
-                                GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to refine.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineIncorrectItem, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -2093,10 +2093,10 @@ namespace Client.Controls
                                 if (GameScene.Game.NPCAccessoryLevelBox.TargetCell.Grid[0].Link == null)
                                 {
                                     if (!MoveItem(GameScene.Game.NPCAccessoryLevelBox.TargetCell))
-                                        GameScene.Game.ReceiveChat($"Unable to Level {Item.Info.ItemName}.", MessageType.System);
+                                        GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToLevel, Item.Info.ItemName), MessageType.System);
                                 }
                                 else if (!MoveItem(GameScene.Game.NPCAccessoryLevelBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to level.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToUseToLevel, Item.Info.ItemName), MessageType.System);
 
                                 return;
                             }
@@ -2105,7 +2105,7 @@ namespace Client.Controls
                             {
 
                                 if (!Item.CanAccessoryUpgrade())
-                                    GameScene.Game.ReceiveChat($"Unable to Upgrade {Item.Info.ItemName}.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToUpgrade, Item.Info.ItemName), MessageType.System);
                                 else
                                     MoveItem(GameScene.Game.NPCAccessoryUpgradeBox.TargetCell);
 
@@ -2115,7 +2115,7 @@ namespace Client.Controls
                             if (GameScene.Game.NPCAccessoryResetBox.IsVisible)
                             {
                                 if (!MoveItem(GameScene.Game.NPCAccessoryResetBox.AccessoryGrid))
-                                    GameScene.Game.ReceiveChat($"Unable to Reset {Item.Info.ItemName}.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToReset, Item.Info.ItemName), MessageType.System);
 
                                 return;
                             }
@@ -2137,25 +2137,25 @@ namespace Client.Controls
                                 if (Item.Info.ItemEffect == ItemEffect.ItemPart)
                                     MoveItem(GameScene.Game.StorageBox.PartGrid);
                                 else if (!MoveItem(GameScene.Game.StorageBox.Grid))
-                                    GameScene.Game.ReceiveChat("No Free Space in Storage.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(CEnvir.Language.NoFreeSpaceInStorage, MessageType.System);
                             }
 
                             if (GameScene.Game.TradeBox.IsVisible)
                             {
                                 if (!MoveItem(GameScene.Game.TradeBox.UserGrid))
-                                    GameScene.Game.ReceiveChat("Unable to trade this item.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(CEnvir.Language.UnableToTrade, MessageType.System);
                                 return;
                             }
 
                             if (GameScene.Game.GuildBox.StorageTab.IsVisible)
                             {
                                 if (!MoveItem(GameScene.Game.GuildBox.StorageGrid))
-                                    GameScene.Game.ReceiveChat("Unable to store this item in guild storage.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(CEnvir.Language.UnableToStoreInGuildStorage, MessageType.System);
                                 return;
                             }
 
                             if (!MoveItem(GameScene.Game.InventoryBox.Grid))
-                                GameScene.Game.ReceiveChat("No Free Space in Inventory.", MessageType.System);
+                                GameScene.Game.ReceiveChat(CEnvir.Language.NoFreeSpaceInInventory, MessageType.System);
 
 
                             break;
@@ -2170,9 +2170,9 @@ namespace Client.Controls
                             if (GameScene.Game.NPCRepairBox.Visible)
                             {
                                 if (Item.CurrentDurability >= Item.MaxDurability || !Item.Info.CanRepair)
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName}, it is already fully repaired.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairFullyRepaired, Item.Info.ItemName), MessageType.System);
                                 else if (!MoveItem(GameScene.Game.NPCRepairBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName} here.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairHere, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -2205,7 +2205,7 @@ namespace Client.Controls
                                             return;
                                         break;
                                 }
-                                GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to refine.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineIncorrectItem, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
                             if (GameScene.Game.NPCRefineBox.Visible)
@@ -2214,7 +2214,7 @@ namespace Client.Controls
                                 {
                                     case ItemType.Ore:
                                         if (Item.Info.ItemEffect != ItemEffect.BlackIronOre)
-                                            GameScene.Game.ReceiveChat($"Only Black Iron Ore can be used.", MessageType.System);
+                                            GameScene.Game.ReceiveChat(CEnvir.Language.OnlyBlackIronOreCanBeUsed, MessageType.System);
                                         else
                                             MoveItem(GameScene.Game.NPCRefineBox.BlackIronGrid);
                                         return;
@@ -2224,7 +2224,7 @@ namespace Client.Controls
                                         MoveItem(GameScene.Game.NPCRefineBox.AccessoryGrid);
                                         return;
                                 }
-                                GameScene.Game.ReceiveChat($"Unable to use {Item.Info.ItemName} to refine.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineIncorrectItem, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -2232,14 +2232,14 @@ namespace Client.Controls
                             {
                                 if (Item.Level > 1)
                                 {
-                                    GameScene.Game.ReceiveChat($"Unable to refine {Item.Info.ItemName} because it has been levelled.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineHasBeenLevelled, Item.Info.ItemName), MessageType.System);
                                 }
                                 else
                                 {
                                     if (Item.Info.ItemType == ItemType.Ore)
                                     {
                                         if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.OreTargetCell))
-                                            GameScene.Game.ReceiveChat($"You cannot use {Item.Info.ItemName}, you must use Corundum Ore.", MessageType.System);
+                                            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefineNeedCorundumOre, Item.Info.ItemName), MessageType.System);
                                     }
                                     else
                                     {
@@ -2247,10 +2247,10 @@ namespace Client.Controls
                                         {
 
                                             if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.TargetCell))
-                                                GameScene.Game.ReceiveChat($"Unable to refine {Item.Info.ItemName}.", MessageType.System);
+                                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRefine, Item.Info.ItemName), MessageType.System);
                                         }
                                         else if (!MoveItem(GameScene.Game.NPCAccessoryRefineBox.Grid))
-                                            GameScene.Game.ReceiveChat($"{Item.Info.ItemName} doesnt have the same stats as the main accessory.", MessageType.System);
+                                            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.DoesntHaveSameStats, Item.Info.ItemName), MessageType.System);
                                     }
                                 }
                                 return;
@@ -2270,9 +2270,9 @@ namespace Client.Controls
                             if (GameScene.Game.NPCRepairBox.Visible)
                             {
                                 if (Item.CurrentDurability >= Item.MaxDurability || !Item.Info.CanRepair)
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName}, it is already fully repaired.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairFullyRepaired, Item.Info.ItemName), MessageType.System);
                                 else if (!MoveItem(GameScene.Game.NPCRepairBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName} here.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairHere, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -2293,9 +2293,9 @@ namespace Client.Controls
                             if (GameScene.Game.NPCRepairBox.Visible)
                             {
                                 if (Item.CurrentDurability >= Item.MaxDurability || !Item.Info.CanRepair)
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName}, it is already fully repaired.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairFullyRepaired, Item.Info.ItemName), MessageType.System);
                                 else if (!MoveItem(GameScene.Game.NPCRepairBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName} here.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairHere, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -2304,7 +2304,7 @@ namespace Client.Controls
                                 if (GameScene.Game.NPCAccessoryLevelBox.TargetCell.Grid[0].Link == null)
                                 {
                                     if (!MoveItem(GameScene.Game.NPCAccessoryLevelBox.TargetCell))
-                                        GameScene.Game.ReceiveChat($"Unable to Level {Item.Info.ItemName}.", MessageType.System);
+                                        GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToLevel, Item.Info.ItemName), MessageType.System);
                                 }
                                 return;
                             }
@@ -2312,7 +2312,7 @@ namespace Client.Controls
                             if (GameScene.Game.NPCAccessoryUpgradeBox.IsVisible)
                             {
                                 if (!Item.CanAccessoryUpgrade())
-                                    GameScene.Game.ReceiveChat($"Unable to Upgrade {Item.Info.ItemName}.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToUpgrade, Item.Info.ItemName), MessageType.System);
                                 else
                                     MoveItem(GameScene.Game.NPCAccessoryUpgradeBox.TargetCell);
 
@@ -2327,7 +2327,7 @@ namespace Client.Controls
                             }
 
                             if (!MoveItem(GameScene.Game.InventoryBox.Grid))
-                                GameScene.Game.ReceiveChat("No Free Space in Inventory.", MessageType.System);
+                                GameScene.Game.ReceiveChat(CEnvir.Language.NoFreeSpaceInInventory, MessageType.System);
 
                             break;
                         case GridType.CompanionEquipment:
@@ -2337,16 +2337,16 @@ namespace Client.Controls
                             if (GameScene.Game.NPCRepairBox.Visible)
                             {
                                 if (Item.CurrentDurability >= Item.MaxDurability || !Item.Info.CanRepair)
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName}, it is already fully repaired.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairFullyRepaired, Item.Info.ItemName), MessageType.System);
                                 else if (!MoveItem(GameScene.Game.NPCRepairBox.Grid))
-                                    GameScene.Game.ReceiveChat($"Unable to repair {Item.Info.ItemName} here.", MessageType.System);
+                                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToRepairHere, Item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
 
 
                             if (!MoveItem(GameScene.Game.InventoryBox.Grid))
-                                GameScene.Game.ReceiveChat("No Free Space in Inventory.", MessageType.System);
+                                GameScene.Game.ReceiveChat(CEnvir.Language.NoFreeSpaceInInventory, MessageType.System);
 
                             break;
                         default:

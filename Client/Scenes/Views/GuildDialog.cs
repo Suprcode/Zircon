@@ -301,7 +301,7 @@ namespace Client.Scenes.Views
 
         public GuildDialog()
         {
-            TitleLabel.Text = "Guild";
+            TitleLabel.Text = CEnvir.Language.GuildDialogTitle;
 
             SetClientSize(new Size(516, 419));
 
@@ -477,14 +477,14 @@ namespace Client.Scenes.Views
         {
             CreateTab = new DXTab
             {
-                TabButton = { Label = { Text = "Create" } },
+                TabButton = { Label = { Text = CEnvir.Language.GuildDialogCreateTabLabel } },
                 Parent = GuildTabs,
                 Border = true,
             };
 
             DXLabel stepLabel = new DXLabel
             {
-                Text = "Step 1 - Identity",
+                Text = CEnvir.Language.GuildDialogCreateTabStep1Label,
                 Parent = CreateTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -499,7 +499,7 @@ namespace Client.Scenes.Views
 
             DXLabel label = new DXLabel
             {
-                Text = "Guild Name:",
+                Text = CEnvir.Language.GuildDialogCreateTabStep1GuildNameLabel,
                 Parent = CreateTab,
                 Outline = true,
                 OutlineColour = Color.Black,
@@ -518,7 +518,7 @@ namespace Client.Scenes.Views
 
             stepLabel = new DXLabel
             {
-                Text = "Step 2 - Payment",
+                Text = CEnvir.Language.GuildDialogCreateTabStep2Label,
                 Parent = CreateTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -532,7 +532,7 @@ namespace Client.Scenes.Views
 
             GoldCheckBox = new DXCheckBox
             {
-                Label = { Text = $"{Globals.GuildCreationCost:#,##0} Gold", ForeColour = Color.White },
+                Label = { Text = string.Format(CEnvir.Language.GuildDialogCreateTabStep2GoldCheckBoxLabel, Globals.GuildCreationCost), ForeColour = Color.White },
                 Parent = CreateTab,
                 Checked = true,
                 ReadOnly = true,
@@ -543,7 +543,7 @@ namespace Client.Scenes.Views
 
             HornCheckBox = new DXCheckBox
             {
-                Label = { Text = "Uma King's Horn", ForeColour = Color.White },
+                Label = { Text = CEnvir.Language.GuildDialogCreateTabStep2HornCheckBoxLabel, ForeColour = Color.White },
                 Parent = CreateTab,
                 ReadOnly = true,
             };
@@ -563,7 +563,7 @@ namespace Client.Scenes.Views
 
             stepLabel = new DXLabel
             {
-                Text = "Step 3 - Options",
+                Text = CEnvir.Language.GuildDialogCreateTabStep3Label,
                 Parent = CreateTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -577,7 +577,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Extra Members:",
+                Text = CEnvir.Language.GuildDialogCreateTabStep3ExtraMembersLabel,
                 Parent = CreateTab,
                 Outline = true,
                 OutlineColour = Color.Black,
@@ -603,14 +603,13 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Hint = "Base Limit: 10" +
-                       $"Cost per Member Slot: {Globals.GuildMemberCost}."
+                Hint = string.Format(CEnvir.Language.GuildDialogCreateTabStep3ExtraMembersHint, Globals.GuildMemberCost)
             };
             label.Location = new Point(MemberTextBox.Location.X + MemberTextBox.Size.Width, MemberTextBox.Location.Y + (MemberTextBox.Size.Height - label.Size.Height) / 2);
 
             label = new DXLabel
             {
-                Text = "Extra Storage:",
+                Text = CEnvir.Language.GuildDialogCreateTabStep3ExtraStorageLabel,
                 Parent = CreateTab,
                 Outline = true,
                 OutlineColour = Color.Black,
@@ -636,8 +635,7 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Hint = "Base Storage: 10," +
-                       $"Cost per Storage Slot: {Globals.GuildStorageCost}."
+                Hint = string.Format(CEnvir.Language.GuildDialogCreateTabStep3ExtraStorageHint, Globals.GuildStorageCost)
             };
             label.Location = new Point(StorageTextBox.Location.X + StorageTextBox.Size.Width, StorageTextBox.Location.Y + (StorageTextBox.Size.Height - label.Size.Height) / 2);
 
@@ -645,7 +643,7 @@ namespace Client.Scenes.Views
 
             stepLabel = new DXLabel
             {
-                Text = "Step 4 - Summary",
+                Text = CEnvir.Language.GuildDialogCreateTabStep4Label,
                 Parent = CreateTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -659,7 +657,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Gold Cost:",
+                Text = CEnvir.Language.GuildDialogCreateTabStep4TotalCostLabel,
                 Parent = CreateTab,
                 Outline = true,
                 OutlineColour = Color.Black,
@@ -684,7 +682,7 @@ namespace Client.Scenes.Views
                 Parent = CreateTab,
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(110, SmallButtonHeight),
-                Label = { Text = "Create Guild" },
+                Label = { Text = CEnvir.Language.GuildDialogCreateTabCreateButtonLabel },
                 Location = new Point(TotalCostBox.Location.X, TotalCostBox.Location.Y + 30)
             };
 
@@ -695,7 +693,7 @@ namespace Client.Scenes.Views
                 Parent = CreateTab,
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(120, SmallButtonHeight),
-                Label = { Text = "Join Starter Guild" },
+                Label = { Text = CEnvir.Language.GuildDialogCreateTabStarterGuildButtonLabel },
                 Location = new Point(ClientArea.Left, TotalCostBox.Location.Y + 40)
             };
             StarterGuildButton.MouseClick += StarterGuildButton_MouseClick;
@@ -757,14 +755,14 @@ namespace Client.Scenes.Views
         {
             HomeTab = new DXTab
             {
-                TabButton = { Label = { Text = "Home" } },
+                TabButton = { Label = { Text = CEnvir.Language.GuildDialogHomeTabLabel } },
                 Parent = GuildTabs,
                 Border = true,
             };
 
              new DXLabel
             {
-                Text = "Notice",
+                Text = CEnvir.Language.GuildDialogHomeTabNoticeLabel,
                 Parent = HomeTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -819,7 +817,7 @@ namespace Client.Scenes.Views
                 Parent = HomeTab,
                 Size = new Size(60, SmallButtonHeight),
                 Location = new Point(HomeTab.Size.Width - 66, 4),
-                Label = { Text = "Edit" },
+                Label = { Text = CEnvir.Language.GuildDialogHomeTabNoticeEditButtonLabel },
                 ButtonType = ButtonType.SmallButton
             };
             EditNoticeButton.MouseClick += (o, e) =>
@@ -837,7 +835,7 @@ namespace Client.Scenes.Views
                 Parent = HomeTab,
                 Size = new Size(60, SmallButtonHeight),
                 Location = new Point(HomeTab.Size.Width - 131, 4),
-                Label = { Text = "Save" },
+                Label = { Text = CEnvir.Language.GuildDialogHomeTabNoticeSaveButtonLabel },
                 ButtonType = ButtonType.SmallButton,
                 Visible = false,
             };
@@ -856,7 +854,7 @@ namespace Client.Scenes.Views
                 Parent = HomeTab,
                 Size = new Size(60, SmallButtonHeight),
                 Location = new Point(HomeTab.Size.Width - 66, 4),
-                Label = { Text = "Cancel" },
+                Label = { Text = CEnvir.Language.CommonControlCancel },
                 ButtonType = ButtonType.SmallButton,
                 Visible = false,
             };
@@ -881,7 +879,7 @@ namespace Client.Scenes.Views
 
             new DXLabel
             {
-                Text = "Stats",
+                Text = CEnvir.Language.GuildDialogHomeTabNoticeStatsLabel,
                 Parent = panel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -894,7 +892,7 @@ namespace Client.Scenes.Views
 
             DXLabel label = new DXLabel
             {
-                Text = "Members:",
+                Text = CEnvir.Language.GuildDialogHomeTabNoticeStatsMembersLabel,
                 Parent = panel,
                 Outline = true,
                 IsControl = false,
@@ -912,7 +910,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Guild Funds:",
+                Text = CEnvir.Language.GuildDialogHomeTabNoticeStatsGuildFundsLabel,
                 Parent = panel,
                 Outline = true,
                 IsControl = false,
@@ -930,7 +928,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Today's Growth:",
+                Text = CEnvir.Language.GuildDialogHomeTabNoticeStatsTodaysGrowthLabel,
                 Parent = panel,
                 Outline = true,
                 IsControl = false,
@@ -948,7 +946,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Total Contibution:",
+                Text = CEnvir.Language.GuildDialogHomeTabNoticeStatsTotalContributionLabel,
                 Parent = panel,
                 Outline = true,
                 IsControl = false,
@@ -966,7 +964,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Today's Contribution:",
+                Text = CEnvir.Language.GuildDialogHomeTabNoticeStatsTodaysContributionLabel,
                 Parent = panel,
                 Outline = true,
                 IsControl = false,
@@ -1018,7 +1016,7 @@ namespace Client.Scenes.Views
         {
             MemberTab = new DXTab
             {
-                TabButton = { Label = { Text = "Members" } },
+                TabButton = { Label = { Text = CEnvir.Language.GuildDialogMembersTabLabel } },
                 Parent = GuildTabs,
                 Border = true,
             };
@@ -1080,7 +1078,7 @@ namespace Client.Scenes.Views
         {
             StorageTab = new DXTab
             {
-                TabButton = { Label = { Text = "Storage" } },
+                TabButton = { Label = { Text = CEnvir.Language.GuildDialogStorageTabLabel } },
                 Parent = GuildTabs,
                 Border = true,
             };
@@ -1098,7 +1096,7 @@ namespace Client.Scenes.Views
             {
                 Parent = filterPanel,
                 Location = new Point(5, 5),
-                Text = "Name:",
+                Text = CEnvir.Language.GuildDialogStorageTabNameLabel,
             };
 
             ItemNameTextBox = new DXTextBox
@@ -1113,7 +1111,7 @@ namespace Client.Scenes.Views
             {
                 Parent = filterPanel,
                 Location = new Point(ItemNameTextBox.Location.X + ItemNameTextBox.Size.Width + 10, 5),
-                Text = "Item:",
+                Text = CEnvir.Language.GuildDialogStorageTabItemLabel,
             };
 
 
@@ -1159,7 +1157,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ItemTypeComboBox.Location.X + ItemTypeComboBox.Size.Width + 33, label.Location.Y - 1),
                 Parent = filterPanel,
                 ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Clear" }
+                Label = { Text = CEnvir.Language.GuildDialogStorageTabClearButtonLabel }
             };
             ClearButton.MouseClick += (o, e) =>
             {
@@ -1248,7 +1246,7 @@ namespace Client.Scenes.Views
         {
             ManageTab = new DXTab
             {
-                TabButton = { Label = { Text = "Manage" } },
+                TabButton = { Label = { Text = CEnvir.Language.GuildDialogManageTabLabel } },
                 Parent = GuildTabs,
                 Border = true,
             };
@@ -1264,7 +1262,7 @@ namespace Client.Scenes.Views
 
             new DXLabel
             {
-                Text = "Membership",
+                Text = CEnvir.Language.GuildDialogManageTabMembershipLabel,
                 Parent = AddMemberPanel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -1279,7 +1277,7 @@ namespace Client.Scenes.Views
             DXLabel label = new DXLabel
             {
                 Parent = AddMemberPanel,
-                Text = "Member:",
+                Text = CEnvir.Language.GuildDialogManageTabMembershipMemberLabel,
             };
             label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 32);
 
@@ -1298,7 +1296,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 170, label.Location.Y - 1),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(60, SmallButtonHeight),
-                Label = { Text = "Invite" },
+                Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipAddButtonLabel },
             };
             AddMemberButton.MouseClick += (o, e) =>
             {
@@ -1313,7 +1311,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 55, label.Location.Y + 25),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(110, SmallButtonHeight),
-                Label = { Text = "Default Rank" },
+                Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipEditDefaultButtonLabel },
             };
             EditDefaultMemberButton.MouseClick += (o, e) =>
             {
@@ -1338,7 +1336,7 @@ namespace Client.Scenes.Views
 
             new DXLabel
             {
-                Text = "Treasury",
+                Text = CEnvir.Language.GuildDialogManageTabTreasuryLabel,
                 Parent = TreasuryPanel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -1352,7 +1350,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = TreasuryPanel,
-                Text = "Guild Tax:",
+                Text = CEnvir.Language.GuildDialogManageTabTreasuryGuildTaxLabel,
             };
             label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 32);
 
@@ -1367,7 +1365,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = TreasuryPanel,
-                Text = "(Percent)",
+                Text = CEnvir.Language.GuildDialogManageTabTreasuryPercentLabel,
                 Location = new Point(ClientArea.X + 115, 32),
             };
 
@@ -1378,7 +1376,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 170, label.Location.Y - 1),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(60, SmallButtonHeight),
-                Label = { Text = "Change" },
+                Label = { Text = CEnvir.Language.GuildDialogManageTabTreasuryChangeButtonLabel },
             };
             SetTaxButton.MouseClick += (o, e) =>
             {
@@ -1391,7 +1389,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = TreasuryPanel,
-                Text = "Balance:",
+                Text = CEnvir.Language.GuildDialogManageTabTreasuryBalanceLabel,
             };
             label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 54);
 
@@ -1415,7 +1413,7 @@ namespace Client.Scenes.Views
 
             new DXLabel
             {
-                Text = "Upgrade",
+                Text = CEnvir.Language.GuildDialogManageTabUpgradeLabel,
                 Parent = UpgradePanel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -1429,7 +1427,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = UpgradePanel,
-                Text = "Members:",
+                Text = CEnvir.Language.GuildDialogManageTabUpgradeMembersLabel,
             };
             label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 35);
 
@@ -1439,7 +1437,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 55, label.Location.Y - 1),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(110, SmallButtonHeight),
-                Label = { Text = $"Upgrade ({Globals.GuildMemberCost:#,##0})" },
+                Label = { Text = string.Format(CEnvir.Language.GuildDialogManageTabUpgradeMembersIncreaseButtonLabel, Globals.GuildMemberCost) },
             };
             IncreaseMemberButton.MouseClick += (o, e) =>
             {
@@ -1450,7 +1448,7 @@ namespace Client.Scenes.Views
             DXLabel label1 = new DXLabel
             {
                 Parent = UpgradePanel,
-                Text = "Limit:",
+                Text = CEnvir.Language.GuildDialogManageTabUpgradeMembersLimitLabel,
             };
             label1.Location = new Point(ClientArea.X + 205 - label1.Size.Width, label.Location.Y);
 
@@ -1465,7 +1463,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = UpgradePanel,
-                Text = "Storage:",
+                Text = CEnvir.Language.GuildDialogManageTabUpgradeStorageLabel,
             };
             label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 60);
 
@@ -1475,7 +1473,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 55, label.Location.Y - 1),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(110, SmallButtonHeight),
-                Label = { Text = $"Upgrade ({Globals.GuildStorageCost:#,##0})" },
+                Label = { Text = string.Format(CEnvir.Language.GuildDialogManageTabUpgradeStorageIncreaseButtonLabel, Globals.GuildStorageCost) },
             };
             IncreaseStorageButton.MouseClick += (o, e) =>
             {
@@ -1486,7 +1484,7 @@ namespace Client.Scenes.Views
             label1 = new DXLabel
             {
                 Parent = UpgradePanel,
-                Text = "Limit:",
+                Text = CEnvir.Language.GuildDialogManageTabUpgradeStorageLimitLabel,
             };
             label1.Location = new Point(ClientArea.X + 205 - label1.Size.Width, label.Location.Y);
 
@@ -1509,7 +1507,7 @@ namespace Client.Scenes.Views
 
             new DXLabel
             {
-                Text = "Guild War",
+                Text = CEnvir.Language.GuildDialogManageTabGuildWarLabel,
                 Parent = GuildWarPanel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -1524,7 +1522,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = GuildWarPanel,
-                Text = "Guild:",
+                Text = CEnvir.Language.GuildDialogManageTabGuildWarGuildLabel,
             };
             label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 32);
 
@@ -1544,7 +1542,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 170, label.Location.Y - 1),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(60, SmallButtonHeight),
-                Label = { Text = "Attack" },
+                Label = { Text = CEnvir.Language.GuildDialogManageTabGuildWarStartWarButtonLabel },
                 Enabled =  false,
             };
             StartWarButton.MouseClick += (o, e) => StartWar();
@@ -1552,7 +1550,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = GuildWarPanel,
-                Text = $"Cost: {Globals.GuildWarCost:#,##0} Gold",
+                Text = string.Format(CEnvir.Language.GuildDialogManageTabGuildWarCostLabel, Globals.GuildWarCost),
                 Location = new Point(ClientArea.X + 55, label.Location.Y + 25),
             };
 
@@ -2069,19 +2067,19 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> IsHeaderChanged;
         public void OnIsHeaderChanged(bool oValue, bool nValue)
         {
-            NameLabel.Text = "Name";
+            NameLabel.Text = CEnvir.Language.GuildMemberRowNameLabel;
             NameLabel.ForeColour = Color.FromArgb(198, 166, 99);
 
-            RankLabel.Text = "Rank";
+            RankLabel.Text = CEnvir.Language.GuildMemberRowRankLabel;
             RankLabel.ForeColour = Color.FromArgb(198, 166, 99);
 
-            TotalLabel.Text = "Total Con.";
+            TotalLabel.Text = CEnvir.Language.GuildMemberRowTotalLabel;
             TotalLabel.ForeColour = Color.FromArgb(198, 166, 99);
 
-            DailyLabel.Text = "Daily Con.";
+            DailyLabel.Text = CEnvir.Language.GuildMemberRowDailyLabel;
             DailyLabel.ForeColour = Color.FromArgb(198, 166, 99);
 
-            OnlineLabel.Text = "Online";
+            OnlineLabel.Text = CEnvir.Language.GuildMemberRowOnlineLabel;
             OnlineLabel.ForeColour = Color.FromArgb(198, 166, 99);
 
             DrawTexture = false;
@@ -2388,12 +2386,12 @@ namespace Client.Scenes.Views
         {
             SetClientSize(new Size(200, 160));
 
-            TitleLabel.Text = "Edit Member";
+            TitleLabel.Text = CEnvir.Language.GuildMemberDialogTitle;
 
             DXLabel label = new DXLabel
             {
                 Parent = this,
-                Text = "Member:",
+                Text = CEnvir.Language.GuildMemberDialogMemberLabel,
             };
             label.Location = new Point(ClientArea.X + 80 - label.Size.Width, ClientArea.Y);
 
@@ -2409,7 +2407,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = this,
-                Text = "Rank:",
+                Text = CEnvir.Language.GuildMemberDialogRankLabel,
             };
             label.Location = new Point(ClientArea.X + 80 - label.Size.Width, MemberNameLabel.Location.Y + 20);
 
@@ -2424,7 +2422,7 @@ namespace Client.Scenes.Views
             LeaderBox = new DXCheckBox
             {
                 Parent = this,
-                Label = { Text = "Is Leader:" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogLeaderLabel },
             };
             LeaderBox.CheckedChanged += (o, e) => UpdatePermission();
             LeaderBox.Location = new Point(ClientArea.X + 94 - LeaderBox.Size.Width, RankTextBox.Location.Y + 24);
@@ -2432,7 +2430,7 @@ namespace Client.Scenes.Views
             EditNoticeBox = new DXCheckBox
             {
                 Parent = this,
-                Label = { Text = "Edit Notice:" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogEditNoticeLabel },
             };
             EditNoticeBox.CheckedChanged += (o, e) => UpdatePermission();
             EditNoticeBox.Location = new Point(ClientArea.X + 94 - EditNoticeBox.Size.Width, LeaderBox.Location.Y + 20);
@@ -2440,7 +2438,7 @@ namespace Client.Scenes.Views
             AddMemberBox = new DXCheckBox
             {
                 Parent = this,
-                Label = { Text = "Add Member:" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogAddMemberLabel },
             };
             AddMemberBox.CheckedChanged += (o, e) => UpdatePermission();
             AddMemberBox.Location = new Point(ClientArea.X + 94 - AddMemberBox.Size.Width, EditNoticeBox.Location.Y + 20);
@@ -2448,7 +2446,7 @@ namespace Client.Scenes.Views
             StorageBox = new DXCheckBox
             {
                 Parent = this,
-                Label = { Text = "Use Storage:" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogUseStorageLabel },
             };
             StorageBox.CheckedChanged += (o, e) => UpdatePermission();
             StorageBox.Location = new Point(ClientArea.X + 94 - StorageBox.Size.Width, AddMemberBox.Location.Y + 20);
@@ -2456,7 +2454,7 @@ namespace Client.Scenes.Views
             StartWarBox = new DXCheckBox
             {
                 Parent = this,
-                Label = { Text = "Start War:" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogStartWarLabel },
             };
             StartWarBox.CheckedChanged += (o, e) => UpdatePermission();
             StartWarBox.Location = new Point(ClientArea.X + 94 - StartWarBox.Size.Width, StorageBox.Location.Y + 20);
@@ -2464,7 +2462,7 @@ namespace Client.Scenes.Views
             RepairBox = new DXCheckBox
             {
                 Parent = this,
-                Label = { Text = "Repair Fund:" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogRepairLabel },
             };
             RepairBox.CheckedChanged += (o, e) => UpdatePermission();
             RepairBox.Location = new Point(ClientArea.X + 200 - RepairBox.Size.Width, EditNoticeBox.Location.Y );
@@ -2473,7 +2471,7 @@ namespace Client.Scenes.Views
             MerchantBox = new DXCheckBox
             {
                 Parent = this,
-                Label = { Text = "Merchant Fund:" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogMerchantLabel },
             };
             MerchantBox.CheckedChanged += (o, e) => UpdatePermission();
             MerchantBox.Location = new Point(ClientArea.X + 200 - MerchantBox.Size.Width, RepairBox.Location.Y + 20);
@@ -2481,7 +2479,7 @@ namespace Client.Scenes.Views
             MarketBox = new DXCheckBox
             {
                 Parent = this,
-                Label = { Text = "Market Fund:" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogMarketLabel },
             };
             MarketBox.CheckedChanged += (o, e) => UpdatePermission();
             MarketBox.Location = new Point(ClientArea.X + 200 - MarketBox.Size.Width, MerchantBox.Location.Y + 20);
@@ -2493,7 +2491,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 120, StorageBox.Location.Y + 40),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(80, SmallButtonHeight),
-                Label = { Text = "Confirm" },
+                Label = { Text = CEnvir.Language.CommonControlConfirm },
             };
 
             ConfirmButton.MouseClick += (o, e) =>
@@ -2508,11 +2506,11 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X, StorageBox.Location.Y + 40),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(40, SmallButtonHeight),
-                Label = { Text = "Kick" },
+                Label = { Text = CEnvir.Language.GuildMemberDialogKickButtonLabel },
             };
             KickButton.MouseClick += (o, e) =>
             {
-                DXMessageBox box = new DXMessageBox($"Are you sure you want to remove {MemberNameLabel.Text} from the guild", "Kick Member", DXMessageBoxButtons.YesNo);
+                DXMessageBox box = new DXMessageBox(string.Format(CEnvir.Language.GuildMemberDialogKickButtonConfirmMessage, MemberNameLabel.Text), CEnvir.Language.GuildMemberDialogKickButtonConfirmCaption, DXMessageBoxButtons.YesNo);
                 
                 box.YesButton.MouseClick += (o1, e1) =>
                 {
@@ -2727,14 +2725,14 @@ namespace Client.Scenes.Views
             DXLabel label = new DXLabel
             {
                 Parent = this,
-                Text = "Current Owner:",
+                Text = CEnvir.Language.GuildCastlePanelOwnerLabel,
             };
             label.Location = new Point(80 - label.Size.Width, 25);
 
             CastleOwnerLabel = new DXLabel
             {
                 Parent = this,
-                Text = "None",
+                Text = CEnvir.Language.GuildCastlePanelNoneText,
                 Location = new Point(80, 25),
                 ForeColour = Color.White
             };
@@ -2742,7 +2740,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = this,
-                Text = "Schedule:",
+                Text = CEnvir.Language.GuildCastlePanelScheduleLabel,
             };
             label.Location = new Point(80 - label.Size.Width, 45);
 
@@ -2750,7 +2748,7 @@ namespace Client.Scenes.Views
             CastleDateLabel = new DXLabel
             {
                 Parent = this,
-                Text = "None",
+                Text = CEnvir.Language.GuildCastlePanelNoneText,
                 Location = new Point(80, 45),
                 ForeColour = Color.White
             };
@@ -2761,7 +2759,7 @@ namespace Client.Scenes.Views
                 Location = new Point(80, 75),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(100, SmallButtonHeight),
-                Label = { Text = "Submit" },
+                Label = { Text = CEnvir.Language.GuildCastlePanelRequestButtonLabel },
                 Enabled = false,
             };
             RequestButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GuildRequestConquest { Index = Castle.Index });
@@ -2770,14 +2768,14 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = this,
-                Text = "Cost:",
+                Text = CEnvir.Language.GuildCastlePanelCostLabel,
             };
             label.Location = new Point(80 - label.Size.Width, 95);
 
             ItemLabel = new DXLabel
             {
                 Parent = this,
-                Text = "None",
+                Text = CEnvir.Language.GuildCastlePanelNoneText,
                 Location = new Point(80, 95),
                 ForeColour = Color.White
             };
@@ -2788,7 +2786,7 @@ namespace Client.Scenes.Views
         {
             string owner = GameScene.Game.CastleOwners[Castle];
 
-            CastleOwnerLabel.Text = string.IsNullOrEmpty(owner) ? "None" : owner;
+            CastleOwnerLabel.Text = string.IsNullOrEmpty(owner) ? CEnvir.Language.GuildCastlePanelNoneText : owner;
         }
 
         public override void Process()
@@ -2796,9 +2794,9 @@ namespace Client.Scenes.Views
             base.Process();
 
             if (Castle.WarDate == DateTime.MinValue)
-                CastleDateLabel.Text = "None";
+                CastleDateLabel.Text = CEnvir.Language.GuildCastlePanelNoneText;
             else if (Castle.WarDate <= CEnvir.Now)
-                CastleDateLabel.Text = "In Progress";
+                CastleDateLabel.Text = CEnvir.Language.GuildCastlePanelInProgressText;
             else
                 CastleDateLabel.Text = Functions.ToString(Castle.WarDate - CEnvir.Now, true);
         }

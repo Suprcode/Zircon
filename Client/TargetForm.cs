@@ -228,7 +228,7 @@ namespace Client
             image.Dispose();
 
             if (GameScene.Game != null)
-                GameScene.Game.ReceiveChat("Screenshot Saved " + fileName, MessageType.System);
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.ScreenshotSaved, fileName), MessageType.System);
         }
 
         #region ScreenCapture

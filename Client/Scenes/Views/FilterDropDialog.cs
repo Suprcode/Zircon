@@ -22,7 +22,7 @@ namespace Client.Scenes.Views
         public FilterDropDialog()
         {
             HasTitle = true;
-            TitleLabel.Text = "Filter Drop";
+            TitleLabel.Text = CEnvir.Language.FilterDialogTitle;
 
             SetClientSize(new Size(266, 371));
 
@@ -31,7 +31,7 @@ namespace Client.Scenes.Views
                 DXLabel filterLabel = new DXLabel
                 {
                     Parent = this,
-                    Text = "Item #" + (i + 1)
+                    Text = string.Format(CEnvir.Language.FilterDialogFilterLabel, (i + 1))
                 };
                 filterLabel.Location = new Point(20, 50 + (10 + filterLabel.Size.Height) * i);
                 DropFiltersMap[i] = new DXTextBox
@@ -47,7 +47,7 @@ namespace Client.Scenes.Views
             DXButton filterButton = new DXButton
             {
                 Parent = this,
-                Label = { Text = "Save settings", },
+                Label = { Text = CEnvir.Language.FilterDialogSaveButtonLabel, },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(80, SmallButtonHeight)
             };
@@ -60,7 +60,7 @@ namespace Client.Scenes.Views
                     dropItems.Add(DropFiltersMap[i].TextBox.Text);
                 }
                 Config.HighlightedItems = String.Join(",", dropItems);
-                GameScene.Game.ReceiveChat("Drop filters have been saved to your configuration", MessageType.System);
+                GameScene.Game.ReceiveChat(CEnvir.Language.FilterConfigSaved, MessageType.System);
             };
         }
 

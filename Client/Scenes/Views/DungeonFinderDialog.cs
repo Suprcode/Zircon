@@ -356,7 +356,7 @@ namespace Client.Scenes.Views
 
             if (GameScene.Game.MapControl.InstanceInfo != null)
             {
-                GameScene.Game.ReceiveChat("You are already in an instance.", MessageType.System);
+                GameScene.Game.ReceiveChat(CEnvir.Language.DungeonAlreadyInInstance, MessageType.System);
                 return;
             }
 
@@ -364,12 +364,12 @@ namespace Client.Scenes.Views
 
             if (instance.ConnectRegion == null)
             {
-                GameScene.Game.ReceiveChat("Connect Region not configured for this instance.", MessageType.System);
+                GameScene.Game.ReceiveChat(CEnvir.Language.DungeonRegionNotConfigured, MessageType.System);
             }
 
             if (instance.MinPlayerLevel > 0 && MapObject.User.Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && MapObject.User.Level > instance.MaxPlayerLevel)
             {
-                GameScene.Game.ReceiveChat("You are not the correct level.", MessageType.System);
+                GameScene.Game.ReceiveChat(CEnvir.Language.DungeonNotCorrectLevel, MessageType.System);
                 return;
             }
 
@@ -381,19 +381,19 @@ namespace Client.Scenes.Views
             {
                 if (GameScene.Game.GroupBox.Members.Count == 0)
                 {
-                    GameScene.Game.ReceiveChat("You must be in a group.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.DungeonInGroup, MessageType.System);
                     return;
                 }
 
                 if (instance.MinPlayerCount > 1 && (GameScene.Game.GroupBox.Members.Count < instance.MinPlayerCount))
                 {
-                    GameScene.Game.ReceiveChat("There are not enough people in your group.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.DungeonNotEnoughPeople, MessageType.System);
                     return;
                 }
 
                 if (instance.MaxPlayerCount > 1 && (GameScene.Game.GroupBox.Members.Count > instance.MaxPlayerCount))
                 {
-                    GameScene.Game.ReceiveChat("There are too many people in your group.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.DungeonTooManyPeople, MessageType.System);
                     return;
                 }
 
@@ -410,7 +410,7 @@ namespace Client.Scenes.Views
             {
                 if (GameScene.Game.GuildBox.GuildInfo == null)
                 {
-                    GameScene.Game.ReceiveChat("You must be in a guild.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.DungeonInGuild, MessageType.System);
                     return;
                 }
 

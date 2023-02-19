@@ -118,7 +118,7 @@ namespace Client.Scenes.Views
 
             TitleLabel = new DXLabel
             {
-                Text = "Quest Log",
+                Text = CEnvir.Language.QuestDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -138,7 +138,7 @@ namespace Client.Scenes.Views
 
             CurrentTab = new QuestTab
             {
-                TabButton = { Label = { Text = "Current" } },
+                TabButton = { Label = { Text = CEnvir.Language.QuestDialogCurrentTab } },
                 Parent = TabControl,
                 Border = false,
                 ChoiceGrid = { ReadOnly = true },
@@ -148,7 +148,7 @@ namespace Client.Scenes.Views
 
             AvailableTab = new QuestTab
             {
-                TabButton = { Label = { Text = "Available" } },
+                TabButton = { Label = { Text = CEnvir.Language.QuestDialogAvailableTab } },
                 Parent = TabControl,
                 Border = false,
                 ShowTrackerBox = { Visible = false },
@@ -158,7 +158,7 @@ namespace Client.Scenes.Views
 
             CompletedTab = new QuestTab
             {
-                TabButton = { Label = { Text = "Completed" } },
+                TabButton = { Label = { Text = CEnvir.Language.QuestDialogCompletedTab } },
                 Parent = TabControl,
                 Border = false,
                 ShowTrackerBox = { Visible = false },
@@ -558,7 +558,7 @@ namespace Client.Scenes.Views
 
             DXLabel label = new DXLabel
             {
-                Text = "Details",
+                Text = CEnvir.Language.QuestTabDetailsLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 //ForeColour = Color.FromArgb(198, 166, 99),
@@ -570,7 +570,7 @@ namespace Client.Scenes.Views
 
             ShowTrackerBox = new DXCheckBox
             {
-                Label = { Text = "Show Quest Tracker" },
+                Label = { Text = CEnvir.Language.QuestTabShowQuestTrackerLabel },
                 Parent = this,
                 Checked = Config.QuestTrackerVisible,
             };
@@ -593,7 +593,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Tasks",
+                Text = CEnvir.Language.QuestTabTasksLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 //ForeColour = Color.FromArgb(198, 166, 99),
@@ -615,7 +615,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Rewards",
+                Text = CEnvir.Language.QuestTabRewardsLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 Outline = true,
@@ -636,7 +636,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Choice",
+                Text = CEnvir.Language.QuestTabChoiceLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 //ForeColour = Color.FromArgb(198, 166, 99),
@@ -658,7 +658,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Start:",
+                Text = CEnvir.Language.QuestTabStartLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 //ForeColour = Color.FromArgb(198, 166, 99),
@@ -685,7 +685,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "End:",
+                Text = CEnvir.Language.QuestTabEndLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 //ForeColour = Color.FromArgb(198, 166, 99),

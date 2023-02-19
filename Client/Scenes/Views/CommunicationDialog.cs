@@ -305,7 +305,7 @@ namespace Client.Scenes.Views
 
             TitleLabel = new DXLabel
             {
-                Text = "Communication",
+                Text = CEnvir.Language.CommunicationDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -337,7 +337,7 @@ namespace Client.Scenes.Views
             FriendTab = new DXTab
             {
                 Parent = TabControl,
-                TabButton = { Label = { Text = "Friends" } },
+                TabButton = { Label = { Text = CEnvir.Language.CommunicationDialogFriendTabLabel } },
                 BackColour = Color.Empty,
                 Location = new Point(0, 23)
             };
@@ -365,7 +365,7 @@ namespace Client.Scenes.Views
             ReceivedTab = new DXTab
             {
                 Parent = TabControl,
-                TabButton = { Label = { Text = "Received Mail" } },
+                TabButton = { Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabLabel } },
                 BackColour = Color.Empty,
                 Location = new Point(0, 23)
             };
@@ -393,7 +393,7 @@ namespace Client.Scenes.Views
             SendTab = new DXTab
             {
                 Parent = TabControl,
-                TabButton = { Label = { Text = "Send Mail" } },
+                TabButton = { Label = { Text = CEnvir.Language.CommunicationDialogSendTabLabel } },
                 BackColour = Color.Empty,
                 Location = new Point(0, 23)
             };
@@ -426,7 +426,7 @@ namespace Client.Scenes.Views
             BlockTab = new DXTab
             {
                 Parent = TabControl,
-                TabButton = { Label = { Text = "Blocked" } },
+                TabButton = { Label = { Text = CEnvir.Language.CommunicationDialogBlockedTabLabel } },
                 BackColour = Color.Empty,
                 Location = new Point(0, 23)
             };
@@ -468,7 +468,7 @@ namespace Client.Scenes.Views
             DXLabel label = new DXLabel
             {
                 Parent = FriendTab,
-                Text = "Status:"
+                Text = CEnvir.Language.CommunicationDialogFriendTabStatusLabel
             };
             label.Location = new Point(150 - label.Size.Width, 11);
 
@@ -501,7 +501,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = FriendTab,
-                Text = "View Status:"
+                Text = CEnvir.Language.CommunicationDialogFriendTabViewStatusLabel
             };
             label.Location = new Point(150 - label.Size.Width, 32);
 
@@ -556,13 +556,13 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Add Friend" },
+                Label = { Text = CEnvir.Language.CommunicationDialogFriendTabFriendAddButtonLabel },
                 Visible = true
             };
             FriendAddButton.Location = new Point(43, FriendTab.Location.Y + FriendTab.Size.Height + 43);
             FriendAddButton.MouseClick += (o, e) =>
             {
-                DXInputWindow window = new DXInputWindow("Please enter the name of the person you wish to Friend.", "Friend Player")
+                DXInputWindow window = new DXInputWindow(CEnvir.Language.CommunicationDialogFriendTabFriendAddButtonConfirmMessage, CEnvir.Language.CommunicationDialogFriendTabFriendAddButtonConfirmCaption)
                 {
                     ConfirmButton = { Enabled = false },
                     Modal = true
@@ -582,7 +582,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Remove Friend" },
+                Label = { Text = CEnvir.Language.CommunicationDialogFriendTabFriendRemoveButtonLabel },
                 Visible = true,
                 Enabled = false
             };
@@ -591,7 +591,7 @@ namespace Client.Scenes.Views
             {
                 if (FriendListBox.SelectedItem == null) return;
 
-                DXMessageBox box = new DXMessageBox($"Are you sure you want to Un-Friend {FriendListBox.SelectedItem.Label.Text}?", "Un-Friend Player", DXMessageBoxButtons.YesNo);
+                DXMessageBox box = new DXMessageBox(string.Format(CEnvir.Language.CommunicationDialogFriendTabFriendRemoveButtonConfirmMessage, FriendListBox.SelectedItem.Label.Text), CEnvir.Language.CommunicationDialogFriendTabFriendRemoveButtonConfirmCaption, DXMessageBoxButtons.YesNo);
 
                 box.YesButton.MouseClick += (o1, e1) =>
                 {
@@ -620,7 +620,7 @@ namespace Client.Scenes.Views
                 Size = new Size(50, 20),
                 Location = new Point(15, 5),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                Text = "Category"
+                Text = CEnvir.Language.CommunicationDialogReceivedTabCategoryLabel
             };
 
             RecievedTitleLabel = new DXLabel
@@ -630,7 +630,7 @@ namespace Client.Scenes.Views
                 Size = new Size(140, 20),
                 Location = new Point(65, 5),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                Text = "Title"
+                Text = CEnvir.Language.CommunicationDialogReceivedTabTitleLabel
             };
 
             ReceivedDateLabel = new DXLabel
@@ -640,7 +640,7 @@ namespace Client.Scenes.Views
                 Size = new Size(65, 20),
                 Location = new Point(200, 5),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                Text = "Date Sent"
+                Text = CEnvir.Language.CommunicationDialogReceivedTabDateLabel
             };
 
             //Rows
@@ -697,7 +697,7 @@ namespace Client.Scenes.Views
             {
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Collect All" },
+                Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabCollectAllButtonLabel },
                 Visible = false
             };
             ReceivedCollectAllButton.Location = new Point(15, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 43);
@@ -735,7 +735,7 @@ namespace Client.Scenes.Views
             {
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Delete All" },
+                Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabDeleteAllButtonLabel },
                 Visible = false
             };
             ReceivedDeleteAll.Location = new Point(15 + ReceivedCollectAllButton.Size.Width + 10, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 43);
@@ -756,7 +756,7 @@ namespace Client.Scenes.Views
             {
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
-                Label = { Text = "New Mail" },
+                Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabNewButtonLabel },
                 Visible = false
             };
             ReceivedNewButton.Location = new Point(15 + ReceivedCollectAllButton.Size.Width + 10 + ReceivedDeleteAll.Size.Width + 10, ReceivedTab.Location.Y + ReceivedTab.Size.Height + 43);
@@ -772,7 +772,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = SendTab,
-                Text = "Recipient:"
+                Text = CEnvir.Language.CommunicationDialogSendTabRecipientLabel,
             };
             label.Location = new Point(82 - label.Size.Width, 11);
 
@@ -790,7 +790,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = SendTab,
-                Text = "Subject:"
+                Text = CEnvir.Language.CommunicationDialogSendTabSubjectLabel
             };
             label.Location = new Point(82 - label.Size.Width, 31);
 
@@ -819,7 +819,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = SendTab,
-                Text = "Items:"
+                Text = CEnvir.Language.CommunicationDialogSendTabItemsLabel
             };
             label.Location = new Point(82 - label.Size.Width, 246);
 
@@ -839,7 +839,7 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = SendTab,
-                Text = "Gold:",
+                Text = CEnvir.Language.CommunicationDialogSendTabGoldLabel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
             };
             label.Location = new Point(82 - label.Size.Width, SendGrid.Location.Y + 3 + SendGrid.Size.Height);
@@ -862,7 +862,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.Default,
                 Size = new Size(70, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Send" },
+                Label = { Text = CEnvir.Language.CommunicationDialogSendTabSendButtonLabel },
                 Enabled = false,
                 Visible = false
             };
@@ -896,7 +896,7 @@ namespace Client.Scenes.Views
 
             BlockAddButton = new DXButton
             {
-                Label = { Text = "Add Block" },
+                Label = { Text = CEnvir.Language.CommunicationDialogBlockedTabAddButtonLabel },
                 Parent = this,
                 Size = new Size(100, DefaultHeight),
                 ButtonType = ButtonType.Default,
@@ -904,7 +904,7 @@ namespace Client.Scenes.Views
             };
             BlockAddButton.MouseClick += (o, e) =>
             {
-                DXInputWindow window = new DXInputWindow("Please enter the name of the person you wish to Block.", "Block Player")
+                DXInputWindow window = new DXInputWindow(CEnvir.Language.CommunicationDialogBlockedTabAddButtonConfirmMessage, CEnvir.Language.CommunicationDialogBlockedTabAddButtonConfirmCaption)
                 {
                     ConfirmButton = { Enabled = false },
                     Modal = true
@@ -921,7 +921,7 @@ namespace Client.Scenes.Views
             
             BlockRemoveButton = new DXButton
             {
-                Label = { Text = "Remove Block" },
+                Label = { Text = CEnvir.Language.CommunicationDialogBlockedTabRemoveButtonLabel },
                 Parent = this,
                 Size = new Size(100, DefaultHeight),
                 ButtonType = ButtonType.Default,
@@ -932,7 +932,7 @@ namespace Client.Scenes.Views
             {
                 if (BlockListBox.SelectedItem == null) return;
 
-                DXMessageBox box = new DXMessageBox($"Are you sure you want to Un-Block {BlockListBox.SelectedItem.Label.Text}?", "Un-Block Player", DXMessageBoxButtons.YesNo);
+                DXMessageBox box = new DXMessageBox(string.Format(CEnvir.Language.CommunicationDialogBlockedTabRemoveButtonConfirmMessage, BlockListBox.SelectedItem.Label.Text), CEnvir.Language.CommunicationDialogBlockedTabRemoveButtonConfirmCaption, DXMessageBoxButtons.YesNo);
 
                 box.YesButton.MouseClick += (o1, e1) =>
                 {
@@ -1082,7 +1082,7 @@ namespace Client.Scenes.Views
             {
                 if (ReadMail.Items.Count > 0)
                 {
-                    GameScene.Game.ReceiveChat("You cannot delete a mail with items inside", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.CommunicationCannotDeleteMailWithItems, MessageType.System);
                     return;
                 }
 

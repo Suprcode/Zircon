@@ -723,7 +723,7 @@ namespace Client.Scenes.Views
                         case ItemType.Poison:
                             if (MapObject.User.Stats[Stat.BagWeight] - MapObject.User.BagWeight < SelectedCell.Good.Item.Weight)
                             {
-                                GameScene.Game.ReceiveChat($"You do not have enough weight to buy any '{SelectedCell.Good.Item.ItemName}'.", MessageType.System);
+                                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellOverweight, SelectedCell.Good.Item.ItemName), MessageType.System);
                                 return;
                             }
                             break;
@@ -735,7 +735,7 @@ namespace Client.Scenes.Views
 
                 if (maxCount < 0)
                 {
-                    GameScene.Game.ReceiveChat($"You do not have enough weight to buy any '{SelectedCell.Good.Item.ItemName}'.", MessageType.System);
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellOverweight, SelectedCell.Good.Item.ItemName), MessageType.System);
                     return;
                 }
 
@@ -752,13 +752,13 @@ namespace Client.Scenes.Views
             {
                 if (MapObject.User.Stats[Stat.BagWeight] - MapObject.User.BagWeight < SelectedCell.Good.Item.Weight)
                 {
-                    GameScene.Game.ReceiveChat($"You do not have enough weight to buy a '{SelectedCell.Good.Item.ItemName}'.", MessageType.System);
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellOverweight, SelectedCell.Good.Item.ItemName), MessageType.System);
                     return;
                 }
 
                 if (cost > gold)
                 {
-                    GameScene.Game.ReceiveChat($"You do not have enough gold to buy a '{SelectedCell.Good.Item.ItemName}'.", MessageType.System);
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellNeedGold, SelectedCell.Good.Item.ItemName), MessageType.System);
                     return;
                 }
 
@@ -3239,7 +3239,7 @@ namespace Client.Scenes.Views
 
                 if (HasChoice && SelectedCell == null)
                 {
-                    GameScene.Game.ReceiveChat("Please select a reward.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.QuestSelectReward, MessageType.System);
                     return;
                 }
 
@@ -3933,7 +3933,7 @@ namespace Client.Scenes.Views
         {
             if (GameScene.Game.Inventory.All(x => x == null || x.Info.ItemEffect != ItemEffect.CompanionTicket))
             {
-                GameScene.Game.ReceiveChat("You need a Companion Ticket to unlock a new appearance", MessageType.System);
+                GameScene.Game.ReceiveChat(CEnvir.Language.CompanionNeedTicket, MessageType.System);
                 return;
             }
 
@@ -4736,7 +4736,7 @@ namespace Client.Scenes.Views
                 }
                 if (iron.Count < 4)
                 {
-                    GameScene.Game.ReceiveChat("You need Iron Ore x4 to create a Refinement Stone", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedIronOre, MessageType.System);
                     return;
                 }
 
@@ -4752,7 +4752,7 @@ namespace Client.Scenes.Views
                 }
                 if (silver.Count < 4)
                 {
-                    GameScene.Game.ReceiveChat("You need Silver Ore x4 to create a Refinement Stone", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedSilverOre, MessageType.System);
                     return;
                 }
 
@@ -4768,7 +4768,7 @@ namespace Client.Scenes.Views
                 }
                 if (diamond.Count < 4)
                 {
-                    GameScene.Game.ReceiveChat("You need Diamond x4 to create a Refinement Stone", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedDiamond, MessageType.System);
                     return;
                 }
 
@@ -4784,7 +4784,7 @@ namespace Client.Scenes.Views
                 }
                 if (gold.Count < 2)
                 {
-                    GameScene.Game.ReceiveChat("You need Gold Ore x2 to create a Refinement Stone", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedGoldOre, MessageType.System);
                     return;
                 }
 
@@ -4800,13 +4800,13 @@ namespace Client.Scenes.Views
                 }
                 if (crystal.Count < 1)
                 {
-                    GameScene.Game.ReceiveChat("You need Crystal x1 to create a Refinement Stone", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedCrystal, MessageType.System);
                     return;
                 }
 
                 if (GoldBox.Value > GameScene.Game.User.Gold.Amount)
                 {
-                    GameScene.Game.ReceiveChat("You cannot aford to offer this amount of gold.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedGold, MessageType.System);
                     return;
                 }
 
@@ -5469,25 +5469,25 @@ namespace Client.Scenes.Views
 
                 if (frag1.Count < 1 || frag1[0].Count != 10)
                 {
-                    GameScene.Game.ReceiveChat("You need Fragment (I) x10 to Master Refine", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedFragmentI, MessageType.System);
                     return;
                 }
 
                 if (frag2.Count < 1 || frag2[0].Count != 10)
                 {
-                    GameScene.Game.ReceiveChat("You need Fragment (II) x10 to Master Refine", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedFragmentII, MessageType.System);
                     return;
                 }
 
                 if (frag3.Count < 1)
                 {
-                    GameScene.Game.ReceiveChat("You need at least 1x Fragment (III) to Master Refine", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedFragmentIII, MessageType.System);
                     return;
                 }
 
                 if (stone.Count < 1)
                 {
-                    GameScene.Game.ReceiveChat("You need Refinement Stone x1 to Master Refine", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedRefinementStone, MessageType.System);
                     return;
                 }
                 
@@ -5573,25 +5573,25 @@ namespace Client.Scenes.Views
 
                 if (frag1.Count < 1 || frag1[0].Count != 10)
                 {
-                    GameScene.Game.ReceiveChat("You need Fragment (I) x10 to Master Refine", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedFragmentI, MessageType.System);
                     return;
                 }
 
                 if (frag2.Count < 1 || frag2[0].Count != 10)
                 {
-                    GameScene.Game.ReceiveChat("You need Fragment (II) x10 to Master Refine", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedFragmentII, MessageType.System);
                     return;
                 }
 
                 if (frag3.Count < 1)
                 {
-                    GameScene.Game.ReceiveChat("You need at least 1x Fragment (III) to Master Refine", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedFragmentIII, MessageType.System);
                     return;
                 }
 
                 if (stone.Count < 1)
                 {
-                    GameScene.Game.ReceiveChat("You need Refinement Stone x1 to Master Refine", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedRefinementStone, MessageType.System);
                     return;
                 }
 
