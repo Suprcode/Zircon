@@ -1,11 +1,8 @@
 ﻿using Client.Envir;
 using Client.Models.Character.Shadow;
 using Library;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace Client.Models.Character
