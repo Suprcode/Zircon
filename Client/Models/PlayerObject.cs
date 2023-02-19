@@ -801,13 +801,17 @@ namespace Client.Models
         public override void Draw()
         {
             if (BodyLibrary == null) return;
+            DrawPlayer(true);
+        }
 
+        public void DrawPlayer(bool shadow = false)
+        {
             ExteriorEffectManager.DrawExteriorEffects(this, true);
 
             if (DrawShieldEffectBehind())
                 DrawShieldEffect();
 
-            DrawBody(true);
+            DrawBody(shadow);
 
             ExteriorEffectManager.DrawExteriorEffects(this, false);
 
@@ -820,7 +824,7 @@ namespace Client.Models
             if (BodyLibrary == null) return;
 
             DXManager.SetBlend(true, 0.60F, BlendMode.HIGHLIGHT);
-            DrawBody(false);
+            DrawPlayer(false);
             DXManager.SetBlend(false);
         }
 

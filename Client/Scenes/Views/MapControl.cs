@@ -402,7 +402,7 @@ namespace Client.Scenes.Views
             float oldOpacity = MapObject.User.Opacity;
             MapObject.User.Opacity = 0.65F;
 
-            MapObject.User.DrawBody(false);
+            MapObject.User.DrawPlayer(false);
 
             MapObject.User.Opacity = oldOpacity;
 
