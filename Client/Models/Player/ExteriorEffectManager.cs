@@ -8,27 +8,123 @@ namespace Client.Models.Player
 {
     public class ExteriorEffectManager
     {
-        public static void DrawExteriorEffects(PlayerObject player)
+        public static void DrawExteriorEffects(PlayerObject player, bool behind)
         {
             if (!Config.DrawEffects)
             {
                 return;
             }
 
-            MirAction currentAction = player.CurrentAction;
-            MirAction mirAction = currentAction;
+            MirAction mirAction = player.CurrentAction;
             if (mirAction - 7 <= MirAction.Moving) //TODO - Probably name all the compatible enums instead, as MirActions are not numbers so can easily change
             {
                 return;
             }
 
-            DrawExteriorEffect(player, player.ArmourEffect);
-            DrawExteriorEffect(player, player.WingsEffect);
-            DrawExteriorEffect(player, player.EmblemEffect);
+            DrawExteriorEffect(player, player.ArmourEffect, behind);
+            DrawExteriorEffect(player, player.WingsEffect, behind);
+            DrawExteriorEffect(player, player.EmblemEffect, behind);
         }
 
-        private static void DrawExteriorEffect(PlayerObject player, ExteriorEffect effect)
+        private static bool DrawExteriorEffectBehind(MirDirection direction, ExteriorEffect effect)
         {
+            //Effects to always draw behind
+            switch (effect)
+            {
+                case ExteriorEffect.E_BlueEyeRing:
+                case ExteriorEffect.E_RedEyeRing:
+                case ExteriorEffect.E_GreenSpiralRing:
+                    return true;
+                default:
+                    break;
+            }
+
+            //Effects to never draw behind
+            switch (effect)
+            {
+                case ExteriorEffect.A_BlueAura:
+                case ExteriorEffect.A_FlameAura:
+                case ExteriorEffect.A_WhiteAura:
+                    return false;
+                default:
+                    break;
+            }
+
+            switch (direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return false;
+                case MirDirection.DownRight:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                    return true;
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        private static bool DrawExteriorEffectInFront(MirDirection direction, ExteriorEffect effect)
+        {
+            //Effects to always draw in front
+            switch (effect)
+            {
+                case ExteriorEffect.A_BlueAura:
+                case ExteriorEffect.A_FlameAura:
+                case ExteriorEffect.A_WhiteAura:
+                    return true;
+                default:
+                    break;
+            };
+
+            //Effects to never draw in front
+            switch (effect)
+            {
+                case ExteriorEffect.E_BlueEyeRing:
+                case ExteriorEffect.E_RedEyeRing:
+                case ExteriorEffect.E_GreenSpiralRing:
+                    return false;
+                default:
+                    break;
+            }
+
+            switch (direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return true;
+                case MirDirection.DownRight:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                    return false;
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        private static void DrawExteriorEffect(PlayerObject player, ExteriorEffect effect, bool behind)
+        {
+            if (behind)
+            { 
+                if (!DrawExteriorEffectBehind(player.Direction, effect))
+                    return; 
+            }
+            else
+            {
+                if (!DrawExteriorEffectInFront(player.Direction, effect))
+                    return;
+            }
+
             MirDirection direction = player.Direction;
             int drawX = DetermineDrawX(player, effect, direction),
                 drawY = DetermineDrawY(player, effect, direction);

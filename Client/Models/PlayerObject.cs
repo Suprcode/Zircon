@@ -802,16 +802,14 @@ namespace Client.Models
         {
             if (BodyLibrary == null) return;
 
-            if (DrawExteriorEffectBehind())
-                ExteriorEffectManager.DrawExteriorEffects(this);
+            ExteriorEffectManager.DrawExteriorEffects(this, true);
 
             if (DrawShieldEffectBehind())
                 DrawShieldEffect();
 
             DrawBody(true);
 
-            if (DrawExteriorEffectInfront())
-                ExteriorEffectManager.DrawExteriorEffects(this);
+            ExteriorEffectManager.DrawExteriorEffects(this, false);
 
             if (DrawShieldEffectInfront())
                 DrawShieldEffect();
@@ -1164,33 +1162,6 @@ namespace Client.Models
             return false;
         }
 
-        public bool DrawExteriorEffectBehind()
-        {
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    return false;
-                case MirDirection.DownRight:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                    switch (ArmourEffect)
-                    {
-                        case ExteriorEffect.A_BlueAura:
-                        case ExteriorEffect.A_FlameAura:
-                        case ExteriorEffect.A_WhiteAura:
-                            return false;
-                        default: return true;
-                    };
-                default:
-                    break;
-            }
-            return false;
-        }
-
         public bool DrawShieldEffectInfront()
         {
             switch (Direction)
@@ -1204,35 +1175,6 @@ namespace Client.Models
             }
             return false;
         }
-
-        public bool DrawExteriorEffectInfront()
-        {
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    return true;
-                case MirDirection.DownRight:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:         
-                    switch(ArmourEffect)
-                    {
-                        case ExteriorEffect.A_BlueAura:
-                        case ExteriorEffect.A_FlameAura:
-                        case ExteriorEffect.A_WhiteAura: 
-                         return true;
-                        default: return false;
-                    };
-                default:
-                    break;
-            }
-
-            return false;
-        }
-
 
         public override bool MouseOver(Point p)
         {
