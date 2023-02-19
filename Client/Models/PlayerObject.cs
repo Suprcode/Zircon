@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Client.Controls;
 using Client.Envir;
+using Client.Models.Character;
+using Client.Models.Character.Shadow;
 using Client.Models.Player;
 using Client.Scenes;
 using Library;
@@ -23,20 +25,6 @@ namespace Client.Models
         public override ObjectType Race => ObjectType.Player;
 
         public const int FemaleOffSet = 5000, AssassinOffSet = 50000, RightHandOffSet = 50;
-
-        #region Shield Librarys
-        public Dictionary<int, LibraryFile> ShieldList = new Dictionary<int, LibraryFile>
-        {
-            [0] = LibraryFile.M_Shield1,
-            [1] = LibraryFile.M_Shield2,
-            [0 + FemaleOffSet] = LibraryFile.WM_Shield1,
-            [1 + FemaleOffSet] = LibraryFile.WM_Shield2,
-
-            [100] = LibraryFile.EquipEffect_Part,
-
-            [100 + FemaleOffSet] = LibraryFile.EquipEffect_Part,
-        };
-        #endregion
 
         #region Weapon Librarys
         public Dictionary<int, LibraryFile> WeaponList = new Dictionary<int, LibraryFile>
@@ -209,7 +197,9 @@ namespace Client.Models
         public int WeaponShape, LibraryWeaponShape;
         public int WeaponFrame => DrawFrame + (WeaponShape % 10) * WeaponShapeOffSet;
 
-        public MirLibrary ShieldLibrary;
+        private DXShieldManager DXShieldManager;
+        private DXShadowManager DXShadowManager;
+
         public int ShieldShape;
         public int ShieldFrame
         {
@@ -303,6 +293,10 @@ namespace Client.Models
 
         public void UpdateLibraries()
         {
+            //Ducky: annoying I can't insansiate this as a field because 'this' isn't available :/
+            if (DXShieldManager == null) DXShieldManager = new DXShieldManager(this);
+            if (DXShadowManager == null) DXShadowManager = new DXShadowManager(this);
+
             LibraryFile file;
 
             WeaponLibrary2 = null;
@@ -374,11 +368,7 @@ namespace Client.Models
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (ShieldShape >= 0)
-                            {
-                                if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
-                            }
+                            DXShieldManager.UpdateLibraries();
                             break;
                         case MirGender.Female:
                             if (!ArmourList.TryGetValue(ArmourShape / 11 + FemaleOffSet, out file))
@@ -397,11 +387,7 @@ namespace Client.Models
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (ShieldShape >= 0)
-                            {
-                                if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
-                            }
+                            DXShieldManager.UpdateLibraries();
                             break;
                     }
                     break;
@@ -429,11 +415,7 @@ namespace Client.Models
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (ShieldShape >= 0)
-                            {
-                                if (!ShieldList.TryGetValue(ShieldShape / 10, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
-                            }
+                            DXShieldManager.UpdateLibraries();
 
                             if (LibraryWeaponShape < 1200) break;
 
@@ -456,11 +438,7 @@ namespace Client.Models
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
 
-                            if (ShieldShape >= 0)
-                            {
-                                if (!ShieldList.TryGetValue(ShieldShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
-                                CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
-                            }
+                            DXShieldManager.UpdateLibraries();
 
                             if (LibraryWeaponShape < 1200) break;
 
@@ -810,7 +788,7 @@ namespace Client.Models
                 ExteriorEffectManager.DrawExteriorEffects(this);
 
             if (DrawShieldEffectBehind())
-                DrawShieldEffect();
+                DXShieldManager.DrawShieldEffect();
 
             DrawBody(shadow);
 
@@ -818,7 +796,7 @@ namespace Client.Models
                 ExteriorEffectManager.DrawExteriorEffects(this);
 
             if (DrawShieldEffectInfront())
-                DrawShieldEffect();
+                DXShieldManager.DrawShieldEffect();
         }
 
         public override void DrawBlend()
@@ -837,7 +815,7 @@ namespace Client.Models
             DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
             DXManager.Sprite.Flush();
 
-            int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;
+            DXShadowBoundary dxShadowBoundary = new DXShadowBoundary();
 
             MirImage image;
             switch (Direction)
@@ -851,11 +829,7 @@ namespace Client.Models
                     if (image == null) break;
 
                     WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    dxShadowBoundary.Transform(image, DrawX, DrawY);
                     break;
                 default:
                     if (!DrawWeapon) break;
@@ -863,11 +837,7 @@ namespace Client.Models
                     if (image == null) break;
 
                     WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    dxShadowBoundary.Transform(image, DrawX, DrawY);
                     break;
             }
 
@@ -876,19 +846,7 @@ namespace Client.Models
                 case MirDirection.UpRight:
                 case MirDirection.Right:
                 case MirDirection.DownRight:
-                    if (ShieldShape >= 0 && ShieldShape < 1000)
-                    {
-                        image = ShieldLibrary?.GetImage(ShieldFrame);
-                        if (image != null)
-                        {
-                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                            l = Math.Min(l, DrawX + image.OffSetX);
-                            t = Math.Min(t, DrawY + image.OffSetY);
-                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                        }
-                    }
+                    DXShieldManager.DrawShieldAndCalculateShadow(dxShadowBoundary);
                     break;
             }
 
@@ -900,10 +858,7 @@ namespace Client.Models
                 if (ArmourColour.ToArgb() != 0)
                     BodyLibrary.Draw(ArmourFrame, DrawX, DrawY, ArmourColour, true, 1F, ImageType.Overlay);
 
-                l = Math.Min(l, DrawX + image.OffSetX);
-                t = Math.Min(t, DrawY + image.OffSetY);
-                r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                dxShadowBoundary.Transform(image, DrawX, DrawY);
             }
 
             if (HelmetShape > 0)
@@ -912,11 +867,7 @@ namespace Client.Models
                 if (image != null)
                 {
                     HelmetLibrary.Draw(HelmetFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    dxShadowBoundary.Transform(image, DrawX, DrawY);
                 }
             }
             else
@@ -925,11 +876,7 @@ namespace Client.Models
                 if (HairType > 0 && image != null)
                 {
                     HairLibrary.Draw(HairFrame, DrawX, DrawY, HairColour, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    dxShadowBoundary.Transform(image, DrawX, DrawY);
                 }
             }
 
@@ -944,11 +891,7 @@ namespace Client.Models
                     if (image == null) break;
 
                     WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    dxShadowBoundary.Transform(image, DrawX, DrawY);
                     break;
                 default:
                     if (!DrawWeapon) break;
@@ -956,11 +899,7 @@ namespace Client.Models
                     if (image == null) break;
 
                     WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    dxShadowBoundary.Transform(image, DrawX, DrawY);
                     break;
             }
 
@@ -971,19 +910,7 @@ namespace Client.Models
                 case MirDirection.DownLeft:
                 case MirDirection.Left:
                 case MirDirection.UpLeft:
-                    if (ShieldShape >= 0 && ShieldShape < 1000)
-                    {
-                        image = ShieldLibrary?.GetImage(ShieldFrame);
-                        if (image != null)
-                        {
-                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                            l = Math.Min(l, DrawX + image.OffSetX);
-                            t = Math.Min(t, DrawY + image.OffSetY);
-                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                        }
-                    }
+                    DXShieldManager.DrawShieldAndCalculateShadow(dxShadowBoundary);
                     break;
             }
 
@@ -1009,7 +936,7 @@ namespace Client.Models
                         }
                         break;
                     default:
-                        DrawShadow2(l, t, r, b);
+                        DXShadowManager.DrawShadow(dxShadowBoundary);
                         break;
                 }
             }
@@ -1055,35 +982,10 @@ namespace Client.Models
 
 
 
-            DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(l, t, r, b), Vector3.Zero, new Vector3(l, t, 0), DrawColour);
+            DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(dxShadowBoundary.Left, dxShadowBoundary.Top, dxShadowBoundary.Right, dxShadowBoundary.Bottom), Vector3.Zero, new Vector3(dxShadowBoundary.Left, dxShadowBoundary.Top, 0), DrawColour);
             CEnvir.DPSCounter++;
             if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(oldOpacity);
 
-        }
-        public void DrawShadow2(int l, int t, int r, int b)
-        {
-            MirImage image = BodyLibrary?.GetImage(ArmourFrame);
-
-            if (image == null) return;
-
-            int w = (DrawX + image.OffSetX) - l;
-            int h = (DrawY + image.OffSetY) - t;
-
-            Matrix m = Matrix.Scaling(1F, 0.5f, 0);
-
-            m.M21 = -0.50F;
-            DXManager.Sprite.Transform = m * Matrix.Translation(DrawX + image.ShadowOffSetX - w + (image.Height) / 2 + h / 2, DrawY + image.ShadowOffSetY - h / 2, 0);
-
-            DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
-
-            float oldOpacity = DXManager.Opacity;
-            if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
-            DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(l, t, r, b), Vector3.Zero, Vector3.Zero, Color.Black);
-
-            DXManager.Sprite.Transform = Matrix.Identity;
-            DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
-
-            if (0.5F != oldOpacity) DXManager.SetOpacity(oldOpacity);
         }
 
         public override void DrawHealth()
@@ -1135,26 +1037,7 @@ namespace Client.Models
             }
         }
 
-        public void DrawShieldEffect()
-        {
-            if (!Config.DrawEffects) return;
-            if (Horse != HorseType.None) return;
 
-            switch (CurrentAction)
-            {
-                case MirAction.Die:
-                case MirAction.Dead:
-                    break;
-                default:
-                    if (ShieldShape >= 1000)
-                    {
-                        ShieldLibrary.DrawBlend(ShieldFrame + 100, DrawX, DrawY, Color.White, true, 0.8f, ImageType.Image);
-                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-                    }
-
-                    break;
-            }
-        }
 
         public bool DrawShieldEffectBehind()
         {
@@ -1255,7 +1138,7 @@ namespace Client.Models
             if (LibraryWeaponShape >= 0 && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
                 return true;
 
-            if (ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (DXShieldManager.IsMouseOver(p))
                 return true;
 
 
