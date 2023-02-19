@@ -22,7 +22,7 @@ namespace Client.Scenes.Views
 
         public ExitDialog()
         {
-            TitleLabel.Text = @"Exit Game";
+            TitleLabel.Text = CEnvir.Language.ExitDialogTitle;
 
             SetClientSize(new Size(200, 50 + DefaultHeight + DefaultHeight));
             ToSelectButton = new DXButton
@@ -30,13 +30,13 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 35, ClientArea.Y + 20),
                 Size = new Size(130, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Character Select" },
+                Label = { Text = CEnvir.Language.ExitDialogToSelectButtonLabel },
             };
             ToSelectButton.MouseClick += (o, e) =>
             {
                 if (CEnvir.Now < MapObject.User.CombatTime.AddSeconds(10) && !GameScene.Game.Observer)
                 {
-                    GameScene.Game.ReceiveChat("Unable to logout whilst in combat.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.LogoutInCombat, MessageType.System);
                     return;
                 }
 
@@ -48,13 +48,13 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 35, ClientArea.Y + 30 + DefaultHeight),
                 Size = new Size(130, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Exit Game" },
+                Label = { Text = CEnvir.Language.ExitDialogExitButtonLabel },
             };
             ExitButton.MouseClick += (o, e) =>
             {
                 if (CEnvir.Now < MapObject.User.CombatTime.AddSeconds(10) && !GameScene.Game.Observer)
                 {
-                    GameScene.Game.ReceiveChat("Unable to exit game whilst in combat.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.ExitInCombat, MessageType.System);
                     return;
                 }
 

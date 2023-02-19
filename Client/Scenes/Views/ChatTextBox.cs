@@ -102,7 +102,7 @@ namespace Client.Scenes.Views
             {
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(50, SmallButtonHeight),
-                Label = { Text = "Options" },
+                Label = { Text = CEnvir.Language.ChatTextBoxOptionsButtonLabel },
                 Parent = this,
             };
             OptionsButton.MouseClick += (o, e) =>

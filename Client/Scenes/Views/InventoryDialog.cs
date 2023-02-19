@@ -183,7 +183,7 @@ namespace Client.Scenes.Views
 
             TitleLabel = new DXLabel
             {
-                Text = "Inventory",
+                Text = CEnvir.Language.InventoryDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -251,7 +251,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(55, 381),
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
-                Text = "Gold",
+                Text = CEnvir.Language.InventoryDialogPrimaryCurrencyTitle,
                 Size = new Size(97, 20)
             };
 
@@ -275,7 +275,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(55, 400),
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
-                Text = "GG",
+                Text = CEnvir.Language.InventoryDialogSecondaryCurrencyTitle,
                 Size = new Size(97, 20)
             };
 
@@ -297,7 +297,7 @@ namespace Client.Scenes.Views
                 Index = 364,
                 Parent = this,
                 Location = new Point(180, 384),
-                Hint = "Sort",
+                Hint = CEnvir.Language.InventoryDialogSortButtonHint,
                 Enabled = false
             };
 
@@ -307,7 +307,7 @@ namespace Client.Scenes.Views
                 Index = 358,
                 Parent = this,
                 Location = new Point(218, 384),
-                Hint = "Trash",
+                Hint = CEnvir.Language.InventoryDialogTrashButtonHint,
                 Enabled = false
             };
 
@@ -315,7 +315,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Location = new Point(8, 380),
-                Hint = "Wallet [Ctrl + C]",
+                Hint = CEnvir.Language.InventoryDialogWalletLabelHint,
                 Size = new Size(45, 40),
                 Sound = SoundIndex.GoldPickUp
             };

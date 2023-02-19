@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using Client.Envir;
+using Client.Envir.Translations;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;
@@ -122,7 +123,7 @@ namespace Client.Controls
             ActiveConfig = this;
 
             Size = new Size(300, 330);
-            TitleLabel.Text = "Configuration";
+            TitleLabel.Text = CEnvir.Language.CommonControlConfigWindowTitle;
             HasFooter = true;
 
             TabControl = new DXTabControl
@@ -135,35 +136,35 @@ namespace Client.Controls
             {
                 Parent = TabControl,
                 Border = true,
-                TabButton = { Label = { Text = "Graphics" } },
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabLabel } },
             };
 
             SoundTab = new DXTab
             {
                 Parent = TabControl,
                 Border = true,
-                TabButton = { Label = { Text = "Sound" } },
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowSoundTabLabel } },
             };
 
             GameTab = new DXTab
             {
                 Parent = TabControl,
                 Border = true,
-                TabButton = { Label = { Text = "Game" } },
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabLabel } },
             };
 
             NetworkTab = new DXTab
             {
                 Parent = TabControl,
                 Border = true,
-                TabButton = { Label = { Text = "Network" } },
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowNetworkTabLabel } },
             };
 
             ColourTab = new DXTab
             {
                 Parent = TabControl,
                 Border = true,
-                TabButton = { Label = { Text = "Colours" }, Visible = false },
+                TabButton = { Label = { Text = CEnvir.Language.CommonControlConfigWindowColoursTabLabel }, Visible = false },
             };
 
 
@@ -176,7 +177,7 @@ namespace Client.Controls
             
             FullScreenCheckBox = new DXCheckBox
             {
-                Label = { Text = "Full Screen:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabFullScreenLabel },
                 Parent = GraphicsTab,
                 Checked = Config.FullScreen,
             };
@@ -184,7 +185,7 @@ namespace Client.Controls
 
             DXLabel label = new DXLabel
             {
-                Text = "Game Size:",
+                Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabGameSizeLabel,
                 Outline = true,
                 Parent = GraphicsTab,
             };
@@ -207,35 +208,35 @@ namespace Client.Controls
 
             VSyncCheckBox = new DXCheckBox
             {
-                Label = { Text = "V-Sync:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabVSyncLabel },
                 Parent = GraphicsTab,
             };
             VSyncCheckBox.Location = new Point(120 - VSyncCheckBox.Size.Width, 60);
 
             LimitFPSCheckBox = new DXCheckBox
             {
-                Label = { Text = "Limit FPS:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabLimitFPSLabel },
                 Parent = GraphicsTab,
             };
             LimitFPSCheckBox.Location = new Point(120 - LimitFPSCheckBox.Size.Width, 80);
 
             ClipMouseCheckBox = new DXCheckBox
             {
-                Label = { Text = "Clip Mouse:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabClipMouseLabel },
                 Parent = GraphicsTab,
             };
             ClipMouseCheckBox.Location = new Point(120 - ClipMouseCheckBox.Size.Width, 100);
 
             DebugLabelCheckBox = new DXCheckBox
             {
-                Label = { Text = "Debug Label:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDebugLabelLabel },
                 Parent = GraphicsTab,
             };
             DebugLabelCheckBox.Location = new Point(120 - DebugLabelCheckBox.Size.Width, 120);
 
             label = new DXLabel
             {
-                Text = "Language:",
+                Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabLanguageLabel,
                 Outline = true,
                 Parent = GraphicsTab,
             };
@@ -261,7 +262,7 @@ namespace Client.Controls
 
             BackgroundSoundBox = new DXCheckBox
             {
-                Label = { Text = "Background Sound:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowSoundTabBackgroundSoundLabel },
                 Parent = SoundTab,
                 Checked = Config.SoundInBackground,
             };
@@ -269,7 +270,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "System Volume:",
+                Text = CEnvir.Language.CommonControlConfigWindowSoundTabSystemVolumeLabel,
                 Outline = true,
                 Parent = SoundTab,
             };
@@ -285,7 +286,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Music Volume:",
+                Text = CEnvir.Language.CommonControlConfigWindowSoundTabMusicVolumeLabel,
                 Outline = true,
                 Parent = SoundTab,
             };
@@ -301,7 +302,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Player Volume:",
+                Text = CEnvir.Language.CommonControlConfigWindowSoundTabPlayerVolumeLabel,
                 Outline = true,
                 Parent = SoundTab,
             };
@@ -316,7 +317,7 @@ namespace Client.Controls
             };
             label = new DXLabel
             {
-                Text = "Monster Volume:",
+                Text = CEnvir.Language.CommonControlConfigWindowSoundTabMonsterVolumeLabel,
                 Outline = true,
                 Parent = SoundTab,
             };
@@ -332,7 +333,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Magic Volume:",
+                Text = CEnvir.Language.CommonControlConfigWindowSoundTabMagicVolumeLabel,
                 Outline = true,
                 Parent = SoundTab,
             };
@@ -353,56 +354,56 @@ namespace Client.Controls
 
             ItemNameCheckBox = new DXCheckBox
             {
-                Label = { Text = "Item Names:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabItemNameLabel },
                 Parent = GameTab,
             };
             ItemNameCheckBox.Location = new Point(120 - ItemNameCheckBox.Size.Width, 10);
 
             MonsterNameCheckBox = new DXCheckBox
             {
-                Label = { Text = "Monster Names:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabMonsterNameLabel },
                 Parent = GameTab,
             };
             MonsterNameCheckBox.Location = new Point(120 - MonsterNameCheckBox.Size.Width, 35);
 
             PlayerNameCheckBox = new DXCheckBox
             {
-                Label = { Text = "Player Name:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabPlayerNameLabel },
                 Parent = GameTab,
             };
             PlayerNameCheckBox.Location = new Point(120 - PlayerNameCheckBox.Size.Width, 60);
 
             UserHealthCheckBox = new DXCheckBox
             {
-                Label = { Text = "User Health:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabUserHealthLabel },
                 Parent = GameTab,
             };
             UserHealthCheckBox.Location = new Point(120 - UserHealthCheckBox.Size.Width, 85);
 
             MonsterHealthCheckBox = new DXCheckBox
             {
-                Label = { Text = "Monster Health:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabMonsterHealthLabel },
                 Parent = GameTab,
             };
             MonsterHealthCheckBox.Location = new Point(120 - MonsterHealthCheckBox.Size.Width, 110);
 
             DamageNumbersCheckBox = new DXCheckBox
             {
-                Label = { Text = "Dmg Numbers:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDamageNumbersLabel },
                 Parent = GameTab,
             };
             DamageNumbersCheckBox.Location = new Point(120 - DamageNumbersCheckBox.Size.Width, 135);
 
             DrawParticlesCheckBox = new DXCheckBox
             {
-                Label = { Text = "Draw Particles:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDrawParticlesLabel },
                 Parent = GameTab,
             };
             DrawParticlesCheckBox.Location = new Point(120 - DrawParticlesCheckBox.Size.Width, 160);
 
             DisplayHelmetCheckBox = new DXCheckBox
             {
-                Label = { Text = "Display Helmet:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDisplayHelmetLabel },
                 Parent = GameTab,
             };
             DisplayHelmetCheckBox.Location = new Point(120 - DisplayHelmetCheckBox.Size.Width, 185);
@@ -413,51 +414,51 @@ namespace Client.Controls
 
             EscapeCloseAllCheckBox = new DXCheckBox
             {
-                Label = { Text = "Escape Close All:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabEscapeCloseAllLabel },
                 Parent = GameTab,
             };
             EscapeCloseAllCheckBox.Location = new Point(270 - EscapeCloseAllCheckBox.Size.Width, 10);
 
             ShiftOpenChatCheckBox = new DXCheckBox
             {
-                Label = { Text = "Shift + 1  Open Chat:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabShiftOpenChatLabel },
                 Parent = GameTab,
-                Hint = "If turned on, Pressing Shift + 1 will open chat, if this is off you will use Quick Slot 1"
+                Hint = CEnvir.Language.CommonControlConfigWindowGameTabShiftOpenChatHint
             };
             ShiftOpenChatCheckBox.Location = new Point(270 - ShiftOpenChatCheckBox.Size.Width, 35);
 
             RightClickDeTargetCheckBox = new DXCheckBox
             {
-                Label = { Text = "Right Click De-Target:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabRightClickDeTargetLabel },
                 Parent = GameTab,
-                Hint = "If turned on, Right clicking to move away will also remove monster target."
+                Hint = CEnvir.Language.CommonControlConfigWindowGameTabRightClickDeTargetHint
             };
             RightClickDeTargetCheckBox.Location = new Point(270 - RightClickDeTargetCheckBox.Size.Width, 60);
 
             MonsterBoxVisibleCheckBox = new DXCheckBox
             {
-                Label = { Text = "Show Monster Info:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabMonsterBoxVisibleLabel },
                 Parent = GameTab,
             };
             MonsterBoxVisibleCheckBox.Location = new Point(270 - MonsterBoxVisibleCheckBox.Size.Width, 85);
 
             LogChatCheckBox = new DXCheckBox
             {
-                Label = { Text = "Log Chat:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabLogChatLabel },
                 Parent = GameTab,
             };
             LogChatCheckBox.Location = new Point(270 - LogChatCheckBox.Size.Width, 110);
 
             DrawEffectsCheckBox = new DXCheckBox
             {
-                Label = { Text = "Draw Effects:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDrawEffectsLabel },
                 Parent = GameTab,
             };
             DrawEffectsCheckBox.Location = new Point(270 - DrawEffectsCheckBox.Size.Width, 135);
 
             DrawWeatherCheckBox = new DXCheckBox
             {
-                Label = { Text = "Draw Weather:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabDrawWeatherLabel },
                 Parent = GameTab,
             };
             DrawWeatherCheckBox.Location = new Point(270 - DrawWeatherCheckBox.Size.Width, 160);
@@ -468,7 +469,7 @@ namespace Client.Controls
                 Location = new Point(190, 185),
                 Size = new Size(80, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Key Binds" }
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabKeyBindButtonLabel }
             };
             KeyBindButton.MouseClick += (o, e) => KeyBindWindow.Visible = !KeyBindWindow.Visible;
             
@@ -478,7 +479,7 @@ namespace Client.Controls
 
             UseNetworkConfigCheckBox = new DXCheckBox
             {
-                Label = { Text = "Use Config:" },
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowNetworkTabUseNetworkConfigLabel },
                 Parent = NetworkTab,
                 Checked = Config.FullScreen,
             };
@@ -486,7 +487,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "IP Address:",
+                Text = CEnvir.Language.CommonControlConfigWindowNetworkTabUseIPAddressLabel,
                 Outline = true,
                 Parent = NetworkTab,
             };
@@ -501,7 +502,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Port:",
+                Text = CEnvir.Language.CommonControlConfigWindowNetworkTabUsePortLabel,
                 Outline = true,
                 Parent = NetworkTab,
             };
@@ -520,7 +521,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Local Chat:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabLocalChatLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -535,7 +536,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "GM Whisper In:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGMWhisperInLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -550,7 +551,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Whisper In:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabWhisperInLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -565,7 +566,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Whisper Out:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabWhisperOutLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -580,7 +581,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Group Chat:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGroupChatLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -595,7 +596,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Guild Chat:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGuildChatLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -610,7 +611,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Shout Chat:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabShoutChatLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -625,7 +626,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Global Chat:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGlobalChatLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -641,7 +642,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Observer Chat:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabObserverChatLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -656,7 +657,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Hint Text:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabHintTextLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -671,7 +672,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "System Text:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabSystemTextLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -686,7 +687,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Gains Text:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabGainsTextLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -701,7 +702,7 @@ namespace Client.Controls
 
             label = new DXLabel
             {
-                Text = "Announcements:",
+                Text = CEnvir.Language.CommonControlConfigWindowColoursTabAnnouncementsLabel,
                 Outline = true,
                 Parent = ColourTab,
             };
@@ -720,7 +721,7 @@ namespace Client.Controls
                 Location = new Point(180, 160),
                 Size = new Size(80, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Reset All" }
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowColoursTabResetColoursButtonLabel }
             };
             ResetColoursButton.MouseClick += (o, e) =>
             {
@@ -746,7 +747,7 @@ namespace Client.Controls
                 Location = new Point(Size.Width - 190, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Apply" }
+                Label = { Text = CEnvir.Language.CommonControlApply }
             };
             SaveButton.MouseClick += SaveSettings;
 
@@ -755,7 +756,7 @@ namespace Client.Controls
                 Location = new Point(Size.Width - 100, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Cancel" }
+                Label = { Text = CEnvir.Language.CommonControlCancel }
             };
             CancelButton.MouseClick += CancelSettings;
 
@@ -764,7 +765,7 @@ namespace Client.Controls
                 Location = new Point(Size.Width - 280, Size.Height - 43),
                 Size = new Size(60, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Exit" },
+                Label = { Text = CEnvir.Language.CommonControlExit },
                 Visible = false,
             };
             ExitButton.MouseClick += CancelSettings;
@@ -795,8 +796,9 @@ namespace Client.Controls
 
             if (LanguageComboBox.SelectedItem is string && Config.Language != (string)LanguageComboBox.SelectedItem)
             {
-
                 Config.Language = (string) LanguageComboBox.SelectedItem;
+
+                CEnvir.LoadLanguage();
 
                 if (CEnvir.Connection != null && CEnvir.Connection.ServerConnected)
                     CEnvir.Enqueue(new C.SelectLanguage { Language = Config.Language });

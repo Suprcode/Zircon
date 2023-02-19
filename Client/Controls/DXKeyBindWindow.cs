@@ -39,7 +39,7 @@ namespace Client.Controls
         public DXKeyBindWindow()
         {
             HasFooter = true;
-            TitleLabel.Text = "Key Binds";
+            TitleLabel.Text = CEnvir.Language.CommonControlDXKeyBindWindowTitle;
             Modal = true;
             CloseButton.Visible = false;
 
@@ -49,7 +49,7 @@ namespace Client.Controls
             DXLabel label = new DXLabel
             {
                 Parent = this,
-                Text = "[Escape] to undo changes to current Key Bind",
+                Text = CEnvir.Language.CommonControlDXKeyBindWindowTipLabel,
             };
             label.Location = new Point(ClientArea.Right - label.Size.Width, ClientArea.Y);
 
@@ -65,7 +65,7 @@ namespace Client.Controls
                 Location = new Point(Size.Width - 190, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Apply" }
+                Label = { Text = CEnvir.Language.CommonControlApply }
             };
             SaveButton.MouseClick += SaveButton_MouseClick;
 
@@ -74,7 +74,7 @@ namespace Client.Controls
                 Location = new Point(Size.Width - 100, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Close" }
+                Label = { Text = CEnvir.Language.CommonControlClose }
             };
             CancelButton.MouseClick += (o, e) => Visible = false;
 
@@ -83,11 +83,11 @@ namespace Client.Controls
                 Location = new Point(ClientArea.X, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
-                Label = { Text = "Defaults" }
+                Label = { Text = CEnvir.Language.CommonControlDefaults }
             };
             DefaultButton.MouseClick += (o, e) =>
             {
-                DXMessageBox box = new DXMessageBox("Are you sure you want to reset ALL keybinds back to the default settings?", "Reset Key Binds", DXMessageBoxButtons.YesNo);
+                DXMessageBox box = new DXMessageBox(CEnvir.Language.CommonControlDXKeyBindWindowDefaultConfirmMessage, CEnvir.Language.CommonControlDXKeyBindWindowDefaultConfirmCaption, DXMessageBoxButtons.YesNo);
 
                 box.YesButton.MouseClick += (o1, e1) =>
                 {

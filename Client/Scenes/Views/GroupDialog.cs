@@ -42,12 +42,12 @@ namespace Client.Scenes.Views
             if (AllowGroup)
             {
                 AllowGroupButton.Index = 122;
-                AllowGroupButton.Hint = "Group Status: Allowing";
+                AllowGroupButton.Hint = CEnvir.Language.GroupDialogAllowGroupButtonAllowingHint;
             }
             else
             {
                 AllowGroupButton.Index = 142;
-                AllowGroupButton.Hint = "Group Status: Not Allowing";
+                AllowGroupButton.Hint = CEnvir.Language.GroupDialogAllowGroupButtonNotAllowingHint;
             }
         }
 
@@ -106,7 +106,7 @@ namespace Client.Scenes.Views
 
         public GroupDialog()
         {
-            TitleLabel.Text = "Group";
+            TitleLabel.Text = CEnvir.Language.GroupDialogTitle;
             HasFooter = true;
 
             SetClientSize(new Size(200, 200));
@@ -116,7 +116,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter2,
                 Index = 142,
                 Parent = this,
-                Hint = "Group Status: Not Allowing",
+                Hint = CEnvir.Language.GroupDialogAllowGroupButtonNotAllowingHint,
                 Location = new Point(ClientArea.X, Size.Height - 46)
             };
             AllowGroupButton.MouseClick += (o, e) =>
@@ -139,7 +139,7 @@ namespace Client.Scenes.Views
                 {
                     Label =
                     {
-                        Text = "Members"
+                        Text = CEnvir.Language.GroupDialogMemberTabLabel
                     },
 
                     IsControl = false,
@@ -152,7 +152,7 @@ namespace Client.Scenes.Views
             {
                 Size = new Size(60, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
-                Label = {Text = "Invite"},
+                Label = {Text = CEnvir.Language.GroupDialogAddButtonLabel },
                 Location = new Point(ClientArea.Right - 135, Size.Height - 40),
                 Parent = this,
             };
@@ -162,17 +162,17 @@ namespace Client.Scenes.Views
 
                 if (Members.Count >= Globals.GroupLimit)
                 {
-                    GameScene.Game.ReceiveChat("Group member limit has been reached", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.GroupMemberLimit, MessageType.System);
                     return;
                 }
 
                 if (Members.Count >= Globals.GroupLimit)
                 {
-                    GameScene.Game.ReceiveChat("You are not the leader of your group.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.GroupNotLeader, MessageType.System);
                     return;
                 }
 
-                DXInputWindow window = new DXInputWindow("Please enter the name of the person you wish to group.", "Invite Group Member")
+                DXInputWindow window = new DXInputWindow(CEnvir.Language.GroupDialogAddButtonConfirmMessage, CEnvir.Language.GroupDialogAddButtonConfirmCaption)
                 {
                     ConfirmButton = { Enabled = false },
                     Modal = true
@@ -191,7 +191,7 @@ namespace Client.Scenes.Views
             {
                 Size = new Size(60, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Remove" },
+                Label = { Text = CEnvir.Language.GroupDialogRemoveButtonLabel },
                 Location = new Point(ClientArea.Right - 65, Size.Height - 40),
                 Parent = this,
                 Enabled = false,

@@ -169,7 +169,7 @@ namespace Client.Scenes.Views
 
             TitleLabel = new DXLabel
             {
-                Text = "Companion",
+                Text = CEnvir.Language.CompanionDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -191,7 +191,7 @@ namespace Client.Scenes.Views
             CompanionTab = new DXTab
             {
                 Parent = TabControl,
-                TabButton = { Label = { Text = "Pet" } },
+                TabButton = { Label = { Text = CEnvir.Language.CompanionDialogCompanionTabLabel } },
                 BackColour = Color.Empty,
                 Location = new Point(0, 24)
             };
@@ -201,7 +201,7 @@ namespace Client.Scenes.Views
             BonusButton = new DXButton
             {
                 Parent = CompanionTab,
-                Label = { Text = "Bonus" },
+                Label = { Text = CEnvir.Language.CompanionDialogCompanionTabBonusButtonLabel },
                 Location = new Point(10, 263),
                 Size = new Size(70, DefaultHeight),
                 Enabled = false,
@@ -211,7 +211,7 @@ namespace Client.Scenes.Views
             FilterButton = new DXButton
             {
                 Parent = CompanionTab,
-                Label = { Text = "Filter" },
+                Label = { Text = CEnvir.Language.CompanionDialogCompanionTabFilterButtonLabel },
                 Location = new Point(90, 263),
                 Size = new Size(70, DefaultHeight),
                 Enabled = false,
@@ -221,7 +221,7 @@ namespace Client.Scenes.Views
             BagButton = new DXButton
             {
                 Parent = CompanionTab,
-                Label = { Text = "Bag" },
+                Label = { Text = CEnvir.Language.CompanionDialogCompanionTabBagButtonLabel },
                 Location = new Point(170, 263),
                 Size = new Size(70, DefaultHeight),
                 Enabled = false,
@@ -334,12 +334,12 @@ namespace Client.Scenes.Views
             {
                 Parent = CompanionTab,
                 Outline = true,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 ForeColour = Color.FromArgb(198, 166, 99),
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Text = "Name",
+                Text = CEnvir.Language.CompanionDialogCompanionTabNameLabel,
                 AutoSize = false,
                 Size = new Size(60, 17),
                 Location = new Point(10, 156)
@@ -362,12 +362,12 @@ namespace Client.Scenes.Views
             {
                 Parent = CompanionTab,
                 Outline = true,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 ForeColour = Color.FromArgb(198, 166, 99),
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Text = "Level",
+                Text = CEnvir.Language.CompanionDialogCompanionTabLevelLabel,
                 AutoSize = false,
                 Size = new Size(60, 17),
                 Location = new Point(10, 178)
@@ -413,12 +413,12 @@ namespace Client.Scenes.Views
             {
                 Parent = CompanionTab,
                 Outline = true,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 ForeColour = Color.FromArgb(198, 166, 99),
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Text = "Exp",
+                Text = CEnvir.Language.CompanionDialogCompanionTabExpLabel,
                 AutoSize = false,
                 Size = new Size(60, 17),
                 Location = new Point(10, 200)
@@ -464,12 +464,12 @@ namespace Client.Scenes.Views
             {
                 Parent = CompanionTab,
                 Outline = true,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 ForeColour = Color.FromArgb(198, 166, 99),
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Text = "Hunger",
+                Text = CEnvir.Language.CompanionDialogCompanionTabHungerLabel,
                 AutoSize = false,
                 Size = new Size(60, 17),
                 Location = new Point(10, 222)

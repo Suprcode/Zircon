@@ -265,7 +265,7 @@ namespace Client.Scenes.Views
             ChangeButton = new DXButton
             {
                 Parent = this,
-                Label = { Text = "Confirm" },
+                Label = { Text = CEnvir.Language.CommonControlConfirm },
                 Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
             };
@@ -544,7 +544,7 @@ namespace Client.Scenes.Views
                 case ChangeType.GenderChange:
                     if (SelectedGender == GameScene.Game.User.Gender)
                     {
-                        GameScene.Game.ReceiveChat($"You are already a {SelectedGender}.", MessageType.System);
+                        GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.CharacterSameGender, SelectedGender), MessageType.System);
                         return;
                     }
 

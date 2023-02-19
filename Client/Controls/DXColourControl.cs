@@ -121,14 +121,14 @@ namespace Client.Controls
         public DXColourPicker()
         {
             Size = new Size(380, 253);
-            TitleLabel.Text = "Colour Picker";
+            TitleLabel.Text = CEnvir.Language.CommonControlColourPickerTitle;
             Modal = true;
             HasFooter = true;
 
             CancelButton = new DXButton
             {
                 Parent = this,
-                Label = { Text = "Cancel" },
+                Label = { Text = CEnvir.Language.CommonControlCancel },
                 Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
             };
@@ -138,7 +138,7 @@ namespace Client.Controls
             SelectButton = new DXButton
             {
                 Parent = this,
-                Label = { Text = "Select" },
+                Label = { Text = CEnvir.Language.CommonControlSelect },
                 Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
             };
@@ -171,7 +171,7 @@ namespace Client.Controls
             DXLabel label = new DXLabel
             {
                 Parent = this,
-                Text = "Red:",
+                Text = CEnvir.Language.CommonControlColourPickerRedLabel,
             };
             label.Location = new Point(RedBox.Location.X - label.Size.Width - 5, (RedBox.Size.Height - label.Size.Height) / 2 + RedBox.Location.Y);
 
@@ -187,7 +187,7 @@ namespace Client.Controls
             label = new DXLabel
             {
                 Parent = this,
-                Text = "Green:",
+                Text = CEnvir.Language.CommonControlColourPickerGreenLabel,
             };
             label.Location = new Point(GreenBox.Location.X - label.Size.Width - 5, (GreenBox.Size.Height - label.Size.Height) / 2 + GreenBox.Location.Y);
 
@@ -203,7 +203,7 @@ namespace Client.Controls
             label = new DXLabel
             {
                 Parent = this,
-                Text = "Blue:",
+                Text = CEnvir.Language.CommonControlColourPickerBlueLabel,
             };
             label.Location = new Point(BlueBox.Location.X - label.Size.Width - 5, (BlueBox.Size.Height - label.Size.Height) / 2 + BlueBox.Location.Y);
 
@@ -221,7 +221,7 @@ namespace Client.Controls
             label = new DXLabel
             {
                 Parent = this,
-                Text = "Colour:",
+                Text = CEnvir.Language.CommonControlColourPickerColourLabel,
             };
             label.Location = new Point(BlueBox.Location.X - label.Size.Width - 5, (ColourBox.Size.Height - label.Size.Height) / 2 + ColourBox.Location.Y);
 

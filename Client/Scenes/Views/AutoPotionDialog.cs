@@ -27,7 +27,7 @@ namespace Client.Scenes.Views
 
         public AutoPotionDialog()
         {
-            TitleLabel.Text = "Auto Potion";
+            TitleLabel.Text = CEnvir.Language.AutoPotionTitle;
             HasFooter = true;
 
             SetClientSize(new Size(280, 398));
@@ -48,7 +48,7 @@ namespace Client.Scenes.Views
             DXControl panel = new DXControl
             {
                 Parent = this,
-                Size = new Size(ClientArea.Size.Width -16, ClientArea.Size.Height),
+                Size = new Size(ClientArea.Size.Width - 16, ClientArea.Size.Height),
                 Location = ClientArea.Location,
             };
             panel.MouseWheel += ScrollBar.DoMouseWheel;
@@ -59,7 +59,7 @@ namespace Client.Scenes.Views
                 Rows[i] = row = new AutoPotionRow
                 {
                     Parent = panel,
-                    Location = new Point(1, 1 + 50*i),
+                    Location = new Point(1, 1 + 50 * i),
                     Index = i,
                 };
                 row.MouseWheel += ScrollBar.DoMouseWheel;
@@ -73,7 +73,7 @@ namespace Client.Scenes.Views
             int y = -ScrollBar.Value;
 
             foreach (AutoPotionRow row in Rows)
-                row.Location = new Point(1, 1 + 50*row.Index + y);
+                row.Location = new Point(1, 1 + 50 * row.Index + y);
         }
 
         public bool Updating;
@@ -209,7 +209,7 @@ namespace Client.Scenes.Views
             Border = true;
             BorderColour = Color.FromArgb(198, 166, 99);
 
-            UpButton =  new DXButton
+            UpButton = new DXButton
             {
                 Index = 44,
                 LibraryFile = LibraryFile.Interface,
@@ -235,14 +235,14 @@ namespace Client.Scenes.Views
                 GameScene.Game.AutoPotionBox.Rows[Index - 1].HealthTargetBox.Value = hp;
                 GameScene.Game.AutoPotionBox.Rows[Index - 1].ManaTargetBox.Value = mp;
                 GameScene.Game.AutoPotionBox.Rows[Index - 1].EnabledCheckBox.Checked = enabled;
-                
+
                 GameScene.Game.AutoPotionBox.Updating = false;
 
                 SendUpdate();
                 GameScene.Game.AutoPotionBox.Rows[Index - 1].SendUpdate();
             };
 
-            DownButton =   new DXButton
+            DownButton = new DXButton
             {
                 Index = 46,
                 LibraryFile = LibraryFile.Interface,
@@ -281,25 +281,25 @@ namespace Client.Scenes.Views
                 AllowLink = true,
                 FixedBorder = true,
                 Border = true,
-                GridType =  GridType.AutoPotion,
+                GridType = GridType.AutoPotion,
             };
 
             IndexLabel = new DXLabel
             {
                 Parent = ItemCell,
-                Text = (Index +1).ToString(),
+                Text = (Index + 1).ToString(),
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Italic),
                 IsControl = false,
                 Location = new Point(-2, -1)
             };
-            
-            
+
+
             HealthTargetBox = new DXNumberBox
             {
                 Parent = this,
                 Location = new Point(105, 5),
-                Size =  new Size(80, 20),
-                ValueTextBox = { Size = new Size(40, 18)},
+                Size = new Size(80, 20),
+                ValueTextBox = { Size = new Size(40, 18) },
                 MaxValue = 50000,
                 MinValue = 0,
                 UpButton = { Location = new Point(63, 1) }
@@ -322,7 +322,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 IsControl = false,
-                Text = "Health:"
+                Text = CEnvir.Language.CommonStatusHealth + ":"
             };
             HealthLabel.Location = new Point(HealthTargetBox.Location.X - HealthLabel.Size.Width, HealthTargetBox.Location.Y + (HealthTargetBox.Size.Height - HealthLabel.Size.Height) / 2);
 
@@ -331,18 +331,18 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 IsControl = false,
-                Text = "Mana:"
+                Text = CEnvir.Language.CommonStatusMana + ":"
             };
             ManaLabel.Location = new Point(ManaTargetBox.Location.X - ManaLabel.Size.Width, ManaTargetBox.Location.Y + (ManaTargetBox.Size.Height - ManaLabel.Size.Height) / 2);
-            
+
             EnabledCheckBox = new DXCheckBox
             {
-                Label = {Text =  "Enabled"},
+                Label = { Text = CEnvir.Language.AutoPotionEnabledLabel },
                 Parent = this,
             };
             EnabledCheckBox.CheckedChanged += (o, e) => SendUpdate();
 
-            EnabledCheckBox.Location = new Point(Size.Width - EnabledCheckBox.Size.Width - 5,  5);
+            EnabledCheckBox.Location = new Point(Size.Width - EnabledCheckBox.Size.Width - 5, 5);
         }
 
         #region Methods
@@ -356,7 +356,7 @@ namespace Client.Scenes.Views
             CEnvir.Enqueue(new C.AutoPotionLinkChanged { Slot = Index, LinkIndex = ItemCell.Item?.Info.Index ?? -1, Enabled = EnabledCheckBox.Checked, Health = (int)HealthTargetBox.Value, Mana = (int)ManaTargetBox.Value });
         }
         #endregion
-        
+
         #region IDisposable
 
         protected override void Dispose(bool disposing)
