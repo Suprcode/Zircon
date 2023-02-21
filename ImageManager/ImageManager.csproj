@@ -27,25 +27,12 @@
     <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DevExpress.Win.BonusSkins" Version="21.2.6" />
+    <PackageReference Include="DevExpress.Win.Design" Version="21.2.6" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.BonusSkins.v21.2">
-      <HintPath>..\..\Debug\Server\DevExpress.BonusSkins.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Data.v21.2">
-      <HintPath>..\Components\DevExpress\DevExpress.Data.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Utils.v21.2">
-      <HintPath>..\Components\DevExpress\DevExpress.Utils.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.XtraBars.v21.2">
-      <HintPath>..\Components\DevExpress\DevExpress.XtraBars.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.XtraEditors.v21.2">
-      <HintPath>..\Components\DevExpress\DevExpress.XtraEditors.v21.2.dll</HintPath>
-    </Reference>
     <Reference Include="ManagedSquish">
       <HintPath>..\Components\ManagedSquish.dll</HintPath>
     </Reference>
