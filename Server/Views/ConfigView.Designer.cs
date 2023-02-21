@@ -225,8 +225,8 @@
             this.labelControl56 = new DevExpress.XtraEditors.LabelControl();
             this.ExperienceRateEdit = new DevExpress.XtraEditors.TextEdit();
             this.labelControl55 = new DevExpress.XtraEditors.LabelControl();
-            this.OpenDialog = new System.Windows.Forms.OpenFileDialog();
-            this.FolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.OpenDialog = new DevExpress.XtraEditors.XtraOpenFileDialog();
+            this.FolderDialog = new DevExpress.XtraEditors.XtraFolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
             this.xtraTabControl1.SuspendLayout();
@@ -2566,8 +2566,8 @@
         private DevExpress.XtraEditors.CheckEdit AllowChangePasswordEdit;
         private DevExpress.XtraEditors.LabelControl labelControl7;
         private DevExpress.XtraEditors.CheckEdit AllowNewAccountEdit;
-        private System.Windows.Forms.OpenFileDialog OpenDialog;
-        private System.Windows.Forms.FolderBrowserDialog FolderDialog;
+        private DevExpress.XtraEditors.XtraOpenFileDialog OpenDialog;
+        private DevExpress.XtraEditors.XtraFolderBrowserDialog FolderDialog;
         private DevExpress.XtraTab.XtraTabPage xtraTabPage4;
         private DevExpress.XtraEditors.LabelControl labelControl16;
         private DevExpress.XtraEditors.CheckEdit AllowRequestActivationEdit;
