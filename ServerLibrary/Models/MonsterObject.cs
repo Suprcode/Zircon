@@ -2686,71 +2686,74 @@ namespace Server.Models
                         userDrop.Progress += progress;
                 }
 
-                if (drop.PartOnly ||
-                    ((SEnvir.Random.Next() > chance || (!SEnvir.IsCurrencyItem(drop.Item) && owner.Character.Account.ItemBot)) && ((long)userDrop.Progress <= userDrop.DropCount || SEnvir.IsCurrencyItem(drop.Item))))
+                if (SEnvir.ItemPartInfo != null)
                 {
-                    if (drop.Item.PartCount <= 1) continue;
-
-                    if (SEnvir.Random.Next() > ((owner.Character.Account.ItemBot || drop.PartOnly)
-                            ? chance
-                            : (chance * drop.Item.PartCount))) continue;
-
-                    result = true;
-
-                    UserItem item = SEnvir.CreateDropItem(SEnvir.ItemPartInfo);
-
-                    item.AddStat(Stat.ItemIndex, drop.Item.Index, StatSource.Added);
-                    item.StatsChanged();
-
-                    item.IsTemporary = true;
-
-                    if (NeedHarvest)
+                    if (drop.PartOnly ||
+                        ((SEnvir.Random.Next() > chance || (!SEnvir.IsCurrencyItem(drop.Item) && owner.Character.Account.ItemBot)) && ((long)userDrop.Progress <= userDrop.DropCount || SEnvir.IsCurrencyItem(drop.Item))))
                     {
-                        if (drops == null)
-                            drops = new List<UserItem>();
+                        if (drop.Item.PartCount <= 1) continue;
 
-                        if (drop.Item.Rarity != Rarity.Common)
+                        if (SEnvir.Random.Next() > ((owner.Character.Account.ItemBot || drop.PartOnly)
+                                ? chance
+                                : (chance * drop.Item.PartCount))) continue;
+
+                        result = true;
+
+                        UserItem item = SEnvir.CreateDropItem(SEnvir.ItemPartInfo);
+
+                        item.AddStat(Stat.ItemIndex, drop.Item.Index, StatSource.Added);
+                        item.StatsChanged();
+
+                        item.IsTemporary = true;
+
+                        if (NeedHarvest)
                         {
-                            owner.Connection.ReceiveChat(
-                                string.Format(owner.Connection.Language.HarvestRare, MonsterInfo.MonsterName),
-                                MessageType.System);
+                            if (drops == null)
+                                drops = new List<UserItem>();
 
-                            foreach (SConnection con in owner.Connection.Observers)
-                                con.ReceiveChat(string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName),
+                            if (drop.Item.Rarity != Rarity.Common)
+                            {
+                                owner.Connection.ReceiveChat(
+                                    string.Format(owner.Connection.Language.HarvestRare, MonsterInfo.MonsterName),
                                     MessageType.System);
+
+                                foreach (SConnection con in owner.Connection.Observers)
+                                    con.ReceiveChat(string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName),
+                                        MessageType.System);
+                            }
+
+                            drops.Add(item);
+                            continue;
                         }
 
-                        drops.Add(item);
+                        Cell cell = GetDropLocation(Config.DropDistance, owner) ?? CurrentCell;
+
+                        ItemObject ob = new ItemObject
+                        {
+                            Item = item,
+                            Account = owner.Character.Account,
+                            MonsterDrop = true,
+                        };
+
+                        ob.Spawn(CurrentMap, cell.Location);
+
+                        if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
+                        {
+                            long goldAmount = 0;
+
+                            if (ob.Item.Info == SEnvir.GoldInfo && ob.Account.GuildMember != null &&
+                                ob.Account.GuildMember.Guild.GuildTax > 0)
+                                goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
+
+                            ItemCheck check = new ItemCheck(ob.Item, ob.Item.Count - goldAmount, ob.Item.Flags,
+                                ob.Item.ExpireTime);
+
+                            if (owner.Companion.CanGainItems(true, check)) ob.PickUpItem(owner.Companion);
+
+                        }
+
                         continue;
                     }
-
-                    Cell cell = GetDropLocation(Config.DropDistance, owner) ?? CurrentCell;
-
-                    ItemObject ob = new ItemObject
-                    {
-                        Item = item,
-                        Account = owner.Character.Account,
-                        MonsterDrop = true,
-                    };
-
-                    ob.Spawn(CurrentMap, cell.Location);
-
-                    if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
-                    {
-                        long goldAmount = 0;
-
-                        if (ob.Item.Info == SEnvir.GoldInfo && ob.Account.GuildMember != null &&
-                            ob.Account.GuildMember.Guild.GuildTax > 0)
-                            goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
-
-                        ItemCheck check = new ItemCheck(ob.Item, ob.Item.Count - goldAmount, ob.Item.Flags,
-                            ob.Item.ExpireTime);
-
-                        if (owner.Companion.CanGainItems(true, check)) ob.PickUpItem(owner.Companion);
-
-                    }
-
-                    continue;
                 }
 
                 if (!SEnvir.IsCurrencyItem(drop.Item) && (Math.Floor(userDrop.Progress) > userDrop.DropCount + amount) && Config.EnableFortune)

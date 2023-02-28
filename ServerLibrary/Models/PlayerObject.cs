@@ -9013,6 +9013,7 @@ namespace Server.Models
 
             if (!ParseLinks(p.Links, 0, 100)) return;
 
+            if (SEnvir.FragmentInfo == null || SEnvir.Fragment2Info == null || SEnvir.Fragment3Info == null) return;
 
             long cost = 0;
             int fragmentCount = 0;
@@ -9796,10 +9797,7 @@ namespace Server.Models
 
             if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.RefinementStone) return;
 
-            if (SEnvir.RefinementStoneInfo == null)
-            {
-                return;
-            }
+            if (SEnvir.RefinementStoneInfo == null) return;
 
             if (!ParseLinks(p.IronOres, 4, 4)) return;
             if (!ParseLinks(p.SilverOres, 4, 4)) return;
