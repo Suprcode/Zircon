@@ -16,9 +16,9 @@ namespace Server.Views
         {
             InitializeComponent();
 
-            MapInfoGridControl.DataSource =  SMain.Session.GetCollection<MapInfo>().Binding;
-            MonsterLookUpEdit.DataSource =  SMain.Session.GetCollection<MonsterInfo>().Binding;
-            MapInfoLookUpEdit.DataSource =  SMain.Session.GetCollection<MapInfo>().Binding;
+            MapInfoGridControl.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
+            MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
+            MapInfoLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
 
             LightComboBox.Items.AddEnum<LightSetting>();
@@ -28,8 +28,8 @@ namespace Server.Views
             StartClassImageComboBox.Items.AddEnum<RequiredClass>();
             RequiredClassImageComboBox.Items.AddEnum<RequiredClass>();
         }
-        
-        
+
+
 
         private void MapInfoView_Load(object sender, EventArgs e)
         {
@@ -45,7 +45,7 @@ namespace Server.Views
 
         private void ClearMapsButton_ItemClick(object sender, ItemClickEventArgs e)
         {
-           
+
         }
 
         private void RenameMiniMapButton_ItemClick(object sender, ItemClickEventArgs e)

@@ -30,11 +30,7 @@ namespace Client.Models
             [0] = LibraryFile.M_Shield1,
             [1] = LibraryFile.M_Shield2,
             [0 + FemaleOffSet] = LibraryFile.WM_Shield1,
-            [1 + FemaleOffSet] = LibraryFile.WM_Shield2,
-
-            [100] = LibraryFile.EquipEffect_Part,
-
-            [100 + FemaleOffSet] = LibraryFile.EquipEffect_Part,
+            [1 + FemaleOffSet] = LibraryFile.WM_Shield2
         };
         #endregion
 
@@ -211,16 +207,7 @@ namespace Client.Models
 
         public MirLibrary ShieldLibrary;
         public int ShieldShape;
-        public int ShieldFrame
-        {
-            get
-            {
-                if (ShieldShape < 1000)
-                    return DrawFrame + (ShieldShape % 10) * ArmourShapeOffSet + ArmourShift;
-                else
-                    return 900 + 200 * (ShieldShape % 10) + 10 * (byte)Direction + (GameScene.Game.MapControl.Animation % 4);
-            }
-        }
+        public int ShieldFrame => DrawFrame + (ShieldShape % 10) * ArmourShapeOffSet + ArmourShift;
 
         public MirLibrary BodyLibrary;
         public int ArmourShapeOffSet;
@@ -237,6 +224,8 @@ namespace Client.Models
         public ExteriorEffect ArmourEffect;
         public ExteriorEffect EmblemEffect;
         public ExteriorEffect WingsEffect;
+        public ExteriorEffect WeaponEffect;
+        public ExteriorEffect ShieldEffect;
 
         public bool DrawWeapon;
 
@@ -285,6 +274,8 @@ namespace Client.Models
             ArmourEffect = info.ArmourEffect;
             EmblemEffect = info.EmblemEffect;
             WingsEffect = info.WingsEffect;
+            WeaponEffect = info.WeaponEffect;
+            ShieldEffect = info.ShieldEffect;
 
             Light = info.Light;
 
@@ -808,15 +799,9 @@ namespace Client.Models
         {
             ExteriorEffectManager.DrawExteriorEffects(this, true);
 
-            if (DrawShieldEffectBehind())
-                DrawShieldEffect();
-
             DrawBody(shadow);
 
             ExteriorEffectManager.DrawExteriorEffects(this, false);
-
-            if (DrawShieldEffectInfront())
-                DrawShieldEffect();
         }
 
         public override void DrawBlend()
@@ -874,18 +859,15 @@ namespace Client.Models
                 case MirDirection.UpRight:
                 case MirDirection.Right:
                 case MirDirection.DownRight:
-                    if (ShieldShape >= 0 && ShieldShape < 1000)
+                    image = ShieldLibrary?.GetImage(ShieldFrame);
+                    if (image != null)
                     {
-                        image = ShieldLibrary?.GetImage(ShieldFrame);
-                        if (image != null)
-                        {
-                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
-                            l = Math.Min(l, DrawX + image.OffSetX);
-                            t = Math.Min(t, DrawY + image.OffSetY);
-                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                        }
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
                     }
                     break;
             }
@@ -969,18 +951,15 @@ namespace Client.Models
                 case MirDirection.DownLeft:
                 case MirDirection.Left:
                 case MirDirection.UpLeft:
-                    if (ShieldShape >= 0 && ShieldShape < 1000)
+                    image = ShieldLibrary?.GetImage(ShieldFrame);
+                    if (image != null)
                     {
-                        image = ShieldLibrary?.GetImage(ShieldFrame);
-                        if (image != null)
-                        {
-                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
-                            l = Math.Min(l, DrawX + image.OffSetX);
-                            t = Math.Min(t, DrawY + image.OffSetY);
-                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                        }
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
                     }
                     break;
             }
@@ -1133,53 +1112,6 @@ namespace Client.Models
             }
         }
 
-        public void DrawShieldEffect()
-        {
-            if (!Config.DrawEffects) return;
-            if (Horse != HorseType.None) return;
-
-            switch (CurrentAction)
-            {
-                case MirAction.Die:
-                case MirAction.Dead:
-                    break;
-                default:
-                    if (ShieldShape >= 1000)
-                    {
-                        ShieldLibrary.DrawBlend(ShieldFrame + 100, DrawX, DrawY, Color.White, true, 0.8f, ImageType.Image);
-                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-                    }
-
-                    break;
-            }
-        }
-
-        public bool DrawShieldEffectBehind()
-        {
-            switch (Direction)
-            {
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.DownRight:
-                    return true;
-            }
-            return false;
-        }
-
-        public bool DrawShieldEffectInfront()
-        {
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    return true;
-            }
-            return false;
-        }
-
         public override bool MouseOver(Point p)
         {
             if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
@@ -1199,7 +1131,6 @@ namespace Client.Models
 
             if (ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
                 return true;
-
 
             switch (CurrentAnimation)
             {

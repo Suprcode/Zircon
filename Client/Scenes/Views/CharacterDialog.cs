@@ -2330,7 +2330,7 @@ namespace Client.Scenes.Views
             ClientUserItem armour = Grid[(int)EquipmentSlot.Armour]?.Item;
             if (armour != null)
             {
-                MirImage image = ArmourEffectDecider.GetArmourEffectImageOrNull(armour, Gender);
+                MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
                 if (image != null)
                 {
                     bool oldBlend = DXManager.Blending;
@@ -2363,14 +2363,27 @@ namespace Client.Scenes.Views
                 {
                     int armourIndex = armour.Info.Image;
                     library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Armour].Item.Colour, true, 1F, ImageType.Overlay);
+                    library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, armour.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (Grid[(int)EquipmentSlot.Weapon]?.Item != null)
+                ClientUserItem weapon = Grid[(int)EquipmentSlot.Weapon]?.Item;
+
+                if (weapon != null)
                 {
-                    int weaponIndex = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
+                    int weaponIndex = weapon.Info.Image;
                     library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
+                    library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, weapon.Colour, true, 1F, ImageType.Overlay);
+
+                    MirImage image = EquipEffectDecider.GetEffectImageOrNull(weapon, Gender);
+                    if (image != null)
+                    {
+                        bool oldBlend = DXManager.Blending;
+                        float oldRate = DXManager.BlendRate;
+
+                        DXManager.SetBlend(true, 0.8F);
+                        PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                        DXManager.SetBlend(oldBlend, oldRate);
+                    }
                 }
 
                 if (Grid[(int)EquipmentSlot.Shield]?.Item != null)

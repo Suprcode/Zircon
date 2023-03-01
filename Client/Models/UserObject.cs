@@ -303,11 +303,14 @@ namespace Client.Models
             HairColour = info.HairColour;
 
             ArmourShape = info.Armour;
-            ArmourEffect = info.ArmourEffect;
             ArmourColour = info.ArmourColour;
             LibraryWeaponShape = info.Weapon;
-            WingsEffect = info.WingsShape;
+
+            ArmourEffect = info.ArmourEffect;
             EmblemEffect = info.EmblemEffect;
+            WingsEffect = info.WingsEffect;
+            WeaponEffect = info.WeaponEffect;
+            ShieldEffect = info.ShieldEffect;
 
             Poison = info.Poison;
 

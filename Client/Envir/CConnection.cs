@@ -878,10 +878,13 @@ namespace Client.Envir
                 player.ArmourColour = p.ArmourColour;
                 player.HelmetShape = p.Helmet;
                 player.HorseShape = p.HorseArmour;
-                player.ArmourEffect = p.ArmourEffect;
                 player.ShieldShape = p.Shield;
+
+                player.ArmourEffect = p.ArmourEffect;
                 player.EmblemEffect = p.EmblemEffect;
                 player.WingsEffect = p.WingsEffect;
+                player.WeaponEffect = p.WeaponEffect;
+                player.ShieldEffect = p.ShieldEffect;
 
                 player.Light = p.Light;
                 if (player == MapObject.User)

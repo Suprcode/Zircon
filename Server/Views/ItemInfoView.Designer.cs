@@ -82,11 +82,8 @@ namespace Server.Views
             this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)(this.ItemStatsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StatImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemInfoGridControl)).BeginInit();
@@ -138,7 +135,6 @@ namespace Server.Views
             // 
             // ItemInfoGridControl
             // 
-            this.ItemInfoGridControl.Cursor = System.Windows.Forms.Cursors.Default;
             this.ItemInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
             gridLevelNode1.LevelTemplate = this.ItemStatsGridView;
             gridLevelNode1.RelationName = "ItemStats";
@@ -379,14 +375,6 @@ namespace Server.Views
             this.colItemEffect.VisibleIndex = 7;
             this.colItemEffect.Width = 24;
             // 
-            // colImage
-            // 
-            this.colImage.FieldName = "Image";
-            this.colImage.Name = "colImage";
-            this.colImage.Visible = true;
-            this.colImage.VisibleIndex = 8;
-            this.colImage.Width = 24;
-            // 
             // colExteriorEffect
             // 
             this.colExteriorEffect.FieldName = "ExteriorEffect";
@@ -394,6 +382,14 @@ namespace Server.Views
             this.colExteriorEffect.Visible = true;
             this.colExteriorEffect.VisibleIndex = 9;
             this.colExteriorEffect.Width = 24;
+            // 
+            // colImage
+            // 
+            this.colImage.FieldName = "Image";
+            this.colImage.Name = "colImage";
+            this.colImage.Visible = true;
+            this.colImage.VisibleIndex = 8;
+            this.colImage.Width = 24;
             // 
             // colWeight
             // 
@@ -559,13 +555,12 @@ namespace Server.Views
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
             this.SaveButton,
-            this.barButtonItem1});
+            this.ribbon.SearchEditItem});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
             this.ribbon.MaxItemId = 3;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
-            this.ribbonPage1,
-            this.ribbonPage2});
+            this.ribbonPage1});
             this.ribbon.Size = new System.Drawing.Size(803, 144);
             // 
             // SaveButton
@@ -578,16 +573,6 @@ namespace Server.Views
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
             // 
-            // barButtonItem1
-            // 
-            this.barButtonItem1.Caption = "Export To";
-            this.barButtonItem1.Id = 2;
-            this.barButtonItem1.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.Image")));
-            this.barButtonItem1.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.LargeImage")));
-            this.barButtonItem1.LargeWidth = 60;
-            this.barButtonItem1.Name = "barButtonItem1";
-            this.barButtonItem1.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem1_ItemClick);
-            // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
@@ -598,25 +583,10 @@ namespace Server.Views
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
-            // 
-            // ribbonPage2
-            // 
-            this.ribbonPage2.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup2});
-            this.ribbonPage2.Name = "ribbonPage2";
-            this.ribbonPage2.Text = "Export";
-            // 
-            // ribbonPageGroup2
-            // 
-            this.ribbonPageGroup2.AllowTextClipping = false;
-            this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItem1);
-            this.ribbonPageGroup2.Name = "ribbonPageGroup2";
-            this.ribbonPageGroup2.ShowCaptionButton = false;
-            this.ribbonPageGroup2.Text = "Export";
             // 
             // ItemInfoView
             // 
@@ -695,9 +665,6 @@ namespace Server.Views
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit SetLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn colWeight;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn6;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem1;
-        private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage2;
-        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn8;
         private DevExpress.XtraGrid.Columns.GridColumn colIndex;

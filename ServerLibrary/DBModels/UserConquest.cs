@@ -57,6 +57,11 @@ namespace Server.DBModels
         }
         private DateTime _WarDate;
 
+        protected override void OnLoaded()
+        {
+            base.OnLoaded();
+        }
+
 
         protected override void OnDeleted()
         {

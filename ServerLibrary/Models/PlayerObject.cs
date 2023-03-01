@@ -19116,10 +19116,12 @@ namespace Server.Models
 
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
-                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
 
+                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
-                WingsShape = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
+                WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
+                WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
+                ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 
                 Experience = Experience,
 
@@ -19199,16 +19201,20 @@ namespace Server.Models
                 HairType = HairType,
                 HairColour = HairColour,
 
-                //TODO HElmet
                 Weapon = Equipment[(int)EquipmentSlot.Weapon]?.Info.Shape ?? -1,
 
                 Shield = Equipment[(int)EquipmentSlot.Shield]?.Info.Shape ?? -1,
 
+                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
+
                 ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
                 WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
+                WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
+                ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 
                 Poison = Poison,
 
@@ -19216,7 +19222,6 @@ namespace Server.Models
 
                 Horse = Horse,
 
-                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
@@ -19255,13 +19260,16 @@ namespace Server.Models
 
                 Shield = Equipment[(int)EquipmentSlot.Shield]?.Info.Shape ?? -1,
 
+                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
+
                 ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
                 WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
-
-                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
+                ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 
                 HorseArmour = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 

@@ -908,7 +908,7 @@ namespace Client.Scenes.Views
             ClientUserItem armour = Grid[(int)EquipmentSlot.Armour]?.Item;
             if (armour != null)
             {
-                MirImage image = ArmourEffectDecider.GetArmourEffectImageOrNull(armour, Gender);
+                MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
                 if (image != null)
                 {
                     bool oldBlend = DXManager.Blending;
@@ -949,6 +949,17 @@ namespace Client.Scenes.Views
                     int weaponIndex = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
                     library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                     library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
+
+                    MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
+                    if (image != null)
+                    {
+                        bool oldBlend = DXManager.Blending;
+                        float oldRate = DXManager.BlendRate;
+
+                        DXManager.SetBlend(true, 0.8F);
+                        PresentTexture(image.Image, InspectPanel, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                        DXManager.SetBlend(oldBlend, oldRate);
+                    }
                 }
 
                 if (Grid[(int)EquipmentSlot.Shield]?.Item != null)

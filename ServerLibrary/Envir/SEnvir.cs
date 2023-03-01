@@ -1439,6 +1439,12 @@ namespace Server.Envir
             {
                 foreach (UserConquest conquest in UserConquestList.Binding)
                 {
+                    if (conquest.Guild == null)
+                    {
+                        conquest.Delete();
+                        continue;
+                    }
+
                     if (conquest.Castle != info) continue;
                     if (conquest.WarDate > Now.Date) continue;
 
@@ -1468,7 +1474,6 @@ namespace Server.Envir
         }
         public static void StartConquest(CastleInfo info, List<GuildInfo> participants)
         {
-
             ConquestWar War = new ConquestWar
             {
                 Castle = info,
