@@ -67,13 +67,6 @@ namespace Client.Models
             [15 + FemaleOffSet] = LibraryFile.WM_Weapon15,
             [16 + FemaleOffSet] = LibraryFile.WM_Weapon16,
 
-            [120] = LibraryFile.M_WeaponADL1,
-            [122] = LibraryFile.M_WeaponADL2,
-            [126] = LibraryFile.M_WeaponADL6,
-            [120 + RightHandOffSet] = LibraryFile.M_WeaponADR1,
-            [122 + RightHandOffSet] = LibraryFile.M_WeaponADR2,
-            [126 + RightHandOffSet] = LibraryFile.M_WeaponADR6,
-
             [110] = LibraryFile.M_WeaponAOH1,
             [111] = LibraryFile.M_WeaponAOH2,
             [112] = LibraryFile.M_WeaponAOH3,
@@ -82,13 +75,6 @@ namespace Client.Models
             [115] = LibraryFile.M_WeaponAOH5,
             [116] = LibraryFile.M_WeaponAOH6,
 
-            [120 + FemaleOffSet] = LibraryFile.WM_WeaponADL1,
-            [122 + FemaleOffSet] = LibraryFile.WM_WeaponADL2,
-            [126 + FemaleOffSet] = LibraryFile.WM_WeaponADL6,
-            [120 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR1,
-            [122 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR2,
-            [126 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR6,
-
             [110 + FemaleOffSet] = LibraryFile.WM_WeaponAOH1,
             [111 + FemaleOffSet] = LibraryFile.WM_WeaponAOH2,
             [112 + FemaleOffSet] = LibraryFile.WM_WeaponAOH3,
@@ -96,6 +82,21 @@ namespace Client.Models
             [114 + FemaleOffSet] = LibraryFile.WM_WeaponAOH4,
             [115 + FemaleOffSet] = LibraryFile.WM_WeaponAOH5,
             [116 + FemaleOffSet] = LibraryFile.WM_WeaponAOH6,
+
+            [120] = LibraryFile.M_WeaponADL1,
+            [122] = LibraryFile.M_WeaponADL2,
+            [126] = LibraryFile.M_WeaponADL6,
+            [120 + RightHandOffSet] = LibraryFile.M_WeaponADR1,
+            [122 + RightHandOffSet] = LibraryFile.M_WeaponADR2,
+            [126 + RightHandOffSet] = LibraryFile.M_WeaponADR6,
+
+            [120 + FemaleOffSet] = LibraryFile.WM_WeaponADL1,
+            [122 + FemaleOffSet] = LibraryFile.WM_WeaponADL2,
+            [126 + FemaleOffSet] = LibraryFile.WM_WeaponADL6,
+            [120 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR1,
+            [122 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR2,
+            [126 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR6,
+
         };
         #endregion
 
@@ -411,7 +412,6 @@ namespace Client.Models
                             }
 
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);
-
                             CEnvir.LibraryList.TryGetValue(LibraryFile.M_HairA, out HairLibrary);
 
                             if (!HelmetList.TryGetValue(HelmetShape / 10 + AssassinOffSet, out file)) file = LibraryFile.None;
@@ -426,10 +426,19 @@ namespace Client.Models
                                 CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
 
-                            if (LibraryWeaponShape < 1200) break;
-
-                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
-                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            if (LibraryWeaponShape >= 1200)
+                            {
+                                if (LibraryWeaponShape == 1263) //Chaotic Heaven Blade
+                                {
+                                    if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
+                                }
+                                else
+                                {
+                                    if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                }
+                            }
                             break;
                         case MirGender.Female:
                             if (!ArmourList.TryGetValue(ArmourShape / 11 + AssassinOffSet + FemaleOffSet, out file))
@@ -453,10 +462,19 @@ namespace Client.Models
                                 CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
 
-                            if (LibraryWeaponShape < 1200) break;
-
-                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
-                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            if (LibraryWeaponShape >= 1200)
+                            {
+                                if (LibraryWeaponShape == 1263) //Chaotic Heaven Blade
+                                {
+                                    if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
+                                }
+                                else
+                                {
+                                    if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                }
+                            }
                             break;
                     }
                     break;
@@ -993,7 +1011,6 @@ namespace Client.Models
 
             if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(Opacity);
 
-
             switch (CurrentAnimation)
             {
                 case MirAnimation.HorseStanding:
@@ -1024,19 +1041,17 @@ namespace Client.Models
                             //if (shadow)
                             //    HorseShapeLibrary2?.DrawBlend(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
-
                     }
 
                     break;
             }
 
-
-
             DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(l, t, r, b), Vector3.Zero, new Vector3(l, t, 0), DrawColour);
             CEnvir.DPSCounter++;
-            if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(oldOpacity);
 
+            if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(oldOpacity);
         }
+
         public void DrawShadow2(int l, int t, int r, int b)
         {
             MirImage image = BodyLibrary?.GetImage(ArmourFrame);
