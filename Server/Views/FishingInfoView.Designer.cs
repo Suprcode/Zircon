@@ -35,6 +35,7 @@
             this.ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.ColChance = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.FishingInfoGridControl = new DevExpress.XtraGrid.GridControl();
             this.FishingInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -44,7 +45,9 @@
             this.SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.FishingDropInfoGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.FishingInfoGridControl)).BeginInit();
@@ -109,9 +112,16 @@
             this.gridColumn3.Visible = true;
             this.gridColumn3.VisibleIndex = 3;
             // 
+            // gridColumn4
+            // 
+            this.gridColumn4.Caption = "Throw Quality";
+            this.gridColumn4.FieldName = "ThrowQuality";
+            this.gridColumn4.Name = "gridColumn4";
+            this.gridColumn4.Visible = true;
+            this.gridColumn4.VisibleIndex = 2;
+            // 
             // FishingInfoGridControl
             // 
-            this.FishingInfoGridControl.Cursor = System.Windows.Forms.Cursors.Default;
             this.FishingInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
             gridLevelNode1.LevelTemplate = this.FishingDropInfoGridView;
             gridLevelNode1.RelationName = "Drops";
@@ -182,9 +192,11 @@
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
             this.ribbon.SearchEditItem,
-            this.SaveDatabaseButton});
+            this.SaveDatabaseButton,
+            this.ImportButton,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
+            this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
@@ -203,7 +215,8 @@
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
+            this.ribbonPageGroup1,
+            this.JsonImportExport});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
@@ -215,13 +228,30 @@
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "Saving";
             // 
-            // gridColumn4
+            // JsonImportExport
             // 
-            this.gridColumn4.Caption = "Throw Quality";
-            this.gridColumn4.FieldName = "ThrowQuality";
-            this.gridColumn4.Name = "gridColumn4";
-            this.gridColumn4.Visible = true;
-            this.gridColumn4.VisibleIndex = 2;
+            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
+            // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 2;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
             // 
             // FishingInfoView
             // 
@@ -261,5 +291,8 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit ItemLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

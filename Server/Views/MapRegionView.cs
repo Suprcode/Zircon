@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using DevExpress.XtraBars;
 using DevExpress.XtraGrid.Views.Grid;
 using Library.SystemModels;
@@ -51,6 +44,16 @@ namespace Server.Views
             MapViewer.CurrentViewer.Save();
 
             MapViewer.CurrentViewer.MapRegion = view.GetFocusedRow() as MapRegion;
+        }
+
+        private void ImportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<MapRegion>();
+        }
+
+        private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<MapRegion>(MapRegionGridView);
         }
     }
 }

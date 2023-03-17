@@ -1,9 +1,11 @@
 ﻿using MirDB;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
     public sealed class GuardInfo : DBObject
     {
+        [IsIdentity]
         [Association("Guards")]
         public MapInfo Map
         {
@@ -20,6 +22,7 @@ namespace Library.SystemModels
         }
         private MapInfo _Map;
 
+        [IsIdentity]
         public MonsterInfo Monster
         {
             get { return _Monster; }
@@ -35,6 +38,7 @@ namespace Library.SystemModels
         }
         private MonsterInfo _Monster;
 
+        [IsIdentity]
         public int X
         {
             get { return _X; }
@@ -50,6 +54,7 @@ namespace Library.SystemModels
         }
         private int _X;
 
+        [IsIdentity]
         public int Y
         {
             get { return _Y; }

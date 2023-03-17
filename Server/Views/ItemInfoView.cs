@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Reflection;
-using System.Text;
 using DevExpress.XtraBars;
+
 using Library;
 using Library.SystemModels;
-using Server.Envir;
 
 namespace Server.Views
 {
@@ -43,6 +37,14 @@ namespace Server.Views
             SMain.Session.Save(true);
         }
 
+        private void ImportButton_Click(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<ItemInfo>();
+        }
 
+        private void ExportButton_Click(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<ItemInfo>(ItemInfoGridView);
+        }
     }
 }

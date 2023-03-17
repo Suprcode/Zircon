@@ -7,6 +7,7 @@ namespace Library.SystemModels
 {
     public class FishingInfo : DBObject
     {
+        [IsIdentity]
         public string Name
         {
             get { return _Name; }

@@ -167,7 +167,7 @@
             this.ClientSize = new System.Drawing.Size(937, 373);
             this.Controls.Add(this.GameStoreSaleGridControl);
             this.Name = "GameStoreSaleView";
-            this.Text = "Game Store Sale View";
+            this.Text = "Store Sales";
             ((System.ComponentModel.ISupportInitialize)(this.GameStoreSaleGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GameStoreSaleGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).EndInit();

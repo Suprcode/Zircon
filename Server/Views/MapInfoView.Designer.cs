@@ -37,585 +37,696 @@
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject3 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject4 = new DevExpress.Utils.SerializableAppearanceObject();
-            GuardsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
-            MonsterLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
-            DirectionImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            MapInfoGridControl = new DevExpress.XtraGrid.GridControl();
-            RegionGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            gridColumn18 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn19 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
-            EditButtonEdit = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
-            MiningGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
-            ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
-            MapInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            colFileName = new DevExpress.XtraGrid.Columns.GridColumn();
-            colDescription = new DevExpress.XtraGrid.Columns.GridColumn();
-            colMiniMap = new DevExpress.XtraGrid.Columns.GridColumn();
-            colLight = new DevExpress.XtraGrid.Columns.GridColumn();
-            LightComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colRequiredClass = new DevExpress.XtraGrid.Columns.GridColumn();
-            colAllowRT = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn15 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn16 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn17 = new DevExpress.XtraGrid.Columns.GridColumn();
-            MapInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn24 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn22 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn25 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn23 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn26 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn27 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn14 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn28 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn21 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn29 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colWeather = new DevExpress.XtraGrid.Columns.GridColumn();
-            WeatherComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            SaveButton = new DevExpress.XtraBars.BarButtonItem();
-            ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            StartClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            RequiredClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            ((System.ComponentModel.ISupportInitialize)GuardsGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MonsterLookUpEdit).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)DirectionImageComboBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MapInfoGridControl).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)RegionGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)EditButtonEdit).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MiningGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MapInfoGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)LightComboBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MapInfoLookUpEdit).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)WeatherComboBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MapIconImageComboBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)StartClassImageComboBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)RequiredClassImageComboBox).BeginInit();
-            SuspendLayout();
+            this.GuardsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.MonsterLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.DirectionImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.MapInfoGridControl = new DevExpress.XtraGrid.GridControl();
+            this.RegionGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.gridColumn18 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn19 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.EditButtonEdit = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
+            this.MiningGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.MapInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.colFileName = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colDescription = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colMiniMap = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colLight = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.LightComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colRequiredClass = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colAllowRT = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn15 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn16 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn17 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.MapInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn24 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn22 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn25 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn23 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn26 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn27 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn14 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn28 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn21 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn29 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colWeather = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.WeatherComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.StartClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.RequiredClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            ((System.ComponentModel.ISupportInitialize)(this.GuardsGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MonsterLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DirectionImageComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapInfoGridControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RegionGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EditButtonEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MiningGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapInfoGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LightComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeatherComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StartClassImageComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RequiredClassImageComboBox)).BeginInit();
+            this.SuspendLayout();
             // 
             // GuardsGridView
             // 
-            GuardsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn2, gridColumn3, gridColumn4 });
-            GuardsGridView.GridControl = MapInfoGridControl;
-            GuardsGridView.Name = "GuardsGridView";
-            GuardsGridView.OptionsView.EnableAppearanceEvenRow = true;
-            GuardsGridView.OptionsView.EnableAppearanceOddRow = true;
-            GuardsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            GuardsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            GuardsGridView.OptionsView.ShowGroupPanel = false;
+            this.GuardsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.gridColumn1,
+            this.gridColumn2,
+            this.gridColumn3,
+            this.gridColumn4});
+            this.GuardsGridView.GridControl = this.MapInfoGridControl;
+            this.GuardsGridView.Name = "GuardsGridView";
+            this.GuardsGridView.OptionsView.EnableAppearanceEvenRow = true;
+            this.GuardsGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.GuardsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            this.GuardsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            this.GuardsGridView.OptionsView.ShowGroupPanel = false;
             // 
             // gridColumn1
             // 
-            gridColumn1.ColumnEdit = MonsterLookUpEdit;
-            gridColumn1.FieldName = "Monster";
-            gridColumn1.Name = "gridColumn1";
-            gridColumn1.Visible = true;
-            gridColumn1.VisibleIndex = 0;
+            this.gridColumn1.ColumnEdit = this.MonsterLookUpEdit;
+            this.gridColumn1.FieldName = "Monster";
+            this.gridColumn1.Name = "gridColumn1";
+            this.gridColumn1.Visible = true;
+            this.gridColumn1.VisibleIndex = 0;
             // 
             // MonsterLookUpEdit
             // 
-            MonsterLookUpEdit.AutoHeight = false;
-            MonsterLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            MonsterLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            MonsterLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MonsterName", "Monster Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("AI", "AI"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Level", "Level"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Experience", "Experience"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("IsBoss", "Is Boss") });
-            MonsterLookUpEdit.DisplayMember = "MonsterName";
-            MonsterLookUpEdit.Name = "MonsterLookUpEdit";
-            MonsterLookUpEdit.NullText = "[Monster is null]";
+            this.MonsterLookUpEdit.AutoHeight = false;
+            this.MonsterLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            this.MonsterLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.MonsterLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MonsterName", "Monster Name"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("AI", "AI"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Level", "Level"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Experience", "Experience"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("IsBoss", "Is Boss")});
+            this.MonsterLookUpEdit.DisplayMember = "MonsterName";
+            this.MonsterLookUpEdit.Name = "MonsterLookUpEdit";
+            this.MonsterLookUpEdit.NullText = "[Monster is null]";
             // 
             // gridColumn2
             // 
-            gridColumn2.FieldName = "X";
-            gridColumn2.Name = "gridColumn2";
-            gridColumn2.Visible = true;
-            gridColumn2.VisibleIndex = 1;
+            this.gridColumn2.FieldName = "X";
+            this.gridColumn2.Name = "gridColumn2";
+            this.gridColumn2.Visible = true;
+            this.gridColumn2.VisibleIndex = 1;
             // 
             // gridColumn3
             // 
-            gridColumn3.FieldName = "Y";
-            gridColumn3.Name = "gridColumn3";
-            gridColumn3.Visible = true;
-            gridColumn3.VisibleIndex = 2;
+            this.gridColumn3.FieldName = "Y";
+            this.gridColumn3.Name = "gridColumn3";
+            this.gridColumn3.Visible = true;
+            this.gridColumn3.VisibleIndex = 2;
             // 
             // gridColumn4
             // 
-            gridColumn4.ColumnEdit = DirectionImageComboBox;
-            gridColumn4.FieldName = "Direction";
-            gridColumn4.Name = "gridColumn4";
-            gridColumn4.Visible = true;
-            gridColumn4.VisibleIndex = 3;
+            this.gridColumn4.ColumnEdit = this.DirectionImageComboBox;
+            this.gridColumn4.FieldName = "Direction";
+            this.gridColumn4.Name = "gridColumn4";
+            this.gridColumn4.Visible = true;
+            this.gridColumn4.VisibleIndex = 3;
             // 
             // DirectionImageComboBox
             // 
-            DirectionImageComboBox.AutoHeight = false;
-            DirectionImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            DirectionImageComboBox.Name = "DirectionImageComboBox";
+            this.DirectionImageComboBox.AutoHeight = false;
+            this.DirectionImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.DirectionImageComboBox.Name = "DirectionImageComboBox";
             // 
             // MapInfoGridControl
             // 
-            MapInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            gridLevelNode1.LevelTemplate = GuardsGridView;
+            this.MapInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            gridLevelNode1.LevelTemplate = this.GuardsGridView;
             gridLevelNode1.RelationName = "Guards";
-            gridLevelNode2.LevelTemplate = RegionGridView;
+            gridLevelNode2.LevelTemplate = this.RegionGridView;
             gridLevelNode2.RelationName = "Regions";
-            gridLevelNode3.LevelTemplate = MiningGridView;
+            gridLevelNode3.LevelTemplate = this.MiningGridView;
             gridLevelNode3.RelationName = "Mining";
-            MapInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1, gridLevelNode2, gridLevelNode3 });
-            MapInfoGridControl.Location = new System.Drawing.Point(0, 158);
-            MapInfoGridControl.MainView = MapInfoGridView;
-            MapInfoGridControl.MenuManager = ribbon;
-            MapInfoGridControl.Name = "MapInfoGridControl";
-            MapInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { LightComboBox, MonsterLookUpEdit, DirectionImageComboBox, MapInfoLookUpEdit, MapIconImageComboBox, StartClassImageComboBox, RequiredClassImageComboBox, EditButtonEdit, ItemLookUpEdit, WeatherComboBox });
-            MapInfoGridControl.ShowOnlyPredefinedDetails = true;
-            MapInfoGridControl.Size = new System.Drawing.Size(830, 381);
-            MapInfoGridControl.TabIndex = 2;
-            MapInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { RegionGridView, MiningGridView, MapInfoGridView, GuardsGridView });
+            this.MapInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode1,
+            gridLevelNode2,
+            gridLevelNode3});
+            this.MapInfoGridControl.Location = new System.Drawing.Point(0, 144);
+            this.MapInfoGridControl.MainView = this.MapInfoGridView;
+            this.MapInfoGridControl.MenuManager = this.ribbon;
+            this.MapInfoGridControl.Name = "MapInfoGridControl";
+            this.MapInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
+            this.LightComboBox,
+            this.MonsterLookUpEdit,
+            this.DirectionImageComboBox,
+            this.MapInfoLookUpEdit,
+            this.MapIconImageComboBox,
+            this.StartClassImageComboBox,
+            this.RequiredClassImageComboBox,
+            this.EditButtonEdit,
+            this.ItemLookUpEdit,
+            this.WeatherComboBox});
+            this.MapInfoGridControl.ShowOnlyPredefinedDetails = true;
+            this.MapInfoGridControl.Size = new System.Drawing.Size(830, 395);
+            this.MapInfoGridControl.TabIndex = 2;
+            this.MapInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.RegionGridView,
+            this.MiningGridView,
+            this.MapInfoGridView,
+            this.GuardsGridView});
             // 
             // RegionGridView
             // 
-            RegionGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn18, gridColumn19, gridColumn20 });
-            RegionGridView.GridControl = MapInfoGridControl;
-            RegionGridView.Name = "RegionGridView";
-            RegionGridView.OptionsView.EnableAppearanceEvenRow = true;
-            RegionGridView.OptionsView.EnableAppearanceOddRow = true;
-            RegionGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            RegionGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            RegionGridView.OptionsView.ShowGroupPanel = false;
+            this.RegionGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.gridColumn18,
+            this.gridColumn19,
+            this.gridColumn20});
+            this.RegionGridView.GridControl = this.MapInfoGridControl;
+            this.RegionGridView.Name = "RegionGridView";
+            this.RegionGridView.OptionsView.EnableAppearanceEvenRow = true;
+            this.RegionGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.RegionGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            this.RegionGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            this.RegionGridView.OptionsView.ShowGroupPanel = false;
             // 
             // gridColumn18
             // 
-            gridColumn18.FieldName = "Description";
-            gridColumn18.Name = "gridColumn18";
-            gridColumn18.Visible = true;
-            gridColumn18.VisibleIndex = 0;
+            this.gridColumn18.FieldName = "Description";
+            this.gridColumn18.Name = "gridColumn18";
+            this.gridColumn18.Visible = true;
+            this.gridColumn18.VisibleIndex = 0;
             // 
             // gridColumn19
             // 
-            gridColumn19.FieldName = "Size";
-            gridColumn19.Name = "gridColumn19";
-            gridColumn19.Visible = true;
-            gridColumn19.VisibleIndex = 1;
+            this.gridColumn19.FieldName = "Size";
+            this.gridColumn19.Name = "gridColumn19";
+            this.gridColumn19.Visible = true;
+            this.gridColumn19.VisibleIndex = 1;
             // 
             // gridColumn20
             // 
-            gridColumn20.Caption = "Edit";
-            gridColumn20.ColumnEdit = EditButtonEdit;
-            gridColumn20.Name = "gridColumn20";
-            gridColumn20.Visible = true;
-            gridColumn20.VisibleIndex = 2;
+            this.gridColumn20.Caption = "Edit";
+            this.gridColumn20.ColumnEdit = this.EditButtonEdit;
+            this.gridColumn20.Name = "gridColumn20";
+            this.gridColumn20.Visible = true;
+            this.gridColumn20.VisibleIndex = 2;
             // 
             // EditButtonEdit
             // 
-            EditButtonEdit.AutoHeight = false;
-            editorButtonImageOptions1.Image = (System.Drawing.Image)resources.GetObject("editorButtonImageOptions1.Image");
-            EditButtonEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, editorButtonImageOptions1, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject1, serializableAppearanceObject2, serializableAppearanceObject3, serializableAppearanceObject4, "", null, null, DevExpress.Utils.ToolTipAnchor.Default) });
-            EditButtonEdit.Name = "EditButtonEdit";
-            EditButtonEdit.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
-            EditButtonEdit.ButtonClick += EditButtonEdit_ButtonClick;
+            this.EditButtonEdit.AutoHeight = false;
+            editorButtonImageOptions1.Image = ((System.Drawing.Image)(resources.GetObject("editorButtonImageOptions1.Image")));
+            this.EditButtonEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, editorButtonImageOptions1, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject1, serializableAppearanceObject2, serializableAppearanceObject3, serializableAppearanceObject4, "", null, null, DevExpress.Utils.ToolTipAnchor.Default)});
+            this.EditButtonEdit.Name = "EditButtonEdit";
+            this.EditButtonEdit.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             // 
             // MiningGridView
             // 
-            MiningGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn7, gridColumn8 });
-            MiningGridView.GridControl = MapInfoGridControl;
-            MiningGridView.Name = "MiningGridView";
-            MiningGridView.OptionsView.EnableAppearanceEvenRow = true;
-            MiningGridView.OptionsView.EnableAppearanceOddRow = true;
-            MiningGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            MiningGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            MiningGridView.OptionsView.ShowGroupPanel = false;
+            this.MiningGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.gridColumn7,
+            this.gridColumn8});
+            this.MiningGridView.GridControl = this.MapInfoGridControl;
+            this.MiningGridView.Name = "MiningGridView";
+            this.MiningGridView.OptionsView.EnableAppearanceEvenRow = true;
+            this.MiningGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.MiningGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            this.MiningGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            this.MiningGridView.OptionsView.ShowGroupPanel = false;
             // 
             // gridColumn7
             // 
-            gridColumn7.ColumnEdit = ItemLookUpEdit;
-            gridColumn7.FieldName = "Item";
-            gridColumn7.Name = "gridColumn7";
-            gridColumn7.Visible = true;
-            gridColumn7.VisibleIndex = 0;
+            this.gridColumn7.ColumnEdit = this.ItemLookUpEdit;
+            this.gridColumn7.FieldName = "Item";
+            this.gridColumn7.Name = "gridColumn7";
+            this.gridColumn7.Visible = true;
+            this.gridColumn7.VisibleIndex = 0;
             // 
             // ItemLookUpEdit
             // 
-            ItemLookUpEdit.AutoHeight = false;
-            ItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            ItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            ItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size") });
-            ItemLookUpEdit.DisplayMember = "ItemName";
-            ItemLookUpEdit.Name = "ItemLookUpEdit";
-            ItemLookUpEdit.NullText = "[Item is null]";
+            this.ItemLookUpEdit.AutoHeight = false;
+            this.ItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            this.ItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.ItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size")});
+            this.ItemLookUpEdit.DisplayMember = "ItemName";
+            this.ItemLookUpEdit.Name = "ItemLookUpEdit";
+            this.ItemLookUpEdit.NullText = "[Item is null]";
             // 
             // gridColumn8
             // 
-            gridColumn8.FieldName = "Chance";
-            gridColumn8.Name = "gridColumn8";
-            gridColumn8.Visible = true;
-            gridColumn8.VisibleIndex = 1;
+            this.gridColumn8.FieldName = "Chance";
+            this.gridColumn8.Name = "gridColumn8";
+            this.gridColumn8.Visible = true;
+            this.gridColumn8.VisibleIndex = 1;
             // 
             // MapInfoGridView
             // 
-            MapInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colFileName, colDescription, colMiniMap, colLight, gridColumn12, colRequiredClass, colAllowRT, gridColumn13, gridColumn15, gridColumn16, gridColumn17, gridColumn5, gridColumn24, gridColumn6, gridColumn9, gridColumn10, gridColumn22, gridColumn25, gridColumn23, gridColumn26, gridColumn11, gridColumn27, gridColumn14, gridColumn28, gridColumn21, gridColumn29, colWeather });
-            MapInfoGridView.GridControl = MapInfoGridControl;
-            MapInfoGridView.Name = "MapInfoGridView";
-            MapInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
-            MapInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
-            MapInfoGridView.OptionsView.EnableAppearanceOddRow = true;
-            MapInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            MapInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            MapInfoGridView.OptionsView.ShowGroupPanel = false;
+            this.MapInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.colFileName,
+            this.colDescription,
+            this.colMiniMap,
+            this.colLight,
+            this.gridColumn12,
+            this.colRequiredClass,
+            this.colAllowRT,
+            this.gridColumn13,
+            this.gridColumn15,
+            this.gridColumn16,
+            this.gridColumn17,
+            this.gridColumn5,
+            this.gridColumn24,
+            this.gridColumn6,
+            this.gridColumn9,
+            this.gridColumn10,
+            this.gridColumn22,
+            this.gridColumn25,
+            this.gridColumn23,
+            this.gridColumn26,
+            this.gridColumn11,
+            this.gridColumn27,
+            this.gridColumn14,
+            this.gridColumn28,
+            this.gridColumn21,
+            this.gridColumn29,
+            this.colWeather});
+            this.MapInfoGridView.GridControl = this.MapInfoGridControl;
+            this.MapInfoGridView.Name = "MapInfoGridView";
+            this.MapInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
+            this.MapInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            this.MapInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.MapInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            this.MapInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            this.MapInfoGridView.OptionsView.ShowGroupPanel = false;
             // 
             // colFileName
             // 
-            colFileName.FieldName = "FileName";
-            colFileName.Name = "colFileName";
-            colFileName.Visible = true;
-            colFileName.VisibleIndex = 0;
-            colFileName.Width = 28;
+            this.colFileName.FieldName = "FileName";
+            this.colFileName.Name = "colFileName";
+            this.colFileName.Visible = true;
+            this.colFileName.VisibleIndex = 0;
+            this.colFileName.Width = 28;
             // 
             // colDescription
             // 
-            colDescription.FieldName = "Description";
-            colDescription.Name = "colDescription";
-            colDescription.Visible = true;
-            colDescription.VisibleIndex = 1;
-            colDescription.Width = 28;
+            this.colDescription.FieldName = "Description";
+            this.colDescription.Name = "colDescription";
+            this.colDescription.Visible = true;
+            this.colDescription.VisibleIndex = 1;
+            this.colDescription.Width = 28;
             // 
             // colMiniMap
             // 
-            colMiniMap.FieldName = "MiniMap";
-            colMiniMap.Name = "colMiniMap";
-            colMiniMap.Visible = true;
-            colMiniMap.VisibleIndex = 2;
-            colMiniMap.Width = 28;
+            this.colMiniMap.FieldName = "MiniMap";
+            this.colMiniMap.Name = "colMiniMap";
+            this.colMiniMap.Visible = true;
+            this.colMiniMap.VisibleIndex = 2;
+            this.colMiniMap.Width = 28;
             // 
             // colLight
             // 
-            colLight.ColumnEdit = LightComboBox;
-            colLight.FieldName = "Light";
-            colLight.Name = "colLight";
-            colLight.Visible = true;
-            colLight.VisibleIndex = 3;
-            colLight.Width = 32;
+            this.colLight.ColumnEdit = this.LightComboBox;
+            this.colLight.FieldName = "Light";
+            this.colLight.Name = "colLight";
+            this.colLight.Visible = true;
+            this.colLight.VisibleIndex = 3;
+            this.colLight.Width = 32;
             // 
             // LightComboBox
             // 
-            LightComboBox.AutoHeight = false;
-            LightComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            LightComboBox.Name = "LightComboBox";
+            this.LightComboBox.AutoHeight = false;
+            this.LightComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.LightComboBox.Name = "LightComboBox";
             // 
             // gridColumn12
             // 
-            gridColumn12.Caption = "Fight";
-            gridColumn12.FieldName = "Fight";
-            gridColumn12.Name = "gridColumn12";
-            gridColumn12.Visible = true;
-            gridColumn12.VisibleIndex = 5;
-            gridColumn12.Width = 27;
+            this.gridColumn12.Caption = "Fight";
+            this.gridColumn12.FieldName = "Fight";
+            this.gridColumn12.Name = "gridColumn12";
+            this.gridColumn12.Visible = true;
+            this.gridColumn12.VisibleIndex = 5;
+            this.gridColumn12.Width = 27;
             // 
             // colRequiredClass
             // 
-            colRequiredClass.Caption = "Required Class";
-            colRequiredClass.FieldName = "RequiredClass";
-            colRequiredClass.Name = "colRequiredClass";
-            colRequiredClass.Visible = true;
-            colRequiredClass.VisibleIndex = 6;
-            colRequiredClass.Width = 27;
+            this.colRequiredClass.Caption = "Required Class";
+            this.colRequiredClass.FieldName = "RequiredClass";
+            this.colRequiredClass.Name = "colRequiredClass";
+            this.colRequiredClass.Visible = true;
+            this.colRequiredClass.VisibleIndex = 6;
+            this.colRequiredClass.Width = 27;
             // 
             // colAllowRT
             // 
-            colAllowRT.FieldName = "AllowRT";
-            colAllowRT.Name = "colAllowRT";
-            colAllowRT.Visible = true;
-            colAllowRT.VisibleIndex = 7;
-            colAllowRT.Width = 27;
+            this.colAllowRT.FieldName = "AllowRT";
+            this.colAllowRT.Name = "colAllowRT";
+            this.colAllowRT.Visible = true;
+            this.colAllowRT.VisibleIndex = 7;
+            this.colAllowRT.Width = 27;
             // 
             // gridColumn13
             // 
-            gridColumn13.FieldName = "CanHorse";
-            gridColumn13.Name = "gridColumn13";
-            gridColumn13.Visible = true;
-            gridColumn13.VisibleIndex = 8;
-            gridColumn13.Width = 27;
+            this.gridColumn13.FieldName = "CanHorse";
+            this.gridColumn13.Name = "gridColumn13";
+            this.gridColumn13.Visible = true;
+            this.gridColumn13.VisibleIndex = 8;
+            this.gridColumn13.Width = 27;
             // 
             // gridColumn15
             // 
-            gridColumn15.FieldName = "AllowTT";
-            gridColumn15.Name = "gridColumn15";
-            gridColumn15.Visible = true;
-            gridColumn15.VisibleIndex = 9;
-            gridColumn15.Width = 27;
+            this.gridColumn15.FieldName = "AllowTT";
+            this.gridColumn15.Name = "gridColumn15";
+            this.gridColumn15.Visible = true;
+            this.gridColumn15.VisibleIndex = 9;
+            this.gridColumn15.Width = 27;
             // 
             // gridColumn16
             // 
-            gridColumn16.FieldName = "SkillDelay";
-            gridColumn16.Name = "gridColumn16";
-            gridColumn16.Visible = true;
-            gridColumn16.VisibleIndex = 10;
-            gridColumn16.Width = 27;
+            this.gridColumn16.FieldName = "SkillDelay";
+            this.gridColumn16.Name = "gridColumn16";
+            this.gridColumn16.Visible = true;
+            this.gridColumn16.VisibleIndex = 10;
+            this.gridColumn16.Width = 27;
             // 
             // gridColumn17
             // 
-            gridColumn17.ColumnEdit = MapInfoLookUpEdit;
-            gridColumn17.FieldName = "ReconnectMap";
-            gridColumn17.Name = "gridColumn17";
-            gridColumn17.Visible = true;
-            gridColumn17.VisibleIndex = 11;
-            gridColumn17.Width = 27;
+            this.gridColumn17.ColumnEdit = this.MapInfoLookUpEdit;
+            this.gridColumn17.FieldName = "ReconnectMap";
+            this.gridColumn17.Name = "gridColumn17";
+            this.gridColumn17.Visible = true;
+            this.gridColumn17.VisibleIndex = 11;
+            this.gridColumn17.Width = 27;
             // 
             // MapInfoLookUpEdit
             // 
-            MapInfoLookUpEdit.AutoHeight = false;
-            MapInfoLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            MapInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            MapInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("FileName", "File Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Description", "Description") });
-            MapInfoLookUpEdit.DisplayMember = "Description";
-            MapInfoLookUpEdit.Name = "MapInfoLookUpEdit";
-            MapInfoLookUpEdit.NullText = "[Map is null]";
+            this.MapInfoLookUpEdit.AutoHeight = false;
+            this.MapInfoLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            this.MapInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.MapInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("FileName", "File Name"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Description", "Description")});
+            this.MapInfoLookUpEdit.DisplayMember = "Description";
+            this.MapInfoLookUpEdit.Name = "MapInfoLookUpEdit";
+            this.MapInfoLookUpEdit.NullText = "[Map is null]";
             // 
             // gridColumn5
             // 
-            gridColumn5.FieldName = "MinimumLevel";
-            gridColumn5.Name = "gridColumn5";
-            gridColumn5.Visible = true;
-            gridColumn5.VisibleIndex = 12;
-            gridColumn5.Width = 27;
+            this.gridColumn5.FieldName = "MinimumLevel";
+            this.gridColumn5.Name = "gridColumn5";
+            this.gridColumn5.Visible = true;
+            this.gridColumn5.VisibleIndex = 12;
+            this.gridColumn5.Width = 27;
             // 
             // gridColumn24
             // 
-            gridColumn24.FieldName = "MaximumLevel";
-            gridColumn24.Name = "gridColumn24";
-            gridColumn24.Visible = true;
-            gridColumn24.VisibleIndex = 13;
-            gridColumn24.Width = 27;
+            this.gridColumn24.FieldName = "MaximumLevel";
+            this.gridColumn24.Name = "gridColumn24";
+            this.gridColumn24.Visible = true;
+            this.gridColumn24.VisibleIndex = 13;
+            this.gridColumn24.Width = 27;
             // 
             // gridColumn6
             // 
-            gridColumn6.FieldName = "CanMine";
-            gridColumn6.Name = "gridColumn6";
-            gridColumn6.Visible = true;
-            gridColumn6.VisibleIndex = 14;
-            gridColumn6.Width = 27;
+            this.gridColumn6.FieldName = "CanMine";
+            this.gridColumn6.Name = "gridColumn6";
+            this.gridColumn6.Visible = true;
+            this.gridColumn6.VisibleIndex = 14;
+            this.gridColumn6.Width = 27;
             // 
             // gridColumn9
             // 
-            gridColumn9.FieldName = "Music";
-            gridColumn9.Name = "gridColumn9";
-            gridColumn9.Visible = true;
-            gridColumn9.VisibleIndex = 15;
-            gridColumn9.Width = 27;
+            this.gridColumn9.FieldName = "Music";
+            this.gridColumn9.Name = "gridColumn9";
+            this.gridColumn9.Visible = true;
+            this.gridColumn9.VisibleIndex = 15;
+            this.gridColumn9.Width = 27;
             // 
             // gridColumn10
             // 
-            gridColumn10.FieldName = "CanMarriageRecall";
-            gridColumn10.Name = "gridColumn10";
-            gridColumn10.Visible = true;
-            gridColumn10.VisibleIndex = 16;
-            gridColumn10.Width = 27;
+            this.gridColumn10.FieldName = "CanMarriageRecall";
+            this.gridColumn10.Name = "gridColumn10";
+            this.gridColumn10.Visible = true;
+            this.gridColumn10.VisibleIndex = 16;
+            this.gridColumn10.Width = 27;
             // 
             // gridColumn22
             // 
-            gridColumn22.Caption = "Min Health";
-            gridColumn22.FieldName = "MonsterHealth";
-            gridColumn22.Name = "gridColumn22";
-            gridColumn22.Visible = true;
-            gridColumn22.VisibleIndex = 17;
-            gridColumn22.Width = 27;
+            this.gridColumn22.Caption = "Min Health";
+            this.gridColumn22.FieldName = "MonsterHealth";
+            this.gridColumn22.Name = "gridColumn22";
+            this.gridColumn22.Visible = true;
+            this.gridColumn22.VisibleIndex = 17;
+            this.gridColumn22.Width = 27;
             // 
             // gridColumn25
             // 
-            gridColumn25.Caption = "Max Health";
-            gridColumn25.FieldName = "MaxMonsterHealth";
-            gridColumn25.Name = "gridColumn25";
-            gridColumn25.Visible = true;
-            gridColumn25.VisibleIndex = 18;
-            gridColumn25.Width = 27;
+            this.gridColumn25.Caption = "Max Health";
+            this.gridColumn25.FieldName = "MaxMonsterHealth";
+            this.gridColumn25.Name = "gridColumn25";
+            this.gridColumn25.Visible = true;
+            this.gridColumn25.VisibleIndex = 18;
+            this.gridColumn25.Width = 27;
             // 
             // gridColumn23
             // 
-            gridColumn23.Caption = "Min Damage";
-            gridColumn23.FieldName = "MonsterDamage";
-            gridColumn23.Name = "gridColumn23";
-            gridColumn23.Visible = true;
-            gridColumn23.VisibleIndex = 19;
-            gridColumn23.Width = 27;
+            this.gridColumn23.Caption = "Min Damage";
+            this.gridColumn23.FieldName = "MonsterDamage";
+            this.gridColumn23.Name = "gridColumn23";
+            this.gridColumn23.Visible = true;
+            this.gridColumn23.VisibleIndex = 19;
+            this.gridColumn23.Width = 27;
             // 
             // gridColumn26
             // 
-            gridColumn26.Caption = "Max Damage";
-            gridColumn26.FieldName = "MaxMonsterDamage";
-            gridColumn26.Name = "gridColumn26";
-            gridColumn26.Visible = true;
-            gridColumn26.VisibleIndex = 20;
-            gridColumn26.Width = 27;
+            this.gridColumn26.Caption = "Max Damage";
+            this.gridColumn26.FieldName = "MaxMonsterDamage";
+            this.gridColumn26.Name = "gridColumn26";
+            this.gridColumn26.Visible = true;
+            this.gridColumn26.VisibleIndex = 20;
+            this.gridColumn26.Width = 27;
             // 
             // gridColumn11
             // 
-            gridColumn11.Caption = "Min Exp";
-            gridColumn11.FieldName = "ExperienceRate";
-            gridColumn11.Name = "gridColumn11";
-            gridColumn11.Visible = true;
-            gridColumn11.VisibleIndex = 21;
-            gridColumn11.Width = 27;
+            this.gridColumn11.Caption = "Min Exp";
+            this.gridColumn11.FieldName = "ExperienceRate";
+            this.gridColumn11.Name = "gridColumn11";
+            this.gridColumn11.Visible = true;
+            this.gridColumn11.VisibleIndex = 21;
+            this.gridColumn11.Width = 27;
             // 
             // gridColumn27
             // 
-            gridColumn27.Caption = "Max Exp";
-            gridColumn27.FieldName = "MaxExperienceRate";
-            gridColumn27.Name = "gridColumn27";
-            gridColumn27.Visible = true;
-            gridColumn27.VisibleIndex = 22;
-            gridColumn27.Width = 27;
+            this.gridColumn27.Caption = "Max Exp";
+            this.gridColumn27.FieldName = "MaxExperienceRate";
+            this.gridColumn27.Name = "gridColumn27";
+            this.gridColumn27.Visible = true;
+            this.gridColumn27.VisibleIndex = 22;
+            this.gridColumn27.Width = 27;
             // 
             // gridColumn14
             // 
-            gridColumn14.Caption = "Min Drop";
-            gridColumn14.FieldName = "DropRate";
-            gridColumn14.Name = "gridColumn14";
-            gridColumn14.Visible = true;
-            gridColumn14.VisibleIndex = 23;
-            gridColumn14.Width = 27;
+            this.gridColumn14.Caption = "Min Drop";
+            this.gridColumn14.FieldName = "DropRate";
+            this.gridColumn14.Name = "gridColumn14";
+            this.gridColumn14.Visible = true;
+            this.gridColumn14.VisibleIndex = 23;
+            this.gridColumn14.Width = 27;
             // 
             // gridColumn28
             // 
-            gridColumn28.Caption = "Max Drop";
-            gridColumn28.FieldName = "MaxDropRate";
-            gridColumn28.Name = "gridColumn28";
-            gridColumn28.Visible = true;
-            gridColumn28.VisibleIndex = 24;
-            gridColumn28.Width = 33;
+            this.gridColumn28.Caption = "Max Drop";
+            this.gridColumn28.FieldName = "MaxDropRate";
+            this.gridColumn28.Name = "gridColumn28";
+            this.gridColumn28.Visible = true;
+            this.gridColumn28.VisibleIndex = 24;
+            this.gridColumn28.Width = 33;
             // 
             // gridColumn21
             // 
-            gridColumn21.Caption = "Min Gold";
-            gridColumn21.FieldName = "GoldRate";
-            gridColumn21.Name = "gridColumn21";
-            gridColumn21.Visible = true;
-            gridColumn21.VisibleIndex = 25;
-            gridColumn21.Width = 27;
+            this.gridColumn21.Caption = "Min Gold";
+            this.gridColumn21.FieldName = "GoldRate";
+            this.gridColumn21.Name = "gridColumn21";
+            this.gridColumn21.Visible = true;
+            this.gridColumn21.VisibleIndex = 25;
+            this.gridColumn21.Width = 27;
             // 
             // gridColumn29
             // 
-            gridColumn29.Caption = "Max Gold";
-            gridColumn29.FieldName = "MaxGoldRate";
-            gridColumn29.Name = "gridColumn29";
-            gridColumn29.Visible = true;
-            gridColumn29.VisibleIndex = 26;
-            gridColumn29.Width = 85;
+            this.gridColumn29.Caption = "Max Gold";
+            this.gridColumn29.FieldName = "MaxGoldRate";
+            this.gridColumn29.Name = "gridColumn29";
+            this.gridColumn29.Visible = true;
+            this.gridColumn29.VisibleIndex = 26;
+            this.gridColumn29.Width = 85;
             // 
             // colWeather
             // 
-            colWeather.Caption = "Weather";
-            colWeather.ColumnEdit = WeatherComboBox;
-            colWeather.FieldName = "Weather";
-            colWeather.Name = "colWeather";
-            colWeather.Visible = true;
-            colWeather.VisibleIndex = 4;
-            colWeather.Width = 38;
+            this.colWeather.Caption = "Weather";
+            this.colWeather.ColumnEdit = this.WeatherComboBox;
+            this.colWeather.FieldName = "Weather";
+            this.colWeather.Name = "colWeather";
+            this.colWeather.Visible = true;
+            this.colWeather.VisibleIndex = 4;
+            this.colWeather.Width = 38;
             // 
             // WeatherComboBox
             // 
-            WeatherComboBox.AutoHeight = false;
-            WeatherComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            WeatherComboBox.Name = "WeatherComboBox";
+            this.WeatherComboBox.AutoHeight = false;
+            this.WeatherComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.WeatherComboBox.Name = "WeatherComboBox";
             // 
             // ribbon
             // 
-            ribbon.ExpandCollapseItem.Id = 0;
-            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton });
-            ribbon.Location = new System.Drawing.Point(0, 0);
-            ribbon.MaxItemId = 4;
-            ribbon.Name = "ribbon";
-            ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(830, 158);
+            this.ribbon.ExpandCollapseItem.Id = 0;
+            this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
+            this.ribbon.ExpandCollapseItem,
+            this.ribbon.SearchEditItem,
+            this.SaveButton,
+            this.ImportButton,
+            this.ExportButton});
+            this.ribbon.Location = new System.Drawing.Point(0, 0);
+            this.ribbon.MaxItemId = 6;
+            this.ribbon.Name = "ribbon";
+            this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
+            this.ribbonPage1});
+            this.ribbon.Size = new System.Drawing.Size(830, 144);
             // 
             // SaveButton
             // 
-            SaveButton.Caption = "Save Database";
-            SaveButton.Id = 1;
-            SaveButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("SaveButton.ImageOptions.Image");
-            SaveButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("SaveButton.ImageOptions.LargeImage");
-            SaveButton.LargeWidth = 60;
-            SaveButton.Name = "SaveButton";
-            SaveButton.ItemClick += SaveButton_ItemClick;
+            this.SaveButton.Caption = "Save Database";
+            this.SaveButton.Id = 1;
+            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
+            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
+            this.SaveButton.LargeWidth = 60;
+            this.SaveButton.Name = "SaveButton";
+            // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 4;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 5;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
             // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1 });
-            ribbonPage1.Name = "ribbonPage1";
-            ribbonPage1.Text = "Home";
+            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
+            this.ribbonPageGroup1,
+            this.JsonImportExport});
+            this.ribbonPage1.Name = "ribbonPage1";
+            this.ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
-            ribbonPageGroup1.AllowTextClipping = false;
-            ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
-            ribbonPageGroup1.ItemLinks.Add(SaveButton);
-            ribbonPageGroup1.Name = "ribbonPageGroup1";
-            ribbonPageGroup1.Text = "Saving";
+            this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
+            this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
+            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
+            this.ribbonPageGroup1.Text = "Saving";
+            // 
+            // JsonImportExport
+            // 
+            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
             // 
             // MapIconImageComboBox
             // 
-            MapIconImageComboBox.AutoHeight = false;
-            MapIconImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            MapIconImageComboBox.Name = "MapIconImageComboBox";
+            this.MapIconImageComboBox.AutoHeight = false;
+            this.MapIconImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.MapIconImageComboBox.Name = "MapIconImageComboBox";
             // 
             // StartClassImageComboBox
             // 
-            StartClassImageComboBox.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
-            StartClassImageComboBox.AutoHeight = false;
-            StartClassImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            StartClassImageComboBox.ContextImageOptions.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
-            StartClassImageComboBox.Name = "StartClassImageComboBox";
+            this.StartClassImageComboBox.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
+            this.StartClassImageComboBox.AutoHeight = false;
+            this.StartClassImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.StartClassImageComboBox.ContextImageOptions.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
+            this.StartClassImageComboBox.Name = "StartClassImageComboBox";
             // 
             // RequiredClassImageComboBox
             // 
-            RequiredClassImageComboBox.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
-            RequiredClassImageComboBox.AutoHeight = false;
-            RequiredClassImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            RequiredClassImageComboBox.ContextImageOptions.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
-            RequiredClassImageComboBox.Name = "RequiredClassImageComboBox";
+            this.RequiredClassImageComboBox.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
+            this.RequiredClassImageComboBox.AutoHeight = false;
+            this.RequiredClassImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.RequiredClassImageComboBox.ContextImageOptions.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
+            this.RequiredClassImageComboBox.Name = "RequiredClassImageComboBox";
             // 
             // MapInfoView
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(830, 539);
-            Controls.Add(MapInfoGridControl);
-            Controls.Add(ribbon);
-            Name = "MapInfoView";
-            Ribbon = ribbon;
-            Text = "Map Info";
-            Load += MapInfoView_Load;
-            ((System.ComponentModel.ISupportInitialize)GuardsGridView).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MonsterLookUpEdit).EndInit();
-            ((System.ComponentModel.ISupportInitialize)DirectionImageComboBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MapInfoGridControl).EndInit();
-            ((System.ComponentModel.ISupportInitialize)RegionGridView).EndInit();
-            ((System.ComponentModel.ISupportInitialize)EditButtonEdit).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MiningGridView).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MapInfoGridView).EndInit();
-            ((System.ComponentModel.ISupportInitialize)LightComboBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MapInfoLookUpEdit).EndInit();
-            ((System.ComponentModel.ISupportInitialize)WeatherComboBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MapIconImageComboBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)StartClassImageComboBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)RequiredClassImageComboBox).EndInit();
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(830, 539);
+            this.Controls.Add(this.MapInfoGridControl);
+            this.Controls.Add(this.ribbon);
+            this.Name = "MapInfoView";
+            this.Ribbon = this.ribbon;
+            this.Text = "Map Info";
+            ((System.ComponentModel.ISupportInitialize)(this.GuardsGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MonsterLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DirectionImageComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapInfoGridControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RegionGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EditButtonEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MiningGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapInfoGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LightComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeatherComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StartClassImageComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RequiredClassImageComboBox)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion
@@ -675,5 +786,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn29;
         private DevExpress.XtraGrid.Columns.GridColumn colWeather;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox WeatherComboBox;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

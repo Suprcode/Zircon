@@ -1,9 +1,11 @@
 ﻿using MirDB;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
     public sealed class MonsterInfo : DBObject
     {
+        [IsIdentity]
         public string MonsterName
         {
             get { return _MonsterName; }
@@ -252,20 +254,23 @@ namespace Library.SystemModels
         [Association("MonsterInfoStats", true)]
         public DBBindingList<MonsterInfoStat> MonsterInfoStats { get; set; }
 
+        [JsonIgnore]
         [Association("Respawns", true)]
         public DBBindingList<RespawnInfo> Respawns { get; set; }
 
+        [JsonIgnore]
         [Association("Drops", true)]
         public DBBindingList<DropInfo> Drops { get; set; }
 
+        [JsonIgnore]
         [Association("Events", true)]
         public DBBindingList<EventTarget> Events { get; set; }
 
+        [JsonIgnore]
         [Association("QuestDetails", true)]
         public DBBindingList<QuestTaskMonsterDetails> QuestDetails { get; set; }
 
-
-        public Stats Stats = new Stats();
+        public Stats Stats = new();
 
         protected internal override void OnCreated()
         {

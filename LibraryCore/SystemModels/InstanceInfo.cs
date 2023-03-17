@@ -1,6 +1,7 @@
 ﻿using MirDB;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
@@ -9,9 +10,7 @@ namespace Library.SystemModels
 
     public sealed class InstanceInfo : DBObject
     {
-        [Association("Map", true)]
-        public DBBindingList<InstanceMapInfo> Maps { get; set; }
-
+        [IsIdentity]
         public string Name
         {
             get { return _Name; }
@@ -147,7 +146,6 @@ namespace Library.SystemModels
         }
         private byte _MaxPlayerCount;
 
-
         public ItemInfo RequiredItem
         {
             get { return _RequiredItem; }
@@ -194,7 +192,6 @@ namespace Library.SystemModels
         }
         private MapRegion _ConnectRegion;
 
-
         public MapRegion ReconnectRegion
         {
             get { return _ReconnectRegion; }
@@ -225,19 +222,25 @@ namespace Library.SystemModels
         }
         private int _CooldownTimeInMinutes;
 
+        [Association("Map", true)]
+        public DBBindingList<InstanceMapInfo> Maps { get; set; }
+
         [Association("InstanceInfoStats", true)]
         public DBBindingList<InstanceInfoStat> BuffStats { get; set; }
 
+        [JsonIgnore]
         [IgnoreProperty]
         public Dictionary<string, byte> UserRecord { get; set; }
 
+        [JsonIgnore]
         [IgnoreProperty]
         public Dictionary<string, DateTime> UserCooldown { get; set; }
 
+        [JsonIgnore]
         [IgnoreProperty]
         public Dictionary<string, DateTime> GuildCooldown { get; set; }
 
-        public Stats Stats = new Stats();
+        public Stats Stats = new();
 
         protected internal override void OnLoaded()
         {

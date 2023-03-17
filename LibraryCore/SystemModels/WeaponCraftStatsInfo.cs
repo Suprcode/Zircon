@@ -9,6 +9,7 @@ namespace Library.SystemModels
 {
     public sealed class WeaponCraftStatInfo : DBObject
     {
+        [IsIdentity]
         public RequiredClass RequiredClass
         {
             get { return _RequiredClass; }
@@ -23,8 +24,8 @@ namespace Library.SystemModels
             }
         }
         private RequiredClass _RequiredClass;
-        
 
+        [IsIdentity]
         public Stat Stat
         {
             get { return _Stat; }
@@ -69,7 +70,8 @@ namespace Library.SystemModels
             }
         }
         private int _MaxValue;
-        
+
+        [IsIdentity]
         public int Weight
         {
             get { return _Weight; }

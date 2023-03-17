@@ -77,12 +77,15 @@
             this.SayMemoExEdit = new DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit();
             this.colSuccessPage = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn17 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.gridColumn23 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.CurrencyInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.JsonImportButton = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)(this.ChecksGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PageLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CheckTypeImageComboBox)).BeginInit();
@@ -100,8 +103,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.NPCPageGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DialogTypeImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SayMemoExEdit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             this.SuspendLayout();
             // 
             // ChecksGridView
@@ -239,7 +242,7 @@
             gridLevelNode3,
             gridLevelNode4,
             gridLevelNode5});
-            this.NPCPageGridControl.Location = new System.Drawing.Point(0, 143);
+            this.NPCPageGridControl.Location = new System.Drawing.Point(0, 144);
             this.NPCPageGridControl.MainView = this.NPCPageGridView;
             this.NPCPageGridControl.MenuManager = this.ribbon;
             this.NPCPageGridControl.Name = "NPCPageGridControl";
@@ -256,7 +259,7 @@
             this.InstanceLookUpEdit,
             this.CurrencyInfoLookUpEdit});
             this.NPCPageGridControl.ShowOnlyPredefinedDetails = true;
-            this.NPCPageGridControl.Size = new System.Drawing.Size(641, 395);
+            this.NPCPageGridControl.Size = new System.Drawing.Size(641, 394);
             this.NPCPageGridControl.TabIndex = 2;
             this.NPCPageGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.ActionsGridView,
@@ -543,44 +546,6 @@
             this.gridColumn17.Visible = true;
             this.gridColumn17.VisibleIndex = 4;
             // 
-            // ribbon
-            // 
-            this.ribbon.ExpandCollapseItem.Id = 0;
-            this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
-            this.ribbon.ExpandCollapseItem,
-            this.SaveButton});
-            this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
-            this.ribbon.Name = "ribbon";
-            this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
-            this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(641, 143);
-            // 
-            // SaveButton
-            // 
-            this.SaveButton.Caption = "Save Database";
-            this.SaveButton.Id = 1;
-            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
-            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
-            this.SaveButton.LargeWidth = 60;
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
-            // 
-            // ribbonPage1
-            // 
-            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
-            this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "Home";
-            // 
-            // ribbonPageGroup1
-            // 
-            this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
-            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
-            this.ribbonPageGroup1.Text = "Saving";
-            // 
             // gridColumn23
             // 
             this.gridColumn23.Caption = "Currency";
@@ -602,6 +567,73 @@
             this.CurrencyInfoLookUpEdit.Name = "CurrencyInfoLookUpEdit";
             this.CurrencyInfoLookUpEdit.NullText = "[Currency is null]";
             // 
+            // ribbon
+            // 
+            this.ribbon.ExpandCollapseItem.Id = 0;
+            this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
+            this.ribbon.ExpandCollapseItem,
+            this.ribbon.SearchEditItem,
+            this.SaveButton,
+            this.ImportButton,
+            this.ExportButton});
+            this.ribbon.Location = new System.Drawing.Point(0, 0);
+            this.ribbon.MaxItemId = 4;
+            this.ribbon.Name = "ribbon";
+            this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
+            this.ribbonPage1});
+            this.ribbon.Size = new System.Drawing.Size(641, 144);
+            // 
+            // SaveButton
+            // 
+            this.SaveButton.Caption = "Save Database";
+            this.SaveButton.Id = 1;
+            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
+            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
+            this.SaveButton.LargeWidth = 60;
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
+            // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 2;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            // 
+            // ribbonPage1
+            // 
+            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
+            this.ribbonPageGroup1,
+            this.JsonImportButton});
+            this.ribbonPage1.Name = "ribbonPage1";
+            this.ribbonPage1.Text = "Home";
+            // 
+            // ribbonPageGroup1
+            // 
+            this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
+            this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
+            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
+            this.ribbonPageGroup1.Text = "Saving";
+            // 
+            // JsonImportButton
+            // 
+            this.JsonImportButton.ItemLinks.Add(this.ImportButton);
+            this.JsonImportButton.ItemLinks.Add(this.ExportButton);
+            this.JsonImportButton.Name = "JsonImportButton";
+            this.JsonImportButton.Text = "Json";
+            // 
             // NPCPageView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -611,7 +643,7 @@
             this.Controls.Add(this.ribbon);
             this.Name = "NPCPageView";
             this.Ribbon = this.ribbon;
-            this.Text = "NPC Pages";
+            this.Text = "NPC Page";
             ((System.ComponentModel.ISupportInitialize)(this.ChecksGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PageLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CheckTypeImageComboBox)).EndInit();
@@ -629,8 +661,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.NPCPageGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DialogTypeImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SayMemoExEdit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -687,5 +719,8 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit InstanceLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn23;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit CurrencyInfoLookUpEdit;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportButton;
     }
 }

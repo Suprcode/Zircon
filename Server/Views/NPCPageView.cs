@@ -3,7 +3,6 @@ using DevExpress.XtraBars;
 using DevExpress.XtraBars.Ribbon;
 using Library;
 using Library.SystemModels;
-using Server.DBModels;
 
 namespace Server.Views
 {
@@ -43,6 +42,16 @@ namespace Server.Views
             SMain.SetUpView(ButtonsGridView);
             SMain.SetUpView(TypesGridView);
             SMain.SetUpView(GoodsGridView);
+        }
+
+        private void ImportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<NPCPage>();
+        }
+
+        private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<NPCPage>(NPCPageGridView);
         }
     }
 }

@@ -25,8 +25,9 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DevExpress.Win.BonusSkins" Version="21.2.6" />
-    <PackageReference Include="DevExpress.Win.Design" Version="21.2.6" />
+    <PackageReference Include="DevExpress.Win" Version="22.2.3" />
+    <PackageReference Include="DevExpress.Win.BonusSkins" Version="22.2.3" />
+    <PackageReference Include="DevExpress.Win.Design" Version="22.2.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="WinSCP" Version="5.21.7" />

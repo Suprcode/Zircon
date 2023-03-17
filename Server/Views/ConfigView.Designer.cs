@@ -2408,7 +2408,7 @@
             this.Controls.Add(this.ribbon);
             this.Name = "ConfigView";
             this.Ribbon = this.ribbon;
-            this.Text = "Config View";
+            this.Text = "Config";
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).EndInit();
             this.xtraTabControl1.ResumeLayout(false);

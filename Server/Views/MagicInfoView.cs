@@ -35,5 +35,15 @@ namespace Server.Views
         {
 
         }
+
+        private void ImportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<MagicInfo>();
+        }
+
+        private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<MagicInfo>(MagicInfoGridView);
+        }
     }
 }

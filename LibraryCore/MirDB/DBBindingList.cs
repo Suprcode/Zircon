@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reflection;
-using Library.MirDB;
 
 namespace MirDB
 {
@@ -10,14 +9,14 @@ namespace MirDB
         private readonly Session Session;
         private readonly DBObject Parent;
         private readonly PropertyInfo Property;
-        private readonly Association Link;
+        private readonly AssociationAttribute Link;
 
         public DBBindingList(DBObject parent, PropertyInfo property)
         {
             Session = parent.Collection.Session;
             Parent = parent;
             Property = property;
-            Link = property.GetCustomAttribute<Association>();
+            Link = property.GetCustomAttribute<AssociationAttribute>();
             
             RaiseListChangedEvents = Session.GetCollection(property.PropertyType.GetGenericArguments()[0]).RaisePropertyChanges;
         }
@@ -55,7 +54,7 @@ namespace MirDB
 
             foreach (PropertyInfo p in properties)
             {
-                Association obLink = p.GetCustomAttribute<Association>();
+                AssociationAttribute obLink = p.GetCustomAttribute<AssociationAttribute>();
 
                 if (obLink == null || obLink.Identity != Link.Identity || p.PropertyType != Property.DeclaringType) continue;
 
@@ -84,7 +83,7 @@ namespace MirDB
 
             foreach (PropertyInfo p in properties)
             {
-                Association obLink = p.GetCustomAttribute<Association>();
+                AssociationAttribute obLink = p.GetCustomAttribute<AssociationAttribute>();
 
                 if (obLink == null || obLink.Identity != Link.Identity || p.PropertyType != Property.DeclaringType) continue;
 

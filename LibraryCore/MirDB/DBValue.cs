@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Library;
 
 namespace MirDB
@@ -210,7 +208,7 @@ namespace MirDB
             PropertyInfo property = type?.GetProperty(PropertyName);
 
             if (property != null)
-                if (property.GetCustomAttribute<IgnoreProperty>() != null) return;
+                if (property.GetCustomAttribute<IgnorePropertyAttribute>() != null) return;
 
             Property = property;
         }

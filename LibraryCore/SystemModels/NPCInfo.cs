@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using MirDB;
 
 namespace Library.SystemModels
 {
     public sealed class NPCInfo : DBObject
     {
+        [IsIdentity]
         public MapRegion Region
         {
             get { return _Region; }
@@ -20,6 +22,7 @@ namespace Library.SystemModels
         }
         private MapRegion _Region;
 
+        [IsIdentity]
         public string NPCName
         {
             get { return _NPCName; }
@@ -83,15 +86,18 @@ namespace Library.SystemModels
         [IgnoreProperty]
         public string RegionName => Region?.ServerDescription ?? string.Empty;
 
+        [JsonIgnore]
         [Association("StartQuests")]
         public DBBindingList<QuestInfo> StartQuests { get; set; }
 
+        [JsonIgnore]
         [Association("FinishQuests")]
         public DBBindingList<QuestInfo> FinishQuests { get; set; }
 
         [Association("Requirements", true)]
         public DBBindingList<NPCRequirement> Requirements { get; set; }
 
+        [JsonIgnore]
         [IgnoreProperty]
         public CurrentQuest CurrentQuest { get; set; }
     }

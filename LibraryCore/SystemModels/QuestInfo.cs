@@ -9,6 +9,7 @@ namespace Library.SystemModels
 {
     public sealed class QuestInfo : DBObject
     {
+        [IsIdentity]
         public string QuestName
         {
             get { return _QuestName; }
@@ -98,8 +99,7 @@ namespace Library.SystemModels
             }
         }
         private string _ArchiveText;
-        
-        
+              
         [Association("Requirements", true)]
         public DBBindingList<QuestRequirement> Requirements { get; set; }
 

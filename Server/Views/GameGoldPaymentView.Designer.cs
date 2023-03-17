@@ -217,7 +217,7 @@
             this.ClientSize = new System.Drawing.Size(937, 373);
             this.Controls.Add(this.GameGoldPaymentGridControl);
             this.Name = "GameGoldPaymentView";
-            this.Text = "Game Gold Payment View";
+            this.Text = "Payments";
             ((System.ComponentModel.ISupportInitialize)(this.GameGoldPaymentGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GameGoldPaymentGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).EndInit();

@@ -35,5 +35,15 @@ namespace Server.Views
         {
             SMain.Session.Save(true);
         }
+
+        private void barButtonItem1_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<NPCInfo>();
+        }
+
+        private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<NPCInfo>(NPCInfoGridView);
+        }
     }
 }
