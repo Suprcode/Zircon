@@ -121,6 +121,14 @@ namespace Server.Models
         public override bool CanAttack => base.CanAttack && Horse == HorseType.None;
         public override bool CanCast => base.CanCast && Horse == HorseType.None && !Fishing;
 
+        private bool HideHead
+        {
+            get
+            {
+                return Equipment[(int)EquipmentSlot.Armour]?.Info.ItemEffect == ItemEffect.FishingRobe || Equipment[(int)EquipmentSlot.Costume]?.Info != null;
+            }
+        }
+
         public List<MonsterObject> Pets = new List<MonsterObject>();
 
         public HashSet<MapObject> VisibleObjects = new HashSet<MapObject>();
@@ -165,11 +173,6 @@ namespace Server.Models
 
         public Point FishingLocation;
         public MirDirection FishingDirection;
-
-        public bool HasFishingRobe
-        {
-            get { return Equipment[(int)EquipmentSlot.Armour]?.Info.ItemEffect == ItemEffect.FishingRobe; }
-        }
 
         public PlayerObject(CharacterInfo info, SConnection con)
         {
@@ -5524,12 +5527,9 @@ namespace Server.Models
                                 return;
                             }
 
-
-
                             if (item.Info.Stats[Stat.Experience] > 0) GainExperience(item.Info.Stats[Stat.Experience], false);
 
                             IncreasePKPoints(item.Info.Stats[Stat.PKPoint]);
-
 
                             if (item.Info.Stats[Stat.FootballArmourAction] > 0 && SEnvir.Random.Next(item.Info.Stats[Stat.FootballArmourAction]) == 0)
                             {
@@ -5667,7 +5667,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            //Give armour
+                            //Give extractor
                             extractorInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.StatExtractor);
 
                             if (extractorInfo == null) return;
@@ -5726,7 +5726,7 @@ namespace Server.Models
 
                             weapon.StatsChanged();
 
-                            //Give armour
+                            //Give stats to weapon
                             for (int i = item.AddedStats.Count - 1; i >= 0; i--)
                                 weapon.AddStat(item.AddedStats[i].Stat, item.AddedStats[i].Amount, item.AddedStats[i].StatSource);
 
@@ -5791,7 +5791,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            //Give armour
+                            //Give extractor
                             extractorInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.RefineExtractor);
 
                             if (extractorInfo == null) return;
@@ -5847,7 +5847,7 @@ namespace Server.Models
 
                             weapon.StatsChanged();
 
-                            //Give armour
+                            //Give stats to weapon
                             for (int i = item.AddedStats.Count - 1; i >= 0; i--)
                                 weapon.AddStat(item.AddedStats[i].Stat, item.AddedStats[i].Amount, item.AddedStats[i].StatSource);
 
@@ -19117,9 +19117,10 @@ namespace Server.Models
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
 
+                Costume = Equipment[(int)EquipmentSlot.Costume]?.Info.Shape ?? -1,
+
                 ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
-                WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
                 WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
                 ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 
@@ -19158,7 +19159,9 @@ namespace Server.Models
 
                 Horse = Horse,
 
-                HelmetShape = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                HelmetShape = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
+                HideHead = HideHead,
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
@@ -19205,14 +19208,17 @@ namespace Server.Models
 
                 Shield = Equipment[(int)EquipmentSlot.Shield]?.Info.Shape ?? -1,
 
-                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                Helmet = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
+                HideHead = HideHead,
 
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
 
+                Costume = Equipment[(int)EquipmentSlot.Costume]?.Info.Shape ?? -1,
+
                 ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
-                WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
                 WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
                 ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 
@@ -19221,7 +19227,6 @@ namespace Server.Models
                 Buffs = Character.Buffs.Where(x => x.Visible).Select(x => x.Type).ToList(),
 
                 Horse = Horse,
-
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
@@ -19260,14 +19265,17 @@ namespace Server.Models
 
                 Shield = Equipment[(int)EquipmentSlot.Shield]?.Info.Shape ?? -1,
 
-                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                Helmet = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
+                HideHead = HideHead,
 
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
 
+                Costume = Equipment[(int)EquipmentSlot.Costume]?.Info.Shape ?? -1,
+
                 ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
-                WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
                 WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
                 ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 

@@ -451,8 +451,8 @@ namespace Library
                     return type == ItemType.HorseArmour;
                 case EquipmentSlot.Shield:
                     return type == ItemType.Shield;
-                case EquipmentSlot.Wings:
-                    return type == ItemType.Wings;
+                case EquipmentSlot.Costume:
+                    return type == ItemType.Costume;
                 case EquipmentSlot.Hook:
                     return type == ItemType.Hook;
                 case EquipmentSlot.Float:

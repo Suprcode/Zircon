@@ -595,16 +595,16 @@ namespace Client.Scenes.Views
                 };
                 cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 36);
 
-                Grid[(int)EquipmentSlot.Wings] = cell = new DXItemCell
+                Grid[(int)EquipmentSlot.Costume] = cell = new DXItemCell
                 {
                     Location = new Point(24, 204),
                     Parent = InspectPanel,
                     Border = true,
                     ItemGrid = Equipment,
-                    Slot = (int)EquipmentSlot.Wings,
+                    Slot = (int)EquipmentSlot.Costume,
                     GridType = GridType.Inspect,
                 };
-                //cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 34);
 
                 Grid[(int)EquipmentSlot.Hook] = cell = new DXItemCell
                 {

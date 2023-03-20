@@ -1508,8 +1508,8 @@ namespace Client.Controls
                 case ItemType.Shield:
                     GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Shield].ToEquipment(this);
                     break;
-                case ItemType.Wings:
-                    GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Wings].ToEquipment(this);
+                case ItemType.Costume:
+                    GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.Costume].ToEquipment(this);
                     break;
                 case ItemType.HorseArmour:
                     GameScene.Game.CharacterBox.Grid[(int)EquipmentSlot.HorseArmour].ToEquipment(this);

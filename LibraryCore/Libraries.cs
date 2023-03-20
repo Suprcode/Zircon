@@ -75,6 +75,14 @@ namespace Library
             [LibraryFile.M_HairA] = @"Data\M-HairA.Zl",
             [LibraryFile.WM_HairA] = @"Data\WM-HairA.Zl",
 
+            [LibraryFile.M_Costume] = @"Data\M-Costume.Zl",
+            [LibraryFile.M_CostumeA] = @"Data\M-CostumeA.Zl",
+            [LibraryFile.M_CostumeEx1] = @"Data\M-CostumeEx1.Zl",
+
+            [LibraryFile.WM_Costume] = @"Data\WM-Costume.Zl",
+            [LibraryFile.WM_CostumeA] = @"Data\WM-CostumeA.Zl",
+            [LibraryFile.WM_CostumeEx1] = @"Data\WM-CostumeEx1.Zl",
+
             [LibraryFile.Horse] = @"Data\Horse.Zl",
             [LibraryFile.HorseS] = @"Data\HorseS.Zl",
             [LibraryFile.HorseIron] = @"Data\Horse_Iron.Zl",
@@ -490,6 +498,14 @@ namespace Library
         WM_HumAEx2,
         WM_HumAEx3,
         WM_HairA,
+
+        M_Costume,
+        M_CostumeA,
+        M_CostumeEx1,
+
+        WM_Costume,
+        WM_CostumeA,
+        WM_CostumeEx1,
 
         Horse,
         HorseS,

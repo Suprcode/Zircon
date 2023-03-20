@@ -874,15 +874,21 @@ namespace Client.Envir
                 PlayerObject player = (PlayerObject)ob;
 
                 player.LibraryWeaponShape = p.Weapon;
+
                 player.ArmourShape = p.Armour;
                 player.ArmourColour = p.ArmourColour;
+
+                player.CostumeShape = p.Costume;
+
                 player.HelmetShape = p.Helmet;
                 player.HorseShape = p.HorseArmour;
+
                 player.ShieldShape = p.Shield;
+
+                player.HideHead = p.HideHead;
 
                 player.ArmourEffect = p.ArmourEffect;
                 player.EmblemEffect = p.EmblemEffect;
-                player.WingsEffect = p.WingsEffect;
                 player.WeaponEffect = p.WeaponEffect;
                 player.ShieldEffect = p.ShieldEffect;
 

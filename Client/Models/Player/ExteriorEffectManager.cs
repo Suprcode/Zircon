@@ -21,11 +21,18 @@ namespace Client.Models.Player
                 return;
             }
 
-            DrawExteriorEffect(player, player.ArmourEffect, behind);
-            DrawExteriorEffect(player, player.WingsEffect, behind);
+            if (player.CostumeShape < 0)
+            {
+                DrawExteriorEffect(player, player.ArmourEffect, behind);
+            }
+
             DrawExteriorEffect(player, player.EmblemEffect, behind);
-            DrawExteriorEffect(player, player.WeaponEffect, behind);
-            DrawExteriorEffect(player, player.ShieldEffect, behind);
+
+            if (!PlayerObject.CostumeShapeHideBody.Contains(player.CostumeShape))
+            {
+                DrawExteriorEffect(player, player.WeaponEffect, behind);
+                DrawExteriorEffect(player, player.ShieldEffect, behind);
+            }
         }
 
         private static bool DrawExteriorEffectBehind(MirDirection direction, ExteriorEffect effect)

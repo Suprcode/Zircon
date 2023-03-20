@@ -15,6 +15,10 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\Debug\Server\</OutputPath>
+    <NoWarn>1701;1702;CA1416</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Inject\**" />
@@ -31,13 +35,5 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="DevExpress.XtraBars.v21.2">
-      
-    </Reference>
-    <Reference Include="DevExpress.XtraEditors.v21.2">
-      
-    </Reference>
   </ItemGroup>
 </Project>

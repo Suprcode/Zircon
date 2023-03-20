@@ -174,6 +174,26 @@ namespace Client.Models
         };
         #endregion
 
+        #region Costume Librarys
+        public Dictionary<int, LibraryFile> CostumeList = new()
+        {
+            [0] = LibraryFile.M_Costume,
+            [1] = LibraryFile.M_CostumeEx1,
+
+            [0 + FemaleOffSet] = LibraryFile.WM_Costume,
+            [1 + FemaleOffSet] = LibraryFile.WM_CostumeEx1,
+
+            [0 + AssassinOffSet] = LibraryFile.M_CostumeA,
+
+            [0 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_CostumeA,
+        };
+
+        public static readonly List<int> CostumeShapeHideBody = new()
+        {
+            6, 7, 8, 9, 10, 11, 12, 13
+        };
+
+        #endregion
 
         public string GuildRank
         {
@@ -212,10 +232,11 @@ namespace Client.Models
 
         public MirLibrary BodyLibrary;
         public int ArmourShapeOffSet;
-        public int ArmourShape;
+        public int ArmourShape, CostumeShape;
         public int ArmourShift;
         public Color ArmourColour;
-        public int ArmourFrame => DrawFrame + (ArmourShape % 11) * ArmourShapeOffSet + ArmourShift;
+        public int ArmourFrame => DrawFrame + (CostumeShape >= 0 ? (CostumeShape % 10) : (ArmourShape % 11)) * ArmourShapeOffSet + ArmourShift;
+
 
         public MirLibrary HorseLibrary, HorseShapeLibrary, HorseShapeLibrary2;
         public int HorseShape;
@@ -224,7 +245,6 @@ namespace Client.Models
 
         public ExteriorEffect ArmourEffect;
         public ExteriorEffect EmblemEffect;
-        public ExteriorEffect WingsEffect;
         public ExteriorEffect WeaponEffect;
         public ExteriorEffect ShieldEffect;
 
@@ -236,10 +256,10 @@ namespace Client.Models
         public string FiltersRarity;
         public string FiltersItemType;
 
-        public PlayerObject()
-        {
+        public bool HideHead;
 
-        }
+        public PlayerObject() { }
+
         public PlayerObject(S.ObjectPlayer info)
         {
             CharacterIndex = info.Index;
@@ -267,14 +287,21 @@ namespace Client.Models
 
             ArmourShape = info.Armour;
             ArmourColour = info.ArmourColour;
+
+            CostumeShape = info.Costume;
+
             LibraryWeaponShape = info.Weapon;
+
             HorseShape = info.HorseShape;
+
             HelmetShape = info.Helmet;
+
             ShieldShape = info.Shield;
+
+            HideHead = info.HideHead;
 
             ArmourEffect = info.ArmourEffect;
             EmblemEffect = info.EmblemEffect;
-            WingsEffect = info.WingsEffect;
             WeaponEffect = info.WeaponEffect;
             ShieldEffect = info.ShieldEffect;
 
@@ -354,6 +381,15 @@ namespace Client.Models
                             {
                                 file = LibraryFile.M_Hum;
                                 ArmourShape = 0;
+                            }
+
+                            if (CostumeShape >= 0)
+                            {
+                                if (!CostumeList.TryGetValue(CostumeShape / 10, out file))
+                                {
+                                    file = LibraryFile.M_Hum;
+                                    ArmourShape = 0;
+                                }
                             }
 
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);
@@ -841,53 +877,59 @@ namespace Client.Models
             int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;
 
             MirImage image;
-            switch (Direction)
+
+            bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
+
+            if (!hideBody)
             {
-                case MirDirection.Up:
-                case MirDirection.DownLeft:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    if (!DrawWeapon) break;
-                    image = WeaponLibrary1?.GetImage(WeaponFrame);
-                    if (image == null) break;
+                switch (Direction)
+                {
+                    case MirDirection.Up:
+                    case MirDirection.DownLeft:
+                    case MirDirection.Left:
+                    case MirDirection.UpLeft:
+                        if (!DrawWeapon) break;
+                        image = WeaponLibrary1?.GetImage(WeaponFrame);
+                        if (image == null) break;
 
-                    WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    break;
-                default:
-                    if (!DrawWeapon) break;
-                    image = WeaponLibrary2?.GetImage(WeaponFrame);
-                    if (image == null) break;
-
-                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    break;
-            }
-
-            switch (Direction)
-            {
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.DownRight:
-                    image = ShieldLibrary?.GetImage(ShieldFrame);
-                    if (image != null)
-                    {
-                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                        WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
                         l = Math.Min(l, DrawX + image.OffSetX);
                         t = Math.Min(t, DrawY + image.OffSetY);
                         r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                         b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    }
-                    break;
+                        break;
+                    default:
+                        if (!DrawWeapon) break;
+                        image = WeaponLibrary2?.GetImage(WeaponFrame);
+                        if (image == null) break;
+
+                        WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        break;
+                }
+
+                switch (Direction)
+                {
+                    case MirDirection.UpRight:
+                    case MirDirection.Right:
+                    case MirDirection.DownRight:
+                        image = ShieldLibrary?.GetImage(ShieldFrame);
+                        if (image != null)
+                        {
+                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                            l = Math.Min(l, DrawX + image.OffSetX);
+                            t = Math.Min(t, DrawY + image.OffSetY);
+                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        }
+                        break;
+                }
             }
 
             image = BodyLibrary?.GetImage(ArmourFrame);
@@ -904,82 +946,88 @@ namespace Client.Models
                 b = Math.Max(b, image.Height + DrawY + image.OffSetY);
             }
 
-            if (HelmetShape > 0)
+            if (!HideHead)
             {
-                image = HelmetLibrary?.GetImage(HelmetFrame);
-                if (image != null)
+                if (HelmetShape > 0)
                 {
-                    HelmetLibrary.Draw(HelmetFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                }
-            }
-            else
-            {
-                image = HairLibrary.GetImage(HairFrame);
-                if (HairType > 0 && image != null)
-                {
-                    HairLibrary.Draw(HairFrame, DrawX, DrawY, HairColour, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                }
-            }
-
-            switch (Direction)
-            {
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.DownRight:
-                case MirDirection.Down:
-                    if (!DrawWeapon) break;
-                    image = WeaponLibrary1?.GetImage(WeaponFrame);
-                    if (image == null) break;
-
-                    WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    break;
-                default:
-                    if (!DrawWeapon) break;
-                    image = WeaponLibrary2?.GetImage(WeaponFrame);
-                    if (image == null) break;
-
-                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    break;
-            }
-
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    image = ShieldLibrary?.GetImage(ShieldFrame);
+                    image = HelmetLibrary?.GetImage(HelmetFrame);
                     if (image != null)
                     {
-                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                        HelmetLibrary.Draw(HelmetFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
                         l = Math.Min(l, DrawX + image.OffSetX);
                         t = Math.Min(t, DrawY + image.OffSetY);
                         r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                         b = Math.Max(b, image.Height + DrawY + image.OffSetY);
                     }
-                    break;
+                }
+                else
+                {
+                    image = HairLibrary.GetImage(HairFrame);
+                    if (HairType > 0 && image != null)
+                    {
+                        HairLibrary.Draw(HairFrame, DrawX, DrawY, HairColour, true, 1F, ImageType.Image);
+
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    }
+                }
+            }
+
+            if (!hideBody)
+            {
+                switch (Direction)
+                {
+                    case MirDirection.UpRight:
+                    case MirDirection.Right:
+                    case MirDirection.DownRight:
+                    case MirDirection.Down:
+                        if (!DrawWeapon) break;
+                        image = WeaponLibrary1?.GetImage(WeaponFrame);
+                        if (image == null) break;
+
+                        WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        break;
+                    default:
+                        if (!DrawWeapon) break;
+                        image = WeaponLibrary2?.GetImage(WeaponFrame);
+                        if (image == null) break;
+
+                        WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        break;
+                }
+
+                switch (Direction)
+                {
+                    case MirDirection.Up:
+                    case MirDirection.Down:
+                    case MirDirection.DownLeft:
+                    case MirDirection.Left:
+                    case MirDirection.UpLeft:
+                        image = ShieldLibrary?.GetImage(ShieldFrame);
+                        if (image != null)
+                        {
+                            ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                            l = Math.Min(l, DrawX + image.OffSetX);
+                            t = Math.Min(t, DrawY + image.OffSetY);
+                            r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                            b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        }
+                        break;
+                }
             }
 
             DXManager.SetSurface(oldSurface);

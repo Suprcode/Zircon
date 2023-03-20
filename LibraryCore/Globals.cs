@@ -441,13 +441,13 @@ namespace Library
         public Color HairColour { get; set; }
         public int Weapon { get; set; }
         public int Armour { get; set; }
+        public int Costume { get; set; }
         public int Shield { get; set; }
         public Color ArmourColour { get; set; }
 
         public ExteriorEffect ArmourEffect { get; set; }
         public ExteriorEffect EmblemEffect { get; set; }
         public ExteriorEffect WeaponEffect { get; set; }
-        public ExteriorEffect WingsEffect { get; set; }
         public ExteriorEffect ShieldEffect { get; set; }
 
         public decimal Experience { get; set; }
@@ -490,6 +490,8 @@ namespace Library
 
         public int HelmetShape { get; set; }
         public int HorseShape { get; set; }
+
+        public bool HideHead { get; set; }
 
         public List<ClientUserQuest> Quests { get; set; }
 

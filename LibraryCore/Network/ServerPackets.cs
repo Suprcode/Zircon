@@ -280,10 +280,10 @@ namespace Library.Network.ServerPackets
         public int Weapon { get; set; }
         public int Shield { get; set; }
         public int Armour { get; set; }
+        public int Costume { get; set; }
         public Color ArmourColour { get; set; }
         public ExteriorEffect ArmourEffect { get; set; }
         public ExteriorEffect EmblemEffect { get; set; }
-        public ExteriorEffect WingsEffect { get; set; }
         public ExteriorEffect WeaponEffect { get; set; }
         public ExteriorEffect ShieldEffect { get; set; }
 
@@ -303,6 +303,8 @@ namespace Library.Network.ServerPackets
         public string FiltersClass;
         public string FiltersRarity;
         public string FiltersItemType;
+
+        public bool HideHead;
     }
     public sealed class ObjectMonster : Packet
     {
@@ -375,16 +377,18 @@ namespace Library.Network.ServerPackets
         public int Weapon { get; set; }
         public int Shield { get; set; }
         public int Armour { get; set; }
+        public int Costume { get; set; }
         public Color ArmourColour { get; set; }
         public ExteriorEffect ArmourEffect { get; set; }
         public ExteriorEffect EmblemEffect { get; set; }
-        public ExteriorEffect WingsEffect { get; set; }
         public ExteriorEffect WeaponEffect { get; set; }
         public ExteriorEffect ShieldEffect { get; set; }
 
         public int HorseArmour { get; set; }
         public int Helmet { get; set; }
         public int Light { get; set; }
+
+        public bool HideHead { get; set; }
     }
 
 

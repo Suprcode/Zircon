@@ -305,7 +305,7 @@ namespace Server
                     value = JsonSerializer.Deserialize(ref reader, property.PropertyType, converterOptions);
                 }
 
-                identities.AddRange(value.ToString().Split('/'));
+                identities.AddRange(SplitIdentityValue(value?.ToString()));
 
                 if (++i >= identityProperties.Length)
                 {
@@ -370,7 +370,7 @@ namespace Server
                 return null;
             }
 
-            return GetObjectFromIdentity(identityValue.Split('/').ToList());
+            return GetObjectFromIdentity(SplitIdentityValue(identityValue).ToList());
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
@@ -379,7 +379,7 @@ namespace Server
 
             FindAllIdentities(null, typeof(T), GetIdentityProperties(typeof(T)), value, identities);
 
-            writer.WriteStringValue(string.Join('/', identities.ToArray()));
+            writer.WriteStringValue(JoinIdentityValues(identities.ToArray()));
         }
 
         private T GetObjectFromIdentity(List<string> identityValues)
@@ -397,7 +397,7 @@ namespace Server
 
             if (obj == null)
             {
-                throw new JsonException($"Object not found for '{typeof(T).Name}' using values '{string.Join('/', identityValues)}'.");
+                throw new JsonException($"Object not found for '{typeof(T).Name}' using values '{JoinIdentityValues(identityValues.ToArray())}'.");
             }
 
             return obj;
@@ -577,6 +577,16 @@ namespace Server
             }
 
             return associationAttribute.Identity;
+        }
+
+        protected static string[] SplitIdentityValue(string value)
+        {
+            return value.Split('/');
+        }
+
+        protected string JoinIdentityValues(string[] values)
+        {
+            return string.Join('/', values);
         }
     }
 }

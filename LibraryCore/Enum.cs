@@ -108,7 +108,7 @@ namespace Library
         HorseArmour = 13,
         Emblem = 14,
         Shield = 15,
-        Wings = 16,
+        Costume = 16,
 
         Hook = 17,
         Float = 18,
@@ -383,7 +383,7 @@ namespace Library
         ItemPart,
         Emblem,
         Shield,
-        Wings,
+        Costume,
         Hook,
         Float,
         Bait,

@@ -306,9 +306,10 @@ namespace Client.Models
             ArmourColour = info.ArmourColour;
             LibraryWeaponShape = info.Weapon;
 
+            CostumeShape = info.Costume;
+
             ArmourEffect = info.ArmourEffect;
             EmblemEffect = info.EmblemEffect;
-            WingsEffect = info.WingsEffect;
             WeaponEffect = info.WeaponEffect;
             ShieldEffect = info.ShieldEffect;
 
@@ -325,6 +326,8 @@ namespace Client.Models
             HorseShape = info.HorseShape;
             HelmetShape = info.HelmetShape;
             ShieldShape = info.Shield;
+
+            HideHead = info.HideHead;
 
             GameScene.Game.DayTime = info.DayTime;
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;
