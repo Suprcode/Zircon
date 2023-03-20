@@ -263,6 +263,7 @@ namespace Library.SystemModels
 
     public class InstanceMapInfo : DBObject
     {
+        [IsIdentity]
         [Association("Map")]
         public InstanceInfo Instance
         {
@@ -279,6 +280,7 @@ namespace Library.SystemModels
         }
         private InstanceInfo _Instance;
 
+        [IsIdentity]
         public MapInfo Map
         {
             get { return _Map; }
@@ -297,6 +299,7 @@ namespace Library.SystemModels
 
     public sealed class InstanceInfoStat : DBObject
     {
+        [IsIdentity]
         [Association("InstanceInfoStats")]
         public InstanceInfo Instance
         {
@@ -313,6 +316,7 @@ namespace Library.SystemModels
         }
         private InstanceInfo _Instance;
 
+        [IsIdentity]
         public Stat Stat
         {
             get { return _Stat; }

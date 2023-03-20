@@ -5639,7 +5639,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Level != 17)
+                            if (weapon.Level != Globals.WeaponExperienceList.Count)
                             {
                                 Connection.ReceiveChat("Your weapon is not the max level.", MessageType.System);
                                 return;
@@ -5710,7 +5710,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Level != 17)
+                            if (weapon.Level != Globals.WeaponExperienceList.Count)
                             {
                                 Connection.ReceiveChat("Your weapon is not the max level.", MessageType.System);
                                 return;
@@ -5753,7 +5753,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Level != 17)
+                            if (weapon.Level != Globals.WeaponExperienceList.Count)
                             {
                                 Connection.ReceiveChat("Your weapon is not the max level.", MessageType.System);
                                 return;
@@ -5830,7 +5830,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Level != 17)
+                            if (weapon.Level != Globals.WeaponExperienceList.Count)
                             {
                                 Connection.ReceiveChat("Your weapon is not the max level.", MessageType.System);
                                 return;
@@ -10730,7 +10730,7 @@ namespace Server.Models
 
             if ((weapon.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
 
-            if (weapon.Level != 17) return;
+            if (weapon.Level != Globals.WeaponExperienceList.Count) return;
 
             long fragmentCount = 0;
             int special = 0;
@@ -11180,7 +11180,7 @@ namespace Server.Models
 
             if (weapon == null) return;
 
-            if (weapon.Level != 17) return;
+            if (weapon.Level != Globals.WeaponExperienceList.Count) return;
 
             weapon.AddStat(stat, amount, StatSource.Refine);
 
@@ -11238,7 +11238,7 @@ namespace Server.Models
 
             if ((weapon.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
 
-            if (weapon.Level != 17) return;
+            if (weapon.Level != Globals.WeaponExperienceList.Count) return;
 
             long fragmentCount = 0;
             int special = 0;
