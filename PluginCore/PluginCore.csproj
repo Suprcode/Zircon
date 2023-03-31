@@ -25,18 +25,18 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DevExpress.Win.BonusSkins" Version="21.2.6" />
-    <PackageReference Include="DevExpress.Win.Design" Version="21.2.6" />
+    <PackageReference Include="DevExpress.Win.BonusSkins" Version="22.2.4" />
+    <PackageReference Include="DevExpress.Win.Design" Version="22.2.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.XtraBars.v21.2">
-      <HintPath>..\Components\DevExpress\DevExpress.XtraBars.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraBars.v22.2">
+      
     </Reference>
-    <Reference Include="DevExpress.XtraEditors.v21.2">
-      <HintPath>..\Components\DevExpress\DevExpress.XtraEditors.v21.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraEditors.v22.2">
+      
     </Reference>
   </ItemGroup>
 </Project>

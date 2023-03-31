@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
+    <LangVersion>8.0</LangVersion>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -15,29 +16,19 @@
 	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>..\..\Debug\ImageManager\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>1701;1702;CA1416</NoWarn>
+    <OutputPath>..\..\Debug\PatchManager\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>..\..\Release\ImageManager\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>1701;1702;CA1416</NoWarn>
+    <OutputPath>..\..\Release\PatchManager\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DevExpress.Win.BonusSkins" Version="22.2.4" />
-    <PackageReference Include="DevExpress.Win.Design" Version="22.2.4" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ManagedSquish">
-      <HintPath>..\Components\ManagedSquish.dll</HintPath>
-    </Reference>
-    <Reference Include="NativeSquish_x64">
-      <HintPath>..\Components\NativeSquish_x64.dll</HintPath>
-    </Reference>
+    <PackageReference Include="DevExpress.Win.BonusSkins" Version="21.2.6" />
+    <PackageReference Include="DevExpress.Win.Design" Version="21.2.6" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="WinSCP" Version="5.21.7" />
   </ItemGroup>
 </Project>

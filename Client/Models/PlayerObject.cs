@@ -3,10 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Client.Controls;
 using Client.Envir;
 using Client.Models.Player;
 using Client.Scenes;
@@ -257,6 +253,7 @@ namespace Client.Models
             ObjectID = info.ObjectID;
 
             Name = info.Name;
+            Caption = info.Caption;
             NameColour = info.NameColour;
 
             Class = info.Class;

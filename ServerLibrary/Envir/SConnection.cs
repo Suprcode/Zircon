@@ -1208,6 +1208,13 @@ namespace Server.Envir
             Player.NameChange(p.Name);
         }
 
+        public void Process(C.CaptionChange p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.CaptionChange(p.Caption);
+        }
+
         public void Process(C.FortuneCheck p)
         {
             if (Stage != GameStage.Game) return;

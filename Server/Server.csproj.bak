@@ -47,8 +47,8 @@
     <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Runtime.Serialization.Schema" Version="7.0.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
-    <PackageReference Include="DevExpress.Win.BonusSkins" Version="22.2.*-*" />
-    <PackageReference Include="DevExpress.Win.Design" Version="22.2.*-*" />
+    <PackageReference Include="DevExpress.Win.BonusSkins" Version="21.2.*-*" />
+    <PackageReference Include="DevExpress.Win.Design" Version="21.2.*-*" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="Views\LocationView.resx" />

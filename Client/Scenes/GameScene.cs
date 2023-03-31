@@ -147,6 +147,7 @@ namespace Client.Scenes
         public MainPanel MainPanel;
 
         public DXConfigWindow ConfigBox;
+        public CaptionDialog CaptionBox;
         public InventoryDialog InventoryBox;
         public CharacterDialog CharacterBox;
         public FilterDropDialog FilterDropBox;
@@ -402,6 +403,13 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
             };
+
+            CaptionBox = new CaptionDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+
             InventoryBox = new InventoryDialog
             {
                 Parent = this,
@@ -640,7 +648,6 @@ namespace Client.Scenes
                 Visible = false,
                 Parent = this,
             };
-
             NPCAccessoryRefineBox = new NPCAccessoryRefineDialog
             {
                 Parent = this,
@@ -684,6 +691,8 @@ namespace Client.Scenes
             if (ConfigBox == null) return;
 
             ConfigBox.Location = new Point((Size.Width - ConfigBox.Size.Width)/2, (Size.Height - ConfigBox.Size.Height)/2);
+
+            CaptionBox.Location = new Point((Size.Width - CaptionBox.Size.Width) / 2, 0);
 
             ChatOptionsBox.Location = new Point((Size.Width - ChatOptionsBox.Size.Width)/2, (Size.Height - ChatOptionsBox.Size.Height)/2);
             

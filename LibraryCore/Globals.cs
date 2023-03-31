@@ -40,6 +40,7 @@ namespace Library
         public static readonly Regex PasswordRegex = new Regex(@"^[\S]{" + MinPasswordLength + "," + MaxPasswordLength + "}$", RegexOptions.Compiled);
         public static readonly Regex CharacterReg = new Regex(@"^[A-Za-z0-9]{" + MinCharacterNameLength + "," + MaxCharacterNameLength + @"}$", RegexOptions.Compiled);
         public static readonly Regex GuildNameRegex = new Regex(@"^[A-Za-z0-9]{" + MinGuildNameLength + "," + MaxGuildNameLength + "}$", RegexOptions.Compiled);
+        public static readonly Regex CaptionReg = new Regex(@"^[A-Za-z0-9]{" + MinCaptionLength + "," + MaxCaptionLength + @"}$", RegexOptions.Compiled);
 
         public static Color NoneColour = Color.White,
                             FireColour = Color.OrangeRed,
@@ -61,6 +62,10 @@ namespace Library
 
             MinRealNameLength = 3,
             MaxRealNameLength = 20,
+
+
+            MinCaptionLength = 3,
+            MaxCaptionLength = 25,
 
             MaxEMailLength = 50,
 
@@ -412,6 +417,7 @@ namespace Library
     {
         public int CharacterIndex { get; set; }
         public string CharacterName { get; set; }
+        public string Caption { get; set; }
         public int Level { get; set; }
         public MirGender Gender { get; set; }
         public MirClass Class { get; set; }
@@ -424,6 +430,8 @@ namespace Library
         public int Index { get; set; }
         public uint ObjectID { get; set; }
         public string Name { get; set; }
+
+        public string Caption { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
         public string GuildRank { get; set; }
