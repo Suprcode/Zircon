@@ -14,7 +14,6 @@ using Library;
 using Library.SystemModels;
 using SlimDX;
 using SlimDX.Direct3D9;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using Frame = Library.Frame;
 
 namespace Client.Models
