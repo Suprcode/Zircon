@@ -130,6 +130,7 @@ namespace Client.Models
 
                 _Caption = value;
 
+                NameChanged();
             }
         }
         private string _Caption;
@@ -4072,7 +4073,23 @@ namespace Client.Models
 
         public virtual void NameChanged()
         {
-            if (string.IsNullOrEmpty(Name))
+
+
+            if (Race is ObjectType.Player && Caption is not null)
+            {
+                CaptionLabel = new DXLabel
+                {
+                    BackColour = Color.Empty,
+                    ForeColour = NameColour,
+                    Outline = true,
+                    OutlineColour = Color.Black,
+                    Text = Caption,
+                    IsControl = false,
+                    IsVisible = true,
+
+                };
+            }
+                if (string.IsNullOrEmpty(Name))
             {
                 NameLabel = null;
             }
@@ -4173,19 +4190,24 @@ namespace Client.Models
                 NameLabel.Draw();
             }
 
-            if (Race == ObjectType.Player)
-            {
-                CaptionLabel = new DXLabel
-                {
-                    BackColour = Color.Empty,
-                    ForeColour = NameColour,
-                    Outline = true,
-                    OutlineColour = Color.Black,
-                    Text = Caption,
-                    IsControl = false,
-                    IsVisible = true,
+         
 
-                };
+            if (TitleNameLabel != null)
+            {
+                int x = DrawX + (48 - TitleNameLabel.Size.Width) / 2;
+                int y = DrawY - (32 - TitleNameLabel.Size.Height) / 2;
+
+                if (Dead)
+                    y += 21;
+                else
+                    y -= 6;
+
+                TitleNameLabel.Location = new Point(x, y);
+                TitleNameLabel.Draw();
+            }
+
+            if (CaptionLabel is not null)
+            {
 
                 int x = DrawX + (48 - CaptionLabel.Size.Width) / 2;
                 int y = (DrawY - (32 - CaptionLabel.Size.Height) / 2) - 13;
@@ -4202,20 +4224,6 @@ namespace Client.Models
 
                 CaptionLabel.Location = new Point(x, y);
                 CaptionLabel.Draw();
-            }
-
-            if (TitleNameLabel != null)
-            {
-                int x = DrawX + (48 - TitleNameLabel.Size.Width) / 2;
-                int y = DrawY - (32 - TitleNameLabel.Size.Height) / 2;
-
-                if (Dead)
-                    y += 21;
-                else
-                    y -= 6;
-
-                TitleNameLabel.Location = new Point(x, y);
-                TitleNameLabel.Draw();
             }
         }
         public virtual void DrawDamage()

@@ -1,4 +1,6 @@
-﻿namespace Server.Views
+﻿using System;
+
+namespace Server.Views
 {
     partial class CharacterView
     {
@@ -85,7 +87,7 @@
             this.CharacterGridControl.TabIndex = 0;
             this.CharacterGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.CharacterGridView});
-            this.CharacterGridControl.Click += new System.EventHandler(this.CharacterGridControl_Click);
+            //this.CharacterGridControl.Click += new System.EventHandler(this.CharacterGridControl.Click);
             // 
             // CharacterGridView
             // 
@@ -206,5 +208,6 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit AccountLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn Caption;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
+     
     }
 }

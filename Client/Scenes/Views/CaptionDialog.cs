@@ -52,10 +52,10 @@ namespace Client.Scenes.Views
             TitleLabel.Text = @"Caption";
 
             HasFooter = true;
-            Movable = false;
+            Movable = true;
             Border = true;
 
-            SetClientSize(new Size(325, 40));
+            SetClientSize(new Size(325, 50));
             label = new DXLabel
             {
                 Parent = this,

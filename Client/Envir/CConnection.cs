@@ -4032,7 +4032,7 @@ namespace Client.Envir
                 Location = p.CurrentLocation,
 
                 Name = p.Name,
-
+        
                 Health = p.Health,
                 MaxHealth = p.MaxHealth,
                 Dead = p.Dead,
@@ -4224,6 +4224,7 @@ namespace Client.Envir
                 PlayerObject player = (PlayerObject)ob;
 
                 player.Name = p.Name;
+                player.Caption = p.Caption;
                 player.Gender = p.Gender;
                 player.HairType = p.HairType;
                 player.HairColour = p.HairColour;

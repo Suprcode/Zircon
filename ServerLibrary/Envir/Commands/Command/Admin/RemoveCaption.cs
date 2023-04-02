@@ -27,11 +27,11 @@ namespace Server.Envir.Commands.Command.Admin
             character.Caption = null;
             SEnvir.CharacterInfoList.RaisePropertyChanges = true;
 
-            PlayerObject? activePlayer = SEnvir.Players.FirstOrDefault(x => x.Name == characterName);
+            bool isPlayerActive = SEnvir.Players.Any(x => x.Name == characterName);
 
-            if (activePlayer is not null)
+            if (isPlayerActive)
             {
-                activePlayer.SendChangeUpdate();
+               SEnvir.Players.FirstOrDefault(x => x.Name == characterName)?.SendChangeUpdate();
             }
 
         }

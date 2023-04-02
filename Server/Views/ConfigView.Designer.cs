@@ -1,4 +1,6 @@
-﻿namespace Server.Views
+﻿using Microsoft.Win32;
+
+namespace Server.Views
 {
     partial class ConfigView
     {
