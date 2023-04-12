@@ -7770,7 +7770,7 @@ namespace Server.Models
 
             for (int i = 0; i < Inventory.Length; i++)
             {
-                if (Inventory[i] is null || Inventory[i].Info.Effect is not ItemEffect.Caption) continue;
+                if (Inventory[i] is null || Inventory[i].Info.ItemEffect is not ItemEffect.Caption) continue;
 
                 if (!CanUseItem(Inventory[i])) continue;
 

@@ -19,7 +19,7 @@ namespace Server.Envir.Commands.Command.Admin
 
             string characterName = vals[1];
 
-            CharacterInfo? character = SEnvir.GetCharacter(characterName);
+            var character = SEnvir.GetCharacter(characterName);
 
             if (character is null)
                 throw new UserCommandException(string.Format("Could not find player: {0}.", characterName));
