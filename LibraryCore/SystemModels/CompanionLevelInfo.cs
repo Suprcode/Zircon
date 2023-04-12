@@ -9,6 +9,7 @@ namespace Library.SystemModels
 {
     public sealed class CompanionLevelInfo : DBObject
     {
+        [IsIdentity]
         public int Level
         {
             get { return _Level; }

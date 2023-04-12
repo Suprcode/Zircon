@@ -184,7 +184,7 @@ namespace Server.Views
             this.ClientSize = new System.Drawing.Size(640, 517);
             this.Controls.Add(this.CharacterGridControl);
             this.Name = "CharacterView";
-            this.Text = "Character View";
+            this.Text = "Character";
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CharacterGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CharacterGridView)).EndInit();

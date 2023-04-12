@@ -1,9 +1,11 @@
 ﻿using MirDB;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
     public sealed class RespawnInfo : DBObject
     {
+        [IsIdentity]
         [Association("Respawns")]
         public MonsterInfo Monster
         {
@@ -20,6 +22,7 @@ namespace Library.SystemModels
         }
         private MonsterInfo _Monster;
 
+        [IsIdentity]
         public MapRegion Region
         {
             get { return _Region; }
@@ -49,8 +52,7 @@ namespace Library.SystemModels
             }
         }
         private bool _EventSpawn;
-        
-        
+           
         public int Delay
         {
             get { return _Delay; }
@@ -125,15 +127,13 @@ namespace Library.SystemModels
             }
         }
         private int _EasterEventChance;
-        
-        
 
+        [JsonIgnore]
         [IgnoreProperty]
         public string RegionName => Region?.ServerDescription ?? string.Empty;
 
-
+        [JsonIgnore]
         [IgnoreProperty]
         public string MonsterName => Monster?.MonsterName ?? string.Empty;
-
     }
 }

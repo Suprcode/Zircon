@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using MirDB;
 
@@ -11,6 +12,7 @@ namespace Library.SystemModels
 {
     public sealed class MapRegion : DBObject
     {
+        [IsIdentity]
         [Association("Regions")]
         public MapInfo Map
         {
@@ -27,6 +29,7 @@ namespace Library.SystemModels
         }
         private MapInfo _Map;
 
+        [IsIdentity]
         public string Description
         {
             get { return _Description; }
@@ -42,6 +45,7 @@ namespace Library.SystemModels
         }
         private string _Description;
 
+        [JsonIgnore]
         public BitArray BitRegion
         {
             get { return _BitRegion; }
@@ -72,6 +76,7 @@ namespace Library.SystemModels
         }
         private Point[] _PointRegion;
 
+        [JsonIgnore]
         [IgnoreProperty]
         public string ServerDescription => $"{Map?.Description} - {Description}";
 
@@ -90,6 +95,7 @@ namespace Library.SystemModels
         }
         private int _Size;
 
+        [JsonIgnore]
         public List<Point> PointList;
 
         public HashSet<Point> GetPoints(int width)

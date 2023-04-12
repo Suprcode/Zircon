@@ -1,9 +1,12 @@
 ﻿using MirDB;
+using System;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
     public class ItemInfo : DBObject
     {
+        [IsIdentity]
         public string ItemName
         {
             get { return _ItemName; }
@@ -109,9 +112,8 @@ namespace Library.SystemModels
         }
         private int _Shape;
 
-        /** Ducky: I have to have this for backwards compatibility... 
-         * @Suprcode this should removed at some point in favour of _ItemEffect
-        **/
+        [JsonIgnore]
+        [Obsolete("Use ItemEffect instead")]
         public ItemEffect Effect
         {
             get { return _Effect; }
@@ -427,8 +429,6 @@ namespace Library.SystemModels
             }
         }
         private int _PartCount;
-        
-        
 
         [Association("Set")]
         public SetInfo Set
@@ -445,19 +445,19 @@ namespace Library.SystemModels
             }
         }
         private SetInfo _Set;
-        
-        public Stats Stats = new Stats();
 
         [Association("ItemStats")]
         public DBBindingList<ItemInfoStat> ItemStats { get; set; }
 
+        [JsonIgnore]
         [Association("Drops", true)]
         public DBBindingList<DropInfo> Drops { get; set; }
-        
 
+        [JsonIgnore]
         [IgnoreProperty]
         public bool ShouldLinkInfo => StackSize > 1 || ItemType == ItemType.Consumable || ItemType == ItemType.Scroll;
 
+        public Stats Stats = new();
 
         protected internal override void OnCreated()
         {
@@ -488,7 +488,6 @@ namespace Library.SystemModels
             foreach (ItemInfoStat stat in ItemStats)
                 Stats[stat.Stat] += stat.Amount;
         }
-
 
         public override string ToString()
         {

@@ -9,6 +9,7 @@ namespace Library.SystemModels
 {
     public sealed class StoreInfo : DBObject
     {
+        [IsIdentity]
         public ItemInfo Item
         {
             get { return _Item; }

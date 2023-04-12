@@ -6,6 +6,7 @@ namespace Library.SystemModels
 {
     public sealed class MovementInfo : DBObject
     {
+        [IsIdentity]
         public MapRegion SourceRegion
         {
             get { return _SourceRegion; }
@@ -21,6 +22,7 @@ namespace Library.SystemModels
         }
         private MapRegion _SourceRegion;
 
+        [IsIdentity]
         public MapRegion DestinationRegion
         {
             get { return _DestinationRegion; }

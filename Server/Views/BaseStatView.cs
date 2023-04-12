@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using DevExpress.XtraBars;
 using Library.SystemModels;
 
@@ -30,6 +23,16 @@ namespace Server.Views
         private void SaveButton_ItemClick(object sender, ItemClickEventArgs e)
         {
             SMain.Session.Save(true);
+        }
+
+        private void ImportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<BaseStat>();
+        }
+
+        private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<BaseStat>(BaseStatGridView);
         }
     }
 }

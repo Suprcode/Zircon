@@ -6,6 +6,7 @@ namespace Library.SystemModels
 {
     public sealed class SafeZoneInfo : DBObject
     {
+        [IsIdentity]
         public MapRegion Region
         {
             get { return _Region; }

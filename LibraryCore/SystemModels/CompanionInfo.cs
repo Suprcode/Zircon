@@ -9,6 +9,7 @@ namespace Library.SystemModels
 {
     public class CompanionInfo : DBObject
     {
+        [IsIdentity]
         public MonsterInfo MonsterInfo
         {
             get { return _MonsterInfo; }

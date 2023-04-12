@@ -104,7 +104,6 @@ namespace Library
 
         public static decimal MarketPlaceTax = 0.07M;  //2.5x Item cost
 
-
         public static long
             GuildCreationCost = 7500000,
             GuildMemberCost = 1000000,
@@ -449,13 +448,15 @@ namespace Library
         public Color HairColour { get; set; }
         public int Weapon { get; set; }
         public int Armour { get; set; }
+        public int Costume { get; set; }
         public int Shield { get; set; }
         public Color ArmourColour { get; set; }
-        public ExteriorEffect ArmourEffect { get; set; }
 
+        public ExteriorEffect ArmourEffect { get; set; }
         public ExteriorEffect EmblemEffect { get; set; }
-        public ExteriorEffect WingsShape { get; set; }
-        
+        public ExteriorEffect WeaponEffect { get; set; }
+        public ExteriorEffect ShieldEffect { get; set; }
+
         public decimal Experience { get; set; }
 
         public int CurrentHP { get; set; }
@@ -496,6 +497,8 @@ namespace Library
 
         public int HelmetShape { get; set; }
         public int HorseShape { get; set; }
+
+        public bool HideHead { get; set; }
 
         public List<ClientUserQuest> Quests { get; set; }
 

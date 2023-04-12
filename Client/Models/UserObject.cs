@@ -304,11 +304,15 @@ namespace Client.Models
             HairColour = info.HairColour;
 
             ArmourShape = info.Armour;
-            ArmourEffect = info.ArmourEffect;
             ArmourColour = info.ArmourColour;
             LibraryWeaponShape = info.Weapon;
-            WingsEffect = info.WingsShape;
+
+            CostumeShape = info.Costume;
+
+            ArmourEffect = info.ArmourEffect;
             EmblemEffect = info.EmblemEffect;
+            WeaponEffect = info.WeaponEffect;
+            ShieldEffect = info.ShieldEffect;
 
             Poison = info.Poison;
 
@@ -323,6 +327,8 @@ namespace Client.Models
             HorseShape = info.HorseShape;
             HelmetShape = info.HelmetShape;
             ShieldShape = info.Shield;
+
+            HideHead = info.HideHead;
 
             GameScene.Game.DayTime = info.DayTime;
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;

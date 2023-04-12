@@ -1,9 +1,11 @@
 ﻿using MirDB;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
     public class SetInfo : DBObject
     {
+        [IsIdentity]
         public string SetName
         {
             get { return _SetName; }
@@ -19,6 +21,7 @@ namespace Library.SystemModels
         }
         private string _SetName;
 
+        [JsonIgnore]
         [Association("Set")]
         public DBBindingList<ItemInfo> Items { get; set; }
 

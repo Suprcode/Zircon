@@ -10,8 +10,7 @@ namespace Server.Envir.Commands
     {
         public override bool IsAllowedByPlayer(PlayerObject player)
         {
-            return player.Character.Account.TempAdmin
-                && player.Character.Account.Admin;
+            return player.Character.Account.TempAdmin;
         }
     }
 }

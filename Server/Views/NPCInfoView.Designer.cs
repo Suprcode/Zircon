@@ -54,6 +54,9 @@
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ItemInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.RequirementGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RequirementImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.QuestInfoLookUpEdit)).BeginInit();
@@ -162,13 +165,12 @@
             // 
             // NPCInfoGridControl
             // 
-            this.NPCInfoGridControl.Cursor = System.Windows.Forms.Cursors.Default;
             this.NPCInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
             gridLevelNode1.LevelTemplate = this.RequirementGridView;
             gridLevelNode1.RelationName = "Requirements";
             this.NPCInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
             gridLevelNode1});
-            this.NPCInfoGridControl.Location = new System.Drawing.Point(0, 143);
+            this.NPCInfoGridControl.Location = new System.Drawing.Point(0, 144);
             this.NPCInfoGridControl.MainView = this.NPCInfoGridView;
             this.NPCInfoGridControl.MenuManager = this.ribbon;
             this.NPCInfoGridControl.Name = "NPCInfoGridControl";
@@ -181,7 +183,7 @@
             this.DaysOfWeekImageComboBox,
             this.ItemInfoLookUpEdit});
             this.NPCInfoGridControl.ShowOnlyPredefinedDetails = true;
-            this.NPCInfoGridControl.Size = new System.Drawing.Size(736, 428);
+            this.NPCInfoGridControl.Size = new System.Drawing.Size(736, 427);
             this.NPCInfoGridControl.TabIndex = 2;
             this.NPCInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.NPCInfoGridView,
@@ -276,13 +278,16 @@
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
-            this.SaveButton});
+            this.SaveButton,
+            this.ribbon.SearchEditItem,
+            this.barButtonItem1,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
+            this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(736, 143);
+            this.ribbon.Size = new System.Drawing.Size(736, 144);
             // 
             // SaveButton
             // 
@@ -297,16 +302,17 @@
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
+            this.ribbonPageGroup1,
+            this.JsonImportExport});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
             // ItemInfoLookUpEdit
@@ -323,6 +329,31 @@
             new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size")});
             this.ItemInfoLookUpEdit.Name = "ItemInfoLookUpEdit";
             this.ItemInfoLookUpEdit.NullText = "[Reward is null]";
+            // 
+            // JsonImportExport
+            // 
+            this.JsonImportExport.ItemLinks.Add(this.barButtonItem1);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
+            // 
+            // barButtonItem1
+            // 
+            this.barButtonItem1.Caption = "Import";
+            this.barButtonItem1.Id = 2;
+            this.barButtonItem1.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.Image")));
+            this.barButtonItem1.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.LargeImage")));
+            this.barButtonItem1.Name = "barButtonItem1";
+            this.barButtonItem1.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItem1_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
             // 
             // NPCInfoView
             // 
@@ -376,5 +407,8 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox DaysOfWeekImageComboBox;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit ItemInfoLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn colFaceImage;
+        private DevExpress.XtraBars.BarButtonItem barButtonItem1;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

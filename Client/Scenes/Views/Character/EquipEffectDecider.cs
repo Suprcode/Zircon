@@ -3,21 +3,21 @@ using Library;
 
 namespace Client.Scenes.Views.Character
 {
-    internal class ArmourEffectDecider
+    internal class EquipEffectDecider
     {
-        public static MirImage GetArmourEffectImageOrNull(ClientUserItem Item, MirGender Gender)
+        public static MirImage GetEffectImageOrNull(ClientUserItem item, MirGender gender)
         {
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_UI, out MirLibrary effectLibrary)) return null;
 
-            MirImage image = ItemExteriorEffectImage(Item, Gender, effectLibrary);
+            MirImage image = ItemExteriorEffectImage(item, gender, effectLibrary);
             if (image != null) return image;
-            return PresetItemEffectImage(Item, effectLibrary);
+            return PresetItemEffectImage(item, effectLibrary);
         }
 
-        private static MirImage ItemExteriorEffectImage(ClientUserItem Item, MirGender Gender, MirLibrary effectLibrary)
+        private static MirImage ItemExteriorEffectImage(ClientUserItem item, MirGender gender, MirLibrary effectLibrary)
         {
             int animationIndex = GameScene.Game.MapControl.Animation;
-            return Item.Info.ExteriorEffect switch
+            return item.Info.ExteriorEffect switch
             {
                 ExteriorEffect.A_GreenFeatherWings => effectLibrary.CreateImage(2100, ImageType.Image),
                 ExteriorEffect.A_RedFeatherWings => effectLibrary.CreateImage(2101, ImageType.Image),
@@ -25,21 +25,26 @@ namespace Client.Scenes.Views.Character
                 ExteriorEffect.A_WhiteFeatherWings => effectLibrary.CreateImage(2103, ImageType.Image),
                 ExteriorEffect.A_AngelicWings => effectLibrary.CreateImage(3000, ImageType.Image),
 
-                ExteriorEffect.A_BlueAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 602 : 622, ImageType.Image),
-                ExteriorEffect.A_FlameAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 601 : 621, ImageType.Image),
-                ExteriorEffect.A_WhiteAura => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 600 : 620, ImageType.Image),
-                ExteriorEffect.A_SmallYellowWings => effectLibrary.CreateImage(MirGender.Male.Equals(Gender) ? 1800 : 1820, ImageType.Image),
+                ExteriorEffect.A_BlueAura => effectLibrary.CreateImage(MirGender.Male.Equals(gender) ? 602 : 622, ImageType.Image),
+                ExteriorEffect.A_FlameAura => effectLibrary.CreateImage(MirGender.Male.Equals(gender) ? 601 : 621, ImageType.Image),
+                ExteriorEffect.A_WhiteAura => effectLibrary.CreateImage(MirGender.Male.Equals(gender) ? 600 : 620, ImageType.Image),
+
+                ExteriorEffect.A_SmallYellowWings => effectLibrary.CreateImage(MirGender.Male.Equals(gender) ? 1800 : 1820, ImageType.Image),
 
                 ExteriorEffect.A_PurpleTentacles => effectLibrary.CreateImage(2200 + (animationIndex % 11), ImageType.Image),
                 ExteriorEffect.A_LionWings => effectLibrary.CreateImage(2300 + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.A_BlueDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 2400 : 2500) + (animationIndex % 14), ImageType.Image),
-                ExteriorEffect.A_RedWings2 => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 2600 : 2700) + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.A_FlameAura2 => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 1700 : 1720) + (animationIndex % 10), ImageType.Image),
-                ExteriorEffect.A_GreenWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 400 : 420) + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.A_FlameWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 300 : 320) + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.A_BlueWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 200 : 220) + (animationIndex % 15), ImageType.Image),
-                ExteriorEffect.A_RedSinWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 500 : 520) + (animationIndex % 13), ImageType.Image),
-                ExteriorEffect.A_FireDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(Gender) ? 100 : 120) + (animationIndex % 10), ImageType.Image),
+                ExteriorEffect.A_BlueDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 2400 : 2500) + (animationIndex % 14), ImageType.Image),
+                ExteriorEffect.A_RedWings2 => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 2600 : 2700) + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_FlameAura2 => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 1700 : 1720) + (animationIndex % 10), ImageType.Image),
+                ExteriorEffect.A_GreenWings => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 400 : 420) + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_FlameWings => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 300 : 320) + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_BlueWings => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 200 : 220) + (animationIndex % 15), ImageType.Image),
+                ExteriorEffect.A_RedSinWings => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 500 : 520) + (animationIndex % 13), ImageType.Image),
+                ExteriorEffect.A_FireDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 100 : 120) + (animationIndex % 10), ImageType.Image),
+
+                ExteriorEffect.W_ChaoticHeavenBlade => effectLibrary.CreateImage(2000 + (animationIndex % 10), ImageType.Image),
+                ExteriorEffect.W_JanitorsScimitar => effectLibrary.CreateImage(1900 + (animationIndex % 12), ImageType.Image),
+                ExteriorEffect.W_JanitorsDualBlade => effectLibrary.CreateImage(1920 + (animationIndex % 12), ImageType.Image),
                 _ => null
             };
         }

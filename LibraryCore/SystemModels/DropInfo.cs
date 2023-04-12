@@ -1,9 +1,11 @@
 ﻿using MirDB;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
     public sealed class DropInfo : DBObject
     {
+        [IsIdentity]
         [Association("Drops")]
         public MonsterInfo Monster
         {
@@ -20,6 +22,7 @@ namespace Library.SystemModels
         }
         private MonsterInfo _Monster;
 
+        [IsIdentity]
         [Association("Drops")]
         public ItemInfo Item
         {
@@ -110,8 +113,6 @@ namespace Library.SystemModels
             }
         }
         private bool _EasterEvent;
-        
-
 
         protected internal override void OnCreated()
         {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using Library;
 using Library.MirDB;
 
 namespace MirDB
@@ -28,7 +26,7 @@ namespace MirDB
             Type = typeof(T);
             Mapping = new DBMapping(session.Assemblies, Type);
 
-            IsSystemData = Type.GetCustomAttribute<UserObject>() == null;
+            IsSystemData = Type.GetCustomAttribute<UserObjectAttribute>() == null;
 
             RaisePropertyChanges = IsSystemData;
             Session = session;

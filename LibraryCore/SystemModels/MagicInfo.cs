@@ -4,6 +4,7 @@ namespace Library.SystemModels
 {
     public sealed class MagicInfo : DBObject
     {
+        [IsIdentity]
         public string Name
         {
             get { return _Name; }

@@ -7,6 +7,7 @@ namespace Library.SystemModels
 {
     public class DisciplineInfo : DBObject
     {
+        [IsIdentity]
         public int Level
         {
             get { return _Level; }

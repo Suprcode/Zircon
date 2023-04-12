@@ -703,6 +703,17 @@ namespace Server.DBModels
             if (buff != null)
                 buff.Stats = new Stats { [Stat.AvailableHuntGoldCap] = 15 };
 
+            var removeList = new List<UserItem>();
+
+            foreach (var item in Items)
+            {
+                if (item.Info == null)
+                    removeList.Add(item);
+            }
+
+            foreach (var item in removeList)
+                Items.Remove(item);
+
             AddDefaultCurrencies();
             RemoveDeletedCurrencies();
         }

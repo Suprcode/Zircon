@@ -9,6 +9,7 @@ namespace Library.SystemModels
 {
     public sealed class CastleInfo : DBObject
     {
+        [IsIdentity]
         public string Name
         {
             get { return _Name; }

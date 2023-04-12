@@ -1,8 +1,12 @@
-﻿using System;
+﻿using SlimDX.DirectSound;
+using SlimDX.Multimedia;
+using NAudio;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using SlimDX.DirectSound;
-using SlimDX.Multimedia;
+using NAudio.Wave;
+using WaveFormat = SlimDX.Multimedia.WaveFormat;
+using WaveStream = SlimDX.Multimedia.WaveStream;
 
 namespace Client.Envir
 {
@@ -34,26 +38,56 @@ namespace Client.Envir
         {
             if (RawData == null)
             {
-                if (!File.Exists(FileName)) return;
-                
-                using (WaveStream wStream = new WaveStream(FileName))
+                if (!File.Exists(FileName))
                 {
-                    Format = wStream.Format;
-                    RawData = new byte[wStream.Length];
+                    return;
+                }
 
-                    wStream.Position = 44;
-                    wStream.Read(RawData, 0, RawData.Length);
+                if (Path.GetExtension(FileName) == ".mp3")
+                {
+                    using (var mp3 = new Mp3FileReader(FileName))
+                    {
+                        var format = mp3.WaveFormat.AsStandardWaveFormat();
+                        Format = new WaveFormat()
+                        {
+                            AverageBytesPerSecond = format.AverageBytesPerSecond,
+                            BitsPerSample = (short)format.BitsPerSample,
+                            BlockAlignment = (short)format.BlockAlign,
+                            Channels = (short)format.Channels,
+                            SamplesPerSecond = format.SampleRate,
+                            FormatTag = (WaveFormatTag)Enum.Parse(typeof(WaveFormatTag), format.Encoding.ToString())
+                        };
+                        RawData = new byte[mp3.Length];
+                        mp3.Read(RawData, 0, RawData.Length);
+                    }
+                }
+                else
+                {
+                    using (WaveStream wStream = new WaveStream(FileName))
+                    {
+                        Format = wStream.Format;
+                        RawData = new byte[wStream.Length];
+
+                        wStream.Position = 44;
+                        wStream.Read(RawData, 0, RawData.Length);
+                    }
                 }
                 DXManager.SoundList.Add(this);
             }
 
 
             if (BufferList.Count == 0)
+            {
                 CreateBuffer();
+            }
 
             if (Loop)
             {
-                if ((BufferList[0].Status & BufferStatus.Playing) != BufferStatus.Playing) BufferList[0].Play(0, PlayFlags.Looping);
+                if ((BufferList[0].Status & BufferStatus.Playing) != BufferStatus.Playing)
+                {
+                    BufferList[0].Play(0, PlayFlags.Looping);
+                }
+
                 ExpireTime = DateTime.MaxValue;
                 return;
             }
@@ -67,23 +101,34 @@ namespace Client.Envir
                     continue;
                 }
 
-                if (BufferList[i].Status == BufferStatus.Playing) continue;
+                if (BufferList[i].Status == BufferStatus.Playing)
+                {
+                    continue;
+                }
 
                 BufferList[i].Play(0, PlayFlags.None);
                 return;
             }
 
-            if (BufferList.Count >= Config.SoundOverLap) return;
+            if (BufferList.Count >= Config.SoundOverLap)
+            {
+                return;
+            }
 
             SecondarySoundBuffer buff = CreateBuffer();
             buff.Play(0, PlayFlags.None);
         }
         public void Stop()
         {
-            if (BufferList == null) return;
+            if (BufferList == null)
+            {
+                return;
+            }
 
             if (Loop)
+            {
                 ExpireTime = CEnvir.Now + Config.CacheDuration;
+            }
 
             for (int i = BufferList.Count - 1; i >= 0; i--)
             {
@@ -103,8 +148,9 @@ namespace Client.Envir
             BufferFlags flags = BufferFlags.ControlVolume;
 
             if (Config.SoundInBackground)
+            {
                 flags |= BufferFlags.GlobalFocus;
-
+            }
 
             BufferList.Add(buff = new SecondarySoundBuffer(DXSoundManager.Device, new SoundBufferDescription { Format = Format, SizeInBytes = RawData.Length, Flags = flags })
             {
@@ -123,7 +169,9 @@ namespace Client.Envir
             for (int i = BufferList.Count - 1; i >= 0; i--)
             {
                 if (!BufferList[i].Disposed)
+                {
                     BufferList[i].Dispose();
+                }
 
                 BufferList.RemoveAt(i);
             }
@@ -157,14 +205,18 @@ namespace Client.Envir
                 buffer.CurrentPlayPosition = BufferList[0].CurrentPlayPosition;
 
                 if ((BufferList[0].Status & BufferStatus.Playing) == BufferStatus.Playing)
+                {
                     buffer.Play(0, Loop ? PlayFlags.Looping : PlayFlags.None);
+                }
 
                 if (!BufferList[0].Disposed)
+                {
                     BufferList[0].Dispose();
+                }
 
                 BufferList.RemoveAt(0);
             }
-            
+
         }
     }
 }

@@ -59,6 +59,9 @@
             this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repositoryItemLookUpEdit2 = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridView)).BeginInit();
@@ -81,9 +84,12 @@
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
-            this.SaveButton});
+            this.SaveButton,
+            this.ribbon.SearchEditItem,
+            this.ImportButton,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
+            this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
@@ -92,9 +98,9 @@
             // SaveButton
             // 
             this.SaveButton.Caption = "Save Database";
-            this.SaveButton.Glyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.Glyph")));
             this.SaveButton.Id = 1;
-            this.SaveButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.LargeGlyph")));
+            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
+            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
             this.SaveButton.LargeWidth = 60;
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
@@ -102,16 +108,17 @@
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
+            this.ribbonPageGroup1,
+            this.JsonImportExport});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
             // CompanionInfoGridControl
@@ -123,7 +130,7 @@
             this.CompanionInfoGridControl.Name = "CompanionInfoGridControl";
             this.CompanionInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.MonsterInfoLookUpEdit});
-            this.CompanionInfoGridControl.Size = new System.Drawing.Size(954, 355);
+            this.CompanionInfoGridControl.Size = new System.Drawing.Size(972, 371);
             this.CompanionInfoGridControl.TabIndex = 2;
             this.CompanionInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.CompanionInfoGridView});
@@ -203,14 +210,14 @@
             this.tabNavigationPage1.Caption = "Companion Info";
             this.tabNavigationPage1.Controls.Add(this.CompanionInfoGridControl);
             this.tabNavigationPage1.Name = "tabNavigationPage1";
-            this.tabNavigationPage1.Size = new System.Drawing.Size(954, 355);
+            this.tabNavigationPage1.Size = new System.Drawing.Size(972, 371);
             // 
             // tabNavigationPage2
             // 
             this.tabNavigationPage2.Caption = "Companion Level Info";
             this.tabNavigationPage2.Controls.Add(this.CompanionLevelInfoGridControl);
             this.tabNavigationPage2.Name = "tabNavigationPage2";
-            this.tabNavigationPage2.Size = new System.Drawing.Size(960, 358);
+            this.tabNavigationPage2.Size = new System.Drawing.Size(972, 371);
             // 
             // CompanionLevelInfoGridControl
             // 
@@ -221,7 +228,7 @@
             this.CompanionLevelInfoGridControl.Name = "CompanionLevelInfoGridControl";
             this.CompanionLevelInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemLookUpEdit1});
-            this.CompanionLevelInfoGridControl.Size = new System.Drawing.Size(960, 358);
+            this.CompanionLevelInfoGridControl.Size = new System.Drawing.Size(972, 371);
             this.CompanionLevelInfoGridControl.TabIndex = 3;
             this.CompanionLevelInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.CompanionLevelInfoGridView});
@@ -299,7 +306,7 @@
             this.tabNavigationPage3.Caption = "Companion Skill Info";
             this.tabNavigationPage3.Controls.Add(this.CompanionSkillInfoGridControl);
             this.tabNavigationPage3.Name = "tabNavigationPage3";
-            this.tabNavigationPage3.Size = new System.Drawing.Size(960, 358);
+            this.tabNavigationPage3.Size = new System.Drawing.Size(972, 371);
             // 
             // CompanionSkillInfoGridControl
             // 
@@ -310,7 +317,7 @@
             this.CompanionSkillInfoGridControl.Name = "CompanionSkillInfoGridControl";
             this.CompanionSkillInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemLookUpEdit2});
-            this.CompanionSkillInfoGridControl.Size = new System.Drawing.Size(960, 358);
+            this.CompanionSkillInfoGridControl.Size = new System.Drawing.Size(972, 371);
             this.CompanionSkillInfoGridControl.TabIndex = 4;
             this.CompanionSkillInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.CompanionSkillInfoGridView});
@@ -383,6 +390,31 @@
             this.repositoryItemLookUpEdit2.Name = "repositoryItemLookUpEdit2";
             this.repositoryItemLookUpEdit2.NullText = "[Monster is null]";
             // 
+            // JsonImportExport
+            // 
+            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
+            // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 2;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            // 
             // CompanionInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -392,7 +424,7 @@
             this.Controls.Add(this.ribbon);
             this.Name = "CompanionInfoView";
             this.Ribbon = this.ribbon;
-            this.Text = "CompanionInfoView";
+            this.Text = "Companion Info";
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridView)).EndInit();
@@ -445,5 +477,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn11;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn12;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn13;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

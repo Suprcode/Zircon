@@ -22,7 +22,7 @@ namespace MirDB
 
             foreach (PropertyInfo property in properties)
             {
-                if (property.GetCustomAttribute<IgnoreProperty>() != null) continue;
+                if (property.GetCustomAttribute<IgnorePropertyAttribute>() != null) continue;
                 if (!DBValue.TypeList.ContainsValue(property.PropertyType) && !property.PropertyType.IsEnum && !property.PropertyType.IsSubclassOf(typeof(DBObject))) continue;
 
                 Properties.Add(new DBValue(property));

@@ -8,38 +8,45 @@ namespace MirDB
         None = 0,
         System = 1,
         Users = 2,
-        Both = System | Users,
+        Both = System | Users
     }
+
     [AttributeUsage(AttributeTargets.Class)]
-    public class UserObject : Attribute
+    public class UserObjectAttribute : Attribute
     {
 
     }
 
     [AttributeUsage(AttributeTargets.Property)]
-    public class IgnoreProperty : Attribute
+    public class IgnorePropertyAttribute : Attribute
     {
 
     }
     
     [AttributeUsage(AttributeTargets.Property)]
-    public class Association : Attribute
+    public class AssociationAttribute : Attribute
     {
         public string Identity { get; }
         public bool Aggregate { get; }
 
-        public Association(string identity)
+        public AssociationAttribute(string identity)
         {
             Identity = identity;
         }
-        public Association(bool aggregate)
+        public AssociationAttribute(bool aggregate)
         {
             Aggregate = aggregate;
         }
-        public Association(string identity, bool aggregate)
+        public AssociationAttribute(string identity, bool aggregate)
         {
             Identity = identity;
             Aggregate = aggregate;
         }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class IsIdentityAttribute : Attribute
+    {
+
     }
 }

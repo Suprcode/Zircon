@@ -108,7 +108,7 @@ namespace Library
         HorseArmour = 13,
         Emblem = 14,
         Shield = 15,
-        Wings = 16,
+        Costume = 16,
 
         Hook = 17,
         Float = 18,
@@ -383,7 +383,7 @@ namespace Library
         ItemPart,
         Emblem,
         Shield,
-        Wings,
+        Costume,
         Hook,
         Float,
         Bait,
@@ -1150,9 +1150,9 @@ namespace Library
         //EquipEffect_Part [1~99] 
         A_WhiteAura = 1,
         A_FlameAura = 2,
-        A_FlameAura2 = 3,
-        A_BlueAura = 4,
+        A_BlueAura = 3,
 
+        A_FlameAura2 = 9,
         A_GreenWings = 10,
         A_FlameWings = 11,
         A_BlueWings = 12,
@@ -1163,6 +1163,12 @@ namespace Library
         A_PhoenixWings = 16,
         A_IceKingWings = 17,
         A_BlueButterflyWings = 18,
+
+
+        S_WarThurible = 50,
+        S_PenanceThurible = 51,
+        S_CensorshipThurible = 52,
+        S_PetrichorThurible = 53,
         
         //EquipEffect_Full [100~119]
         A_FireDragonWings = 100,
@@ -1172,6 +1178,10 @@ namespace Library
         A_BlueFeatherWings = 104,
         A_WhiteFeatherWings = 105,
         A_PurpleTentacles = 106,
+
+        W_ChaoticHeavenBlade = 110,
+        W_JanitorsScimitar = 111,
+        W_JanitorsDualBlade = 112,
 
         //EquipEffect_FullEx1 [120~139] 
         A_LionWings = 120,

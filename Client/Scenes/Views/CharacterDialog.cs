@@ -119,6 +119,22 @@ namespace Client.Scenes.Views
             }
         }
 
+        private bool HideHead
+        {
+            get
+            {
+                return Grid[(int)EquipmentSlot.Costume]?.Item?.Info != null || HasFishingRobe;
+            }
+        }
+
+        private bool HideBody
+        {
+            get
+            {
+                return PlayerObject.CostumeShapeHideBody.Contains(Grid[(int)EquipmentSlot.Costume]?.Item?.Info.Shape ?? -1);
+            }
+        }
+
         private bool HasFishingRobe
         {
             get { return Grid != null && Grid[(int)EquipmentSlot.Armour]?.Item?.Info.ItemEffect == ItemEffect.FishingRobe; }
@@ -248,7 +264,7 @@ namespace Client.Scenes.Views
             TabControl = new DXTabControl
             {
                 Parent = this,
-                Location = new Point(0, 19),
+                Location = new Point(0, 20),
                 Size = new Size(DisplayArea.Width, DisplayArea.Height),
                 MarginLeft = 18
             };
@@ -257,7 +273,7 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabLabel } },
                 BackColour = Color.Empty,
-                Location = new Point(0, 27)
+                Location = new Point(0, 26)
             };
             CharacterTab.BeforeChildrenDraw += CharacterTab_BeforeChildrenDraw;
             CharacterTab.TabButton.MouseClick += (o, e) =>
@@ -270,7 +286,7 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 TabButton = { Label = { Text = CEnvir.Language.CharacterHermitTabLabel } },
                 BackColour = Color.Empty,
-                Location = new Point(0, 27),
+                Location = new Point(0, 26),
             };
 
             HermitTab.TabButton.Visible = !Inspect;
@@ -284,7 +300,7 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 TabButton = { Label = { Text = CEnvir.Language.CharacterDisciplineTabLabel } },
                 BackColour = Color.Empty,
-                Location = new Point(0, 27),
+                Location = new Point(0, 26),
             };
 
             DisciplineTab.TabButton.Visible = !Inspect && Globals.DisciplineInfoList.Binding.Count > 0;
@@ -564,16 +580,16 @@ namespace Client.Scenes.Views
             cell.MouseEnter += Cell_MouseEnter;
             cell.MouseLeave += Cell_MouseLeave;
 
-            Grid[(int)EquipmentSlot.Wings] = cell = new DXItemCell
+            Grid[(int)EquipmentSlot.Costume] = cell = new DXItemCell
             {
                 Location = new Point(10, 118),
                 Parent = CharacterTab,
                 Border = true,
                 ItemGrid = Equipment,
-                Slot = (int)EquipmentSlot.Wings,
+                Slot = (int)EquipmentSlot.Costume,
                 GridType = Inspect ? GridType.Inspect : GridType.Equipment,
             };
-            //cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
+            cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 34);
             cell.MouseEnter += Cell_MouseEnter;
             cell.MouseLeave += Cell_MouseLeave;
 
@@ -2325,12 +2341,12 @@ namespace Client.Scenes.Views
             int x = 130;
             int y = 270;
 
-            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out MirLibrary library)) return;
-
             ClientUserItem armour = Grid[(int)EquipmentSlot.Armour]?.Item;
-            if (armour != null)
+            ClientUserItem costume = Grid[(int)EquipmentSlot.Costume]?.Item;
+
+            if (armour != null && costume == null)
             {
-                MirImage image = ArmourEffectDecider.GetArmourEffectImageOrNull(armour, Gender);
+                MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
                 if (image != null)
                 {
                     bool oldBlend = DXManager.Blending;
@@ -2342,46 +2358,70 @@ namespace Client.Scenes.Views
                 }
             }
 
-            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out library)) return;
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out MirLibrary library)) return;
 
-            if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && Grid[(int)EquipmentSlot.Helmet].Item == null)
-                library.Draw(1160, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
-
-            switch (Gender)
+            if (!HideBody)
             {
-                case MirGender.Male:
-                    library.Draw(0, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    break;
-                case MirGender.Female:
-                    library.Draw(1, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    break;
+                if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && Grid[(int)EquipmentSlot.Helmet].Item == null)
+                    library.Draw(1160, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
+
+                switch (Gender)
+                {
+                    case MirGender.Male:
+                        library.Draw(0, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        break;
+                    case MirGender.Female:
+                        library.Draw(1, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        break;
+                }
             }
 
             if (CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library))
             {
-                if (armour != null)
+                if (costume != null)
+                {
+                    int costumeIndex = costume.Info.Image;
+                    library.Draw(costumeIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                }
+                else if (armour != null)
                 {
                     int armourIndex = armour.Info.Image;
                     library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Armour].Item.Colour, true, 1F, ImageType.Overlay);
+                    library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, armour.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (Grid[(int)EquipmentSlot.Weapon]?.Item != null)
+                if (!HideBody)
                 {
-                    int weaponIndex = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
-                    library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
-                }
+                    ClientUserItem weapon = Grid[(int)EquipmentSlot.Weapon]?.Item;
 
-                if (Grid[(int)EquipmentSlot.Shield]?.Item != null)
-                {
-                    int shieldIndex = Grid[(int)EquipmentSlot.Shield].Item.Info.Image;
-                    library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Shield].Item.Colour, true, 1F, ImageType.Overlay);
+                    if (weapon != null)
+                    {
+                        int weaponIndex = weapon.Info.Image;
+                        library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        library.Draw(weaponIndex, DisplayArea.X + x, DisplayArea.Y + y, weapon.Colour, true, 1F, ImageType.Overlay);
+
+                        MirImage image = EquipEffectDecider.GetEffectImageOrNull(weapon, Gender);
+                        if (image != null)
+                        {
+                            bool oldBlend = DXManager.Blending;
+                            float oldRate = DXManager.BlendRate;
+
+                            DXManager.SetBlend(true, 0.8F);
+                            PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                            DXManager.SetBlend(oldBlend, oldRate);
+                        }
+                    }
+
+                    if (Grid[(int)EquipmentSlot.Shield]?.Item != null)
+                    {
+                        int shieldIndex = Grid[(int)EquipmentSlot.Shield].Item.Info.Image;
+                        library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Shield].Item.Colour, true, 1F, ImageType.Overlay);
+                    }
                 }
             }
 
-            if (HasFishingRobe) return;
+            if (HideHead) return;
 
             if (Grid[(int)EquipmentSlot.Helmet]?.Item != null && library != null)
             {

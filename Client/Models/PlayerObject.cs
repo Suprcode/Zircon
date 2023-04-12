@@ -26,11 +26,7 @@ namespace Client.Models
             [0] = LibraryFile.M_Shield1,
             [1] = LibraryFile.M_Shield2,
             [0 + FemaleOffSet] = LibraryFile.WM_Shield1,
-            [1 + FemaleOffSet] = LibraryFile.WM_Shield2,
-
-            [100] = LibraryFile.EquipEffect_Part,
-
-            [100 + FemaleOffSet] = LibraryFile.EquipEffect_Part,
+            [1 + FemaleOffSet] = LibraryFile.WM_Shield2
         };
         #endregion
 
@@ -67,13 +63,6 @@ namespace Client.Models
             [15 + FemaleOffSet] = LibraryFile.WM_Weapon15,
             [16 + FemaleOffSet] = LibraryFile.WM_Weapon16,
 
-            [120] = LibraryFile.M_WeaponADL1,
-            [122] = LibraryFile.M_WeaponADL2,
-            [126] = LibraryFile.M_WeaponADL6,
-            [120 + RightHandOffSet] = LibraryFile.M_WeaponADR1,
-            [122 + RightHandOffSet] = LibraryFile.M_WeaponADR2,
-            [126 + RightHandOffSet] = LibraryFile.M_WeaponADR6,
-
             [110] = LibraryFile.M_WeaponAOH1,
             [111] = LibraryFile.M_WeaponAOH2,
             [112] = LibraryFile.M_WeaponAOH3,
@@ -82,13 +71,6 @@ namespace Client.Models
             [115] = LibraryFile.M_WeaponAOH5,
             [116] = LibraryFile.M_WeaponAOH6,
 
-            [120 + FemaleOffSet] = LibraryFile.WM_WeaponADL1,
-            [122 + FemaleOffSet] = LibraryFile.WM_WeaponADL2,
-            [126 + FemaleOffSet] = LibraryFile.WM_WeaponADL6,
-            [120 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR1,
-            [122 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR2,
-            [126 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR6,
-
             [110 + FemaleOffSet] = LibraryFile.WM_WeaponAOH1,
             [111 + FemaleOffSet] = LibraryFile.WM_WeaponAOH2,
             [112 + FemaleOffSet] = LibraryFile.WM_WeaponAOH3,
@@ -96,6 +78,21 @@ namespace Client.Models
             [114 + FemaleOffSet] = LibraryFile.WM_WeaponAOH4,
             [115 + FemaleOffSet] = LibraryFile.WM_WeaponAOH5,
             [116 + FemaleOffSet] = LibraryFile.WM_WeaponAOH6,
+
+            [120] = LibraryFile.M_WeaponADL1,
+            [122] = LibraryFile.M_WeaponADL2,
+            [126] = LibraryFile.M_WeaponADL6,
+            [120 + RightHandOffSet] = LibraryFile.M_WeaponADR1,
+            [122 + RightHandOffSet] = LibraryFile.M_WeaponADR2,
+            [126 + RightHandOffSet] = LibraryFile.M_WeaponADR6,
+
+            [120 + FemaleOffSet] = LibraryFile.WM_WeaponADL1,
+            [122 + FemaleOffSet] = LibraryFile.WM_WeaponADL2,
+            [126 + FemaleOffSet] = LibraryFile.WM_WeaponADL6,
+            [120 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR1,
+            [122 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR2,
+            [126 + FemaleOffSet + RightHandOffSet] = LibraryFile.WM_WeaponADR6,
+
         };
         #endregion
 
@@ -173,6 +170,26 @@ namespace Client.Models
         };
         #endregion
 
+        #region Costume Librarys
+        public Dictionary<int, LibraryFile> CostumeList = new()
+        {
+            [0] = LibraryFile.M_Costume,
+            [1] = LibraryFile.M_CostumeEx1,
+
+            [0 + FemaleOffSet] = LibraryFile.WM_Costume,
+            [1 + FemaleOffSet] = LibraryFile.WM_CostumeEx1,
+
+            [0 + AssassinOffSet] = LibraryFile.M_CostumeA,
+
+            [0 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_CostumeA,
+        };
+
+        public static readonly List<int> CostumeShapeHideBody = new()
+        {
+            6, 7, 8, 9, 10, 11, 12, 13
+        };
+
+        #endregion
 
         public string GuildRank
         {
@@ -207,23 +224,15 @@ namespace Client.Models
 
         public MirLibrary ShieldLibrary;
         public int ShieldShape;
-        public int ShieldFrame
-        {
-            get
-            {
-                if (ShieldShape < 1000)
-                    return DrawFrame + (ShieldShape % 10) * ArmourShapeOffSet + ArmourShift;
-                else
-                    return 900 + 200 * (ShieldShape % 10) + 10 * (byte)Direction + (GameScene.Game.MapControl.Animation % 4);
-            }
-        }
+        public int ShieldFrame => DrawFrame + (ShieldShape % 10) * ArmourShapeOffSet + ArmourShift;
 
         public MirLibrary BodyLibrary;
         public int ArmourShapeOffSet;
-        public int ArmourShape;
+        public int ArmourShape, CostumeShape;
         public int ArmourShift;
         public Color ArmourColour;
-        public int ArmourFrame => DrawFrame + (ArmourShape % 11) * ArmourShapeOffSet + ArmourShift;
+        public int ArmourFrame => DrawFrame + (CostumeShape >= 0 ? (CostumeShape % 10) : (ArmourShape % 11)) * ArmourShapeOffSet + ArmourShift;
+
 
         public MirLibrary HorseLibrary, HorseShapeLibrary, HorseShapeLibrary2;
         public int HorseShape;
@@ -232,7 +241,8 @@ namespace Client.Models
 
         public ExteriorEffect ArmourEffect;
         public ExteriorEffect EmblemEffect;
-        public ExteriorEffect WingsEffect;
+        public ExteriorEffect WeaponEffect;
+        public ExteriorEffect ShieldEffect;
 
         public bool DrawWeapon;
 
@@ -242,10 +252,10 @@ namespace Client.Models
         public string FiltersRarity;
         public string FiltersItemType;
 
-        public PlayerObject()
-        {
+        public bool HideHead;
 
-        }
+        public PlayerObject() { }
+
         public PlayerObject(S.ObjectPlayer info)
         {
             CharacterIndex = info.Index;
@@ -274,14 +284,23 @@ namespace Client.Models
 
             ArmourShape = info.Armour;
             ArmourColour = info.ArmourColour;
+
+            CostumeShape = info.Costume;
+
             LibraryWeaponShape = info.Weapon;
+
             HorseShape = info.HorseShape;
+
             HelmetShape = info.Helmet;
+
             ShieldShape = info.Shield;
+
+            HideHead = info.HideHead;
 
             ArmourEffect = info.ArmourEffect;
             EmblemEffect = info.EmblemEffect;
-            WingsEffect = info.WingsEffect;
+            WeaponEffect = info.WeaponEffect;
+            ShieldEffect = info.ShieldEffect;
 
             Light = info.Light;
 
@@ -361,6 +380,15 @@ namespace Client.Models
                                 ArmourShape = 0;
                             }
 
+                            if (CostumeShape >= 0)
+                            {
+                                if (!CostumeList.TryGetValue(CostumeShape / 10, out file))
+                                {
+                                    file = LibraryFile.M_Hum;
+                                    ArmourShape = 0;
+                                }
+                            }
+
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);
 
                             CEnvir.LibraryList.TryGetValue(LibraryFile.M_Hair, out HairLibrary);
@@ -417,7 +445,6 @@ namespace Client.Models
                             }
 
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);
-
                             CEnvir.LibraryList.TryGetValue(LibraryFile.M_HairA, out HairLibrary);
 
                             if (!HelmetList.TryGetValue(HelmetShape / 10 + AssassinOffSet, out file)) file = LibraryFile.None;
@@ -432,10 +459,19 @@ namespace Client.Models
                                 CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
 
-                            if (LibraryWeaponShape < 1200) break;
-
-                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
-                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            if (LibraryWeaponShape >= 1200)
+                            {
+                                if (LibraryWeaponShape == 1263) //Chaotic Heaven Blade
+                                {
+                                    if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
+                                }
+                                else
+                                {
+                                    if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + RightHandOffSet, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                }
+                            }
                             break;
                         case MirGender.Female:
                             if (!ArmourList.TryGetValue(ArmourShape / 11 + AssassinOffSet + FemaleOffSet, out file))
@@ -459,10 +495,19 @@ namespace Client.Models
                                 CEnvir.LibraryList.TryGetValue(file, out ShieldLibrary);
                             }
 
-                            if (LibraryWeaponShape < 1200) break;
-
-                            if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
-                            CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                            if (LibraryWeaponShape >= 1200)
+                            {
+                                if (LibraryWeaponShape == 1263) //Chaotic Heaven Blade
+                                {
+                                    if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary1);
+                                }
+                                else
+                                {
+                                    if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet + RightHandOffSet, out file)) file = LibraryFile.None;
+                                    CEnvir.LibraryList.TryGetValue(file, out WeaponLibrary2);
+                                }
+                            }
                             break;
                     }
                     break;
@@ -805,15 +850,9 @@ namespace Client.Models
         {
             ExteriorEffectManager.DrawExteriorEffects(this, true);
 
-            if (DrawShieldEffectBehind())
-                DrawShieldEffect();
-
             DrawBody(shadow);
 
             ExteriorEffectManager.DrawExteriorEffects(this, false);
-
-            if (DrawShieldEffectInfront())
-                DrawShieldEffect();
         }
 
         public override void DrawBlend()
@@ -835,44 +874,47 @@ namespace Client.Models
             int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;
 
             MirImage image;
-            switch (Direction)
+
+            bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
+
+            if (!hideBody)
             {
-                case MirDirection.Up:
-                case MirDirection.DownLeft:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    if (!DrawWeapon) break;
-                    image = WeaponLibrary1?.GetImage(WeaponFrame);
-                    if (image == null) break;
+                switch (Direction)
+                {
+                    case MirDirection.Up:
+                    case MirDirection.DownLeft:
+                    case MirDirection.Left:
+                    case MirDirection.UpLeft:
+                        if (!DrawWeapon) break;
+                        image = WeaponLibrary1?.GetImage(WeaponFrame);
+                        if (image == null) break;
 
-                    WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                        WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    break;
-                default:
-                    if (!DrawWeapon) break;
-                    image = WeaponLibrary2?.GetImage(WeaponFrame);
-                    if (image == null) break;
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        break;
+                    default:
+                        if (!DrawWeapon) break;
+                        image = WeaponLibrary2?.GetImage(WeaponFrame);
+                        if (image == null) break;
 
-                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                        WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
 
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    break;
-            }
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        break;
+                }
 
-            switch (Direction)
-            {
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.DownRight:
-                    if (ShieldShape >= 0 && ShieldShape < 1000)
-                    {
+                switch (Direction)
+                {
+                    case MirDirection.UpRight:
+                    case MirDirection.Right:
+                    case MirDirection.DownRight:
                         image = ShieldLibrary?.GetImage(ShieldFrame);
                         if (image != null)
                         {
@@ -883,8 +925,8 @@ namespace Client.Models
                             r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                             b = Math.Max(b, image.Height + DrawY + image.OffSetY);
                         }
-                    }
-                    break;
+                        break;
+                }
             }
 
             image = BodyLibrary?.GetImage(ArmourFrame);
@@ -901,73 +943,76 @@ namespace Client.Models
                 b = Math.Max(b, image.Height + DrawY + image.OffSetY);
             }
 
-            if (HelmetShape > 0)
+            if (!HideHead)
             {
-                image = HelmetLibrary?.GetImage(HelmetFrame);
-                if (image != null)
+                if (HelmetShape > 0)
                 {
-                    HelmetLibrary.Draw(HelmetFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                }
-            }
-            else
-            {
-                image = HairLibrary.GetImage(HairFrame);
-                if (HairType > 0 && image != null)
-                {
-                    HairLibrary.Draw(HairFrame, DrawX, DrawY, HairColour, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                }
-            }
-
-            switch (Direction)
-            {
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.DownRight:
-                case MirDirection.Down:
-                    if (!DrawWeapon) break;
-                    image = WeaponLibrary1?.GetImage(WeaponFrame);
-                    if (image == null) break;
-
-                    WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    break;
-                default:
-                    if (!DrawWeapon) break;
-                    image = WeaponLibrary2?.GetImage(WeaponFrame);
-                    if (image == null) break;
-
-                    WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                    l = Math.Min(l, DrawX + image.OffSetX);
-                    t = Math.Min(t, DrawY + image.OffSetY);
-                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
-                    break;
-            }
-
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    if (ShieldShape >= 0 && ShieldShape < 1000)
+                    image = HelmetLibrary?.GetImage(HelmetFrame);
+                    if (image != null)
                     {
+                        HelmetLibrary.Draw(HelmetFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    }
+                }
+                else
+                {
+                    image = HairLibrary.GetImage(HairFrame);
+                    if (HairType > 0 && image != null)
+                    {
+                        HairLibrary.Draw(HairFrame, DrawX, DrawY, HairColour, true, 1F, ImageType.Image);
+
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    }
+                }
+            }
+
+            if (!hideBody)
+            {
+                switch (Direction)
+                {
+                    case MirDirection.UpRight:
+                    case MirDirection.Right:
+                    case MirDirection.DownRight:
+                    case MirDirection.Down:
+                        if (!DrawWeapon) break;
+                        image = WeaponLibrary1?.GetImage(WeaponFrame);
+                        if (image == null) break;
+
+                        WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        break;
+                    default:
+                        if (!DrawWeapon) break;
+                        image = WeaponLibrary2?.GetImage(WeaponFrame);
+                        if (image == null) break;
+
+                        WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                        break;
+                }
+
+                switch (Direction)
+                {
+                    case MirDirection.Up:
+                    case MirDirection.Down:
+                    case MirDirection.DownLeft:
+                    case MirDirection.Left:
+                    case MirDirection.UpLeft:
                         image = ShieldLibrary?.GetImage(ShieldFrame);
                         if (image != null)
                         {
@@ -978,8 +1023,8 @@ namespace Client.Models
                             r = Math.Max(r, image.Width + DrawX + image.OffSetX);
                             b = Math.Max(b, image.Height + DrawY + image.OffSetY);
                         }
-                    }
-                    break;
+                        break;
+                }
             }
 
             DXManager.SetSurface(oldSurface);
@@ -1011,7 +1056,6 @@ namespace Client.Models
 
             if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(Opacity);
 
-
             switch (CurrentAnimation)
             {
                 case MirAnimation.HorseStanding:
@@ -1042,19 +1086,17 @@ namespace Client.Models
                             //if (shadow)
                             //    HorseShapeLibrary2?.DrawBlend(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
-
                     }
 
                     break;
             }
 
-
-
             DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(l, t, r, b), Vector3.Zero, new Vector3(l, t, 0), DrawColour);
             CEnvir.DPSCounter++;
-            if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(oldOpacity);
 
+            if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(oldOpacity);
         }
+
         public void DrawShadow2(int l, int t, int r, int b)
         {
             MirImage image = BodyLibrary?.GetImage(ArmourFrame);
@@ -1130,53 +1172,6 @@ namespace Client.Models
             }
         }
 
-        public void DrawShieldEffect()
-        {
-            if (!Config.DrawEffects) return;
-            if (Horse != HorseType.None) return;
-
-            switch (CurrentAction)
-            {
-                case MirAction.Die:
-                case MirAction.Dead:
-                    break;
-                default:
-                    if (ShieldShape >= 1000)
-                    {
-                        ShieldLibrary.DrawBlend(ShieldFrame + 100, DrawX, DrawY, Color.White, true, 0.8f, ImageType.Image);
-                        ShieldLibrary.Draw(ShieldFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-                    }
-
-                    break;
-            }
-        }
-
-        public bool DrawShieldEffectBehind()
-        {
-            switch (Direction)
-            {
-                case MirDirection.UpRight:
-                case MirDirection.Right:
-                case MirDirection.DownRight:
-                    return true;
-            }
-            return false;
-        }
-
-        public bool DrawShieldEffectInfront()
-        {
-            switch (Direction)
-            {
-                case MirDirection.Up:
-                case MirDirection.Down:
-                case MirDirection.DownLeft:
-                case MirDirection.Left:
-                case MirDirection.UpLeft:
-                    return true;
-            }
-            return false;
-        }
-
         public override bool MouseOver(Point p)
         {
             if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
@@ -1196,7 +1191,6 @@ namespace Client.Models
 
             if (ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
                 return true;
-
 
             switch (CurrentAnimation)
             {

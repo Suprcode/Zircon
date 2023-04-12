@@ -463,13 +463,13 @@ namespace Server.Envir
 
             GoldInfo = CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
 
-            RefinementStoneInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.RefinementStone);
-            FragmentInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment1);
-            Fragment2Info = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment2);
-            Fragment3Info = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment3);
+            RefinementStoneInfo = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.RefinementStone);
+            FragmentInfo = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.Fragment1);
+            Fragment2Info = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.Fragment2);
+            Fragment3Info = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.Fragment3);
 
-            ItemPartInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.ItemPart);
-            FortuneCheckerInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.FortuneChecker);
+            ItemPartInfo = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.ItemPart);
+            FortuneCheckerInfo = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.FortuneChecker);
 
             MysteryShipMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.MysteryShipRegionIndex);
             LairMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.LairRegionIndex);
@@ -1439,6 +1439,12 @@ namespace Server.Envir
             {
                 foreach (UserConquest conquest in UserConquestList.Binding)
                 {
+                    if (conquest.Guild == null)
+                    {
+                        conquest.Delete();
+                        continue;
+                    }
+
                     if (conquest.Castle != info) continue;
                     if (conquest.WarDate > Now.Date) continue;
 
@@ -1468,7 +1474,6 @@ namespace Server.Envir
         }
         public static void StartConquest(CastleInfo info, List<GuildInfo> participants)
         {
-
             ConquestWar War = new ConquestWar
             {
                 Castle = info,

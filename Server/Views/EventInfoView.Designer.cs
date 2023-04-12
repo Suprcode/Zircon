@@ -34,6 +34,7 @@
             this.TargetsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.MonsterLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.EventInfoGridControl = new DevExpress.XtraGrid.GridControl();
             this.ActionsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -52,9 +53,11 @@
             this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)(this.TargetsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EventInfoGridControl)).BeginInit();
@@ -105,6 +108,13 @@
             this.MonsterLookUpEdit.Name = "MonsterLookUpEdit";
             this.MonsterLookUpEdit.NullText = "[Monster is null]";
             // 
+            // gridColumn12
+            // 
+            this.gridColumn12.FieldName = "DropSet";
+            this.gridColumn12.Name = "gridColumn12";
+            this.gridColumn12.Visible = true;
+            this.gridColumn12.VisibleIndex = 1;
+            // 
             // gridColumn3
             // 
             this.gridColumn3.FieldName = "Value";
@@ -122,7 +132,7 @@
             this.EventInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
             gridLevelNode1,
             gridLevelNode2});
-            this.EventInfoGridControl.Location = new System.Drawing.Point(0, 143);
+            this.EventInfoGridControl.Location = new System.Drawing.Point(0, 144);
             this.EventInfoGridControl.MainView = this.EventInfoGridView;
             this.EventInfoGridControl.MenuManager = this.ribbon;
             this.EventInfoGridControl.Name = "EventInfoGridControl";
@@ -132,7 +142,7 @@
             this.RegionLookUpEdit,
             this.MapLookUpEdit});
             this.EventInfoGridControl.ShowOnlyPredefinedDetails = true;
-            this.EventInfoGridControl.Size = new System.Drawing.Size(742, 381);
+            this.EventInfoGridControl.Size = new System.Drawing.Size(742, 380);
             this.EventInfoGridControl.TabIndex = 2;
             this.EventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.ActionsGridView,
@@ -290,45 +300,67 @@
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
-            this.SaveButton});
+            this.ribbon.SearchEditItem,
+            this.SaveButton,
+            this.ImportButton,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
+            this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(742, 143);
+            this.ribbon.Size = new System.Drawing.Size(742, 144);
             // 
             // SaveButton
             // 
             this.SaveButton.Caption = "Save Database";
-            this.SaveButton.Glyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.Glyph")));
             this.SaveButton.Id = 1;
-            this.SaveButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.LargeGlyph")));
+            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
+            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
             this.SaveButton.LargeWidth = 60;
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
             // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 2;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
+            this.ribbonPageGroup1,
+            this.JsonImportExport});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
-            // gridColumn12
+            // JsonImportExport
             // 
-            this.gridColumn12.FieldName = "DropSet";
-            this.gridColumn12.Name = "gridColumn12";
-            this.gridColumn12.Visible = true;
-            this.gridColumn12.VisibleIndex = 1;
+            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
             // 
             // EventInfoView
             // 
@@ -339,7 +371,7 @@
             this.Controls.Add(this.ribbon);
             this.Name = "EventInfoView";
             this.Ribbon = this.ribbon;
-            this.Text = "EventInfoView";
+            this.Text = "Event Info";
             ((System.ComponentModel.ISupportInitialize)(this.TargetsGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EventInfoGridControl)).EndInit();
@@ -380,5 +412,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn11;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit MapLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn12;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

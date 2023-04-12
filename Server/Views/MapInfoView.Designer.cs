@@ -83,18 +83,18 @@
             this.gridColumn28 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn21 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn29 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colWeather = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.WeatherComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ClearMapsButton = new DevExpress.XtraBars.BarButtonItem();
-            this.RenameMiniMapButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.StartClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.RequiredClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            this.colWeather = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.WeatherComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.GuardsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DirectionImageComboBox)).BeginInit();
@@ -106,11 +106,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LightComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeatherComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartClassImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RequiredClassImageComboBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.WeatherComboBox)).BeginInit();
             this.SuspendLayout();
             // 
             // GuardsGridView
@@ -263,7 +263,6 @@
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, editorButtonImageOptions1, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject1, serializableAppearanceObject2, serializableAppearanceObject3, serializableAppearanceObject4, "", null, null, DevExpress.Utils.ToolTipAnchor.Default)});
             this.EditButtonEdit.Name = "EditButtonEdit";
             this.EditButtonEdit.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
-            this.EditButtonEdit.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.EditButtonEdit_ButtonClick);
             // 
             // MiningGridView
             // 
@@ -591,17 +590,34 @@
             this.gridColumn29.VisibleIndex = 26;
             this.gridColumn29.Width = 85;
             // 
+            // colWeather
+            // 
+            this.colWeather.Caption = "Weather";
+            this.colWeather.ColumnEdit = this.WeatherComboBox;
+            this.colWeather.FieldName = "Weather";
+            this.colWeather.Name = "colWeather";
+            this.colWeather.Visible = true;
+            this.colWeather.VisibleIndex = 4;
+            this.colWeather.Width = 38;
+            // 
+            // WeatherComboBox
+            // 
+            this.WeatherComboBox.AutoHeight = false;
+            this.WeatherComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.WeatherComboBox.Name = "WeatherComboBox";
+            // 
             // ribbon
             // 
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
+            this.ribbon.SearchEditItem,
             this.SaveButton,
-            this.ClearMapsButton,
-            this.RenameMiniMapButton,
-            this.ribbon.SearchEditItem});
+            this.ImportButton,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 4;
+            this.ribbon.MaxItemId = 6;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
@@ -615,33 +631,30 @@
             this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
             this.SaveButton.LargeWidth = 60;
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
             // 
-            // ClearMapsButton
+            // ImportButton
             // 
-            this.ClearMapsButton.Caption = "Clear Maps";
-            this.ClearMapsButton.Id = 2;
-            this.ClearMapsButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ClearMapsButton.ImageOptions.Image")));
-            this.ClearMapsButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ClearMapsButton.ImageOptions.LargeImage")));
-            this.ClearMapsButton.LargeWidth = 60;
-            this.ClearMapsButton.Name = "ClearMapsButton";
-            this.ClearMapsButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ClearMapsButton_ItemClick);
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 4;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
             // 
-            // RenameMiniMapButton
+            // ExportButton
             // 
-            this.RenameMiniMapButton.Caption = "Rename Minimaps";
-            this.RenameMiniMapButton.Id = 3;
-            this.RenameMiniMapButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("RenameMiniMapButton.ImageOptions.Image")));
-            this.RenameMiniMapButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("RenameMiniMapButton.ImageOptions.LargeImage")));
-            this.RenameMiniMapButton.LargeWidth = 60;
-            this.RenameMiniMapButton.Name = "RenameMiniMapButton";
-            this.RenameMiniMapButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.RenameMiniMapButton_ItemClick);
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 5;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
             // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
             this.ribbonPageGroup1,
-            this.ribbonPageGroup2});
+            this.JsonImportExport});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
@@ -653,14 +666,12 @@
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "Saving";
             // 
-            // ribbonPageGroup2
+            // JsonImportExport
             // 
-            this.ribbonPageGroup2.AllowTextClipping = false;
-            this.ribbonPageGroup2.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
-            this.ribbonPageGroup2.ItemLinks.Add(this.ClearMapsButton);
-            this.ribbonPageGroup2.ItemLinks.Add(this.RenameMiniMapButton);
-            this.ribbonPageGroup2.Name = "ribbonPageGroup2";
-            this.ribbonPageGroup2.Text = "Actions";
+            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
             // 
             // MapIconImageComboBox
             // 
@@ -687,23 +698,6 @@
             this.RequiredClassImageComboBox.ContextImageOptions.AllowGlyphSkinning = DevExpress.Utils.DefaultBoolean.False;
             this.RequiredClassImageComboBox.Name = "RequiredClassImageComboBox";
             // 
-            // colWeather
-            // 
-            this.colWeather.Caption = "Weather";
-            this.colWeather.ColumnEdit = this.WeatherComboBox;
-            this.colWeather.FieldName = "Weather";
-            this.colWeather.Name = "colWeather";
-            this.colWeather.Visible = true;
-            this.colWeather.VisibleIndex = 4;
-            this.colWeather.Width = 38;
-            // 
-            // WeatherComboBox
-            // 
-            this.WeatherComboBox.AutoHeight = false;
-            this.WeatherComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.WeatherComboBox.Name = "WeatherComboBox";
-            // 
             // MapInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -714,7 +708,6 @@
             this.Name = "MapInfoView";
             this.Ribbon = this.ribbon;
             this.Text = "Map Info";
-            this.Load += new System.EventHandler(this.MapInfoView_Load);
             ((System.ComponentModel.ISupportInitialize)(this.GuardsGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DirectionImageComboBox)).EndInit();
@@ -726,11 +719,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LightComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapInfoLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.WeatherComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartClassImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RequiredClassImageComboBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.WeatherComboBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -761,9 +754,6 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox MapIconImageComboBox;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox StartClassImageComboBox;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox RequiredClassImageComboBox;
-        private DevExpress.XtraBars.BarButtonItem ClearMapsButton;
-        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
-        private DevExpress.XtraBars.BarButtonItem RenameMiniMapButton;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn12;
         private DevExpress.XtraGrid.Columns.GridColumn colRequiredClass;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn13;
@@ -796,5 +786,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn29;
         private DevExpress.XtraGrid.Columns.GridColumn colWeather;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox WeatherComboBox;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

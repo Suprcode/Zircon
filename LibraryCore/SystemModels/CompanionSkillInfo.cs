@@ -9,6 +9,7 @@ namespace Library.SystemModels
 {
     public sealed class CompanionSkillInfo : DBObject
     {
+        [IsIdentity]
         public int Level
         {
             get { return _Level; }
@@ -24,6 +25,7 @@ namespace Library.SystemModels
         }
         private int _Level;
 
+        [IsIdentity]
         public Stat StatType
         {
             get { return _StatType; }
