@@ -42,6 +42,8 @@ namespace Server.DBModels
         }
         private string _CharacterName;
 
+
+
         public MirClass Class
         {
             get { return _Class; }
@@ -86,6 +88,21 @@ namespace Server.DBModels
             }
         }
         private int _Level;
+
+        public string Caption
+        {
+            get { return _Caption; }
+            set
+            {
+                if (_Caption == value) return;
+
+                var oldValue = _Caption;
+                _Caption = value;
+
+                OnChanged(oldValue, value, "Caption");
+            }
+        }
+        private string _Caption;
 
         public int HairType
         {

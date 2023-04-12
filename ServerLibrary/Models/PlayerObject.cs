@@ -29,6 +29,12 @@ namespace Server.Models
             get { return Character.CharacterName; }
             set { Character.CharacterName = value; }
         }
+
+        public override string Caption
+        {
+            get { return Character.Caption; }
+            set { Character.Caption = value; }
+        }
         public override int Level
         {
             get { return Character.Level; }
@@ -7728,7 +7734,6 @@ namespace Server.Models
                 item = Inventory[i];
                 break;
             }
-
             if (item == null) return;
 
             S.ItemChanged result = new S.ItemChanged
@@ -7754,6 +7759,53 @@ namespace Server.Models
 
             SEnvir.Log($"[NAME CHANGED] Old: {Name}, New: {newName}.", true);
             Name = newName;
+
+            SendChangeUpdate();
+        }
+
+        public void CaptionChange(string newCaption)
+        {
+            int index = 0;
+            UserItem item = null;
+
+            for (int i = 0; i < Inventory.Length; i++)
+            {
+                if (Inventory[i] is null || Inventory[i].Info.Effect is not ItemEffect.Caption) continue;
+
+                if (!CanUseItem(Inventory[i])) continue;
+
+                index = i;
+                item = Inventory[i];
+                break;
+            }
+
+            if (item == null) return;
+
+            S.ItemChanged result = new S.ItemChanged
+            {
+                Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = index },
+                Success = true
+            };
+            Enqueue(result);
+
+            if (item.Count > 1)
+            {
+                item.Count--;
+                result.Link.Count = item.Count;
+            }
+            else
+            {
+                RemoveItem(item);
+                Inventory[index] = null;
+                item.Delete();
+
+                result.Link.Count = 0;
+            }
+            Character.Caption = newCaption;
+            Caption = newCaption;
+            SEnvir.Log($"[CAPTION CHANGED] {Character.CharacterName} caption changed to: {Caption}", true);
+            Connection.ReceiveChat($"Your caption changed to: {Caption}.", MessageType.System);
+
 
             SendChangeUpdate();
         }
@@ -19094,6 +19146,7 @@ namespace Server.Models
                 Index = Character.Index,
                 ObjectID = ObjectID,
                 Name = Name,
+                Caption = Character.Caption,
                 GuildName = Character.Account.GuildMember?.Guild.GuildName,
                 GuildRank = Character.Account.GuildMember?.Rank,
                 NameColour = NameColour,
@@ -19191,6 +19244,7 @@ namespace Server.Models
 
                 ObjectID = ObjectID,
                 Name = Name,
+                Caption = Character.Caption,
                 GuildName = Character.Account.GuildMember?.Guild.GuildName,
                 NameColour = NameColour,
                 Location = CurrentLocation,
@@ -19294,7 +19348,7 @@ namespace Server.Models
                 ObjectID = ObjectID,
 
                 Name = Name,
-
+                Caption = Caption,
                 Gender = Gender,
                 HairType = HairType,
                 HairColour = HairColour,

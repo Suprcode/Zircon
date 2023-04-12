@@ -1643,6 +1643,9 @@ namespace Client.Controls
                         case ItemEffect.FortuneChecker:
                             GameScene.Game.FortuneCheckerBox.Visible = true;
                             break;
+                        case ItemEffect.Caption:
+                            GameScene.Game.CaptionBox.Visible = true;
+                            break;
                     }
 
                     break;

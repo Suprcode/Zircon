@@ -1244,6 +1244,7 @@ namespace Library
         ArmourDye = 52,
         NameChange = 53,
         FortuneChecker = 54,
+        Caption = 55,
 
         WeaponTemplate = 60,
         WarriorWeapon = 61,

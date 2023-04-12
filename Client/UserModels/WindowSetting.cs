@@ -122,6 +122,7 @@ namespace Client.UserModels
     {
         None,
         ConfigBox,
+        CaptionBox,
         InventoryBox,
         CharacterBox,
         ExitBox,

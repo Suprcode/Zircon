@@ -605,6 +605,11 @@ namespace Library.Network.ClientPackets
         public string Name { get; set; }
     }
 
+    public sealed class CaptionChange : Packet
+    {
+        public string Caption { get; set; }
+    }
+
     public sealed class FortuneCheck : Packet
     {
         public int ItemIndex { get; set; }
