@@ -430,7 +430,7 @@ namespace Library
         public MirDirection Direction { get; set; }
 
         public int MapIndex { get; set; }
-        public int? InstanceIndex { get; set; }
+        public int InstanceIndex { get; set; }
 
         public int Level { get; set; }
         public int HairType { get; set; }

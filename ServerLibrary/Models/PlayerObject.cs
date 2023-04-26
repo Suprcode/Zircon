@@ -19157,7 +19157,7 @@ namespace Server.Models
                 Direction = Direction,
 
                 MapIndex = CurrentMap.Info.Index,
-                InstanceIndex = CurrentMap.Instance?.Index,
+                InstanceIndex = CurrentMap.Instance?.Index ?? -1,
 
                 HairType = HairType,
                 HairColour = HairColour,

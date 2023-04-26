@@ -797,7 +797,6 @@ namespace Client.Envir
         {
             GameScene.Game.DayTime = p.DayTime;
         }
-
         public void Process(S.UserLocation p)
         {
             GameScene.Game.Displacement(p.Direction, p.Location);
