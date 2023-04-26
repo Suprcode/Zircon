@@ -355,6 +355,9 @@ namespace Client.Envir
 
                     CheckKeyBinds();
 
+                    if (!DXManager.ValidResolutions.Contains(Config.GameSize))
+                        Config.GameSize = DXManager.ValidResolutions[0];
+
                     Loaded = true;
                 }
                 finally

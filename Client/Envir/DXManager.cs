@@ -24,6 +24,9 @@ namespace Client.Envir
     {
         public static Graphics Graphics { get; private set; }
 
+        public static List<Size> ValidResolutions = new List<Size>();
+        private static Size MinimumResolution = new Size(1024, 768);
+
         public static PresentParameters Parameters { get; private set; }
         public static Device Device { get; private set; }
         public static Sprite Sprite { get; private set; }
@@ -125,6 +128,19 @@ namespace Client.Envir
             Direct3D direct3D = new Direct3D();
 
             Device = new Device(direct3D, direct3D.Adapters.DefaultAdapter.Adapter, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
+
+            AdapterInformation adapterInfo = direct3D.Adapters.DefaultAdapter;
+            var modes = adapterInfo.GetDisplayModes(Format.X8R8G8B8);
+
+            foreach (DisplayMode mode in modes)
+            {
+                Size s = new Size(mode.Width, mode.Height);
+                if (s.Width < MinimumResolution.Width || s.Height < MinimumResolution.Height) continue;
+
+                if (!ValidResolutions.Contains(s))
+                    ValidResolutions.Add(s);
+            }
+            ValidResolutions.Sort((s1, s2) => (s1.Width * s1.Height).CompareTo(s2.Width * s2.Height));
 
             LoadTextures();
 

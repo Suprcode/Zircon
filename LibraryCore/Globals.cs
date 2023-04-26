@@ -114,17 +114,6 @@ namespace Library
             MasterRefineCost = 50000,
             MasterRefineEvaluateCost = 250000;
 
-
-        public static List<Size> ValidResolutions = new List<Size>
-        {
-            new Size(1024, 768),
-            new Size(1366, 768),
-            new Size(1280, 800),
-            new Size(1440, 900),
-            new Size(1600, 900),
-            new Size(1920, 1080),
-        };
-
         public static List<string> Languages = new List<string>
         {
             "English",

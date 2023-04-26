@@ -198,7 +198,7 @@ namespace Client.Controls
                 Size = new Size(100, DXComboBox.DefaultNormalHeight),
             };
 
-            foreach (Size resolution in Globals.ValidResolutions)
+            foreach (Size resolution in DXManager.ValidResolutions)
                 new DXListBoxItem
                 {
                     Parent = GameSizeComboBox.ListBox,
