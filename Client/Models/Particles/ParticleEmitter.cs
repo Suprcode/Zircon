@@ -39,11 +39,6 @@ namespace Client.Models.Particles
         {
             _owner = owner;
             _startTime = CEnvir.Now.Add(StartDelay);
-
-            _owner.CompleteAction += () =>
-            {
-                _stopGeneration = true;
-            };
         }
 
         public ParticleEmitter(Point location)
@@ -140,6 +135,11 @@ namespace Client.Models.Particles
                     p.Draw();
                 }
             }
+        }
+
+        public void StopGeneration()
+        {
+            _stopGeneration = true;
         }
 
         public void Remove()

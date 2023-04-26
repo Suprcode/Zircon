@@ -218,7 +218,7 @@ namespace Client.Models
                 Library.Draw(DrawFrame, DrawX, DrawY, DrawColour, UseOffSet, Opacity, ImageType.Image);
         }
 
-        public void Remove()
+        public virtual void Remove()
         {
             CompleteAction = null;
             FrameAction = null;
