@@ -1152,12 +1152,11 @@ namespace Server.Models
             Enqueue(new S.MapChanged
             {
                 MapIndex = CurrentMap.Info.Index,
-                InstanceIndex = CurrentMap.Instance?.Index
+                InstanceIndex = CurrentMap.Instance?.Index ?? -1
             });
 
             if (!CurrentMap.Info.CanHorse)
                 RemoveMount();
-
 
             ApplyMapBuff();
         }
