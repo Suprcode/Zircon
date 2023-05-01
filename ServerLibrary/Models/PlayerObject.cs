@@ -4727,13 +4727,17 @@ namespace Server.Models
                 return;
             }
 
-            if (GroupMembers != null && GroupMembers.Any(x => x.CurrentMap.Instance != null))
+            if (GroupMembers != null && CurrentMap.Instance != null)
             {
-                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
+                if (!CurrentMap.Instance.UserRecord.TryGetValue(player.Name, out byte instanceSequence) || CurrentMap.InstanceSequence != instanceSequence)
+                {
+                    Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
 
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
-                return;
+                    foreach (SConnection con in Connection.Observers)
+                        con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
+
+                    return;
+                }
             }
 
             player.GroupInvitation = this;

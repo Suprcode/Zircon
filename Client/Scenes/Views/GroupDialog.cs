@@ -208,13 +208,7 @@ namespace Client.Scenes.Views
 
         private void GroupDialog_VisibleChanged(object sender, EventArgs e)
         {
-            if (Visible)
-            {
-                if (GameScene.Game.MapControl.InstanceInfo != null)
-                {
-                    Visible = false;
-                }
-            }
+            
         }
 
         #region Methods

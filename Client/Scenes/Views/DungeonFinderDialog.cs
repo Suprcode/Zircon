@@ -503,12 +503,18 @@ namespace Client.Scenes.Views
 
         private string GetLevel(InstanceInfo instance)
         {
-            if (instance.MaxPlayerLevel == 0)
+            if (instance.MinPlayerLevel == 0 && instance.MaxPlayerLevel == 0)
             {
                 return "Any";
             }
-
-            return $"{InstanceInfo.MinPlayerLevel} - {InstanceInfo.MaxPlayerLevel}";
+            else if (instance.MinPlayerLevel > 0 && instance.MaxPlayerLevel == 0)
+            {
+                return $"{InstanceInfo.MinPlayerLevel}+";
+            }
+            else
+            {
+                return $"{InstanceInfo.MinPlayerLevel} - {InstanceInfo.MaxPlayerLevel}";
+            }
         }
 
         private string GetPlayerCount(InstanceInfo instance)
