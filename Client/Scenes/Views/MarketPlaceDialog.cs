@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -1199,8 +1200,12 @@ namespace Client.Scenes.Views
                 {
                     if (string.IsNullOrEmpty(CEnvir.BuyAddress)) return;
 
-                    System.Diagnostics.Process.Start(CEnvir.BuyAddress + MapObject.User.Name);
-                };                
+                    System.Diagnostics.Process.Start(new ProcessStartInfo
+                    {
+                        FileName = (CEnvir.BuyAddress + MapObject.User.Name),
+                        UseShellExecute = true
+                    });
+                };
             };
             
             StoreBuyPanel = new DXControl
