@@ -71,6 +71,7 @@ namespace Server.Models
                         {
                             if (ob.CurrentMap.Instance != null)
                             {
+                                // cannot move from one instance to another
                                 return;
                             }
 
@@ -88,12 +89,16 @@ namespace Server.Models
                         }
                         else
                         {
-                            Map map = SEnvir.GetMap(action.MapParameter1);
+                            Map map = SEnvir.GetMap(action.MapParameter1, ob.CurrentMap.Instance, ob.CurrentMap.InstanceSequence);
 
-                            if (action.IntParameter1 == 0 && action.IntParameter2 == 0)
-                                ob.Teleport(map, map.GetRandomLocation());
-                            else
-                                ob.Teleport(map, new Point(action.IntParameter1, action.IntParameter2));
+                            // prevents moving across or off instances
+                            if (map != null)
+                            {
+                                if (action.IntParameter1 == 0 && action.IntParameter2 == 0)
+                                    ob.Teleport(map, map.GetRandomLocation());
+                                else
+                                    ob.Teleport(map, new Point(action.IntParameter1, action.IntParameter2));
+                            }
                         }
                         break;
                     case NPCActionType.TakeGold:
