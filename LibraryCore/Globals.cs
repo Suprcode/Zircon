@@ -885,6 +885,11 @@ namespace Library
         }
     }
 
+    public class ClientNPCValues
+    {
+        public int ID { get; set; }
+        public string Value { get; set; }
+    }
 
     public class CellLinkInfo
     {

@@ -207,6 +207,15 @@ namespace Library.Network.ClientPackets
         public int ButtonID { get; set; }
     }
 
+    public sealed class NPCRoll : Packet
+    {
+        public int Type { get; set; }
+    }
+
+    public sealed class NPCRollResult : Packet
+    {
+    }
+
     public sealed class NPCBuy : Packet
     {
         public int Index { get; set; }

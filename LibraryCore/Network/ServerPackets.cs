@@ -598,7 +598,7 @@ namespace Library.Network.ServerPackets
     {
         public uint ObjectID { get; set; }
         public int Index { get; set; }
-        public List<ClientRefineInfo> Extra { get; set; }
+        public List<ClientNPCValues> Values { get; set; }
 
         public NPCPage Page;
 
@@ -1320,6 +1320,12 @@ namespace Library.Network.ServerPackets
     public sealed class DisciplineExperienceChanged : Packet
     {
         public long Experience { get; set; }
+    }
+
+    public sealed class NPCRoll : Packet
+    {
+        public int Type { get; set; }
+        public int Result { get; set; }
     }
 }
 

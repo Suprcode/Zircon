@@ -33,6 +33,8 @@ namespace Library
             [LibraryFile.CBIcon] = @"Data\CBIcons.Zl",
             [LibraryFile.QuestIcon] = @"Data\QuestIcons.Zl",
 
+            [LibraryFile.MiniGames] = @"Data\MiniGames.Zl",
+
             [LibraryFile.NPCImage] = @"Data\NPCface.Zl",
             [LibraryFile.MonImage] = @"Data\MonImg.Zl",
 
@@ -458,6 +460,7 @@ namespace Library
         MagicIcon,
         CBIcon,
         QuestIcon,
+        MiniGames,
 
         NPCImage,
         MonImage,

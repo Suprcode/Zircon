@@ -25,6 +25,9 @@ namespace Server.Views
             ActionTypeImageComboBox.Items.AddEnum<NPCActionType>();
             ItemTypeImageComboBox.Items.AddEnum<ItemType>();
 
+            DataTypeImageComboBox.Items.AddEnum<NPCDataType>();
+            ValueTypeImageComboBox.Items.AddEnum<NPCValueType>();
+            FieldTypeImageComboBox.Items.AddEnum<NPCFieldType>();
         }
 
         private void SaveButton_ItemClick(object sender, ItemClickEventArgs e)
@@ -42,6 +45,7 @@ namespace Server.Views
             SMain.SetUpView(ButtonsGridView);
             SMain.SetUpView(TypesGridView);
             SMain.SetUpView(GoodsGridView);
+            SMain.SetUpView(ValuesGridView);
         }
 
         private void ImportButton_ItemClick(object sender, ItemClickEventArgs e)

@@ -563,11 +563,6 @@ namespace Server
             ShowView(typeof(DiagnosticView));
         }
 
-        private void navBarItem2_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
-        {
-            ShowView(typeof(UserItemView));
-        }
-
         private void navBarItem3_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(UserConquestStatsView));
@@ -578,7 +573,7 @@ namespace Server
             ShowView(typeof(UserMailView));
         }
 
-        private void navBarItem5_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        private void WeaponCraftInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(WeaponCraftStatInfoView));
         }
@@ -591,6 +586,11 @@ namespace Server
         private void DisciplineInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(DisciplineInfoView));
+        }
+
+        private void navBarItem5_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(NPCListView));
         }
     }
 }

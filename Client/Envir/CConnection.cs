@@ -2064,9 +2064,9 @@ namespace Client.Envir
 
                 DXItemCell fromCell = grid[cellLinkInfo.Slot];
                 fromCell.Locked = false;
+                fromCell.Selected = false;
 
                 if (!p.Success) continue;
-
 
                 if (!fromCell.Item.Info.ShouldLinkInfo)
                 {
@@ -2085,7 +2085,6 @@ namespace Client.Envir
                     }
                 }
 
-
                 if (cellLinkInfo.Count == fromCell.Item.Count)
                     fromCell.Item = null;
                 else
@@ -2094,6 +2093,7 @@ namespace Client.Envir
                 fromCell.RefreshItem();
             }
         }
+
         public void Process(S.ItemStatsChanged p)
         {
             DXItemCell[] grid;
@@ -4212,6 +4212,11 @@ namespace Client.Envir
             GameScene.Game.User.Discipline.Experience = p.Experience;
 
             GameScene.Game.CharacterBox.UpdateDiscipline();
+        }
+
+        public void Process(S.NPCRoll p)
+        {
+            GameScene.Game.NPCRollBox.Setup(p.Type, p.Result, false);
         }
 
         public void Process(S.HelmetToggle p)

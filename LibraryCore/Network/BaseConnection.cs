@@ -20,6 +20,7 @@ namespace Library.Network
 
         public int TotalBytesSent { get; set; }
         public int TotalBytesReceived { get; set; }
+        public int TotalPacketsProcessed { get; set; }
 
         public bool AdditionalLogging;
 
@@ -54,9 +55,10 @@ namespace Library.Network
             Client = client;
             Client.NoDelay = true;
 
-
             Connected = true;
             TimeConnected = Time.Now;
+
+            TotalPacketsProcessed = 0;
         }
 
         protected void BeginReceive()
@@ -89,6 +91,7 @@ namespace Library.Network
                     Disconnecting = true;
                     return;
                 }
+
                 TotalBytesReceived += dataRead;
 
                 UpdateTimeOut();
@@ -103,7 +106,10 @@ namespace Library.Network
                 Packet p;
 
                 while ((p = Packet.ReceivePacket(_rawData, out _rawData)) != null)
+                {
                     ReceiveList.Enqueue(p);
+                    TotalPacketsProcessed++;
+                }
 
                 BeginReceive();
             }

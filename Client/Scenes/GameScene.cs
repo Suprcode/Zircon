@@ -157,7 +157,6 @@ namespace Client.Scenes
         public ChatOptionsDialog ChatOptionsBox;
         public NPCDialog NPCBox;
         public NPCGoodsDialog NPCGoodsBox;
-        public NPCSellDialog NPCSellBox;
         public NPCRepairDialog NPCRepairBox;
         public NPCRefinementStoneDialog NPCRefinementStoneBox;
         public NPCRefineDialog NPCRefineBox;
@@ -171,6 +170,7 @@ namespace Client.Scenes
         public NPCAccessoryLevelDialog NPCAccessoryLevelBox;
         public NPCAccessoryResetDialog NPCAccessoryResetBox;
         public NPCMasterRefineDialog NPCMasterRefineBox;
+        public NPCRollDialog NPCRollBox;
         public MiniMapDialog MiniMapBox;
         public BigMapDialog BigMapBox;
         public MagicDialog MagicBox;
@@ -451,11 +451,6 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false
             };
-            NPCSellBox = new NPCSellDialog
-            {
-                Parent = this,
-                Visible = false,
-            };
 
             NPCRepairBox = new NPCRepairDialog
             {
@@ -553,6 +548,11 @@ namespace Client.Scenes
                 Visible = false
             };
             NPCMasterRefineBox = new NPCMasterRefineDialog
+            {
+                Parent = this,
+                Visible = false
+            };
+            NPCRollBox = new NPCRollDialog
             {
                 Parent = this,
                 Visible = false
@@ -720,7 +720,7 @@ namespace Client.Scenes
 
             NPCGoodsBox.Location = new Point(0, NPCBox.Size.Height);
 
-            NPCSellBox.Location = new Point(NPCGoodsBox.Size.Width, NPCBox.Size.Height);
+            NPCRollBox.Location = new Point((Size.Width - NPCRollBox.Size.Width) / 2, (Size.Height - NPCRollBox.Size.Height) / 2);
 
             NPCRepairBox.Location = new Point(0, NPCBox.Size.Height);
 
@@ -3598,7 +3598,6 @@ namespace Client.Scenes
             NPCGoodsBox.CloseButton.Enabled = !Observer;
             NPCRefineBox.CloseButton.Enabled = !Observer;
             NPCRepairBox.CloseButton.Enabled = !Observer;
-            NPCSellBox.CloseButton.Enabled = !Observer;
             NPCRefineRetrieveBox.CloseButton.Enabled = !Observer;
         }
         public void LevelChanged()
@@ -4243,14 +4242,6 @@ namespace Client.Scenes
                     NPCGoodsBox = null;
                 }
 
-                if (NPCSellBox != null)
-                {
-                    if (!NPCSellBox.IsDisposed)
-                        NPCSellBox.Dispose();
-
-                    NPCSellBox = null;
-                }
-
                 if (NPCRefinementStoneBox != null)
                 {
                     if (!NPCRefinementStoneBox.IsDisposed)
@@ -4282,6 +4273,7 @@ namespace Client.Scenes
 
                     NPCRefineRetrieveBox = null;
                 }
+
                 if (NPCMasterRefineBox != null)
                 {
                     if (!NPCMasterRefineBox.IsDisposed)
@@ -4290,6 +4282,13 @@ namespace Client.Scenes
                     NPCMasterRefineBox = null;
                 }
 
+                if (NPCRollBox != null)
+                {
+                    if (!NPCRollBox.IsDisposed)
+                        NPCRollBox.Dispose();
+
+                    NPCRollBox = null;
+                }
 
                 if (NPCQuestBox != null)
                 {

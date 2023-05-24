@@ -240,7 +240,6 @@ namespace Client.Scenes.Views
                         GameScene.Game.BigMapBox.Visible = true;
                         GameScene.Game.BigMapBox.Opacity = 1F;
 
-
                         if (!GameScene.Game.DataDictionary.TryGetValue(member.ObjectID, out ClientObjectData data)) return;
 
                         GameScene.Game.BigMapBox.SelectedInfo = Globals.MapInfoList.Binding.FirstOrDefault(x => x.Index == data.MapIndex);

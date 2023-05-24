@@ -164,6 +164,10 @@ namespace Server.Envir
                         NewConnections?.Enqueue(Connection);
                 }
             }
+            catch (SocketException)
+            {
+
+            }
             catch (Exception ex)
             {
                 Log(ex.ToString());
@@ -289,6 +293,7 @@ namespace Server.Envir
         public static DBCollection<UserConquest> UserConquestList;
         public static DBCollection<GameGoldPayment> GameGoldPaymentList;
         public static DBCollection<GameStoreSale> GameStoreSaleList;
+        public static DBCollection<GameNPCList> GameNPCList;
         public static DBCollection<GuildWarInfo> GuildWarInfoList;
         public static DBCollection<UserConquestStats> UserConquestStatsList;
         public static DBCollection<UserFortuneInfo> UserFortuneInfoList;
@@ -455,6 +460,7 @@ namespace Server.Envir
             UserConquestList = Session.GetCollection<UserConquest>();
             GameGoldPaymentList = Session.GetCollection<GameGoldPayment>();
             GameStoreSaleList = Session.GetCollection<GameStoreSale>();
+            GameNPCList = Session.GetCollection<GameNPCList>();
             GuildWarInfoList = Session.GetCollection<GuildWarInfo>();
             UserConquestStatsList = Session.GetCollection<UserConquestStats>();
             UserFortuneInfoList = Session.GetCollection<UserFortuneInfo>();

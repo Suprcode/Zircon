@@ -139,6 +139,7 @@ namespace Client.Controls
         #endregion
 
         public event EventHandler AfterAnimation;
+        public event EventHandler AfterAnimationLoop;
         public DateTime AnimationStart;
         #endregion
 
@@ -157,7 +158,6 @@ namespace Client.Controls
 
             if (!IsVisible) return;
 
-
             if (!Animated || AnimationDelay == TimeSpan.Zero || FrameCount == 0) return;
 
             if (AnimationStart == DateTime.MinValue) AnimationStart = CEnvir.Now;
@@ -165,12 +165,17 @@ namespace Client.Controls
             TimeSpan time = CEnvir.Now - AnimationStart;
             Index = BaseIndex + (int)(time.Ticks / (AnimationDelay.Ticks / FrameCount) % FrameCount);
 
-            if (Loop || time < AnimationDelay) return;
+            if (time < AnimationDelay) return;
 
-            Animated = false;
-            Index = BaseIndex + FrameCount - 1;
+            AfterAnimationLoop?.Invoke(this, EventArgs.Empty);
 
-            AfterAnimation?.Invoke(this, EventArgs.Empty);
+            if (!Loop)
+            {
+                Animated = false;
+                Index = BaseIndex + FrameCount - 1;
+
+                AfterAnimation?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         #endregion

@@ -33,6 +33,7 @@
             DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode5 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode6 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NPCPageView));
             this.ChecksGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn14 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -62,6 +63,13 @@
             this.ButtonsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.ValuesGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.gridColumn26 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn27 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn29 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.FieldTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.gridColumn30 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.ValueTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.TypesGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ItemTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
@@ -86,6 +94,8 @@
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.JsonImportButton = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.DataTypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.gridColumn24 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.ChecksGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PageLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CheckTypeImageComboBox)).BeginInit();
@@ -96,6 +106,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ButtonsGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ValuesGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FieldTypeImageComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ValueTypeImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TypesGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemTypeImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GoodsGridView)).BeginInit();
@@ -105,6 +118,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.SayMemoExEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DataTypeImageComboBox)).BeginInit();
             this.SuspendLayout();
             // 
             // ChecksGridView
@@ -232,16 +246,19 @@
             gridLevelNode2.RelationName = "Actions";
             gridLevelNode3.LevelTemplate = this.ButtonsGridView;
             gridLevelNode3.RelationName = "Buttons";
-            gridLevelNode4.LevelTemplate = this.TypesGridView;
-            gridLevelNode4.RelationName = "Types";
-            gridLevelNode5.LevelTemplate = this.GoodsGridView;
-            gridLevelNode5.RelationName = "Goods";
+            gridLevelNode4.LevelTemplate = this.ValuesGridView;
+            gridLevelNode4.RelationName = "Values";
+            gridLevelNode5.LevelTemplate = this.TypesGridView;
+            gridLevelNode5.RelationName = "Types";
+            gridLevelNode6.LevelTemplate = this.GoodsGridView;
+            gridLevelNode6.RelationName = "Goods";
             this.NPCPageGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
             gridLevelNode1,
             gridLevelNode2,
             gridLevelNode3,
             gridLevelNode4,
-            gridLevelNode5});
+            gridLevelNode5,
+            gridLevelNode6});
             this.NPCPageGridControl.Location = new System.Drawing.Point(0, 144);
             this.NPCPageGridControl.MainView = this.NPCPageGridView;
             this.NPCPageGridControl.MenuManager = this.ribbon;
@@ -257,13 +274,17 @@
             this.PercentTextEdit,
             this.MapLookUpEdit,
             this.InstanceLookUpEdit,
-            this.CurrencyInfoLookUpEdit});
+            this.CurrencyInfoLookUpEdit,
+            this.DataTypeImageComboBox,
+            this.ValueTypeImageComboBox,
+            this.FieldTypeImageComboBox});
             this.NPCPageGridControl.ShowOnlyPredefinedDetails = true;
             this.NPCPageGridControl.Size = new System.Drawing.Size(641, 394);
             this.NPCPageGridControl.TabIndex = 2;
             this.NPCPageGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.ActionsGridView,
             this.ButtonsGridView,
+            this.ValuesGridView,
             this.TypesGridView,
             this.GoodsGridView,
             this.NPCPageGridView,
@@ -410,6 +431,70 @@
             this.gridColumn11.Name = "gridColumn11";
             this.gridColumn11.Visible = true;
             this.gridColumn11.VisibleIndex = 1;
+            // 
+            // ValuesGridView
+            // 
+            this.ValuesGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.gridColumn26,
+            this.gridColumn27,
+            this.gridColumn29,
+            this.gridColumn30,
+            this.gridColumn24});
+            this.ValuesGridView.GridControl = this.NPCPageGridControl;
+            this.ValuesGridView.Name = "ValuesGridView";
+            this.ValuesGridView.OptionsView.EnableAppearanceEvenRow = true;
+            this.ValuesGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.ValuesGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            this.ValuesGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            this.ValuesGridView.OptionsView.ShowGroupPanel = false;
+            // 
+            // gridColumn26
+            // 
+            this.gridColumn26.Caption = "Value ID";
+            this.gridColumn26.FieldName = "ValueID";
+            this.gridColumn26.Name = "gridColumn26";
+            this.gridColumn26.Visible = true;
+            this.gridColumn26.VisibleIndex = 0;
+            // 
+            // gridColumn27
+            // 
+            this.gridColumn27.Caption = "Data Category";
+            this.gridColumn27.FieldName = "DataCategory";
+            this.gridColumn27.Name = "gridColumn27";
+            this.gridColumn27.Visible = true;
+            this.gridColumn27.VisibleIndex = 2;
+            // 
+            // gridColumn29
+            // 
+            this.gridColumn29.Caption = "Field Type";
+            this.gridColumn29.ColumnEdit = this.FieldTypeImageComboBox;
+            this.gridColumn29.FieldName = "FieldType";
+            this.gridColumn29.Name = "gridColumn29";
+            this.gridColumn29.Visible = true;
+            this.gridColumn29.VisibleIndex = 4;
+            // 
+            // FieldTypeImageComboBox
+            // 
+            this.FieldTypeImageComboBox.AutoHeight = false;
+            this.FieldTypeImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.FieldTypeImageComboBox.Name = "FieldTypeImageComboBox";
+            // 
+            // gridColumn30
+            // 
+            this.gridColumn30.Caption = "Value Type";
+            this.gridColumn30.ColumnEdit = this.ValueTypeImageComboBox;
+            this.gridColumn30.FieldName = "ValueType";
+            this.gridColumn30.Name = "gridColumn30";
+            this.gridColumn30.Visible = true;
+            this.gridColumn30.VisibleIndex = 1;
+            // 
+            // ValueTypeImageComboBox
+            // 
+            this.ValueTypeImageComboBox.AutoHeight = false;
+            this.ValueTypeImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.ValueTypeImageComboBox.Name = "ValueTypeImageComboBox";
             // 
             // TypesGridView
             // 
@@ -634,6 +719,22 @@
             this.JsonImportButton.Name = "JsonImportButton";
             this.JsonImportButton.Text = "Json";
             // 
+            // DataTypeImageComboBox
+            // 
+            this.DataTypeImageComboBox.AutoHeight = false;
+            this.DataTypeImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.DataTypeImageComboBox.Name = "DataTypeImageComboBox";
+            // 
+            // gridColumn24
+            // 
+            this.gridColumn24.Caption = "Data Type";
+            this.gridColumn24.ColumnEdit = this.DataTypeImageComboBox;
+            this.gridColumn24.Name = "gridColumn24";
+            this.gridColumn24.Visible = true;
+            this.gridColumn24.VisibleIndex = 3;
+            this.gridColumn24.FieldName = "DataType";
+            // 
             // NPCPageView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -654,6 +755,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ButtonsGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ValuesGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FieldTypeImageComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ValueTypeImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TypesGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemTypeImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GoodsGridView)).EndInit();
@@ -663,6 +767,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.SayMemoExEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DataTypeImageComboBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -722,5 +827,14 @@
         private DevExpress.XtraBars.BarButtonItem ImportButton;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportButton;
+        private DevExpress.XtraGrid.Views.Grid.GridView ValuesGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn26;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn27;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox DataTypeImageComboBox;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn29;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn30;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox ValueTypeImageComboBox;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox FieldTypeImageComboBox;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn24;
     }
 }

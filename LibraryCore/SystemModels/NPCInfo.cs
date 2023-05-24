@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MirDB;
+using System;
 using System.Text.Json.Serialization;
-using MirDB;
 
 namespace Library.SystemModels
 {
@@ -219,6 +219,9 @@ namespace Library.SystemModels
 
         [Association("Types", true)]
         public DBBindingList<NPCType> Types { get; set; }
+
+        [Association("Values", true)]
+        public DBBindingList<NPCValue> Values { get; set; }
     }
 
     public sealed class NPCGood : DBObject
@@ -644,9 +647,6 @@ namespace Library.SystemModels
             }
         }
         private NPCPage _DestinationPage;
-
-
-
     }
 
     public sealed class NPCRequirement : DBObject
@@ -743,65 +743,205 @@ namespace Library.SystemModels
         private DaysOfWeek _DayOfWeek;
     }
 
+
+    public sealed class NPCValue : DBObject
+    {
+        [Association("Values")]
+        public NPCPage Page
+        {
+            get { return _Page; }
+            set
+            {
+                if (_Page == value) return;
+
+                var oldValue = _Page;
+                _Page = value;
+
+                OnChanged(oldValue, value, "Page");
+            }
+        }
+        private NPCPage _Page;
+
+        public int ValueID
+        {
+            get { return _ValueID; }
+            set
+            {
+                if (_ValueID == value) return;
+
+                var oldValue = _ValueID;
+                _ValueID = value;
+
+                OnChanged(oldValue, value, "ValueID");
+            }
+        }
+        private int _ValueID;
+
+        public NPCValueType ValueType
+        {
+            get { return _ValueType; }
+            set
+            {
+                if (_ValueType == value) return;
+
+                var oldValue = _ValueType;
+                _ValueType = value;
+
+                OnChanged(oldValue, value, "ValueType");
+            }
+        }
+        private NPCValueType _ValueType;
+
+        public string DataCategory
+        {
+            get { return _DataCategory; }
+            set
+            {
+                if (_DataCategory == value) return;
+
+                var oldValue = _DataCategory;
+                _DataCategory = value;
+
+                OnChanged(oldValue, value, "DataCategory");
+            }
+        }
+        private string _DataCategory;
+
+        public NPCDataType DataType
+        {
+            get { return _DataType; }
+            set
+            {
+                if (_DataType == value) return;
+
+                var oldValue = _DataType;
+                _DataType = value;
+
+                OnChanged(oldValue, value, "DataType");
+            }
+        }
+        private NPCDataType _DataType;
+
+        public NPCFieldType FieldType
+        {
+            get { return _FieldType; }
+            set
+            {
+                if (_FieldType == value) return;
+
+                var oldValue = _FieldType;
+                _FieldType = value;
+
+                OnChanged(oldValue, value, "FieldType");
+            }
+        }
+        private NPCFieldType _FieldType;
+    }
+
     public enum NPCCheckType
     {
-        Level,
-        Class,
-        Gender,
-        Gold,
-        HasItem,
-        PKPoints,
+        Level = 0,
+        Class = 1,
+        Gender = 2,
+        Gold = 3,
+        HasItem = 4,
+        PKPoints = 5,
 
-        HasWeapon,
-        WeaponLevel,
-        WeaponElement,
-        WeaponCanRefine,
+        HasWeapon = 6,
+        WeaponLevel = 7,
+        WeaponElement = 8,
+        WeaponCanRefine = 9,
 
-        Horse,
+        Horse = 10,
 
-        Marriage,
-        WeddingRing,
+        Marriage = 11,
+        WeddingRing = 12,
 
-        CanGainItem,
-        CanResetWeapon,
+        CanGainItem = 13,
+        CanResetWeapon = 14,
 
-        Random,
+        Random = 15,
 
-        WeaponAddedStats,
+        WeaponAddedStats = 16,
 
-        Currency
+        Currency = 17,
+
+        RollResult = 18,
+
+        CheckDataList = 19,
+
+        CheckDataValue = 20,
     }
+
     public enum Operator
     {
-        Equal,
-        NotEqual,
-        LessThan,
-        LessThanOrEqual,
-        GreaterThan,
-        GreaterThanOrEqual,
+        Equal = 0,
+        NotEqual = 1,
+        LessThan = 2,
+        LessThanOrEqual = 3,
+        GreaterThan = 4,
+        GreaterThanOrEqual = 5,
     }
+
     public enum NPCActionType
     {
-        Teleport,
-        GiveGold,
-        TakeGold,
-        GiveItem,
-        TakeItem,
-        ChangeElement,
-        ChangeHorse,
-        Message,
+        Teleport = 0,
+        GiveGold = 1,
+        TakeGold = 2,
+        GiveItem = 3,
+        TakeItem = 4,
+        ChangeElement = 5,
+        ChangeHorse = 6,
+        Message = 7,
 
-        Marriage,
-        Divorce,
-        RemoveWeddingRing,
+        Marriage = 8,
+        Divorce = 9,
+        RemoveWeddingRing = 10,
 
-        ResetWeapon,
-        GiveItemExperience,
+        ResetWeapon = 11,
+        GiveItemExperience = 12,
 
-        SpecialRefine,
-        Rebirth,
+        SpecialRefine = 13,
+        Rebirth = 14,
 
-        GiveCurrency,
-        TakeCurrency
+        GiveCurrency = 15,
+        TakeCurrency = 16,
+
+        AddDataList = 17,
+        RemoveDataList = 18,
+        ClearDataList = 19,
+
+        ChangeDataValue = 20,
+        SetDataValue = 21
+    }
+
+    public enum NPCValueType
+    {
+        None = 0,
+
+        DataList = 1,
+        DataValue = 2,
+
+        Field = 3,
+
+        RollResult = 4,
+    }
+
+    public enum NPCDataType
+    {
+        None = 0,
+
+        User = 1,
+        Guild = 2,
+        Account = 3
+    }
+
+    public enum NPCFieldType
+    {
+        None = 0,
+
+        Name = 1,
+        GuildName = 2,
+        //??
     }
 }

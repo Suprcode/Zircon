@@ -163,7 +163,6 @@ namespace Library
         Inventory,
         Equipment,
         Belt,
-        Sell,
         Repair,
         Storage,
         AutoPotion,
@@ -205,6 +204,18 @@ namespace Library
         AccessoryRefineCombTarget,
         AccessoryRefineCombItems,
         PartsStorage
+    }
+
+    public enum GridSelect
+    {
+        Single,
+        Multi
+    }
+
+    public enum InventoryMode
+    {
+        Normal,
+        Sell
     }
 
     public enum BuffType
@@ -499,6 +510,9 @@ namespace Library
         AccessoryReset,
         WeaponCraft,
         AccessoryRefine,
+
+        RollDie,
+        RollYut
     }
 
     public enum MagicSchool
@@ -527,10 +541,10 @@ namespace Library
         None,
         Fire,
         Ice,
-        Lightning ,
+        Lightning,
         Wind,
         Holy,
-        Dark ,
+        Dark,
         Phantom,
     }
 
@@ -1088,7 +1102,6 @@ namespace Library
         LowestPrice,
     }
 
-
     public enum MarketPlaceStoreSort
     {
         Alphabetical,
@@ -1098,7 +1111,6 @@ namespace Library
         LowestPrice,
         Favourite
     }
-
 
     public enum DungeonFinderSort
     {
@@ -1136,11 +1148,11 @@ namespace Library
 
     public enum RefineQuality : byte
     {
-        Rush,
-        Quick,
-        Standard,
-        Careful,
-        Precise,
+        Rush = 0,
+        Quick = 1,
+        Standard = 2,
+        Careful = 3,
+        Precise = 4,
     }
 
     public enum ExteriorEffect : byte
@@ -1272,10 +1284,10 @@ namespace Library
 
     public enum CurrencyType
     {
-        Gold,
-        GameGold,
-        HuntGold,
-        Other
+        Gold = 0,
+        GameGold = 1,
+        HuntGold = 2,
+        Other = 3
     }
 
     [Flags]
@@ -1296,13 +1308,13 @@ namespace Library
     
     public enum HorseType : byte
     {
-        None,
-        Brown,
-        White,
-        Red,
-        Black,
-        WhiteUnicorn,
-        RedUnicorn
+        None = 0,
+        Brown = 1,
+        White = 2,
+        Red = 3,
+        Black = 4,
+        WhiteUnicorn = 5,
+        RedUnicorn = 6
     }
     
     public enum OnlineState : byte
@@ -1332,14 +1344,14 @@ namespace Library
 
     public enum NPCRequirementType
     {
-        MinLevel,
-        MaxLevel,
-        Accepted,
-        NotAccepted,
-        HaveCompleted,
-        HaveNotCompleted,
-        Class,
-        DaysOfWeek,
+        MinLevel = 0,
+        MaxLevel = 1,
+        Accepted = 2,
+        NotAccepted = 3,
+        HaveCompleted = 4,
+        HaveNotCompleted = 5,
+        Class = 6,
+        DaysOfWeek = 7,
     }
 
     public enum QuestType
@@ -1356,26 +1368,26 @@ namespace Library
     {
         None = 0,
 
-        New,
-        Incomplete,
-        Complete,
+        New = 1,
+        Incomplete = 2,
+        Complete = 3,
     }
 
     public enum QuestRequirementType
     {
-        MinLevel,
-        MaxLevel,
-        NotAccepted,
-        HaveCompleted,
-        HaveNotCompleted,
-        Class,
+        MinLevel = 0,
+        MaxLevel = 1,
+        NotAccepted = 2,
+        HaveCompleted = 3,
+        HaveNotCompleted = 4,
+        Class = 5,
     }
 
     public enum QuestTaskType
     {
-        KillMonster,
-        GainItem,
-        Region
+        KillMonster = 0,
+        GainItem = 1,
+        Region = 2
     }
 
     public enum MovementEffect
@@ -1736,6 +1748,9 @@ namespace Library
 
         GoldPickUp,
         GoldGained,
+
+        RollDice,
+        RollYut,
 
         DaggerSwing,
         WoodSwing,

@@ -116,6 +116,7 @@ namespace Server.Models
 
         public NPCObject NPC;
         public NPCPage NPCPage;
+        public Dictionary<string, object> NPCVals = new Dictionary<string, object>();
 
         public HorseType Horse;
 
@@ -2769,6 +2770,7 @@ namespace Server.Models
             unlock.Account = Character.Account;
             unlock.CompanionInfo = info;
         }
+
         public void CompanionAdopt(C.CompanionAdopt p)
         {
             S.CompanionAdopt result = new S.CompanionAdopt();
@@ -2777,7 +2779,6 @@ namespace Server.Models
             if (Dead || NPC == null || NPCPage == null) return;
 
             if (NPCPage.DialogType != NPCDialogType.CompanionManage) return;
-
 
             CompanionInfo info = SEnvir.CompanionInfoList.Binding.FirstOrDefault(x => x.Index == p.Index);
 
@@ -2814,12 +2815,12 @@ namespace Server.Models
 
             result.UserCompanion = companion.ToClientInfo();
         }
+
         public void CompanionRetrieve(int index)
         {
             if (Dead || NPC == null || NPCPage == null) return;
 
             if (NPCPage.DialogType != NPCDialogType.CompanionManage) return;
-
 
             UserCompanion info = Character.Account.Companions.FirstOrDefault(x => x.Index == index);
 
@@ -2841,6 +2842,7 @@ namespace Server.Models
             CompanionSpawn();
 
         }
+
         public void CompanionStore(int index)
         {
             if (Dead || NPC == null || NPCPage == null) return;
@@ -8832,21 +8834,38 @@ namespace Server.Models
                 return;
             }
         }
-        public void NPCButton(int ButtonID)
+
+        public void NPCButton(int buttonID)
         {
             if (Dead || NPC == null || NPCPage == null) return;
 
-
             foreach (NPCButton button in NPCPage.Buttons)
             {
-                if (button.ButtonID != ButtonID || button.DestinationPage == null) continue;
+                if (button.ButtonID != buttonID || button.DestinationPage == null) continue;
 
                 NPC.NPCCall(this, button.DestinationPage);
                 return;
             }
-
-
         }
+
+        public void NPCRoll(int type)
+        {
+            if (Dead || NPC == null || NPCPage == null || NPCPage.SuccessPage == null) return;
+
+            var roll = SEnvir.Random.Next(1, 7);
+
+            NPCVals["ROLLRESULT"] = roll;
+
+            Enqueue(new S.NPCRoll { Type = type, Result = roll });
+        }
+
+        public void NPCRollResult()
+        {
+            if (Dead || NPC == null || NPCPage == null || NPCPage.SuccessPage == null) return;
+
+            NPC.NPCCall(this, NPCPage.SuccessPage);
+        }
+
         public void NPCBuy(C.NPCBuy p)
         {
             if (Dead || NPC == null || NPCPage == null || p.Amount <= 0) return;

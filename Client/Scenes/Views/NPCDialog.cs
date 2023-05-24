@@ -1,11 +1,13 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Reflection.Emit;
+using Font = System.Drawing.Font;
+
 using Client.Controls;
 using Client.Envir;
 using Client.Models;
@@ -14,46 +16,35 @@ using Library;
 using Library.SystemModels;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
-using Font = System.Drawing.Font;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
-    public sealed class NPCDialog : DXWindow
+    public sealed partial class NPCDialog : DXControl
     {
         #region Properties
 
-        public static Regex B = new Regex(@"\[(?<Text>.*?):(?<ID>.+?)\]", RegexOptions.Compiled);
-        public static Regex C = new Regex(@"\{(?<Text>.*?):(?<Colour>.+?)\}", RegexOptions.Compiled);
+        private readonly Regex B = ButtonRegex();
+        private readonly Regex C = ColourRegex();
+        private readonly Regex V = ValueRegex();
 
         public NPCPage Page;
-        public DXLabel PageText;
-        
-        public List<DXLabel> Buttons = new List<DXLabel>();
-        public bool Opened;
+        private readonly DXControl PageTextContainer;
+        private DXLabel PageText;
 
-        public override void OnClientAreaChanged(Rectangle oValue, Rectangle nValue)
-        {
-            base.OnClientAreaChanged(oValue, nValue);
+        private List<DXLabel> Buttons = new ();
+        private bool Opened;
 
+        private string CurrentPageSay;
+        private bool Rolling = true;
 
-            if (PageText == null || IsResizing) return;
+        public DXButton CloseButton;
+        private DXImageControl HeaderImage, FooterImage;
+        private DXImageControl[] RowImages = new DXImageControl[6];
+        private DXVScrollBar ScrollBar;
 
-            PageText.Location = new Point(ClientArea.X + 10, ClientArea.Y + 10);
-            PageText.Size = new Size(ClientArea.Width - 20, ClientArea.Height - 20);
-
-            ProcessText();
-        }
-
-        public override void OnIsResizingChanged(bool oValue, bool nValue)
-        {
-            PageText.Location = new Point(ClientArea.X + 10, ClientArea.Y + 10);
-            PageText.Size = new Size(ClientArea.Width - 20, ClientArea.Height - 20);
-
-            ProcessText();
-
-            base.OnIsResizingChanged(oValue, nValue);
-        }
+        private const int _HeaderHeight = 140;
+        private const int _FooterHeight = 64;
+        private const int _RowHeight = 20;
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -61,9 +52,6 @@ namespace Client.Scenes.Views
 
             if (GameScene.Game.NPCGoodsBox != null && !IsVisible)
                 GameScene.Game.NPCGoodsBox.Visible = false;
-
-            if (GameScene.Game.NPCSellBox != null && !IsVisible)
-                GameScene.Game.NPCSellBox.Visible = false;
 
             if (GameScene.Game.NPCRepairBox != null && !IsVisible)
                 GameScene.Game.NPCRepairBox.Visible = false;
@@ -110,7 +98,10 @@ namespace Client.Scenes.Views
             if (GameScene.Game.NPCAccessoryRefineBox != null && !IsVisible)
                 GameScene.Game.NPCAccessoryRefineBox.Visible = false;
 
-            GameScene.Game.InventoryBox.SetPrimaryCurrency(null);
+            if (GameScene.Game.NPCRollBox != null && !IsVisible)
+                GameScene.Game.NPCRollBox.Visible = false;
+
+            GameScene.Game.InventoryBox.NormalMode();
 
             if (Opened)
             {
@@ -124,7 +115,7 @@ namespace Client.Scenes.Views
                 if (GameScene.Game.CharacterBox.Location.X < Size.Width)
                     GameScene.Game.CharacterBox.Location = new Point(Size.Width, 0);
 
-                GameScene.Game.StorageBox.Location = new Point(GameScene.Game.Size.Width - GameScene.Game.StorageBox.Size.Width, GameScene.Game.InventoryBox.Size.Height);
+                GameScene.Game.StorageBox.Location = new Point(Math.Max(0, GameScene.Game.InventoryBox.Location.X - GameScene.Game.StorageBox.Size.Width), GameScene.Game.InventoryBox.Location.Y);
             }
             else if (GameScene.Game.CharacterBox.Location.X == Size.Width)
             {
@@ -132,34 +123,129 @@ namespace Client.Scenes.Views
                 GameScene.Game.StorageBox.ApplySettings();
             }
         }
-        
-        public override WindowType Type => WindowType.None;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => false;
 
         #endregion
 
         public NPCDialog()
         {
-            HasTitle = false;
-            TitleLabel.Text = string.Empty;
-            HasFooter = false;
             Movable = false;
-            SetClientSize(new Size(491, 180));
+
+            HeaderImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 380,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(0, 0),
+                IsControl = false
+            };
+
+            for (int i = 0; i < RowImages.Length; i++)
+            {
+                RowImages[i] = new DXImageControl
+                {
+                    Parent = this,
+                    Index = 381,
+                    LibraryFile = LibraryFile.GameInter,
+                    Location = new Point(0, _HeaderHeight + i * _RowHeight),
+                    IsControl = false,
+                    Visible = false
+                };
+            }
+
+            FooterImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 382,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(0, _HeaderHeight),
+                IsControl = false
+            };
+
+            PageTextContainer = new DXControl
+            {
+                Parent = this,
+                Location = new Point(15, 45),
+                Size = new Size(350, 10)
+            };
 
             PageText = new DXLabel
             {
                 AutoSize = false,
                 Outline = false,
                 DrawFormat = TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis,
-                Parent = this,
-                Location = new Point(ClientArea.X + 10, ClientArea.Y + 10),
-                Size = new Size(ClientArea.Width - 20, ClientArea.Height - 20),
+                Parent = PageTextContainer,
+                Location = new Point(0, 0),
+                Size = new Size(350, 10),
                 ForeColour = Color.White
             };
+
+            ScrollBar = new DXVScrollBar
+            {
+                Visible = true,
+                Parent = this,
+                Location = new Point(350, 45),
+                Size = new Size(14, 349),
+                VisibleSize = 10,
+                Change = 1,
+                MinValue = 0,
+                MaxValue = 100,
+                BackColour = Color.Empty,
+                Border = false,
+                UpButton = { Index = 387, LibraryFile = LibraryFile.GameInter },
+                DownButton = { Index = 385, LibraryFile = LibraryFile.GameInter },
+                PositionBar = { Index = -1, LibraryFile = LibraryFile.None }
+                //HideWhenNoScroll = true
+            };
+            ScrollBar.ValueChanged += ScrollBar_ValueChanged;
+            PageText.MouseWheel += ScrollBar.DoMouseWheel;
+
+            SetSize(0);
+
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(380 - CloseButton.Size.Width - 5, 5);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+        }
+
+        private void ScrollBar_ValueChanged(object sender, EventArgs e)
+        {
+            int y = -ScrollBar.Value;
+
+            PageText.Location = new Point(0, 0 + y);
         }
 
         #region Methods
+
+        private void SetSize(int pageTextHeight)
+        {
+            var overflow = pageTextHeight - _HeaderHeight - _FooterHeight + 35 + 45;
+            var additionalRowCount = 0;
+
+            if (overflow > 0)
+            {
+                additionalRowCount = Math.Min(overflow / _RowHeight, RowImages.Length);
+            }
+
+            for (int i = 0; i < RowImages.Length; i++)
+            {
+                RowImages[i].Visible = additionalRowCount > i;
+            }
+
+            FooterImage.Location = new Point(0, _HeaderHeight + additionalRowCount * _RowHeight);
+
+            Size = new Size(380, _HeaderHeight + _FooterHeight + additionalRowCount * _RowHeight);
+
+            PageText.Size = new Size(350, pageTextHeight);
+            PageTextContainer.Size = new Size(350, Size.Height - 45 - 15);
+            ScrollBar.Size = new Size(14, Size.Height - 45 - 15);
+
+            ScrollBar.MaxValue = PageText.Size.Height - PageTextContainer.Size.Height + 15;
+        }
+
         public void Response(S.NPCResponse info)
         {
             GameScene.Game.NPCID = info.ObjectID;
@@ -167,22 +253,27 @@ namespace Client.Scenes.Views
 
             Page = info.Page;
 
-            var text = Page.Say;
+            CurrentPageSay = Page.Say;
+
+            var text = CurrentPageSay = V.Replace(CurrentPageSay, match =>
+            {
+                string text = match.Groups["Text"].Value;
+                string defaultText = match.Groups["Default"].Value;
+                ClientNPCValues valueItem = info.Values.Find(item => item.ID.ToString() == text);
+                return valueItem != null ? valueItem.Value : defaultText;
+            });
+
             text = B.Replace(text, @"${Text}");
             text = C.Replace(text, @"${Text}");
-
             PageText.Text = text;
 
-            int height = DXLabel.GetHeight(PageText, ClientArea.Width).Height;
-            if (height > ClientArea.Height)
-                SetClientSize(new Size(ClientArea.Width, height));
-
-            ProcessText();
+            int height = DXLabel.GetHeight(PageText, Size.Width).Height;
+            SetSize(height);
+            ProcessText(CurrentPageSay);
 
             Opened = true;
 
             GameScene.Game.NPCGoodsBox.Visible = false;
-            GameScene.Game.NPCSellBox.Visible = false;
             GameScene.Game.NPCRepairBox.Visible = false;
             GameScene.Game.NPCRefineBox.Visible = false;
             GameScene.Game.NPCRefinementStoneBox.Visible = false;
@@ -197,7 +288,12 @@ namespace Client.Scenes.Views
             GameScene.Game.NPCAccessoryResetBox.Visible = false;
             GameScene.Game.NPCWeaponCraftBox.Visible = false;
 
-            GameScene.Game.InventoryBox.SetPrimaryCurrency(null);
+            if (Rolling)
+                Rolling = false;
+            else
+                GameScene.Game.NPCRollBox.Visible = false;
+
+            GameScene.Game.InventoryBox.NormalMode();
 
             switch (info.Page.DialogType)
             {
@@ -208,11 +304,12 @@ namespace Client.Scenes.Views
                     GameScene.Game.NPCGoodsBox.Visible = Page.Goods.Count > 0;
                     GameScene.Game.NPCGoodsBox.NewGoods(Page.Goods, Page.Currency);
 
-                    GameScene.Game.NPCSellBox.Visible = Page.Types.Count > 0;
-                    GameScene.Game.NPCSellBox.SetCurrency(Page.Currency);
-                    GameScene.Game.InventoryBox.SetPrimaryCurrency(Page.Currency);
-                    GameScene.Game.NPCSellBox.Location = GameScene.Game.NPCGoodsBox.Visible ? new Point(Size.Width - GameScene.Game.NPCSellBox.Size.Width, Size.Height) : new Point(0, Size.Height);
-                    break;
+                    if (Page.Types.Count > 0)
+                    {
+                        GameScene.Game.InventoryBox.SellMode(Page.Currency);
+                        GameScene.Game.InventoryBox.Visible = true;
+                    }
+                break;
                 case NPCDialogType.Repair:
                     GameScene.Game.NPCRepairBox.Visible = true;
                     GameScene.Game.NPCRepairBox.Location = new Point(0, Size.Height);
@@ -238,7 +335,7 @@ namespace Client.Scenes.Views
                     GameScene.Game.NPCCompanionStorageBox.Visible = true;
                     GameScene.Game.NPCCompanionStorageBox.Location = new Point(0, Size.Height);
                     GameScene.Game.NPCAdoptCompanionBox.Visible = true;
-                    GameScene.Game.NPCAdoptCompanionBox.Location = new Point(Size.Width - GameScene.Game.NPCAdoptCompanionBox.Size.Width, Size.Height);
+                    GameScene.Game.NPCAdoptCompanionBox.Location = new Point(GameScene.Game.NPCCompanionStorageBox.Size.Width, Size.Height);
                     break;
                 case NPCDialogType.WeddingRing:
                     GameScene.Game.NPCWeddingRingBox.Visible = true;
@@ -268,10 +365,18 @@ namespace Client.Scenes.Views
                     GameScene.Game.NPCAccessoryRefineBox.Visible = true;
                     GameScene.Game.NPCAccessoryRefineBox.Location = new Point(Size.Width - GameScene.Game.NPCAccessoryRefineBox.Size.Width, Size.Height);
                     break;
+                case NPCDialogType.RollDie:
+                    Rolling = true;
+                    CEnvir.Enqueue(new C.NPCRoll { Type = 0 });
+                    break;
+                case NPCDialogType.RollYut:
+                    Rolling = true;
+                    CEnvir.Enqueue(new C.NPCRoll { Type = 1 });
+                    break;
             }
         }
         
-        private void ProcessText()
+        private void ProcessText(string page)
         {
             foreach (DXLabel label in Buttons)
                 label.Dispose();
@@ -281,8 +386,8 @@ namespace Client.Scenes.Views
             List<ButtonIndex> buttonRanges = new();
 
             List<Match> matchList = new();
-            matchList.AddRange(B.Matches(Page.Say).Cast<Match>());
-            matchList.AddRange(C.Matches(Page.Say).Cast<Match>());
+            matchList.AddRange(B.Matches(page).Cast<Match>());
+            matchList.AddRange(C.Matches(page).Cast<Match>());
 
             matchList = matchList.OrderBy(x => x.Groups["Text"].Index).ToList();
 
@@ -366,9 +471,11 @@ namespace Client.Scenes.Views
 
                                     if (CEnvir.Now < NextButtonTime) return;
 
+                                    int idx = int.Parse(matchList[index].Groups["ID"].Value);
+
                                     NextButtonTime = CEnvir.Now.AddSeconds(1);
 
-                                    CEnvir.Enqueue(new C.NPCButton { ButtonID = int.Parse(matchList[index].Groups["ID"].Value) });
+                                    CEnvir.Enqueue(new C.NPCButton { ButtonID = idx });
                                 };
                             }
                             break;
@@ -461,7 +568,7 @@ namespace Client.Scenes.Views
                         else
                         {
                             //Measure Current.Index to range.First + Length
-                            currentInfo.Length = (range.First + range.Length) - currentInfo.Index;
+                            currentInfo.Length = range.First + range.Length - currentInfo.Index;
                             currentInfo.Region.Width = TextRenderer.MeasureText(graphics, text.Substring(currentInfo.Index, currentInfo.Length), font, new Size(width, 9999), flags).Width;
                         }
                         //We need to capture this word.
@@ -493,6 +600,54 @@ namespace Client.Scenes.Views
                     PageText = null;
                 }
 
+                if (HeaderImage != null)
+                {
+                    if (!HeaderImage.IsDisposed)
+                        HeaderImage.Dispose();
+
+                    HeaderImage = null;
+                }
+
+                if (FooterImage != null)
+                {
+                    if (!FooterImage.IsDisposed)
+                        FooterImage.Dispose();
+
+                    FooterImage = null;
+                }
+
+                if (RowImages != null)
+                {
+                    for (int i = 0; i < RowImages.Length; i++)
+                    {
+                        if (RowImages[i] != null)
+                        {
+                            if (!RowImages[i].IsDisposed)
+                                RowImages[i].Dispose();
+
+                            RowImages[i] = null;
+                        }
+                    }
+
+                    RowImages = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                if (PageText != null)
+                {
+                    if (!PageText.IsDisposed)
+                        PageText.Dispose();
+
+                    PageText = null;
+                }
+
                 if (Buttons != null)
                 {
                     for (int i = 0; i < Buttons.Count; i++)
@@ -512,7 +667,6 @@ namespace Client.Scenes.Views
 
                 Opened = false;
             }
-
         }
 
         #endregion
@@ -535,6 +689,15 @@ namespace Client.Scenes.Views
             Button,
             Label
         };
+
+        [GeneratedRegex("\\<(?<Text>.*?):(?<Default>.+?)\\>", RegexOptions.Compiled)]
+        private static partial Regex ValueRegex();
+
+        [GeneratedRegex("\\{(?<Text>.*?):(?<Colour>.+?)\\}", RegexOptions.Compiled)]
+        private static partial Regex ColourRegex();
+
+        [GeneratedRegex("\\[(?<Text>.*?):(?<ID>.+?)\\]", RegexOptions.Compiled)]
+        private static partial Regex ButtonRegex();
     }
 
     public sealed class NPCGoodsDialog : DXWindow
@@ -1163,262 +1326,6 @@ namespace Client.Scenes.Views
         #endregion
     }
 
-    public sealed class NPCSellDialog : DXImageControl
-    {
-        #region Properties
-
-        #region Currency
-
-        public CurrencyInfo Currency
-        {
-            get => _Currency;
-            set
-            {
-                if (_Currency == value) return;
-
-                CurrencyInfo oldValue = _Currency;
-                _Currency = value;
-
-                OnCurrencyChanged(oldValue, value);
-            }
-        }
-        private CurrencyInfo _Currency;
-
-        public event EventHandler<EventArgs> CurrencyChanged;
-        public void OnCurrencyChanged(CurrencyInfo oValue, CurrencyInfo nValue)
-        {
-            if (GameScene.Game.InventoryBox == null) return;
-
-            if (IsVisible)
-                GameScene.Game.InventoryBox.Visible = true;
-
-            if (!IsVisible)
-                Grid.ClearLinks();
-
-            if (Currency == null || Currency.DropItem == null || Currency.Type != CurrencyType.Other)
-            {
-                CurrencyIcon.LibraryFile = LibraryFile.Inventory;
-                CurrencyIcon.Index = 121;
-            }
-            else
-            {
-                CurrencyIcon.LibraryFile = LibraryFile.Ground;
-                CurrencyIcon.Index = Currency.DropItem.Image;
-            }
-
-            CurrencyIcon.Location = new Point(CurrencyLabel.Location.X + CurrencyLabel.Size.Width - CurrencyIcon.Size.Width - 5, CurrencyLabel.Location.Y + ((CurrencyLabel.Size.Height - CurrencyIcon.Size.Height) / 2));
-
-            CurrencyChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void SetCurrency(CurrencyInfo currency)
-        {
-            Currency = currency ?? Globals.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold);
-        }
-
-        #endregion
-
-        private DXLabel TitleLabel;
-        public DXButton CloseButton;
-
-        public DXItemGrid Grid;
-        public DXButton SellButton;
-        public DXLabel CurrencyLabel;
-
-        public DXImageControl CurrencyIcon;
-
-        public override void OnIsVisibleChanged(bool oValue, bool nValue)
-        {
-            base.OnIsVisibleChanged(oValue, nValue);
-
-            if (GameScene.Game.InventoryBox == null) return;
-
-            if (IsVisible)
-                GameScene.Game.InventoryBox.Visible = true;
-
-            if (!IsVisible)
-                Grid.ClearLinks();
-        }
-
-        public WindowType Type => WindowType.None;
-
-        #endregion
-
-        public NPCSellDialog()
-        {
-            LibraryFile = LibraryFile.Interface;
-            Index = 135;
-            Movable = false;
-
-            CloseButton = new DXButton
-            {
-                Parent = this,
-                Index = 15,
-                LibraryFile = LibraryFile.Interface,
-            };
-            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
-            CloseButton.MouseClick += (o, e) => Visible = false;
-
-            TitleLabel = new DXLabel
-            {
-                Text = "Sell Items",
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
-            };
-            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
-
-            Grid = new DXItemGrid
-            {
-                GridSize = new Size(6, 6),
-                Parent = this,
-                GridType = GridType.Sell,
-                Linked = true,
-                Location = new Point(20, 39),
-                GridPadding = 1,
-                BackColour = Color.Empty,
-                Border = false
-            };
-
-            Movable = false;
-
-            foreach (DXItemCell cell in Grid.Grid)
-            {
-                cell.LinkChanged += Cell_LinkChanged;
-            }
-
-            CurrencyLabel = new DXLabel
-            {
-                AutoSize = false,
-                Border = false,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.VerticalCenter,
-                Parent = this,
-                Location = new Point(30, 280),
-                Text = "0",
-                Size = new Size(205, 15),
-                Sound = SoundIndex.GoldPickUp
-            };
-
-            CurrencyIcon = new DXImageControl
-            {
-                LibraryFile = LibraryFile.Inventory,
-                Index = 121,
-                Parent = this,
-                IsControl = false,
-            };
-            CurrencyIcon.Location = new Point(10, 10);
-
-            DXButton selectAll = new DXButton
-            {
-                Label = { Text = "Select All" },
-                Location = new Point(12, CurrencyLabel.Location.Y + CurrencyLabel.Size.Height + 20),
-                ButtonType = ButtonType.Default,
-                Parent = this,
-                Size = new Size(79, DefaultHeight)
-            };
-            selectAll.MouseClick += (o, e) =>
-            {
-                foreach (DXItemCell cell in GameScene.Game.InventoryBox.Grid.Grid)
-                {
-                    if (!cell.CheckLink(Grid)) continue;
-
-                    cell.MoveItem(Grid, true);
-                }
-            };
-
-            SellButton = new DXButton
-            {
-                Label = { Text = "Sell" },
-                Location = new Point(170, CurrencyLabel.Location.Y + CurrencyLabel.Size.Height + 20),
-                ButtonType = ButtonType.Default,
-                Parent = this,
-                Size = new Size(79, DefaultHeight),
-                Enabled = false,
-            };
-            SellButton.MouseClick += (o, e) =>
-            {
-                if (GameScene.Game.Observer) return;
-
-                List<CellLinkInfo> links = new List<CellLinkInfo>();
-
-                foreach (DXItemCell cell in Grid.Grid)
-                {
-                    if (cell.Link == null) continue;
-
-                    links.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
-                }
-
-                CEnvir.Enqueue(new C.NPCSell { Links = links });
-            };
-        }
-
-        #region Methods
-        private void Cell_LinkChanged(object sender, EventArgs e)
-        {
-            long sum = 0;
-            int count = 0;
-            foreach (DXItemCell cell in Grid.Grid)
-            {
-                if (cell.Link?.Item == null) continue;
-
-                count++;
-                sum += (long)(cell.Link.Item.Price(cell.LinkedCount) * Currency.ExchangeRate);
-            }
-
-            CurrencyLabel.Text = sum.ToString("#,##0");
-
-            SellButton.Enabled = count > 0;
-        }
-
-        #endregion
-
-
-        #region IDisposable
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (disposing)
-            {
-                if (Grid != null)
-                {
-                    if (!Grid.IsDisposed)
-                        Grid.Dispose();
-
-                    Grid = null;
-                }
-
-                if (SellButton != null)
-                {
-                    if (!SellButton.IsDisposed)
-                        SellButton.Dispose();
-
-                    SellButton = null;
-                }
-
-                if (CurrencyLabel != null)
-                {
-                    if (!CurrencyLabel.IsDisposed)
-                        CurrencyLabel.Dispose();
-
-                    CurrencyLabel = null;
-                }
-            }
-
-        }
-
-        #endregion
-    }
-
     public sealed class NPCRepairDialog : DXWindow
     {
         #region Properties
@@ -1459,7 +1366,7 @@ namespace Client.Scenes.Views
 
             Grid = new DXItemGrid
             {
-                GridSize = new Size(14, 5),
+                GridSize = new Size(11, 5),
                 Parent = this,
                 GridType = GridType.Repair,
                 Linked = true
