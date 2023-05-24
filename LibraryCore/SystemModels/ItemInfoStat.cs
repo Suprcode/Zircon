@@ -1,9 +1,11 @@
 ﻿using MirDB;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
     public sealed class ItemInfoStat : DBObject
     {
+        [IsIdentity]
         [Association("ItemStats")]
         public ItemInfo Item
         {
@@ -20,6 +22,7 @@ namespace Library.SystemModels
         }
         private ItemInfo _Item;
 
+        [IsIdentity]
         public Stat Stat
         {
             get { return _Stat; }

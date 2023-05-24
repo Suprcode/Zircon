@@ -33,6 +33,12 @@ namespace Server.Models
             get { return Character.CharacterName; }
             set { Character.CharacterName = value; }
         }
+
+        public override string Caption
+        {
+            get { return Character.Caption; }
+            set { Character.Caption = value; }
+        }
         public override int Level
         {
             get { return Character.Level; }
@@ -114,6 +120,7 @@ namespace Server.Models
 
         public NPCObject NPC;
         public NPCPage NPCPage;
+        public Dictionary<string, object> NPCVals = new Dictionary<string, object>();
 
         public HorseType Horse;
 
@@ -124,6 +131,14 @@ namespace Server.Models
         public override bool CanMove => base.CanMove && !Fishing;
         public override bool CanAttack => base.CanAttack && Horse == HorseType.None;
         public override bool CanCast => base.CanCast && Horse == HorseType.None && !Fishing;
+
+        private bool HideHead
+        {
+            get
+            {
+                return Equipment[(int)EquipmentSlot.Armour]?.Info.ItemEffect == ItemEffect.FishingRobe || Equipment[(int)EquipmentSlot.Costume]?.Info != null;
+            }
+        }
 
         public List<MonsterObject> Pets = new List<MonsterObject>();
 
@@ -1213,12 +1228,11 @@ namespace Server.Models
             Enqueue(new S.MapChanged
             {
                 MapIndex = CurrentMap.Info.Index,
-                InstanceIndex = CurrentMap.Instance?.Index
+                InstanceIndex = CurrentMap.Instance?.Index ?? -1
             });
 
             if (!CurrentMap.Info.CanHorse)
                 RemoveMount();
-
 
             ApplyMapBuff();
         }
@@ -2840,6 +2854,7 @@ namespace Server.Models
             unlock.Account = Character.Account;
             unlock.CompanionInfo = info;
         }
+
         public void CompanionAdopt(C.CompanionAdopt p)
         {
             S.CompanionAdopt result = new S.CompanionAdopt();
@@ -2848,7 +2863,6 @@ namespace Server.Models
             if (Dead || NPC == null || NPCPage == null) return;
 
             if (NPCPage.DialogType != NPCDialogType.CompanionManage) return;
-
 
             CompanionInfo info = SEnvir.CompanionInfoList.Binding.FirstOrDefault(x => x.Index == p.Index);
 
@@ -2885,12 +2899,12 @@ namespace Server.Models
 
             result.UserCompanion = companion.ToClientInfo();
         }
+
         public void CompanionRetrieve(int index)
         {
             if (Dead || NPC == null || NPCPage == null) return;
 
             if (NPCPage.DialogType != NPCDialogType.CompanionManage) return;
-
 
             UserCompanion info = Character.Account.Companions.FirstOrDefault(x => x.Index == index);
 
@@ -2912,6 +2926,7 @@ namespace Server.Models
             CompanionSpawn();
 
         }
+
         public void CompanionStore(int index)
         {
             if (Dead || NPC == null || NPCPage == null) return;
@@ -4798,13 +4813,17 @@ namespace Server.Models
                 return;
             }
 
-            if (GroupMembers != null && GroupMembers.Any(x => x.CurrentMap.Instance != null))
+            if (GroupMembers != null && CurrentMap.Instance != null)
             {
-                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
+                if (!CurrentMap.Instance.UserRecord.TryGetValue(player.Name, out byte instanceSequence) || CurrentMap.InstanceSequence != instanceSequence)
+                {
+                    Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
 
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
-                return;
+                    foreach (SConnection con in Connection.Observers)
+                        con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
+
+                    return;
+                }
             }
 
             player.GroupInvitation = this;
@@ -5603,12 +5622,9 @@ namespace Server.Models
                                 return;
                             }
 
-
-
                             if (item.Info.Stats[Stat.Experience] > 0) GainExperience(item.Info.Stats[Stat.Experience], false);
 
                             IncreasePKPoints(item.Info.Stats[Stat.PKPoint]);
-
 
                             if (item.Info.Stats[Stat.FootballArmourAction] > 0 && SEnvir.Random.Next(item.Info.Stats[Stat.FootballArmourAction]) == 0)
                             {
@@ -5718,7 +5734,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Level != 17)
+                            if (weapon.Level != Globals.WeaponExperienceList.Count)
                             {
                                 Connection.ReceiveChat("Your weapon is not the max level.", MessageType.System);
                                 return;
@@ -5746,7 +5762,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            //Give armour
+                            //Give extractor
                             extractorInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.StatExtractor);
 
                             if (extractorInfo == null) return;
@@ -5789,7 +5805,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Level != 17)
+                            if (weapon.Level != Globals.WeaponExperienceList.Count)
                             {
                                 Connection.ReceiveChat("Your weapon is not the max level.", MessageType.System);
                                 return;
@@ -5805,7 +5821,7 @@ namespace Server.Models
 
                             weapon.StatsChanged();
 
-                            //Give armour
+                            //Give stats to weapon
                             for (int i = item.AddedStats.Count - 1; i >= 0; i--)
                                 weapon.AddStat(item.AddedStats[i].Stat, item.AddedStats[i].Amount, item.AddedStats[i].StatSource);
 
@@ -5832,7 +5848,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Level != 17)
+                            if (weapon.Level != Globals.WeaponExperienceList.Count)
                             {
                                 Connection.ReceiveChat("Your weapon is not the max level.", MessageType.System);
                                 return;
@@ -5870,7 +5886,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            //Give armour
+                            //Give extractor
                             extractorInfo = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.RefineExtractor);
 
                             if (extractorInfo == null) return;
@@ -5909,7 +5925,7 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (weapon.Level != 17)
+                            if (weapon.Level != Globals.WeaponExperienceList.Count)
                             {
                                 Connection.ReceiveChat("Your weapon is not the max level.", MessageType.System);
                                 return;
@@ -5926,7 +5942,7 @@ namespace Server.Models
 
                             weapon.StatsChanged();
 
-                            //Give armour
+                            //Give stats to weapon
                             for (int i = item.AddedStats.Count - 1; i >= 0; i--)
                                 weapon.AddStat(item.AddedStats[i].Stat, item.AddedStats[i].Amount, item.AddedStats[i].StatSource);
 
@@ -7807,7 +7823,6 @@ namespace Server.Models
                 item = Inventory[i];
                 break;
             }
-
             if (item == null) return;
 
             S.ItemChanged result = new S.ItemChanged
@@ -7833,6 +7848,53 @@ namespace Server.Models
 
             SEnvir.Log($"[NAME CHANGED] Old: {Name}, New: {newName}.", true);
             Name = newName;
+
+            SendChangeUpdate();
+        }
+
+        public void CaptionChange(string newCaption)
+        {
+            int index = 0;
+            UserItem item = null;
+
+            for (int i = 0; i < Inventory.Length; i++)
+            {
+                if (Inventory[i] is null || Inventory[i].Info.ItemEffect is not ItemEffect.Caption) continue;
+
+                if (!CanUseItem(Inventory[i])) continue;
+
+                index = i;
+                item = Inventory[i];
+                break;
+            }
+
+            if (item == null) return;
+
+            S.ItemChanged result = new S.ItemChanged
+            {
+                Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = index },
+                Success = true
+            };
+            Enqueue(result);
+
+            if (item.Count > 1)
+            {
+                item.Count--;
+                result.Link.Count = item.Count;
+            }
+            else
+            {
+                RemoveItem(item);
+                Inventory[index] = null;
+                item.Delete();
+
+                result.Link.Count = 0;
+            }
+            Character.Caption = newCaption;
+            Caption = newCaption;
+            SEnvir.Log($"[CAPTION CHANGED] {Character.CharacterName} caption changed to: {Caption}", true);
+            Connection.ReceiveChat($"Your caption changed to: {Caption}.", MessageType.System);
+
 
             SendChangeUpdate();
         }
@@ -8856,21 +8918,39 @@ namespace Server.Models
                 return;
             }
         }
-        public void NPCButton(int ButtonID)
+
+        public void NPCButton(int buttonID)
         {
             if (Dead || NPC == null || NPCPage == null) return;
 
 
             foreach (Library.SystemModels.NPCButton button in NPCPage.Buttons)
             {
-                if (button.ButtonID != ButtonID || button.DestinationPage == null) continue;
+                if (button.ButtonID != buttonID || button.DestinationPage == null) continue;
 
                 NPC.NPCCall(this, button.DestinationPage);
                 return;
             }
-
-
         }
+
+        public void NPCRoll(int type)
+        {
+            if (Dead || NPC == null || NPCPage == null || NPCPage.SuccessPage == null) return;
+
+            var roll = SEnvir.Random.Next(1, 7);
+
+            NPCVals["ROLLRESULT"] = roll;
+
+            Enqueue(new S.NPCRoll { Type = type, Result = roll });
+        }
+
+        public void NPCRollResult()
+        {
+            if (Dead || NPC == null || NPCPage == null || NPCPage.SuccessPage == null) return;
+
+            NPC.NPCCall(this, NPCPage.SuccessPage);
+        }
+
         public void NPCBuy(C.NPCBuy p)
         {
             if (Dead || NPC == null || NPCPage == null || p.Amount <= 0) return;
@@ -9092,6 +9172,7 @@ namespace Server.Models
 
             if (!ParseLinks(p.Links, 0, 100)) return;
 
+            if (SEnvir.FragmentInfo == null || SEnvir.Fragment2Info == null || SEnvir.Fragment3Info == null) return;
 
             long cost = 0;
             int fragmentCount = 0;
@@ -9875,10 +9956,7 @@ namespace Server.Models
 
             if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.RefinementStone) return;
 
-            if (SEnvir.RefinementStoneInfo == null)
-            {
-                return;
-            }
+            if (SEnvir.RefinementStoneInfo == null) return;
 
             if (!ParseLinks(p.IronOres, 4, 4)) return;
             if (!ParseLinks(p.SilverOres, 4, 4)) return;
@@ -10811,7 +10889,7 @@ namespace Server.Models
 
             if ((weapon.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
 
-            if (weapon.Level != 17) return;
+            if (weapon.Level != Globals.WeaponExperienceList.Count) return;
 
             long fragmentCount = 0;
             int special = 0;
@@ -11261,7 +11339,7 @@ namespace Server.Models
 
             if (weapon == null) return;
 
-            if (weapon.Level != 17) return;
+            if (weapon.Level != Globals.WeaponExperienceList.Count) return;
 
             weapon.AddStat(stat, amount, StatSource.Refine);
 
@@ -11319,7 +11397,7 @@ namespace Server.Models
 
             if ((weapon.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
 
-            if (weapon.Level != 17) return;
+            if (weapon.Level != Globals.WeaponExperienceList.Count) return;
 
             long fragmentCount = 0;
             int special = 0;
@@ -19061,6 +19139,7 @@ namespace Server.Models
                 Index = Character.Index,
                 ObjectID = ObjectID,
                 Name = Name,
+                Caption = Character.Caption,
                 GuildName = Character.Account.GuildMember?.Guild.GuildName,
                 GuildRank = Character.Account.GuildMember?.Rank,
                 NameColour = NameColour,
@@ -19072,7 +19151,7 @@ namespace Server.Models
                 Direction = Direction,
 
                 MapIndex = CurrentMap.Info.Index,
-                InstanceIndex = CurrentMap.Instance?.Index,
+                InstanceIndex = CurrentMap.Instance?.Index ?? -1,
 
                 HairType = HairType,
                 HairColour = HairColour,
@@ -19083,10 +19162,13 @@ namespace Server.Models
 
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
-                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
 
+                Costume = Equipment[(int)EquipmentSlot.Costume]?.Info.Shape ?? -1,
+
+                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
-                WingsShape = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
+                WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
+                ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 
                 Experience = Experience,
 
@@ -19123,7 +19205,9 @@ namespace Server.Models
 
                 Horse = Horse,
 
-                HelmetShape = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                HelmetShape = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
+                HideHead = HideHead,
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
@@ -19153,6 +19237,7 @@ namespace Server.Models
 
                 ObjectID = ObjectID,
                 Name = Name,
+                Caption = Character.Caption,
                 GuildName = Character.Account.GuildMember?.Guild.GuildName,
                 NameColour = NameColour,
                 Location = CurrentLocation,
@@ -19166,24 +19251,29 @@ namespace Server.Models
                 HairType = HairType,
                 HairColour = HairColour,
 
-                //TODO HElmet
                 Weapon = Equipment[(int)EquipmentSlot.Weapon]?.Info.Shape ?? -1,
 
                 Shield = Equipment[(int)EquipmentSlot.Shield]?.Info.Shape ?? -1,
 
+                Helmet = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
+                HideHead = HideHead,
+
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
+
+                Costume = Equipment[(int)EquipmentSlot.Costume]?.Info.Shape ?? -1,
+
                 ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
-                WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
+                WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
+                ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 
                 Poison = Poison,
 
                 Buffs = Character.Buffs.Where(x => x.Visible).Select(x => x.Type).ToList(),
 
                 Horse = Horse,
-
-                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
 
                 HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
@@ -19222,13 +19312,19 @@ namespace Server.Models
 
                 Shield = Equipment[(int)EquipmentSlot.Shield]?.Info.Shape ?? -1,
 
+                Helmet = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
+                HideHead = HideHead,
+
                 Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
                 ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
+
+                Costume = Equipment[(int)EquipmentSlot.Costume]?.Info.Shape ?? -1,
+
                 ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
                 EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
-                WingsEffect = Equipment[(int)EquipmentSlot.Wings]?.Info.ExteriorEffect ?? 0,
-
-                Helmet = HasFishingRobe ? 99 : Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+                WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
+                ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
 
                 HorseArmour = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
@@ -19245,7 +19341,7 @@ namespace Server.Models
                 ObjectID = ObjectID,
 
                 Name = Name,
-
+                Caption = Caption,
                 Gender = Gender,
                 HairType = HairType,
                 HairColour = HairColour,

@@ -124,5 +124,11 @@ namespace Client.Models
 
             return FrameCount;
         }
+
+        public override void Remove()
+        {
+            _particleEmitter?.StopGeneration();
+            base.Remove();
+        }
     }
 }

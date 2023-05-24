@@ -66,7 +66,6 @@ namespace Client.Controls
 
         #endregion
 
-
         #region GridPadding
 
         public int GridPadding
@@ -257,7 +256,6 @@ namespace Client.Controls
         }
 
         #endregion
-
 
         public DXItemCell[] Grid;
 

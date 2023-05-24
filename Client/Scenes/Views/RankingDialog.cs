@@ -327,7 +327,7 @@ namespace Client.Scenes.Views
 
             TitleLabel = new DXLabel
             {
-                Text = "Ranking",
+                Text = CEnvir.Language.RankingDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -359,7 +359,7 @@ namespace Client.Scenes.Views
                 GlobalTab = new DXTab
                 {
                     Parent = TabControl,
-                    TabButton = { Label = { Text = "Global" } },
+                    TabButton = { Label = { Text = CEnvir.Language.RankingDialogGlobalTabLabel } },
                     BackColour = Color.Empty,
                     Location = new Point(0, 25)
                 };
@@ -595,16 +595,16 @@ namespace Client.Scenes.Views
                 };
                 cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 36);
 
-                Grid[(int)EquipmentSlot.Wings] = cell = new DXItemCell
+                Grid[(int)EquipmentSlot.Costume] = cell = new DXItemCell
                 {
                     Location = new Point(24, 204),
                     Parent = InspectPanel,
                     Border = true,
                     ItemGrid = Equipment,
-                    Slot = (int)EquipmentSlot.Wings,
+                    Slot = (int)EquipmentSlot.Costume,
                     GridType = GridType.Inspect,
                 };
-                //cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 190);
+                cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 34);
 
                 Grid[(int)EquipmentSlot.Hook] = cell = new DXItemCell
                 {
@@ -715,7 +715,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(60, SmallButtonHeight),
                 Parent = RankPanel,
-                Label = { Text = "Search" },
+                Label = { Text = CEnvir.Language.RankingDialogSearchButtonLabel },
                 Visible = true,
                 Location = new Point(164, 66),
                 Enabled = false
@@ -730,7 +730,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(60, SmallButtonHeight),
                 Parent = RankPanel,
-                Label = { Text = "Observe" },
+                Label = { Text = CEnvir.Language.RankingDialogObserveButtonLabel },
                 Visible = true,
                 Enabled = false,
                 Location = new Point(SearchButton.Location.X + SearchButton.Size.Width + 5, 66)
@@ -742,7 +742,7 @@ namespace Client.Scenes.Views
 
                 if (GameScene.Game != null && CEnvir.Now < GameScene.Game.User.CombatTime.AddSeconds(10) && !GameScene.Game.Observer)
                 {
-                    GameScene.Game.ReceiveChat("Unable to observe whilst in combat.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.SpectatorModeWarningInCombat, MessageType.System);
                     return;
                 }
 
@@ -851,7 +851,7 @@ namespace Client.Scenes.Views
             OnlineOnlyBox = new DXCheckBox
             {
                 Parent = RankPanel,
-                Label = { Text = "Online Only" }
+                Label = { Text = CEnvir.Language.RankingDialogOnlineOnlyLabel }
             };
             OnlineOnlyBox.CheckedChanged += (o, e) =>
             {
@@ -865,7 +865,7 @@ namespace Client.Scenes.Views
             ObservableBox = new DXCheckBox
             {
                 Parent = RankPanel,
-                Label = { Text = "Observable" }
+                Label = { Text = CEnvir.Language.RankingDialogObservableLabel }
             };
             ObservableBox.CheckedChanged += (o, e) =>
             {
@@ -875,7 +875,7 @@ namespace Client.Scenes.Views
                 if (GameScene.Game.Observer) return;
                 if (!GameScene.Game.User.InSafeZone)
                 {
-                    GameScene.Game.ReceiveChat("You can only change spectator mode whilst in safezone.", MessageType.System);
+                    GameScene.Game.ReceiveChat(CEnvir.Language.SpectatorModeWarningInSafezone, MessageType.System);
                     return;
                 }
 
@@ -908,7 +908,7 @@ namespace Client.Scenes.Views
             ClientUserItem armour = Grid[(int)EquipmentSlot.Armour]?.Item;
             if (armour != null)
             {
-                MirImage image = ArmourEffectDecider.GetArmourEffectImageOrNull(armour, Gender);
+                MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
                 if (image != null)
                 {
                     bool oldBlend = DXManager.Blending;
@@ -949,6 +949,17 @@ namespace Client.Scenes.Views
                     int weaponIndex = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
                     library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                     library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
+
+                    MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
+                    if (image != null)
+                    {
+                        bool oldBlend = DXManager.Blending;
+                        float oldRate = DXManager.BlendRate;
+
+                        DXManager.SetBlend(true, 0.8F);
+                        PresentTexture(image.Image, InspectPanel, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                        DXManager.SetBlend(oldBlend, oldRate);
+                    }
                 }
 
                 if (Grid[(int)EquipmentSlot.Shield]?.Item != null)

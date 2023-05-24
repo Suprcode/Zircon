@@ -252,7 +252,7 @@ namespace Client.Scenes.Views
             {
                 Parent = panel2,
                 IsControl = false,
-                Text = "AC:"
+                Text = CEnvir.Language.CommonStatusAC + ":"
             };
             label.Location = new Point(36 - label.Size.Width, 5);
 
@@ -267,7 +267,7 @@ namespace Client.Scenes.Views
             {
                 Parent = panel2,
                 IsControl = false,
-                Text = "MR:"
+                Text = CEnvir.Language.CommonStatusMR + ":"
             };
             label.Location = new Point(125 - label.Size.Width, 5);
 
@@ -281,7 +281,7 @@ namespace Client.Scenes.Views
             {
                 Parent = panel2,
                 IsControl = false,
-                Text = "DC:"
+                Text = CEnvir.Language.CommonStatusDC + ":"
             };
             label.Location = new Point(36 - label.Size.Width, 22);
 
@@ -298,7 +298,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1510,
                 Location = new Point(5, 39),
-                Hint = "Fire"
+                Hint = CEnvir.Language.CommonStatusFire
             };
 
             FireResistLabel = new DXLabel
@@ -314,7 +314,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1511,
                 Location = new Point(icon.Location.X + 43, 39),
-                Hint = "Ice"
+                Hint = CEnvir.Language.CommonStatusIce
             };
 
             IceResistLabel = new DXLabel
@@ -330,7 +330,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1512,
                 Location = new Point(icon.Location.X + 43, 39),
-                Hint = "Lightning"
+                Hint = CEnvir.Language.CommonStatusLightning
             };
 
             LightningResistLabel = new DXLabel
@@ -346,7 +346,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1513,
                 Location = new Point(icon.Location.X + 43, 39),
-                Hint = "Wind"
+                Hint = CEnvir.Language.CommonStatusWind
             };
 
             WindResistLabel = new DXLabel
@@ -363,7 +363,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1514,
                 Location = new Point(5, 63),
-                Hint = "Holy",
+                Hint = CEnvir.Language.CommonStatusHoly,
             };
 
             HolyResistLabel = new DXLabel
@@ -379,7 +379,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1515,
                 Location = new Point(icon.Location.X + 43, 63),
-                Hint = "Dark",
+                Hint = CEnvir.Language.CommonStatusDark,
             };
 
             DarkResistLabel = new DXLabel
@@ -395,7 +395,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1516,
                 Location = new Point(icon.Location.X + 43, 63),
-                Hint = "Phantom",
+                Hint = CEnvir.Language.CommonStatusPhantom,
             };
 
             PhantomResistLabel = new DXLabel
@@ -411,7 +411,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1517,
                 Location = new Point(icon.Location.X + 43, 63),
-                Hint = "Physical"
+                Hint = CEnvir.Language.CommonStatusPhysical
             };
 
             PhysicalResistLabel = new DXLabel
@@ -427,7 +427,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 590,
                 Location = new Point(5, 87),
-                Hint = "Attack Speed",
+                Hint = CEnvir.Language.MonsterDialogAttackingIconDefaultHint,
             };
 
             MovementSpeedIcon = new DXImageControl
@@ -436,7 +436,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 620,
                 Location = new Point(AttackSpeedIcon.Location.X + AttackSpeedIcon.Size.Width + 2, 87),
-                Hint = "Movement Speed",
+                Hint = CEnvir.Language.MonsterDialogMovingIconDefaultHint,
             };
 
             TamableIcon = new DXImageControl
@@ -445,7 +445,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 631,
                 Location = new Point(MovementSpeedIcon.Location.X + MovementSpeedIcon.Size.Width + 2, 87),
-                Hint = "Tameable",
+                Hint = CEnvir.Language.MonsterDialogTamableIconHint,
             };
 
             UndeadIcon = new DXImageControl
@@ -454,7 +454,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 634,
                 Location = new Point(TamableIcon.Location.X + TamableIcon.Size.Width + 2, 87),
-                Hint = "Mortal",
+                Hint = CEnvir.Language.MonsterDialogMortalIconHint,
             };
 
             GrowthIcon = new DXImageControl
@@ -463,7 +463,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 630, //TODO - Find new icon!
                 Location = new Point(UndeadIcon.Location.X + UndeadIcon.Size.Width + 2, 87),
-                Hint = "Growth",
+                Hint = CEnvir.Language.MonsterDialogGrowthIconDefaultHint,
                 Visible = false
             };
 
@@ -509,15 +509,15 @@ namespace Client.Scenes.Views
                 PopulateLabel(Stat.PhantomResistance, PhantomResistLabel, Monster.MonsterInfo.Stats);
                 PopulateLabel(Stat.PhysicalResistance, PhysicalResistLabel, Monster.MonsterInfo.Stats);
 
-                UndeadIcon.Hint = Monster.MonsterInfo.Undead ? "Undead" : "Mortal";
+                UndeadIcon.Hint = Monster.MonsterInfo.Undead ? CEnvir.Language.MonsterDialogUndeadIconHint : CEnvir.Language.MonsterDialogMortalIconHint;
                 UndeadIcon.Index = Monster.MonsterInfo.Undead ? 635 : 634;
 
-                TamableIcon.Hint = Monster.MonsterInfo.CanTame ? "Tamable" : "Untamable";
+                TamableIcon.Hint = Monster.MonsterInfo.CanTame ? CEnvir.Language.MonsterDialogTamableIconHint : CEnvir.Language.MonsterDialogUntamableIconHint;
                 TamableIcon.Index = Monster.MonsterInfo.CanTame ? 631 : 632;
 
                 if (Monster.GrowthLevel > 0)
                 {
-                    GrowthIcon.Hint = $"Growth Lv. {Monster.GrowthLevel}";
+                    GrowthIcon.Hint = string.Format(CEnvir.Language.MonsterDialogGrowthIconHint, Monster.GrowthLevel);
                     GrowthIcon.Visible = true;
                 }
                 else
@@ -528,35 +528,35 @@ namespace Client.Scenes.Views
                 switch (Monster.MonsterInfo.AttackDelay)
                 {
                     case int n when (n == 0):
-                        AttackSpeedIcon.Hint = "Non Attacking";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingNonHint;
                         AttackSpeedIcon.Index = 630;
                         break;
                     case int n when (n >= 2500):
-                        AttackSpeedIcon.Hint = "Attacking: Very Slow";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingVerySlowHint;
                         AttackSpeedIcon.Index = 590;
                         break;
                     case int n when (n >= 2000 && n < 2500):
-                        AttackSpeedIcon.Hint = "Attacking: Slow";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingSlowHint;
                         AttackSpeedIcon.Index = 591;
                         break;
                     case int n when (n >= 1750 && n < 2000):
-                        AttackSpeedIcon.Hint = "Attacking: Somewhat Slow";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingSomewhatSlowHint;
                         AttackSpeedIcon.Index = 592;
                         break;
                     case int n when (n >= 1500 && n < 1750):
-                        AttackSpeedIcon.Hint = "Attacking: Moderate";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingModerateHint;
                         AttackSpeedIcon.Index = 593;
                         break;
                     case int n when (n >= 1250 && n < 1500):
-                        AttackSpeedIcon.Hint = "Attacking: Somewhat Fast";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingSomewhatFastHint;
                         AttackSpeedIcon.Index = 594;
                         break;
                     case int n when (n >= 1000 && n < 1250):
-                        AttackSpeedIcon.Hint = "Attacking: Fast";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingFastHint;
                         AttackSpeedIcon.Index = 595;
                         break;
                     case int n when (n > 0 && n < 1000):
-                        AttackSpeedIcon.Hint = "Attacking: Very Fast";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingVeryFastHint;
                         AttackSpeedIcon.Index = 596;
                         break;
                 }
@@ -564,35 +564,35 @@ namespace Client.Scenes.Views
                 switch (Monster.MonsterInfo.MoveDelay)
                 {
                     case int n when (n == 0):
-                        MovementSpeedIcon.Hint = "Non Moving";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingNonHint;
                         MovementSpeedIcon.Index = 620;
                         break;
                     case int n when (n >= 2500):
-                        MovementSpeedIcon.Hint = "Moving: Very Slow";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingVerySlowHint;
                         MovementSpeedIcon.Index = 621;
                         break;
                     case int n when (n >= 1500 && n < 2500):
-                        MovementSpeedIcon.Hint = "Moving: Slow";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingSlowHint;
                         MovementSpeedIcon.Index = 622;
                         break;
                     case int n when (n >= 1000 && n < 1500):
-                        MovementSpeedIcon.Hint = "Moving: Somewhat Slow";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingSomewhatSlowHint;
                         MovementSpeedIcon.Index = 623;
                         break;
                     case int n when (n >= 900 && n < 1000):
-                        MovementSpeedIcon.Hint = "Moving: Moderate";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingModerateHint;
                         MovementSpeedIcon.Index = 624;
                         break;
                     case int n when (n >= 800 && n < 900):
-                        MovementSpeedIcon.Hint = "Moving: Somewhat Fast";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingSomewhatFastHint;
                         MovementSpeedIcon.Index = 625;
                         break;
                     case int n when (n >= 700 && n < 800):
-                        MovementSpeedIcon.Hint = "Moving: Fast";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingFastHint;
                         MovementSpeedIcon.Index = 626;
                         break;
                     case int n when (n > 0 && n < 700):
-                        MovementSpeedIcon.Hint = "Moving: Very Fast";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingVeryFastHint;
                         MovementSpeedIcon.Index = 627;
                         break;
                 }
@@ -601,35 +601,35 @@ namespace Client.Scenes.Views
                 {
                     case Element.None:
                         AttackIcon.Index = 1517;
-                        AttackIcon.Hint = "Physical";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusPhysical;
                         break;
                     case Element.Fire:
                         AttackIcon.Index = 1510;
-                        AttackIcon.Hint = "Fire";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusFire;
                         break;
                     case Element.Ice:
                         AttackIcon.Index = 1511;
-                        AttackIcon.Hint = "Ice";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusIce;
                         break;
                     case Element.Lightning:
                         AttackIcon.Index = 1512;
-                        AttackIcon.Hint = "Lightning";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusLightning;
                         break;
                     case Element.Wind:
                         AttackIcon.Index = 1513;
-                        AttackIcon.Hint = "Wind";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusWind;
                         break;
                     case Element.Holy:
                         AttackIcon.Index = 1514;
-                        AttackIcon.Hint = "Holy";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusHoly;
                         break;
                     case Element.Dark:
                         AttackIcon.Index = 1515;
-                        AttackIcon.Hint = "Dark";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusDark;
                         break;
                     case Element.Phantom:
                         AttackIcon.Index = 1516;
-                        AttackIcon.Hint = "Phantom";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusPhantom;
                         break;
                 }
             }
@@ -650,15 +650,15 @@ namespace Client.Scenes.Views
                 PopulateLabel(Stat.PhantomResistance, PhantomResistLabel, data.Stats);
                 PopulateLabel(Stat.PhysicalResistance, PhysicalResistLabel, data.Stats);
 
-                UndeadIcon.Hint = data.MonsterInfo.Undead ? "Undead" : "Mortal";
+                UndeadIcon.Hint = data.MonsterInfo.Undead ? CEnvir.Language.MonsterDialogUndeadIconHint : CEnvir.Language.MonsterDialogMortalIconHint;
                 UndeadIcon.Index = data.MonsterInfo.Undead ? 635 : 634;
 
-                TamableIcon.Hint = data.MonsterInfo.CanTame ? "Tamable" : "Untamable";
+                TamableIcon.Hint = data.MonsterInfo.CanTame ? CEnvir.Language.MonsterDialogTamableIconHint : CEnvir.Language.MonsterDialogUntamableIconHint;
                 TamableIcon.Index = data.MonsterInfo.CanTame ? 631 : 632;
 
                 if (Monster.GrowthLevel > 0)
                 {
-                    GrowthIcon.Hint = $"Growth Lv. {Monster.GrowthLevel}";
+                    GrowthIcon.Hint = string.Format(CEnvir.Language.MonsterDialogGrowthIconHint, Monster.GrowthLevel);
                     GrowthIcon.Visible = true;
                 }
                 else
@@ -669,35 +669,35 @@ namespace Client.Scenes.Views
                 switch (data.MonsterInfo.AttackDelay)
                 {
                     case int n when (n == 0):
-                        AttackSpeedIcon.Hint = "Non Attacking";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingNonHint;
                         AttackSpeedIcon.Index = 630;
                         break;
                     case int n when (n >= 2500):
-                        AttackSpeedIcon.Hint = "Attacking: Very Slow";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingVerySlowHint;
                         AttackSpeedIcon.Index = 590;
                         break;
                     case int n when (n >= 2000 && n < 2500):
-                        AttackSpeedIcon.Hint = "Attacking: Slow";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingSlowHint;
                         AttackSpeedIcon.Index = 591;
                         break;
                     case int n when (n >= 1750 && n < 2000):
-                        AttackSpeedIcon.Hint = "Attacking: Somewhat Slow";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingSomewhatSlowHint;
                         AttackSpeedIcon.Index = 592;
                         break;
                     case int n when (n >= 1500 && n < 1750):
-                        AttackSpeedIcon.Hint = "Attacking: Moderate";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingModerateHint;
                         AttackSpeedIcon.Index = 593;
                         break;
                     case int n when (n >= 1250 && n < 1500):
-                        AttackSpeedIcon.Hint = "Attacking: Somewhat Fast";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingSomewhatFastHint;
                         AttackSpeedIcon.Index = 594;
                         break;
                     case int n when (n >= 1000 && n < 1250):
-                        AttackSpeedIcon.Hint = "Attacking: Fast";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingFastHint;
                         AttackSpeedIcon.Index = 595;
                         break;
                     case int n when (n > 0 && n < 1000):
-                        AttackSpeedIcon.Hint = "Attacking: Very Fast";
+                        AttackSpeedIcon.Hint = CEnvir.Language.MonsterDialogAttackSpeedIconAttackingVeryFastHint;
                         AttackSpeedIcon.Index = 596;
                         break;
                 }
@@ -705,35 +705,35 @@ namespace Client.Scenes.Views
                 switch (data.MonsterInfo.MoveDelay)
                 {
                     case int n when (n == 0):
-                        MovementSpeedIcon.Hint = "Non Moving";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingNonHint;
                         MovementSpeedIcon.Index = 620;
                         break;
                     case int n when (n >= 2500):
-                        MovementSpeedIcon.Hint = "Moving: Very Slow";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingVerySlowHint;
                         MovementSpeedIcon.Index = 621;
                         break;
                     case int n when (n >= 1500 && n < 2500):
-                        MovementSpeedIcon.Hint = "Moving: Slow";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingSlowHint;
                         MovementSpeedIcon.Index = 622;
                         break;
                     case int n when (n >= 1000 && n < 1500):
-                        MovementSpeedIcon.Hint = "Moving: Somewhat Slow";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingSomewhatSlowHint;
                         MovementSpeedIcon.Index = 623;
                         break;
                     case int n when (n >= 900 && n < 1000):
-                        MovementSpeedIcon.Hint = "Moving: Moderate";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingModerateHint;
                         MovementSpeedIcon.Index = 624;
                         break;
                     case int n when (n >= 800 && n < 900):
-                        MovementSpeedIcon.Hint = "Moving: Somewhat Fast";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingSomewhatFastHint;
                         MovementSpeedIcon.Index = 625;
                         break;
                     case int n when (n >= 700 && n < 800):
-                        MovementSpeedIcon.Hint = "Moving: Fast";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingFastHint;
                         MovementSpeedIcon.Index = 626;
                         break;
                     case int n when (n > 0 && n < 700):
-                        MovementSpeedIcon.Hint = "Moving: Very Fast";
+                        MovementSpeedIcon.Hint = CEnvir.Language.MonsterDialogMovementSpeedIconMovingVeryFastHint;
                         MovementSpeedIcon.Index = 627;
                         break;
                 }
@@ -742,35 +742,35 @@ namespace Client.Scenes.Views
                 {
                     case Element.None:
                         AttackIcon.Index = 1517;
-                        AttackIcon.Hint = "Physical";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusPhysical;
                         break;
                     case Element.Fire:
                         AttackIcon.Index = 1510;
-                        AttackIcon.Hint = "Fire";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusFire;
                         break;
                     case Element.Ice:
                         AttackIcon.Index = 1511;
-                        AttackIcon.Hint = "Ice";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusIce;
                         break;
                     case Element.Lightning:
                         AttackIcon.Index = 1512;
-                        AttackIcon.Hint = "Lightning";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusLightning;
                         break;
                     case Element.Wind:
                         AttackIcon.Index = 1513;
-                        AttackIcon.Hint = "Wind";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusWind;
                         break;
                     case Element.Holy:
                         AttackIcon.Index = 1514;
-                        AttackIcon.Hint = "Holy";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusHoly;
                         break;
                     case Element.Dark:
                         AttackIcon.Index = 1515;
-                        AttackIcon.Hint = "Dark";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusDark;
                         break;
                     case Element.Phantom:
                         AttackIcon.Index = 1516;
-                        AttackIcon.Hint = "Phantom";
+                        AttackIcon.Hint = CEnvir.Language.CommonStatusPhantom;
                         break;
                 }
             }

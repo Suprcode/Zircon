@@ -30,16 +30,19 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SafeZoneInfoView));
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.SafeZoneGridControl = new DevExpress.XtraGrid.GridControl();
             this.SafeZoneGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SafeZoneGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SafeZoneGridView)).BeginInit();
@@ -51,38 +54,67 @@
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
-            this.SaveButton});
+            this.ribbon.SearchEditItem,
+            this.SaveButton,
+            this.ImportButton,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
+            this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
             this.ribbon.Size = new System.Drawing.Size(788, 144);
             // 
+            // SaveButton
+            // 
+            this.SaveButton.Caption = "Save Database";
+            this.SaveButton.Id = 1;
+            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
+            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
+            this.SaveButton.LargeWidth = 60;
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
+            // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 2;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
+            this.ribbonPageGroup1,
+            this.JsonImportExport});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
-            // SaveButton
+            // JsonImportExport
             // 
-            this.SaveButton.Caption = "Save Database";
-            this.SaveButton.Glyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.Glyph")));
-            this.SaveButton.Id = 1;
-            this.SaveButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.LargeGlyph")));
-            this.SaveButton.LargeWidth = 60;
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
+            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
             // 
             // SafeZoneGridControl
             // 
@@ -121,6 +153,20 @@
             this.gridColumn1.Visible = true;
             this.gridColumn1.VisibleIndex = 0;
             // 
+            // RegionLookUpEdit
+            // 
+            this.RegionLookUpEdit.AutoHeight = false;
+            this.RegionLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            this.RegionLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.RegionLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ServerDescription", "Server Description"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Size", "Size")});
+            this.RegionLookUpEdit.DisplayMember = "ServerDescription";
+            this.RegionLookUpEdit.Name = "RegionLookUpEdit";
+            this.RegionLookUpEdit.NullText = "[Region is null]";
+            // 
             // gridColumn2
             // 
             this.gridColumn2.ColumnEdit = this.RegionLookUpEdit;
@@ -143,20 +189,6 @@
             this.gridColumn4.Visible = true;
             this.gridColumn4.VisibleIndex = 3;
             // 
-            // RegionLookUpEdit
-            // 
-            this.RegionLookUpEdit.AutoHeight = false;
-            this.RegionLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.RegionLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.RegionLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ServerDescription", "Server Description"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Size", "Size")});
-            this.RegionLookUpEdit.DisplayMember = "ServerDescription";
-            this.RegionLookUpEdit.Name = "RegionLookUpEdit";
-            this.RegionLookUpEdit.NullText = "[Region is null]";
-            // 
             // SafeZoneInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -166,7 +198,7 @@
             this.Controls.Add(this.ribbon);
             this.Name = "SafeZoneInfoView";
             this.Ribbon = this.ribbon;
-            this.Text = "SafeZoneInfoView";
+            this.Text = "Safe Zone Info";
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SafeZoneGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SafeZoneGridView)).EndInit();
@@ -189,5 +221,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

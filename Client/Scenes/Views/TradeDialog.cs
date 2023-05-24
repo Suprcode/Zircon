@@ -87,7 +87,7 @@ namespace Client.Scenes.Views
 
             TitleLabel = new DXLabel
             {
-                Text = "Trade Window",
+                Text = CEnvir.Language.TradeDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -141,7 +141,7 @@ namespace Client.Scenes.Views
 
             UserLabel = new DXLabel
             {
-                Text = "User",
+                Text = CEnvir.Language.TradeDialogUserLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -154,7 +154,7 @@ namespace Client.Scenes.Views
 
             PlayerLabel = new DXLabel
             {
-                Text = "Player",
+                Text = CEnvir.Language.TradeDialogPlayerLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -188,7 +188,7 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 Parent = this,
                 Location = new Point(UserGrid.Location.X - 4, UserGrid.Location.Y + UserGrid.Size.Height + 20),
-                Text = "Gold",
+                Text = CEnvir.Language.TradeDialogGoldLabel,
                 Size = new Size(63, 15),
                 IsControl = false,
             };
@@ -215,7 +215,7 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 Parent = this,
                 Location = new Point(PlayerGrid.Location.X - 4, UserGrid.Location.Y + UserGrid.Size.Height + 20),
-                Text = "Gold",
+                Text = CEnvir.Language.TradeDialogGoldLabel,
                 Size = new Size(63, 15),
                 IsControl = false,
             };
@@ -224,7 +224,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Location = new Point(UserGrid.Location.X + UserGrid.Size.Width - 75, UserGoldLabel.Location.Y + 35),
-                Label = { Text = "Confirm" },
+                Label = { Text = CEnvir.Language.CommonControlConfirm },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(80, SmallButtonHeight),
             };

@@ -1,9 +1,11 @@
 ﻿using MirDB;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
     public sealed class MonsterInfoStat : DBObject
     {
+        [IsIdentity]
         [Association("MonsterInfoStats")]
         public MonsterInfo Monster
         {
@@ -20,6 +22,7 @@ namespace Library.SystemModels
         }
         private MonsterInfo _Monster;
 
+        [IsIdentity]
         public Stat Stat
         {
             get { return _Stat; }

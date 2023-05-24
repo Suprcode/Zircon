@@ -27,30 +27,18 @@
     <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+<PackageReference Include="DevExpress.Win" Version="22.2.3" />
+    <PackageReference Include="DevExpress.Win.BonusSkins" Version="22.2.3" />
+    <PackageReference Include="DevExpress.Win.Design" Version="22.2.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.BonusSkins.v21.2">
-      <HintPath>..\..\Debug\Server\DevExpress.BonusSkins.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Data.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Standard\DevExpress.Data.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Utils.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.Utils.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.XtraBars.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraBars.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.XtraEditors.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraEditors.v21.2.dll</HintPath>
-    </Reference>
     <Reference Include="ManagedSquish">
-      <HintPath>C:\Users\AndyF\Desktop\ManagedSquish-master\ManagedSquish\bin\Net40\Debug\netstandard2.0\ManagedSquish.dll</HintPath>
+      <HintPath>..\Components\ManagedSquish.dll</HintPath>
     </Reference>
     <Reference Include="NativeSquish_x64">
-      <HintPath>C:\Users\AndyF\Desktop\ManagedSquish-master\ManagedSquish\bin\Net40\Debug\netstandard2.0\NativeSquish_x64.dll</HintPath>
+      <HintPath>..\Components\NativeSquish_x64.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

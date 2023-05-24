@@ -81,7 +81,7 @@ namespace Client.Scenes.Views
 
         public CurrencyDialog()
         {
-            TitleLabel.Text = "Currencies";
+            TitleLabel.Text = CEnvir.Language.CurrencyDialogTitle;
 
             HasFooter = false;
             Movable = true;

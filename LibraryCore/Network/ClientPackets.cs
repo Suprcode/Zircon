@@ -207,6 +207,15 @@ namespace Library.Network.ClientPackets
         public int ButtonID { get; set; }
     }
 
+    public sealed class NPCRoll : Packet
+    {
+        public int Type { get; set; }
+    }
+
+    public sealed class NPCRollResult : Packet
+    {
+    }
+
     public sealed class NPCBuy : Packet
     {
         public int Index { get; set; }
@@ -603,6 +612,11 @@ namespace Library.Network.ClientPackets
     public sealed class NameChange : Packet
     {
         public string Name { get; set; }
+    }
+
+    public sealed class CaptionChange : Packet
+    {
+        public string Caption { get; set; }
     }
 
     public sealed class FortuneCheck : Packet

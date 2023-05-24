@@ -108,7 +108,7 @@ namespace Library
         HorseArmour = 13,
         Emblem = 14,
         Shield = 15,
-        Wings = 16,
+        Costume = 16,
 
         Hook = 17,
         Float = 18,
@@ -163,7 +163,6 @@ namespace Library
         Inventory,
         Equipment,
         Belt,
-        Sell,
         Repair,
         Storage,
         AutoPotion,
@@ -205,6 +204,18 @@ namespace Library
         AccessoryRefineCombTarget,
         AccessoryRefineCombItems,
         PartsStorage
+    }
+
+    public enum GridSelect
+    {
+        Single,
+        Multi
+    }
+
+    public enum InventoryMode
+    {
+        Normal,
+        Sell
     }
 
     public enum BuffType
@@ -383,7 +394,7 @@ namespace Library
         ItemPart,
         Emblem,
         Shield,
-        Wings,
+        Costume,
         Hook,
         Float,
         Bait,
@@ -499,6 +510,9 @@ namespace Library
         AccessoryReset,
         WeaponCraft,
         AccessoryRefine,
+
+        RollDie,
+        RollYut
     }
 
     public enum MagicSchool
@@ -527,10 +541,10 @@ namespace Library
         None,
         Fire,
         Ice,
-        Lightning ,
+        Lightning,
         Wind,
         Holy,
-        Dark ,
+        Dark,
         Phantom,
     }
 
@@ -1088,7 +1102,6 @@ namespace Library
         LowestPrice,
     }
 
-
     public enum MarketPlaceStoreSort
     {
         Alphabetical,
@@ -1098,7 +1111,6 @@ namespace Library
         LowestPrice,
         Favourite
     }
-
 
     public enum DungeonFinderSort
     {
@@ -1136,11 +1148,11 @@ namespace Library
 
     public enum RefineQuality : byte
     {
-        Rush,
-        Quick,
-        Standard,
-        Careful,
-        Precise,
+        Rush = 0,
+        Quick = 1,
+        Standard = 2,
+        Careful = 3,
+        Precise = 4,
     }
 
     public enum ExteriorEffect : byte
@@ -1150,9 +1162,9 @@ namespace Library
         //EquipEffect_Part [1~99] 
         A_WhiteAura = 1,
         A_FlameAura = 2,
-        A_FlameAura2 = 3,
-        A_BlueAura = 4,
+        A_BlueAura = 3,
 
+        A_FlameAura2 = 9,
         A_GreenWings = 10,
         A_FlameWings = 11,
         A_BlueWings = 12,
@@ -1163,6 +1175,12 @@ namespace Library
         A_PhoenixWings = 16,
         A_IceKingWings = 17,
         A_BlueButterflyWings = 18,
+
+
+        S_WarThurible = 50,
+        S_PenanceThurible = 51,
+        S_CensorshipThurible = 52,
+        S_PetrichorThurible = 53,
         
         //EquipEffect_Full [100~119]
         A_FireDragonWings = 100,
@@ -1172,6 +1190,10 @@ namespace Library
         A_BlueFeatherWings = 104,
         A_WhiteFeatherWings = 105,
         A_PurpleTentacles = 106,
+
+        W_ChaoticHeavenBlade = 110,
+        W_JanitorsScimitar = 111,
+        W_JanitorsDualBlade = 112,
 
         //EquipEffect_FullEx1 [120~139] 
         A_LionWings = 120,
@@ -1234,6 +1256,7 @@ namespace Library
         ArmourDye = 52,
         NameChange = 53,
         FortuneChecker = 54,
+        Caption = 55,
 
         WeaponTemplate = 60,
         WarriorWeapon = 61,
@@ -1261,10 +1284,10 @@ namespace Library
 
     public enum CurrencyType
     {
-        Gold,
-        GameGold,
-        HuntGold,
-        Other
+        Gold = 0,
+        GameGold = 1,
+        HuntGold = 2,
+        Other = 3
     }
 
     [Flags]
@@ -1285,13 +1308,13 @@ namespace Library
     
     public enum HorseType : byte
     {
-        None,
-        Brown,
-        White,
-        Red,
-        Black,
-        WhiteUnicorn,
-        RedUnicorn
+        None = 0,
+        Brown = 1,
+        White = 2,
+        Red = 3,
+        Black = 4,
+        WhiteUnicorn = 5,
+        RedUnicorn = 6
     }
     
     public enum OnlineState : byte
@@ -1321,14 +1344,14 @@ namespace Library
 
     public enum NPCRequirementType
     {
-        MinLevel,
-        MaxLevel,
-        Accepted,
-        NotAccepted,
-        HaveCompleted,
-        HaveNotCompleted,
-        Class,
-        DaysOfWeek,
+        MinLevel = 0,
+        MaxLevel = 1,
+        Accepted = 2,
+        NotAccepted = 3,
+        HaveCompleted = 4,
+        HaveNotCompleted = 5,
+        Class = 6,
+        DaysOfWeek = 7,
     }
 
     public enum QuestType
@@ -1345,26 +1368,26 @@ namespace Library
     {
         None = 0,
 
-        New,
-        Incomplete,
-        Complete,
+        New = 1,
+        Incomplete = 2,
+        Complete = 3,
     }
 
     public enum QuestRequirementType
     {
-        MinLevel,
-        MaxLevel,
-        NotAccepted,
-        HaveCompleted,
-        HaveNotCompleted,
-        Class,
+        MinLevel = 0,
+        MaxLevel = 1,
+        NotAccepted = 2,
+        HaveCompleted = 3,
+        HaveNotCompleted = 4,
+        Class = 5,
     }
 
     public enum QuestTaskType
     {
-        KillMonster,
-        GainItem,
-        Region
+        KillMonster = 0,
+        GainItem = 1,
+        Region = 2
     }
 
     public enum MovementEffect
@@ -1725,6 +1748,9 @@ namespace Library
 
         GoldPickUp,
         GoldGained,
+
+        RollDice,
+        RollYut,
 
         DaggerSwing,
         WoodSwing,

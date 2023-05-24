@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using MirDB;
 
@@ -9,6 +10,7 @@ namespace Library.SystemModels
 {
     public sealed class MineInfo : DBObject
     {
+        [IsIdentity]
         [Association("Mining")]
         public MapInfo Map
         {
@@ -24,7 +26,8 @@ namespace Library.SystemModels
             }
         }
         private MapInfo _Map;
-        
+
+        [IsIdentity]
         public ItemInfo Item
         {
             get { return _Item; }
@@ -53,7 +56,6 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "Chance");
             }
         }
-        private int _Chance;
-        
+        private int _Chance;      
     }
 }

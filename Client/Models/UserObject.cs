@@ -227,7 +227,7 @@ namespace Client.Models
                 
                 _canThrusting = value;
 
-                GameScene.Game.ReceiveChat(CanThrusting ? "Use Thrusting." : "Do not use Thrusting.", MessageType.Hint);
+                GameScene.Game.ReceiveChat(CanThrusting ? CEnvir.Language.UseThrusting : CEnvir.Language.DoNotUseThrusting, MessageType.Hint);
             }
         }
         private bool _canThrusting;
@@ -241,7 +241,7 @@ namespace Client.Models
 
                 _CanHalfMoon = value;
 
-                GameScene.Game.ReceiveChat(CanHalfMoon ? "Use Half Moon Strike." : "Do not use Half Moon Strike.", MessageType.Hint);
+                GameScene.Game.ReceiveChat(CanHalfMoon ? CEnvir.Language.UseHalfMoon : CEnvir.Language.DoNotUseHalfMoon, MessageType.Hint);
             }
         }
         private bool _CanHalfMoon;
@@ -253,7 +253,7 @@ namespace Client.Models
                 if (_CanDestructiveBlow == value) return;
                 _CanDestructiveBlow = value;
 
-                GameScene.Game.ReceiveChat(CanDestructiveBlow ? "Use Destructive Blow." : "Do not use Destructive Blow.", MessageType.Hint);
+                GameScene.Game.ReceiveChat(CanDestructiveBlow ? CEnvir.Language.UseDestructiveBlow : CEnvir.Language.DoNotUseDestructiveBlow, MessageType.Hint);
             }
         }
         private bool _CanDestructiveBlow;
@@ -268,7 +268,7 @@ namespace Client.Models
                 if (_CanFlameSplash == value) return;
                 _CanFlameSplash = value;
 
-                GameScene.Game.ReceiveChat(CanFlameSplash ? "Use Flame Splash." : "Do not use Flame Splash.", MessageType.Hint);
+                GameScene.Game.ReceiveChat(CanFlameSplash ? CEnvir.Language.UseFlameSplash : CEnvir.Language.DoNotUseFlameSplash, MessageType.Hint);
             }
         }
         private bool _CanFlameSplash;
@@ -281,6 +281,7 @@ namespace Client.Models
             ObjectID = info.ObjectID;
 
             Name = info.Name;
+            Caption = info.Caption;
             NameColour = info.NameColour;
 
             Class = info.Class;
@@ -303,11 +304,15 @@ namespace Client.Models
             HairColour = info.HairColour;
 
             ArmourShape = info.Armour;
-            ArmourEffect = info.ArmourEffect;
             ArmourColour = info.ArmourColour;
             LibraryWeaponShape = info.Weapon;
-            WingsEffect = info.WingsShape;
+
+            CostumeShape = info.Costume;
+
+            ArmourEffect = info.ArmourEffect;
             EmblemEffect = info.EmblemEffect;
+            WeaponEffect = info.WeaponEffect;
+            ShieldEffect = info.ShieldEffect;
 
             Poison = info.Poison;
 
@@ -322,6 +327,8 @@ namespace Client.Models
             HorseShape = info.HorseShape;
             HelmetShape = info.HelmetShape;
             ShieldShape = info.Shield;
+
+            HideHead = info.HideHead;
 
             GameScene.Game.DayTime = info.DayTime;
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;

@@ -24,6 +24,10 @@ namespace Server.Models
         public virtual bool Blocking => !Dead;
 
         public virtual string Name { get; set; }
+
+        public virtual string Caption { get; set; }
+       
+    
         public virtual int Level { get; set; }
 
         public Cell CurrentCell

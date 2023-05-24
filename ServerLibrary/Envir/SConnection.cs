@@ -168,6 +168,7 @@ namespace Server.Envir
             //   ItemList.Clear();
             //    MagicList.Clear();
         }
+
         public override void Process()
         {
             if (SEnvir.Now >= PingTime && !PingSent && Stage != GameStage.None)
@@ -177,6 +178,19 @@ namespace Server.Envir
                 Enqueue(new G.Ping { ObserverPacket = false });
             }
 
+            if (TotalPacketsProcessed == 0 && TotalBytesReceived > 1024)
+            {
+                TryDisconnect();
+                SEnvir.IPBlocks[IPAddress] = SEnvir.Now.Add(Config.PacketBanTime);
+
+                for (int i = SEnvir.Connections.Count - 1; i >= 0; i--)
+                    if (SEnvir.Connections[i].IPAddress == IPAddress)
+                        SEnvir.Connections[i].TryDisconnect();
+
+                SEnvir.Log($"{IPAddress} Disconnected, Large Packet");
+                return;
+            }
+            
             if (ReceiveList.Count > Config.MaxPacket)
             {
                 TryDisconnect();
@@ -501,18 +515,34 @@ namespace Server.Envir
             if (Stage == GameStage.Observer)
                 Observed.Player.ObserverChat(this, p.Text);
         }
+
         public void Process(C.NPCCall p)
         {
             if (Stage != GameStage.Game) return;
 
             Player.NPCCall(p.ObjectID);
         }
+
         public void Process(C.NPCButton p)
         {
             if (Stage != GameStage.Game) return;
 
             Player.NPCButton(p.ButtonID);
         }
+
+        public void Process(C.NPCRoll p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.NPCRoll(p.Type);
+        }
+        public void Process(C.NPCRollResult p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.NPCRollResult();
+        }
+
         public void Process(C.NPCBuy p)
         {
             if (Stage != GameStage.Game) return;
@@ -1205,6 +1235,13 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.NameChange(p.Name);
+        }
+
+        public void Process(C.CaptionChange p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.CaptionChange(p.Caption);
         }
 
         public void Process(C.FortuneCheck p)

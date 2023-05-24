@@ -402,7 +402,7 @@ namespace Client.Scenes.Views
             float oldOpacity = MapObject.User.Opacity;
             MapObject.User.Opacity = 0.65F;
 
-            MapObject.User.DrawBody(false);
+            MapObject.User.DrawPlayer(false);
 
             MapObject.User.Opacity = oldOpacity;
 
@@ -812,7 +812,7 @@ namespace Client.Scenes.Views
                             if (User.Horse != HorseType.None) return;
                             if (FishingState != FishingState.None) return;
 
-                            if (weap?.Info.Effect == ItemEffect.FishingRod && armour?.Info.Effect == ItemEffect.FishingRobe)
+                            if (weap?.Info.ItemEffect == ItemEffect.FishingRod && armour?.Info.ItemEffect == ItemEffect.FishingRobe)
                             {
                                 FloatLocation = MapLocation;
                                 FishingDirection = Functions.DirectionFromPoint(MapObject.User.CurrentLocation, FloatLocation);

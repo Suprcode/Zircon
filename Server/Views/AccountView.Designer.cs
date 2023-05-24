@@ -244,7 +244,7 @@
             this.ClientSize = new System.Drawing.Size(937, 373);
             this.Controls.Add(this.AccountGridControl);
             this.Name = "AccountView";
-            this.Text = "Account View";
+            this.Text = "Account";
             ((System.ComponentModel.ISupportInitialize)(this.AccountGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AccountGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).EndInit();

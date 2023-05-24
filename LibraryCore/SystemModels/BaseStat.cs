@@ -7,8 +7,9 @@ using MirDB;
 
 namespace Library.SystemModels
 {
-   public sealed   class BaseStat : DBObject
+    public sealed class BaseStat : DBObject
     {
+        [IsIdentity]
         public MirClass Class
         {
             get { return _Class; }
@@ -24,6 +25,7 @@ namespace Library.SystemModels
         }
         private MirClass _Class;
 
+        [IsIdentity]
         public int Level
         {
             get { return _Level; }
@@ -205,7 +207,7 @@ namespace Library.SystemModels
             }
         }
         private int _MaxMR;
-        
+
 
         public int MinDC
         {
@@ -236,7 +238,7 @@ namespace Library.SystemModels
             }
         }
         private int _MaxDC;
-        
+
 
         public int MinMC
         {
@@ -297,6 +299,5 @@ namespace Library.SystemModels
             }
         }
         private int _MaxSC;
-        
     }
 }

@@ -40,6 +40,9 @@
             this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.StatImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.JsonImportButton = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoStatGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoStatGridView)).BeginInit();
@@ -52,20 +55,23 @@
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
-            this.SaveButton});
+            this.SaveButton,
+            this.ribbon.SearchEditItem,
+            this.ImportButton,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
+            this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(692, 147);
+            this.ribbon.Size = new System.Drawing.Size(692, 144);
             // 
             // SaveButton
             // 
             this.SaveButton.Caption = "Save Database";
-            this.SaveButton.Glyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.Glyph")));
             this.SaveButton.Id = 1;
-            this.SaveButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("SaveButton.LargeGlyph")));
+            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
+            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
             this.SaveButton.LargeWidth = 60;
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
@@ -73,29 +79,30 @@
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
+            this.ribbonPageGroup1,
+            this.JsonImportButton});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
             // MonsterInfoStatGridControl
             // 
             this.MonsterInfoStatGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MonsterInfoStatGridControl.Location = new System.Drawing.Point(0, 147);
+            this.MonsterInfoStatGridControl.Location = new System.Drawing.Point(0, 144);
             this.MonsterInfoStatGridControl.MainView = this.MonsterInfoStatGridView;
             this.MonsterInfoStatGridControl.MenuManager = this.ribbon;
             this.MonsterInfoStatGridControl.Name = "MonsterInfoStatGridControl";
             this.MonsterInfoStatGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.MonsterLookUpEdit,
             this.StatImageComboBox});
-            this.MonsterInfoStatGridControl.Size = new System.Drawing.Size(692, 326);
+            this.MonsterInfoStatGridControl.Size = new System.Drawing.Size(692, 329);
             this.MonsterInfoStatGridControl.TabIndex = 2;
             this.MonsterInfoStatGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.MonsterInfoStatGridView});
@@ -163,6 +170,31 @@
             this.gridColumn3.Visible = true;
             this.gridColumn3.VisibleIndex = 2;
             // 
+            // JsonImportButton
+            // 
+            this.JsonImportButton.ItemLinks.Add(this.ImportButton);
+            this.JsonImportButton.ItemLinks.Add(this.ExportButton);
+            this.JsonImportButton.Name = "JsonImportButton";
+            this.JsonImportButton.Text = "Json";
+            // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 2;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            // 
             // MonsterInfoStatView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -196,5 +228,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit MonsterLookUpEdit;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox StatImageComboBox;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportButton;
     }
 }

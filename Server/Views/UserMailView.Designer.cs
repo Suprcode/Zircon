@@ -94,7 +94,7 @@
             this.ClientSize = new System.Drawing.Size(693, 408);
             this.Controls.Add(this.UserDropGridControl);
             this.Name = "UserMailView";
-            this.Text = "User Mail View";
+            this.Text = "User Mail";
             ((System.ComponentModel.ISupportInitialize)(this.UserDropGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.UserDropGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).EndInit();

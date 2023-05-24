@@ -343,7 +343,7 @@ namespace Client.Scenes.Views
             CountLabelLabel = new DXLabel
             {
                 Parent = this,
-                Text = "Drop Count:",
+                Text = CEnvir.Language.FortuneCheckerRowCountLabel,
                 ForeColour = Color.White,
                 IsControl = false,
 
@@ -360,7 +360,7 @@ namespace Client.Scenes.Views
             ProgressLabelLabel = new DXLabel
             {
                 Parent = this,
-                Text = "Fortune Drop in:",
+                Text = CEnvir.Language.FortuneCheckerRowProgressLabel,
                 ForeColour = Color.White,
                 IsControl = false,
 
@@ -377,7 +377,7 @@ namespace Client.Scenes.Views
             DateLabelLabel = new DXLabel
             {
                 Parent = this,
-                Text = "Last Check:",
+                Text = CEnvir.Language.FortuneCheckerRowDateLabel,
                 ForeColour = Color.White,
                 IsControl = false,
 
@@ -394,7 +394,7 @@ namespace Client.Scenes.Views
             CheckButton = new DXButton
             {
                 Parent = this,
-                Label = { Text = "Check" },
+                Label = { Text = CEnvir.Language.FortuneCheckerRowCheckButtonLabel },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(50, SmallButtonHeight),
                 Location = new Point(Size.Width - 55, 34)
@@ -408,7 +408,7 @@ namespace Client.Scenes.Views
         {
             if (GameScene.Game.Observer) return;
 
-            DXMessageBox box = new DXMessageBox("Are you sure you want to check your fortune progress?", "Fortune Check", DXMessageBoxButtons.YesNo);
+            DXMessageBox box = new DXMessageBox(CEnvir.Language.FortuneCheckerRowCheckButtonConfirmMessage, CEnvir.Language.FortuneCheckerRowCheckButtonConfirmCaption, DXMessageBoxButtons.YesNo);
 
             box.YesButton.MouseClick += (o1, e1) =>
             {

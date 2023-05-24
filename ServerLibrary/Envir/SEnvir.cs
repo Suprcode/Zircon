@@ -165,6 +165,10 @@ namespace Server.Envir
                         NewConnections?.Enqueue(Connection);
                 }
             }
+            catch (SocketException)
+            {
+
+            }
             catch (Exception ex)
             {
                 Log(ex.ToString());
@@ -290,6 +294,7 @@ namespace Server.Envir
         public static DBCollection<UserConquest> UserConquestList;
         public static DBCollection<GameGoldPayment> GameGoldPaymentList;
         public static DBCollection<GameStoreSale> GameStoreSaleList;
+        public static DBCollection<GameNPCList> GameNPCList;
         public static DBCollection<GuildWarInfo> GuildWarInfoList;
         public static DBCollection<UserConquestStats> UserConquestStatsList;
         public static DBCollection<UserFortuneInfo> UserFortuneInfoList;
@@ -456,6 +461,7 @@ namespace Server.Envir
             UserConquestList = Session.GetCollection<UserConquest>();
             GameGoldPaymentList = Session.GetCollection<GameGoldPayment>();
             GameStoreSaleList = Session.GetCollection<GameStoreSale>();
+            GameNPCList = Session.GetCollection<GameNPCList>();
             GuildWarInfoList = Session.GetCollection<GuildWarInfo>();
             UserConquestStatsList = Session.GetCollection<UserConquestStats>();
             UserFortuneInfoList = Session.GetCollection<UserFortuneInfo>();
@@ -464,13 +470,13 @@ namespace Server.Envir
 
             GoldInfo = CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
 
-            RefinementStoneInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.RefinementStone);
-            FragmentInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment1);
-            Fragment2Info = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment2);
-            Fragment3Info = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.Fragment3);
+            RefinementStoneInfo = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.RefinementStone);
+            FragmentInfo = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.Fragment1);
+            Fragment2Info = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.Fragment2);
+            Fragment3Info = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.Fragment3);
 
-            ItemPartInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.ItemPart);
-            FortuneCheckerInfo = ItemInfoList.Binding.First(x => x.ItemEffect == ItemEffect.FortuneChecker);
+            ItemPartInfo = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.ItemPart);
+            FortuneCheckerInfo = ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.FortuneChecker);
 
             MysteryShipMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.MysteryShipRegionIndex);
             LairMapRegion = MapRegionList.Binding.FirstOrDefault(x => x.Index == Config.LairRegionIndex);
@@ -1439,6 +1445,12 @@ namespace Server.Envir
             {
                 foreach (UserConquest conquest in UserConquestList.Binding)
                 {
+                    if (conquest.Guild == null)
+                    {
+                        conquest.Delete();
+                        continue;
+                    }
+
                     if (conquest.Castle != info) continue;
                     if (conquest.WarDate > Now.Date) continue;
 
@@ -1468,7 +1480,6 @@ namespace Server.Envir
         }
         public static void StartConquest(CastleInfo info, List<GuildInfo> participants)
         {
-
             ConquestWar War = new ConquestWar
             {
                 Castle = info,
@@ -2773,9 +2784,11 @@ namespace Server.Envir
                 con.Enqueue(new S.NewAccount { Result = NewAccountResult.BadRealName });
                 return;
             }
+
             var list = AccountInfoList.Binding.Where(e => e.CreationIP == con.IPAddress).ToList();
             int nowcount = 0;
             int todaycount = 0;
+
             for (int i = 0; i < list.Count; i++)
             {
                 AccountInfo info = list[i];
@@ -2794,13 +2807,14 @@ namespace Server.Envir
                         break;
                 }
             }
+
             if (nowcount > 2 || todaycount > 5)
             {
                 IPBlocks[con.IPAddress] = Now.AddDays(7);
 
                 for (int i = Connections.Count - 1; i >= 0; i--)
                     if (Connections[i].IPAddress == con.IPAddress)
-                        Connections[i].TryDisconnect();
+                        Connections[i].Disconnecting = true;
 
                 Log($"{con.IPAddress} Disconnected and banned for trying too many accounts");
                 return;

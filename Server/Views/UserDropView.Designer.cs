@@ -31,11 +31,11 @@
             this.UserDropGridControl = new DevExpress.XtraGrid.GridControl();
             this.UserDropGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.AccountLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.AccountLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            this.ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             ((System.ComponentModel.ISupportInitialize)(this.UserDropGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.UserDropGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).BeginInit();
@@ -79,6 +79,18 @@
             this.gridColumn1.Visible = true;
             this.gridColumn1.VisibleIndex = 0;
             // 
+            // AccountLookUpEdit
+            // 
+            this.AccountLookUpEdit.AutoHeight = false;
+            this.AccountLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            this.AccountLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.AccountLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("EMailAddress", "EMail")});
+            this.AccountLookUpEdit.DisplayMember = "EMailAddress";
+            this.AccountLookUpEdit.Name = "AccountLookUpEdit";
+            this.AccountLookUpEdit.NullText = "[Account is null]";
+            // 
             // gridColumn2
             // 
             this.gridColumn2.ColumnEdit = this.ItemLookUpEdit;
@@ -88,6 +100,21 @@
             this.gridColumn2.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
             this.gridColumn2.Visible = true;
             this.gridColumn2.VisibleIndex = 1;
+            // 
+            // ItemLookUpEdit
+            // 
+            this.ItemLookUpEdit.AutoHeight = false;
+            this.ItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            this.ItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.ItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"),
+            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size")});
+            this.ItemLookUpEdit.DisplayMember = "ItemName";
+            this.ItemLookUpEdit.Name = "ItemLookUpEdit";
             // 
             // gridColumn3
             // 
@@ -106,33 +133,6 @@
             this.gridColumn4.Visible = true;
             this.gridColumn4.VisibleIndex = 3;
             // 
-            // AccountLookUpEdit
-            // 
-            this.AccountLookUpEdit.AutoHeight = false;
-            this.AccountLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.AccountLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.AccountLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("EMailAddress", "EMail")});
-            this.AccountLookUpEdit.DisplayMember = "EMailAddress";
-            this.AccountLookUpEdit.Name = "AccountLookUpEdit";
-            this.AccountLookUpEdit.NullText = "[Account is null]";
-            // 
-            // ItemLookUpEdit
-            // 
-            this.ItemLookUpEdit.AutoHeight = false;
-            this.ItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.ItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.ItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size")});
-            this.ItemLookUpEdit.DisplayMember = "ItemName";
-            this.ItemLookUpEdit.Name = "ItemLookUpEdit";
-            // 
             // UserDropView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -140,7 +140,7 @@
             this.ClientSize = new System.Drawing.Size(693, 408);
             this.Controls.Add(this.UserDropGridControl);
             this.Name = "UserDropView";
-            this.Text = "UserDropView";
+            this.Text = "User Drop";
             ((System.ComponentModel.ISupportInitialize)(this.UserDropGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.UserDropGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).EndInit();

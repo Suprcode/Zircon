@@ -187,7 +187,7 @@
             this.Controls.Add(this.ribbon);
             this.Name = "DiagnosticView";
             this.Ribbon = this.ribbon;
-            this.Text = "Diagnostic View";
+            this.Text = "Diagnostics";
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DiagnosticGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DiagnosticGridView)).EndInit();

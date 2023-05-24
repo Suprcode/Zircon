@@ -126,7 +126,7 @@ namespace Client.Scenes.Views
 
             TitleLabel = new DXLabel
             {
-                Text = "Storage",
+                Text = CEnvir.Language.StorageDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -141,7 +141,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 364,
                 Parent = this,
-                Hint = "Sort",
+                Hint = CEnvir.Language.StorageDialogSortButtonLabel,
                 Enabled = false
             };
             SortButton.Location = new Point(DisplayArea.Width - 50, 42);
@@ -149,7 +149,7 @@ namespace Client.Scenes.Views
             TabControl = new DXTabControl
             {
                 Parent = this,
-                Location = new Point(0, 64),
+                Location = new Point(0, 63),
                 Size = new Size(404, 420),
                 Border = false,
                 MarginLeft = 10
@@ -171,7 +171,7 @@ namespace Client.Scenes.Views
             {
                 Parent = filterPanel,
                 Location = new Point(5, 5),
-                Text = "Name:",
+                Text = CEnvir.Language.StorageDialogFilterNameLabel,
             };
 
             ItemNameTextBox = new DXTextBox
@@ -186,7 +186,7 @@ namespace Client.Scenes.Views
             {
                 Parent = filterPanel,
                 Location = new Point(ItemNameTextBox.Location.X + ItemNameTextBox.Size.Width + 10, 5),
-                Text = "Item:",
+                Text = CEnvir.Language.StorageDialogFilterItemLabel,
             };
 
             ItemTypeComboBox = new DXComboBox
@@ -229,7 +229,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ItemTypeComboBox.Location.X + ItemTypeComboBox.Size.Width + 17, label.Location.Y - 1),
                 Parent = filterPanel,
                 ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Clear" }
+                Label = { Text = CEnvir.Language.StorageDialogFilterClearButtonLabel }
             };
             ClearButton.MouseClick += (o, e) =>
             {
@@ -242,7 +242,7 @@ namespace Client.Scenes.Views
             {
                 Parent = TabControl,
                 Border = false,
-                TabButton = { Label = { Text = "Storage" } },
+                TabButton = { Label = { Text = CEnvir.Language.StorageDialogStorageTab } },
                 Visible = true,
                 BackColour = Color.Empty
             };
@@ -251,7 +251,7 @@ namespace Client.Scenes.Views
             {
                 Parent = TabControl,
                 Border = false,
-                TabButton = { Label = { Text = "Parts" } },
+                TabButton = { Label = { Text = CEnvir.Language.StorageDialogPartsTab } },
                 Visible = false,
                 BackColour = Color.Empty
             };
@@ -260,7 +260,7 @@ namespace Client.Scenes.Views
             {
                 Parent = StorageTab,
                 GridSize = new Size(1, 1),
-                Location = new Point(15, 15),
+                Location = new Point(15, 16),
                 GridType = GridType.Storage,
                 ItemGrid = CEnvir.Storage,
                 VisibleHeight = 10,

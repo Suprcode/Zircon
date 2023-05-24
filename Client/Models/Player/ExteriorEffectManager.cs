@@ -8,27 +8,210 @@ namespace Client.Models.Player
 {
     public class ExteriorEffectManager
     {
-        public static void DrawExteriorEffects(PlayerObject player)
+        public static void DrawExteriorEffects(PlayerObject player, bool behind)
         {
             if (!Config.DrawEffects)
             {
                 return;
             }
 
-            MirAction currentAction = player.CurrentAction;
-            MirAction mirAction = currentAction;
+            MirAction mirAction = player.CurrentAction;
             if (mirAction - 7 <= MirAction.Moving) //TODO - Probably name all the compatible enums instead, as MirActions are not numbers so can easily change
             {
                 return;
             }
 
-            DrawExteriorEffect(player, player.ArmourEffect);
-            DrawExteriorEffect(player, player.WingsEffect);
-            DrawExteriorEffect(player, player.EmblemEffect);
+            if (player.CostumeShape < 0)
+            {
+                DrawExteriorEffect(player, player.ArmourEffect, behind);
+            }
+
+            DrawExteriorEffect(player, player.EmblemEffect, behind);
+
+            if (!PlayerObject.CostumeShapeHideBody.Contains(player.CostumeShape))
+            {
+                DrawExteriorEffect(player, player.WeaponEffect, behind);
+                DrawExteriorEffect(player, player.ShieldEffect, behind);
+            }
         }
 
-        private static void DrawExteriorEffect(PlayerObject player, ExteriorEffect effect)
+        private static bool DrawExteriorEffectBehind(MirDirection direction, ExteriorEffect effect)
         {
+            // always draw behind
+            switch (effect)
+            {
+                case ExteriorEffect.E_BlueEyeRing:
+                case ExteriorEffect.E_RedEyeRing:
+                case ExteriorEffect.E_GreenSpiralRing:
+                    return true;
+                default:
+                    break;
+            }
+
+            // never draw behind
+            switch (effect)
+            {
+                case ExteriorEffect.A_BlueAura:
+                case ExteriorEffect.A_FlameAura:
+                case ExteriorEffect.A_WhiteAura:
+                    return false;
+                default:
+                    break;
+            }
+
+            // right hand
+            switch (effect)
+            {
+                case ExteriorEffect.W_ChaoticHeavenBlade:
+                case ExteriorEffect.W_JanitorsScimitar:
+                case ExteriorEffect.W_JanitorsDualBlade:
+                    {
+                        switch (direction)
+                        {
+                            case MirDirection.Up:
+                            case MirDirection.UpLeft:
+                            case MirDirection.Left:
+                            case MirDirection.DownLeft:
+                                return true;
+                        }
+                        return false;
+                    }
+            }
+
+            // left hand
+            switch (effect)
+            {
+                case ExteriorEffect.S_WarThurible:
+                case ExteriorEffect.S_PenanceThurible:
+                case ExteriorEffect.S_CensorshipThurible:
+                case ExteriorEffect.S_PetrichorThurible:
+                    {
+                        switch (direction)
+                        {
+                            case MirDirection.UpRight:
+                            case MirDirection.Right:
+                            case MirDirection.DownRight:
+                                return true;
+                        }
+                        return false;
+                    }
+            }
+
+            switch (direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return false;
+                case MirDirection.DownRight:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                    return true;
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        private static bool DrawExteriorEffectInFront(MirDirection direction, ExteriorEffect effect)
+        {
+            // always draw in front
+            switch (effect)
+            {
+                case ExteriorEffect.A_BlueAura:
+                case ExteriorEffect.A_FlameAura:
+                case ExteriorEffect.A_WhiteAura:
+                    return true;
+                default:
+                    break;
+            };
+
+            // never draw in front
+            switch (effect)
+            {
+                case ExteriorEffect.E_BlueEyeRing:
+                case ExteriorEffect.E_RedEyeRing:
+                case ExteriorEffect.E_GreenSpiralRing:
+                    return false;
+                default:
+                    break;
+            }
+
+            // right hand
+            switch (effect)
+            {
+                case ExteriorEffect.W_ChaoticHeavenBlade:
+                case ExteriorEffect.W_JanitorsScimitar:
+                case ExteriorEffect.W_JanitorsDualBlade:
+                    {
+                        switch (direction)
+                        {
+                            case MirDirection.UpRight:
+                            case MirDirection.Right:
+                            case MirDirection.DownRight:
+                            case MirDirection.Down:
+                                return true;
+                        }
+                        return false;
+                    }
+            }
+
+            // left hand
+            switch (effect)
+            {
+                case ExteriorEffect.S_WarThurible:
+                case ExteriorEffect.S_PenanceThurible:
+                case ExteriorEffect.S_CensorshipThurible:
+                case ExteriorEffect.S_PetrichorThurible:
+                    {
+                        switch (direction)
+                        {
+                            case MirDirection.Up:
+                            case MirDirection.Down:
+                            case MirDirection.DownLeft:
+                            case MirDirection.Left:
+                            case MirDirection.UpLeft:
+                                return true;
+                        }
+                        return false;
+                    }
+            }
+
+            switch (direction)
+            {
+                case MirDirection.Up:
+                case MirDirection.UpRight:
+                case MirDirection.Right:
+                case MirDirection.Left:
+                case MirDirection.UpLeft:
+                    return true;
+                case MirDirection.DownRight:
+                case MirDirection.Down:
+                case MirDirection.DownLeft:
+                    return false;
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        private static void DrawExteriorEffect(PlayerObject player, ExteriorEffect effect, bool behind)
+        {
+            if (behind)
+            { 
+                if (!DrawExteriorEffectBehind(player.Direction, effect))
+                    return; 
+            }
+            else
+            {
+                if (!DrawExteriorEffectInFront(player.Direction, effect))
+                    return;
+            }
+
             MirDirection direction = player.Direction;
             int drawX = DetermineDrawX(player, effect, direction),
                 drawY = DetermineDrawY(player, effect, direction);
@@ -114,6 +297,16 @@ namespace Client.Models.Player
                     case ExteriorEffect.A_PurpleTentacles:
                         library.DrawBlend(DetermineIndex(90000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
+
+                    case ExteriorEffect.W_ChaoticHeavenBlade:
+                        library.DrawBlend(40000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                    case ExteriorEffect.W_JanitorsScimitar:
+                        library.DrawBlend(20000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                    case ExteriorEffect.W_JanitorsDualBlade: //TODO - cannot find correct images
+                        library.DrawBlend(20000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
                 }
             } 
             else //EquipEffect_Part
@@ -161,6 +354,23 @@ namespace Client.Models.Player
                         break;
                     case ExteriorEffect.A_BlueButterflyWings:
                         library.DrawBlend(4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+
+                    case ExteriorEffect.S_WarThurible:
+                        library.Draw(900 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
+                        library.DrawBlend(1000 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                    case ExteriorEffect.S_PenanceThurible:
+                        library.Draw(1100 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
+                        library.DrawBlend(1200 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                    case ExteriorEffect.S_CensorshipThurible:
+                        library.Draw(1300 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
+                        library.DrawBlend(1400 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        break;
+                    case ExteriorEffect.S_PetrichorThurible:
+                        library.Draw(1500 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
+                        library.DrawBlend(1600 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                 }
             }
@@ -243,17 +453,18 @@ namespace Client.Models.Player
 
         private static int DetermineDrawX(PlayerObject player, ExteriorEffect effect, MirDirection direction)
         {
-            bool isRiding = player.Horse != HorseType.None;
             int initialDrawX = player.DrawX;
 
-            if (!isRiding) return initialDrawX;
+            if (player.Horse == HorseType.None)
+            {
+                return initialDrawX;
+            }
 
             switch(effect)
             {
                 case ExteriorEffect.A_WhiteAura:
                 case ExteriorEffect.A_BlueAura:
                 case ExteriorEffect.A_FlameAura:
-                case ExteriorEffect.A_FlameAura2:
                     switch (direction)
                     {
                         //case MirDirection.Up:
@@ -292,15 +503,18 @@ namespace Client.Models.Player
                     }
                     break;
             }
+
             return initialDrawX;
         }
 
         private static int DetermineDrawY(PlayerObject player, ExteriorEffect effect, MirDirection direction)
         {
-            bool isRiding = player.Horse != HorseType.None;
             int initialDrawY = player.DrawY;
 
-            if (!isRiding) return initialDrawY;
+            if (player.Horse == HorseType.None)
+            {
+                return initialDrawY;
+            }
 
             switch (effect)
             {
@@ -335,6 +549,7 @@ namespace Client.Models.Player
                             return initialDrawY - 30;
                     }
             }
+
             return initialDrawY;
         }
     }

@@ -83,7 +83,7 @@ namespace Library.Network.ServerPackets
     public sealed class MapChanged : Packet
     {
         public int MapIndex { get; set; }
-        public int? InstanceIndex { get; set; }
+        public int InstanceIndex { get; set; }
     }
     public sealed class UserLocation : Packet
     {
@@ -266,6 +266,8 @@ namespace Library.Network.ServerPackets
 
         public uint ObjectID { get; set; }
         public string Name { get; set; }
+
+        public string Caption { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
 
@@ -280,10 +282,12 @@ namespace Library.Network.ServerPackets
         public int Weapon { get; set; }
         public int Shield { get; set; }
         public int Armour { get; set; }
+        public int Costume { get; set; }
         public Color ArmourColour { get; set; }
         public ExteriorEffect ArmourEffect { get; set; }
         public ExteriorEffect EmblemEffect { get; set; }
-        public ExteriorEffect WingsEffect { get; set; }
+        public ExteriorEffect WeaponEffect { get; set; }
+        public ExteriorEffect ShieldEffect { get; set; }
 
         public int Light { get; set; }
 
@@ -301,6 +305,8 @@ namespace Library.Network.ServerPackets
         public string FiltersClass;
         public string FiltersRarity;
         public string FiltersItemType;
+
+        public bool HideHead;
     }
     public sealed class ObjectMonster : Packet
     {
@@ -373,14 +379,18 @@ namespace Library.Network.ServerPackets
         public int Weapon { get; set; }
         public int Shield { get; set; }
         public int Armour { get; set; }
+        public int Costume { get; set; }
         public Color ArmourColour { get; set; }
         public ExteriorEffect ArmourEffect { get; set; }
         public ExteriorEffect EmblemEffect { get; set; }
+        public ExteriorEffect WeaponEffect { get; set; }
+        public ExteriorEffect ShieldEffect { get; set; }
 
         public int HorseArmour { get; set; }
         public int Helmet { get; set; }
-        public ExteriorEffect WingsEffect { get; set; }
         public int Light { get; set; }
+
+        public bool HideHead { get; set; }
     }
 
 
@@ -588,7 +598,7 @@ namespace Library.Network.ServerPackets
     {
         public uint ObjectID { get; set; }
         public int Index { get; set; }
-        public List<ClientRefineInfo> Extra { get; set; }
+        public List<ClientNPCValues> Values { get; set; }
 
         public NPCPage Page;
 
@@ -1232,6 +1242,7 @@ namespace Library.Network.ServerPackets
 
         public uint ObjectID { get; set; }
         public string Name { get; set; }
+        public string Caption { get; set; }
         public MirGender Gender { get; set; }
         public int HairType { get; set; }
 
@@ -1309,6 +1320,12 @@ namespace Library.Network.ServerPackets
     public sealed class DisciplineExperienceChanged : Packet
     {
         public long Experience { get; set; }
+    }
+
+    public sealed class NPCRoll : Packet
+    {
+        public int Type { get; set; }
+        public int Result { get; set; }
     }
 }
 

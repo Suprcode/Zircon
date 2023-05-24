@@ -46,6 +46,9 @@
             this.SavingButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoImageGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoGridView)).BeginInit();
@@ -113,8 +116,7 @@
             this.gridColumn5});
             this.CurrencyInfoGridView.GridControl = this.CurrencyInfoGridControl;
             this.CurrencyInfoGridView.Name = "CurrencyInfoGridView";
-            this.CurrencyInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
-            this.CurrencyInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.CurrencyInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
             this.CurrencyInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
             this.CurrencyInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
             this.CurrencyInfoGridView.OptionsView.ShowGroupPanel = false;
@@ -194,9 +196,11 @@
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
             this.ribbon.SearchEditItem,
-            this.SavingButton});
+            this.SavingButton,
+            this.ImportButton,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
+            this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
@@ -210,12 +214,12 @@
             this.SavingButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SavingButton.ImageOptions.LargeImage")));
             this.SavingButton.LargeWidth = 60;
             this.SavingButton.Name = "SavingButton";
-            this.SavingButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SavingButton_ItemClick);
             // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
+            this.ribbonPageGroup1,
+            this.JsonImportExport});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
@@ -227,6 +231,31 @@
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "Saving";
             // 
+            // JsonImportExport
+            // 
+            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
+            // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 2;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            // 
             // CurrencyInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -236,7 +265,7 @@
             this.Controls.Add(this.ribbon);
             this.Name = "CurrencyInfoView";
             this.Ribbon = this.ribbon;
-            this.Text = "Currency Info View";
+            this.Text = "Currency Info";
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoImageGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurrencyInfoGridView)).EndInit();
@@ -266,5 +295,8 @@
         private DevExpress.XtraGrid.Views.Grid.GridView CurrencyInfoImageGridView;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn6;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Server.Views
+﻿using System;
+
+namespace Server.Views
 {
     partial class CharacterView
     {
@@ -40,6 +42,8 @@
             this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repositoryItemTextEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemTextEdit();
+            this.Caption = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CharacterGridControl)).BeginInit();
@@ -79,10 +83,11 @@
             this.CharacterGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemTextEdit1,
             this.AccountLookUpEdit});
-            this.CharacterGridControl.Size = new System.Drawing.Size(654, 523);
+            this.CharacterGridControl.Size = new System.Drawing.Size(640, 517);
             this.CharacterGridControl.TabIndex = 0;
             this.CharacterGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.CharacterGridView});
+            //this.CharacterGridControl.Click += new System.EventHandler(this.CharacterGridControl.Click);
             // 
             // CharacterGridView
             // 
@@ -94,7 +99,8 @@
             this.gridColumn4,
             this.gridColumn5,
             this.gridColumn7,
-            this.gridColumn8});
+            this.gridColumn8,
+            this.Caption});
             this.CharacterGridView.GridControl = this.CharacterGridControl;
             this.CharacterGridView.Name = "CharacterGridView";
             this.CharacterGridView.OptionsView.ShowGroupPanel = false;
@@ -156,14 +162,29 @@
             this.repositoryItemTextEdit1.Mask.UseMaskAsDisplayFormat = true;
             this.repositoryItemTextEdit1.Name = "repositoryItemTextEdit1";
             // 
+            // Caption
+            // 
+            this.Caption.FieldName = "Caption";
+            this.Caption.Name = "Caption";
+            this.Caption.Visible = true;
+            this.Caption.VisibleIndex = 8;
+            // 
+            // gridColumn9
+            // 
+            this.gridColumn9.ColumnEdit = this.repositoryItemTextEdit1;
+            this.gridColumn9.FieldName = "Experience";
+            this.gridColumn9.Name = "gridColumn9";
+            this.gridColumn9.Visible = true;
+            this.gridColumn9.VisibleIndex = 7;
+            // 
             // CharacterView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(654, 523);
+            this.ClientSize = new System.Drawing.Size(640, 517);
             this.Controls.Add(this.CharacterGridControl);
             this.Name = "CharacterView";
-            this.Text = "Character View";
+            this.Text = "Character";
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CharacterGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CharacterGridView)).EndInit();
@@ -185,5 +206,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn8;
         private DevExpress.XtraEditors.Repository.RepositoryItemTextEdit repositoryItemTextEdit1;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit AccountLookUpEdit;
+        private DevExpress.XtraGrid.Columns.GridColumn Caption;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
+     
     }
 }

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Windows.Forms;
 using DevExpress.XtraBars;
-using DevExpress.XtraEditors;
 using DevExpress.XtraGrid.Views.Grid;
 using Library;
 using Library.SystemModels;
-using Server.DBModels;
 
 namespace Server.Views
 {
@@ -16,9 +12,9 @@ namespace Server.Views
         {
             InitializeComponent();
 
-            MapInfoGridControl.DataSource =  SMain.Session.GetCollection<MapInfo>().Binding;
-            MonsterLookUpEdit.DataSource =  SMain.Session.GetCollection<MonsterInfo>().Binding;
-            MapInfoLookUpEdit.DataSource =  SMain.Session.GetCollection<MapInfo>().Binding;
+            MapInfoGridControl.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
+            MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
+            MapInfoLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
 
             LightComboBox.Items.AddEnum<LightSetting>();
@@ -28,29 +24,20 @@ namespace Server.Views
             StartClassImageComboBox.Items.AddEnum<RequiredClass>();
             RequiredClassImageComboBox.Items.AddEnum<RequiredClass>();
         }
-        
-        
 
-        private void MapInfoView_Load(object sender, EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
+
             SMain.SetUpView(MapInfoGridView);
             SMain.SetUpView(GuardsGridView);
             SMain.SetUpView(RegionGridView);
+            SMain.SetUpView(MiningGridView);
         }
 
         private void SaveButton_ItemClick(object sender, ItemClickEventArgs e)
         {
             SMain.Session.Save(true);
-        }
-
-        private void ClearMapsButton_ItemClick(object sender, ItemClickEventArgs e)
-        {
-           
-        }
-
-        private void RenameMiniMapButton_ItemClick(object sender, ItemClickEventArgs e)
-        {
-
         }
 
         private void EditButtonEdit_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e)
@@ -70,6 +57,16 @@ namespace Server.Views
             MapViewer.CurrentViewer.Save();
 
             MapViewer.CurrentViewer.MapRegion = view.GetFocusedRow() as MapRegion;
+        }
+
+        private void ImportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<MapInfo>();
+        }
+
+        private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<MapInfo>(MapInfoGridView);
         }
     }
 }

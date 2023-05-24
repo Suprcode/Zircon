@@ -45,17 +45,20 @@
             this.SpawnLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             this.gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.InstanceLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            this.MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MovementGridControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MovementGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpawnLookUpEdit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).BeginInit();
             this.SuspendLayout();
             // 
             // ribbon
@@ -63,13 +66,16 @@
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
-            this.SaveButton});
+            this.SaveButton,
+            this.ribbon.SearchEditItem,
+            this.ImportButton,
+            this.ExportButton});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 2;
+            this.ribbon.MaxItemId = 4;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(733, 143);
+            this.ribbon.Size = new System.Drawing.Size(733, 144);
             // 
             // SaveButton
             // 
@@ -84,22 +90,23 @@
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
+            this.ribbonPageGroup1,
+            this.JsonImportExport});
             this.ribbonPage1.Name = "ribbonPage1";
             this.ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
+            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Saving";
             // 
             // MovementGridControl
             // 
             this.MovementGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MovementGridControl.Location = new System.Drawing.Point(0, 143);
+            this.MovementGridControl.Location = new System.Drawing.Point(0, 144);
             this.MovementGridControl.MainView = this.MovementGridView;
             this.MovementGridControl.MenuManager = this.ribbon;
             this.MovementGridControl.Name = "MovementGridControl";
@@ -110,7 +117,7 @@
             this.SpawnLookUpEdit,
             this.InstanceLookUpEdit});
             this.MovementGridControl.ShowOnlyPredefinedDetails = true;
-            this.MovementGridControl.Size = new System.Drawing.Size(733, 392);
+            this.MovementGridControl.Size = new System.Drawing.Size(733, 391);
             this.MovementGridControl.TabIndex = 2;
             this.MovementGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.MovementGridView});
@@ -234,13 +241,6 @@
             this.gridColumn7.Visible = true;
             this.gridColumn7.VisibleIndex = 7;
             // 
-            // MapIconImageComboBox
-            // 
-            this.MapIconImageComboBox.AutoHeight = false;
-            this.MapIconImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.MapIconImageComboBox.Name = "MapIconImageComboBox";
-            // 
             // gridColumn8
             // 
             this.gridColumn8.Caption = "Need Instance";
@@ -262,6 +262,38 @@
             this.InstanceLookUpEdit.Name = "InstanceLookUpEdit";
             this.InstanceLookUpEdit.NullText = "[Instance is null]";
             // 
+            // MapIconImageComboBox
+            // 
+            this.MapIconImageComboBox.AutoHeight = false;
+            this.MapIconImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.MapIconImageComboBox.Name = "MapIconImageComboBox";
+            // 
+            // JsonImportExport
+            // 
+            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
+            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
+            this.JsonImportExport.Name = "JsonImportExport";
+            this.JsonImportExport.Text = "Json";
+            // 
+            // ImportButton
+            // 
+            this.ImportButton.Caption = "Import";
+            this.ImportButton.Id = 2;
+            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
+            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Caption = "Export";
+            this.ExportButton.Id = 3;
+            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
+            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            // 
             // MovementInfoView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -278,8 +310,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpawnLookUpEdit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstanceLookUpEdit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MapIconImageComboBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -306,5 +338,8 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn8;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit InstanceLookUpEdit;
+        private DevExpress.XtraBars.BarButtonItem ImportButton;
+        private DevExpress.XtraBars.BarButtonItem ExportButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
     }
 }

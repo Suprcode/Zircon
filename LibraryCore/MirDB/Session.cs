@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Library.MirDB;
-using Library.SystemModels;
 
 namespace MirDB
 {
@@ -334,6 +331,7 @@ namespace MirDB
 
             return $"{time.Year:0000}-{time.Month:00}-{time.Day:00} {time.Hour:00}-{time.Minute:00}";
         }
+
         internal void Delete(DBObject ob)
         {
             if (ob.IsDeleted) return;
@@ -347,7 +345,7 @@ namespace MirDB
             //Remove Internal Reference
             foreach (PropertyInfo property in properties)
             {
-                Association link = property.GetCustomAttribute<Association>();
+                AssociationAttribute link = property.GetCustomAttribute<AssociationAttribute>();
 
                 if (property.PropertyType.IsSubclassOf(typeof(DBObject)))
                 {

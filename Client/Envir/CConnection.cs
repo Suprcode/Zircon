@@ -797,7 +797,6 @@ namespace Client.Envir
         {
             GameScene.Game.DayTime = p.DayTime;
         }
-
         public void Process(S.UserLocation p)
         {
             GameScene.Game.Displacement(p.Direction, p.Location);
@@ -874,14 +873,23 @@ namespace Client.Envir
                 PlayerObject player = (PlayerObject)ob;
 
                 player.LibraryWeaponShape = p.Weapon;
+
                 player.ArmourShape = p.Armour;
                 player.ArmourColour = p.ArmourColour;
+
+                player.CostumeShape = p.Costume;
+
                 player.HelmetShape = p.Helmet;
                 player.HorseShape = p.HorseArmour;
-                player.ArmourEffect = p.ArmourEffect;
+
                 player.ShieldShape = p.Shield;
+
+                player.HideHead = p.HideHead;
+
+                player.ArmourEffect = p.ArmourEffect;
                 player.EmblemEffect = p.EmblemEffect;
-                player.WingsEffect = p.WingsEffect;
+                player.WeaponEffect = p.WeaponEffect;
+                player.ShieldEffect = p.ShieldEffect;
 
                 player.Light = p.Light;
                 if (player == MapObject.User)
@@ -1654,17 +1662,17 @@ namespace Client.Envir
                 case MagicType.FlamingSword:
                     GameScene.Game.User.CanFlamingSword = p.CanUse;
                     if (p.CanUse)
-                        GameScene.Game.ReceiveChat("Energy builds up within your weapon, Flaming Sword is ready.", MessageType.Hint);
+                        GameScene.Game.ReceiveChat(CEnvir.Language.WeaponEnergyFlamingSword, MessageType.Hint);
                     break;
                 case MagicType.DragonRise:
                     GameScene.Game.User.CanDragonRise = p.CanUse;
                     if (p.CanUse)
-                        GameScene.Game.ReceiveChat("Energy builds up within your weapon, Dragon Rise is ready.", MessageType.Hint);
+                        GameScene.Game.ReceiveChat(CEnvir.Language.WeaponEnergyDragonRise, MessageType.Hint);
                     break;
                 case MagicType.BladeStorm:
                     GameScene.Game.User.CanBladeStorm = p.CanUse;
                     if (p.CanUse)
-                        GameScene.Game.ReceiveChat("Energy builds up within your weapon, Blade Storm is ready.", MessageType.Hint);
+                        GameScene.Game.ReceiveChat(CEnvir.Language.WeaponEnergyBladeStorm, MessageType.Hint);
                     break;
                 case MagicType.FlameSplash:
                     GameScene.Game.User.CanFlameSplash = p.CanUse;
@@ -1714,7 +1722,7 @@ namespace Client.Envir
             MapObject.User.Experience = p.Experience;
             MapObject.User.MaxExperience = p.MaxExperience;
 
-            GameScene.Game.ReceiveChat("Level Increased", MessageType.System);
+            GameScene.Game.ReceiveChat(CEnvir.Language.LevelIncreased, MessageType.System);
         }
         public void Process(S.GainedExperience p)
         {
@@ -1724,12 +1732,9 @@ namespace Client.Envir
 
             if (p.Amount < 0)
             {
-                GameScene.Game.ReceiveChat($"Experience Lost {p.Amount:#,##0.#}.", MessageType.Combat);
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.LostExperience, p.Amount), MessageType.Combat);
                 return;
             }
-
-
-            string message = $"Experience Gained {p.Amount:#,##0.#}";
 
             if (weapon != null && weapon.Info.ItemEffect != ItemEffect.PickAxe && (weapon.Flags & UserItemFlags.Refinable) != UserItemFlags.Refinable && (weapon.Flags & UserItemFlags.NonRefinable) != UserItemFlags.NonRefinable && weapon.Level < Globals.WeaponExperienceList.Count)
             {
@@ -1741,13 +1746,11 @@ namespace Client.Envir
                     weapon.Level++;
                     weapon.Flags |= UserItemFlags.Refinable;
 
-                    message += ", Your weapon is ready for refine";
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GainedExperienceAndReadyForRefine, p.Amount), MessageType.Combat);
                 }
                 else
-                    message += $", Weapon Experience {p.Amount / 10:#,##0.#}";
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GainedExperienceAndWeaponExperience, p.Amount, p.Amount / 10), MessageType.Combat);
             }
-
-            GameScene.Game.ReceiveChat(message + ".", MessageType.Combat);
         }
         public void Process(S.ObjectLeveled p)
         {
@@ -1800,7 +1803,7 @@ namespace Client.Envir
                     displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == item.AddedStats[Stat.ItemIndex]);
 
                 item.New = true;
-                string text = item.Count > 1 ? $"You gained {displayInfo.ItemName} x{item.Count}." : $"You gained {displayInfo.ItemName}.";
+                string text = item.Count > 1 ? string.Format(CEnvir.Language.ItemsGained, displayInfo.ItemName, item.Count) : string.Format(CEnvir.Language.ItemGained, displayInfo.ItemName);
 
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem)
                     text += " (Quest)";
@@ -2061,9 +2064,9 @@ namespace Client.Envir
 
                 DXItemCell fromCell = grid[cellLinkInfo.Slot];
                 fromCell.Locked = false;
+                fromCell.Selected = false;
 
                 if (!p.Success) continue;
-
 
                 if (!fromCell.Item.Info.ShouldLinkInfo)
                 {
@@ -2082,7 +2085,6 @@ namespace Client.Envir
                     }
                 }
 
-
                 if (cellLinkInfo.Count == fromCell.Item.Count)
                     fromCell.Item = null;
                 else
@@ -2091,6 +2093,7 @@ namespace Client.Envir
                 fromCell.RefreshItem();
             }
         }
+
         public void Process(S.ItemStatsChanged p)
         {
             DXItemCell[] grid;
@@ -2124,7 +2127,7 @@ namespace Client.Envir
 
             if (p.NewStats.Count == 0)
             {
-                GameScene.Game.ReceiveChat($"Nothing happen to your {fromCell.Item.Info.ItemName}", MessageType.Hint);
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.NothingHappen, fromCell.Item.Info.ItemName), MessageType.Hint);
                 return;
             }
 
@@ -2132,7 +2135,7 @@ namespace Client.Envir
             {
                 if (pair.Key == Stat.WeaponElement)
                 {
-                    GameScene.Game.ReceiveChat($"Your {fromCell.Item.Info.ItemName} has been effected: New Element {(Element)fromCell.Item.AddedStats[Stat.WeaponElement]}", MessageType.Hint);
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.ItemStatsNewElement, fromCell.Item.Info.ItemName, (Element)fromCell.Item.AddedStats[Stat.WeaponElement]), MessageType.Hint);
                     continue;
                 }
 
@@ -2140,7 +2143,7 @@ namespace Client.Envir
 
                 if (string.IsNullOrEmpty(msg)) continue;
 
-                GameScene.Game.ReceiveChat($"Your {fromCell.Item.Info.ItemName} has been effected: {msg}", MessageType.Hint);
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.ItemStatsEffected, fromCell.Item.Info.ItemName, msg), MessageType.Hint);
             }
 
             fromCell.RefreshItem();
@@ -2213,7 +2216,7 @@ namespace Client.Envir
 
 
             if (p.CurrentDurability == 0)
-                GameScene.Game.ReceiveChat($"Your item {fromCell.Item.Info.ItemName} has dropped to durability 0", MessageType.System);
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.ItemDurabilityDrop, fromCell.Item.Info.ItemName), MessageType.System);
 
             fromCell.RefreshItem();
         }
@@ -2654,7 +2657,7 @@ namespace Client.Envir
                 fromCell.Item = null;
                 fromCell.RefreshItem();
 
-                GameScene.Game.ReceiveChat($"Your Refine has been placed successfully, please collect your weapon in {Functions.ToString(Globals.RefineTimes[p.RefineQuality], false)}", MessageType.System);
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.RefineSuccess, Functions.ToString(Globals.RefineTimes[p.RefineQuality], false)), MessageType.System);
             }
         }
         public void Process(S.NPCMasterRefine p)
@@ -3035,7 +3038,7 @@ namespace Client.Envir
             GameScene.Game.GroupBox.Members.Add(new ClientPlayerInfo { ObjectID = p.ObjectID, Name = p.Name });
 
 
-            GameScene.Game.ReceiveChat($"-{p.Name} has joined the group.", MessageType.Group);
+            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GroupJoin, p.Name), MessageType.Group);
 
             GameScene.Game.GroupBox.UpdateMembers();
 
@@ -3050,7 +3053,7 @@ namespace Client.Envir
         {
             ClientPlayerInfo info = GameScene.Game.GroupBox.Members.First(x => x.ObjectID == p.ObjectID);
 
-            GameScene.Game.ReceiveChat($"-{info.Name} has left the group.", MessageType.Group);
+            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GroupRemove, info.Name), MessageType.Group);
 
             HashSet<uint> checks = new HashSet<uint>();
 
@@ -3308,7 +3311,7 @@ namespace Client.Envir
             GameScene.Game.CommunicationBox.ReceivedMailList.Insert(0, p.Mail);
             GameScene.Game.CommunicationBox.RefreshList();
             GameScene.Game.CommunicationBox.UpdateIcon();
-            GameScene.Game.ReceiveChat($"You have received a new mail from {p.Mail.Sender}.", MessageType.System);
+            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.MailNew, p.Mail.Sender), MessageType.System);
         }
 
         public void Process(S.MailDelete p)
@@ -3787,7 +3790,7 @@ namespace Client.Envir
         {
             GameScene.Game.GuildWars.Add(p.GuildName);
 
-            GameScene.Game.ReceiveChat($"You are at war with {p.GuildName} for {Functions.ToString(p.Duration, true)}", MessageType.Hint);
+            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GuildWarStarted, p.GuildName, Functions.ToString(p.Duration, true)), MessageType.Hint);
 
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
                 ob.NameChanged();
@@ -3796,7 +3799,7 @@ namespace Client.Envir
         {
             GameScene.Game.GuildWars.Remove(p.GuildName);
 
-            GameScene.Game.ReceiveChat($"Your war with {p.GuildName} has ended.", MessageType.Hint);
+            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GuildWarFinished, p.GuildName), MessageType.Hint);
 
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
                 ob.NameChanged();
@@ -3947,7 +3950,7 @@ namespace Client.Envir
                     displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == item.AddedStats[Stat.ItemIndex]);
 
                 item.New = true;
-                string text = item.Count > 1 ? $"Your companion gained {displayInfo.ItemName} x{item.Count}." : $"Your companion gained {displayInfo.ItemName}.";
+                string text = item.Count > 1 ? string.Format(CEnvir.Language.CompanionItemsGained, displayInfo.ItemName, item.Count) : string.Format(CEnvir.Language.CompanionItemGained, displayInfo.ItemName);
 
                 if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem)
                     text += " (Quest)";
@@ -4037,7 +4040,7 @@ namespace Client.Envir
                 Location = p.CurrentLocation,
 
                 Name = p.Name,
-
+        
                 Health = p.Health,
                 MaxHealth = p.MaxHealth,
                 Dead = p.Dead,
@@ -4211,6 +4214,11 @@ namespace Client.Envir
             GameScene.Game.CharacterBox.UpdateDiscipline();
         }
 
+        public void Process(S.NPCRoll p)
+        {
+            GameScene.Game.NPCRollBox.Setup(p.Type, p.Result, false);
+        }
+
         public void Process(S.HelmetToggle p)
         {
             GameScene.Game.ConfigBox.DisplayHelmetCheckBox.Checked = !p.HideHelmet;
@@ -4229,6 +4237,7 @@ namespace Client.Envir
                 PlayerObject player = (PlayerObject)ob;
 
                 player.Name = p.Name;
+                player.Caption = p.Caption;
                 player.Gender = p.Gender;
                 player.HairType = p.HairType;
                 player.HairColour = p.HairColour;
@@ -4641,7 +4650,7 @@ namespace Client.Envir
 
             if (p.NewStats.Count == 0)
             {
-                GameScene.Game.ReceiveChat($"Nothing happen to your {fromCell.Item.Info.ItemName}", MessageType.Hint);
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.NothingHappen, fromCell.Item.Info.ItemName), MessageType.Hint);
                 return;
             }
 

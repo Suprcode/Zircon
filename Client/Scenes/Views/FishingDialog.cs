@@ -274,7 +274,7 @@ namespace Client.Scenes.Views
 
             AutoCastCheckBox = new DXCheckBox
             {
-                Label = { Text = "Auto Cast:" },
+                Label = { Text = CEnvir.Language.FishingCatchDialogAutoCast },
                 Parent = this,
                 Checked = true,
             };

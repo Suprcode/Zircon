@@ -50,27 +50,27 @@
             this.ItemInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MonsterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.MagicInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MapRegionButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MovementInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.SafeZoneInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.RespawnInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.DropInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.FishingInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.BaseStatButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.DisciplineInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.ItemInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.SetInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.WeaponCraftInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.NPCInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.NPCPageButton = new DevExpress.XtraNavBar.NavBarItem();
             this.QuestInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.StoreInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.EventInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.CastleInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.CompanionInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.CurrencyInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.SafeZoneInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.MovementInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.MapRegionButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.ItemInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.DropInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.RespawnInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.ConfigButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.BaseStatButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.SetInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.CurrencyInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.FishingInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.CompanionInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.NPCPageButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.CastleInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.DisciplineInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.EventInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            this.WeaponCraftInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.navBarGroup3 = new DevExpress.XtraNavBar.NavBarGroup();
             this.AccountInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             this.CharacterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -78,9 +78,9 @@
             this.PaymentButton = new DevExpress.XtraNavBar.NavBarItem();
             this.StoreSalesButton = new DevExpress.XtraNavBar.NavBarItem();
             this.DiagnosticButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.navBarItem2 = new DevExpress.XtraNavBar.NavBarItem();
             this.navBarItem3 = new DevExpress.XtraNavBar.NavBarItem();
             this.navBarItem4 = new DevExpress.XtraNavBar.NavBarItem();
+            this.navBarItem5 = new DevExpress.XtraNavBar.NavBarItem();
             this.DManager = new DevExpress.XtraBars.Docking2010.DocumentManager(this.components);
             this.tabbedView1 = new DevExpress.XtraBars.Docking2010.Views.Tabbed.TabbedView(this.components);
             this.BManager = new DevExpress.XtraBars.BarManager(this.components);
@@ -236,13 +236,13 @@
             this.PaymentButton,
             this.StoreSalesButton,
             this.DiagnosticButton,
-            this.navBarItem2,
             this.navBarItem3,
             this.navBarItem4,
             this.WeaponCraftInfoButton,
             this.CurrencyInfoButton,
             this.FishingInfoButton,
-            this.DisciplineInfoButton});
+            this.DisciplineInfoButton,
+            this.navBarItem5});
             this.navBarControl1.Location = new System.Drawing.Point(0, 144);
             this.navBarControl1.Name = "navBarControl1";
             this.navBarControl1.OptionsNavPane.ExpandedWidth = 144;
@@ -343,105 +343,12 @@
             this.MagicInfoButton.Name = "MagicInfoButton";
             this.MagicInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MagicInfoButton_LinkClicked);
             // 
-            // MapRegionButton
-            // 
-            this.MapRegionButton.Caption = "Map Region";
-            this.MapRegionButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MapRegionButton.ImageOptions.SmallImage")));
-            this.MapRegionButton.Name = "MapRegionButton";
-            this.MapRegionButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MapRegionButton_LinkClicked);
-            // 
-            // MovementInfoButton
-            // 
-            this.MovementInfoButton.Caption = "Movement Info";
-            this.MovementInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MovementInfoButton.ImageOptions.SmallImage")));
-            this.MovementInfoButton.Name = "MovementInfoButton";
-            this.MovementInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MovementInfoButton_LinkClicked);
-            // 
-            // SafeZoneInfoButton
-            // 
-            this.SafeZoneInfoButton.Caption = "Safe Zone Info";
-            this.SafeZoneInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("SafeZoneInfoButton.ImageOptions.SmallImage")));
-            this.SafeZoneInfoButton.Name = "SafeZoneInfoButton";
-            this.SafeZoneInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.SafeZoneInfoButton_LinkClicked);
-            // 
-            // RespawnInfoButton
-            // 
-            this.RespawnInfoButton.Caption = "Respawn Info";
-            this.RespawnInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("RespawnInfoButton.ImageOptions.SmallImage")));
-            this.RespawnInfoButton.Name = "RespawnInfoButton";
-            this.RespawnInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.RespawnInfoButton_LinkClicked);
-            // 
-            // DropInfoButton
-            // 
-            this.DropInfoButton.Caption = "Drop Info";
-            this.DropInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("DropInfoButton.ImageOptions.SmallImage")));
-            this.DropInfoButton.Name = "DropInfoButton";
-            this.DropInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DropInfoButton_LinkClicked);
-            // 
-            // FishingInfoButton
-            // 
-            this.FishingInfoButton.Caption = "Fishing Info";
-            this.FishingInfoButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("FishingInfoButton.ImageOptions.LargeImage")));
-            this.FishingInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("FishingInfoButton.ImageOptions.SmallImage")));
-            this.FishingInfoButton.Name = "FishingInfoButton";
-            this.FishingInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.FishingInfoButton_LinkClicked);
-            // 
-            // BaseStatButton
-            // 
-            this.BaseStatButton.Caption = "Base Stats";
-            this.BaseStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("BaseStatButton.ImageOptions.SmallImage")));
-            this.BaseStatButton.Name = "BaseStatButton";
-            this.BaseStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.BaseStatButton_LinkClicked);
-            // 
-            // DisciplineInfoButton
-            // 
-            this.DisciplineInfoButton.Caption = "Discipline Info";
-            this.DisciplineInfoButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("DisciplineInfoButton.ImageOptions.LargeImage")));
-            this.DisciplineInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("DisciplineInfoButton.ImageOptions.SmallImage")));
-            this.DisciplineInfoButton.Name = "DisciplineInfoButton";
-            this.DisciplineInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DisciplineInfoButton_LinkClicked);
-            // 
-            // ItemInfoStatButton
-            // 
-            this.ItemInfoStatButton.Caption = "Item Info Stat";
-            this.ItemInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("ItemInfoStatButton.ImageOptions.SmallImage")));
-            this.ItemInfoStatButton.Name = "ItemInfoStatButton";
-            this.ItemInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ItemInfoStatButton_LinkClicked);
-            // 
-            // MonsterInfoStatButton
-            // 
-            this.MonsterInfoStatButton.Caption = "Monster Info Stat";
-            this.MonsterInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MonsterInfoStatButton.ImageOptions.SmallImage")));
-            this.MonsterInfoStatButton.Name = "MonsterInfoStatButton";
-            this.MonsterInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MonsterInfoStatButton_LinkClicked);
-            // 
-            // SetInfoButton
-            // 
-            this.SetInfoButton.Caption = "Set Info";
-            this.SetInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("SetInfoButton.ImageOptions.SmallImage")));
-            this.SetInfoButton.Name = "SetInfoButton";
-            this.SetInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.SetInfoButton_LinkClicked);
-            // 
-            // WeaponCraftInfoButton
-            // 
-            this.WeaponCraftInfoButton.Caption = "Weapon Craft Info";
-            this.WeaponCraftInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("WeaponCraftInfoButton.ImageOptions.SmallImage")));
-            this.WeaponCraftInfoButton.Name = "WeaponCraftInfoButton";
-            this.WeaponCraftInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem5_LinkClicked);
-            // 
             // NPCInfoButton
             // 
             this.NPCInfoButton.Caption = "NPC Info";
             this.NPCInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("NPCInfoButton.ImageOptions.SmallImage")));
             this.NPCInfoButton.Name = "NPCInfoButton";
             this.NPCInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.NPCInfoButton_LinkClicked);
-            // 
-            // NPCPageButton
-            // 
-            this.NPCPageButton.Caption = "NPC Page";
-            this.NPCPageButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("NPCPageButton.ImageOptions.SmallImage")));
-            this.NPCPageButton.Name = "NPCPageButton";
-            this.NPCPageButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.NPCPageButton_LinkClicked);
             // 
             // QuestInfoButton
             // 
@@ -457,26 +364,75 @@
             this.StoreInfoButton.Name = "StoreInfoButton";
             this.StoreInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.StoreInfoButton_LinkClicked);
             // 
-            // EventInfoButton
+            // SafeZoneInfoButton
             // 
-            this.EventInfoButton.Caption = "Event Info";
-            this.EventInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("EventInfoButton.ImageOptions.SmallImage")));
-            this.EventInfoButton.Name = "EventInfoButton";
-            this.EventInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.EventInfoButton_LinkClicked);
+            this.SafeZoneInfoButton.Caption = "Safe Zone Info";
+            this.SafeZoneInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("SafeZoneInfoButton.ImageOptions.SmallImage")));
+            this.SafeZoneInfoButton.Name = "SafeZoneInfoButton";
+            this.SafeZoneInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.SafeZoneInfoButton_LinkClicked);
             // 
-            // CastleInfoButton
+            // MovementInfoButton
             // 
-            this.CastleInfoButton.Caption = "Castle Info";
-            this.CastleInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CastleInfoButton.ImageOptions.SmallImage")));
-            this.CastleInfoButton.Name = "CastleInfoButton";
-            this.CastleInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CastleInfoButton_LinkClicked);
+            this.MovementInfoButton.Caption = "Movement Info";
+            this.MovementInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MovementInfoButton.ImageOptions.SmallImage")));
+            this.MovementInfoButton.Name = "MovementInfoButton";
+            this.MovementInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MovementInfoButton_LinkClicked);
             // 
-            // CompanionInfoButton
+            // MapRegionButton
             // 
-            this.CompanionInfoButton.Caption = "Companion Info";
-            this.CompanionInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CompanionInfoButton.ImageOptions.SmallImage")));
-            this.CompanionInfoButton.Name = "CompanionInfoButton";
-            this.CompanionInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CompanionInfoButton_LinkClicked);
+            this.MapRegionButton.Caption = "Map Region";
+            this.MapRegionButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MapRegionButton.ImageOptions.SmallImage")));
+            this.MapRegionButton.Name = "MapRegionButton";
+            this.MapRegionButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MapRegionButton_LinkClicked);
+            // 
+            // ItemInfoStatButton
+            // 
+            this.ItemInfoStatButton.Caption = "Item Info Stat";
+            this.ItemInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("ItemInfoStatButton.ImageOptions.SmallImage")));
+            this.ItemInfoStatButton.Name = "ItemInfoStatButton";
+            this.ItemInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ItemInfoStatButton_LinkClicked);
+            // 
+            // MonsterInfoStatButton
+            // 
+            this.MonsterInfoStatButton.Caption = "Monster Info Stat";
+            this.MonsterInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MonsterInfoStatButton.ImageOptions.SmallImage")));
+            this.MonsterInfoStatButton.Name = "MonsterInfoStatButton";
+            this.MonsterInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MonsterInfoStatButton_LinkClicked);
+            // 
+            // DropInfoButton
+            // 
+            this.DropInfoButton.Caption = "Drop Info";
+            this.DropInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("DropInfoButton.ImageOptions.SmallImage")));
+            this.DropInfoButton.Name = "DropInfoButton";
+            this.DropInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DropInfoButton_LinkClicked);
+            // 
+            // RespawnInfoButton
+            // 
+            this.RespawnInfoButton.Caption = "Respawn Info";
+            this.RespawnInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("RespawnInfoButton.ImageOptions.SmallImage")));
+            this.RespawnInfoButton.Name = "RespawnInfoButton";
+            this.RespawnInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.RespawnInfoButton_LinkClicked);
+            // 
+            // ConfigButton
+            // 
+            this.ConfigButton.Caption = "Config";
+            this.ConfigButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("ConfigButton.ImageOptions.SmallImage")));
+            this.ConfigButton.Name = "ConfigButton";
+            this.ConfigButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ConfigButton_LinkClicked);
+            // 
+            // BaseStatButton
+            // 
+            this.BaseStatButton.Caption = "Base Stats";
+            this.BaseStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("BaseStatButton.ImageOptions.SmallImage")));
+            this.BaseStatButton.Name = "BaseStatButton";
+            this.BaseStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.BaseStatButton_LinkClicked);
+            // 
+            // SetInfoButton
+            // 
+            this.SetInfoButton.Caption = "Set Info";
+            this.SetInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("SetInfoButton.ImageOptions.SmallImage")));
+            this.SetInfoButton.Name = "SetInfoButton";
+            this.SetInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.SetInfoButton_LinkClicked);
             // 
             // CurrencyInfoButton
             // 
@@ -485,12 +441,56 @@
             this.CurrencyInfoButton.Name = "CurrencyInfoButton";
             this.CurrencyInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CurrencyInfoButton_LinkClicked);
             // 
-            // ConfigButton
+            // FishingInfoButton
             // 
-            this.ConfigButton.Caption = "Config";
-            this.ConfigButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("ConfigButton.ImageOptions.SmallImage")));
-            this.ConfigButton.Name = "ConfigButton";
-            this.ConfigButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ConfigButton_LinkClicked);
+            this.FishingInfoButton.Caption = "Fishing Info";
+            this.FishingInfoButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("FishingInfoButton.ImageOptions.LargeImage")));
+            this.FishingInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("FishingInfoButton.ImageOptions.SmallImage")));
+            this.FishingInfoButton.Name = "FishingInfoButton";
+            this.FishingInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.FishingInfoButton_LinkClicked);
+            // 
+            // CompanionInfoButton
+            // 
+            this.CompanionInfoButton.Caption = "Companion Info";
+            this.CompanionInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CompanionInfoButton.ImageOptions.SmallImage")));
+            this.CompanionInfoButton.Name = "CompanionInfoButton";
+            this.CompanionInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CompanionInfoButton_LinkClicked);
+            // 
+            // NPCPageButton
+            // 
+            this.NPCPageButton.Caption = "NPC Page";
+            this.NPCPageButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("NPCPageButton.ImageOptions.SmallImage")));
+            this.NPCPageButton.Name = "NPCPageButton";
+            this.NPCPageButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.NPCPageButton_LinkClicked);
+            // 
+            // CastleInfoButton
+            // 
+            this.CastleInfoButton.Caption = "Castle Info";
+            this.CastleInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CastleInfoButton.ImageOptions.SmallImage")));
+            this.CastleInfoButton.Name = "CastleInfoButton";
+            this.CastleInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CastleInfoButton_LinkClicked);
+            // 
+            // DisciplineInfoButton
+            // 
+            this.DisciplineInfoButton.Caption = "Discipline Info";
+            this.DisciplineInfoButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("DisciplineInfoButton.ImageOptions.LargeImage")));
+            this.DisciplineInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("DisciplineInfoButton.ImageOptions.SmallImage")));
+            this.DisciplineInfoButton.Name = "DisciplineInfoButton";
+            this.DisciplineInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DisciplineInfoButton_LinkClicked);
+            // 
+            // EventInfoButton
+            // 
+            this.EventInfoButton.Caption = "Event Info";
+            this.EventInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("EventInfoButton.ImageOptions.SmallImage")));
+            this.EventInfoButton.Name = "EventInfoButton";
+            this.EventInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.EventInfoButton_LinkClicked);
+            // 
+            // WeaponCraftInfoButton
+            // 
+            this.WeaponCraftInfoButton.Caption = "Weapon Craft Info";
+            this.WeaponCraftInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("WeaponCraftInfoButton.ImageOptions.SmallImage")));
+            this.WeaponCraftInfoButton.Name = "WeaponCraftInfoButton";
+            this.WeaponCraftInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.WeaponCraftInfoButton_LinkClicked);
             // 
             // navBarGroup3
             // 
@@ -504,9 +504,9 @@
             new DevExpress.XtraNavBar.NavBarItemLink(this.PaymentButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.StoreSalesButton),
             new DevExpress.XtraNavBar.NavBarItemLink(this.DiagnosticButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem2),
             new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem3),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem4)});
+            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem4),
+            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem5)});
             this.navBarGroup3.Name = "navBarGroup3";
             // 
             // AccountInfoButton
@@ -551,14 +551,6 @@
             this.DiagnosticButton.Name = "DiagnosticButton";
             this.DiagnosticButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DiagnosticButton_LinkClicked);
             // 
-            // navBarItem2
-            // 
-            this.navBarItem2.Caption = "User Item";
-            this.navBarItem2.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("navBarItem2.ImageOptions.LargeImage")));
-            this.navBarItem2.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem2.ImageOptions.SmallImage")));
-            this.navBarItem2.Name = "navBarItem2";
-            this.navBarItem2.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem2_LinkClicked);
-            // 
             // navBarItem3
             // 
             this.navBarItem3.Caption = "Conquest Stats";
@@ -574,6 +566,14 @@
             this.navBarItem4.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem4.ImageOptions.SmallImage")));
             this.navBarItem4.Name = "navBarItem4";
             this.navBarItem4.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem4_LinkClicked);
+            // 
+            // navBarItem5
+            // 
+            this.navBarItem5.Caption = "NPC Data";
+            this.navBarItem5.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("navBarItem5.ImageOptions.LargeImage")));
+            this.navBarItem5.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem5.ImageOptions.SmallImage")));
+            this.navBarItem5.Name = "navBarItem5";
+            this.navBarItem5.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem5_LinkClicked);
             // 
             // DManager
             // 
@@ -831,7 +831,6 @@
         private DevExpress.XtraBars.BarStaticItem ConDelay;
         private DevExpress.XtraNavBar.NavBarItem DiagnosticButton;
         private DevExpress.XtraBars.BarStaticItem SaveDelay;
-        private DevExpress.XtraNavBar.NavBarItem navBarItem2;
         private DevExpress.XtraNavBar.NavBarItem navBarItem3;
         private DevExpress.XtraNavBar.NavBarItem navBarItem4;
         private DevExpress.XtraNavBar.NavBarItem WeaponCraftInfoButton;
@@ -839,6 +838,7 @@
         private DevExpress.XtraNavBar.NavBarItem navBarItem6;
         private DevExpress.XtraNavBar.NavBarItem FishingInfoButton;
         private DevExpress.XtraNavBar.NavBarItem DisciplineInfoButton;
+        private DevExpress.XtraNavBar.NavBarItem navBarItem5;
     }
 }
 

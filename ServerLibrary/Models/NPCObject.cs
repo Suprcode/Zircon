@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using Library;
@@ -6,6 +8,7 @@ using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
+using static System.Collections.Specialized.BitVector32;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -27,8 +30,7 @@ namespace Server.Models
             {
                 if (page == null) return;
 
-                NPCPage failPage;
-                if (!CheckPage(ob, page, out failPage))
+                if (!CheckPage(ob, page, out NPCPage failPage))
                 {
                     page = failPage;
                     continue;
@@ -36,24 +38,26 @@ namespace Server.Models
 
                 DoActions(ob, page);
 
-                if (page.SuccessPage != null)
-                {
-                    page = page.SuccessPage;
-                    continue;
-                }
-
                 if (string.IsNullOrEmpty(page.Say))
                 {
+                    if (page.SuccessPage != null)
+                    {
+                        page = page.SuccessPage;
+                        continue;
+                    }
+
                     ob.NPC = null;
                     ob.NPCPage = null;
                     ob.Enqueue(new S.NPCClose());
                     return;
                 }
 
+                var values = GetValues(ob, page);
+
                 ob.NPC = this;
                 ob.NPCPage = page;
 
-                ob.Enqueue(new S.NPCResponse { ObjectID = ObjectID, Index = page.Index });
+                ob.Enqueue(new S.NPCResponse { ObjectID = ObjectID, Index = page.Index, Values = values });
                 break;
             }
         }
@@ -65,35 +69,42 @@ namespace Server.Models
                 switch (action.ActionType)
                 {
                     case NPCActionType.Teleport:
-                        if (action.MapParameter1 == null && action.InstanceParameter1 == null) return;
-
-                        if (action.InstanceParameter1 != null)
                         {
-                            if (ob.CurrentMap.Instance != null)
+                            if (action.MapParameter1 == null && action.InstanceParameter1 == null) continue;
+
+                            if (action.InstanceParameter1 != null)
                             {
-                                return;
+                                if (ob.CurrentMap.Instance != null)
+                                {
+                                    // cannot move from one instance to another
+                                    continue;
+                                }
+
+                                //TODO - Add conditions to npc instance moving
+
+                                var (index, result) = ob.GetInstance(action.InstanceParameter1);
+
+                                if (result != InstanceResult.Success)
+                                {
+                                    ob.SendInstanceMessage(action.InstanceParameter1, result);
+                                    continue;
+                                }
+
+                                ob.Teleport(action.InstanceParameter1.ConnectRegion, action.InstanceParameter1, index.Value);
                             }
-
-                            //TODO - Add conditions to npc instance moving
-
-                            var (index, result) = ob.GetInstance(action.InstanceParameter1);
-
-                            if (result != InstanceResult.Success)
-                            {
-                                ob.SendInstanceMessage(action.InstanceParameter1, result);
-                                return;
-                            }
-
-                            ob.Teleport(action.InstanceParameter1.ConnectRegion, action.InstanceParameter1, index.Value);
-                        }
-                        else
-                        {
-                            Map map = SEnvir.GetMap(action.MapParameter1);
-
-                            if (action.IntParameter1 == 0 && action.IntParameter2 == 0)
-                                ob.Teleport(map, map.GetRandomLocation());
                             else
-                                ob.Teleport(map, new Point(action.IntParameter1, action.IntParameter2));
+                            {
+                                Map map = SEnvir.GetMap(action.MapParameter1, ob.CurrentMap.Instance, ob.CurrentMap.InstanceSequence);
+
+                                // prevents moving across or off instances
+                                if (map != null)
+                                {
+                                    if (action.IntParameter1 == 0 && action.IntParameter2 == 0)
+                                        ob.Teleport(map, map.GetRandomLocation());
+                                    else
+                                        ob.Teleport(map, new Point(action.IntParameter1, action.IntParameter2));
+                                }
+                            }
                         }
                         break;
                     case NPCActionType.TakeGold:
@@ -139,15 +150,16 @@ namespace Server.Models
                         ob.MarriageRemoveRing();
                         break;
                     case NPCActionType.GiveItem:
-                        if (action.ItemParameter1 == null) continue;
+                        {
+                            if (action.ItemParameter1 == null) continue;
 
-                        ItemCheck check = new ItemCheck(action.ItemParameter1, action.IntParameter1, UserItemFlags.None, TimeSpan.Zero);
+                            ItemCheck check = new ItemCheck(action.ItemParameter1, action.IntParameter1, UserItemFlags.None, TimeSpan.Zero);
 
-                        if (!ob.CanGainItems(false, check)) continue;
+                            if (!ob.CanGainItems(false, check)) continue;
 
-                        while (check.Count > 0)
-                            ob.GainItem(SEnvir.CreateFreshItem(check));
-
+                            while (check.Count > 0)
+                                ob.GainItem(SEnvir.CreateFreshItem(check));
+                        }
                         break;
                     case NPCActionType.TakeItem:
                         if (action.ItemParameter1 == null) continue;
@@ -158,29 +170,30 @@ namespace Server.Models
                         ob.NPCResetWeapon();
                         break;
                     case NPCActionType.GiveItemExperience:
-                        if (action.ItemParameter1 == null) continue;
-
-                        check = new ItemCheck(action.ItemParameter1, action.IntParameter1, UserItemFlags.None, TimeSpan.Zero);
-
-                        if (!ob.CanGainItems(false, check)) continue;
-                        
-                        while (check.Count > 0)
                         {
-                            UserItem item = SEnvir.CreateFreshItem(check);
+                            if (action.ItemParameter1 == null) continue;
 
-                            item.Experience = action.IntParameter2;
+                            var check = new ItemCheck(action.ItemParameter1, action.IntParameter1, UserItemFlags.None, TimeSpan.Zero);
 
-                            if (item.Experience >= Globals.AccessoryExperienceList[item.Level])
+                            if (!ob.CanGainItems(false, check)) continue;
+
+                            while (check.Count > 0)
                             {
-                                item.Experience -= Globals.AccessoryExperienceList[item.Level];
-                                item.Level++;
+                                UserItem item = SEnvir.CreateFreshItem(check);
 
-                                item.Flags |= UserItemFlags.Refinable;
+                                item.Experience = action.IntParameter2;
+
+                                if (item.Experience >= Globals.AccessoryExperienceList[item.Level])
+                                {
+                                    item.Experience -= Globals.AccessoryExperienceList[item.Level];
+                                    item.Level++;
+
+                                    item.Flags |= UserItemFlags.Refinable;
+                                }
+
+                                ob.GainItem(item);
                             }
-
-                            ob.GainItem(item);
                         }
-
                         break;
                     case NPCActionType.SpecialRefine:
                         ob.NPCSpecialRefine(action.StatParameter1, action.IntParameter1);
@@ -219,9 +232,174 @@ namespace Server.Models
                             ob.CurrencyChanged(userCurrency);
                         }
                         break;
+                    case NPCActionType.AddDataList:
+                        {
+                            if (action.StringParameter1 == null) continue;
+
+                            var category = $"{action.StringParameter1}_NameList";
+                            var value1 = GetDataTypeValue(ob, (NPCDataType)action.IntParameter1);
+
+                            if (string.IsNullOrEmpty(value1)) continue;
+
+                            var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
+
+                            if (item == null)
+                            {
+                                item = SEnvir.GameNPCList.CreateNewObject();
+                                item.Category = category;
+                                item.TypeValue = value1;
+                            }
+                        }
+                        break;
+                    case NPCActionType.RemoveDataList:
+                        {
+                            if (action.StringParameter1 == null) continue;
+
+                            var category = $"{action.StringParameter1}_NameList";
+                            var value1 = GetDataTypeValue(ob, (NPCDataType)action.IntParameter1);
+
+                            if (string.IsNullOrEmpty(value1)) continue;
+
+                            var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
+
+                            item?.Delete();
+                        }
+                        break;
+                    case NPCActionType.ClearDataList:
+                        {
+                            if (action.StringParameter1 == null) continue;
+
+                            var category = $"{action.StringParameter1}_NameList";
+
+                            for (int i = SEnvir.GameNPCList.Binding.Count - 1; i >= 0; i--)
+                            {
+                                var item = SEnvir.GameNPCList.Binding[i];
+                                if (item.Category != category) continue;
+
+                                item.Delete();
+                            }
+                        }
+                        break;
+                    case NPCActionType.ChangeDataValue:
+                        {
+                            if (action.StringParameter1 == null) continue;
+
+                            var category = action.StringParameter1;
+                            var value1 = GetDataTypeValue(ob, (NPCDataType)action.IntParameter1);
+
+                            if (string.IsNullOrEmpty(value1)) continue;
+
+                            var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
+
+                            if (item == null)
+                            {
+                                item = SEnvir.GameNPCList.CreateNewObject();
+                                item.Category = category;
+                                item.TypeValue = value1;
+                            }
+
+                            item.IntValue1 += action.IntParameter2;
+                        }
+                        break;
+                    case NPCActionType.SetDataValue:
+                        {
+                            if (action.StringParameter1 == null) continue;
+
+                            var category = action.StringParameter1;
+                            var value1 = GetDataTypeValue(ob, (NPCDataType)action.IntParameter1);
+
+                            if (string.IsNullOrEmpty(value1)) continue;
+
+                            var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
+
+                            if (item == null)
+                            {
+                                item = SEnvir.GameNPCList.CreateNewObject();
+                                item.Category = category;
+                                item.TypeValue = value1;
+                            }
+
+                            item.IntValue1 = action.IntParameter2;
+                        }
+                        break;
                 }
             }
         }
+
+        private static List<ClientNPCValues> GetValues(PlayerObject ob, NPCPage page)
+        {
+            List<ClientNPCValues> values = new();
+
+            foreach (NPCValue value in page.Values)
+            {
+                switch (value.ValueType)
+                {
+                    case NPCValueType.DataList:
+                        {
+                            if (value.DataCategory == null) continue;
+
+                            var category = $"{value.DataCategory}_NameList";
+                            var value1 = GetDataTypeValue(ob, value.DataType);
+
+                            var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
+
+                            string value2 = "True";
+
+                            if (item != null)
+                            {
+                                values.Add(new ClientNPCValues { ID = value.ValueID, Value = value2 });
+                            }
+                        }
+                        break;
+                    case NPCValueType.DataValue:
+                        {
+                            if (value.DataCategory == null) continue;
+
+                            var category = $"{value.DataCategory}";
+                            var value1 = GetDataTypeValue(ob, value.DataType);
+
+                            var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
+
+                            if (item != null) {
+                                values.Add(new ClientNPCValues { ID = value.ValueID, Value = item.IntValue1.ToString() });
+                            }
+                        }
+                        break;
+                    case NPCValueType.Field:
+                        {
+                            string value2 = "";
+
+                            switch (value.FieldType)
+                            {
+                                case NPCFieldType.Name:
+                                    value2 = ob.Name;
+                                    break;
+                                case NPCFieldType.GuildName:
+                                    value2 = ob.Character.Account.GuildMember?.Guild?.GuildName ?? null;
+                                    break;
+                                case NPCFieldType.None:
+                                    continue;
+                            }
+
+                            if (!string.IsNullOrEmpty(value2)) {
+                                values.Add(new ClientNPCValues { ID = value.ValueID, Value = value2 });
+                            }
+                        }
+                        break;
+                    case NPCValueType.RollResult:
+                        {
+                            if (ob.NPCVals.TryGetValue("ROLLRESULT", out object val))
+                            {
+                                values.Add(new ClientNPCValues { ID = value.ValueID, Value = val.ToString() });
+                            }
+                        }
+                        break;
+                }
+            }
+
+            return values;
+        }
+
         private bool CheckPage(PlayerObject ob, NPCPage page, out NPCPage failPage)
         {
             failPage = null;
@@ -359,7 +537,6 @@ namespace Server.Models
                                 break;
                         }
 
-
                         if (!Compare(check.Operator, value, check.IntParameter2)) return false;
                         break;
                     case NPCCheckType.PKPoints:
@@ -424,11 +601,51 @@ namespace Server.Models
 
                         if (!Compare(check.Operator, userCurrency.Amount, check.IntParameter1)) return false;
                         break;
+                    case NPCCheckType.RollResult:
+                        {
+                            if (!ob.NPCVals.TryGetValue("ROLLRESULT", out object val)) return false;
+                            if (!Compare(check.Operator, (int)val, check.IntParameter1))  return false;
+                        }
+                        break;
+                    case NPCCheckType.CheckDataList:
+                        {
+                            if (check.StringParameter1 == null) continue;
+
+                            var category = $"{check.StringParameter1}_NameList";
+                            var value1 = GetDataTypeValue(ob, (NPCDataType)check.IntParameter1);
+
+                            if (string.IsNullOrEmpty(value1)) continue;
+
+                            var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
+
+                            if (item == null) return false;
+                        }
+                        break;
+                    case NPCCheckType.CheckDataValue:
+                        {
+                            if (check.StringParameter1 == null) continue;
+
+                            var category = $"{check.StringParameter1}";
+                            var value1 = GetDataTypeValue(ob, (NPCDataType)check.IntParameter1);
+
+                            if (string.IsNullOrEmpty(value1)) continue;
+
+                            var val = 0;
+
+                            var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
+
+                            if (item != null)
+                            {
+                                val = item.IntValue1;
+                            }
+
+                            if (!Compare(check.Operator, (int)val, check.IntParameter2)) return false;
+                        }
+                        break;
                 }
             }
             return true;
         }
-
 
         private bool Compare(Operator op, long pValue, long cValue)
         {
@@ -448,6 +665,30 @@ namespace Server.Models
                     return pValue >= cValue;
                 default: return false;
             }
+        }
+
+        private static string GetDataTypeValue(PlayerObject ob, NPCDataType type)
+        {
+            string value = null;
+
+            switch (type)
+            {
+                case NPCDataType.None:
+                    value = $"{type}";
+                    break;
+                case NPCDataType.User:
+                    value = $"{type}_{ob.Name}";
+                    break;
+                case NPCDataType.Guild:
+                    if (ob.Character.Account.GuildMember?.Guild?.GuildName != null)
+                        value = $"{type}_{ob.Character.Account.GuildMember.Guild.GuildName}";
+                    break;
+                case NPCDataType.Account:
+                    value = $"{type}_{ob.Character.Account.EMailAddress}";
+                    break;
+            }
+
+            return value;
         }
 
         public override Packet GetInfoPacket(PlayerObject ob)

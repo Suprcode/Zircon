@@ -64,7 +64,7 @@ namespace Client.Scenes.Views
             if (TextBox == null || ChatModeButton == null || OptionsButton == null) return;
 
             ChatModeButton.Location = new Point(ClientArea.Location.X, ClientArea.Y - 1);
-            TextBox.Size = new Size(ClientArea.Width - ChatModeButton.Size.Width - 10 - OptionsButton.Size.Width, 20);
+            TextBox.Size = new Size(ClientArea.Width - ChatModeButton.Size.Width - 10 - OptionsButton.Size.Width, 100);
             TextBox.Location = new Point(ClientArea.Location.X + ChatModeButton.Size.Width + 5, ClientArea.Y);
             OptionsButton.Location = new Point(ClientArea.Location.X + TextBox.Size.Width + ChatModeButton.Size.Width + 10, ClientArea.Y - 1);
         }
@@ -102,7 +102,7 @@ namespace Client.Scenes.Views
             {
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(50, SmallButtonHeight),
-                Label = { Text = "Options" },
+                Label = { Text = CEnvir.Language.ChatTextBoxOptionsButtonLabel },
                 Parent = this,
             };
             OptionsButton.MouseClick += (o, e) =>
@@ -114,14 +114,14 @@ namespace Client.Scenes.Views
 
             TextBox = new DXTextBox
             {
-                Size = new Size(350, 20),
+                Size = new Size(350, 100),
                 Parent = this,
                 MaxLength = Globals.MaxChatLength,
                 Opacity = 0.35f,
             };
             TextBox.TextBox.KeyPress += TextBox_KeyPress;
-          //  TextBox.TextBox.KeyDown += TextBox_KeyDown;
-         //   TextBox.TextBox.KeyUp += TextBox_KeyUp;
+            //TextBox.TextBox.KeyDown += TextBox_KeyDown;
+            //TextBox.TextBox.KeyUp += TextBox_KeyUp;
 
             SetClientSize(new Size(TextBox.Size.Width + ChatModeButton.Size.Width + 15 + OptionsButton.Size.Width, TextBox.Size.Height));
 

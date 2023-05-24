@@ -40,6 +40,7 @@ namespace Library
         public static readonly Regex PasswordRegex = new Regex(@"^[\S]{" + MinPasswordLength + "," + MaxPasswordLength + "}$", RegexOptions.Compiled);
         public static readonly Regex CharacterReg = new Regex(@"^[A-Za-z0-9]{" + MinCharacterNameLength + "," + MaxCharacterNameLength + @"}$", RegexOptions.Compiled);
         public static readonly Regex GuildNameRegex = new Regex(@"^[A-Za-z0-9]{" + MinGuildNameLength + "," + MaxGuildNameLength + "}$", RegexOptions.Compiled);
+        public static readonly Regex CaptionReg = new Regex(@"^[A-Za-z0-9]{" + MinCaptionLength + "," + MaxCaptionLength + @"}$", RegexOptions.Compiled);
 
         public static Color NoneColour = Color.White,
                             FireColour = Color.OrangeRed,
@@ -61,6 +62,10 @@ namespace Library
 
             MinRealNameLength = 3,
             MaxRealNameLength = 20,
+
+
+            MinCaptionLength = 3,
+            MaxCaptionLength = 25,
 
             MaxEMailLength = 50,
 
@@ -99,7 +104,6 @@ namespace Library
 
         public static decimal MarketPlaceTax = 0.07M;  //2.5x Item cost
 
-
         public static long
             GuildCreationCost = 7500000,
             GuildMemberCost = 1000000,
@@ -109,17 +113,6 @@ namespace Library
         public static long
             MasterRefineCost = 50000,
             MasterRefineEvaluateCost = 250000;
-
-
-        public static List<Size> ValidResolutions = new List<Size>
-        {
-            new Size(1024, 768),
-            new Size(1366, 768),
-            new Size(1280, 800),
-            new Size(1440, 900),
-            new Size(1600, 900),
-            new Size(1920, 1080),
-        };
 
         public static List<string> Languages = new List<string>
         {
@@ -412,6 +405,7 @@ namespace Library
     {
         public int CharacterIndex { get; set; }
         public string CharacterName { get; set; }
+        public string Caption { get; set; }
         public int Level { get; set; }
         public MirGender Gender { get; set; }
         public MirClass Class { get; set; }
@@ -424,6 +418,8 @@ namespace Library
         public int Index { get; set; }
         public uint ObjectID { get; set; }
         public string Name { get; set; }
+
+        public string Caption { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
         public string GuildRank { get; set; }
@@ -434,20 +430,22 @@ namespace Library
         public MirDirection Direction { get; set; }
 
         public int MapIndex { get; set; }
-        public int? InstanceIndex { get; set; }
+        public int InstanceIndex { get; set; }
 
         public int Level { get; set; }
         public int HairType { get; set; }
         public Color HairColour { get; set; }
         public int Weapon { get; set; }
         public int Armour { get; set; }
+        public int Costume { get; set; }
         public int Shield { get; set; }
         public Color ArmourColour { get; set; }
-        public ExteriorEffect ArmourEffect { get; set; }
 
+        public ExteriorEffect ArmourEffect { get; set; }
         public ExteriorEffect EmblemEffect { get; set; }
-        public ExteriorEffect WingsShape { get; set; }
-        
+        public ExteriorEffect WeaponEffect { get; set; }
+        public ExteriorEffect ShieldEffect { get; set; }
+
         public decimal Experience { get; set; }
 
         public int CurrentHP { get; set; }
@@ -488,6 +486,8 @@ namespace Library
 
         public int HelmetShape { get; set; }
         public int HorseShape { get; set; }
+
+        public bool HideHead { get; set; }
 
         public List<ClientUserQuest> Quests { get; set; }
 
@@ -885,6 +885,11 @@ namespace Library
         }
     }
 
+    public class ClientNPCValues
+    {
+        public int ID { get; set; }
+        public string Value { get; set; }
+    }
 
     public class CellLinkInfo
     {

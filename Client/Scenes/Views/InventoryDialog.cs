@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Library;
+using Library.SystemModels;
 using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
-using Library;
-using Library.SystemModels;
+using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
@@ -20,6 +21,10 @@ namespace Client.Scenes.Views
 
         public DXLabel TitleLabel, PrimaryCurrencyLabel, SecondaryCurrencyLabel, WeightLabel, WalletLabel, PrimaryCurrencyTitle, SecondaryCurrencyTitle;
         public DXButton CloseButton, SortButton, TrashButton;
+
+        public DXButton SellButton;
+
+        public List<DXItemCell> SelectedItems = new();
 
         #region PrimaryCurrency
 
@@ -183,7 +188,7 @@ namespace Client.Scenes.Views
 
             TitleLabel = new DXLabel
             {
-                Text = "Inventory",
+                Text = CEnvir.Language.InventoryDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 ForeColour = Color.FromArgb(198, 166, 99),
@@ -204,6 +209,11 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty,
                 Border = false
             };
+
+            foreach (DXItemCell cell in Grid.Grid)
+            {
+                cell.SelectedChanged += Cell_SelectedChanged;
+            }
 
             CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary library);
 
@@ -251,7 +261,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(55, 381),
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
-                Text = "Gold",
+                Text = CEnvir.Language.InventoryDialogPrimaryCurrencyTitle,
                 Size = new Size(97, 20)
             };
 
@@ -275,7 +285,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(55, 400),
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
-                Text = "GG",
+                Text = CEnvir.Language.InventoryDialogSecondaryCurrencyTitle,
                 Size = new Size(97, 20)
             };
 
@@ -297,7 +307,7 @@ namespace Client.Scenes.Views
                 Index = 364,
                 Parent = this,
                 Location = new Point(180, 384),
-                Hint = "Sort",
+                Hint = CEnvir.Language.InventoryDialogSortButtonHint,
                 Enabled = false
             };
 
@@ -307,21 +317,69 @@ namespace Client.Scenes.Views
                 Index = 358,
                 Parent = this,
                 Location = new Point(218, 384),
-                Hint = "Trash",
+                Hint = CEnvir.Language.InventoryDialogTrashButtonHint,
                 Enabled = false
             };
+
+            SellButton = new DXButton
+            {
+                LibraryFile = LibraryFile.GameInter,
+                Index = 354,
+                Parent = this,
+                Location = new Point(218, 384),
+                Hint = "Sell",
+                Enabled = false,
+                Visible = false
+            };
+            SellButton.MouseClick += SellButton_MouseClick;
 
             WalletLabel = new DXLabel
             {
                 Parent = this,
                 Location = new Point(8, 380),
-                Hint = "Wallet [Ctrl + C]",
+                Hint = CEnvir.Language.InventoryDialogWalletLabelHint,
                 Size = new Size(45, 40),
                 Sound = SoundIndex.GoldPickUp
             };
             WalletLabel.MouseClick += WalletLabel_MouseClick;
         }
 
+        private void Cell_SelectedChanged(object sender, EventArgs e)
+        {
+            if (InvMode == InventoryMode.Sell)
+            {
+                var cell = sender as DXItemCell;
+
+                if (cell.Selected)
+                    SelectedItems.Add(cell);
+                else
+                    SelectedItems.Remove(cell);
+
+                long sum = 0;
+                int count = 0;
+                foreach (DXItemCell itemCell in SelectedItems)
+                {
+                    count++;
+                    sum += (long)(itemCell.Item.Price(itemCell.Item.Count) * PrimaryCurrency.ExchangeRate);
+                }
+
+                SecondaryCurrencyLabel.Text = sum.ToString("#,##0");
+
+                SellButton.Enabled = count > 0;
+            }
+        }
+
+        private void SellButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (GameScene.Game.Observer) return;
+
+            List<CellLinkInfo> links = new ();
+
+            foreach (DXItemCell itemCell in SelectedItems)
+                links.Add(new CellLinkInfo { Count = itemCell.Item.Count, GridType = GridType.Inventory, Slot = itemCell.Slot });
+
+            CEnvir.Enqueue(new C.NPCSell { Links = links });
+        }
 
         private void PrimaryCurrencyLabel_MouseClick(object sender, MouseEventArgs e)
         {
@@ -395,12 +453,83 @@ namespace Client.Scenes.Views
         {
             SetSecondaryCurrency(SecondaryCurrency);
 
+            if (InvMode == InventoryMode.Sell) return;
+
             var userCurrency = GameScene.Game.User.GetCurrency(SecondaryCurrency);
 
             SecondaryCurrencyTitle.Text = userCurrency.Info.Abbreviation;
+            SecondaryCurrencyTitle.ForeColour = Color.DarkOrange;
             SecondaryCurrencyLabel.Text = userCurrency.Amount.ToString("#,##0");
         }
 
+        public void SellMode(CurrencyInfo currency)
+        {
+            SetPrimaryCurrency(currency);
+
+            InvMode = InventoryMode.Sell;
+        }
+
+        public void NormalMode()
+        {
+            SetPrimaryCurrency(null);
+
+            InvMode = InventoryMode.Normal;
+        }
+
+        #region InventoryMode
+
+        public InventoryMode InvMode
+        {
+            get => _InvMode;
+            set
+            {
+                if (_InvMode == value) return;
+
+                InventoryMode oldValue = _InvMode;
+                _InvMode = value;
+
+                OnInventoryModeChanged(oldValue, value);
+            }
+        }
+        private InventoryMode _InvMode;
+        public event EventHandler<EventArgs> InventoryModeChanged;
+        public void OnInventoryModeChanged(InventoryMode oValue, InventoryMode nValue)
+        {
+            TrashButton.Visible = false;
+            SellButton.Visible = false;
+
+            DXItemCell.SelectedCell = null;
+
+            switch (nValue)
+            {
+                case InventoryMode.Normal:
+                    {
+                        RefreshCurrency();
+
+                        TrashButton.Visible = true;
+
+                        TitleLabel.Text = CEnvir.Language.InventoryDialogTitle;
+                        TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+                    }
+                    break;
+                case InventoryMode.Sell:
+                    {
+                        SecondaryCurrencyTitle.Text = "Total";
+                        SecondaryCurrencyTitle.ForeColour = Color.CornflowerBlue;
+                        SecondaryCurrencyLabel.Text = 0.ToString("#,##0");
+
+                        SellButton.Visible = true;
+
+                        TitleLabel.Text = CEnvir.Language.InventoryDialogTitle + " [Sell]";
+                        TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+                    }
+                    break;
+            }
+
+            InventoryModeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
 
         #endregion
 

@@ -147,6 +147,7 @@ namespace Client.Scenes
         public MainPanel MainPanel;
 
         public DXConfigWindow ConfigBox;
+        public CaptionDialog CaptionBox;
         public InventoryDialog InventoryBox;
         public CharacterDialog CharacterBox;
         public FilterDropDialog FilterDropBox;
@@ -156,7 +157,6 @@ namespace Client.Scenes
         public ChatOptionsDialog ChatOptionsBox;
         public NPCDialog NPCBox;
         public NPCGoodsDialog NPCGoodsBox;
-        public NPCSellDialog NPCSellBox;
         public NPCRepairDialog NPCRepairBox;
         public NPCRefinementStoneDialog NPCRefinementStoneBox;
         public NPCRefineDialog NPCRefineBox;
@@ -170,6 +170,7 @@ namespace Client.Scenes
         public NPCAccessoryLevelDialog NPCAccessoryLevelBox;
         public NPCAccessoryResetDialog NPCAccessoryResetBox;
         public NPCMasterRefineDialog NPCMasterRefineBox;
+        public NPCRollDialog NPCRollBox;
         public MiniMapDialog MiniMapBox;
         public BigMapDialog BigMapBox;
         public MagicDialog MagicBox;
@@ -226,7 +227,7 @@ namespace Client.Scenes
                 if (_AutoRun == value) return;
                 _AutoRun = value;
                 
-                ReceiveChat(value ? "[AutoRun: On]" : "[AutoRun: Off]", MessageType.Hint);
+                ReceiveChat(value ? CEnvir.Language.GameSceneAutoRunOn : CEnvir.Language.GameSceneAutoRunOff, MessageType.Hint);
             }
         }
         private bool _AutoRun;
@@ -402,6 +403,13 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
             };
+
+            CaptionBox = new CaptionDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+
             InventoryBox = new InventoryDialog
             {
                 Parent = this,
@@ -442,11 +450,6 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false
-            };
-            NPCSellBox = new NPCSellDialog
-            {
-                Parent = this,
-                Visible = false,
             };
 
             NPCRepairBox = new NPCRepairDialog
@@ -549,6 +552,11 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false
             };
+            NPCRollBox = new NPCRollDialog
+            {
+                Parent = this,
+                Visible = false
+            };
 
             InspectBox = new CharacterDialog(true)
             {
@@ -640,7 +648,6 @@ namespace Client.Scenes
                 Visible = false,
                 Parent = this,
             };
-
             NPCAccessoryRefineBox = new NPCAccessoryRefineDialog
             {
                 Parent = this,
@@ -685,6 +692,8 @@ namespace Client.Scenes
 
             ConfigBox.Location = new Point((Size.Width - ConfigBox.Size.Width)/2, (Size.Height - ConfigBox.Size.Height)/2);
 
+            CaptionBox.Location = Point.Empty;
+
             ChatOptionsBox.Location = new Point((Size.Width - ChatOptionsBox.Size.Width)/2, (Size.Height - ChatOptionsBox.Size.Height)/2);
             
             ExitBox.Location = new Point((Size.Width - ExitBox.Size.Width) / 2, (Size.Height - ExitBox.Size.Height) / 2);
@@ -703,7 +712,7 @@ namespace Client.Scenes
 
             MainPanel.Location = new Point((Size.Width - MainPanel.Size.Width)/2, Size.Height - MainPanel.Size.Height);
 
-            ChatTextBox.Location = new Point(MainPanel.Location.X, MainPanel.Location.Y - ChatTextBox.Size.Height);
+            ChatTextBox.Location = new Point((Size.Width - ChatTextBox.Size.Width) / 2, (Size.Height - ChatTextBox.Size.Height) / 2);
 
             BeltBox.Location = new Point(MainPanel.Location.X + MainPanel.Size.Width - BeltBox.Size.Width, MainPanel.Location.Y - BeltBox.Size.Height);
             
@@ -711,7 +720,7 @@ namespace Client.Scenes
 
             NPCGoodsBox.Location = new Point(0, NPCBox.Size.Height);
 
-            NPCSellBox.Location = new Point(NPCGoodsBox.Size.Width, NPCBox.Size.Height);
+            NPCRollBox.Location = new Point((Size.Width - NPCRollBox.Size.Width) / 2, (Size.Height - NPCRollBox.Size.Height) / 2);
 
             NPCRepairBox.Location = new Point(0, NPCBox.Size.Height);
 
@@ -861,7 +870,7 @@ namespace Client.Scenes
             }
 
             if (result)
-                Game.ReceiveChat("Chat Layout Loaded", MessageType.Announcement);
+                Game.ReceiveChat(CEnvir.Language.ChatLayoutLoaded, MessageType.Announcement);
             else
                 ChatOptionsBox.CreateDefaultWindows();
         }
@@ -2835,7 +2844,7 @@ namespace Client.Scenes
 
                     if (User.AttackMagic != magic.Info.Magic)
                     {
-                        ReceiveChat($"{magic.Info.Name} is now Ready.", MessageType.Hint);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneSkillReady, magic.Info.Name), MessageType.Hint);
                         int attackDelay = Globals.AttackDelay - MapObject.User.Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
                         attackDelay = Math.Max(800, attackDelay);
 
@@ -2854,7 +2863,7 @@ namespace Client.Scenes
 
                     if (User.AttackMagic != magic.Info.Magic)
                     {
-                        ReceiveChat($"{magic.Info.Name} is now Ready.", MessageType.Hint);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneSkillReady, magic.Info.Name), MessageType.Hint);
                         ToggleTime = CEnvir.Now + TimeSpan.FromMilliseconds(500);
 
                         User.AttackMagic = magic.Info.Magic;
@@ -2873,7 +2882,7 @@ namespace Client.Scenes
                 if (CEnvir.Now >= OutputTime)
                 {
                     OutputTime = CEnvir.Now.AddSeconds(1);
-                    ReceiveChat($"Unable to cast {magic.Info.Name}, it is still on Cooldown.", MessageType.Hint);
+                    ReceiveChat(string.Format(CEnvir.Language.GameSceneCastInCooldown, magic.Info.Name), MessageType.Hint);
                 }
                 return;
             }
@@ -2887,7 +2896,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name} whilst in combat", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastInCombat, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2897,7 +2906,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Health.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughHealth, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2910,7 +2919,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Mana.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughMana, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2921,7 +2930,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Health.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughHealth, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2930,7 +2939,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Mana.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughMana, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2942,7 +2951,7 @@ namespace Client.Scenes
                         if (CEnvir.Now >= OutputTime)
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
-                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Mana.", MessageType.Hint);
+                            ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughMana, magic.Info.Name), MessageType.Hint);
                         }
                         return;
                     }
@@ -2976,7 +2985,7 @@ namespace Client.Scenes
                     {
                         if (CEnvir.Now < OutputTime) return;
                         OutputTime = CEnvir.Now.AddSeconds(1);
-                        ReceiveChat($"Unable to cast {magic.Info.Name}, Your target is too far.", MessageType.Hint);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneCastTooFar, magic.Info.Name), MessageType.Hint);
                         return;
                     }
 
@@ -3136,7 +3145,7 @@ namespace Client.Scenes
                     {
                         if (CEnvir.Now < OutputTime) return;
                         OutputTime = CEnvir.Now.AddSeconds(1);
-                        ReceiveChat($"Unable to cast {magic.Info.Name}, Your target is too far.", MessageType.Hint);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneCastTooFar, magic.Info.Name), MessageType.Hint);
                         return;
                     }
                     break;
@@ -3148,7 +3157,7 @@ namespace Client.Scenes
             {
                 if (CEnvir.Now < OutputTime) return;
                 OutputTime = CEnvir.Now.AddSeconds(1);
-                ReceiveChat($"Unable to cast {magic.Info.Name}, Your target is too far.", MessageType.Hint);
+                ReceiveChat(string.Format(CEnvir.Language.GameSceneCastTooFar, magic.Info.Name), MessageType.Hint);
                 return;
             }
 
@@ -3516,7 +3525,7 @@ namespace Client.Scenes
                 case EquipmentSlot.Shield:
                     if (User.HandWeight - (Equipment[(int) slot]?.Info.Weight ?? 0) + item.Weight > User.Stats[Stat.HandWeight])
                     {
-                        ReceiveChat($"Unable to hold {item.Info.ItemName}, it is too heavy.", MessageType.System);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneHoldTooHeavy, item.Info.ItemName), MessageType.System);
                         return false;
                     }
                     break;
@@ -3527,14 +3536,14 @@ namespace Client.Scenes
                 case EquipmentSlot.Reel:
                     if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod)
                     {
-                        ReceiveChat($"Unable to hold {item.Info.ItemName}, must be holding fishing rod.", MessageType.System);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneNeedFishingRod, item.Info.ItemName), MessageType.System);
                         return false;
                     }
                     break;
                 default:
                     if (User.WearWeight - (Equipment[(int) slot]?.Info.Weight ?? 0) + item.Weight > User.Stats[Stat.WearWeight])
                     {
-                        ReceiveChat($"Unable to wear {item.Info.ItemName}, it is too heavy.", MessageType.System);
+                        ReceiveChat(string.Format(CEnvir.Language.GameSceneWearTooHeavy, item.Info.ItemName), MessageType.System);
                         return false;
                     }
                     break;
@@ -3589,7 +3598,6 @@ namespace Client.Scenes
             NPCGoodsBox.CloseButton.Enabled = !Observer;
             NPCRefineBox.CloseButton.Enabled = !Observer;
             NPCRepairBox.CloseButton.Enabled = !Observer;
-            NPCSellBox.CloseButton.Enabled = !Observer;
             NPCRefineRetrieveBox.CloseButton.Enabled = !Observer;
         }
         public void LevelChanged()
@@ -4234,14 +4242,6 @@ namespace Client.Scenes
                     NPCGoodsBox = null;
                 }
 
-                if (NPCSellBox != null)
-                {
-                    if (!NPCSellBox.IsDisposed)
-                        NPCSellBox.Dispose();
-
-                    NPCSellBox = null;
-                }
-
                 if (NPCRefinementStoneBox != null)
                 {
                     if (!NPCRefinementStoneBox.IsDisposed)
@@ -4273,6 +4273,7 @@ namespace Client.Scenes
 
                     NPCRefineRetrieveBox = null;
                 }
+
                 if (NPCMasterRefineBox != null)
                 {
                     if (!NPCMasterRefineBox.IsDisposed)
@@ -4281,6 +4282,13 @@ namespace Client.Scenes
                     NPCMasterRefineBox = null;
                 }
 
+                if (NPCRollBox != null)
+                {
+                    if (!NPCRollBox.IsDisposed)
+                        NPCRollBox.Dispose();
+
+                    NPCRollBox = null;
+                }
 
                 if (NPCQuestBox != null)
                 {

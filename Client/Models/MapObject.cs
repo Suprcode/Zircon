@@ -120,6 +120,19 @@ namespace Client.Models
         }
         private string _Name;
 
+        public virtual string Caption
+        {
+            get { return _Caption; }
+            set
+            {
+                if (_Caption == value) return;
+
+                _Caption = value;
+
+                NameChanged();
+            }
+        }
+        private string _Caption;
         public virtual string Title
         {
             get { return _Title; }
@@ -184,7 +197,7 @@ namespace Client.Models
         private Color _NameColour;
 
         public DateTime ChatTime;
-        public DXLabel NameLabel, ChatLabel, TitleNameLabel;
+        public DXLabel NameLabel, ChatLabel, TitleNameLabel, CaptionLabel;
         public List<DamageInfo> DamageList = new List<DamageInfo>();
         public List<MirEffect> Effects = new List<MirEffect>();
 
@@ -4059,7 +4072,23 @@ namespace Client.Models
 
         public virtual void NameChanged()
         {
-            if (string.IsNullOrEmpty(Name))
+
+
+            if (Race is ObjectType.Player && Caption is not null)
+            {
+                CaptionLabel = new DXLabel
+                {
+                    BackColour = Color.Empty,
+                    ForeColour = NameColour,
+                    Outline = true,
+                    OutlineColour = Color.Black,
+                    Text = Caption,
+                    IsControl = false,
+                    IsVisible = true,
+
+                };
+            }
+                if (string.IsNullOrEmpty(Name))
             {
                 NameLabel = null;
             }
@@ -4160,6 +4189,8 @@ namespace Client.Models
                 NameLabel.Draw();
             }
 
+         
+
             if (TitleNameLabel != null)
             {
                 int x = DrawX + (48 - TitleNameLabel.Size.Width) / 2;
@@ -4172,6 +4203,26 @@ namespace Client.Models
 
                 TitleNameLabel.Location = new Point(x, y);
                 TitleNameLabel.Draw();
+            }
+
+            if (CaptionLabel is not null)
+            {
+
+                int x = DrawX + (48 - CaptionLabel.Size.Width) / 2;
+                int y = (DrawY - (32 - CaptionLabel.Size.Height) / 2) - 13;
+
+                if (Dead)
+                    y += 21;
+                else
+                    y -= 6;
+
+                if (TitleNameLabel != null)
+                {
+                    y -= 13;
+                }
+
+                CaptionLabel.Location = new Point(x, y);
+                CaptionLabel.Draw();
             }
         }
         public virtual void DrawDamage()

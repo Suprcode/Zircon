@@ -439,7 +439,6 @@ namespace Server.DBModels
             base.OnDeleted();
         }
 
-
         protected override void OnCreated()
         {
             base.OnCreated();

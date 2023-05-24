@@ -34,5 +34,15 @@ namespace Server.Views
         {
             SMain.Session.Save(true);
         }
+
+        private void ImportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<MonsterInfo>();
+        }
+
+        private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<MonsterInfo>(MonsterInfoGridView);
+        }
     }
 }

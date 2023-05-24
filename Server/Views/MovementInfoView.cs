@@ -13,8 +13,6 @@ namespace Server.Views
 
             MovementGridControl.DataSource = SMain.Session.GetCollection<MovementInfo>().Binding;
 
-
-
             MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
             SpawnLookUpEdit.DataSource = SMain.Session.GetCollection<RespawnInfo>().Binding;
@@ -33,6 +31,16 @@ namespace Server.Views
             base.OnLoad(e);
 
             SMain.SetUpView(MovementGridView);
+        }
+
+        private void ImportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonImporter.Import<MovementInfo>();
+        }
+
+        private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            JsonExporter.Export<MovementInfo>(MovementGridView);
         }
     }
 }

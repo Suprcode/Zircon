@@ -243,7 +243,7 @@
             this.ClientSize = new System.Drawing.Size(693, 408);
             this.Controls.Add(this.UserDropGridControl);
             this.Name = "UserConquestStatsView";
-            this.Text = "UserDropView";
+            this.Text = "Conquest Stats";
             ((System.ComponentModel.ISupportInitialize)(this.UserDropGridControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.UserDropGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AccountLookUpEdit)).EndInit();

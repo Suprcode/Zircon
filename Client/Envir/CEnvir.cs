@@ -72,6 +72,8 @@ namespace Client.Envir
 
         static CEnvir()
         {
+            LoadLanguage();
+
             Thread workThread = new Thread(SaveChatLoop) { IsBackground = true };
             workThread.Start();
 
@@ -85,10 +87,10 @@ namespace Client.Envir
             switch (Config.Language.ToUpper())
             {
                 case "ENGLISH":
-                    Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)]; //Todo Language Selections
+                    Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)];
                     break;
                 case "CHINESE":
-                    Language = (StringMessages)ConfigReader.ConfigObjects[typeof(ChineseMessages)]; //Todo Language Selections
+                    Language = (StringMessages)ConfigReader.ConfigObjects[typeof(ChineseMessages)];
                     break;
             }
 
@@ -352,6 +354,9 @@ namespace Client.Envir
                     Globals.GoldInfo = Globals.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
 
                     CheckKeyBinds();
+
+                    if (!DXManager.ValidResolutions.Contains(Config.GameSize))
+                        Config.GameSize = DXManager.ValidResolutions[0];
 
                     Loaded = true;
                 }

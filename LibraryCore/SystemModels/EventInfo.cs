@@ -9,6 +9,7 @@ namespace Library.SystemModels
 {
     public sealed class EventInfo : DBObject
     {
+        [IsIdentity]
         public string Description
         {
             get { return _Description; }

@@ -105,6 +105,9 @@ namespace Client.Envir
             [SoundIndex.GoldPickUp] = new DXSound(SoundPath + @"120.wav", SoundType.System),
             [SoundIndex.GoldGained] = new DXSound(SoundPath + @"122.wav", SoundType.System),
 
+            [SoundIndex.RollDice] = new DXSound(SoundPath + @"dice_roll.wav", SoundType.System),
+            [SoundIndex.RollYut] = new DXSound(SoundPath + @"yut_sticks.wav", SoundType.System),
+
             #endregion
 
             #region Magic

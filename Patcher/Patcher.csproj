@@ -15,26 +15,17 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\Debug\Patcher\</OutputPath>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\Release\Patcher\</OutputPath>
+    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DevExpress.Win" Version="22.2.3" />
+    <PackageReference Include="DevExpress.Win.BonusSkins" Version="22.2.3" />
+    <PackageReference Include="DevExpress.Win.Design" Version="22.2.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="DevExpress.Data.Desktop.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.Data.Desktop.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Data.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\Standard\DevExpress.Data.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Utils.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.Utils.v21.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.XtraEditors.v21.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 21.2\Components\Bin\NetCore\DevExpress.XtraEditors.v21.2.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>
