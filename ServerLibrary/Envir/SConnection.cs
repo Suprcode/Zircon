@@ -217,7 +217,7 @@ namespace Server.Envir
                 observer.Enqueue(p);
         }
 
-        public void ReceiveChat(string text, MessageType type, uint objectID = 0)
+        public void ReceiveChat(string text, MessageType type, List<ClientUserItem> linkedItems = null, uint objectID = 0)
         {
             switch (Stage)
             {
@@ -229,6 +229,7 @@ namespace Server.Envir
                         Type = type,
                         ObjectID = objectID, // && type != guild
 
+                        LinkedItems = linkedItems,
                         ObserverPacket = false,
                     });
                     break;

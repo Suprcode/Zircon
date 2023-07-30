@@ -591,7 +591,7 @@ namespace Library.Network.ServerPackets
         public uint ObjectID { get; set; }
         public string Text { get; set; }
         public MessageType Type { get; set; }
-        public List<ClientUserItem> Items { get; set; }
+        public List<ClientUserItem> LinkedItems { get; set; }
     }
 
     public sealed class NPCResponse : Packet

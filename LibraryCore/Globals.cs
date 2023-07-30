@@ -104,6 +104,8 @@ namespace Library
 
         public static decimal MarketPlaceTax = 0.07M;  //2.5x Item cost
 
+        public static Regex LinkedItemRegex = new Regex(@"\[(?<Text>.*?):(?<ID>.+?)\]", RegexOptions.Compiled);
+
         public static long
             GuildCreationCost = 7500000,
             GuildMemberCost = 1000000,
