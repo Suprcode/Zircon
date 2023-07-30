@@ -91,6 +91,8 @@ namespace Library
 
             MaxGrowthLevel = 3,
 
+            MaxMailStorage = 50,
+
             CloakRange = 3,
             MarketPlaceFee = 0,
             AccessoryLevelCost = 0,

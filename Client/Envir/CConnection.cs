@@ -4219,6 +4219,11 @@ namespace Client.Envir
             GameScene.Game.NPCRollBox.Setup(p.Type, p.Result, false);
         }
 
+        public void Process(S.SetTimer p)
+        {
+            GameScene.Game.TimerBox.AddTimer(p);
+        }
+
         public void Process(S.HelmetToggle p)
         {
             GameScene.Game.ConfigBox.DisplayHelmetCheckBox.Checked = !p.HideHelmet;

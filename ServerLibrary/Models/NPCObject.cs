@@ -90,7 +90,10 @@ namespace Server.Models
                                     continue;
                                 }
 
-                                ob.Teleport(action.InstanceParameter1.ConnectRegion, action.InstanceParameter1, index.Value);
+                                if (ob.Teleport(action.InstanceParameter1.ConnectRegion, action.InstanceParameter1, index.Value))
+                                {
+
+                                }
                             }
                             else
                             {

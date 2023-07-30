@@ -222,6 +222,21 @@ namespace Library.SystemModels
         }
         private int _CooldownTimeInMinutes;
 
+        public int TimeLimitInMinutes
+        {
+            get { return _TimeLimitInMinutes; }
+            set
+            {
+                if (_TimeLimitInMinutes == value) return;
+
+                var oldValue = _TimeLimitInMinutes;
+                _TimeLimitInMinutes = value;
+
+                OnChanged(oldValue, value, "TimeLimitInMinutes");
+            }
+        }
+        private int _TimeLimitInMinutes;
+
         [Association("Map", true)]
         public DBBindingList<InstanceMapInfo> Maps { get; set; }
 

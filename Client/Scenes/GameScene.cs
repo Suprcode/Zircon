@@ -196,6 +196,7 @@ namespace Client.Scenes
         public NPCWeaponCraftWindow NPCWeaponCraftBox;
         public NPCAccessoryRefineDialog NPCAccessoryRefineBox;
         public CurrencyDialog CurrencyBox;
+        public TimerDialog TimerBox;
 
         public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
@@ -643,6 +644,12 @@ namespace Client.Scenes
                 Visible = false,
             };
 
+            TimerBox = new TimerDialog
+            {
+                Parent = this,
+                Visible = true,
+            };
+
             NPCWeaponCraftBox = new NPCWeaponCraftWindow
             {
                 Visible = false,
@@ -761,6 +768,8 @@ namespace Client.Scenes
             FishingBox.Location = new Point(CharacterBox.Location.X + CharacterBox.Size.Width, CharacterBox.Location.Y);
 
             FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2), ((Size.Height - FishingCatchBox.Size.Height) / 2) + 200);
+
+            TimerBox.Location = new Point(Size.Width - 120, Size.Height - 180);
         }
 
         public void SaveChatTabs()

@@ -121,6 +121,7 @@ namespace Server.Envir.Translations
         public override string MailHasItems { get; set; } = "Unable to delete mail that contains items.";
         public override string MailNotFound { get; set; } = "{0} does not exist.";
         public override string MailSelfMail { get; set; } = "You cannot send mail to yourself.";
+        public override string MailStorageFull { get; set; } = "Recipients mail box is too full to receive more items.";
         public override string MailMailCost { get; set; } = "You cannot afford to send this mail.";
         public override string MailSendSafeZone { get; set; } = "You cannot send items from your inventory if you are not in SafeZone";
 

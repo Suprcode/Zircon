@@ -714,9 +714,16 @@ namespace Server.Models
                 {
                     return;
                 }
+                else
+                {
+                    SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
+                    Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
+                    Connection = null;
+                    Character = null;
+                    return;
+                }
             }
-
-            if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
+            else if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
             {
                 SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
@@ -3221,6 +3228,12 @@ namespace Server.Models
                 return;
             }
 
+            if (p.Links.Count > 0 && account.Mail.Sum(x => x.Items.Count) >= Globals.MaxMailStorage)
+            {
+                Connection.ReceiveChat(Connection.Language.MailStorageFull, MessageType.System);
+                return;
+            }
+
             if (p.Gold < 0 || p.Gold > Gold.Amount)
             {
                 Connection.ReceiveChat(Connection.Language.MailMailCost, MessageType.System);
@@ -4859,6 +4872,7 @@ namespace Server.Models
 
             return true;
         }
+
         public bool ParseLinks(CellLinkInfo link)
         {
             return link != null && link.Count > 0;
@@ -19785,6 +19799,10 @@ namespace Server.Models
                 joinResult.Result = InstanceResult.NoMap;
                 SendInstanceMessage(instance, joinResult.Result);
             }
+            else
+            {
+
+            }
 
             Enqueue(joinResult);
         }
@@ -19805,6 +19823,7 @@ namespace Server.Models
                     return (null, InstanceResult.SafeZoneOnly);
             }
 
+            //Check static instance conditions are met -> if any fail cannot join instance
             switch (instance.Type)
             {
                 case InstanceType.Solo:
@@ -19857,8 +19876,10 @@ namespace Server.Models
                     break;
             }
 
+            //Check live instance conditions are met -> if any pass then will join an existing instance
             switch (instance.Type)
             {
+                case InstanceType.Solo:
                 case InstanceType.Group:
                 case InstanceType.Guild:
                     {
@@ -19868,28 +19889,29 @@ namespace Server.Models
 
                             var maps = mapInstance[i];
 
-                            foreach (var key in maps.Keys)
+                            var playersOnInstance = maps.Values.SelectMany(x => x.Players);
+
+                            switch (instance.Type)
                             {
-                                var map = maps[key];
-
-                                switch (instance.Type)
-                                {
-                                    case InstanceType.Group:
-                                        if (!map.Players.Any(x => x.InGroup(this))) continue;
-                                        break;
-                                    case InstanceType.Guild:
-                                        if (!map.Players.Any(x => x.InGuild(this))) continue;
-                                        break;
-                                }
-
-                                if (!checkOnly)
-                                {
-                                    if (!instance.UserRecord.ContainsKey(Name))
-                                        instance.UserRecord.Add(Name, (byte)i);
-                                }
-
-                                return ((byte)i, InstanceResult.Success);
+                                case InstanceType.Solo:
+                                    if (instance.MaxPlayerCount <= 1) break; //always new instance when solo is max 1 player
+                                    else if (playersOnInstance.Count() >= instance.MaxPlayerCount) continue;
+                                    break;
+                                case InstanceType.Group:
+                                    if (!playersOnInstance.Any(x => x.InGroup(this))) continue;
+                                    break;
+                                case InstanceType.Guild: //max player count doesn't apply to guild instances
+                                    if (!playersOnInstance.Any(x => x.InGuild(this))) continue;
+                                    break;
                             }
+
+                            if (!checkOnly)
+                            {
+                                if (!instance.UserRecord.ContainsKey(Name))
+                                    instance.UserRecord.Add(Name, (byte)i);
+                            }
+
+                            return ((byte)i, InstanceResult.Success);
                         }
                     }
                     break;
@@ -19932,6 +19954,13 @@ namespace Server.Models
             }
 
             return (index.Value, InstanceResult.Success);
+        }
+
+        public void SetTimer(string key, DateTime expiry)
+        {
+            var seconds = Math.Max(0, (int)(expiry - DateTime.UtcNow).TotalSeconds);
+
+            Enqueue(new S.SetTimer { Key = key, Type = 0, Seconds = seconds });
         }
 
         public void SendInstanceMessage(InstanceInfo instance, InstanceResult result)

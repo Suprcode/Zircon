@@ -1327,5 +1327,12 @@ namespace Library.Network.ServerPackets
         public int Type { get; set; }
         public int Result { get; set; }
     }
+
+    public sealed class SetTimer : Packet
+    {
+        public string Key { get; set; }
+        public byte Type { get; set; }
+        public int Seconds { get; set; }
+    }
 }
 
