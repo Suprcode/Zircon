@@ -3769,13 +3769,13 @@ namespace Client.Scenes
             CharacterBox.MarriageIcon.Hint = Partner?.Name;
         }
 
-        public void ReceiveChat(string message, MessageType type)
+        public void ReceiveChat(string message, MessageType type, List<ClientUserItem> linkedItems = null)
         {
             if (Config.LogChat)
                 CEnvir.ChatLog.Enqueue($"[{Time.Now:F}]: {message}");
 
             foreach (ChatTab tab in ChatTab.Tabs)
-                tab.ReceiveChat(message, type);
+                tab.ReceiveChat(message, type, linkedItems);
         }
         public void ReceiveChat(MessageAction action, params object[] args)
         {

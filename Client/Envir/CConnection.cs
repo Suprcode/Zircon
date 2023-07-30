@@ -2383,7 +2383,7 @@ namespace Client.Envir
         {
             if (GameScene.Game == null) return;
 
-            GameScene.Game.ReceiveChat(p.Text, p.Type);
+            GameScene.Game.ReceiveChat(p.Text, p.Type, p.LinkedItems);
 
             if (p.Type != MessageType.Normal || p.ObjectID <= 0) return;
 

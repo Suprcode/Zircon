@@ -243,6 +243,15 @@ namespace Client.Scenes.Views
             TextBox.TextBox.SelectionStart = TextBox.TextBox.Text.Length;
         }
 
+        public void LinkItem(ClientUserItem item)
+        {
+            if (item == null) return;
+
+            TextBox.TextBox.Text += $"[{item.Info.ItemName}:{item.Index}]";
+            TextBox.SetFocus();
+            TextBox.TextBox.SelectionLength = 0;
+            TextBox.TextBox.SelectionStart = TextBox.TextBox.Text.Length;
+        }
         #endregion
 
         #region IDisposable

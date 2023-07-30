@@ -671,13 +671,6 @@ namespace Client.Scenes.Views
 
         #endregion
 
-        public class ButtonInfo
-        {
-            public Rectangle Region;
-            public int Index;
-            public int Length;
-        }
-
         public class ButtonIndex
         {
             public CharacterRange Range;
@@ -698,6 +691,13 @@ namespace Client.Scenes.Views
 
         [GeneratedRegex("\\[(?<Text>.*?):(?<ID>.+?)\\]", RegexOptions.Compiled)]
         private static partial Regex ButtonRegex();
+    }
+
+    public class ButtonInfo
+    {
+        public Rectangle Region;
+        public int Index;
+        public int Length;
     }
 
     public sealed class NPCGoodsDialog : DXWindow
