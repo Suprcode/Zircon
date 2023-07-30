@@ -13,6 +13,21 @@ namespace Server
             var assembly = Assembly.GetAssembly(typeof(Config));
             ConfigReader.Load(assembly);
             Config.LoadVersion();
+            try
+            {
+                if (!string.IsNullOrEmpty(Config.EncryptionKey))
+                    SEnvir.CryptoKey = Convert.FromBase64String(Config.EncryptionKey);
+            }
+            catch (Exception)
+            {
+                throw new ApplicationException($"Invalid format encryption key, expected a base64 with 32 bytes");
+            }
+
+            if (Config.EncryptionEnabled && SEnvir.CryptoKey == null)
+                throw new ApplicationException($"Encryption is enabled but not specified key [System] => DatabaseKey");
+
+            if (Config.EncryptionEnabled)
+                Encryption.SetKey(SEnvir.CryptoKey);
 
             SEnvir.UseLogConsole = true;
             SEnvir.StartServer();
