@@ -1698,6 +1698,11 @@ namespace Client.Controls
             GameScene.Game.MouseItem = null;
             UpdateBorder();
         }
+        public override void OnMouseUp(MouseEventArgs e)
+        {
+            //This needs to be here to stop chat box losing focus after you link an item
+        }
+
         public override void OnMouseClick(MouseEventArgs e)
         {
             if (Locked || GameScene.Game.CurrencyPickedUp != null || (!Linked && Link != null) || GameScene.Game.Observer || GridType == GridType.Inspect) return;
@@ -1744,7 +1749,14 @@ namespace Client.Controls
                     break;
                 case MouseButtons.Middle:
                     if (Item != null)
+                    {
+                        if (CEnvir.Ctrl)
+                        {
+                            GameScene.Game.ChatTextBox.LinkItem(Item);
+                            break;
+                        }
                         CEnvir.Enqueue(new C.ItemLock { GridType = GridType, SlotIndex = Slot, Locked = (Item.Flags & UserItemFlags.Locked) != UserItemFlags.Locked });
+                    }
                     break;
                 case MouseButtons.Right:
                     switch (GridType)

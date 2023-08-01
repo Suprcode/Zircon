@@ -27,7 +27,7 @@ namespace Server.Envir.Commands.Admin {
                 character.Account.Referral.HuntGold2.Amount += count / 10;
 
                 if (character.Account.Referral.Connection != null) {
-                    character.Account.Referral.Connection.ReceiveChat(string.Format(character.Account.Referral.Connection.Language.ReferralPaymentComplete, count / 10), MessageType.System, 0);
+                    character.Account.Referral.Connection.ReceiveChat(string.Format(character.Account.Referral.Connection.Language.ReferralPaymentComplete, count / 10), MessageType.System, null, 0);
 
                     if (character.Account.Referral.Connection.Stage == GameStage.Game)
                         character.Account.Referral.Connection.Player.HuntGoldChanged();

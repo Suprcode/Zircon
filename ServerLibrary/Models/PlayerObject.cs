@@ -14,6 +14,7 @@ using C = Library.Network.ClientPackets;
 using System.Threading;
 using System.Globalization;
 using Server.Envir.Commands.Handler;
+using System.Text.RegularExpressions;
 
 namespace Server.Models
 {
@@ -714,9 +715,16 @@ namespace Server.Models
                 {
                     return;
                 }
+                else
+                {
+                    SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
+                    Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
+                    Connection = null;
+                    Character = null;
+                    return;
+                }
             }
-
-            if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
+            else if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
             {
                 SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
@@ -1262,6 +1270,25 @@ namespace Server.Models
 
             string[] parts;
 
+            List<ClientUserItem> linkedItems = new List<ClientUserItem>();
+            MatchCollection matches = Globals.LinkedItemRegex.Matches(text);
+            foreach (Match match in matches)
+            {
+                if (!int.TryParse(match.Groups["ID"].Value, out int itemIndex)) continue;
+                UserItem item = Inventory.FirstOrDefault(e => e != null && e.Index == itemIndex);
+                if (item == null)
+                    item = Storage.FirstOrDefault(e => e != null && e.Index == itemIndex);
+                if (item == null)
+                    item = Companion.Inventory.FirstOrDefault(e => e != null && e.Index == itemIndex);
+                if (item == null)
+                    continue;
+
+                text = text.Replace(match.Groups["Text"].Value, item.Info.ItemName);
+                if (!linkedItems.Any(e => e.Index == item.Index))
+                    linkedItems.Add(item.ToClientInfo());
+            }
+
+
             if (text.StartsWith("/"))
             {
                 //Private Message
@@ -1274,7 +1301,7 @@ namespace Server.Models
 
                 if (con == null || (con.Stage != GameStage.Observer && con.Stage != GameStage.Game) || SEnvir.IsBlocking(Character.Account, con.Account))
                 {
-                    Connection.ReceiveChat(string.Format(Connection.Language.CannotFindPlayer, parts[0]), MessageType.System);
+                    Connection.ReceiveChat(string.Format(Connection.Language.CannotFindPlayer, parts[0]), MessageType.System, linkedItems);
                     return;
                 }
 
@@ -1282,22 +1309,22 @@ namespace Server.Models
                 {
                     if (BlockWhisper)
                     {
-                        Connection.ReceiveChat(Connection.Language.BlockingWhisper, MessageType.System);
+                        Connection.ReceiveChat(Connection.Language.BlockingWhisper, MessageType.System, linkedItems);
                         return;
                     }
 
                     if (con.Player != null && con.Player.BlockWhisper)
                     {
-                        Connection.ReceiveChat(string.Format(Connection.Language.PlayerBlockingWhisper, parts[0]), MessageType.System);
+                        Connection.ReceiveChat(string.Format(Connection.Language.PlayerBlockingWhisper, parts[0]), MessageType.System, linkedItems);
                         return;
                     }
                 }
 
-                Connection.ReceiveChat($"/{text}", MessageType.WhisperOut);
+                Connection.ReceiveChat($"/{text}", MessageType.WhisperOut, linkedItems);
 
                 if (SEnvir.Now < Character.Account.ChatBanExpiry) return;
 
-                con.ReceiveChat($"{Name}=> {text.Remove(0, parts[0].Length)}", Character.Account.TempAdmin ? MessageType.GMWhisperIn : MessageType.WhisperIn);
+                con.ReceiveChat($"{Name}=> {text.Remove(0, parts[0].Length)}", Character.Account.TempAdmin ? MessageType.GMWhisperIn : MessageType.WhisperIn, linkedItems);
             }
             else if (text.StartsWith("!!"))
             {
@@ -1311,7 +1338,7 @@ namespace Server.Models
 
                     if (member != this && SEnvir.Now < Character.Account.ChatBanExpiry) continue;
 
-                    member.Connection.ReceiveChat(text, MessageType.Group);
+                    member.Connection.ReceiveChat(text, MessageType.Group, linkedItems);
                 }
             }
             else if (text.StartsWith("!~"))
@@ -1326,7 +1353,7 @@ namespace Server.Models
                     if (member.Account.Connection.Stage != GameStage.Game && member.Account.Connection.Stage != GameStage.Observer) continue;
                     if (SEnvir.IsBlocking(Character.Account, member.Account)) continue;
 
-                    member.Account.Connection.ReceiveChat(text, MessageType.Guild);
+                    member.Account.Connection.ReceiveChat(text, MessageType.Guild, linkedItems);
                 }
             }
             else if (text.StartsWith("!@"))
@@ -1335,12 +1362,12 @@ namespace Server.Models
                 {
                     if (SEnvir.Now < Character.Account.GlobalTime)
                     {
-                        Connection.ReceiveChat(string.Format(Connection.Language.GlobalDelay, Math.Ceiling((Character.Account.GlobalTime - SEnvir.Now).TotalSeconds)), MessageType.System);
+                        Connection.ReceiveChat(string.Format(Connection.Language.GlobalDelay, Math.Ceiling((Character.Account.GlobalTime - SEnvir.Now).TotalSeconds)), MessageType.System, linkedItems);
                         return;
                     }
                     if (Level < 33 && Stats[Stat.GlobalShout] == 0)
                     {
-                        Connection.ReceiveChat(Connection.Language.GlobalLevel, MessageType.System);
+                        Connection.ReceiveChat(Connection.Language.GlobalLevel, MessageType.System, linkedItems);
                         return;
                     }
 
@@ -1357,7 +1384,7 @@ namespace Server.Models
                         case GameStage.Observer:
                             if (SEnvir.IsBlocking(Character.Account, con.Account)) continue;
 
-                            con.ReceiveChat(text, MessageType.Global);
+                            con.ReceiveChat(text, MessageType.Global, linkedItems);
                             break;
                         default: continue;
                     }
@@ -1370,12 +1397,12 @@ namespace Server.Models
                 {
                     if (SEnvir.Now < ShoutTime)
                     {
-                        Connection.ReceiveChat(string.Format(Connection.Language.ShoutDelay, Math.Ceiling((ShoutTime - SEnvir.Now).TotalSeconds)), MessageType.System);
+                        Connection.ReceiveChat(string.Format(Connection.Language.ShoutDelay, Math.Ceiling((ShoutTime - SEnvir.Now).TotalSeconds)), MessageType.System, linkedItems);
                         return;
                     }
                     if (Level < 2)
                     {
-                        Connection.ReceiveChat(Connection.Language.ShoutLevel, MessageType.System);
+                        Connection.ReceiveChat(Connection.Language.ShoutLevel, MessageType.System, linkedItems);
                         return;
                     }
                 }
@@ -1388,13 +1415,13 @@ namespace Server.Models
                     if (player != this && SEnvir.Now < Character.Account.ChatBanExpiry) continue;
 
                     if (!SEnvir.IsBlocking(Character.Account, player.Character.Account))
-                        player.Connection.ReceiveChat(text, MessageType.Shout);
+                        player.Connection.ReceiveChat(text, MessageType.Shout, linkedItems);
 
                     foreach (SConnection observer in player.Connection.Observers)
                     {
                         if (SEnvir.IsBlocking(Character.Account, observer.Account)) continue;
 
-                        observer.ReceiveChat(text, MessageType.Shout);
+                        observer.ReceiveChat(text, MessageType.Shout, linkedItems);
                     }
                 }
             }
@@ -1410,7 +1437,7 @@ namespace Server.Models
                     {
                         case GameStage.Game:
                         case GameStage.Observer:
-                            con.ReceiveChat(text, MessageType.Announcement);
+                            con.ReceiveChat(text, MessageType.Announcement, linkedItems);
                             break;
                         default: continue;
                     }
@@ -1429,13 +1456,13 @@ namespace Server.Models
             {
                 text = string.Format("(#){0}: {1}", Name, text.Remove(0, 1));
 
-                Connection.ReceiveChat(text, MessageType.ObserverChat);
+                Connection.ReceiveChat(text, MessageType.ObserverChat, linkedItems);
 
                 foreach (SConnection target in Connection.Observers)
                 {
                     if (SEnvir.IsBlocking(Character.Account, target.Account)) continue;
 
-                    target.ReceiveChat(text, MessageType.ObserverChat);
+                    target.ReceiveChat(text, MessageType.ObserverChat, linkedItems);
                 }
             }
             else
@@ -1448,13 +1475,13 @@ namespace Server.Models
                     if (player != this && SEnvir.Now < Character.Account.ChatBanExpiry) continue;
 
                     if (!SEnvir.IsBlocking(Character.Account, player.Character.Account))
-                        player.Connection.ReceiveChat(text, MessageType.Normal, ObjectID);
+                        player.Connection.ReceiveChat(text, MessageType.Normal, linkedItems, ObjectID);
 
                     foreach (SConnection observer in player.Connection.Observers)
                     {
                         if (SEnvir.IsBlocking(Character.Account, observer.Account)) continue;
 
-                        observer.ReceiveChat(text, MessageType.Normal, ObjectID);
+                        observer.ReceiveChat(text, MessageType.Normal, linkedItems, ObjectID);
                     }
                 }
             }
@@ -3221,6 +3248,12 @@ namespace Server.Models
                 return;
             }
 
+            if (p.Links.Count > 0 && account.Mail.Sum(x => x.Items.Count) >= Globals.MaxMailStorage)
+            {
+                Connection.ReceiveChat(Connection.Language.MailStorageFull, MessageType.System);
+                return;
+            }
+
             if (p.Gold < 0 || p.Gold > Gold.Amount)
             {
                 Connection.ReceiveChat(Connection.Language.MailMailCost, MessageType.System);
@@ -4859,6 +4892,7 @@ namespace Server.Models
 
             return true;
         }
+
         public bool ParseLinks(CellLinkInfo link)
         {
             return link != null && link.Count > 0;
@@ -19785,6 +19819,10 @@ namespace Server.Models
                 joinResult.Result = InstanceResult.NoMap;
                 SendInstanceMessage(instance, joinResult.Result);
             }
+            else
+            {
+
+            }
 
             Enqueue(joinResult);
         }
@@ -19805,6 +19843,7 @@ namespace Server.Models
                     return (null, InstanceResult.SafeZoneOnly);
             }
 
+            //Check static instance conditions are met -> if any fail cannot join instance
             switch (instance.Type)
             {
                 case InstanceType.Solo:
@@ -19857,8 +19896,10 @@ namespace Server.Models
                     break;
             }
 
+            //Check live instance conditions are met -> if any pass then will join an existing instance
             switch (instance.Type)
             {
+                case InstanceType.Solo:
                 case InstanceType.Group:
                 case InstanceType.Guild:
                     {
@@ -19868,28 +19909,29 @@ namespace Server.Models
 
                             var maps = mapInstance[i];
 
-                            foreach (var key in maps.Keys)
+                            var playersOnInstance = maps.Values.SelectMany(x => x.Players);
+
+                            switch (instance.Type)
                             {
-                                var map = maps[key];
-
-                                switch (instance.Type)
-                                {
-                                    case InstanceType.Group:
-                                        if (!map.Players.Any(x => x.InGroup(this))) continue;
-                                        break;
-                                    case InstanceType.Guild:
-                                        if (!map.Players.Any(x => x.InGuild(this))) continue;
-                                        break;
-                                }
-
-                                if (!checkOnly)
-                                {
-                                    if (!instance.UserRecord.ContainsKey(Name))
-                                        instance.UserRecord.Add(Name, (byte)i);
-                                }
-
-                                return ((byte)i, InstanceResult.Success);
+                                case InstanceType.Solo:
+                                    if (instance.MaxPlayerCount <= 1) break; //always new instance when solo is max 1 player
+                                    else if (playersOnInstance.Count() >= instance.MaxPlayerCount) continue;
+                                    break;
+                                case InstanceType.Group:
+                                    if (!playersOnInstance.Any(x => x.InGroup(this))) continue;
+                                    break;
+                                case InstanceType.Guild: //max player count doesn't apply to guild instances
+                                    if (!playersOnInstance.Any(x => x.InGuild(this))) continue;
+                                    break;
                             }
+
+                            if (!checkOnly)
+                            {
+                                if (!instance.UserRecord.ContainsKey(Name))
+                                    instance.UserRecord.Add(Name, (byte)i);
+                            }
+
+                            return ((byte)i, InstanceResult.Success);
                         }
                     }
                     break;
@@ -19932,6 +19974,13 @@ namespace Server.Models
             }
 
             return (index.Value, InstanceResult.Success);
+        }
+
+        public void SetTimer(string key, DateTime expiry)
+        {
+            var seconds = Math.Max(0, (int)(expiry - DateTime.UtcNow).TotalSeconds);
+
+            Enqueue(new S.SetTimer { Key = key, Type = 0, Seconds = seconds });
         }
 
         public void SendInstanceMessage(InstanceInfo instance, InstanceResult result)

@@ -132,6 +132,7 @@ namespace Server.Envir
         public abstract string MailHasItems { get; set; }
         public abstract string MailNotFound { get; set; }
         public abstract string MailSelfMail { get; set; }
+        public abstract string MailStorageFull { get; set; }
         public abstract string MailMailCost { get; set; }
         public abstract string MailSendSafeZone { get; set; }
 
