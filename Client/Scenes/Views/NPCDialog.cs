@@ -129,6 +129,7 @@ namespace Client.Scenes.Views
         public NPCDialog()
         {
             Movable = false;
+            Sort = true;
 
             HeaderImage = new DXImageControl
             {
@@ -580,6 +581,17 @@ namespace Client.Scenes.Views
             return regions;
         }
 
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    Visible = false;
+                    break;
+            }
+        }
         #endregion
 
         #region IDisposable
