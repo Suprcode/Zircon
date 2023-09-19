@@ -12779,19 +12779,19 @@ namespace Server.Models
                     case MagicType.Infection:
 
                     //case MagicType.FireBall:
-                    case MagicType.IceBolt:
-                    case MagicType.LightningBall:
-                    case MagicType.GustBlast:
-                    case MagicType.Repulsion:
+                    //case MagicType.IceBolt:
+                    //case MagicType.LightningBall:
+                    //case MagicType.GustBlast:
+                    //case MagicType.Repulsion:
                     case MagicType.ElectricShock:
                     //case MagicType.AdamantineFireBall:
                     //case MagicType.FireBounce:
-                    case MagicType.ThunderBolt:
-                    case MagicType.IceBlades:
-                    case MagicType.Cyclone:
+                    //case MagicType.ThunderBolt:
+                    //case MagicType.IceBlades:
+                    //case MagicType.Cyclone:
                     //case MagicType.ScortchedEarth:
                     case MagicType.LightningBeam:
-                    case MagicType.FrozenEarth:
+                    //case MagicType.FrozenEarth:
                     case MagicType.BlowEarth:
                     //case MagicType.FireWall:
                     //case MagicType.FireStorm:
@@ -12803,7 +12803,7 @@ namespace Server.Models
                     case MagicType.FrostBite:
                     case MagicType.IceStorm:
                     case MagicType.DragonTornado:
-                    case MagicType.GreaterFrozenEarth:
+                    //case MagicType.GreaterFrozenEarth:
                     case MagicType.ChainLightning:
                     //case MagicType.MeteorShower:
                     case MagicType.Renounce:
@@ -12811,7 +12811,7 @@ namespace Server.Models
                     case MagicType.JudgementOfHeaven:
                     case MagicType.ThunderStrike:
                     case MagicType.MirrorImage:
-                    case MagicType.Teleportation:
+                    //case MagicType.Teleportation:
                     //case MagicType.Asteroid:
 
                     case MagicType.Heal:
@@ -13056,46 +13056,46 @@ namespace Server.Models
                 #region Wizard
 
                 //case MagicType.FireBall:
-                case MagicType.IceBolt:
-                case MagicType.LightningBall:
-                case MagicType.GustBlast:
+                //case MagicType.IceBolt:
+                //case MagicType.LightningBall:
+                //case MagicType.GustBlast:
                 //case MagicType.AdamantineFireBall:
-                case MagicType.IceBlades:
-                    if (!CanAttackTarget(ob))
-                    {
-                        locations.Add(p.Location);
-                        ob = null;
-                        break;
-                    }
+                //case MagicType.IceBlades:
+                //    if (!CanAttackTarget(ob))
+                //    {
+                //        locations.Add(p.Location);
+                //        ob = null;
+                //        break;
+                //    }
 
-                    targets.Add(ob.ObjectID);
+                //    targets.Add(ob.ObjectID);
 
-                    ActionList.Add(new DelayedAction(
-                        SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, ob.CurrentLocation) * 48),
-                        ActionType.DelayMagic,
-                        new List<UserMagic> { magic },
-                        ob));
-                    break;
+                //    ActionList.Add(new DelayedAction(
+                //        SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, ob.CurrentLocation) * 48),
+                //        ActionType.DelayMagic,
+                //        new List<UserMagic> { magic },
+                //        ob));
+                //    break;
                 //case MagicType.FireBounce:
                 //    if (FireBounceStart(ob, magic, this))
                 //        targets.Add(ob.ObjectID);
                 //    break;
-                case MagicType.ThunderBolt:
-                case MagicType.Cyclone:
-                    if (!CanAttackTarget(ob))
-                    {
-                        locations.Add(p.Location);
-                        ob = null;
-                        break;
-                    }
-                    targets.Add(ob.ObjectID);
+                //case MagicType.ThunderBolt:
+                //case MagicType.Cyclone:
+                    //if (!CanAttackTarget(ob))
+                    //{
+                    //    locations.Add(p.Location);
+                    //    ob = null;
+                    //    break;
+                    //}
+                    //targets.Add(ob.ObjectID);
 
-                    ActionList.Add(new DelayedAction(
-                        SEnvir.Now.AddMilliseconds(600),
-                        ActionType.DelayMagic,
-                        new List<UserMagic> { magic },
-                        ob));
-                    break;
+                    //ActionList.Add(new DelayedAction(
+                    //    SEnvir.Now.AddMilliseconds(600),
+                    //    ActionType.DelayMagic,
+                    //    new List<UserMagic> { magic },
+                    //    ob));
+                    //break;
                 case MagicType.ElectricShock:
                     if (!CanAttackTarget(ob) || ob.Race != ObjectType.Monster)
                     {
@@ -13126,84 +13126,84 @@ namespace Server.Models
                         new List<UserMagic> { magic },
                         ob));
                     break;
-                case MagicType.Repulsion:
-                    ob = null;
+                //case MagicType.Repulsion:
+                //    ob = null;
 
-                    for (MirDirection d = MirDirection.Up; d <= MirDirection.UpLeft; d++)
-                    {
-                        ActionList.Add(new DelayedAction(
-                            SEnvir.Now.AddMilliseconds(500),
-                            ActionType.DelayMagic,
-                            new List<UserMagic> { magic },
-                            CurrentMap.GetCell(Functions.Move(CurrentLocation, d)),
-                            d));
-                    }
-                    break;
-                case MagicType.Teleportation:
-                    ob = null;
-                    ActionList.Add(new DelayedAction(
-                        SEnvir.Now.AddMilliseconds(500),
-                        ActionType.DelayMagic,
-                        new List<UserMagic> { magic }));
-                    break;
+                //    for (MirDirection d = MirDirection.Up; d <= MirDirection.UpLeft; d++)
+                //    {
+                //        ActionList.Add(new DelayedAction(
+                //            SEnvir.Now.AddMilliseconds(500),
+                //            ActionType.DelayMagic,
+                //            new List<UserMagic> { magic },
+                //            CurrentMap.GetCell(Functions.Move(CurrentLocation, d)),
+                //            d));
+                //    }
+                //    break;
+                //case MagicType.Teleportation:
+                //    ob = null;
+                //    ActionList.Add(new DelayedAction(
+                //        SEnvir.Now.AddMilliseconds(500),
+                //        ActionType.DelayMagic,
+                //        new List<UserMagic> { magic }));
+                //    break;
                 //case MagicType.ScortchedEarth:
-                case MagicType.FrozenEarth:
-                    ob = null;
+                //case MagicType.FrozenEarth:
+                    //ob = null;
 
-                    for (int i = 1; i <= 8; i++)
-                    {
-                        location = Functions.Move(CurrentLocation, p.Direction, i);
-                        Cell cell = CurrentMap.GetCell(location);
+                    //for (int i = 1; i <= 8; i++)
+                    //{
+                    //    location = Functions.Move(CurrentLocation, p.Direction, i);
+                    //    Cell cell = CurrentMap.GetCell(location);
 
-                        if (cell == null) continue;
-                        locations.Add(cell.Location);
+                    //    if (cell == null) continue;
+                    //    locations.Add(cell.Location);
 
-                        ActionList.Add(new DelayedAction(
-                            SEnvir.Now.AddMilliseconds(800),
-                            ActionType.DelayMagic,
-                            new List<UserMagic> { magic },
-                            cell,
-                            true));
+                    //    ActionList.Add(new DelayedAction(
+                    //        SEnvir.Now.AddMilliseconds(800),
+                    //        ActionType.DelayMagic,
+                    //        new List<UserMagic> { magic },
+                    //        cell,
+                    //        true));
 
-                        switch (p.Direction)
-                        {
-                            case MirDirection.Up:
-                            case MirDirection.Right:
-                            case MirDirection.Down:
-                            case MirDirection.Left:
-                                ActionList.Add(new DelayedAction(
-                                    SEnvir.Now.AddMilliseconds(800),
-                                    ActionType.DelayMagic,
-                                    new List<UserMagic> { magic },
-                                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, -2))),
-                                    false));
-                                ActionList.Add(new DelayedAction(
-                                    SEnvir.Now.AddMilliseconds(800),
-                                    ActionType.DelayMagic,
-                                    new List<UserMagic> { magic },
-                                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, 2))),
-                                    false));
-                                break;
-                            case MirDirection.UpRight:
-                            case MirDirection.DownRight:
-                            case MirDirection.DownLeft:
-                            case MirDirection.UpLeft:
-                                ActionList.Add(new DelayedAction(
-                                    SEnvir.Now.AddMilliseconds(800),
-                                    ActionType.DelayMagic,
-                                    new List<UserMagic> { magic },
-                                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, 1))),
-                                    false));
-                                ActionList.Add(new DelayedAction(
-                                    SEnvir.Now.AddMilliseconds(800),
-                                    ActionType.DelayMagic,
-                                    new List<UserMagic> { magic },
-                                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, -1))),
-                                    false));
-                                break;
-                        }
-                    }
-                    break;
+                    //    switch (p.Direction)
+                    //    {
+                    //        case MirDirection.Up:
+                    //        case MirDirection.Right:
+                    //        case MirDirection.Down:
+                    //        case MirDirection.Left:
+                    //            ActionList.Add(new DelayedAction(
+                    //                SEnvir.Now.AddMilliseconds(800),
+                    //                ActionType.DelayMagic,
+                    //                new List<UserMagic> { magic },
+                    //                CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, -2))),
+                    //                false));
+                    //            ActionList.Add(new DelayedAction(
+                    //                SEnvir.Now.AddMilliseconds(800),
+                    //                ActionType.DelayMagic,
+                    //                new List<UserMagic> { magic },
+                    //                CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, 2))),
+                    //                false));
+                    //            break;
+                    //        case MirDirection.UpRight:
+                    //        case MirDirection.DownRight:
+                    //        case MirDirection.DownLeft:
+                    //        case MirDirection.UpLeft:
+                    //            ActionList.Add(new DelayedAction(
+                    //                SEnvir.Now.AddMilliseconds(800),
+                    //                ActionType.DelayMagic,
+                    //                new List<UserMagic> { magic },
+                    //                CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, 1))),
+                    //                false));
+                    //            ActionList.Add(new DelayedAction(
+                    //                SEnvir.Now.AddMilliseconds(800),
+                    //                ActionType.DelayMagic,
+                    //                new List<UserMagic> { magic },
+                    //                CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, -1))),
+                    //                false));
+                    //            break;
+                    //    }
+                    //}
+                    //break;
                 case MagicType.LightningBeam:
                     ob = null;
 
@@ -13261,72 +13261,72 @@ namespace Server.Models
                         }
                     }
                     break;
-                case MagicType.BlowEarth:
-                    ob = null;
+                //case MagicType.BlowEarth:
+                //    ob = null;
 
-                    Point lastLocation = CurrentLocation;
+                //    Point lastLocation = CurrentLocation;
 
-                    for (int i = 1; i <= 8; i++)
-                    {
-                        location = Functions.Move(CurrentLocation, p.Direction, i);
-                        Cell cell = CurrentMap.GetCell(location);
+                //    for (int i = 1; i <= 8; i++)
+                //    {
+                //        location = Functions.Move(CurrentLocation, p.Direction, i);
+                //        Cell cell = CurrentMap.GetCell(location);
 
-                        if (cell == null) continue;
+                //        if (cell == null) continue;
 
-                        lastLocation = location;
+                //        lastLocation = location;
 
-                        ActionList.Add(new DelayedAction(
-                            SEnvir.Now.AddMilliseconds(800),
-                            ActionType.DelayMagic,
-                            new List<UserMagic> { magic },
-                            cell,
-                            true));
+                //        ActionList.Add(new DelayedAction(
+                //            SEnvir.Now.AddMilliseconds(800),
+                //            ActionType.DelayMagic,
+                //            new List<UserMagic> { magic },
+                //            cell,
+                //            true));
 
 
-                        switch (p.Direction)
-                        {
-                            case MirDirection.Up:
-                            case MirDirection.Right:
-                            case MirDirection.Down:
-                            case MirDirection.Left:
-                                ActionList.Add(new DelayedAction(
-                                    SEnvir.Now.AddMilliseconds(800),
-                                    ActionType.DelayMagic,
-                                    new List<UserMagic> { magic },
-                                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, -2))),
-                                    false));
-                                ActionList.Add(new DelayedAction(
-                                    SEnvir.Now.AddMilliseconds(800),
-                                    ActionType.DelayMagic,
-                                    new List<UserMagic> { magic },
-                                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, 2))),
-                                    false));
-                                break;
-                            case MirDirection.UpRight:
-                            case MirDirection.DownRight:
-                            case MirDirection.DownLeft:
-                            case MirDirection.UpLeft:
-                                ActionList.Add(new DelayedAction(
-                                    SEnvir.Now.AddMilliseconds(800),
-                                    ActionType.DelayMagic,
-                                    new List<UserMagic> { magic },
-                                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, 1))),
-                                    false));
-                                ActionList.Add(new DelayedAction(
-                                    SEnvir.Now.AddMilliseconds(800),
-                                    ActionType.DelayMagic,
-                                    new List<UserMagic> { magic },
-                                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, -1))),
-                                    false));
-                                break;
-                        }
-                    }
+                //        switch (p.Direction)
+                //        {
+                //            case MirDirection.Up:
+                //            case MirDirection.Right:
+                //            case MirDirection.Down:
+                //            case MirDirection.Left:
+                //                ActionList.Add(new DelayedAction(
+                //                    SEnvir.Now.AddMilliseconds(800),
+                //                    ActionType.DelayMagic,
+                //                    new List<UserMagic> { magic },
+                //                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, -2))),
+                //                    false));
+                //                ActionList.Add(new DelayedAction(
+                //                    SEnvir.Now.AddMilliseconds(800),
+                //                    ActionType.DelayMagic,
+                //                    new List<UserMagic> { magic },
+                //                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, 2))),
+                //                    false));
+                //                break;
+                //            case MirDirection.UpRight:
+                //            case MirDirection.DownRight:
+                //            case MirDirection.DownLeft:
+                //            case MirDirection.UpLeft:
+                //                ActionList.Add(new DelayedAction(
+                //                    SEnvir.Now.AddMilliseconds(800),
+                //                    ActionType.DelayMagic,
+                //                    new List<UserMagic> { magic },
+                //                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, 1))),
+                //                    false));
+                //                ActionList.Add(new DelayedAction(
+                //                    SEnvir.Now.AddMilliseconds(800),
+                //                    ActionType.DelayMagic,
+                //                    new List<UserMagic> { magic },
+                //                    CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(p.Direction, -1))),
+                //                    false));
+                //                break;
+                //        }
+                //    }
 
-                    locations.Add(lastLocation);
+                //    locations.Add(lastLocation);
 
-                    if (lastLocation == CurrentLocation)
-                        cast = false;
-                    break;
+                //    if (lastLocation == CurrentLocation)
+                //        cast = false;
+                //    break;
                 //case MagicType.FireWall:
 
                 //    ob = null;
@@ -13389,7 +13389,7 @@ namespace Server.Models
                 //    break;
                 //case MagicType.FireStorm:
                 case MagicType.LightningWave:
-                case MagicType.IceStorm:
+                //case MagicType.IceStorm:
 
                     ob = null;
 
@@ -13525,66 +13525,66 @@ namespace Server.Models
                         new List<UserMagic> { magic },
                         p.Location));
                     break;
-                case MagicType.GreaterFrozenEarth:
-                    ob = null;
+                //case MagicType.GreaterFrozenEarth:
+                //    ob = null;
 
-                    for (int d = -1; d <= 1; d++)
-                        for (int i = 1; i <= 8; i++)
-                        {
-                            MirDirection direction = Functions.ShiftDirection(p.Direction, d);
+                //    for (int d = -1; d <= 1; d++)
+                //        for (int i = 1; i <= 8; i++)
+                //        {
+                //            MirDirection direction = Functions.ShiftDirection(p.Direction, d);
 
-                            location = Functions.Move(CurrentLocation, direction, i);
-                            Cell cell = CurrentMap.GetCell(location);
+                //            location = Functions.Move(CurrentLocation, direction, i);
+                //            Cell cell = CurrentMap.GetCell(location);
 
-                            if (cell == null) continue;
-                            locations.Add(cell.Location);
+                //            if (cell == null) continue;
+                //            locations.Add(cell.Location);
 
-                            ActionList.Add(new DelayedAction(
-                                SEnvir.Now.AddMilliseconds(800),
-                                ActionType.DelayMagic,
-                                new List<UserMagic> { magic },
-                                cell,
-                                true));
+                //            ActionList.Add(new DelayedAction(
+                //                SEnvir.Now.AddMilliseconds(800),
+                //                ActionType.DelayMagic,
+                //                new List<UserMagic> { magic },
+                //                cell,
+                //                true));
 
-                            switch (direction)
-                            {
-                                case MirDirection.Up:
-                                case MirDirection.Right:
-                                case MirDirection.Down:
-                                case MirDirection.Left:
-                                    ActionList.Add(new DelayedAction(
-                                        SEnvir.Now.AddMilliseconds(800),
-                                        ActionType.DelayMagic,
-                                        new List<UserMagic> { magic },
-                                        CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(direction, -2))),
-                                        false));
-                                    ActionList.Add(new DelayedAction(
-                                        SEnvir.Now.AddMilliseconds(800),
-                                        ActionType.DelayMagic,
-                                        new List<UserMagic> { magic },
-                                        CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(direction, 2))),
-                                        false));
-                                    break;
-                                case MirDirection.UpRight:
-                                case MirDirection.DownRight:
-                                case MirDirection.DownLeft:
-                                case MirDirection.UpLeft:
-                                    ActionList.Add(new DelayedAction(
-                                        SEnvir.Now.AddMilliseconds(800),
-                                        ActionType.DelayMagic,
-                                        new List<UserMagic> { magic },
-                                        CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(direction, 1))),
-                                        false));
-                                    ActionList.Add(new DelayedAction(
-                                        SEnvir.Now.AddMilliseconds(800),
-                                        ActionType.DelayMagic,
-                                        new List<UserMagic> { magic },
-                                        CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(direction, -1))),
-                                        false));
-                                    break;
-                            }
-                        }
-                    break;
+                //            switch (direction)
+                //            {
+                //                case MirDirection.Up:
+                //                case MirDirection.Right:
+                //                case MirDirection.Down:
+                //                case MirDirection.Left:
+                //                    ActionList.Add(new DelayedAction(
+                //                        SEnvir.Now.AddMilliseconds(800),
+                //                        ActionType.DelayMagic,
+                //                        new List<UserMagic> { magic },
+                //                        CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(direction, -2))),
+                //                        false));
+                //                    ActionList.Add(new DelayedAction(
+                //                        SEnvir.Now.AddMilliseconds(800),
+                //                        ActionType.DelayMagic,
+                //                        new List<UserMagic> { magic },
+                //                        CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(direction, 2))),
+                //                        false));
+                //                    break;
+                //                case MirDirection.UpRight:
+                //                case MirDirection.DownRight:
+                //                case MirDirection.DownLeft:
+                //                case MirDirection.UpLeft:
+                //                    ActionList.Add(new DelayedAction(
+                //                        SEnvir.Now.AddMilliseconds(800),
+                //                        ActionType.DelayMagic,
+                //                        new List<UserMagic> { magic },
+                //                        CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(direction, 1))),
+                //                        false));
+                //                    ActionList.Add(new DelayedAction(
+                //                        SEnvir.Now.AddMilliseconds(800),
+                //                        ActionType.DelayMagic,
+                //                        new List<UserMagic> { magic },
+                //                        CurrentMap.GetCell(Functions.Move(location, Functions.ShiftDirection(direction, -1))),
+                //                        false));
+                //                    break;
+                //            }
+                //        }
+                //    break;
                 case MagicType.ChainLightning:
                     {
                         if (ob != null)
@@ -14603,9 +14603,9 @@ namespace Server.Models
                 //case MagicType.Might:
                 case MagicType.ReflectDamage:
 
-                case MagicType.Repulsion:
+                //case MagicType.Repulsion:
                 case MagicType.ElectricShock:
-                case MagicType.Teleportation:
+                //case MagicType.Teleportation:
                 case MagicType.GeoManipulation:
                 case MagicType.MagicShield:
                 case MagicType.FrostBite:
@@ -15750,29 +15750,29 @@ namespace Server.Models
                         element = Element.Fire;
                         power += magic.GetPower() + GetDC();
                         break;
-                    case MagicType.IceBolt:
-                    case MagicType.FrozenEarth:
-                        slowLevel = 3;
-                        element = Element.Ice;
-                        power += magic.GetPower() + GetMC();
-                        slow = 10;
-                        break;
-                    case MagicType.IceBlades:
-                    case MagicType.GreaterFrozenEarth:
-                    case MagicType.IceStorm:
-                        slowLevel = 5;
-                        element = Element.Ice;
-                        power += magic.GetPower() + GetMC();
-                        slow = 5;
-                        break;
+                    //case MagicType.IceBolt:
+                    //case MagicType.FrozenEarth:
+                        //slowLevel = 3;
+                        //element = Element.Ice;
+                        //power += magic.GetPower() + GetMC();
+                        //slow = 10;
+                        //break;
+                    //case MagicType.IceBlades:
+                    //case MagicType.GreaterFrozenEarth:
+                    //case MagicType.IceStorm:
+                    //    slowLevel = 5;
+                    //    element = Element.Ice;
+                    //    power += magic.GetPower() + GetMC();
+                    //    slow = 5;
+                    //    break;
                     case MagicType.FrostBite:
                         slowLevel = 5;
                         element = Element.Ice;
                         power += Math.Min(stats[Stat.FrostBiteDamage], stats[Stat.FrostBiteMaxDamage]) - Stats[Stat.IceAttack] * 2;
                         slow = 5;
                         break;
-                    case MagicType.LightningBall:
-                    case MagicType.ThunderBolt:
+                    //case MagicType.LightningBall:
+                    //case MagicType.ThunderBolt:
                     case MagicType.LightningWave:
                     case MagicType.LightningBeam:
                         element = Element.Lightning;
@@ -15789,13 +15789,13 @@ namespace Server.Models
 
                         power = power * 5 / (extra + 5);
                         break;
-                    case MagicType.GustBlast:
-                    case MagicType.BlowEarth:
-                        element = Element.Wind;
-                        power += magic.GetPower() + GetMC();
-                        repel = 10;
-                        break;
-                    case MagicType.Cyclone:
+                    //case MagicType.GustBlast:
+                    //case MagicType.BlowEarth:
+                    //    element = Element.Wind;
+                    //    power += magic.GetPower() + GetMC();
+                    //    repel = 10;
+                    //    break;
+                    //case MagicType.Cyclone:
                     case MagicType.DragonTornado:
                         element = Element.Wind;
                         power += magic.GetPower() + GetMC();
@@ -15936,9 +15936,9 @@ namespace Server.Models
                 {
                     //case MagicType.ScortchedEarth:
                     case MagicType.LightningBeam:
-                    case MagicType.BlowEarth:
-                    case MagicType.FrozenEarth:
-                    case MagicType.GreaterFrozenEarth:
+                    //case MagicType.BlowEarth:
+                    //case MagicType.FrozenEarth:
+                    //case MagicType.GreaterFrozenEarth:
                         if (!primary)
                             power = (int)(power * 0.3F);
                         break;
@@ -16542,13 +16542,13 @@ namespace Server.Models
                     #region Wizard
 
                     //case MagicType.FireBall:
-                    case MagicType.IceBolt:
-                    case MagicType.LightningBall:
-                    case MagicType.ThunderBolt:
-                    case MagicType.GustBlast:
+                    //case MagicType.IceBolt:
+                    //case MagicType.LightningBall:
+                    //case MagicType.ThunderBolt:
+                    //case MagicType.GustBlast:
                     //case MagicType.AdamantineFireBall:
-                    case MagicType.IceBlades:
-                    case MagicType.Cyclone:
+                    //case MagicType.IceBlades:
+                    //case MagicType.Cyclone:
                     //case MagicType.MeteorShower:
                     case MagicType.ThunderStrike:
                     case MagicType.DragonRepulse:
@@ -16557,19 +16557,19 @@ namespace Server.Models
                     //case MagicType.FireBounce:
                     //    FireBounceEnd(magics, (MapObject)data[1], (Point)data[2], (int)data[3]);
                     //    break;
-                    case MagicType.Repulsion:
-                        RepulsionEnd(magic, (Cell)data[1], (MirDirection)data[2]);
-                        break;
+                    //case MagicType.Repulsion:
+                    //    RepulsionEnd(magic, (Cell)data[1], (MirDirection)data[2]);
+                    //    break;
                     //case MagicType.ScortchedEarth:
-                    case MagicType.LightningBeam:
-                    case MagicType.FrozenEarth:
-                    case MagicType.BlowEarth:
-                    case MagicType.GreaterFrozenEarth:
-                        AttackCell(magics, (Cell)data[1], (bool)data[2]);
-                        break;
+                    //case MagicType.LightningBeam:
+                    //case MagicType.FrozenEarth:
+                    //case MagicType.BlowEarth:
+                    //case MagicType.GreaterFrozenEarth:
+                        //AttackCell(magics, (Cell)data[1], (bool)data[2]);
+                        //break;
                     //case MagicType.FireStorm:
                     case MagicType.LightningWave:
-                    case MagicType.IceStorm:
+                    //case MagicType.IceStorm:
                     case MagicType.DragonTornado:
                     //case MagicType.Asteroid:
                         AttackCell(magics, (Cell)data[1], true);
@@ -16577,9 +16577,9 @@ namespace Server.Models
                     case MagicType.ChainLightning:
                         ChainLightningEnd(magics, (List<Point>)data[1], (List<Point>)data[2], (bool)data[3], (int)data[4]);
                         break;
-                    case MagicType.Teleportation:
-                        TeleportationEnd(magic);
-                        break;
+                    //case MagicType.Teleportation:
+                    //    TeleportationEnd(magic);
+                    //    break;
                     case MagicType.ElectricShock:
                         ElectricShockEnd(magic, (MonsterObject)data[1]);
                         break;
@@ -17853,23 +17853,23 @@ namespace Server.Models
 
         #region Wizard Magic
 
-        private void RepulsionEnd(UserMagic magic, Cell cell, MirDirection direction)
-        {
-            if (cell?.Objects == null) return;
+        //private void RepulsionEnd(UserMagic magic, Cell cell, MirDirection direction)
+        //{
+        //    if (cell?.Objects == null) return;
 
-            for (int i = cell.Objects.Count - 1; i >= 0; i--)
-            {
-                MapObject ob = cell.Objects[i];
-                if (!CanAttackTarget(ob) || ob.Level >= Level || SEnvir.Random.Next(16) >= 6 + magic.Level * 3 + Level - ob.Level) continue;
+        //    for (int i = cell.Objects.Count - 1; i >= 0; i--)
+        //    {
+        //        MapObject ob = cell.Objects[i];
+        //        if (!CanAttackTarget(ob) || ob.Level >= Level || SEnvir.Random.Next(16) >= 6 + magic.Level * 3 + Level - ob.Level) continue;
 
-                //CanPush check ?
+        //        //CanPush check ?
 
-                if (ob.Pushed(direction, magic.GetPower()) <= 0) continue;
+        //        if (ob.Pushed(direction, magic.GetPower()) <= 0) continue;
 
-                LevelMagic(magic);
-                break;
-            }
-        }
+        //        LevelMagic(magic);
+        //        break;
+        //    }
+        //}
         private void ElectricShockEnd(UserMagic magic, MonsterObject ob)
         {
             if (ob?.Node == null || !CanAttackTarget(ob)) return;
@@ -17972,36 +17972,36 @@ namespace Server.Models
 
             LevelMagic(magic);
         }
-        private void TeleportationEnd(UserMagic magic)
-        {
-            if (CurrentMap.Info.SkillDelay > 0)
-            {
-                Connection.ReceiveChat(string.Format(Connection.Language.SkillBadMap, magic.Info.Name), MessageType.System);
+        //private void TeleportationEnd(UserMagic magic)
+        //{
+        //    if (CurrentMap.Info.SkillDelay > 0)
+        //    {
+        //        Connection.ReceiveChat(string.Format(Connection.Language.SkillBadMap, magic.Info.Name), MessageType.System);
 
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.SkillBadMap, magic.Info.Name), MessageType.System);
-                return;
-            }
+        //        foreach (SConnection con in Connection.Observers)
+        //            con.ReceiveChat(string.Format(con.Language.SkillBadMap, magic.Info.Name), MessageType.System);
+        //        return;
+        //    }
 
-            if (SEnvir.Random.Next(9) > 2 + magic.Level * 2) return;
-            /*
-            if (CurrentMap.Info.SkillDelay > 0)
-            {
-                TimeSpan delay = TimeSpan.FromMilliseconds(CurrentMap.Info.SkillDelay * 3);
+        //    if (SEnvir.Random.Next(9) > 2 + magic.Level * 2) return;
+        //    /*
+        //    if (CurrentMap.Info.SkillDelay > 0)
+        //    {
+        //        TimeSpan delay = TimeSpan.FromMilliseconds(CurrentMap.Info.SkillDelay * 3);
 
-                Connection.ReceiveChat(string.Format(Connection.Language.SkillEffort, magic.Info.Name, Functions.ToString(delay, true)), MessageType.System);
+        //        Connection.ReceiveChat(string.Format(Connection.Language.SkillEffort, magic.Info.Name, Functions.ToString(delay, true)), MessageType.System);
 
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.SkillEffort, magic.Info.Name, Functions.ToString(delay, true)), MessageType.System);
+        //        foreach (SConnection con in Connection.Observers)
+        //            con.ReceiveChat(string.Format(con.Language.SkillEffort, magic.Info.Name, Functions.ToString(delay, true)), MessageType.System);
 
-                UseItemTime = (UseItemTime < SEnvir.Now ? SEnvir.Now : UseItemTime) + delay;
-                Enqueue(new S.ItemUseDelay { Delay = SEnvir.Now - UseItemTime });
-            }*/
+        //        UseItemTime = (UseItemTime < SEnvir.Now ? SEnvir.Now : UseItemTime) + delay;
+        //        Enqueue(new S.ItemUseDelay { Delay = SEnvir.Now - UseItemTime });
+        //    }*/
 
-            Teleport(CurrentMap, CurrentMap.GetRandomLocation());
-            LevelMagic(magic);
+        //    Teleport(CurrentMap, CurrentMap.GetRandomLocation());
+        //    LevelMagic(magic);
 
-        }
+        //}
         //private void FireWallEnd(UserMagic magic, Cell cell, int power)
         //{
         //    if (cell == null) return;
