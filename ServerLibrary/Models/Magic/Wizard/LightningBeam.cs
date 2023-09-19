@@ -6,13 +6,12 @@ using System.Drawing;
 
 namespace Server.Models.Magic
 {
-    [MagicType(MagicType.BlowEarth)]
-    public class BlowEarth : MagicObject
+    [MagicType(MagicType.LightningBeam)]
+    public class LightningBeam : MagicObject
     {
-        public override Element Element => Element.Wind;
-        protected override int Repel => 10;
+        public override Element Element => Element.Lightning;
 
-        public BlowEarth(PlayerObject player, UserMagic magic) : base(player, magic)
+        public LightningBeam(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
@@ -24,8 +23,6 @@ namespace Server.Models.Magic
                 Ob = null
             };
 
-            Point lastLocation;
-
             for (int i = 1; i <= 8; i++)
             {
                 var loc = Functions.Move(CurrentLocation, direction, i);
@@ -33,8 +30,6 @@ namespace Server.Models.Magic
 
                 if (cell == null) continue;
                 response.Locations.Add(cell.Location);
-
-                lastLocation = loc;
 
                 var delay = SEnvir.Now.AddMilliseconds(800);
 
@@ -57,9 +52,6 @@ namespace Server.Models.Magic
                         ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, -1))), false));
                         break;
                 }
-
-                if (lastLocation == CurrentLocation)
-                    response.Cast = false;
             }
 
             return response;
@@ -84,13 +76,6 @@ namespace Server.Models.Magic
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob)
-        {
-            power += Magic.GetPower() + Player.GetMC();
-
-            return power;
-        }
-
-        public override int ModifyPower2(bool primary, int power)
         {
             if (!primary)
                 power = (int)(power * 0.3F);

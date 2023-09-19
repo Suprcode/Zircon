@@ -1,35 +1,44 @@
 ﻿using Library;
 using Server.DBModels;
+using Server.Envir;
 using System.Collections.Generic;
 using System.Drawing;
 
 namespace Server.Models.Magic
 {
-    [MagicType(MagicType.LightningBall)]
-    public class LightningBall : MagicObject
+    [MagicType(MagicType.LightningWave)]
+    public class LightningWave : MagicObject
     {
         public override Element Element => Element.Lightning;
 
-        public LightningBall(PlayerObject player, UserMagic magic) : base(player, magic)
+        public LightningWave(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
-
-            if (!Player.CanAttackTarget(target))
+            var response = new MagicCast
             {
-                response.Locations.Add(location);
+                Ob = null
+            };
+
+            if (!Functions.InRange(CurrentLocation, location, Globals.MagicRange))
+            {
+                response.Cast = false;
                 return response;
             }
 
-            response.Targets.Add(target.ObjectID);
+            response.Locations.Add(location);
 
-            var delay = GetDelayFromDistance(500, target);
+            var cells = CurrentMap.GetCells(location, 0, 1);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, target));
+            var delay = SEnvir.Now.AddMilliseconds(500);
+
+            foreach (Cell cell in cells)
+            {
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+            }
 
             return response;
         }

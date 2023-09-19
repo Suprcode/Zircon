@@ -574,8 +574,6 @@ namespace Server.Models
 
                         List<Cell> cells = CurrentMap.GetCells(CurrentLocation, 0, 5);
 
-
-
                         switch (Race)
                         {
                             case ObjectType.Player:
@@ -596,7 +594,6 @@ namespace Server.Models
                                         MapObject ob = cell.Objects[o];
 
                                         if (!CanAttackTarget(ob)) continue;
-
 
                                         ActionList.Add(new DelayedAction(
                                             SEnvir.Now.AddMilliseconds(SEnvir.Random.Next(200) + Functions.Distance(CurrentLocation, ob.CurrentLocation) * 20),

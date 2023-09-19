@@ -3,7 +3,7 @@ using Server.DBModels;
 using Server.Envir;
 using System.Drawing;
 
-namespace Server.Models.Magic.Wizard
+namespace Server.Models.Magic
 {
     [MagicType(MagicType.Teleportation)]
     public class Teleportation : MagicObject

@@ -3,7 +3,7 @@ using Server.DBModels;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Server.Models.Magic.Wizard
+namespace Server.Models.Magic
 {
     [MagicType(MagicType.IceBlades)]
     public class IceBlades : MagicObject

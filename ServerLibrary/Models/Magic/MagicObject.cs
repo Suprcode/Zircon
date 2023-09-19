@@ -168,9 +168,9 @@ namespace Server.Models
 
     public class MagicCast
     {
-        public List<Point> Locations = new List<Point>();
-        public List<uint> Targets = new List<uint>();
-        public MapObject Ob;
+        public List<Point> Locations = new ();
+        public List<uint> Targets = new ();
+        public MapObject Ob = null;
         public bool Cast = true;
 
         public bool Return = false;

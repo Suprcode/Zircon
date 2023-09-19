@@ -23,19 +23,19 @@ namespace Server.Models.Magic
                 Ob = null
             };
 
-            if (!Functions.InRange(Player.CurrentLocation, location, Globals.MagicRange))
+            if (!Functions.InRange(CurrentLocation, location, Globals.MagicRange))
             {
                 response.Cast = false;
                 return response;
             }
 
             response.Locations.Add(location);
-            var cells = Player.CurrentMap.GetCells(location, 0, 1);
+            var cells = CurrentMap.GetCells(location, 0, 1);
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
             foreach (Cell cell in cells)
-                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
 
             return response;
         }

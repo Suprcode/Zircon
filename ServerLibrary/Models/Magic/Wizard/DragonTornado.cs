@@ -6,38 +6,38 @@ using System.Drawing;
 
 namespace Server.Models.Magic
 {
-    [MagicType(MagicType.IceStorm)]
-    public class IceStorm : MagicObject
+    [MagicType(MagicType.DragonTornado)]
+    public class DragonTornado : MagicObject
     {
-        public override Element Element => Element.Ice;
-        protected override int Slow => 5;
-        protected override int SlowLevel => 5;
+        public override Element Element => Element.Wind;
+        protected override int Repel => 5;
 
-        public IceStorm(PlayerObject player, UserMagic magic) : base(player, magic)
+        public DragonTornado(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast
-            {
-                Ob = null
-            };
+            var response = new MagicCast();
 
-            if (!Functions.InRange(Player.CurrentLocation, location, Globals.MagicRange))
+            if (!Functions.InRange(CurrentLocation, location, Globals.MagicRange))
             {
                 response.Cast = false;
                 return response;
             }
 
             response.Locations.Add(location);
-            var cells = Player.CurrentMap.GetCells(location, 0, 1);
 
-            var delay = SEnvir.Now.AddMilliseconds(500);
+            var cells = CurrentMap.GetCells(location, 0, 1);
+
+            var delay = SEnvir.Now.AddMilliseconds(1200);
 
             foreach (Cell cell in cells)
-                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+            {
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+            }
+
 
             return response;
         }
