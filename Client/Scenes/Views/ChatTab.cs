@@ -10,6 +10,7 @@ using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
+using static Client.Scenes.Views.NPCDialog;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -28,7 +29,8 @@ namespace Client.Scenes.Views
 
         public DXVScrollBar ScrollBar;
 
-        public List<DXLabel> History = new List<DXLabel>();
+        public List<DXLabel> ItemLabels = new List<DXLabel>();
+        public List<ChatHistory> History = new List<ChatHistory>();
 
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
@@ -120,7 +122,7 @@ namespace Client.Scenes.Views
         {
             if (!IsResizing)
             {
-                foreach (DXLabel label in History)
+                foreach (DXLabel label in History.Select(x => x.Label))
                 {
                     if (label.Size.Width == TextPanel.Size.Width) continue;
 
@@ -138,11 +140,12 @@ namespace Client.Scenes.Views
         {
             int y = -ScrollBar.Value;
 
-            foreach (DXLabel control in History)
+            foreach (DXLabel control in History.Select(x => x.Label))
             {
                 control.Location = new Point(0, y);
                 y += control.Size.Height;
             }
+            ProcessLinkedItems();
         }
 
         public void UpdateScrollBar()
@@ -151,13 +154,13 @@ namespace Client.Scenes.Views
 
             int height = 0;
 
-            foreach (DXLabel control in History)
+            foreach (DXLabel control in History.Select(x => x.Label))
                 height += control.Size.Height;
 
             ScrollBar.MaxValue = height;
         }
 
-        public void ReceiveChat(string message, MessageType type)
+        public void ReceiveChat(string message, MessageType type, List<ClientUserItem> linkedItems)
         {
             if (Panel == null) return;
 
@@ -232,13 +235,12 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(label);
+            History.Add(new ChatHistory() { Message = message, Label = label, LinkedItems = linkedItems });
 
             while (History.Count > 250)
             {
-                DXLabel oldLabel = History[0];
-                History.Remove(oldLabel);
-                oldLabel.Dispose();
+                History[0].Dispose();
+                History.RemoveAt(0);
             }
 
             AlertIcon.Visible = !IsVisible && Panel.AlertCheckBox.Checked;
@@ -277,7 +279,7 @@ namespace Client.Scenes.Views
                     {
                         if (IsDisposed) return;
 
-                        History.Remove(label);
+                        History.RemoveAll(x => x.Label == label);
                         UpdateScrollBar();
                         ScrollBar.Value = ScrollBar.MaxValue - label.Size.Height;
                     };
@@ -292,13 +294,12 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(label);
+            History.Add(new ChatHistory() { Message = label.Text, Label = label });
 
             while (History.Count > 250)
             {
-                DXLabel oldLabel = History[0];
-                History.Remove(oldLabel);
-                oldLabel.Dispose();
+                History[0].Dispose();
+                History.RemoveAt(0);
             }
 
             AlertIcon.Visible = !IsVisible && Panel.AlertCheckBox.Checked;
@@ -316,7 +317,7 @@ namespace Client.Scenes.Views
         }
         public void UpdateColours()
         {
-            foreach (DXLabel label in History)
+            foreach (DXLabel label in History.Select(x => x.Label))
                 UpdateColours(label);
         }
         private void UpdateColours(DXLabel label)
@@ -394,7 +395,7 @@ namespace Client.Scenes.Views
                     foreach (DXButton button in CurrentTabControl.TabButtons)
                         button.Opacity = 0.5f;
 
-                foreach (DXLabel label in History)
+                foreach (DXLabel label in History.Select(x => x.Label))
                     UpdateColours(label);
             }
             else
@@ -408,8 +409,96 @@ namespace Client.Scenes.Views
                     foreach (DXButton button in CurrentTabControl.TabButtons)
                         button.Opacity = 1f;
 
-                foreach (DXLabel label in History)
+                foreach (DXLabel label in History.Select(x => x.Label))
                     UpdateColours(label);
+            }
+        }
+
+        public void ProcessLinkedItems()
+        {
+            foreach (DXLabel label in ItemLabels)
+            {
+                if (!label.IsDisposed)
+                    label.Dispose();
+            }
+            ItemLabels.Clear();
+
+            foreach (ChatHistory history in History)
+                ProcessText(history);
+        }
+
+        public void ProcessText(ChatHistory history)
+        {
+            DXLabel label = history.Label;
+            List<ClientUserItem> items = history.LinkedItems;
+            string message = history.Message;
+
+            label.Text = Globals.LinkedItemRegex.Replace(message, @" [${Text}] ");
+            message = Globals.LinkedItemRegex.Replace(message, @" [${Text}:${ID}] ");
+
+            RegexOptions options = RegexOptions.None;
+            Regex regex = new Regex("[ ]{2,}", options);
+            message = regex.Replace(message, " ");
+            label.Text = regex.Replace(label.Text, " ");
+            label.AutoSize = true;
+
+            MatchCollection matches = Globals.LinkedItemRegex.Matches(message);
+            List<CharacterRange> ranges = new List<CharacterRange>();
+
+            int offset = 1;
+            foreach (Match match in matches)
+            {
+                ranges.Add(new CharacterRange(match.Groups["Text"].Index - offset, match.Groups["Text"].Length + 2));
+                offset += 1 + match.Groups["ID"].Length;
+            }
+
+            for (int i = 0; i < ranges.Count; i++)
+            {
+                if (!int.TryParse(matches[i].Groups["ID"].Value, out int index)) continue;
+                ClientUserItem item = items.FirstOrDefault(e => e.Index == index);
+                if (item == null) continue;
+
+                List<ButtonInfo> buttons = NPCDialog.GetWordRegionsNew(DXManager.Graphics, label.Text, label.Font, label.DrawFormat, label.Size.Width, ranges[i].First, ranges[i].Length);
+
+                List<DXLabel> labels = new List<DXLabel>();
+
+                foreach (ButtonInfo info in buttons)
+                {
+                    labels.Add(new DXLabel
+                    {
+                        AutoSize = false,
+                        Parent = label,
+                        ForeColour = Color.Yellow,
+                        Location = info.Region.Location,
+                        DrawFormat = label.DrawFormat,
+                        Text = label.Text.Substring(info.Index, info.Length),
+                        Font = new Font(label.Font.FontFamily, label.Font.Size, FontStyle.Underline),
+                        Size = info.Region.Size,
+                        Outline = false,
+                        Sound = SoundIndex.ButtonC,
+                    });
+                }
+
+                foreach (DXLabel newlabel in labels)
+                {
+                    newlabel.MouseEnter += (o, e) =>
+                    {
+                        GameScene.Game.MouseItem = item;
+                        foreach (DXLabel l in labels)
+                            l.ForeColour = Color.Red;
+                    };
+
+                    newlabel.MouseLeave += (o, e) =>
+                    {
+                        GameScene.Game.MouseItem = null;
+                        foreach (DXLabel l in labels)
+                            l.ForeColour = Color.Yellow;
+                    };
+
+                    newlabel.MouseWheel += ScrollBar.DoMouseWheel;
+
+                    ItemLabels.Add(newlabel);
+                }
             }
         }
 
@@ -452,16 +541,8 @@ namespace Client.Scenes.Views
                 if (History != null)
                 {
                     for (int i = 0; i < History.Count; i++)
-                    {
-                        if (History[i] != null)
-                        {
-                            if (!History[i].IsDisposed)
-                                    History[i].Dispose();
+                        History[i].Dispose();
 
-                            History[i] = null;
-                        }
-                    }
-                    
                     History.Clear();
                     History = null;
                 }
@@ -473,10 +554,42 @@ namespace Client.Scenes.Views
 
                     AlertIcon = null;
                 }
+
+                if (ItemLabels != null)
+                {
+                    for (int i = 0; i < ItemLabels.Count; i++)
+                    {
+                        if (ItemLabels[i] == null) continue;
+                        if (!ItemLabels[i].IsDisposed)
+                            ItemLabels[i].Dispose();
+
+                        ItemLabels[i] = null;
+                    }
+
+                    ItemLabels.Clear();
+                    ItemLabels = null;
+                }
             }
 
         }
 
         #endregion
+    }
+
+    public class ChatHistory
+    {
+        public string Message;
+        public DXLabel Label;
+        public List<ClientUserItem> LinkedItems;
+
+        public void Dispose()
+        {
+            if (Label != null && !Label.IsDisposed)
+                Label.Dispose();
+
+            if (LinkedItems == null) return;
+            LinkedItems.Clear();
+            LinkedItems = null;
+        }
     }
 }

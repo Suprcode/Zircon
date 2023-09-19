@@ -25,6 +25,7 @@ using System.Globalization;
 using Server.Envir.Commands.Handler;
 using Server.Envir.Commands;
 using Server.Models.Magic;
+using System.Numerics;
 
 namespace Server.Envir
 {
@@ -639,7 +640,7 @@ namespace Server.Envir
             CreateQuestRegions();
         }
 
-        private static void CreateMovements(InstanceInfo instance = null, byte index = 0)
+        private static void CreateMovements(InstanceInfo instance = null, byte instanceSequence = 0)
         {
             foreach (MovementInfo movement in MovementInfoList.Binding)
             {
@@ -649,7 +650,7 @@ namespace Server.Envir
                     continue;
                 }
 
-                Map sourceMap = GetMap(movement.SourceRegion.Map, instance, index);
+                Map sourceMap = GetMap(movement.SourceRegion.Map, instance, instanceSequence);
 
                 if (sourceMap == null)
                 {
@@ -667,7 +668,7 @@ namespace Server.Envir
                     continue;
                 }
 
-                Map destMap = GetMap(movement.DestinationRegion.Map, instance, index);
+                Map destMap = GetMap(movement.DestinationRegion.Map, instance, instanceSequence);
 
                 if (destMap == null)
                 {
@@ -700,13 +701,13 @@ namespace Server.Envir
             }
         }
 
-        private static void CreateNPCs(InstanceInfo instance = null, byte index = 0)
+        private static void CreateNPCs(InstanceInfo instance = null, byte instanceSequence = 0)
         {
             foreach (NPCInfo info in NPCInfoList.Binding)
             {
                 if (info.Region == null) continue;
 
-                Map map = GetMap(info.Region.Map, instance, index);
+                Map map = GetMap(info.Region.Map, instance, instanceSequence);
 
                 if (map == null)
                 {
@@ -723,12 +724,12 @@ namespace Server.Envir
                     NPCInfo = info,
                 };
 
-                if (!ob.Spawn(info.Region, instance, index))
+                if (!ob.Spawn(info.Region, instance, instanceSequence))
                     Log($"[NPC] Failed to spawn NPC, Region: {info.Region.ServerDescription}, NPC: {info.NPCName}");
             }
         }
 
-        private static void CreateQuestRegions(InstanceInfo instance = null, byte index = 0)
+        private static void CreateQuestRegions(InstanceInfo instance = null, byte instanceSequence = 0)
         {
             foreach (QuestInfo quest in QuestInfoList.Binding)
             {
@@ -737,7 +738,7 @@ namespace Server.Envir
                     if (task.Task != QuestTaskType.Region) continue;
                     if (task.RegionParameter == null) continue;
 
-                    var sourceMap = GetMap(task.RegionParameter.Map, instance, index);
+                    var sourceMap = GetMap(task.RegionParameter.Map, instance, instanceSequence);
 
                     if (sourceMap == null)
                     {
@@ -770,13 +771,13 @@ namespace Server.Envir
             }
         }
 
-        private static void CreateSafeZones(InstanceInfo instance = null, byte index = 0)
+        private static void CreateSafeZones(InstanceInfo instance = null, byte instanceSequence = 0)
         {
             foreach (SafeZoneInfo info in SafeZoneInfoList.Binding)
             {
                 if (info.Region == null) continue;
 
-                Map map = GetMap(info.Region.Map, instance, index);
+                Map map = GetMap(info.Region.Map, instance, instanceSequence);
 
                 if (map == null)
                 {
@@ -858,14 +859,14 @@ namespace Server.Envir
             }
         }
 
-        private static void CreateSpawns(InstanceInfo instance = null, byte index = 0)
+        private static void CreateSpawns(InstanceInfo instance = null, byte instanceSequence = 0)
         {
             foreach (RespawnInfo info in RespawnInfoList.Binding)
             {
                 if (info.Monster == null) continue;
                 if (info.Region == null) continue;
 
-                Map map = GetMap(info.Region.Map, instance, index);
+                Map map = GetMap(info.Region.Map, instance, instanceSequence);
 
                 if (map == null)
                 {
@@ -877,13 +878,13 @@ namespace Server.Envir
                     continue;
                 }
 
-                Spawns.Add(new SpawnInfo(info, instance, index));
+                Spawns.Add(new SpawnInfo(info, instance, instanceSequence));
             }
         }
 
-        private static void RemoveSpawns(InstanceInfo instance = null, byte sequence = 0)
+        private static void RemoveSpawns(InstanceInfo instance = null, byte instanceSequence = 0)
         {
-            Spawns.RemoveAll(x => x.CurrentMap.Instance == instance && x.CurrentMap.InstanceSequence == sequence);
+            Spawns.RemoveAll(x => x.CurrentMap.Instance == instance && x.CurrentMap.InstanceSequence == instanceSequence);
         }
 
         private static void StopEnvir()
@@ -1099,15 +1100,27 @@ namespace Server.Envir
 
                         foreach (var instance in Instances)
                         {
-                            for (byte i = 0; i < instance.Value.Length; i++)
+                            for (byte instanceSequence = 0; instanceSequence < instance.Value.Length; instanceSequence++)
                             {
-                                if (instance.Value[i] == null) continue;
+                                bool expired = false;
 
-                                foreach (KeyValuePair<MapInfo, Map> pair in instance.Value[i])
+                                if (instance.Value[instanceSequence] == null) continue;
+
+                                foreach (KeyValuePair<MapInfo, Map> pair in instance.Value[instanceSequence]) 
+                                {
                                     pair.Value.Process();
 
-                                if (instance.Value[i].Values.All(x => x.LastPlayer.AddMinutes(5) < DateTime.UtcNow))
-                                    UnloadInstance(instance.Key, i);
+                                    if (pair.Value.InstanceExpiryDateTime < DateTime.UtcNow)
+                                    {
+                                        expired = true;
+                                    }
+                                }
+
+                                if (expired || instance.Value[instanceSequence].Values.All(x => x.LastPlayer.AddMinutes(5) < DateTime.UtcNow))
+                                {
+                                    UnloadInstance(instance.Key, instanceSequence);
+                                    break;
+                                }
                             }
                         }
 
@@ -3549,51 +3562,69 @@ namespace Server.Envir
             return instanceMaps != null && instanceMaps[instanceSequence].ContainsKey(info) ? instanceMaps[instanceSequence][info] : null;
         }
 
-        public static byte? LoadInstance(InstanceInfo instance, byte index)
+        public static byte? LoadInstance(InstanceInfo instance, byte instanceSequence)
         {
             var mapInstance = Instances[instance];
 
-            mapInstance[index] = new Dictionary<MapInfo, Map>();
+            mapInstance[instanceSequence] = new Dictionary<MapInfo, Map>();
 
             for (int i = 0; i < instance.Maps.Count; i++)
             {
-                mapInstance[index][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, index);
+                mapInstance[instanceSequence][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, instanceSequence);
             }
 
-            Parallel.ForEach(mapInstance[index], x => x.Value.Load());
+            Parallel.ForEach(mapInstance[instanceSequence], x => x.Value.Load());
 
-            foreach (Map map in mapInstance[index].Values)
+            foreach (Map map in mapInstance[instanceSequence].Values)
             {
                 map.Setup();
             }
 
             CreateSafeZones();
 
-            CreateMovements(instance, index);
+            CreateMovements(instance, instanceSequence);
 
-            CreateNPCs(instance, index);
+            CreateNPCs(instance, instanceSequence);
 
-            CreateSpawns(instance, index);
+            CreateSpawns(instance, instanceSequence);
 
-            CreateQuestRegions(instance, index);
+            CreateQuestRegions(instance, instanceSequence);
 
-            Log($"Loaded Instance {instance.Name} at index {index}");
+            Log($"Loaded Instance {instance.Name} at index {instanceSequence}");
 
-            return index;
+            return instanceSequence;
         }
 
-        public static void UnloadInstance(InstanceInfo instance, byte index)
+        public static void UnloadInstance(InstanceInfo instance, byte instanceSequence)
         {
-            //TODO - Dispose of all spawns/npcs/spell objects on map
-            RemoveSpawns(instance, index);
+            if (Instances[instance][instanceSequence] == null) return;
 
-            Instances[instance][index] = null;
+            foreach (KeyValuePair<MapInfo, Map> pair in Instances[instance][instanceSequence])
+            {
+                var map = pair.Value;
+
+                for (int i = map.Players.Count - 1; i >= 0; i--)
+                {
+                    if (instance.ReconnectRegion != null && map.Players[i].Teleport(instance.ReconnectRegion, null, 0))
+                    {
+                    }
+                    else if (map.Players[i].Teleport(map.Players[i].Character.BindPoint.BindRegion, null, 0))
+                    {
+                    }
+                }
+            }
+
+            //TODO - Dispose of all spawns/npcs/spell objects on map
+
+            RemoveSpawns(instance, instanceSequence);
+
+            Instances[instance][instanceSequence] = null;
 
             var users = new List<string>();
 
             foreach (var pair in instance.UserRecord)
             {
-                if (pair.Value == index)
+                if (pair.Value == instanceSequence)
                     users.Add(pair.Key);
             }
 
@@ -3621,7 +3652,7 @@ namespace Server.Envir
                 }
             }
 
-            Log($"Unloaded Instance {instance.Name} at index {index} and removed {users.Count} user records");
+            Log($"Unloaded Instance {instance.Name} at index {instanceSequence} and removed {users.Count} user records");
         }
 
         public static UserConquestStats GetConquestStats(PlayerObject player)

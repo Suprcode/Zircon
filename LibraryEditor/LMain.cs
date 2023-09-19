@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -333,10 +334,7 @@ namespace LibraryEditor
                 "Delete Selected.",
                 MessageBoxButtons.YesNoCancel) != DialogResult.Yes) return;
 
-            List<int> removeList = new List<int>();
-
-            for (int i = 0; i < PreviewListView.SelectedIndices.Count; i++)
-                removeList.Add(PreviewListView.SelectedIndices[i]);
+            var removeList = PreviewListView.SelectedIndices.Cast<int>().ToList();
 
             removeList.Sort();
 
@@ -1166,7 +1164,15 @@ namespace LibraryEditor
                         Mir3Library newLib = new Mir3Library(file);
                         foreach (Mir3Library.Mir3Image image in newLib.Images)
                         {
-                            _library.AddImage(image.Image, image.OffSetX, image.OffSetY);
+                            if (image == null)
+                            {
+                                Bitmap blank = new Bitmap(1, 1);
+                                _library.AddImage(blank, 0, 0);
+                            }
+                            else
+                            {
+                                _library.AddImage(image.Image, image.OffSetX, image.OffSetY);
+                            }
                         }
                     }
                     else if (Path.GetExtension(file).ToUpper() == ".WTL")

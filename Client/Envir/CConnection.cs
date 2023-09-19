@@ -2383,7 +2383,7 @@ namespace Client.Envir
         {
             if (GameScene.Game == null) return;
 
-            GameScene.Game.ReceiveChat(p.Text, p.Type);
+            GameScene.Game.ReceiveChat(p.Text, p.Type, p.LinkedItems);
 
             if (p.Type != MessageType.Normal || p.ObjectID <= 0) return;
 
@@ -4217,6 +4217,11 @@ namespace Client.Envir
         public void Process(S.NPCRoll p)
         {
             GameScene.Game.NPCRollBox.Setup(p.Type, p.Result, false);
+        }
+
+        public void Process(S.SetTimer p)
+        {
+            GameScene.Game.TimerBox.AddTimer(p);
         }
 
         public void Process(S.HelmetToggle p)
