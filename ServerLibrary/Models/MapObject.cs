@@ -8,6 +8,7 @@ using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using Server.Models.Monsters;
+using static System.Collections.Specialized.BitVector32;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -629,46 +630,24 @@ namespace Server.Models
                         }
                         break;
                     case BuffType.FrostBite:
-                        buff.RemainingTime -= ticks;
-
-                        if (buff.RemainingTime > TimeSpan.Zero) continue;
-
-                        Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.FrostBiteEnd });
-
-                        switch (Race)
                         {
-                            case ObjectType.Player:
-                                player = (PlayerObject)this;
+                            buff.RemainingTime -= ticks;
+                            if (buff.RemainingTime > TimeSpan.Zero) continue;
 
-                                if (!player.Magics.TryGetValue(MagicType.FrostBite, out magic)) break;
-                                player.LevelMagic(magic);
+                            Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.FrostBiteEnd });
 
-                                foreach (MapObject ob in GetTargets(CurrentMap, CurrentLocation, 3))
+                            if (this is PlayerObject ob) 
+                            {
+                                if (ob.MagicObjects.TryGetValue(MagicType.FrostBite, out MagicObject magicObject) && magicObject is Server.Models.Magic.FrostBite frostBite)
                                 {
-                                    if (!CanAttackTarget(ob)) continue;
-
-                                    if (ob.Race != ObjectType.Monster) continue;
-
-                                    MonsterObject mob = (MonsterObject)ob;
-
-                                    if (mob.MonsterInfo.IsBoss) continue;
-
-                                    ActionList.Add(new DelayedAction(
-                                        SEnvir.Now.AddMilliseconds(SEnvir.Random.Next(500)),
-                                        ActionType.DelayedMagicDamage,
-                                        new List<UserMagic> { magic },
-                                        ob,
-                                        true,
-                                        buff.Stats,
-                                        0));
+                                    frostBite.FrostBiteEnd(buff);
                                 }
-                                break;
+                            }
+                            
+                            FrostBiteImmunity = SEnvir.Now.AddSeconds(1);
 
+                            expiredBuffs.Add(buff);
                         }
-
-                        FrostBiteImmunity = SEnvir.Now.AddSeconds(1);
-
-                        expiredBuffs.Add(buff);
                         break;
                     default:
                         if (buff.RemainingTime == TimeSpan.MaxValue) continue;

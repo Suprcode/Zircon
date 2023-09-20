@@ -614,7 +614,7 @@ namespace Library
         RetrogressionOfEnergy = 234,
         FuryBlast = 235,
         TempestOfUnstableEnergy = 236,
-        MirrorImage = 237,
+        MirrorImage = 237, //NOT CODED
         AdvancedRenounce = 238,
         FrostBite = 239,
         Asteroid = 240,

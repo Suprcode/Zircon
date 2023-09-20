@@ -55,7 +55,7 @@ namespace Server.Models.Magic
             Player.MagicAttack(new List<MagicType> { Type }, target);
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob)
+        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power += Magic.GetPower() + Player.GetMC();
             power += power / 2;

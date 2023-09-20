@@ -409,7 +409,6 @@ namespace Server.Models
                         if (MagicObjects.TryGetValue((MagicType)action.Data[0], out MagicObject magicObject))
                         {
                             magicObject.MagicComplete(action.Data);
-                            return;
                         }
                     }
                     return;
@@ -426,6 +425,14 @@ namespace Server.Models
                     if (!CanAttackTarget(ob)) return;
 
                     MagicAttack((List<UserMagic>)action.Data[0], ob, (bool)action.Data[2], (Stats)action.Data[3], (int)action.Data[4]);
+                    return;
+                case ActionType.DelayedMagicDamageNew:
+                    {
+                        if (MagicObjects.TryGetValue((MagicType)action.Data[0], out MagicObject magicObject))
+                        {
+                            magicObject.MagicDamageComplete(action.Data);
+                        }
+                    }                 
                     return;
                 case ActionType.Mount:
                     PacketWaiting = false;
@@ -12763,13 +12770,13 @@ namespace Server.Models
                     //case MagicType.Defiance:
                     //case MagicType.Beckon:
                     //case MagicType.Might:
-                    case MagicType.ReflectDamage:
-                    case MagicType.Fetter:
-                    case MagicType.SwiftBlade:
+                    //case MagicType.ReflectDamage:
+                    //case MagicType.Fetter:
+                    //case MagicType.SwiftBlade:
                     case MagicType.Endurance:
                     case MagicType.Assault:
                     case MagicType.SeismicSlam:
-                    case MagicType.MassBeckon:
+                    //case MagicType.MassBeckon:
                     case MagicType.Infection:
 
                     //case MagicType.FireBall:
@@ -12793,18 +12800,18 @@ namespace Server.Models
                     //case MagicType.ExpelUndead:
                     //case MagicType.GeoManipulation:
                     case MagicType.Transparency:
-                    case MagicType.MagicShield:
-                    case MagicType.FrostBite:
-                    case MagicType.IceStorm:
+                    //case MagicType.MagicShield:
+                    //case MagicType.FrostBite:
+                    //case MagicType.IceStorm:
                     //case MagicType.DragonTornado:
                     //case MagicType.GreaterFrozenEarth:
-                    case MagicType.ChainLightning:
+                    //case MagicType.ChainLightning:
                     //case MagicType.MeteorShower:
-                    case MagicType.Renounce:
+                    //case MagicType.Renounce:
                     //case MagicType.Tempest:
-                    case MagicType.JudgementOfHeaven:
+                    //case MagicType.JudgementOfHeaven:
                     //case MagicType.ThunderStrike:
-                    case MagicType.MirrorImage:
+                    //case MagicType.MirrorImage:
                     //case MagicType.Teleportation:
                     //case MagicType.Asteroid:
 
@@ -12973,7 +12980,7 @@ namespace Server.Models
                 //    break;
                 //case MagicType.Defiance:
                 //case MagicType.Might:
-                case MagicType.ReflectDamage:
+                //case MagicType.ReflectDamage:
                 case MagicType.Endurance:
                     ob = null;
                     p.Direction = MirDirection.Down;
@@ -12983,44 +12990,44 @@ namespace Server.Models
                         ActionType.DelayMagic,
                         new List<UserMagic> { magic }));
                     break;
-                case MagicType.Fetter:
-                    ob = null;
-                    p.Direction = MirDirection.Down;
+                //case MagicType.Fetter:
+                //    ob = null;
+                //    p.Direction = MirDirection.Down;
 
-                    cells = CurrentMap.GetCells(CurrentLocation, 0, 2);
+                //    cells = CurrentMap.GetCells(CurrentLocation, 0, 2);
 
-                    foreach (Cell cell in cells)
-                    {
-                        ActionList.Add(new DelayedAction(
-                            SEnvir.Now.AddMilliseconds(500),
-                            ActionType.DelayMagic,
-                            new List<UserMagic> { magic },
-                            cell));
-                    }
-                    break;
-                case MagicType.SwiftBlade:
-                    ob = null;
+                //    foreach (Cell cell in cells)
+                //    {
+                //        ActionList.Add(new DelayedAction(
+                //            SEnvir.Now.AddMilliseconds(500),
+                //            ActionType.DelayMagic,
+                //            new List<UserMagic> { magic },
+                //            cell));
+                //    }
+                //    break;
+                //case MagicType.SwiftBlade:
+                //    ob = null;
 
-                    if (!Functions.InRange(CurrentLocation, p.Location, Globals.MagicRange))
-                    {
-                        cast = false;
-                        break;
-                    }
+                //    if (!Functions.InRange(CurrentLocation, p.Location, Globals.MagicRange))
+                //    {
+                //        cast = false;
+                //        break;
+                //    }
 
-                    locations.Add(p.Location);
+                //    locations.Add(p.Location);
 
-                    cells = CurrentMap.GetCells(p.Location, 0, 3);
-                    SwiftBladeLifeSteal = 0;
+                //    cells = CurrentMap.GetCells(p.Location, 0, 3);
+                //    SwiftBladeLifeSteal = 0;
 
-                    foreach (Cell cell in cells)
-                    {
-                        ActionList.Add(new DelayedAction(
-                            SEnvir.Now.AddMilliseconds(900),
-                            ActionType.DelayMagic,
-                            new List<UserMagic> { magic },
-                            cell));
-                    }
-                    break;
+                //    foreach (Cell cell in cells)
+                //    {
+                //        ActionList.Add(new DelayedAction(
+                //            SEnvir.Now.AddMilliseconds(900),
+                //            ActionType.DelayMagic,
+                //            new List<UserMagic> { magic },
+                //            cell));
+                //    }
+                //    break;
                 case MagicType.SeismicSlam:
                     ob = null;
 
@@ -13036,14 +13043,14 @@ namespace Server.Models
                             cell));
                     }
                     break;
-                case MagicType.MassBeckon:
-                    ob = null;
+                //case MagicType.MassBeckon:
+                //    ob = null;
 
-                    ActionList.Add(new DelayedAction(
-                        SEnvir.Now.AddMilliseconds(500),
-                        ActionType.DelayMagic,
-                        new List<UserMagic> { magic }));
-                    break;
+                //    ActionList.Add(new DelayedAction(
+                //        SEnvir.Now.AddMilliseconds(500),
+                //        ActionType.DelayMagic,
+                //        new List<UserMagic> { magic }));
+                //    break;
 
                 #endregion
 
@@ -13486,24 +13493,24 @@ namespace Server.Models
                 //            cell));
                 //    }
                 //    break;
-                case MagicType.MagicShield:
-                    ob = null;
+                //case MagicType.MagicShield:
+                //    ob = null;
 
-                    ActionList.Add(new DelayedAction(
-                        SEnvir.Now.AddMilliseconds(1100),
-                        ActionType.DelayMagic,
-                        new List<UserMagic> { magic }));
-                    break;
-                case MagicType.Renounce:
-                case MagicType.JudgementOfHeaven:
-                case MagicType.FrostBite:
-                    ob = null;
+                //    ActionList.Add(new DelayedAction(
+                //        SEnvir.Now.AddMilliseconds(1100),
+                //        ActionType.DelayMagic,
+                //        new List<UserMagic> { magic }));
+                //    break;
+                //case MagicType.Renounce:
+                //case MagicType.JudgementOfHeaven:
+                //case MagicType.FrostBite:
+                //    ob = null;
 
-                    ActionList.Add(new DelayedAction(
-                        SEnvir.Now.AddMilliseconds(600),
-                        ActionType.DelayMagic,
-                        new List<UserMagic> { magic }));
-                    break;
+                //    ActionList.Add(new DelayedAction(
+                //        SEnvir.Now.AddMilliseconds(600),
+                //        ActionType.DelayMagic,
+                //        new List<UserMagic> { magic }));
+                //    break;
                 //case MagicType.GeoManipulation:
                 //    ob = null;
 
@@ -13579,15 +13586,15 @@ namespace Server.Models
                 //            }
                 //        }
                 //    break;
-                case MagicType.ChainLightning:
-                    {
-                        if (ob != null)
-                        {
-                            if (ChainLightningStart(magic, new List<Point> { ob.CurrentLocation }, new List<Point>(), true))
-                                locations.Add(ob.CurrentLocation);
-                        }
-                    }
-                    break;
+                //case MagicType.ChainLightning:
+                //    {
+                //        if (ob != null)
+                //        {
+                //            if (ChainLightningStart(magic, new List<Point> { ob.CurrentLocation }, new List<Point>(), true))
+                //                locations.Add(ob.CurrentLocation);
+                //        }
+                //    }
+                //    break;
                 //case MagicType.MeteorShower:
 
                 //    ob = null;
@@ -14513,6 +14520,8 @@ namespace Server.Models
                         locations = castObject.Locations;
                         targets = castObject.Targets;
                         ob = castObject.Ob;
+
+                        p.Direction = castObject.Direction ?? p.Direction;
                     }
                     else
                     {
@@ -14595,17 +14604,17 @@ namespace Server.Models
                     break;
                 //case MagicType.Defiance:
                 //case MagicType.Might:
-                case MagicType.ReflectDamage:
+                //case MagicType.ReflectDamage:
 
                 //case MagicType.Repulsion:
                 //case MagicType.ElectricShock:
                 //case MagicType.Teleportation:
                 //case MagicType.GeoManipulation:
-                case MagicType.MagicShield:
-                case MagicType.FrostBite:
-                case MagicType.Renounce:
-                case MagicType.JudgementOfHeaven:
-                case MagicType.MirrorImage:
+                //case MagicType.MagicShield:
+                //case MagicType.FrostBite:
+                //case MagicType.Renounce:
+                //case MagicType.JudgementOfHeaven:
+                //case MagicType.MirrorImage:
 
                 case MagicType.Heal:
                 case MagicType.Invisibility:
@@ -15001,6 +15010,7 @@ namespace Server.Models
             return result;
         }
 
+        //New
         public void Attack(MapObject ob, List<MagicType> types, bool primary, int extra)
         {
             if (ob?.Node == null || ob.Dead) return;
@@ -15010,6 +15020,11 @@ namespace Server.Models
                     Pets[i].Target = ob;
 
             int power = GetDC();
+
+            foreach (MagicType type in types)
+            {
+
+            }
         }
 
         public void Attack(MapObject ob, List<UserMagic> magics, bool primary, int extra)
@@ -15094,12 +15109,12 @@ namespace Server.Models
                     //    if (!primary)
                     //        power = power * magic.GetPower() / 100;
                     //    break;
-                    case MagicType.SwiftBlade:
-                        power = power * magic.GetPower() / 100;
+                    //case MagicType.SwiftBlade:
+                    //    power = power * magic.GetPower() / 100;
 
-                        if (ob.Race == ObjectType.Player)
-                            power /= 2;
-                        break;
+                    //    if (ob.Race == ObjectType.Player)
+                    //        power /= 2;
+                    //    break;
                     case MagicType.SeismicSlam:
                         power = power * magic.GetPower() / 100;
 
@@ -15475,7 +15490,7 @@ namespace Server.Models
         }
 
         //New
-        public int MagicAttack(List<MagicType> types, MapObject ob, bool primary = true, Stats stats = null)
+        public int MagicAttack(List<MagicType> types, MapObject ob, bool primary = true, Stats stats = null, int extra = 0)
         {
             if (ob?.Node == null || ob.Dead) return 0;
 
@@ -15503,7 +15518,7 @@ namespace Server.Models
             {
                 if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-                power = magicObject.ModifyPower1(primary, power, ob);
+                power = magicObject.ModifyPower1(primary, power, ob, stats, extra);
 
                 slow = magicObject.GetSlow();
                 slowLevel = magicObject.GetSlowLevel();
@@ -15759,12 +15774,12 @@ namespace Server.Models
                     //    power += magic.GetPower() + GetMC();
                     //    slow = 5;
                     //    break;
-                    case MagicType.FrostBite:
-                        slowLevel = 5;
-                        element = Element.Ice;
-                        power += Math.Min(stats[Stat.FrostBiteDamage], stats[Stat.FrostBiteMaxDamage]) - Stats[Stat.IceAttack] * 2;
-                        slow = 5;
-                        break;
+                    //case MagicType.FrostBite:
+                    //    slowLevel = 5;
+                    //    element = Element.Ice;
+                    //    power += Math.Min(stats[Stat.FrostBiteDamage], stats[Stat.FrostBiteMaxDamage]) - Stats[Stat.IceAttack] * 2;
+                    //    slow = 5;
+                    //    break;
                     //case MagicType.LightningBall:
                     //case MagicType.ThunderBolt:
                     //case MagicType.LightningWave:
@@ -15777,12 +15792,12 @@ namespace Server.Models
                     //    power += magic.GetPower() + GetMC();
                     //    power += power / 2;
                     //    break;
-                    case MagicType.ChainLightning:
-                        element = Element.Lightning;
-                        power += magic.GetPower() + GetMC();
+                    //case MagicType.ChainLightning:
+                    //    element = Element.Lightning;
+                    //    power += magic.GetPower() + GetMC();
 
-                        power = power * 5 / (extra + 5);
-                        break;
+                    //    power = power * 5 / (extra + 5);
+                    //    break;
                     //case MagicType.GustBlast:
                     //case MagicType.BlowEarth:
                     //    element = Element.Wind;
@@ -16504,22 +16519,22 @@ namespace Server.Models
                     //case MagicType.Beckon:
                     //    BeckonEnd(magic, (MapObject)data[1]);
                     //    break;
-                    case MagicType.MassBeckon:
-                        MassBeckonEnd(magic);
-                        break;
+                    //case MagicType.MassBeckon:
+                    //    MassBeckonEnd(magic);
+                    //    break;
                     //case MagicType.Defiance:
                     //    DefianceEnd(magic);
                     //    break;
                     //case MagicType.Might:
                     //    MightEnd(magic);
                     //    break;
-                    case MagicType.ReflectDamage:
-                        ReflectDamageEnd(magic);
-                        break;
-                    case MagicType.Fetter:
-                        FetterEnd(magic, (Cell)data[1]);
-                        break;
-                    case MagicType.SwiftBlade:
+                    //case MagicType.ReflectDamage:
+                    //    ReflectDamageEnd(magic);
+                    //    break;
+                    //case MagicType.Fetter:
+                    //    FetterEnd(magic, (Cell)data[1]);
+                    //    break;
+                    //case MagicType.SwiftBlade:
                     case MagicType.SeismicSlam:
                         Cell cell = (Cell)data[1];
                         if (cell == null || cell.Objects == null) continue;
@@ -16568,9 +16583,9 @@ namespace Server.Models
                     //case MagicType.Asteroid:
                         //AttackCell(magics, (Cell)data[1], true);
                         //break;
-                    case MagicType.ChainLightning:
-                        ChainLightningEnd(magics, (List<Point>)data[1], (List<Point>)data[2], (bool)data[3], (int)data[4]);
-                        break;
+                    //case MagicType.ChainLightning:
+                    //    ChainLightningEnd(magics, (List<Point>)data[1], (List<Point>)data[2], (bool)data[3], (int)data[4]);
+                    //    break;
                     //case MagicType.Teleportation:
                     //    TeleportationEnd(magic);
                     //    break;
@@ -16583,24 +16598,24 @@ namespace Server.Models
                     //case MagicType.FireWall:
                     //    FireWallEnd(magic, (Cell)data[1], (int)data[2]);
                     //    break;
-                    case MagicType.MagicShield:
-                        MagicShieldEnd(magic);
-                        break;
-                    case MagicType.FrostBite:
-                        FrostBiteEnd(magic);
-                        break;
+                    //case MagicType.MagicShield:
+                    //    MagicShieldEnd(magic);
+                    //    break;
+                    //case MagicType.FrostBite:
+                    //    FrostBiteEnd(magic);
+                    //    break;
                     //case MagicType.GeoManipulation:
                     //    GeoManipulationEnd(magic, (Point)data[1]);
                     //    break;
-                    case MagicType.Renounce:
-                        RenounceEnd(magic);
-                        break;
+                    //case MagicType.Renounce:
+                    //    RenounceEnd(magic);
+                    //    break;
                     //case MagicType.Tempest:
                     //    TempestEnd(magic, (Cell)data[1], (int)data[2]);
                     //    break;
-                    case MagicType.JudgementOfHeaven:
-                        JudgementOfHeavenEnd(magic);
-                        break;
+                    //case MagicType.JudgementOfHeaven:
+                    //    JudgementOfHeavenEnd(magic);
+                    //    break;
 
                     #endregion
 
@@ -16800,6 +16815,7 @@ namespace Server.Models
 
             return res;
         }
+
         private void AttackCell(List<UserMagic> magics, Cell cell, bool primary)
         {
             if (cell?.Objects == null) return;
@@ -16814,6 +16830,7 @@ namespace Server.Models
                 MagicAttack(magics, ob, primary);
             }
         }
+
         private void BuffCell(UserMagic magic, Cell cell, Stats stats)
         {
             if (cell?.Objects == null) return;
@@ -17688,34 +17705,34 @@ namespace Server.Models
 
         //    LevelMagic(magic);
         //}
-        public void MassBeckonEnd(UserMagic magic)
-        {
-            List<MapObject> targets = GetTargets(CurrentMap, CurrentLocation, 9);
+        //public void MassBeckonEnd(UserMagic magic)
+        //{
+        //    List<MapObject> targets = GetTargets(CurrentMap, CurrentLocation, 9);
 
-            foreach (MapObject ob in targets)
-            {
-                if (ob.Race != ObjectType.Monster) continue;
+        //    foreach (MapObject ob in targets)
+        //    {
+        //        if (ob.Race != ObjectType.Monster) continue;
 
-                if (!CanAttackTarget(ob)) continue;
-                if (ob.Level - 10 > Level || !((MonsterObject)ob).MonsterInfo.CanPush) continue;
+        //        if (!CanAttackTarget(ob)) continue;
+        //        if (ob.Level - 10 > Level || !((MonsterObject)ob).MonsterInfo.CanPush) continue;
 
-                if (SEnvir.Random.Next(9) > 2 + magic.Level * 2) continue;
+        //        if (SEnvir.Random.Next(9) > 2 + magic.Level * 2) continue;
 
 
 
-                if (!ob.Teleport(CurrentMap, CurrentMap.GetRandomLocation(CurrentLocation, 3))) continue;
+        //        if (!ob.Teleport(CurrentMap, CurrentMap.GetRandomLocation(CurrentLocation, 3))) continue;
 
-                ob.ApplyPoison(new Poison
-                {
-                    Owner = this,
-                    Type = PoisonType.Paralysis,
-                    TickFrequency = TimeSpan.FromSeconds(1 + magic.Level),
-                    TickCount = 1,
-                });
+        //        ob.ApplyPoison(new Poison
+        //        {
+        //            Owner = this,
+        //            Type = PoisonType.Paralysis,
+        //            TickFrequency = TimeSpan.FromSeconds(1 + magic.Level),
+        //            TickCount = 1,
+        //        });
 
-                LevelMagic(magic);
-            }
-        }
+        //        LevelMagic(magic);
+        //    }
+        //}
 
         //public void DefianceEnd(UserMagic magic)
         //{
@@ -17763,49 +17780,49 @@ namespace Server.Models
         }
 
 
-        public void ReflectDamageEnd(UserMagic magic)
-        {
-            Stats buffStats = new Stats
-            {
-                [Stat.ReflectDamage] = 5 + magic.Level * 3,
-            };
+        //public void ReflectDamageEnd(UserMagic magic)
+        //{
+        //    Stats buffStats = new Stats
+        //    {
+        //        [Stat.ReflectDamage] = 5 + magic.Level * 3,
+        //    };
 
-            BuffAdd(BuffType.ReflectDamage, TimeSpan.FromSeconds(15 + magic.Level * 10), buffStats, false, false, TimeSpan.Zero);
+        //    BuffAdd(BuffType.ReflectDamage, TimeSpan.FromSeconds(15 + magic.Level * 10), buffStats, false, false, TimeSpan.Zero);
 
-            LevelMagic(magic);
-        }
+        //    LevelMagic(magic);
+        //}
 
-        public void FetterEnd(UserMagic magic, Cell cell)
-        {
-            if (cell == null || cell.Map != CurrentMap) return;
+        //public void FetterEnd(UserMagic magic, Cell cell)
+        //{
+        //    if (cell == null || cell.Map != CurrentMap) return;
 
-            if (cell.Objects == null) return;
+        //    if (cell.Objects == null) return;
 
-            foreach (MapObject ob in cell.Objects)
-            {
-                if (!CanAttackTarget(ob)) continue;
+        //    foreach (MapObject ob in cell.Objects)
+        //    {
+        //        if (!CanAttackTarget(ob)) continue;
 
-                switch (ob.Race)
-                {
-                    case ObjectType.Monster:
-                        if (ob.Level > Level + 15) continue;
+        //        switch (ob.Race)
+        //        {
+        //            case ObjectType.Monster:
+        //                if (ob.Level > Level + 15) continue;
 
-                        ob.ApplyPoison(new Poison
-                        {
-                            Owner = this,
-                            Value = (3 + magic.Level) * 2,
-                            TickCount = 1,
-                            TickFrequency = TimeSpan.FromSeconds(5 + magic.Level * 3),
-                            Type = PoisonType.Slow,
-                        });
-                        break;
-                }
+        //                ob.ApplyPoison(new Poison
+        //                {
+        //                    Owner = this,
+        //                    Value = (3 + magic.Level) * 2,
+        //                    TickCount = 1,
+        //                    TickFrequency = TimeSpan.FromSeconds(5 + magic.Level * 3),
+        //                    Type = PoisonType.Slow,
+        //                });
+        //                break;
+        //        }
 
-                LevelMagic(magic);
+        //        LevelMagic(magic);
 
-            }
+        //    }
 
-        }
+        //}
 
         public void BarrageEnd(UserMagic magic)
         {
@@ -18067,153 +18084,153 @@ namespace Server.Models
         //    magic.Cooldown = SEnvir.Now.AddMilliseconds(delay);
         //    Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = delay });
         //}
-        public void MagicShieldEnd(UserMagic magic)
-        {
-            if (Buffs.Any(x => x.Type == BuffType.MagicShield)) return;
+        //public void MagicShieldEnd(UserMagic magic)
+        //{
+        //    if (Buffs.Any(x => x.Type == BuffType.MagicShield)) return;
 
-            Stats buffStats = new Stats
-            {
-                [Stat.MagicShield] = 50
-            };
+        //    Stats buffStats = new Stats
+        //    {
+        //        [Stat.MagicShield] = 50
+        //    };
 
-            BuffAdd(BuffType.MagicShield, TimeSpan.FromSeconds(30 + magic.Level * 20 + GetMC() / 2 + Stats[Stat.PhantomAttack] * 2), buffStats, true, false, TimeSpan.Zero);
+        //    BuffAdd(BuffType.MagicShield, TimeSpan.FromSeconds(30 + magic.Level * 20 + GetMC() / 2 + Stats[Stat.PhantomAttack] * 2), buffStats, true, false, TimeSpan.Zero);
 
-            LevelMagic(magic);
-        }
-        public void FrostBiteEnd(UserMagic magic)
-        {
-            if (Buffs.Any(x => x.Type == BuffType.FrostBite)) return;
+        //    LevelMagic(magic);
+        //}
+        //public void FrostBiteEnd(UserMagic magic)
+        //{
+        //    if (Buffs.Any(x => x.Type == BuffType.FrostBite)) return;
 
-            Stats buffStats = new Stats
-            {
-                [Stat.FrostBiteDamage] = GetMC() + Stats[Stat.IceAttack] * 2 + magic.GetPower(),
-                [Stat.FrostBiteMaxDamage] = Stats[Stat.MaxMC] * 50 + Stats[Stat.IceAttack] * 70,
-            };
+        //    Stats buffStats = new Stats
+        //    {
+        //        [Stat.FrostBiteDamage] = GetMC() + Stats[Stat.IceAttack] * 2 + magic.GetPower(),
+        //        [Stat.FrostBiteMaxDamage] = Stats[Stat.MaxMC] * 50 + Stats[Stat.IceAttack] * 70,
+        //    };
 
-            BuffAdd(BuffType.FrostBite, TimeSpan.FromSeconds(3 + magic.Level * 3), buffStats, false, false, TimeSpan.Zero);
+        //    BuffAdd(BuffType.FrostBite, TimeSpan.FromSeconds(3 + magic.Level * 3), buffStats, false, false, TimeSpan.Zero);
 
-            LevelMagic(magic);
-        }
-        public void RenounceEnd(UserMagic magic)
-        {
-            Stats buffStats = new Stats
-            {
-                [Stat.HealthPercent] = -(1 + magic.Level) * 10,
-                [Stat.MCPercent] = (1 + magic.Level) * 10,
-            };
+        //    LevelMagic(magic);
+        //}
+        //public void RenounceEnd(UserMagic magic)
+        //{
+        //    Stats buffStats = new Stats
+        //    {
+        //        [Stat.HealthPercent] = -(1 + magic.Level) * 10,
+        //        [Stat.MCPercent] = (1 + magic.Level) * 10,
+        //    };
 
-            int health = CurrentHP;
+        //    int health = CurrentHP;
 
-            BuffInfo buff = BuffAdd(BuffType.Renounce, TimeSpan.FromSeconds(30 + magic.Level * 30), buffStats, false, false, TimeSpan.Zero);
-
-
-            buff.Stats[Stat.RenounceHPLost] = health - CurrentHP;
-            Enqueue(new S.BuffChanged() { Index = buff.Index, Stats = new Stats(buff.Stats) });
+        //    BuffInfo buff = BuffAdd(BuffType.Renounce, TimeSpan.FromSeconds(30 + magic.Level * 30), buffStats, false, false, TimeSpan.Zero);
 
 
-            LevelMagic(magic);
-        }
-        public void JudgementOfHeavenEnd(UserMagic magic)
-        {
-            Stats buffStats = new Stats
-            {
-                [Stat.JudgementOfHeaven] = (2 + magic.Level) * 20,
-            };
+        //    buff.Stats[Stat.RenounceHPLost] = health - CurrentHP;
+        //    Enqueue(new S.BuffChanged() { Index = buff.Index, Stats = new Stats(buff.Stats) });
 
-            BuffAdd(BuffType.JudgementOfHeaven, TimeSpan.FromSeconds(30 + magic.Level * 30), buffStats, false, false, TimeSpan.Zero);
 
-            LevelMagic(magic);
-        }
+        //    LevelMagic(magic);
+        //}
+        //public void JudgementOfHeavenEnd(UserMagic magic)
+        //{
+        //    Stats buffStats = new Stats
+        //    {
+        //        [Stat.JudgementOfHeaven] = (2 + magic.Level) * 20,
+        //    };
 
-        public bool ChainLightningStart(UserMagic magic, List<Point> locations, List<Point> previousLocations, bool primary, int powerDivisor = 0)
-        {
-            DateTime delay = SEnvir.Now.AddMilliseconds(primary ? 600 : 200);
+        //    BuffAdd(BuffType.JudgementOfHeaven, TimeSpan.FromSeconds(30 + magic.Level * 30), buffStats, false, false, TimeSpan.Zero);
 
-            var newLocations = new List<Point>();
+        //    LevelMagic(magic);
+        //}
 
-            if (primary)
-            {
-                newLocations.AddRange(locations);
-            }
-            else
-            {
-                foreach (var location in locations)
-                {
-                    var cells = CurrentMap.GetCells(location, 0, 1);
+        //public bool ChainLightningStart(UserMagic magic, List<Point> locations, List<Point> previousLocations, bool primary, int powerDivisor = 0)
+        //{
+        //    DateTime delay = SEnvir.Now.AddMilliseconds(primary ? 600 : 200);
 
-                    foreach (var cell in cells)
-                    {
-                        if (cell.Objects == null) continue;
+        //    var newLocations = new List<Point>();
 
-                        if (previousLocations.Contains(cell.Location)) continue;
+        //    if (primary)
+        //    {
+        //        newLocations.AddRange(locations);
+        //    }
+        //    else
+        //    {
+        //        foreach (var location in locations)
+        //        {
+        //            var cells = CurrentMap.GetCells(location, 0, 1);
 
-                        foreach (var ob in cell.Objects)
-                        {
-                            if (ob.Race != ObjectType.Monster || !CanAttackTarget(ob) || !Functions.InRange(CurrentLocation, ob.CurrentLocation, Globals.MagicRange))
-                                continue;
+        //            foreach (var cell in cells)
+        //            {
+        //                if (cell.Objects == null) continue;
 
-                            if (SEnvir.Random.Next(powerDivisor) == 0)
-                                newLocations.Add(cell.Location);
+        //                if (previousLocations.Contains(cell.Location)) continue;
 
-                            break;
-                        }
-                    }
-                }
-            }
+        //                foreach (var ob in cell.Objects)
+        //                {
+        //                    if (ob.Race != ObjectType.Monster || !CanAttackTarget(ob) || !Functions.InRange(CurrentLocation, ob.CurrentLocation, Globals.MagicRange))
+        //                        continue;
 
-            if (newLocations.Count > 0)
-            {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, new List<UserMagic> { magic }, newLocations, previousLocations, primary, powerDivisor));
-            }
+        //                    if (SEnvir.Random.Next(powerDivisor) == 0)
+        //                        newLocations.Add(cell.Location);
 
-            return true;
-        }
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //    }
 
-        public void ChainLightningEnd(List<UserMagic> magics, List<Point> locations, List<Point> previousLocations, bool primary, int powerDivisor)
-        {
-            var actualTargets = new List<MapObject>();
+        //    if (newLocations.Count > 0)
+        //    {
+        //        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, new List<UserMagic> { magic }, newLocations, previousLocations, primary, powerDivisor));
+        //    }
 
-            foreach (var location in locations)
-            {
-                var cell = CurrentMap.GetCell(location);
+        //    return true;
+        //}
 
-                if (cell.Objects == null) continue;
+        //public void ChainLightningEnd(List<UserMagic> magics, List<Point> locations, List<Point> previousLocations, bool primary, int powerDivisor)
+        //{
+        //    var actualTargets = new List<MapObject>();
 
-                foreach (var ob in cell.Objects)
-                {
-                    if (ob.Race != ObjectType.Monster || !CanAttackTarget(ob) || !Functions.InRange(CurrentLocation, ob.CurrentLocation, Globals.MagicRange))
-                        continue;
+        //    foreach (var location in locations)
+        //    {
+        //        var cell = CurrentMap.GetCell(location);
 
-                    actualTargets.Add(ob);
-                }
-            }
+        //        if (cell.Objects == null) continue;
 
-            foreach (var ob in actualTargets)
-            {
-                if (MagicAttack(magics, ob, true, null, powerDivisor) < 1)
-                    locations.Remove(ob.CurrentLocation);
-            }
+        //        foreach (var ob in cell.Objects)
+        //        {
+        //            if (ob.Race != ObjectType.Monster || !CanAttackTarget(ob) || !Functions.InRange(CurrentLocation, ob.CurrentLocation, Globals.MagicRange))
+        //                continue;
 
-            if (!primary)
-            {
-                Broadcast(new S.ObjectProjectile
-                {
-                    ObjectID = ObjectID,
-                    Direction = Direction,
-                    CurrentLocation = CurrentLocation,
-                    Type = magics.First().Info.Magic,
-                    Targets = new List<uint>(),
-                    Locations = locations
-                });
-            }
+        //            actualTargets.Add(ob);
+        //        }
+        //    }
 
-            previousLocations.AddRange(locations);
+        //    foreach (var ob in actualTargets)
+        //    {
+        //        if (MagicAttack(magics, ob, true, null, powerDivisor) < 1)
+        //            locations.Remove(ob.CurrentLocation);
+        //    }
 
-            if (locations.Count > 0)
-            {
-                ChainLightningStart(magics.First(), locations, previousLocations, false, ++powerDivisor);
-            }
-        }
+        //    if (!primary)
+        //    {
+        //        Broadcast(new S.ObjectProjectile
+        //        {
+        //            ObjectID = ObjectID,
+        //            Direction = Direction,
+        //            CurrentLocation = CurrentLocation,
+        //            Type = magics.First().Info.Magic,
+        //            Targets = new List<uint>(),
+        //            Locations = locations
+        //        });
+        //    }
+
+        //    previousLocations.AddRange(locations);
+
+        //    if (locations.Count > 0)
+        //    {
+        //        ChainLightningStart(magics.First(), locations, previousLocations, false, ++powerDivisor);
+        //    }
+        //}
 
         //private void TempestEnd(UserMagic magic, Cell cell, int power)
         //{

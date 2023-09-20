@@ -93,7 +93,7 @@ namespace Server.Models.Magic
             Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, 2)), magics, false);
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob)
+        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power = power * Magic.GetPower() / 100;
 

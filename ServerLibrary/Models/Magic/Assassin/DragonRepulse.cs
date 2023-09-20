@@ -35,7 +35,7 @@ namespace Server.Models.Magic
             Player.MagicAttack(new List<MagicType> { Type }, target);
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob)
+        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power = Player.GetDC() * Magic.GetPower() / 100 + Player.Level;
 
@@ -74,5 +74,11 @@ namespace Server.Models.Magic
             Player.ChangeHP(-(Player.Stats[Stat.Health] * Magic.Cost / 1000));
             Player.ChangeMP(-(Player.Stats[Stat.Mana] * Magic.Cost / 1000));
         }
+
+        public void DragonPulseEnd()
+        {
+            //TODO - FINISH OFF BUFFTYPE UPDATE
+        }
+
     }
 }

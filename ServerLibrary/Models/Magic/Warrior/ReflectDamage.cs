@@ -3,17 +3,16 @@ using Server.DBModels;
 using Server.Envir;
 using System;
 using System.Drawing;
-using System.Linq;
 
 namespace Server.Models.Magic
 {
-    [MagicType(MagicType.Defiance)]
-    public class Defiance : MagicObject
+    [MagicType(MagicType.ReflectDamage)]
+    public class ReflectDamage : MagicObject
     {
         public override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
 
-        public Defiance(PlayerObject player, UserMagic magic) : base(player, magic)
+        public ReflectDamage(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
@@ -34,18 +33,12 @@ namespace Server.Models.Magic
 
         public override void MagicComplete(params object[] data)
         {
-            if (Player.Buffs.Any(x => x.Type == BuffType.Might))
-            {
-                Player.BuffRemove(BuffType.Might);
-                Player.ChangeHP(-(Player.CurrentHP / 2));
-            }
-
             Stats buffStats = new Stats
             {
-                [Stat.Defiance] = 1,
+                [Stat.ReflectDamage] = 5 + Magic.Level * 3,
             };
 
-            Player.BuffAdd(BuffType.Defiance, TimeSpan.FromSeconds(60 + Magic.Level * 30), buffStats, false, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.ReflectDamage, TimeSpan.FromSeconds(15 + Magic.Level * 10), buffStats, false, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
         }

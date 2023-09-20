@@ -31,7 +31,7 @@ namespace Server.Models.Magic
             return response;
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob)
+        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power += Magic.GetPower();
 

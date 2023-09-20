@@ -78,7 +78,7 @@ namespace Server.Models.Magic
             }
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob)
+        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             
 

@@ -36,6 +36,7 @@ namespace Server.Models
         Function,
         DelayedAttackDamage,
         DelayedMagicDamage,
+        DelayedMagicDamageNew,
         Mining,
         DelayMining,
         Fishing

@@ -61,6 +61,10 @@ namespace Server.Models
 
         }
 
+        public virtual void MagicDamageComplete(params object[] data)
+        {
+
+        }
         public virtual void AttackLocations(List<MagicType> magics)
         {
 
@@ -79,6 +83,8 @@ namespace Server.Models
 
         public virtual void MagicFinalise()
         {
+            Player.BuffRemove(BuffType.Cloak);
+            Player.BuffRemove(BuffType.Transparency);
         }
 
         public virtual void ResetCombatTime()
@@ -121,7 +127,7 @@ namespace Server.Models
             return delay;
         }
 
-        public virtual int ModifyPower1(bool primary, int power, MapObject ob)
+        public virtual int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             return power;
         }
@@ -168,11 +174,34 @@ namespace Server.Models
 
     public class MagicCast
     {
+        /// <summary>
+        /// List of locations spell has locked on to
+        /// </summary>
         public List<Point> Locations = new ();
+
+        /// <summary>
+        /// List of targets spell has locked on to
+        /// </summary>
         public List<uint> Targets = new ();
+
+        /// <summary>
+        /// Targetted object for the spell. Will be used to automatically update players direction to face target
+        /// </summary>
         public MapObject Ob = null;
+
+        /// <summary>
+        /// has the spell been cast, sends cooldown to the client
+        /// </summary>
         public bool Cast = true;
 
+        /// <summary>
+        /// Should the players direction be overwritten
+        /// </summary>
+        public MirDirection? Direction = null;
+
+        /// <summary>
+        /// Dont send a return packet to the client
+        /// </summary>
         public bool Return = false;
     }
 

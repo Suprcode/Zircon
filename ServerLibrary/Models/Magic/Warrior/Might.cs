@@ -22,11 +22,8 @@ namespace Server.Models.Magic
         {
             var response = new MagicCast
             {
-                Ob = null
+                Direction = MirDirection.Down
             };
-
-            //TODO!!
-            //p.Direction = MirDirection.Down;
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 

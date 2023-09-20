@@ -1,4 +1,5 @@
 ﻿using Library;
+using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
 using System;
@@ -7,25 +8,22 @@ using System.Linq;
 
 namespace Server.Models.Magic
 {
-    [MagicType(MagicType.Defiance)]
-    public class Defiance : MagicObject
+    [MagicType(MagicType.MagicShield)]
+    public class MagicShield : MagicObject
     {
         public override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
 
-        public Defiance(PlayerObject player, UserMagic magic) : base(player, magic)
+        public MagicShield(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast
-            {
-                Direction = MirDirection.Down
-            };
+            var response = new MagicCast();
 
-            var delay = SEnvir.Now.AddMilliseconds(500);
+            var delay = SEnvir.Now.AddMilliseconds(1100);
 
             ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type));
 
@@ -34,18 +32,14 @@ namespace Server.Models.Magic
 
         public override void MagicComplete(params object[] data)
         {
-            if (Player.Buffs.Any(x => x.Type == BuffType.Might))
-            {
-                Player.BuffRemove(BuffType.Might);
-                Player.ChangeHP(-(Player.CurrentHP / 2));
-            }
+            if (Player.Buffs.Any(x => x.Type == BuffType.MagicShield)) return;
 
             Stats buffStats = new Stats
             {
-                [Stat.Defiance] = 1,
+                [Stat.MagicShield] = 50
             };
 
-            Player.BuffAdd(BuffType.Defiance, TimeSpan.FromSeconds(60 + Magic.Level * 30), buffStats, false, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.MagicShield, TimeSpan.FromSeconds(30 + Magic.Level * 20 + Player.GetMC() / 2 + Player.Stats[Stat.PhantomAttack] * 2), buffStats, true, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
         }

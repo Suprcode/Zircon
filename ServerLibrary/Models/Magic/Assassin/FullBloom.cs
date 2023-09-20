@@ -1,9 +1,8 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
 using System;
-using System.Collections.Generic;
+
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magic
@@ -73,7 +72,7 @@ namespace Server.Models.Magic
             }
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob)
+        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             bool hasStone = Player.Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone;
 
