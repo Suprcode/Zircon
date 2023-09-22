@@ -9,8 +9,11 @@ namespace Server.Models.Magic
     [MagicType(MagicType.SwiftBlade)]
     public class SwiftBlade : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
+
+        public override bool IgnoreAccuracy => true;
+        public override bool HasLotus => true;
 
         public SwiftBlade(PlayerObject player, UserMagic magic) : base(player, magic)
         {

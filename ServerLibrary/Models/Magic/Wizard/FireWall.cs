@@ -12,7 +12,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.FireWall)]
     public class FireWall : MagicObject
     {
-        public override Element Element => Element.Fire;
+        protected override Element Element => Element.Fire;
         public override bool CanStruck => false;
 
         public FireWall(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -100,7 +100,7 @@ namespace Server.Models.Magic
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power)
+        public override int ModifyPower2(bool primary, int power, Stats stats = null)
         {
             power = (int)(power * 0.60F);
 

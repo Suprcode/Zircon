@@ -8,7 +8,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Slaying)]
     public class Slaying : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
 
         public Slaying(PlayerObject player, UserMagic magic) : base(player, magic)

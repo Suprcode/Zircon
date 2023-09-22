@@ -8,7 +8,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.GustBlast)]
     public class GustBlast : MagicObject
     {
-        public override Element Element => Element.Wind;
+        protected override Element Element => Element.Wind;
 
         protected override int Repel => 10;
 
@@ -19,10 +19,14 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = target
+            };
 
             if (!Player.CanAttackTarget(target))
             {
+                response.Ob = null;
                 response.Locations.Add(location);
                 return response;
             }

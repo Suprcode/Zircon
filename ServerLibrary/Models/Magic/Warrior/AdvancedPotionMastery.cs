@@ -8,7 +8,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.AdvancedPotionMastery)]
     public class AdvancedPotionMastery : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
 
         public AdvancedPotionMastery(PlayerObject player, UserMagic magic) : base(player, magic)
         {

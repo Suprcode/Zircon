@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using System.Collections.Generic;
+
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magic
@@ -8,8 +9,12 @@ namespace Server.Models.Magic
     [MagicType(MagicType.DestructiveSurge)]
     public class DestructiveSurge : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public override bool HasDestructiveSurge(bool primary)
+        {
+            return !primary;
+        }
 
         public DestructiveSurge(PlayerObject player, UserMagic magic) : base(player, magic)
         {

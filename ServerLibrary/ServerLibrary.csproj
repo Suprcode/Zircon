@@ -9,4 +9,8 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\NPCs\" />
+  </ItemGroup>
+
 </Project>

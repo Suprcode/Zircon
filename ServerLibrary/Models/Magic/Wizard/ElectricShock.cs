@@ -11,7 +11,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.ElectricShock)]
     public class ElectricShock : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
 
         public ElectricShock(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -21,10 +21,14 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = null
+            };
 
             if (!Player.CanAttackTarget(target) || target.Race != ObjectType.Monster)
             {
+                response.Ob = null;
                 response.Locations.Add(location);
                 return response;
             }

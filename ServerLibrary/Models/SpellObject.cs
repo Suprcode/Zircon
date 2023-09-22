@@ -168,7 +168,7 @@ namespace Server.Models
                         PlayerObject player = Owner as PlayerObject;
                         if (player == null || !player.CanAttackTarget(ob)) return;
 
-                        int damage = player.MagicAttack(new List<UserMagic> { Magic }, ob, true);
+                        int damage = player.MagicAttack(new List<MagicType> { MagicType.Tempest }, ob, true);
 
                         if (damage > 0 && ob.Race == ObjectType.Player)
                         {

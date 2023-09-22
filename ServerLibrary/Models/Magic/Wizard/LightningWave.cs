@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.LightningWave)]
     public class LightningWave : MagicObject
     {
-        public override Element Element => Element.Lightning;
+        protected override Element Element => Element.Lightning;
 
         public LightningWave(PlayerObject player, UserMagic magic) : base(player, magic)
         {

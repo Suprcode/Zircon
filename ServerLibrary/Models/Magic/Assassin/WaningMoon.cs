@@ -8,7 +8,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.WaningMoon)]
     public class WaningMoon : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
 
         public WaningMoon(PlayerObject player, UserMagic magic) : base(player, magic)

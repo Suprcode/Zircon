@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Defiance)]
     public class Defiance : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
 
         public Defiance(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -22,6 +22,7 @@ namespace Server.Models.Magic
         {
             var response = new MagicCast
             {
+                Ob = null,
                 Direction = MirDirection.Down
             };
 

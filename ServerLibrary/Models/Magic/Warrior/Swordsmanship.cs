@@ -6,7 +6,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Swordsmanship)]
     public class Swordsmanship : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
 
         public Swordsmanship(PlayerObject player, UserMagic magic) : base(player, magic)

@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.ThunderStrike)]
     public class ThunderStrike : MagicObject
     {
-        public override Element Element => Element.Lightning;
+        protected override Element Element => Element.Lightning;
 
         public ThunderStrike(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -18,7 +18,10 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = null
+            };
 
             var cells = CurrentMap.GetCells(CurrentLocation, 0, 6);
 

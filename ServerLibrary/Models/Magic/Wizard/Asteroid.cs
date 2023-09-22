@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Asteroid)]
     public class Asteroid : MagicObject
     {
-        public override Element Element => Element.Fire;
+        protected override Element Element => Element.Fire;
         public override bool CanStruck => false;
 
         public Asteroid(PlayerObject player, UserMagic magic) : base(player, magic)

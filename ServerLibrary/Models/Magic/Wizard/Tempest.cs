@@ -1,4 +1,5 @@
 ﻿using Library;
+using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
 using System;
@@ -9,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Tempest)]
     public class Tempest : MagicObject
     {
-        public override Element Element => Element.Wind;
+        protected override Element Element => Element.Wind;
         protected override int Repel => 5;
         public override bool CanStruck => false;
 
@@ -96,6 +97,13 @@ namespace Server.Models.Magic
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        {
+            power += Magic.GetPower() + Player.GetMC();
+
+            return power;
+        }
+
+        public override int ModifyPower2(bool primary, int power, Stats stats = null)
         {
             power = (int)(power * 0.80F);
 

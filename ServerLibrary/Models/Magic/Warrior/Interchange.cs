@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Interchange)]
     public class Interchange : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
 
         public Interchange(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -19,7 +19,10 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = target
+            };
 
             if (target == null)
                 return response;

@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.MeteorShower)]
     public class MeteorShower : MagicObject
     {
-        public override Element Element => Element.Fire;
+        protected override Element Element => Element.Fire;
 
         public MeteorShower(PlayerObject player, UserMagic magic) : base(player, magic)
         {

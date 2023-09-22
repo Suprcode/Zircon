@@ -8,7 +8,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Repulsion)]
     public class Repulsion : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
 
         public Repulsion(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -18,15 +18,17 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
-
-            response.Targets.Add(target.ObjectID);
+            var response = new MagicCast
+            {
+                Ob = null
+            };
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
             for (MirDirection d = MirDirection.Up; d <= MirDirection.UpLeft; d++)
             {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(CurrentLocation, d)), d));
+                var cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, d));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell, d));
             }
 
             return response;

@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.FireBounce)]
     public class FireBounce : MagicObject
     {
-        public override Element Element => Element.Fire;
+        protected override Element Element => Element.Fire;
 
         public FireBounce(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -22,11 +22,11 @@ namespace Server.Models.Magic
             if (!Player.CanAttackTarget(target))
                 return new MagicCast();
 
-            var bounce = Bounce(Player, target, -1);
+            var response = Bounce(Player, target, -1);
 
-            bounce.Targets.Add(target.ObjectID);
+            response.Targets.Add(target.ObjectID);
 
-            return bounce;
+            return response;
         }
 
         public override void MagicComplete(params object[] data)
@@ -65,7 +65,10 @@ namespace Server.Models.Magic
 
         private MagicCast Bounce(MapObject source, MapObject target, int bounce = -1)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = source
+            };
 
             if (!Player.CanAttackTarget(target) || bounce == 0)
                 return response;

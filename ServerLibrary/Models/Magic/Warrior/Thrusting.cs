@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Thrusting)]
     public class Thrusting : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
 
         public Thrusting(PlayerObject player, UserMagic magic) : base(player, magic)

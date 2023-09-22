@@ -11,8 +11,12 @@ namespace Server.Models.Magic
     [MagicType(MagicType.FlameSplash)]
     public class FlameSplash : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public override bool HasFlameSplash(bool primary)
+        {
+            return primary;
+        }
 
         public FlameSplash(PlayerObject player, UserMagic magic) : base(player, magic)
         {

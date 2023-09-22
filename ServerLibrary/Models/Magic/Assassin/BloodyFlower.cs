@@ -7,7 +7,8 @@ namespace Server.Models.Magic
     [MagicType(MagicType.BloodyFlower)]
     public class BloodyFlower : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
+
         public override bool AttackSkill => true;
 
         public BloodyFlower(PlayerObject player, UserMagic magic) : base(player, magic)

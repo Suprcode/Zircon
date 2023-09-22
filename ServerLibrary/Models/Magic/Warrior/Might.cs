@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Might)]
     public class Might : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
 
         public Might(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -22,6 +22,7 @@ namespace Server.Models.Magic
         {
             var response = new MagicCast
             {
+                Ob = null,
                 Direction = MirDirection.Down
             };
 

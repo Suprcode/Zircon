@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.DragonTornado)]
     public class DragonTornado : MagicObject
     {
-        public override Element Element => Element.Wind;
+        protected override Element Element => Element.Wind;
         protected override int Repel => 5;
 
         public DragonTornado(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -19,7 +19,10 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = null
+            };
 
             if (!Functions.InRange(CurrentLocation, location, Globals.MagicRange))
             {

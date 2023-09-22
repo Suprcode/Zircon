@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.BlowEarth)]
     public class BlowEarth : MagicObject
     {
-        public override Element Element => Element.Wind;
+        protected override Element Element => Element.Wind;
         protected override int Repel => 10;
 
         public BlowEarth(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -90,7 +90,7 @@ namespace Server.Models.Magic
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power)
+        public override int ModifyPower2(bool primary, int power, Stats stats = null)
         {
             if (!primary)
                 power = (int)(power * 0.3F);

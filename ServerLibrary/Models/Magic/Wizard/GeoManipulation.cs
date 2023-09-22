@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.GeoManipulation)]
     public class GeoManipulation : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
 
         public GeoManipulation(PlayerObject player, UserMagic magic) : base(player, magic)

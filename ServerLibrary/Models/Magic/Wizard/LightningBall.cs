@@ -8,7 +8,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.LightningBall)]
     public class LightningBall : MagicObject
     {
-        public override Element Element => Element.Lightning;
+        protected override Element Element => Element.Lightning;
 
         public LightningBall(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -17,10 +17,14 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = target
+            };
 
             if (!Player.CanAttackTarget(target))
             {
+                response.Ob = null;
                 response.Locations.Add(location);
                 return response;
             }

@@ -3,6 +3,7 @@ using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
 using System.Collections.Generic;
+
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magic
@@ -10,7 +11,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.BladeStorm)]
     public class BladeStorm : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
 
         public BladeStorm(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -52,6 +53,7 @@ namespace Server.Models.Magic
                 Player.CanBladeStorm = true;
                 Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = Player.CanBladeStorm });
             }
+
             if (Player.Magics.TryGetValue(MagicType.FlamingSword, out UserMagic magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
             {
                 magic.Cooldown = SEnvir.Now.AddSeconds(2);

@@ -8,7 +8,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.IceBlades)]
     public class IceBlades : MagicObject
     {
-        public override Element Element => Element.Ice;
+        protected override Element Element => Element.Ice;
         protected override int Slow => 5;
         protected override int SlowLevel => 5;
 
@@ -19,10 +19,14 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = target
+            };
 
             if (!Player.CanAttackTarget(target))
             {
+                response.Ob = null;
                 response.Locations.Add(location);
                 return response;
             }

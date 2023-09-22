@@ -7,6 +7,25 @@ using System.Drawing;
 
 namespace Server.Models
 {
+    //public abstract class AttackObject : MagicObject
+    //{
+
+    //    public override bool AttackSkill => true;
+
+    //    public AttackObject(PlayerObject player, UserMagic magic) : base (player, magic)
+    //    {
+
+    //    }
+    //}
+    
+    //public abstract class CastObject : MagicObject
+    //{
+    //    public CastObject(PlayerObject player, UserMagic magic) : base(player, magic)
+    //    {
+
+    //    }
+    //}
+
     public abstract class MagicObject
     {
         public PlayerObject Player { get; }
@@ -19,15 +38,13 @@ namespace Server.Models
         public MirDirection Direction => Player.Direction;
 
 
-        public abstract Element Element { get; }
+        protected abstract Element Element { get; }
         public virtual bool UpdateCombatTime => true;
 
 
-        //Attack variables
-        public virtual bool AttackSkill => false;
-
         //Magic variables
         public virtual bool MagicSkill => false; //TODO
+        public virtual bool AugmentedSkill => false;
         public virtual bool CanStruck => true;
         protected virtual int Slow => 0;
         protected virtual int SlowLevel => 0;
@@ -35,10 +52,35 @@ namespace Server.Models
         protected virtual int Silence => 0;
         protected virtual int Shock => 0;
 
+
+        //Attack variables
+        public virtual bool AttackSkill => false;
+        public virtual bool IgnoreAccuracy => false;
+        public virtual bool HasFlameSplash(bool primary)
+        {
+            return false;
+        }
+        public virtual bool HasLotus => false;
+        public virtual bool HasDestructiveSurge(bool primary)
+        {
+            return false;
+        }
+        public virtual bool HasBladeStorm => false;
+        public virtual bool HasDanceOfSallows => false;
+        public virtual bool HasMassacre => false;
+        public virtual bool HasSwiftBlade => false;
+        public virtual bool HasSeismicSlam => false;
+
+
         public MagicObject(PlayerObject player, UserMagic magic) 
         {
             Player = player;
             Magic = magic;
+        }
+
+        public virtual Element GetElement(Element currentElement, Stats stats = null)
+        {
+            return Element;
         }
 
         public virtual bool CheckCost()
@@ -132,7 +174,7 @@ namespace Server.Models
             return power;
         }
 
-        public virtual int ModifyPower2(bool primary, int power)
+        public virtual int ModifyPower2(bool primary, int power, Stats stats = null)
         {
             return power;
         }
@@ -142,32 +184,32 @@ namespace Server.Models
             return new Stats();
         }
 
-        public virtual int GetSlow()
+        public virtual int GetSlow(int slow, Stats stats = null)
         {
             return Slow;
         }
 
-        public virtual int GetSlowLevel()
+        public virtual int GetSlowLevel(int slowLevel, Stats stats = null)
         {
             return SlowLevel;
         }
 
-        public virtual int GetRepel()
+        public virtual int GetRepel(int repel, Stats stats = null)
         {
             return Repel;
         }
 
-        public virtual int GetSilence()
+        public virtual int GetSilence(int silence, Stats stats = null)
         {
             return Silence;
         }
 
-        public virtual int GetShock()
+        public virtual int GetShock(int shock, Stats stats = null)
         {
             return Shock;
         }
 
-        //TODO - Send list to client of which magics are toggled, casted, targetted etc (allows removing of lots of switches)
+        //TODO - Send list to client of which magics are toggled, casted, targetted etc (allows removing of lots of client switches)
         //TODO - Create new Attack method passing in MagicType instead
         //TODO - Clean up AttackLocation and AttackCell methods (find which skills use them first)
     }

@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.IceStorm)]
     public class IceStorm : MagicObject
     {
-        public override Element Element => Element.Ice;
+        protected override Element Element => Element.Ice;
         protected override int Slow => 5;
         protected override int SlowLevel => 5;
 

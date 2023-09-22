@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.GreaterFrozenEarth)]
     public class GreaterFrozenEarth : MagicObject
     {
-        public override Element Element => Element.Ice;
+        protected override Element Element => Element.Ice;
         protected override int Slow => 5;
         protected override int SlowLevel => 5;
 
@@ -87,7 +87,7 @@ namespace Server.Models.Magic
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power)
+        public override int ModifyPower2(bool primary, int power, Stats stats = null)
         {
             if (!primary)
                 power = (int)(power * 0.3F);

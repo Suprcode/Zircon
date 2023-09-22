@@ -5,6 +5,7 @@ using Server.Envir;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magic
@@ -12,7 +13,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Karma)]
     public class Karma : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
 
         public Karma(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -80,7 +81,29 @@ namespace Server.Models.Magic
 
         public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
-            
+            power += Player.GetDC();
+
+            var karmaDamage = ob.CurrentHP * Magic.GetPower() / 100;
+
+            if (ob.Race == ObjectType.Monster)
+            {
+                if (((MonsterObject)ob).MonsterInfo.IsBoss)
+                    karmaDamage = Magic.GetPower() * 20;
+                else
+                    karmaDamage /= 4;
+            }
+
+            /*   buff = Buffs.FirstOrDefault(x => x.Type == BuffType.TheNewBeginning);
+               if (buff != null && Magics.TryGetValue(MagicType.TheNewBeginning, out augMagic) && Level >= augMagic.Info.NeedLevel1)
+               {
+                   power += power * augMagic.GetPower() / 100;
+                   magics.Add(augMagic);
+                   BuffRemove(buff);
+                   if (buff.Stats[Stat.TheNewBeginning] > 1)
+                       BuffAdd(BuffType.TheNewBeginning, TimeSpan.FromMinutes(1), new Stats { [Stat.TheNewBeginning] = buff.Stats[Stat.TheNewBeginning] - 1 }, false, false, TimeSpan.Zero);
+               }
+               */
+            ob.Broadcast(new S.ObjectEffect { ObjectID = ob.ObjectID, Effect = Effect.Karma });
 
             return power;
         }

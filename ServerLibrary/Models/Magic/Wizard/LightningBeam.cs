@@ -9,7 +9,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.LightningBeam)]
     public class LightningBeam : MagicObject
     {
-        public override Element Element => Element.Lightning;
+        protected override Element Element => Element.Lightning;
 
         public LightningBeam(PlayerObject player, UserMagic magic) : base(player, magic)
         {

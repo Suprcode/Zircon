@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.DragonRepulse)]
     public class DragonRepulse : MagicObject
     {
-        public override Element Element => Element.Lightning;
+        protected override Element Element => Element.Lightning;
         protected override int Repel => 5;
 
         public DragonRepulse(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -20,7 +20,10 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = null
+            };
 
             var buff = Player.BuffAdd(BuffType.DragonRepulse, TimeSpan.FromSeconds(6), null, true, false, TimeSpan.FromSeconds(1));
             buff.TickTime = TimeSpan.FromMilliseconds(500);

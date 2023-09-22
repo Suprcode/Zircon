@@ -7,7 +7,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.Discipline)]
     public class Discipline : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
         public override bool AttackSkill => true;
 
         public Discipline(PlayerObject player, UserMagic magic) : base(player, magic)

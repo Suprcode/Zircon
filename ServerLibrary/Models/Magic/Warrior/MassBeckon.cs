@@ -10,7 +10,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.MassBeckon)]
     public class MassBeckon : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
 
         public MassBeckon(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -19,7 +19,10 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = null
+            };
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 

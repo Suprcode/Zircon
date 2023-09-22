@@ -12,7 +12,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.ScortchedEarth)]
     public class ScortchedEarth : MagicObject
     {
-        public override Element Element => Element.Fire;
+        protected override Element Element => Element.Fire;
 
         public ScortchedEarth(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -85,7 +85,7 @@ namespace Server.Models.Magic
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power)
+        public override int ModifyPower2(bool primary, int power, Stats stats = null)
         {
             if (!primary)
                 power = (int)(power * 0.3F);

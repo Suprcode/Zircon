@@ -10,7 +10,9 @@ namespace Server.Models.Magic
     [MagicType(MagicType.FullBloom)]
     public class FullBloom : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
+        public override bool IgnoreAccuracy => true;
+        public override bool HasLotus => true;
         public override bool AttackSkill => true;
 
         public FullBloom(PlayerObject player, UserMagic magic) : base(player, magic)

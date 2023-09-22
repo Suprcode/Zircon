@@ -15,7 +15,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.ExpelUndead)]
     public class ExpelUndead : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
 
         public ExpelUndead(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -24,10 +24,14 @@ namespace Server.Models.Magic
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
-            var response = new MagicCast();
+            var response = new MagicCast
+            {
+                Ob = target
+            };
 
             if (!Player.CanAttackTarget(target) || target.Race != ObjectType.Monster || !((MonsterObject)target).MonsterInfo.Undead)
             {
+                response.Ob = null;
                 return response;
             }
 

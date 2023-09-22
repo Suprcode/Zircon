@@ -11,7 +11,7 @@ namespace Server.Models.Magic
     [MagicType(MagicType.ShoulderDash)]
     public class ShoulderDash : MagicObject
     {
-        public override Element Element => Element.None;
+        protected override Element Element => Element.None;
 
         public ShoulderDash(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -22,6 +22,7 @@ namespace Server.Models.Magic
         {
             var response = new MagicCast
             {
+                Ob = target,
                 Return = true
             };
 
