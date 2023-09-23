@@ -38,7 +38,7 @@ namespace Server.Models.Magic
 
                     var delay = SEnvir.Now.AddMilliseconds(800);
 
-                    ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell, true));
+                    ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell, true));
 
                     switch (dir)
                     {
@@ -46,15 +46,15 @@ namespace Server.Models.Magic
                         case MirDirection.Right:
                         case MirDirection.Down:
                         case MirDirection.Left:
-                            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(dir, -2))), false));
-                            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(dir, 2))), false));
+                            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(dir, -2))), false));
+                            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(dir, 2))), false));
                             break;
                         case MirDirection.UpRight:
                         case MirDirection.DownRight:
                         case MirDirection.DownLeft:
                         case MirDirection.UpLeft:
-                            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(dir, 1))), false));
-                            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(dir, -1))), false));
+                            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(dir, 1))), false));
+                            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(dir, -1))), false));
                             break;
                     }
                 }
@@ -87,7 +87,7 @@ namespace Server.Models.Magic
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power, Stats stats = null)
+        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
         {
             if (!primary)
                 power = (int)(power * 0.3F);

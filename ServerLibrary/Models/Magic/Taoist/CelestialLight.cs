@@ -38,11 +38,11 @@ namespace Server.Models.Magic
                 return response;
             }
 
-            response.Targets.Add(target.ObjectID);
+            response.Targets.Add(Player.ObjectID);
 
             var delay = SEnvir.Now.AddMilliseconds(1500);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type));
 
             return response;
         }

@@ -47,7 +47,7 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, target));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, target));
 
             return response;
         }
@@ -61,9 +61,13 @@ namespace Server.Models.Magic
             int power = Player.GetSP();
 
             int duration = Magic.GetPower();
-            UserMagic touch = null;
-            if (Player.Magics.TryGetValue(MagicType.TouchOfTheDeparted, out touch) && Player.Level < Magic.Info.NeedLevel1)
-                touch = null;
+
+            UserMagic touchOfTheDeparted = GetAugmentedSkill(MagicType.TouchOfTheDeparted);
+
+            if (touchOfTheDeparted != null && Player.Level < touchOfTheDeparted.Info.NeedLevel1)
+            {
+                touchOfTheDeparted = null;
+            }
 
             ob.ApplyPoison(new Poison
             {
@@ -72,10 +76,11 @@ namespace Server.Models.Magic
                 Owner = Player,
                 TickCount = ob.Race == ObjectType.Player ? duration * 7 / 10 : duration,
                 TickFrequency = TimeSpan.FromSeconds(1),
-                Extra = touch,
+                Extra = touchOfTheDeparted,
             });
 
-            if (touch != null)
+            if (touchOfTheDeparted != null)
+            {
                 ob.ApplyPoison(new Poison
                 {
                     Value = power,
@@ -86,8 +91,10 @@ namespace Server.Models.Magic
                     TickFrequency = TimeSpan.FromSeconds(1),
                 });
 
+                Player.LevelMagic(touchOfTheDeparted);
+            }
+
             Player.LevelMagic(Magic);
-            Player.LevelMagic(touch);
         }
     }
 }

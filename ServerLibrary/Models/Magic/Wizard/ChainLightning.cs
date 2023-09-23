@@ -73,7 +73,7 @@ namespace Server.Models.Magic
 
             if (newLocations.Count > 0)
             {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, newLocations, previousLocations, primary, powerDivisor));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, newLocations, previousLocations, primary, powerDivisor));
             }
 
             return true;

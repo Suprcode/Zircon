@@ -599,7 +599,7 @@ namespace Server.Models
                                         ActionList.Add(new DelayedAction(
                                             SEnvir.Now.AddMilliseconds(SEnvir.Random.Next(200) + Functions.Distance(CurrentLocation, ob.CurrentLocation) * 20),
                                             ActionType.DelayMagic,
-                                            new List<UserMagic> { magic },
+                                            MagicType.DragonRepulse,
                                             ob));
                                     }
                                 }

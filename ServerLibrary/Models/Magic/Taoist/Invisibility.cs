@@ -33,23 +33,21 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type));
 
             return response;
         }
 
         public override void MagicComplete(params object[] data)
         {
-            MapObject ob = (MapObject)data[1];
-
-            if (ob?.Node == null || !Player.CanHelpTarget(ob) || ob.Buffs.Any(x => x.Type == BuffType.Invisibility)) return;
+            if (Player.Buffs.Any(x => x.Type == BuffType.Invisibility)) return;
 
             Stats buffStats = new Stats
             {
                 [Stat.Invisibility] = 1
             };
 
-            ob.BuffAdd(BuffType.Invisibility, TimeSpan.FromSeconds((Magic.GetPower() + Player.GetSC() + Player.Stats[Stat.PhantomAttack] * 2)), buffStats, true, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.Invisibility, TimeSpan.FromSeconds((Magic.GetPower() + Player.GetSC() + Player.Stats[Stat.PhantomAttack] * 2)), buffStats, true, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
         }

@@ -54,7 +54,7 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type));
 
             return response;
         }
@@ -66,7 +66,7 @@ namespace Server.Models.Magic
 
             if (ob?.Node == null || !Player.CanHelpTarget(ob) || ob.Buffs.Any(x => x.Type == BuffType.Cloak)) return;
 
-            UserMagic pledgeofBlood = Player.Magics.ContainsKey(MagicType.PledgeOfBlood) ? Player.Magics[MagicType.PledgeOfBlood] : null;
+            var pledgeofBlood = GetAugmentedSkill(MagicType.PledgeOfBlood);
 
             int value = 0;
             if (pledgeofBlood != null && Player.Level >= pledgeofBlood.Info.NeedLevel1)
@@ -85,7 +85,8 @@ namespace Server.Models.Magic
 
             if (!forceGhost)
             {
-                UserMagic ghostWalk = Player.Magics.ContainsKey(MagicType.GhostWalk) ? Player.Magics[MagicType.GhostWalk] : null;
+                var ghostWalk = GetAugmentedSkill(MagicType.GhostWalk);
+
                 if (ghostWalk == null || Player.Level < ghostWalk.Info.NeedLevel1) return;
 
                 int rate = (ghostWalk.Level + 1) * 3;

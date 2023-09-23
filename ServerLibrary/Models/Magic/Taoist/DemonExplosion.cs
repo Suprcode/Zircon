@@ -34,7 +34,7 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, stats));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, stats));
 
             return response;
         }
@@ -67,7 +67,7 @@ namespace Server.Models.Magic
 
             foreach (MapObject target in targets)
             {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamageNew, Type, target, true, null, target.Race == ObjectType.Player ? damagePvP : damagePvE));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, Type, target, true, null, target.Race == ObjectType.Player ? damagePvP : damagePvE));
             }
         }
 

@@ -44,7 +44,7 @@ namespace Server.Models.Magic
                 var delay = GetDelayFromDistance(500, ob);
 
                 response.Targets.Add(ob.ObjectID);
-                Player.ActionList.Add(new DelayedAction( delay, ActionType.DelayMagicNew, Type, ob));
+                Player.ActionList.Add(new DelayedAction( delay, ActionType.DelayMagic, Type, ob));
             }
 
             return response;

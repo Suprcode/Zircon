@@ -37,7 +37,7 @@ namespace Server.Models.Magic
             var delay = SEnvir.Now.AddMilliseconds(500);
 
             foreach (Cell cell in cells)
-                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
 
             return response;
         }

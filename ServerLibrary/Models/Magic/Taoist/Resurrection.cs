@@ -26,18 +26,22 @@ namespace Server.Models.Magic
                 Ob = target
             };
 
-            Player.Magics.TryGetValue(MagicType.OathOfThePerished, out UserMagic augMagic);
-
             var realTargets = new HashSet<MapObject>();
 
             if ((Player.InGroup(target as PlayerObject) || Player.InGuild(target as PlayerObject)) && target.Dead)
-                realTargets.Add(target);
-            else
-                response.Ob = null;
-
-            if (augMagic != null && SEnvir.Now > augMagic.Cooldown && Player.Level >= augMagic.Info.NeedLevel1)
             {
-                var power = augMagic.GetPower() + 1;
+                realTargets.Add(target);
+            }
+            else
+            {
+                response.Ob = null;
+            }
+
+            var oathOfThePerished = GetAugmentedSkill(MagicType.OathOfThePerished);
+
+            if (oathOfThePerished != null && SEnvir.Now > oathOfThePerished.Cooldown && Player.Level >= oathOfThePerished.Info.NeedLevel1)
+            {
+                var power = oathOfThePerished.GetPower() + 1;
 
                 var possibleTargets = Player.GetAllObjects(location, 3);
 
@@ -58,16 +62,16 @@ namespace Server.Models.Magic
 
             var count = -1;
 
+            var hasOathOfThePerished = false;
+
             foreach (MapObject realTarget in realTargets)
             {
                 if (!Player.UseAmulet(1, 1))
                     break;
 
-                var aug = false;
-
-                if (augMagic != null)
+                if (oathOfThePerished != null)
                 {
-                    aug = true;
+                    hasOathOfThePerished = true;
                     count++;
                 }
 
@@ -75,13 +79,13 @@ namespace Server.Models.Magic
 
                 var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, realTarget.CurrentLocation) * 48);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, realTarget, realTarget == target, aug));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, realTarget == target, hasOathOfThePerished));
             }
 
             if (count > 0)
             {
-                augMagic.Cooldown = SEnvir.Now.AddMilliseconds(augMagic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augMagic.Info.Index, Delay = augMagic.Info.Delay });
+                oathOfThePerished.Cooldown = SEnvir.Now.AddMilliseconds(oathOfThePerished.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = oathOfThePerished.Info.Index, Delay = oathOfThePerished.Info.Delay });
             }
 
             return response;
@@ -91,7 +95,7 @@ namespace Server.Models.Magic
         {
             var ob = (MapObject)data[1];
             var primary = (bool)data[2];
-            var aug = (bool)data[3];
+            var hasOathOfThePerished = (bool)data[3];
 
             if (ob?.Node == null || !ob.Dead) return;
 
@@ -109,9 +113,11 @@ namespace Server.Models.Magic
             Magic.Cooldown = SEnvir.Now.AddSeconds(20);
             Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = 20000 });
 
-            if (!primary && aug && Player.Magics.TryGetValue(MagicType.OathOfThePerished, out UserMagic augMagic))
+            var oathOfThePerished = GetAugmentedSkill(MagicType.OathOfThePerished);
+
+            if (!primary && hasOathOfThePerished && oathOfThePerished != null)
             {
-                Player.LevelMagic(augMagic);
+                Player.LevelMagic(oathOfThePerished);
             }
         }
     }

@@ -39,7 +39,7 @@ namespace Server.Models.Magic
 
             foreach (var cell in cells)
             {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
             }
 
             return response;
@@ -55,18 +55,22 @@ namespace Server.Models.Magic
             {
                 MapObject ob = cell.Objects[i];
 
-                if (ob?.Node == null || !Player.CanHelpTarget(ob) || ob.CurrentHP >= ob.Stats[Stat.Health] || ob.Buffs.Any(x => x.Type == BuffType.Heal)) continue;
+                if (ob?.Node == null || !Player.CanHelpTarget(ob) || ob.CurrentHP >= ob.Stats[Stat.Health] || ob.Buffs.Any(x => x.Type == BuffType.Heal))
+                {
+                    continue;
+                }
 
-                UserMagic empowered;
                 int bonus = 0;
                 int cap = 30;
 
-                if (Player.Magics.TryGetValue(MagicType.EmpoweredHealing, out empowered) && Player.Level >= empowered.Info.NeedLevel1)
-                {
-                    bonus = empowered.GetPower();
-                    cap += (1 + empowered.Level) * 30;
+                var empoweredHealing = GetAugmentedSkill(MagicType.EmpoweredHealing);
 
-                    Player.LevelMagic(empowered);
+                if (empoweredHealing != null && Player.Level >= empoweredHealing.Info.NeedLevel1)
+                {
+                    bonus = empoweredHealing.GetPower();
+                    cap += (1 + empoweredHealing.Level) * 30;
+
+                    Player.LevelMagic(empoweredHealing);
                 }
 
                 Stats buffStats = new Stats

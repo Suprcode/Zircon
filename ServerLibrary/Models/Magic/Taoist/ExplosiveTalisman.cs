@@ -26,16 +26,16 @@ namespace Server.Models.Magic
                 Ob = target
             };
 
-            Player.Magics.TryGetValue(MagicType.AugmentExplosiveTalisman, out UserMagic augMagic);
-
             var realTargets = new HashSet<MapObject>();
 
             if (Player.CanAttackTarget(target))
                 realTargets.Add(target);
 
-            if (augMagic != null && SEnvir.Now > augMagic.Cooldown && Player.Level >= augMagic.Info.NeedLevel1)
+            var augmentExplosiveTalisman = GetAugmentedSkill(MagicType.AugmentExplosiveTalisman);
+
+            if (augmentExplosiveTalisman != null && SEnvir.Now > augmentExplosiveTalisman.Cooldown && Player.Level >= augmentExplosiveTalisman.Info.NeedLevel1)
             {
-                var power = augMagic.GetPower() + 1;
+                var power = augmentExplosiveTalisman.GetPower() + 1;
                 var possibleTargets = Player.GetTargets(CurrentMap, location, 2);
 
                 while (power >= realTargets.Count)
@@ -52,7 +52,7 @@ namespace Server.Models.Magic
                 }
             }
 
-            var aug = false;
+            var hasAugmentExplosiveTalisman = false;
 
             var count = -1;
             foreach (MapObject realTarget in realTargets)
@@ -60,23 +60,23 @@ namespace Server.Models.Magic
                 if (!Player.UseAmulet(1, 0, out Stats stats))
                     break;
 
-                if (augMagic != null)
+                if (augmentExplosiveTalisman != null)
                 {
                     count++;
-                    aug = true;
+                    hasAugmentExplosiveTalisman = true;
                 }
 
                 response.Targets.Add(realTarget.ObjectID);
 
                 var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, realTarget.CurrentLocation) * 48);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, realTarget, realTarget == target, stats, aug));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, realTarget == target, stats, hasAugmentExplosiveTalisman));
             }
 
             if (count > 0)
             {
-                augMagic.Cooldown = SEnvir.Now.AddMilliseconds(augMagic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augMagic.Info.Index, Delay = augMagic.Info.Delay });
+                augmentExplosiveTalisman.Cooldown = SEnvir.Now.AddMilliseconds(augmentExplosiveTalisman.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentExplosiveTalisman.Info.Index, Delay = augmentExplosiveTalisman.Info.Delay });
             }
 
             if (target == null)
@@ -90,20 +90,22 @@ namespace Server.Models.Magic
             MapObject target = (MapObject)data[1];
             bool primary = (bool)data[2];
             var stats = (Stats)data[3];
-            var aug = (bool)data[4];
+            var hasAugmentExplosiveTalisman = (bool)data[4];
 
             var magics = new List<MagicType> { Type };
 
-            if (aug)
+            if (hasAugmentExplosiveTalisman)
             {
                 magics.Add(MagicType.AugmentExplosiveTalisman);
             }
 
             var damage = Player.MagicAttack(magics, target, primary, stats);
 
-            if (!primary && damage > 0 && aug && Player.Magics.TryGetValue(MagicType.AugmentEvilSlayer, out UserMagic augMagic))
+            var augmentExplosiveTalisman = GetAugmentedSkill(MagicType.AugmentExplosiveTalisman);
+
+            if (!primary && damage > 0 && hasAugmentExplosiveTalisman && augmentExplosiveTalisman != null)
             {
-                Player.LevelMagic(augMagic);
+                Player.LevelMagic(augmentExplosiveTalisman);
             }
         }
 
@@ -114,7 +116,7 @@ namespace Server.Models.Magic
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power, Stats stats = null)
+        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
         {
             if (stats != null && stats[Stat.DarkAffinity] >= 1)
                 power += (int)(power * 0.3F);

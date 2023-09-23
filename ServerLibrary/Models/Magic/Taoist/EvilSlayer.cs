@@ -27,17 +27,18 @@ namespace Server.Models.Magic.Taoist
                 Ob = target
             };
 
-            Player.Magics.TryGetValue(MagicType.AugmentEvilSlayer, out UserMagic augMagic);
-
             var realTargets = new HashSet<MapObject>();
 
             if (Player.CanAttackTarget(target))
-                realTargets.Add(target);
-
-
-            if (augMagic != null && SEnvir.Now > augMagic.Cooldown && Player.Level >= augMagic.Info.NeedLevel1)
             {
-                var power = augMagic.GetPower() + 1;
+                realTargets.Add(target);
+            }
+
+            var augmentEvilSlayer = GetAugmentedSkill(MagicType.AugmentEvilSlayer);
+
+            if (augmentEvilSlayer != null && SEnvir.Now > augmentEvilSlayer.Cooldown && Player.Level >= augmentEvilSlayer.Info.NeedLevel1)
+            {
+                var power = augmentEvilSlayer.GetPower() + 1;
 
                 var possibleTargets = Player.GetTargets(CurrentMap, location, 2);
 
@@ -55,8 +56,8 @@ namespace Server.Models.Magic.Taoist
                 }
             }
 
-            bool aug = false;
             var count = -1;
+            var hasAugmentEvilSlayer = false;
 
             foreach (MapObject realTarget in realTargets)
             {
@@ -67,23 +68,23 @@ namespace Server.Models.Magic.Taoist
                 else
                     stats = null;
 
-                if (augMagic != null)
+                if (augmentEvilSlayer != null)
                 {
                     count++;
-                    aug = true;
+                    hasAugmentEvilSlayer = true;
                 }
 
                 response.Targets.Add(realTarget.ObjectID);
 
                 var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, realTarget.CurrentLocation) * 48);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, realTarget, realTarget == target, stats, aug));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, realTarget == target, stats, hasAugmentEvilSlayer));
             }
 
             if (count > 0)
             {
-                augMagic.Cooldown = SEnvir.Now.AddMilliseconds(augMagic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augMagic.Info.Index, Delay = augMagic.Info.Delay });
+                augmentEvilSlayer.Cooldown = SEnvir.Now.AddMilliseconds(augmentEvilSlayer.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentEvilSlayer.Info.Index, Delay = augmentEvilSlayer.Info.Delay });
             }
 
             if (target == null)
@@ -97,20 +98,22 @@ namespace Server.Models.Magic.Taoist
             MapObject target = (MapObject)data[1];
             bool primary = (bool)data[2];
             var stats = (Stats)data[3];
-            var aug = (bool)data[4];
+            bool hasAugmentEvilSlayer = (bool)data[4];
 
             var magics = new List<MagicType> { Type };
 
-            if (aug)
+            if (hasAugmentEvilSlayer)
             {
-                magics.Add(MagicType.AugmentExplosiveTalisman);
+                magics.Add(MagicType.AugmentEvilSlayer);
             }
 
             var damage = Player.MagicAttack(magics, target, primary, stats);
 
-            if (damage > 0 && aug && Player.Magics.TryGetValue(MagicType.AugmentEvilSlayer, out UserMagic augMagic))
+            var augmentEvilSlayer = GetAugmentedSkill(MagicType.AugmentEvilSlayer);
+
+            if (!primary && damage > 0 && hasAugmentEvilSlayer && augmentEvilSlayer != null)
             {
-                Player.LevelMagic(augMagic);
+                Player.LevelMagic(augmentEvilSlayer);
             }
         }
 
@@ -121,7 +124,7 @@ namespace Server.Models.Magic.Taoist
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power, Stats stats = null)
+        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
         {
             if (stats != null && stats[Stat.HolyAffinity] >= 1)
                 power += (int)(power * 0.3F);

@@ -12,7 +12,7 @@ namespace Server.Models.Magic
 
         public Resolution(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO
         }
     }
 }

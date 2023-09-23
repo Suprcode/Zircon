@@ -26,8 +26,6 @@ namespace Server.Models.Magic.Taoist
                 Ob = target
             };
 
-            Player.Magics.TryGetValue(MagicType.GreaterPoisonDust, out UserMagic augMagic);
-
             var realTargets = new HashSet<MapObject>();
 
             if (Player.CanAttackTarget(target))
@@ -37,9 +35,11 @@ namespace Server.Models.Magic.Taoist
 
             List<uint> targets = new List<uint>();
 
-            if (augMagic != null && SEnvir.Now > augMagic.Cooldown && Player.Level >= augMagic.Info.NeedLevel1)
+            var greaterPoisonDust = GetAugmentedSkill(MagicType.GreaterPoisonDust);
+
+            if (greaterPoisonDust != null && SEnvir.Now > greaterPoisonDust.Cooldown && Player.Level >= greaterPoisonDust.Info.NeedLevel1)
             {
-                var power = augMagic.GetPower() + 1;
+                var power = greaterPoisonDust.GetPower() + 1;
                 var possibleTargets = Player.GetTargets(CurrentMap, location, 3);
 
                 while (power >= realTargets.Count)
@@ -58,28 +58,29 @@ namespace Server.Models.Magic.Taoist
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
+            var hasGreaterPoisonDust = false;
+
             var count = -1;
             foreach (MapObject realTarget in realTargets)
             {
                 int shape;
-                bool aug = false;
 
                 if (!Player.UsePoison(1, out shape))
                     break;
 
-                if (augMagic != null)
+                if (greaterPoisonDust != null)
                 {
                     count++;
-                    aug = true;
+                    hasGreaterPoisonDust = true;
                 }
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, realTarget, shape == 0 ? PoisonType.Green : PoisonType.Red, aug));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, shape == 0 ? PoisonType.Green : PoisonType.Red, hasGreaterPoisonDust));
             }
 
             if (count > 0)
             {
-                augMagic.Cooldown = SEnvir.Now.AddMilliseconds(augMagic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augMagic.Info.Index, Delay = augMagic.Info.Delay });
+                greaterPoisonDust.Cooldown = SEnvir.Now.AddMilliseconds(greaterPoisonDust.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = greaterPoisonDust.Info.Index, Delay = greaterPoisonDust.Info.Delay });
             }
 
             if (target == null)
@@ -94,7 +95,7 @@ namespace Server.Models.Magic.Taoist
         {
             MapObject ob = (MapObject)data[1];
             PoisonType type = (PoisonType)data[2];
-            bool aug = (bool)data[3];
+            bool hasGreaterPoisonDust = (bool)data[3];
 
             if (ob?.Node == null || !Player.CanAttackTarget(ob)) return;
 
@@ -115,9 +116,11 @@ namespace Server.Models.Magic.Taoist
 
             Player.LevelMagic(Magic);
 
-            if (aug && Player.Magics.TryGetValue(MagicType.GreaterPoisonDust, out UserMagic augMagic))
+            var greaterPoisonDust = GetAugmentedSkill(MagicType.GreaterPoisonDust);
+
+            if (hasGreaterPoisonDust && greaterPoisonDust != null)
             {
-                Player.LevelMagic(augMagic);
+                Player.LevelMagic(greaterPoisonDust);
             }
         }
     }

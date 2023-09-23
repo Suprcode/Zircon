@@ -1,4 +1,5 @@
 ﻿using Library;
+using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
 using System.Collections.Generic;
@@ -23,17 +24,18 @@ namespace Server.Models.Magic
                 Ob = null
             };
 
+            response.Locations.Add(Functions.Move(CurrentLocation, direction));
+
             for (int i = 1; i <= 8; i++)
             {
                 var loc = Functions.Move(CurrentLocation, direction, i);
                 Cell cell = CurrentMap.GetCell(loc);
 
                 if (cell == null) continue;
-                response.Locations.Add(cell.Location);
 
-                var delay = SEnvir.Now.AddMilliseconds(800);
+                var delay = SEnvir.Now.AddMilliseconds(500);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell, true));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell, true));
 
                 switch (direction)
                 {
@@ -41,15 +43,15 @@ namespace Server.Models.Magic
                     case MirDirection.Right:
                     case MirDirection.Down:
                     case MirDirection.Left:
-                        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, -2))), false));
-                        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, 2))), false));
+                        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, -2))), false));
+                        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, 2))), false));
                         break;
                     case MirDirection.UpRight:
                     case MirDirection.DownRight:
                     case MirDirection.DownLeft:
                     case MirDirection.UpLeft:
-                        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, 1))), false));
-                        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, -1))), false));
+                        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, 1))), false));
+                        ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(loc, Functions.ShiftDirection(direction, -1))), false));
                         break;
                 }
             }
@@ -76,6 +78,13 @@ namespace Server.Models.Magic
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        {
+            power += Magic.GetPower() + Player.GetMC();
+
+            return power;
+        }
+
+        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
         {
             if (!primary)
                 power = (int)(power * 0.3F);

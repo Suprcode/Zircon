@@ -44,7 +44,7 @@ namespace Server.Models.Magic
 
                     response.Targets.Add(ob.ObjectID);
 
-                    ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, ob));
+                    ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, ob));
                 }
             }
 

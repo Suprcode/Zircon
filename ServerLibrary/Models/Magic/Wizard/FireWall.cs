@@ -49,11 +49,11 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Up))));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Down))));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(location)));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Left))));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Right))));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Up))));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Down))));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(location)));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Left))));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Right))));
 
             return response;
         }
@@ -100,7 +100,7 @@ namespace Server.Models.Magic
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power, Stats stats = null)
+        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
         {
             power = (int)(power * 0.60F);
 

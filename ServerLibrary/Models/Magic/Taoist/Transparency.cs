@@ -27,6 +27,12 @@ namespace Server.Models.Magic
                 Ob = null
             };
 
+            if (!Player.UseAmulet(10, 0))
+            {
+                response.Cast = false;
+                return response;
+            }
+
             if (!Functions.InRange(CurrentLocation, location, Globals.MagicRange))
             {
                 response.Cast = false;
@@ -35,7 +41,7 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, location));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, location));
 
             return response;
         }
@@ -44,9 +50,7 @@ namespace Server.Models.Magic
         {
             Point location = (Point)data[1];
 
-            var ob = Player;
-
-            if (ob?.Node == null || !Player.CanHelpTarget(ob) || ob.Buffs.Any(x => x.Type == BuffType.Transparency)) return;
+            if (Player.Buffs.Any(x => x.Type == BuffType.Transparency)) return;
 
             Player.Teleport(CurrentMap, location, false);
 
@@ -57,13 +61,12 @@ namespace Server.Models.Magic
             Magic.Cooldown = SEnvir.Now.AddMilliseconds(delay);
             Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = delay });
 
-
-            Stats buffStats = new Stats
+            Stats buffStats = new()
             {
                 [Stat.Transparency] = 1
             };
 
-            ob.BuffAdd(BuffType.Transparency, TimeSpan.FromSeconds(Math.Min(SEnvir.Now <= Player.PvPTime.AddSeconds(30) ? 20 : 3600, Magic.GetPower() + Player.GetSC() / 2 + Player.Stats[Stat.PhantomAttack] * 2)), buffStats, true, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.Transparency, TimeSpan.FromSeconds(Math.Min(SEnvir.Now <= Player.PvPTime.AddSeconds(30) ? 20 : 3600, Magic.GetPower() + Player.GetSC() / 2 + Player.Stats[Stat.PhantomAttack] * 2)), buffStats, true, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
         }

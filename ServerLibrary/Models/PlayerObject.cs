@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using C = Library.Network.ClientPackets;
@@ -365,6 +366,8 @@ namespace Server.Models
         public override void ProcessAction(DelayedAction action)
         {
             MapObject ob;
+            MagicType type;
+
             switch (action.Type)
             {
                 case ActionType.Turn:
@@ -395,43 +398,35 @@ namespace Server.Models
                     PacketWaiting = false;
                     Attack((MirDirection)action.Data[0], (MagicType)action.Data[1]);
                     return;
-                //case ActionType.DelayAttack:
-                //    Attack((MapObject)action.Data[0], (List<UserMagic>)action.Data[1], (bool)action.Data[2], (int)action.Data[3]);
-                //    return;
-                case ActionType.DelayAttackNew:
+                case ActionType.DelayAttack:
                     Attack((MapObject)action.Data[0], (List<MagicType>)action.Data[1], (bool)action.Data[2], (int)action.Data[3]);
                     return;
-                //case ActionType.DelayMagic:
-                //    CompleteMagic(action.Data);
-                //    return;
-                case ActionType.DelayMagicNew:            
+                case ActionType.DelayMagic:            
                     {
-                        if (MagicObjects.TryGetValue((MagicType)action.Data[0], out MagicObject magicObject))
+                        type = (MagicType)action.Data[0];
+
+                        if (MagicObjects.TryGetValue(type, out MagicObject magicObject))
                         {
                             magicObject.MagicComplete(action.Data);
                         }
                     }
                     return;
                 case ActionType.DelayedAttackDamage:
-                    ob = (MapObject)action.Data[0];
-
-                    if (!CanAttackTarget(ob)) return;
-
-                    ob.Attacked(this, (int)action.Data[1], (Element)action.Data[2], (bool)action.Data[3], (bool)action.Data[4], (bool)action.Data[5], (bool)action.Data[6]);
-                    return;
-                //case ActionType.DelayedMagicDamage:
-                //    ob = (MapObject)action.Data[1];
-
-                //    if (!CanAttackTarget(ob)) return;
-
-                //    MagicAttack((List<UserMagic>)action.Data[0], ob, (bool)action.Data[2], (Stats)action.Data[3], (int)action.Data[4]);
-                //    return;
-                case ActionType.DelayedMagicDamageNew:
                     {
-                        if (MagicObjects.TryGetValue((MagicType)action.Data[0], out MagicObject magicObject))
-                        {
-                            magicObject.MagicDamageComplete(action.Data);
-                        }
+                        ob = (MapObject)action.Data[0];
+
+                        if (!CanAttackTarget(ob)) return;
+
+                        ob.Attacked(this, (int)action.Data[1], (Element)action.Data[2], (bool)action.Data[3], (bool)action.Data[4], (bool)action.Data[5], (bool)action.Data[6]);
+                    }
+                    return;
+                case ActionType.DelayedMagicDamage:
+                    {
+                        ob = (MapObject)action.Data[1];
+
+                        if (!CanAttackTarget(ob)) return;
+
+                        MagicAttack((List<MagicType>)action.Data[0], ob, (bool)action.Data[2], (Stats)action.Data[3], (int)action.Data[4]);
                     }                 
                     return;
                 case ActionType.Mount:
@@ -12911,7 +12906,6 @@ namespace Server.Models
 
         #region Combat
 
-        //New
         public bool AttackLocation(Point location, List<MagicType> types, bool primary)
         {
             Cell cell = CurrentMap.GetCell(location);
@@ -12929,7 +12923,7 @@ namespace Server.Models
                 if (types.Contains(MagicType.DragonRise))
                     delay = 600;
 
-                ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(delay), ActionType.DelayAttackNew, ob, types, primary, 0));
+                ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(delay), ActionType.DelayAttack, ob, types, primary, 0));
 
                 result = true;
             }
@@ -12937,7 +12931,6 @@ namespace Server.Models
             return result;
         }
 
-        //New
         public void Attack(MapObject ob, List<MagicType> types, bool primary, int extra)
         {
             if (ob?.Node == null || ob.Dead) return;
@@ -13213,13 +13206,12 @@ namespace Server.Models
 
                         var delay = SEnvir.Now.AddMilliseconds(600);
 
-                        ActionList.Add(new DelayedAction(delay, ActionType.DelayAttackNew, target, types, false, power));
+                        ActionList.Add(new DelayedAction(delay, ActionType.DelayAttack, target, types, false, power));
                     }
                 }
             }
         }
 
-        //New
         public int MagicAttack(List<MagicType> types, MapObject ob, bool primary = true, Stats stats = null, int extra = 0)
         {
             if (ob?.Node == null || ob.Dead) return 0;
@@ -13265,7 +13257,7 @@ namespace Server.Models
             {
                 if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-                power = magicObject.ModifyPower2(primary, power, stats);
+                power = magicObject.ModifyPowerMultiplier(primary, power, stats);
             }
 
             power -= ob.GetMR();

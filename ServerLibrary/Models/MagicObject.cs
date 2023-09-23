@@ -7,25 +7,6 @@ using System.Drawing;
 
 namespace Server.Models
 {
-    //public abstract class AttackObject : MagicObject
-    //{
-
-    //    public override bool AttackSkill => true;
-
-    //    public AttackObject(PlayerObject player, UserMagic magic) : base (player, magic)
-    //    {
-
-    //    }
-    //}
-    
-    //public abstract class CastObject : MagicObject
-    //{
-    //    public CastObject(PlayerObject player, UserMagic magic) : base(player, magic)
-    //    {
-
-    //    }
-    //}
-
     public abstract class MagicObject
     {
         public PlayerObject Player { get; }
@@ -103,10 +84,6 @@ namespace Server.Models
 
         }
 
-        public virtual void MagicDamageComplete(params object[] data)
-        {
-
-        }
         public virtual void AttackLocations(List<MagicType> magics)
         {
 
@@ -174,7 +151,7 @@ namespace Server.Models
             return power;
         }
 
-        public virtual int ModifyPower2(bool primary, int power, Stats stats = null)
+        public virtual int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
         {
             return power;
         }
@@ -209,9 +186,17 @@ namespace Server.Models
             return Shock;
         }
 
+        protected UserMagic GetAugmentedSkill(MagicType type)
+        {
+            if (Player.Magics.TryGetValue(type, out UserMagic augMagic))
+            {
+                return augMagic;
+            }
+
+            return null;
+        }
+
         //TODO - Send list to client of which magics are toggled, casted, targetted etc (allows removing of lots of client switches)
-        //TODO - Create new Attack method passing in MagicType instead
-        //TODO - Clean up AttackLocation and AttackCell methods (find which skills use them first)
     }
 
     public class MagicCast

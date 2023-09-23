@@ -54,7 +54,7 @@ namespace Server.Models.Magic
 
             foreach (Cell cell in cells)
             {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell, power));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell, power));
             }
 
             return response;
@@ -103,7 +103,7 @@ namespace Server.Models.Magic
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power, Stats stats = null)
+        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
         {
             power = (int)(power * 0.80F);
 

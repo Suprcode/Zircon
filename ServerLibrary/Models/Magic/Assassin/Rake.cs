@@ -29,7 +29,7 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(600);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
 
             return response;
         }

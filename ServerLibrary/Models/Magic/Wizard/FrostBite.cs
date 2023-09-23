@@ -2,7 +2,6 @@
 using Server.DBModels;
 using Server.Envir;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -30,7 +29,7 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(600);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type));
 
             return response;
         }
@@ -66,19 +65,8 @@ namespace Server.Models.Magic
 
                 var delay = SEnvir.Now.AddMilliseconds(500);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamageNew, Type, ob, true, buff.Stats));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, Type, ob, true, buff.Stats));
             }
-        }
-
-        public override void MagicDamageComplete(params object[] data)
-        {
-            var ob = (MapObject)data[1];
-            var primary = (bool)data[2];
-            Stats stats = (Stats)data[3];
-
-            if (!Player.CanAttackTarget(ob)) return;
-
-            Player.MagicAttack(new List<MagicType> { Type }, ob, primary, stats);
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

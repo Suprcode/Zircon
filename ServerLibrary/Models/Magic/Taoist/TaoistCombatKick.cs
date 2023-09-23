@@ -30,7 +30,7 @@ namespace Server.Models.Magic
 
             var cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, direction));
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell, direction));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell, direction));
 
             return response;
         }

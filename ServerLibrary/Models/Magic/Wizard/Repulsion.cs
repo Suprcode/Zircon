@@ -28,7 +28,7 @@ namespace Server.Models.Magic
             for (MirDirection d = MirDirection.Up; d <= MirDirection.UpLeft; d++)
             {
                 var cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, d));
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell, d));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell, d));
             }
 
             return response;

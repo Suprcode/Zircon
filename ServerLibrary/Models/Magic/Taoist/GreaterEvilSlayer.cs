@@ -75,7 +75,7 @@ namespace Server.Models.Magic.Taoist
 
                 var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, realTarget.CurrentLocation) * 48);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, realTarget, realTarget == target, stats, aug));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, realTarget == target, stats, aug));
             }
 
             if (count > 0)
@@ -119,7 +119,7 @@ namespace Server.Models.Magic.Taoist
             return power;
         }
 
-        public override int ModifyPower2(bool primary, int power, Stats stats = null)
+        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
         {
             if (stats != null && stats[Stat.HolyAffinity] >= 1)
                 power += (int)(power * 0.6F);

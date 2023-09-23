@@ -33,7 +33,7 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, location));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, location));
 
             return response;
         }

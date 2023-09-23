@@ -39,10 +39,11 @@ namespace Server.Models.Magic
 
             int cost = Player.Stats[Stat.Health] * Magic.Cost / 100;
 
-            UserMagic augMagic;
-            if (Player.Magics.TryGetValue(MagicType.Release, out augMagic) && Player.Level >= augMagic.Info.NeedLevel1)
+            var release = GetAugmentedSkill(MagicType.Release);
+
+            if (release != null && Player.Level >= release.Info.NeedLevel1)
             {
-                cost -= cost * augMagic.GetPower() / 100;
+                cost -= cost * release.GetPower() / 100;
                 response.Magics.Add(MagicType.Release);
             }
 

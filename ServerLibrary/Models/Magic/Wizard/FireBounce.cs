@@ -93,7 +93,7 @@ namespace Server.Models.Magic
                 });
             }
 
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, target, target.CurrentLocation, bounce));
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, target, target.CurrentLocation, bounce));
 
             return response;
         }

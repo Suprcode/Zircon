@@ -27,7 +27,9 @@ namespace Server.Models.Magic
             };
 
             if ((Player.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip)
+            {
                 return response;
+            }
 
             Player.Direction = direction;
 
@@ -196,7 +198,9 @@ namespace Server.Models.Magic
             MagicType type = magic.Info.Magic;
             if (travelled > 0 && target != null)
             {
-                if (type == MagicType.ShoulderDash && Player.Magics.TryGetValue(MagicType.Assault, out UserMagic assault) && Player.Level >= assault.Info.NeedLevel1 && SEnvir.Now >= assault.Cooldown)
+                var assault = GetAugmentedSkill(MagicType.Assault);
+
+                if (assault != null && Player.Level >= assault.Info.NeedLevel1 && SEnvir.Now >= assault.Cooldown)
                 {
                     target.ApplyPoison(new Poison
                     {

@@ -27,21 +27,23 @@ namespace Server.Models.Magic
                 Ob = target
             };
 
-            Player.Magics.TryGetValue(MagicType.AugmentPurification, out UserMagic augMagic);
-
             var realTargets = new HashSet<MapObject>();
 
             if (target != null && (Player.CanAttackTarget(target) || Player.CanHelpTarget(target)))
+            {
                 realTargets.Add(target);
+            }
             else
             {
                 realTargets.Add(Player);
                 response.Ob = null;
             }
 
-            if (augMagic != null && SEnvir.Now > augMagic.Cooldown && Player.Level >= augMagic.Info.NeedLevel1)
+            var augmentPurification = GetAugmentedSkill(MagicType.AugmentPurification);
+
+            if (augmentPurification != null && SEnvir.Now > augmentPurification.Cooldown && Player.Level >= augmentPurification.Info.NeedLevel1)
             {
-                var power = augMagic.GetPower() + 1;
+                var power = augmentPurification.GetPower() + 1;
 
                 var possibleTargets = Player.GetAllObjects(location, 3);
 
@@ -56,22 +58,24 @@ namespace Server.Models.Magic
                     if (!Functions.InRange(CurrentLocation, possibleTarget.CurrentLocation, Globals.MagicRange)) continue;
 
                     if (!Player.CanAttackTarget(target) && Player.CanHelpTarget(target))
+                    {
                         realTargets.Add(possibleTarget);
+                    }
                 }
             }
 
             var count = -1;
+
+            var hasAugmentPurification = false;
 
             foreach (MapObject realTarget in realTargets)
             {
                 if (!Player.UseAmulet(2, 0))
                     break;
 
-                var aug = false;
-
-                if (augMagic != null)
+                if (augmentPurification != null)
                 {
-                    aug = true;
+                    hasAugmentPurification = true;
                     count++;
                 }
 
@@ -79,13 +83,13 @@ namespace Server.Models.Magic
 
                 var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, realTarget.CurrentLocation) * 48);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, realTarget, aug));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, hasAugmentPurification));
             }
 
             if (count > 0)
             {
-                augMagic.Cooldown = SEnvir.Now.AddMilliseconds(augMagic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augMagic.Info.Index, Delay = augMagic.Info.Delay });
+                augmentPurification.Cooldown = SEnvir.Now.AddMilliseconds(augmentPurification.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentPurification.Info.Index, Delay = augmentPurification.Info.Delay });
             }
 
             return response;
@@ -94,11 +98,13 @@ namespace Server.Models.Magic
         public override void MagicComplete(params object[] data)
         {
             var ob = (MapObject)data[1];
-            var aug = (bool)data[2];
+            var hasAugmentPurification = (bool)data[2];
 
             if (ob?.Node == null) return;
 
             if (SEnvir.Random.Next(100) > 40 + Magic.Level * 20) return;
+
+            var augmentPurification = GetAugmentedSkill(MagicType.AugmentPurification);
 
             int result = Player.Purify(ob);
 
@@ -106,12 +112,11 @@ namespace Server.Models.Magic
             {
                 Player.LevelMagic(Magic);
 
-                if (aug && Player.Magics.TryGetValue(MagicType.AugmentPurification, out UserMagic augMagic))
+                if (hasAugmentPurification && augmentPurification != null)
                 {
-                    Player.LevelMagic(augMagic);
+                    Player.LevelMagic(augmentPurification);
                 }
             }
-            
         }
     }
 }

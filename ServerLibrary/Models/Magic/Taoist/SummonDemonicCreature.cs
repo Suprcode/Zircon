@@ -1,5 +1,4 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
@@ -36,7 +35,7 @@ namespace Server.Models.Magic.Taoist
 
             var info = SEnvir.MonsterInfoList.Binding.First(x => x.Flag == MonsterFlag.InfernalSoldier);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, CurrentMap, Functions.Move(CurrentLocation, direction, -1), info));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap, Functions.Move(CurrentLocation, direction, -1), info));
 
             return response;
         }
@@ -70,14 +69,18 @@ namespace Server.Models.Magic.Taoist
             ob.SummonLevel = Magic.Level * 2;
             ob.TameTime = SEnvir.Now.AddDays(365);
 
-            if (Player.Buffs.Any(x => x.Type == BuffType.StrengthOfFaith) && Player.Magics.TryGetValue(MagicType.StrengthOfFaith, out UserMagic strengthOfFaith))
+            var strengthOfFaith = GetAugmentedSkill(MagicType.StrengthOfFaith);
+
+            if (Player.Buffs.Any(x => x.Type == BuffType.StrengthOfFaith) && strengthOfFaith != null)
             {
                 ob.Magics.Add(strengthOfFaith);
             }
 
-            if (Player.Magics.TryGetValue(MagicType.DemonicRecovery, out UserMagic demonRecovery))
+            var demonicRecovery = GetAugmentedSkill(MagicType.DemonicRecovery);
+
+            if (demonicRecovery != null)
             {
-                ob.Magics.Add(demonRecovery);
+                ob.Magics.Add(demonicRecovery);
             }
 
             Cell cell = map.GetCell(location);

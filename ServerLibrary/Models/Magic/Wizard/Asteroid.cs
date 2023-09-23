@@ -37,7 +37,7 @@ namespace Server.Models.Magic
             var delay = SEnvir.Now.AddMilliseconds(1200);
 
             foreach (Cell cell in cells)
-                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
 
             if (Player.Magics.TryGetValue(MagicType.FireWall, out UserMagic augMagic) && augMagic.Info.NeedLevel1 > Player.Level)
                 augMagic = null;
@@ -65,7 +65,7 @@ namespace Server.Models.Magic
                 {
                     if (Math.Abs(cell.Location.X - location.X) + Math.Abs(cell.Location.Y - location.Y) >= 3) continue;
 
-                    Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, MagicType.FireWall, cell, power));
+                    Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, MagicType.FireWall, cell, power));
                 }
             }
 

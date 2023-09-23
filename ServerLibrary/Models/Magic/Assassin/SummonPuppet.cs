@@ -31,15 +31,13 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type));
 
             return response;
         }
 
         public override void MagicComplete(params object[] data)
         {
-            var ob = Player;
-
             /*  if (CurrentMap.Info.SkillDelay > 0)
               {
                   Connection.ReceiveChat(string.Format(Connection.Language.SkillBadMap, magic.Info.Name), MessageType.System);
@@ -49,34 +47,33 @@ namespace Server.Models.Magic
                   return;
               }*/
 
-            if (ob?.Node == null || !Player.CanHelpTarget(ob)) return;
-
             List<UserMagic> magics = new List<UserMagic> { Magic };
-
-            UserMagic augMagic;
 
             //Summon Puppets.
 
             int count = Magic.Level + 1;
 
-            Stats darkstoneStats = new Stats();
-            if (Player.Magics.TryGetValue(MagicType.ElementalPuppet, out augMagic) && Player.Level >= augMagic.Info.NeedLevel1)
+            var elementalPuppet = GetAugmentedSkill(MagicType.ElementalPuppet);
+            var artOfShadows = GetAugmentedSkill(MagicType.ArtOfShadows);
+
+            Stats darkstoneStats = new();
+            if (elementalPuppet != null && Player.Level >= elementalPuppet.Info.NeedLevel1)
             {
                 if (Player.Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
                     darkstoneStats = Player.Equipment[(int)EquipmentSlot.Amulet].Info.Stats;
 
                 Player.DamageDarkStone(10);
 
-                magics.Add(augMagic);
+                magics.Add(elementalPuppet);
             }
 
             int range = 1;
-            if (Player.Magics.TryGetValue(MagicType.ArtOfShadows, out augMagic) && Player.Level >= augMagic.Info.NeedLevel1)
+            if (artOfShadows != null && Player.Level >= artOfShadows.Info.NeedLevel1)
             {
-                count += augMagic.GetPower();
+                count += artOfShadows.GetPower();
                 range = 3;
 
-                magics.Add(augMagic);
+                magics.Add(artOfShadows);
             }
 
             for (int i = 0; i < count; i++)
@@ -120,36 +117,38 @@ namespace Server.Models.Magic
 
             if (cell != null) Player.CurrentCell = cell;
 
-            CloakEnd(Magic, ob, true);
+            CloakEnd(Magic, true);
 
             Player.Broadcast(new S.ObjectTurn { ObjectID = Player.ObjectID, Direction = Direction, Location = CurrentLocation });
         }
 
-        public void CloakEnd(UserMagic magic, MapObject ob, bool forceGhost)
+        public void CloakEnd(UserMagic magic, bool forceGhost)
         {
-            if (ob?.Node == null || !Player.CanHelpTarget(ob) || ob.Buffs.Any(x => x.Type == BuffType.Cloak)) return;
+            if (Player.Buffs.Any(x => x.Type == BuffType.Cloak)) return;
 
-            UserMagic pledgeofBlood = Player.Magics.ContainsKey(MagicType.PledgeOfBlood) ? Player.Magics[MagicType.PledgeOfBlood] : null;
+            var pledgeofBlood = GetAugmentedSkill(MagicType.PledgeOfBlood);
 
             int value = 0;
             if (pledgeofBlood != null && Player.Level >= pledgeofBlood.Info.NeedLevel1)
+            {
                 value = pledgeofBlood.GetPower();
+                Player.LevelMagic(pledgeofBlood);
+            }
 
-            Stats buffStats = new Stats
+            Stats buffStats = new()
             {
                 [Stat.Cloak] = 1,
                 [Stat.CloakDamage] = Player.Stats[Stat.Health] * (20 - magic.Level - value) / 1000,
             };
 
-            ob.BuffAdd(BuffType.Cloak, TimeSpan.MaxValue, buffStats, true, false, TimeSpan.FromSeconds(2));
-
+            Player.BuffAdd(BuffType.Cloak, TimeSpan.MaxValue, buffStats, true, false, TimeSpan.FromSeconds(2));
 
             Player.LevelMagic(magic);
-            Player.LevelMagic(pledgeofBlood);
 
             if (!forceGhost)
             {
-                UserMagic ghostWalk = Player.Magics.ContainsKey(MagicType.GhostWalk) ? Player.Magics[MagicType.GhostWalk] : null;
+                var ghostWalk = GetAugmentedSkill(MagicType.GhostWalk);
+
                 if (ghostWalk == null || Player.Level < ghostWalk.Info.NeedLevel1) return;
 
                 int rate = (ghostWalk.Level + 1) * 3;
@@ -159,7 +158,7 @@ namespace Server.Models.Magic
                 Player.LevelMagic(ghostWalk);
             }
 
-            ob.BuffAdd(BuffType.GhostWalk, TimeSpan.MaxValue, null, true, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.GhostWalk, TimeSpan.MaxValue, null, true, false, TimeSpan.Zero);
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

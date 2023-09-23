@@ -46,7 +46,7 @@ namespace Server.Models.Magic
                 if (cell == null) continue;
                 response.Locations.Add(cell.Location);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
             }
 
             return response;

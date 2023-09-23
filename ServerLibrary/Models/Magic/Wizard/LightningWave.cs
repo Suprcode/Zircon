@@ -37,7 +37,7 @@ namespace Server.Models.Magic
 
             foreach (Cell cell in cells)
             {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
             }
 
             return response;
@@ -45,9 +45,19 @@ namespace Server.Models.Magic
 
         public override void MagicComplete(params object[] data)
         {
-            MapObject target = (MapObject)data[1];
+            Cell cell = (Cell)data[1];
 
-            Player.MagicAttack(new List<MagicType> { Type }, target);
+            if (cell?.Objects == null) return;
+            if (cell.Objects.Count == 0) return;
+
+            for (int i = cell.Objects.Count - 1; i >= 0; i--)
+            {
+                if (i >= cell.Objects.Count) continue;
+                MapObject ob = cell.Objects[i];
+                if (!Player.CanAttackTarget(ob)) continue;
+
+                Player.MagicAttack(new List<MagicType> { Type }, ob);
+            }
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

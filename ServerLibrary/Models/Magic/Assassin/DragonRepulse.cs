@@ -35,7 +35,7 @@ namespace Server.Models.Magic
         {
             MapObject target = (MapObject)data[1];
 
-            Player.MagicAttack(new List<MagicType> { Type }, target);
+            Player.MagicAttack(new List<MagicType> { Type }, target, true);
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

@@ -103,7 +103,7 @@ namespace Server.Models.Magic
 
             var delay = SEnvir.Now.AddMilliseconds(400);
 
-            ActionList.Add(new DelayedAction(delay, ActionType.DelayAttackNew, target, new List<MagicType> { Type }, true, 0));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayAttack, target, new List<MagicType> { Type }, true, 0));
 
 
             int magicDelay = Magic.Info.Delay;
@@ -195,7 +195,7 @@ namespace Server.Models.Magic
 
             Player.Broadcast(new S.ObjectAttack { ObjectID = Player.ObjectID, Direction = Direction, Location = CurrentLocation, AttackMagic = Magic.Info.Magic });
 
-            ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(400), ActionType.DelayAttackNew,
+            ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(400), ActionType.DelayAttack,
                 ob,
                 new List<MagicType> { Type },
                 true,

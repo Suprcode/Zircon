@@ -38,7 +38,7 @@ namespace Server.Models.Magic
 
             foreach (var cell in cells)
             {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagicNew, Type, cell, stats));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell, stats));
             }
 
             return response;
