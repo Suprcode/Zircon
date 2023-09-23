@@ -7,6 +7,10 @@ using System.Drawing;
 
 namespace Server.Models
 {
+    //TODO - Send list to client of which magics are toggled, casted, targetted etc (allows removing of lots of client switches)
+    //TODO - Add MonsterObject methods
+    //TODO - Add client side version of MagicObject
+
     public abstract class MagicObject
     {
         public PlayerObject Player { get; }
@@ -195,8 +199,6 @@ namespace Server.Models
 
             return null;
         }
-
-        //TODO - Send list to client of which magics are toggled, casted, targetted etc (allows removing of lots of client switches)
     }
 
     public class MagicCast

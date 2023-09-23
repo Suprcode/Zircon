@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using Library;
+﻿using Library;
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using Server.Models.Monsters;
-using static System.Collections.Specialized.BitVector32;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -638,7 +637,7 @@ namespace Server.Models
 
                             if (this is PlayerObject ob) 
                             {
-                                if (ob.MagicObjects.TryGetValue(MagicType.FrostBite, out MagicObject magicObject) && magicObject is Server.Models.Magic.FrostBite frostBite)
+                                if (ob.MagicObjects.TryGetValue(MagicType.FrostBite, out MagicObject magicObject) && magicObject is Server.Models.Magics.FrostBite frostBite)
                                 {
                                     frostBite.FrostBiteEnd(buff);
                                 }
@@ -1735,5 +1734,4 @@ namespace Server.Models
         public DateTime TickTime;
         public object Extra;
     }
-
 }

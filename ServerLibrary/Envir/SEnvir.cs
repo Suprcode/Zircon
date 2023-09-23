@@ -24,7 +24,7 @@ using System.Reflection;
 using System.Globalization;
 using Server.Envir.Commands.Handler;
 using Server.Envir.Commands;
-using Server.Models.Magic;
+using Server.Models.Magics;
 using System.Numerics;
 
 namespace Server.Envir
