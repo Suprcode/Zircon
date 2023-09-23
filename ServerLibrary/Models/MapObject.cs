@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using Library;
+﻿using Library;
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using Server.Models.Monsters;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -574,8 +574,6 @@ namespace Server.Models
 
                         List<Cell> cells = CurrentMap.GetCells(CurrentLocation, 0, 5);
 
-
-
                         switch (Race)
                         {
                             case ObjectType.Player:
@@ -597,11 +595,10 @@ namespace Server.Models
 
                                         if (!CanAttackTarget(ob)) continue;
 
-
                                         ActionList.Add(new DelayedAction(
                                             SEnvir.Now.AddMilliseconds(SEnvir.Random.Next(200) + Functions.Distance(CurrentLocation, ob.CurrentLocation) * 20),
                                             ActionType.DelayMagic,
-                                            new List<UserMagic> { magic },
+                                            MagicType.DragonRepulse,
                                             ob));
                                     }
                                 }
@@ -632,46 +629,24 @@ namespace Server.Models
                         }
                         break;
                     case BuffType.FrostBite:
-                        buff.RemainingTime -= ticks;
-
-                        if (buff.RemainingTime > TimeSpan.Zero) continue;
-
-                        Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.FrostBiteEnd });
-
-                        switch (Race)
                         {
-                            case ObjectType.Player:
-                                player = (PlayerObject)this;
+                            buff.RemainingTime -= ticks;
+                            if (buff.RemainingTime > TimeSpan.Zero) continue;
 
-                                if (!player.Magics.TryGetValue(MagicType.FrostBite, out magic)) break;
-                                player.LevelMagic(magic);
+                            Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.FrostBiteEnd });
 
-                                foreach (MapObject ob in GetTargets(CurrentMap, CurrentLocation, 3))
+                            if (this is PlayerObject ob) 
+                            {
+                                if (ob.MagicObjects.TryGetValue(MagicType.FrostBite, out MagicObject magicObject) && magicObject is Server.Models.Magics.FrostBite frostBite)
                                 {
-                                    if (!CanAttackTarget(ob)) continue;
-
-                                    if (ob.Race != ObjectType.Monster) continue;
-
-                                    MonsterObject mob = (MonsterObject)ob;
-
-                                    if (mob.MonsterInfo.IsBoss) continue;
-
-                                    ActionList.Add(new DelayedAction(
-                                        SEnvir.Now.AddMilliseconds(SEnvir.Random.Next(500)),
-                                        ActionType.DelayedMagicDamage,
-                                        new List<UserMagic> { magic },
-                                        ob,
-                                        true,
-                                        buff.Stats,
-                                        0));
+                                    frostBite.FrostBiteEnd(buff);
                                 }
-                                break;
+                            }
+                            
+                            FrostBiteImmunity = SEnvir.Now.AddSeconds(1);
 
+                            expiredBuffs.Add(buff);
                         }
-
-                        FrostBiteImmunity = SEnvir.Now.AddSeconds(1);
-
-                        expiredBuffs.Add(buff);
                         break;
                     default:
                         if (buff.RemainingTime == TimeSpan.MaxValue) continue;
@@ -1477,7 +1452,7 @@ namespace Server.Models
             if (info != null)
                 BuffRemove(info);
         }
-        public virtual int Attacked(MapObject attacker, int power, Element elemnet, bool canReflect = true, bool ignoreShield = false, bool canCrit = true, bool canStruck = true) { return 0; }
+        public virtual int Attacked(MapObject attacker, int power, Element element, bool canReflect = true, bool ignoreShield = false, bool canCrit = true, bool canStruck = true) { return 0; }
 
         public List<MapObject> GetTargets(Map map, Point location, int radius)
         {
@@ -1759,5 +1734,4 @@ namespace Server.Models
         public DateTime TickTime;
         public object Extra;
     }
-
 }

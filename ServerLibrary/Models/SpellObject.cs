@@ -147,20 +147,38 @@ namespace Server.Models
                     ob.BuffAdd(BuffType.PoisonousCloud, remaining, new Stats { [Stat.Agility] = Power }, false, false, TimeSpan.Zero);
                     break;
                 case SpellEffect.FireWall:
-                case SpellEffect.Tempest:
-                    PlayerObject player = Owner as PlayerObject;
-                    if (player == null || !player.CanAttackTarget(ob)) return;
-
-                    int damage = player.MagicAttack(new List<UserMagic> { Magic }, ob, true);
-
-                    if (damage > 0 && ob.Race == ObjectType.Player)
                     {
-                        foreach (SpellObject spell in player.SpellList)
-                        {
-                            if (spell.Effect != Effect) continue;
+                        if (!(Owner is PlayerObject player) || !player.CanAttackTarget(ob)) return;
 
-                            spell.TickCount--;
-                        } 
+                        int damage = player.MagicAttack(new List<MagicType> { MagicType.FireWall }, ob, true);
+
+                        if (damage > 0 && ob.Race == ObjectType.Player)
+                        {
+                            foreach (SpellObject spell in player.SpellList)
+                            {
+                                if (spell.Effect != Effect) continue;
+
+                                spell.TickCount--;
+                            }
+                        }
+                    }
+                    break;
+                case SpellEffect.Tempest:
+                    {
+                        PlayerObject player = Owner as PlayerObject;
+                        if (player == null || !player.CanAttackTarget(ob)) return;
+
+                        int damage = player.MagicAttack(new List<MagicType> { MagicType.Tempest }, ob, true);
+
+                        if (damage > 0 && ob.Race == ObjectType.Player)
+                        {
+                            foreach (SpellObject spell in player.SpellList)
+                            {
+                                if (spell.Effect != Effect) continue;
+
+                                spell.TickCount--;
+                            }
+                        }
                     }
                     break;
                 case SpellEffect.MonsterFireWall:

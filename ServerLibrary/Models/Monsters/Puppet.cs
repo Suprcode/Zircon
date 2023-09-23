@@ -95,7 +95,7 @@ namespace Server.Models.Monsters
                 Player.ActionList.Add(new DelayedAction(
                     SEnvir.Now.AddMilliseconds(800),
                     ActionType.DelayedMagicDamage,
-                    Magics.ToList(),
+                    Magics.Select(x => x.Info.Magic).ToList(),
                     target,
                     Functions.InRange(target.CurrentLocation, CurrentLocation, 1),
                     DarkStoneStats,

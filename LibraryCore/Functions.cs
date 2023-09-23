@@ -116,11 +116,11 @@ namespace Library
 
             return value;
         }
-        public static MirAnimation GetAttackAnimation(MirClass c, int w, MagicType m)
+        public static MirAnimation GetAttackAnimation(MirClass @class, int weaponShape, MagicType magicType)
         {
             MirAnimation animation;
-
-            switch (m)
+     
+            switch (magicType)
             {
                 case MagicType.Slaying:
                 case MagicType.Thrusting:
@@ -141,29 +141,29 @@ namespace Library
                 case MagicType.WhiteLotus:
                 case MagicType.RedLotus:
                 case MagicType.DanceOfSwallow:
-                    if (w >= 1200)
+                    if (weaponShape >= 1200)
                         animation = MirAnimation.Combat13;
-                    else if (w >= 1100)
+                    else if (weaponShape >= 1100)
                         animation = MirAnimation.Combat5;
                     else
                         animation = MirAnimation.Combat3;
                     break;
                 case MagicType.SweetBrier:
                 case MagicType.Karma:
-                    if (w >= 1200)
+                    if (weaponShape >= 1200)
                         animation = MirAnimation.Combat12;
-                    else if (w >= 1100)
+                    else if (weaponShape >= 1100)
                         animation = MirAnimation.Combat10;
                     else
                         animation = MirAnimation.Combat3;
                     break;
                 default:
-                    switch (c)
+                    switch (@class)
                     {
                         case MirClass.Assassin:
-                            if (w >= 1200)
+                            if (weaponShape >= 1200)
                                 animation = MirAnimation.Combat11;
-                            else if (w >= 1100)
+                            else if (weaponShape >= 1100)
                                 animation = MirAnimation.Combat4;
                             else
                                 animation = MirAnimation.Combat3;
