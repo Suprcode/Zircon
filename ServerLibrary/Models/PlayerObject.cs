@@ -266,6 +266,22 @@ namespace Server.Models
             }
         }
 
+        public void SetupMagic(UserMagic magic)
+        {
+            var types = typeof(MagicObject).Assembly.GetTypes().Where(type =>
+                type.BaseType != null &&
+                !type.IsAbstract &&
+                type.BaseType == typeof(MagicObject) &&
+                type.IsDefined(typeof(MagicTypeAttribute))).ToList();
+
+            var found = types.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == magic.Info.Magic);
+
+            if (found != null)
+            {
+                MagicObjects[magic.Info.Magic] = (MagicObject)Activator.CreateInstance(found, this, magic);
+            }
+        }
+
         private void AddDefaultCurrencies()
         {
             foreach (var currency in SEnvir.CurrencyInfoList.Binding)
@@ -6032,6 +6048,8 @@ namespace Server.Models
                         magic.Character = Character;
                         magic.Info = info;
                         Magics[info.Magic] = magic;
+
+                        SetupMagic(magic);
 
                         Enqueue(new S.NewMagic { Magic = magic.ToClientInfo() });
 
@@ -15402,6 +15420,8 @@ namespace Server.Models
                 uMagic.Character = Character;
                 uMagic.Info = mInfo;
                 Magics[mInfo.Magic] = uMagic;
+
+                SetupMagic(uMagic);
 
                 uFocus.Magics.Add(uMagic);
 

@@ -34,6 +34,8 @@ namespace Server.Envir.Commands.Command.Admin
                     uMagic.Info = mInfo;
                     player.Magics[mInfo.Magic] = uMagic;
 
+                    player.SetupMagic(uMagic);
+
                     player.Enqueue(new S.NewMagic { Magic = uMagic.ToClientInfo() });
                 }
 
