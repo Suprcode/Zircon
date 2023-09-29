@@ -30,8 +30,7 @@ namespace Client.Controls
         private int _Value;
         public event EventHandler<EventArgs> ValueChanged;
         public void OnValueChanged(int oValue, int nValue)
-        {
-            
+        {          
             if (Value != Math.Max(MinValue, Math.Min(MaxValue - VisibleSize, Value)))
             {
                 Value = Math.Max(MinValue, Math.Min(MaxValue - VisibleSize, Value));

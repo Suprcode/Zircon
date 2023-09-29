@@ -161,6 +161,7 @@ namespace Client.Scenes
         public NPCRefinementStoneDialog NPCRefinementStoneBox;
         public NPCRefineDialog NPCRefineBox;
         public NPCRefineRetrieveDialog NPCRefineRetrieveBox;
+        public NPCQuestListDialog NPCQuestListBox;
         public NPCQuestDialog NPCQuestBox;
         public NPCAdoptCompanionDialog NPCAdoptCompanionBox;
         public NPCCompanionStorageDialog NPCCompanionStorageBox;
@@ -276,16 +277,7 @@ namespace Client.Scenes
         private uint _NPCID;
         public void OnNPCIDChanged(uint oValue, uint nValue)
         {
-            if (MapControl?.Objects == null || NPCQuestBox == null) return;
 
-            foreach (MapObject ob in MapControl.Objects)
-            {
-                if (ob.Race != ObjectType.NPC || ob.ObjectID != NPCID) continue;
-
-                NPCQuestBox.NPCInfo = ((NPCObject) ob).NPCInfo;
-                return;
-            }
-            NPCQuestBox.NPCInfo = null;
         }
 
         #endregion
@@ -454,6 +446,11 @@ namespace Client.Scenes
             };
 
             NPCRepairBox = new NPCRepairDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+            NPCQuestListBox = new NPCQuestListDialog
             {
                 Parent = this,
                 Visible = false,
@@ -807,6 +804,11 @@ namespace Client.Scenes
                     pSetting.Name = tab.Panel.NameTextBox.TextBox.Text;
                     pSetting.Transparent = tab.Panel.TransparentCheckBox.Checked;
                     pSetting.Alert = tab.Panel.AlertCheckBox.Checked;
+                    pSetting.HideTab = tab.Panel.HideTabCheckBox.Checked;
+                    pSetting.ReverseList = tab.Panel.ReverseListCheckBox.Checked;
+                    pSetting.CleanUp = tab.Panel.CleanUpCheckBox.Checked;
+                    pSetting.FadeOut = tab.Panel.FadeOutCheckBox.Checked;
+
                     pSetting.LocalChat = tab.Panel.LocalCheckBox.Checked;
                     pSetting.WhisperChat = tab.Panel.WhisperCheckBox.Checked;
                     pSetting.GroupChat = tab.Panel.GroupCheckBox.Checked;
@@ -853,6 +855,11 @@ namespace Client.Scenes
 
                     tab.Panel.NameTextBox.TextBox.Text = tab.Settings.Name;
                     tab.Panel.AlertCheckBox.Checked = tab.Settings.Alert;
+                    tab.Panel.HideTabCheckBox.Checked = tab.Settings.HideTab;
+                    tab.Panel.ReverseListCheckBox.Checked = tab.Settings.ReverseList;
+                    tab.Panel.CleanUpCheckBox.Checked = tab.Settings.CleanUp;
+                    tab.Panel.FadeOutCheckBox.Checked = tab.Settings.FadeOut;
+
                     tab.Panel.LocalCheckBox.Checked = tab.Settings.LocalChat;
                     tab.Panel.WhisperCheckBox.Checked = tab.Settings.WhisperChat;
                     tab.Panel.GroupCheckBox.Checked = tab.Settings.GroupChat;
@@ -864,7 +871,6 @@ namespace Client.Scenes
                     tab.Panel.HintCheckBox.Checked = tab.Settings.HintChat;
                     tab.Panel.SystemCheckBox.Checked = tab.Settings.SystemChat;
                     tab.Panel.GainsCheckBox.Checked = tab.Settings.GainsChat;
-
                 }
 
                 foreach (ChatTab tab in ChatTab.Tabs)
@@ -1167,7 +1173,7 @@ namespace Client.Scenes
                     case KeyBindAction.GroupAllowSwitch:
                         if (Observer) continue;
 
-                        GroupBox.AllowGroupButton.InvokeMouseClick();
+                        GroupBox.AllowGroupBox.InvokeMouseClick();
                         break;
                     case KeyBindAction.GroupTarget:
                         if (Observer) continue;
@@ -3068,6 +3074,7 @@ namespace Client.Scenes
                     break;
 
                 case MagicType.Defiance:
+                case MagicType.Invincibility:
                     direction = MirDirection.Down;
                     break;
                 case MagicType.Might:
@@ -3093,8 +3100,8 @@ namespace Client.Scenes
                 case MagicType.JudgementOfHeaven:
                     break;
 
-
                 case MagicType.SeismicSlam:
+                case MagicType.CrushingWave:
 
                 case MagicType.Repulsion:
                 case MagicType.ScortchedEarth:
@@ -3608,6 +3615,7 @@ namespace Client.Scenes
             NPCRefineBox.CloseButton.Enabled = !Observer;
             NPCRepairBox.CloseButton.Enabled = !Observer;
             NPCRefineRetrieveBox.CloseButton.Enabled = !Observer;
+            NPCQuestBox.CloseButton.Enabled = !Observer;
         }
         public void LevelChanged()
         {
@@ -3844,7 +3852,7 @@ namespace Client.Scenes
 
             QuestTrackerBox.PopulateQuests();
             
-            NPCQuestBox.UpdateQuestDisplay();
+            NPCQuestListBox.UpdateQuestDisplay();
 
             UpdateQuestIcons();
         }
@@ -4297,6 +4305,14 @@ namespace Client.Scenes
                         NPCRollBox.Dispose();
 
                     NPCRollBox = null;
+                }
+
+                if (NPCQuestListBox != null)
+                {
+                    if (!NPCQuestListBox.IsDisposed)
+                        NPCQuestListBox.Dispose();
+
+                    NPCQuestListBox = null;
                 }
 
                 if (NPCQuestBox != null)

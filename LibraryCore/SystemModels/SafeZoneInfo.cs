@@ -67,6 +67,21 @@ namespace Library.SystemModels
         }
         private bool _RedZone;
 
+        public bool Border
+        {
+            get { return _Border; }
+            set
+            {
+                if (_Border == value) return;
+
+                var oldValue = _Border;
+                _Border = value;
+
+                OnChanged(oldValue, value, "Border");
+            }
+        }
+        private bool _Border;
+
         public List<Point> ValidBindPoints = new List<Point>();
     }
 }

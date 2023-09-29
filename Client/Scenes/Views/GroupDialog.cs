@@ -1,22 +1,24 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Envir;
+using Client.UserModels;
+using Library;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Client.Controls;
-using Client.Envir;
-using Client.UserModels;
-using Library;
 using C = Library.Network.ClientPackets;
 
 //Cleaned
 namespace Client.Scenes.Views
 {
-    public sealed  class GroupDialog : DXWindow
+    public sealed  class GroupDialog : DXImageControl
     {
         #region Properties
 
-        public DXButton AllowGroupButton, AddButton, RemoveButton;
+        public DXLabel TitleLabel;
+        public DXButton CloseButton, AddButton, RemoveButton;
+        public DXCheckBox AllowGroupBox;
 
         #region AllowGroup
 
@@ -41,19 +43,21 @@ namespace Client.Scenes.Views
 
             if (AllowGroup)
             {
-                AllowGroupButton.Index = 122;
-                AllowGroupButton.Hint = CEnvir.Language.GroupDialogAllowGroupButtonAllowingHint;
+                AllowGroupBox.Label.Text = CEnvir.Language.GroupDialogAllowGroupButtonAllowingHint;
             }
             else
             {
-                AllowGroupButton.Index = 142;
-                AllowGroupButton.Hint = CEnvir.Language.GroupDialogAllowGroupButtonNotAllowingHint;
+                AllowGroupBox.Label.Text = CEnvir.Language.GroupDialogAllowGroupButtonNotAllowingHint;
             }
+
+            AllowGroupBox.SetSilentState(AllowGroup);
+            AllowGroupBox.Location = new Point(230 - AllowGroupBox.Size.Width, 40);
         }
 
         #endregion
 
         public DXTab MemberTab;
+
 
         public List<ClientPlayerInfo> Members = new List<ClientPlayerInfo>();
         
@@ -97,29 +101,46 @@ namespace Client.Scenes.Views
 
         #endregion
 
-
-        public override WindowType Type => WindowType.GroupBox;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => true;
+        public WindowType Type => WindowType.GroupBox;
 
         #endregion
 
         public GroupDialog()
         {
-            TitleLabel.Text = CEnvir.Language.GroupDialogTitle;
-            HasFooter = true;
+            LibraryFile = LibraryFile.Interface;
+            Index = 240;
+            Movable = true;
+            Sort = true;
 
-            SetClientSize(new Size(200, 200));
-
-            AllowGroupButton = new DXButton
+            TitleLabel = new DXLabel
             {
-                LibraryFile = LibraryFile.GameInter2,
-                Index = 142,
+                Text = CEnvir.Language.GroupDialogTitle,
                 Parent = this,
-                Hint = CEnvir.Language.GroupDialogAllowGroupButtonNotAllowingHint,
-                Location = new Point(ClientArea.X, Size.Height - 46)
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
             };
-            AllowGroupButton.MouseClick += (o, e) =>
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(240 - CloseButton.Size.Width - 3, 3);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            AllowGroupBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.GroupDialogAllowGroupButtonNotAllowingHint },
+                Parent = this,
+                Checked = Config.QuestTrackerVisible,
+            };
+            AllowGroupBox.Location = new Point(230 - AllowGroupBox.Size.Width, 40);
+            AllowGroupBox.CheckedChanged += (o, e) =>
             {
                 if (GameScene.Game.Observer) return;
 
@@ -129,8 +150,8 @@ namespace Client.Scenes.Views
             DXTabControl members = new DXTabControl
             {
                 Parent = this,
-                Size = ClientArea.Size,
-                Location = ClientArea.Location,
+                Size = new Size(218, 146),
+                Location = new Point(11, 60),
             };
 
             MemberTab = new DXTab
@@ -145,15 +166,15 @@ namespace Client.Scenes.Views
                     IsControl = false,
                 },
                 Parent = members,
-                Border = true,
+                Border = false,
+                BackColour = Color.Empty
             };
 
             AddButton = new DXButton
             {
-                Size = new Size(60, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
-                Label = {Text = CEnvir.Language.GroupDialogAddButtonLabel },
-                Location = new Point(ClientArea.Right - 135, Size.Height - 40),
+                Size = new Size(36, 36),
+                ButtonType = ButtonType.AddButton,
+                Location = new Point(30, 217),
                 Parent = this,
             };
             AddButton.MouseClick += (o, e) =>
@@ -189,10 +210,9 @@ namespace Client.Scenes.Views
 
             RemoveButton = new DXButton
             {
-                Size = new Size(60, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
-                Label = { Text = CEnvir.Language.GroupDialogRemoveButtonLabel },
-                Location = new Point(ClientArea.Right - 65, Size.Height - 40),
+                Size = new Size(36, 36),
+                ButtonType = ButtonType.RemoveButton,
+                Location = new Point(174, 217),
                 Parent = this,
                 Enabled = false,
             };
@@ -228,7 +248,7 @@ namespace Client.Scenes.Views
                 DXLabel label = new DXLabel
                 {
                     Parent = MemberTab,
-                    Location = new Point(10 + 100*(i%2), 10 + 20*(i/2)),
+                    Location = new Point(10 + 100*(i%2), 5 + 20*(i/2)),
                     Text = member.Name,
                 };
                 label.MouseClick += (o, e) =>
@@ -266,12 +286,28 @@ namespace Client.Scenes.Views
                 _AllowGroup = false;
                 AllowGroupChanged = null;
 
-                if (AllowGroupButton != null)
+                if (TitleLabel != null)
                 {
-                    if (!AllowGroupButton.IsDisposed)
-                        AllowGroupButton.Dispose();
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
 
-                    AllowGroupButton = null;
+                    TitleLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                if (AllowGroupBox != null)
+                {
+                    if (!AllowGroupBox.IsDisposed)
+                        AllowGroupBox.Dispose();
+
+                    AllowGroupBox = null;
                 }
                 
                 if (AddButton != null)

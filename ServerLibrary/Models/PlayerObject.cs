@@ -247,7 +247,7 @@ namespace Server.Models
             SetupMagic();
         }
 
-        private void SetupMagic()
+        public void SetupMagic(UserMagic addMagic = null)
         {
             var types = typeof(MagicObject).Assembly.GetTypes().Where(type => 
                 type.BaseType != null && 
@@ -255,30 +255,28 @@ namespace Server.Models
                 type.BaseType == typeof(MagicObject) && 
                 type.IsDefined(typeof(MagicTypeAttribute))).ToList();
 
-            foreach (UserMagic magic in Character.Magics)
+            Type found;
+
+            if (addMagic != null)
             {
-                var found = types.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == magic.Info.Magic);
+                found = types.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == addMagic.Info.Magic);
 
                 if (found != null)
                 {
-                    MagicObjects[magic.Info.Magic] = (MagicObject)Activator.CreateInstance(found, this, magic);
+                    MagicObjects[addMagic.Info.Magic] = (MagicObject)Activator.CreateInstance(found, this, addMagic);
                 }
             }
-        }
-
-        public void SetupMagic(UserMagic magic)
-        {
-            var types = typeof(MagicObject).Assembly.GetTypes().Where(type =>
-                type.BaseType != null &&
-                !type.IsAbstract &&
-                type.BaseType == typeof(MagicObject) &&
-                type.IsDefined(typeof(MagicTypeAttribute))).ToList();
-
-            var found = types.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == magic.Info.Magic);
-
-            if (found != null)
+            else
             {
-                MagicObjects[magic.Info.Magic] = (MagicObject)Activator.CreateInstance(found, this, magic);
+                foreach (UserMagic magic in Character.Magics)
+                {
+                    found = types.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == magic.Info.Magic);
+
+                    if (found != null)
+                    {
+                        MagicObjects[magic.Info.Magic] = (MagicObject)Activator.CreateInstance(found, this, magic);
+                    }
+                }
             }
         }
 
@@ -300,7 +298,6 @@ namespace Server.Models
                 }
             }
         }
-
 
         public override void Process()
         {
@@ -773,6 +770,116 @@ namespace Server.Models
                 NameColour = Globals.BrownNameColour;
             else if (Stats[Stat.PKPoint] >= 50)
                 NameColour = Color.Yellow;
+        }
+        
+        private StartInformation GetStartInformation(bool observer = false)
+        {
+            List<ClientBeltLink> blinks = new List<ClientBeltLink>();
+
+            foreach (CharacterBeltLink link in Character.BeltLinks)
+            {
+                if (link.LinkItemIndex > 0 && Inventory.FirstOrDefault(x => x?.Index == link.LinkItemIndex) == null)
+                    link.LinkItemIndex = -1;
+
+                blinks.Add(link.ToClientInfo());
+            }
+
+            List<ClientAutoPotionLink> alinks = new List<ClientAutoPotionLink>();
+
+            foreach (AutoPotionLink link in Character.AutoPotionLinks)
+                alinks.Add(link.ToClientInfo());
+
+            return new StartInformation
+            {
+                Index = Character.Index,
+                ObjectID = ObjectID,
+                Name = Name,
+                Caption = Character.Caption,
+                GuildName = Character.Account.GuildMember?.Guild.GuildName,
+                GuildRank = Character.Account.GuildMember?.Rank,
+                NameColour = NameColour,
+
+                Level = Level,
+                Class = Class,
+                Gender = Gender,
+                Location = CurrentLocation,
+                Direction = Direction,
+
+                MapIndex = CurrentMap.Info.Index,
+                InstanceIndex = CurrentMap.Instance?.Index ?? -1,
+
+                HairType = HairType,
+                HairColour = HairColour,
+
+                Weapon = Equipment[(int)EquipmentSlot.Weapon]?.Info.Shape ?? -1,
+
+                Shield = Equipment[(int)EquipmentSlot.Shield]?.Info.Shape ?? -1,
+
+                Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
+                ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
+
+                Costume = Equipment[(int)EquipmentSlot.Costume]?.Info.Shape ?? -1,
+
+                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
+                EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
+                WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
+                ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
+
+                Experience = Experience,
+
+                DayTime = SEnvir.DayTime,
+                AllowGroup = Character.Account.AllowGroup,
+
+                CurrentHP = DisplayHP,
+                CurrentMP = DisplayMP,
+                CurrentFP = DisplayFP,
+
+                AttackMode = AttackMode,
+                PetMode = PetMode,
+
+                OnlineState = OnlineState,
+                Friends = Character.Friends.Select(x => x.ToClientInfo()).ToList(),
+
+                Discipline = Character.Discipline?.ToClientInfo(),
+
+                Items = Character.Items.Select(x => x.ToClientInfo()).ToList(),
+                BeltLinks = blinks,
+                AutoPotionLinks = alinks,
+                Magics = Character.Magics.Select(x => x.ToClientInfo()).ToList(),
+                Buffs = Buffs.Select(x => x.ToClientInfo()).ToList(),
+                Currencies = Character.Account.Currencies.Select(x => x.ToClientInfo(x.Info.Type == CurrencyType.GameGold && observer)).ToList(),
+
+                Poison = Poison,
+
+                InSafeZone = InSafeZone,
+
+                Observable = Character.Observable,
+                HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints),
+
+                Dead = Dead,
+
+                Horse = Horse,
+
+                HelmetShape = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
+
+                HideHead = HideHead,
+
+                HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
+
+                Quests = Quests.Select(x => x.ToClientInfo()).ToList(),
+
+                CompanionUnlocks = Character.Account.CompanionUnlocks.Select(x => x.CompanionInfo.Index).ToList(),
+
+                Companions = Character.Account.Companions.Select(x => x.ToClientInfo()).ToList(),
+
+                Companion = Character.Companion?.Index ?? 0,
+
+                StorageSize = Character.Account.StorageSize,
+
+                FiltersClass = Character.FiltersClass,
+                FiltersRarity = Character.FiltersRarity,
+                FiltersItemType = Character.FiltersItemType,
+            };
         }
 
         public void StartGame()
@@ -1373,7 +1480,6 @@ namespace Server.Models
                 if (!linkedItems.Any(e => e.Index == item.Index))
                     linkedItems.Add(item.ToClientInfo());
             }
-
 
             if (text.StartsWith("/"))
             {
@@ -2887,6 +2993,20 @@ namespace Server.Models
             companion.Name = p.Name;
 
             result.UserCompanion = companion.ToClientInfo();
+        }
+
+        public void SetFilters(C.SendCompanionFilters p)
+        {
+            Character.FiltersClass = String.Join(",", p.FilterClass);
+            Character.FiltersRarity = String.Join(",", p.FilterRarity);
+            Character.FiltersItemType = String.Join(",", p.FilterItemType);
+
+            FiltersClass = Character.FiltersClass;
+            FiltersItemType = Character.FiltersItemType;
+            FiltersRarity = Character.FiltersRarity;
+
+            Enqueue(new S.SendCompanionFilters { FilterClass = p.FilterClass, FilterRarity = p.FilterRarity, FilterItemType = p.FilterItemType });
+            Connection.ReceiveChat("Companion filters have been updated", MessageType.System);
         }
 
         public void CompanionRetrieve(int index)
@@ -9740,6 +9860,342 @@ namespace Server.Models
             Enqueue(new S.ItemExperience { Target = p.Cell, Experience = targetItem.Experience, Level = targetItem.Level, Flags = targetItem.Flags });
         }
 
+        public void NPCAccessoryRefine(C.NPCAccessoryRefine p)
+        {
+            Enqueue(new S.NPCAccessoryRefine { Target = p.Target, OreTarget = p.OreTarget, Links = p.Links });
+
+            if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.AccessoryRefine) return;
+
+            if (!ParseLinks(p.Target)) return;
+
+            if (Gold.Amount < 50000) return;
+
+            UserItem[] targetArray = null;
+
+            switch (p.Target.GridType)
+            {
+                case GridType.Inventory:
+                    targetArray = Inventory;
+                    break;
+                case GridType.Equipment:
+                    targetArray = Equipment;
+                    break;
+                case GridType.Storage:
+                    targetArray = Storage;
+                    break;
+                case GridType.CompanionInventory:
+                    if (Companion == null) return;
+
+                    targetArray = Companion.Inventory;
+                    break;
+                default:
+                    return;
+            }
+
+            if (p.Target.Slot < 0 || p.Target.Slot >= targetArray.Length) return;
+            UserItem targetItem = targetArray[p.Target.Slot];
+
+            if (targetItem == null || p.Target.Count > targetItem.Count) return; //Already Leveled.
+            if ((targetItem.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
+            if (targetItem.Level > 1) return; //No refine on levelled items
+
+            switch (targetItem.Info.ItemType)
+            {
+                case ItemType.Ring:
+                case ItemType.Bracelet:
+                case ItemType.Necklace:
+                    break;
+                default: return; //only refined accessories
+            }
+
+            UserItem[] targetOreArray = null;
+
+            switch (p.OreTarget.GridType)
+            {
+                case GridType.Inventory:
+                    targetOreArray = Inventory;
+                    break;
+                case GridType.Equipment:
+                    targetOreArray = Equipment;
+                    break;
+                case GridType.Storage:
+                    targetOreArray = Storage;
+                    break;
+                case GridType.CompanionInventory:
+                    if (Companion == null) return;
+
+                    targetOreArray = Companion.Inventory;
+                    break;
+                default:
+                    return;
+            }
+            if (p.OreTarget.Slot < 0 || p.OreTarget.Slot >= targetArray.Length) return;
+            UserItem oretargetItem = targetOreArray[p.OreTarget.Slot];
+
+            S.ItemsChanged result = new S.ItemsChanged { Links = new List<CellLinkInfo>(), Success = true };
+            Enqueue(result);
+
+            foreach (CellLinkInfo link in p.Links) //loop through to check level and added stats on each material vs target
+            {
+                UserItem[] fromArray = null;
+
+                switch (link.GridType)
+                {
+                    case GridType.Inventory:
+                        fromArray = Inventory;
+                        break;
+                    case GridType.Storage:
+                        fromArray = Storage;
+                        break;
+                    case GridType.CompanionInventory:
+                        if (Companion == null) continue;
+
+                        fromArray = Companion.Inventory;
+                        break;
+                    default:
+                        continue;
+                }
+
+                if (link.Slot < 0 || link.Slot >= fromArray.Length) continue;
+                UserItem refItem = fromArray[link.Slot];
+
+                if (refItem.Level > 1) return; //if material is levelled dont refine
+                if (targetItem.AddedStats.Count != refItem.AddedStats.Count) return; //if material has different amount of added stats to target dont refine
+
+                if (targetItem.AddedStats.Count > 1) //if target has added stats loop through to check material has same stats
+                {
+                    int count = 0;
+                    foreach (UserItemStat addStat in targetItem.AddedStats)
+                    {
+                        foreach (UserItemStat raddStat in refItem.AddedStats)
+                        {
+                            if (addStat.Stat == raddStat.Stat && addStat.StatSource == raddStat.StatSource && addStat.Amount == raddStat.Amount)
+                            {
+                                count++;
+                            }
+                        }
+                    }
+                    if (count != targetItem.AddedStats.Count) return;
+
+                }
+
+            }
+
+            foreach (CellLinkInfo link in p.Links) //now loop through to remove materials
+            {
+
+                UserItem[] fromArray = null;
+
+                switch (link.GridType)
+                {
+                    case GridType.Inventory:
+                        fromArray = Inventory;
+                        break;
+                    case GridType.Storage:
+                        fromArray = Storage;
+                        break;
+                    case GridType.CompanionInventory:
+                        if (Companion == null) continue;
+
+                        fromArray = Companion.Inventory;
+                        break;
+                    default:
+                        continue;
+                }
+
+                if (link.Slot < 0 || link.Slot >= fromArray.Length) continue;
+                UserItem item = fromArray[link.Slot];
+
+                if (item == null || link.Count > item.Count || (item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) continue;
+                if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) continue;
+                if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) continue;
+                if (item.Info != targetItem.Info) continue;
+                if ((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound && (targetItem.Flags & UserItemFlags.Bound) != UserItemFlags.Bound) continue;
+
+                result.Links.Add(link);
+
+                if (item.Count == link.Count)
+                {
+                    RemoveItem(item);
+                    fromArray[link.Slot] = null;
+                    item.Delete();
+                }
+                else
+                    item.Count -= link.Count;
+
+            }
+
+            int chance = 100 - (oretargetItem.CurrentDurability / 1000);
+            int success = 30;
+            if (targetItem.Info.Rarity != Rarity.Common)
+            {
+                success = 40;
+            }
+            if (SEnvir.Random.Next(chance) < success)
+            #region refineworked
+            {
+
+                S.ItemAcessoryRefined presult = new S.ItemAcessoryRefined { GridType = p.Target.GridType, Slot = p.Target.Slot, NewStats = new Stats() };
+                Enqueue(presult);
+                int amount = 1;
+                if (SEnvir.Random.Next(chance) == 0)
+                {
+                    amount = 2;
+                }
+                switch (p.RefineType)
+                {
+
+                    case RefineType.DC:
+                        targetItem.AddStat(Stat.MaxDC, amount, StatSource.Added);
+                        presult.NewStats[Stat.MaxDC] = amount;
+                        break;
+                    case RefineType.SpellPower:
+                        if (targetItem.Info.Stats[Stat.MinMC] == 0 && targetItem.Info.Stats[Stat.MaxMC] == 0 && targetItem.Info.Stats[Stat.MinSC] == 0 && targetItem.Info.Stats[Stat.MaxSC] == 0)
+                        {
+                            targetItem.AddStat(Stat.MaxMC, amount, StatSource.Added);
+                            presult.NewStats[Stat.MaxMC] = amount;
+
+                            targetItem.AddStat(Stat.MaxSC, amount, StatSource.Added);
+                            presult.NewStats[Stat.MaxSC] = amount;
+                        }
+
+                        if (targetItem.Info.Stats[Stat.MinMC] > 0 || targetItem.Info.Stats[Stat.MaxMC] > 0)
+                        {
+                            targetItem.AddStat(Stat.MaxMC, amount, StatSource.Added);
+                            presult.NewStats[Stat.MaxMC] = amount;
+                        }
+
+                        if (targetItem.Info.Stats[Stat.MinSC] > 0 || targetItem.Info.Stats[Stat.MaxSC] > 0)
+                        {
+                            targetItem.AddStat(Stat.MaxSC, amount, StatSource.Added);
+                            presult.NewStats[Stat.MaxSC] = amount;
+                        }
+                        break;
+                    case RefineType.Health:
+                        amount *= 10;
+                        targetItem.AddStat(Stat.Health, amount, StatSource.Added);
+                        presult.NewStats[Stat.Health] = amount;
+                        break;
+                    case RefineType.Mana:
+                        amount *= 10;
+                        targetItem.AddStat(Stat.Mana, amount, StatSource.Added);
+                        presult.NewStats[Stat.Mana] = amount;
+                        break;
+                    case RefineType.DCPercent:
+                        targetItem.AddStat(Stat.DCPercent, amount, StatSource.Added);
+                        presult.NewStats[Stat.DCPercent] = amount;
+                        break;
+                    case RefineType.SPPercent:
+                        if (targetItem.Info.Stats[Stat.MinMC] == 0 && targetItem.Info.Stats[Stat.MaxMC] == 0 && targetItem.Info.Stats[Stat.MinSC] == 0 && targetItem.Info.Stats[Stat.MaxSC] == 0)
+                        {
+                            targetItem.AddStat(Stat.MCPercent, amount, StatSource.Added);
+                            presult.NewStats[Stat.MCPercent] = amount;
+
+                            targetItem.AddStat(Stat.SCPercent, amount, StatSource.Added);
+                            presult.NewStats[Stat.SCPercent] = amount;
+                        }
+
+                        if (targetItem.Info.Stats[Stat.MinMC] > 0 || targetItem.Info.Stats[Stat.MaxMC] > 0)
+                        {
+                            targetItem.AddStat(Stat.MCPercent, amount, StatSource.Added);
+                            presult.NewStats[Stat.MCPercent] = amount;
+                        }
+
+                        if (targetItem.Info.Stats[Stat.MinSC] > 0 || targetItem.Info.Stats[Stat.MaxSC] > 0)
+                        {
+                            targetItem.AddStat(Stat.SCPercent, amount, StatSource.Added);
+                            presult.NewStats[Stat.SCPercent] = amount;
+                        }
+                        break;
+                    case RefineType.HealthPercent:
+                        targetItem.AddStat(Stat.HealthPercent, amount, StatSource.Added);
+                        presult.NewStats[Stat.HealthPercent] = amount;
+                        break;
+                    case RefineType.ManaPercent:
+                        targetItem.AddStat(Stat.ManaPercent, amount, StatSource.Added);
+                        presult.NewStats[Stat.ManaPercent] = amount;
+                        break;
+                    case RefineType.Fire:
+                        targetItem.AddStat(Stat.FireAttack, amount, StatSource.Added);
+                        presult.NewStats[Stat.FireAttack] = amount;
+                        break;
+                    case RefineType.Ice:
+                        targetItem.AddStat(Stat.IceAttack, amount, StatSource.Added);
+                        presult.NewStats[Stat.IceAttack] = amount;
+                        break;
+                    case RefineType.Lightning:
+                        targetItem.AddStat(Stat.LightningAttack, amount, StatSource.Added);
+                        presult.NewStats[Stat.LightningAttack] = amount;
+                        break;
+                    case RefineType.Wind:
+                        targetItem.AddStat(Stat.WindAttack, amount, StatSource.Added);
+                        presult.NewStats[Stat.WindAttack] = amount;
+                        break;
+                    case RefineType.Holy:
+                        targetItem.AddStat(Stat.HolyAttack, amount, StatSource.Added);
+                        presult.NewStats[Stat.HolyAttack] = amount;
+                        break;
+                    case RefineType.Dark:
+                        targetItem.AddStat(Stat.DarkAttack, amount, StatSource.Added);
+                        presult.NewStats[Stat.DarkAttack] = amount;
+                        break;
+                    case RefineType.Phantom:
+                        targetItem.AddStat(Stat.PhantomAttack, amount, StatSource.Added);
+                        presult.NewStats[Stat.PhantomAttack] = amount;
+                        break;
+                    case RefineType.AC:
+                        targetItem.AddStat(Stat.MaxAC, amount, StatSource.Added);
+                        presult.NewStats[Stat.MaxAC] = amount;
+                        break;
+                    case RefineType.MR:
+                        targetItem.AddStat(Stat.MaxMR, amount, StatSource.Added);
+                        presult.NewStats[Stat.MaxMR] = amount;
+                        break;
+                    case RefineType.Accuracy:
+                        targetItem.AddStat(Stat.Accuracy, amount, StatSource.Added);
+                        presult.NewStats[Stat.Accuracy] = amount;
+                        break;
+                    case RefineType.Agility:
+                        targetItem.AddStat(Stat.Agility, amount, StatSource.Added);
+                        presult.NewStats[Stat.Agility] = amount;
+                        break;
+                    default:
+                        Character.Account.Banned = true;
+                        Character.Account.BanReason = "Attempted to Exploit refine, Accessory Refine Type.";
+                        Character.Account.ExpiryDate = SEnvir.Now.AddYears(10);
+                        return;
+                }
+                targetItem.StatsChanged();
+                Connection.ReceiveChat(string.Format(Connection.Language.AccessoryRefineSuccess, targetItem.Info.ItemName, p.RefineType, amount), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.AccessoryRefineSuccess, targetItem.Info.ItemName, p.RefineType, amount), MessageType.System);
+                RefreshStats();
+            }
+            #endregion
+            else
+            {
+                Connection.ReceiveChat(string.Format(Connection.Language.AccessoryRefineFailed, targetItem.Info.ItemName), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.AccessoryRefineFailed, targetItem.Info.ItemName), MessageType.System);
+                targetArray[targetItem.Slot] = null;
+                result.Links.Add(p.Target);
+                RemoveItem(targetItem);
+                targetItem.Delete();
+
+            }
+
+            Gold.Amount -= 50000;
+            GoldChanged();
+            targetOreArray[oretargetItem.Slot] = null;
+            result.Links.Add(p.OreTarget);
+            RemoveItem(oretargetItem);
+            oretargetItem.Delete();
+            Companion?.RefreshWeight();
+            RefreshStats();
+        }
+
         public void NPCRepair(C.NPCRepair p)
         {
             S.NPCRepair result = new S.NPCRepair { Links = p.Links, Special = p.Special, SpecialRepairDelay = Config.SpecialRepairDelay };
@@ -12972,7 +13428,7 @@ namespace Server.Models
                 if (magicObject.HasBladeStorm) hasBladeStorm = true;
                 if (magicObject.HasDanceOfSallows) hasDanceOfSallows = true;
                 if (magicObject.HasMassacre) hasMassacre = true;
-                if (magicObject.HasSwiftBlade) hasSwiftBlade = true;
+                if (magicObject.HasSwiftBlade(primary)) hasSwiftBlade = true;
                 if (magicObject.HasSeismicSlam) hasSeismicSlam = true;
 
                 if (magicObject.HasFlameSplash(primary)) hasFlameSplash = true;
@@ -13448,7 +13904,7 @@ namespace Server.Models
 
         public override int Attacked(MapObject attacker, int power, Element element, bool canReflect = true, bool ignoreShield = false, bool canCrit = true, bool canStruck = true)
         {
-            if (attacker?.Node == null || power == 0 || Dead || attacker.CurrentMap != CurrentMap || !Functions.InRange(attacker.CurrentLocation, CurrentLocation, Config.MaxViewRange)) return 0;
+            if (attacker?.Node == null || power == 0 || Dead || attacker.CurrentMap != CurrentMap || !Functions.InRange(attacker.CurrentLocation, CurrentLocation, Config.MaxViewRange) || Stats[Stat.Invincibility] > 0) return 0;
 
             UserMagic magic;
             if (element != Element.None)
@@ -13629,6 +14085,9 @@ namespace Server.Models
                 LevelMagic(magic);
 
             if (Magics.TryGetValue(MagicType.AdventOfDevil, out magic) && element != Element.None)
+                LevelMagic(magic);
+
+            if (Buffs.Any(x => x.Type == BuffType.Invincibility) && Magics.TryGetValue(MagicType.Invincibility, out magic))
                 LevelMagic(magic);
 
             return power;
@@ -14368,116 +14827,6 @@ namespace Server.Models
         #endregion
 
         public void Enqueue(Packet p) => Connection.Enqueue(p);
-        private StartInformation GetStartInformation(bool observer = false)
-        {
-            List<ClientBeltLink> blinks = new List<ClientBeltLink>();
-
-            foreach (CharacterBeltLink link in Character.BeltLinks)
-            {
-                if (link.LinkItemIndex > 0 && Inventory.FirstOrDefault(x => x?.Index == link.LinkItemIndex) == null)
-                    link.LinkItemIndex = -1;
-
-                blinks.Add(link.ToClientInfo());
-            }
-
-            List<ClientAutoPotionLink> alinks = new List<ClientAutoPotionLink>();
-
-            foreach (AutoPotionLink link in Character.AutoPotionLinks)
-                alinks.Add(link.ToClientInfo());
-
-            return new StartInformation
-            {
-                Index = Character.Index,
-                ObjectID = ObjectID,
-                Name = Name,
-                Caption = Character.Caption,
-                GuildName = Character.Account.GuildMember?.Guild.GuildName,
-                GuildRank = Character.Account.GuildMember?.Rank,
-                NameColour = NameColour,
-
-                Level = Level,
-                Class = Class,
-                Gender = Gender,
-                Location = CurrentLocation,
-                Direction = Direction,
-
-                MapIndex = CurrentMap.Info.Index,
-                InstanceIndex = CurrentMap.Instance?.Index ?? -1,
-
-                HairType = HairType,
-                HairColour = HairColour,
-
-                Weapon = Equipment[(int)EquipmentSlot.Weapon]?.Info.Shape ?? -1,
-
-                Shield = Equipment[(int)EquipmentSlot.Shield]?.Info.Shape ?? -1,
-
-                Armour = Equipment[(int)EquipmentSlot.Armour]?.Info.Shape ?? 0,
-                ArmourColour = Equipment[(int)EquipmentSlot.Armour]?.Colour ?? Color.Empty,
-
-                Costume = Equipment[(int)EquipmentSlot.Costume]?.Info.Shape ?? -1,
-
-                ArmourEffect = Equipment[(int)EquipmentSlot.Armour]?.Info.ExteriorEffect ?? 0,
-                EmblemEffect = Equipment[(int)EquipmentSlot.Emblem]?.Info.ExteriorEffect ?? 0,
-                WeaponEffect = Equipment[(int)EquipmentSlot.Weapon]?.Info.ExteriorEffect ?? 0,
-                ShieldEffect = Equipment[(int)EquipmentSlot.Shield]?.Info.ExteriorEffect ?? 0,
-
-                Experience = Experience,
-
-                DayTime = SEnvir.DayTime,
-                AllowGroup = Character.Account.AllowGroup,
-
-                CurrentHP = DisplayHP,
-                CurrentMP = DisplayMP,
-                CurrentFP = DisplayFP,
-
-                AttackMode = AttackMode,
-                PetMode = PetMode,
-
-                OnlineState = OnlineState,
-                Friends = Character.Friends.Select(x => x.ToClientInfo()).ToList(),
-
-                Discipline = Character.Discipline?.ToClientInfo(),
-
-                Items = Character.Items.Select(x => x.ToClientInfo()).ToList(),
-                BeltLinks = blinks,
-                AutoPotionLinks = alinks,
-                Magics = Character.Magics.Select(x => x.ToClientInfo()).ToList(),
-                Buffs = Buffs.Select(x => x.ToClientInfo()).ToList(),
-                Currencies = Character.Account.Currencies.Select(x => x.ToClientInfo(x.Info.Type == CurrencyType.GameGold && observer)).ToList(),
-
-                Poison = Poison,
-
-                InSafeZone = InSafeZone,
-
-                Observable = Character.Observable,
-                HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints),
-
-                Dead = Dead,
-
-                Horse = Horse,
-
-                HelmetShape = Character.HideHelmet ? 0 : Equipment[(int)EquipmentSlot.Helmet]?.Info.Shape ?? 0,
-
-                HideHead = HideHead,
-
-                HorseShape = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
-
-                Quests = Quests.Select(x => x.ToClientInfo()).ToList(),
-
-                CompanionUnlocks = Character.Account.CompanionUnlocks.Select(x => x.CompanionInfo.Index).ToList(),
-
-                Companions = Character.Account.Companions.Select(x => x.ToClientInfo()).ToList(),
-
-                Companion = Character.Companion?.Index ?? 0,
-
-                StorageSize = Character.Account.StorageSize,
-
-                FiltersClass = Character.FiltersClass,
-                FiltersRarity = Character.FiltersRarity,
-                FiltersItemType = Character.FiltersItemType,
-            };
-        }
-
         public override Packet GetInfoPacket(PlayerObject ob)
         {
             if (ob == this) return null;
@@ -14600,355 +14949,6 @@ namespace Server.Models
             };
 
             Broadcast(p);
-        }
-        public void NPCAccessoryRefine(C.NPCAccessoryRefine p)
-        {
-            Enqueue(new S.NPCAccessoryRefine { Target = p.Target, OreTarget = p.OreTarget, Links = p.Links });
-
-            if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.AccessoryRefine) return;
-
-            if (!ParseLinks(p.Target)) return;
-
-            if (Gold.Amount < 50000) return;
-
-            UserItem[] targetArray = null;
-
-            switch (p.Target.GridType)
-            {
-                case GridType.Inventory:
-                    targetArray = Inventory;
-                    break;
-                case GridType.Equipment:
-                    targetArray = Equipment;
-                    break;
-                case GridType.Storage:
-                    targetArray = Storage;
-                    break;
-                case GridType.CompanionInventory:
-                    if (Companion == null) return;
-
-                    targetArray = Companion.Inventory;
-                    break;
-                default:
-                    return;
-            }
-
-            if (p.Target.Slot < 0 || p.Target.Slot >= targetArray.Length) return;
-            UserItem targetItem = targetArray[p.Target.Slot];
-
-            if (targetItem == null || p.Target.Count > targetItem.Count) return; //Already Leveled.
-            if ((targetItem.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
-            if (targetItem.Level > 1) return; //No refine on levelled items
-
-            switch (targetItem.Info.ItemType)
-            {
-                case ItemType.Ring:
-                case ItemType.Bracelet:
-                case ItemType.Necklace:
-                    break;
-                default: return; //only refined accessories
-            }
-
-            UserItem[] targetOreArray = null;
-
-            switch (p.OreTarget.GridType)
-            {
-                case GridType.Inventory:
-                    targetOreArray = Inventory;
-                    break;
-                case GridType.Equipment:
-                    targetOreArray = Equipment;
-                    break;
-                case GridType.Storage:
-                    targetOreArray = Storage;
-                    break;
-                case GridType.CompanionInventory:
-                    if (Companion == null) return;
-
-                    targetOreArray = Companion.Inventory;
-                    break;
-                default:
-                    return;
-            }
-            if (p.OreTarget.Slot < 0 || p.OreTarget.Slot >= targetArray.Length) return;
-            UserItem oretargetItem = targetOreArray[p.OreTarget.Slot];
-
-            S.ItemsChanged result = new S.ItemsChanged { Links = new List<CellLinkInfo>(), Success = true };
-            Enqueue(result);
-
-            foreach (CellLinkInfo link in p.Links) //loop through to check level and added stats on each material vs target
-            {
-                UserItem[] fromArray = null;
-
-                switch (link.GridType)
-                {
-                    case GridType.Inventory:
-                        fromArray = Inventory;
-                        break;
-                    case GridType.Storage:
-                        fromArray = Storage;
-                        break;
-                    case GridType.CompanionInventory:
-                        if (Companion == null) continue;
-
-                        fromArray = Companion.Inventory;
-                        break;
-                    default:
-                        continue;
-                }
-
-                if (link.Slot < 0 || link.Slot >= fromArray.Length) continue;
-                UserItem refItem = fromArray[link.Slot];
-
-                if (refItem.Level > 1) return; //if material is levelled dont refine
-                if (targetItem.AddedStats.Count != refItem.AddedStats.Count) return; //if material has different amount of added stats to target dont refine
-
-                if (targetItem.AddedStats.Count > 1) //if target has added stats loop through to check material has same stats
-                {
-                    int count = 0;
-                    foreach (UserItemStat addStat in targetItem.AddedStats)
-                    {
-                        foreach (UserItemStat raddStat in refItem.AddedStats)
-                        {
-                            if (addStat.Stat == raddStat.Stat && addStat.StatSource == raddStat.StatSource && addStat.Amount == raddStat.Amount)
-                            {
-                                count++;
-                            }
-                        }
-                    }
-                    if (count != targetItem.AddedStats.Count) return;
-
-                }
-
-            }
-
-            foreach (CellLinkInfo link in p.Links) //now loop through to remove materials
-            {
-
-                UserItem[] fromArray = null;
-
-                switch (link.GridType)
-                {
-                    case GridType.Inventory:
-                        fromArray = Inventory;
-                        break;
-                    case GridType.Storage:
-                        fromArray = Storage;
-                        break;
-                    case GridType.CompanionInventory:
-                        if (Companion == null) continue;
-
-                        fromArray = Companion.Inventory;
-                        break;
-                    default:
-                        continue;
-                }
-
-                if (link.Slot < 0 || link.Slot >= fromArray.Length) continue;
-                UserItem item = fromArray[link.Slot];
-
-                if (item == null || link.Count > item.Count || (item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) continue;
-                if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) continue;
-                if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) continue;
-                if (item.Info != targetItem.Info) continue;
-                if ((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound && (targetItem.Flags & UserItemFlags.Bound) != UserItemFlags.Bound) continue;
-
-                result.Links.Add(link);
-
-                if (item.Count == link.Count)
-                {
-                    RemoveItem(item);
-                    fromArray[link.Slot] = null;
-                    item.Delete();
-                }
-                else
-                    item.Count -= link.Count;
-
-            }
-
-            int chance = 100 - (oretargetItem.CurrentDurability / 1000);
-            int success = 30;
-            if (targetItem.Info.Rarity != Rarity.Common)
-            {
-                success = 40;
-            }
-            if (SEnvir.Random.Next(chance) < success)
-            #region refineworked
-            {
-
-                S.ItemAcessoryRefined presult = new S.ItemAcessoryRefined { GridType = p.Target.GridType, Slot = p.Target.Slot, NewStats = new Stats() };
-                Enqueue(presult);
-                int amount = 1;
-                if (SEnvir.Random.Next(chance) == 0)
-                {
-                    amount = 2;
-                }
-                switch (p.RefineType)
-                {
-
-                    case RefineType.DC:
-                        targetItem.AddStat(Stat.MaxDC, amount, StatSource.Added);
-                        presult.NewStats[Stat.MaxDC] = amount;
-                        break;
-                    case RefineType.SpellPower:
-                        if (targetItem.Info.Stats[Stat.MinMC] == 0 && targetItem.Info.Stats[Stat.MaxMC] == 0 && targetItem.Info.Stats[Stat.MinSC] == 0 && targetItem.Info.Stats[Stat.MaxSC] == 0)
-                        {
-                            targetItem.AddStat(Stat.MaxMC, amount, StatSource.Added);
-                            presult.NewStats[Stat.MaxMC] = amount;
-
-                            targetItem.AddStat(Stat.MaxSC, amount, StatSource.Added);
-                            presult.NewStats[Stat.MaxSC] = amount;
-                        }
-
-                        if (targetItem.Info.Stats[Stat.MinMC] > 0 || targetItem.Info.Stats[Stat.MaxMC] > 0)
-                        {
-                            targetItem.AddStat(Stat.MaxMC, amount, StatSource.Added);
-                            presult.NewStats[Stat.MaxMC] = amount;
-                        }
-
-                        if (targetItem.Info.Stats[Stat.MinSC] > 0 || targetItem.Info.Stats[Stat.MaxSC] > 0)
-                        {
-                            targetItem.AddStat(Stat.MaxSC, amount, StatSource.Added);
-                            presult.NewStats[Stat.MaxSC] = amount;
-                        }
-                        break;
-                    case RefineType.Health:
-                        amount *= 10;
-                        targetItem.AddStat(Stat.Health, amount, StatSource.Added);
-                        presult.NewStats[Stat.Health] = amount;
-                        break;
-                    case RefineType.Mana:
-                        amount *= 10;
-                        targetItem.AddStat(Stat.Mana, amount, StatSource.Added);
-                        presult.NewStats[Stat.Mana] = amount;
-                        break;
-                    case RefineType.DCPercent:
-                        targetItem.AddStat(Stat.DCPercent, amount, StatSource.Added);
-                        presult.NewStats[Stat.DCPercent] = amount;
-                        break;
-                    case RefineType.SPPercent:
-                        if (targetItem.Info.Stats[Stat.MinMC] == 0 && targetItem.Info.Stats[Stat.MaxMC] == 0 && targetItem.Info.Stats[Stat.MinSC] == 0 && targetItem.Info.Stats[Stat.MaxSC] == 0)
-                        {
-                            targetItem.AddStat(Stat.MCPercent, amount, StatSource.Added);
-                            presult.NewStats[Stat.MCPercent] = amount;
-
-                            targetItem.AddStat(Stat.SCPercent, amount, StatSource.Added);
-                            presult.NewStats[Stat.SCPercent] = amount;
-                        }
-
-                        if (targetItem.Info.Stats[Stat.MinMC] > 0 || targetItem.Info.Stats[Stat.MaxMC] > 0)
-                        {
-                            targetItem.AddStat(Stat.MCPercent, amount, StatSource.Added);
-                            presult.NewStats[Stat.MCPercent] = amount;
-                        }
-
-                        if (targetItem.Info.Stats[Stat.MinSC] > 0 || targetItem.Info.Stats[Stat.MaxSC] > 0)
-                        {
-                            targetItem.AddStat(Stat.SCPercent, amount, StatSource.Added);
-                            presult.NewStats[Stat.SCPercent] = amount;
-                        }
-                        break;
-                    case RefineType.HealthPercent:
-                        targetItem.AddStat(Stat.HealthPercent, amount, StatSource.Added);
-                        presult.NewStats[Stat.HealthPercent] = amount;
-                        break;
-                    case RefineType.ManaPercent:
-                        targetItem.AddStat(Stat.ManaPercent, amount, StatSource.Added);
-                        presult.NewStats[Stat.ManaPercent] = amount;
-                        break;
-                    case RefineType.Fire:
-                        targetItem.AddStat(Stat.FireAttack, amount, StatSource.Added);
-                        presult.NewStats[Stat.FireAttack] = amount;
-                        break;
-                    case RefineType.Ice:
-                        targetItem.AddStat(Stat.IceAttack, amount, StatSource.Added);
-                        presult.NewStats[Stat.IceAttack] = amount;
-                        break;
-                    case RefineType.Lightning:
-                        targetItem.AddStat(Stat.LightningAttack, amount, StatSource.Added);
-                        presult.NewStats[Stat.LightningAttack] = amount;
-                        break;
-                    case RefineType.Wind:
-                        targetItem.AddStat(Stat.WindAttack, amount, StatSource.Added);
-                        presult.NewStats[Stat.WindAttack] = amount;
-                        break;
-                    case RefineType.Holy:
-                        targetItem.AddStat(Stat.HolyAttack, amount, StatSource.Added);
-                        presult.NewStats[Stat.HolyAttack] = amount;
-                        break;
-                    case RefineType.Dark:
-                        targetItem.AddStat(Stat.DarkAttack, amount, StatSource.Added);
-                        presult.NewStats[Stat.DarkAttack] = amount;
-                        break;
-                    case RefineType.Phantom:
-                        targetItem.AddStat(Stat.PhantomAttack, amount, StatSource.Added);
-                        presult.NewStats[Stat.PhantomAttack] = amount;
-                        break;
-                    case RefineType.AC:
-                        targetItem.AddStat(Stat.MaxAC, amount, StatSource.Added);
-                        presult.NewStats[Stat.MaxAC] = amount;
-                        break;
-                    case RefineType.MR:
-                        targetItem.AddStat(Stat.MaxMR, amount, StatSource.Added);
-                        presult.NewStats[Stat.MaxMR] = amount;
-                        break;
-                    case RefineType.Accuracy:
-                        targetItem.AddStat(Stat.Accuracy, amount, StatSource.Added);
-                        presult.NewStats[Stat.Accuracy] = amount;
-                        break;
-                    case RefineType.Agility:
-                        targetItem.AddStat(Stat.Agility, amount, StatSource.Added);
-                        presult.NewStats[Stat.Agility] = amount;
-                        break;
-                    default:
-                        Character.Account.Banned = true;
-                        Character.Account.BanReason = "Attempted to Exploit refine, Accessory Refine Type.";
-                        Character.Account.ExpiryDate = SEnvir.Now.AddYears(10);
-                        return;
-                }
-                targetItem.StatsChanged();
-                Connection.ReceiveChat(string.Format(Connection.Language.AccessoryRefineSuccess, targetItem.Info.ItemName, p.RefineType, amount), MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.AccessoryRefineSuccess, targetItem.Info.ItemName, p.RefineType, amount), MessageType.System);
-                RefreshStats();
-            }
-            #endregion
-            else
-            {
-                Connection.ReceiveChat(string.Format(Connection.Language.AccessoryRefineFailed, targetItem.Info.ItemName), MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.AccessoryRefineFailed, targetItem.Info.ItemName), MessageType.System);
-                targetArray[targetItem.Slot] = null;
-                result.Links.Add(p.Target);
-                RemoveItem(targetItem);
-                targetItem.Delete();
-
-            }
-
-            Gold.Amount -= 50000;
-            GoldChanged();
-            targetOreArray[oretargetItem.Slot] = null;
-            result.Links.Add(p.OreTarget);
-            RemoveItem(oretargetItem);
-            oretargetItem.Delete();
-            Companion?.RefreshWeight();
-            RefreshStats();
-        }
-
-        public void SetFilters(C.SendCompanionFilters p)
-        {
-            Character.FiltersClass = String.Join(",", p.FilterClass);
-            Character.FiltersRarity = String.Join(",", p.FilterRarity);
-            Character.FiltersItemType = String.Join(",", p.FilterItemType);
-
-            FiltersClass = Character.FiltersClass;
-            FiltersItemType = Character.FiltersItemType;
-            FiltersRarity = Character.FiltersRarity;
-
-            Enqueue(new S.SendCompanionFilters { FilterClass = p.FilterClass, FilterRarity = p.FilterRarity, FilterItemType = p.FilterItemType });
-            Connection.ReceiveChat("Companion filters have been updated", MessageType.System);
         }
 
         #region Instance / Dungeon Finder

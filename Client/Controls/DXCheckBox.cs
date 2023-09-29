@@ -127,6 +127,13 @@ namespace Client.Controls
 
             Checked = !Checked;
         }
+
+        public void SetSilentState(bool check)
+        {
+            _Checked = check;
+            Box.Index = Checked ? 162 : 161;
+        }
+
         #endregion
 
         #region IDisposable

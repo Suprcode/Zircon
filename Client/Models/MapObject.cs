@@ -348,8 +348,8 @@ namespace Client.Models
 
             if (this != User)
             {
-                DrawX += MovingOffSet.X - User.MovingOffSet.X;
-                DrawY += MovingOffSet.Y - User.MovingOffSet.Y;
+                DrawX += MovingOffSet.X - User.MovingOffSet.X - User.ShakeScreenOffset.X;
+                DrawY += MovingOffSet.Y - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
             }
 
             DrawColour = DefaultColour;
@@ -2720,6 +2720,7 @@ namespace Client.Models
                         #region Defiance
 
                         case MagicType.Defiance:
+                        case MagicType.Invincibility:
                             Effects.Add(new MirEffect(40, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 60, 60, Globals.NoneColour)
                             {
                                 Blend = true,
@@ -2758,10 +2759,23 @@ namespace Client.Models
 
                         #endregion
 
-                        #region Lightning Beam
+                        #region Seismic Slam
 
                         case MagicType.SeismicSlam:
                             Effects.Add(spell = new MirEffect(4900, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 35, Globals.LightningColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Direction = action.Direction,
+                            });
+                            break;
+
+                        #endregion
+
+                        #region Crushing Wave
+
+                        case MagicType.CrushingWave:
+                            Effects.Add(spell = new MirEffect(100, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 0, 0, Globals.LightningColour)
                             {
                                 Blend = true,
                                 Target = this,

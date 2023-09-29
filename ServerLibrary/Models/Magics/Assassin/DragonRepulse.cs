@@ -36,23 +36,23 @@ namespace Server.Models.Magics
             MapObject target = (MapObject)data[1];
 
             Player.MagicAttack(new List<MagicType> { Type }, target, true);
-        }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
-        {
-            power = Player.GetDC() * Magic.GetPower() / 100 + Player.Level;
-
-            MirDirection dir = Functions.DirectionFromPoint(CurrentLocation, ob.CurrentLocation);
-            if (ob.Pushed(dir, 1) == 0)
+            MirDirection dir = Functions.DirectionFromPoint(CurrentLocation, target.CurrentLocation);
+            if (target.Pushed(dir, 1) == 0)
             {
                 int rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
 
                 for (int i = 1; i < 2; i++)
                 {
-                    if (ob.Pushed(Functions.ShiftDirection(dir, i * rotation), 1) > 0) break;
-                    if (ob.Pushed(Functions.ShiftDirection(dir, i * -rotation), 1) > 0) break;
+                    if (target.Pushed(Functions.ShiftDirection(dir, i * rotation), 1) > 0) break;
+                    if (target.Pushed(Functions.ShiftDirection(dir, i * -rotation), 1) > 0) break;
                 }
             }
+        }
+
+        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        {
+            power = Player.GetDC() * Magic.GetPower() / 100 + Player.Level;
 
             return power;
         }
@@ -77,11 +77,5 @@ namespace Server.Models.Magics
             Player.ChangeHP(-(Player.Stats[Stat.Health] * Magic.Cost / 1000));
             Player.ChangeMP(-(Player.Stats[Stat.Mana] * Magic.Cost / 1000));
         }
-
-        public void DragonPulseEnd()
-        {
-            //TODO - FINISH OFF BUFFTYPE UPDATE
-        }
-
     }
 }

@@ -71,7 +71,68 @@ namespace Client.UserModels
             }
         }
         private bool _Alert;
-        
+
+
+        public bool HideTab
+        {
+            get { return _HideTab; }
+            set
+            {
+                if (_HideTab == value) return;
+
+                var oldValue = _HideTab;
+                _HideTab = value;
+
+                OnChanged(oldValue, value, "HideTab");
+            }
+        }
+        private bool _HideTab;
+
+        public bool ReverseList
+        {
+            get { return _ReverseList; }
+            set
+            {
+                if (_ReverseList == value) return;
+
+                var oldValue = _ReverseList;
+                _ReverseList = value;
+
+                OnChanged(oldValue, value, "ReverseList");
+            }
+        }
+        private bool _ReverseList;
+
+        public bool CleanUp
+        {
+            get { return _CleanUp; }
+            set
+            {
+                if (_CleanUp == value) return;
+
+                var oldValue = _CleanUp;
+                _CleanUp = value;
+
+                OnChanged(oldValue, value, "CleanUp");
+            }
+        }
+        private bool _CleanUp;
+
+        public bool FadeOut
+        {
+            get { return _FadeOut; }
+            set
+            {
+                if (_FadeOut == value) return;
+
+                var oldValue = _FadeOut;
+                _FadeOut = value;
+
+                OnChanged(oldValue, value, "FadeOut");
+            }
+        }
+        private bool _FadeOut;
+
         public bool LocalChat
         {
             get { return _LocalChat; }

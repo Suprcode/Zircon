@@ -93,7 +93,7 @@ namespace Client.Scenes.Views
                 Index = 15,
                 LibraryFile = LibraryFile.Interface,
             };
-            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
             CloseButton.MouseClick += (o, e) => Visible = false;
 
             DXItemCell cell;
@@ -265,7 +265,7 @@ namespace Client.Scenes.Views
                 Index = 15,
                 LibraryFile = LibraryFile.Interface,
             };
-            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
             CloseButton.MouseClick += (o, e) =>
             {
                 GameScene.Game.MapControl.FishingState = FishingState.Cancel;

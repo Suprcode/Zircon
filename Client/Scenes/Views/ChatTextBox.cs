@@ -1,16 +1,15 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 //Cleaned
 namespace Client.Scenes.Views
 {
-
     public sealed class ChatTextBox : DXWindow
     {
         #region Properties
@@ -44,7 +43,6 @@ namespace Client.Scenes.Views
 
         public string LastPM;
         
-
         public DXTextBox TextBox;
         public DXButton OptionsButton;
         public DXButton ChatModeButton;
@@ -55,7 +53,7 @@ namespace Client.Scenes.Views
 
             if (GameScene.Game.MainPanel == null) return;
 
-            Location = new Point(GameScene.Game.MainPanel.Location.X, (GameScene.Game.MainPanel.DisplayArea.Top - Size.Height));
+            SetDefaultLocation();
         }
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
@@ -110,8 +108,6 @@ namespace Client.Scenes.Views
                 GameScene.Game.ChatOptionsBox.Visible = !GameScene.Game.ChatOptionsBox.Visible;
             };
 
-
-
             TextBox = new DXTextBox
             {
                 Size = new Size(350, 100),
@@ -123,11 +119,21 @@ namespace Client.Scenes.Views
             //TextBox.TextBox.KeyDown += TextBox_KeyDown;
             //TextBox.TextBox.KeyUp += TextBox_KeyUp;
 
-            SetClientSize(new Size(TextBox.Size.Width + ChatModeButton.Size.Width + 15 + OptionsButton.Size.Width, TextBox.Size.Height));
+            SetDefaultSize();
 
             ChatModeButton.Location = new Point(ClientArea.Location.X, ClientArea.Y - 1);
             TextBox.Location = new Point(ClientArea.Location.X + ChatModeButton.Size.Width + 5, ClientArea.Y);
             OptionsButton.Location = new Point(ClientArea.Location.X + TextBox.Size.Width + ChatModeButton.Size.Width + 10, ClientArea.Y - 1);
+        }
+
+        public void SetDefaultSize()
+        {
+            SetClientSize(new Size(TextBox.Size.Width + ChatModeButton.Size.Width + 15 + OptionsButton.Size.Width, TextBox.Size.Height));
+        }
+
+        public void SetDefaultLocation()
+        {
+            Location = new Point(GameScene.Game.MainPanel.Location.X, (GameScene.Game.MainPanel.Location.Y - Size.Height));
         }
 
         #region Methods
@@ -305,7 +311,7 @@ namespace Client.Scenes.Views
         Guild,
         Shout,
         Global,
-        Observer, //7
+        Observer,
     }
 
     public class Message
@@ -313,6 +319,5 @@ namespace Client.Scenes.Views
         public string Text { get; set; }
         public DateTime ReceivedTime { get; set; }
         public MessageType Type { get; set; }
-    }
-    
+    } 
 }

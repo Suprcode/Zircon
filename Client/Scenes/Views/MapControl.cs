@@ -315,11 +315,11 @@ namespace Client.Scenes.Views
 
             for (int y = minY; y <= maxY; y++)
             {
-                int drawY = (y - User.CurrentLocation.Y + OffSetY + 1)*CellHeight - User.MovingOffSet.Y;
+                int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
 
                 for (int x = minX; x <= maxX; x++)
                 {
-                    int drawX = (x - User.CurrentLocation.X + OffSetX)*CellWidth - User.MovingOffSet.X;
+                    int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X - User.ShakeScreenOffset.X;
 
                     Cell cell = Cells[x, y];
 
@@ -1320,14 +1320,14 @@ namespace Client.Scenes.Views
                     if (y < 0) continue;
                     if (y >= GameScene.Game.MapControl.Height) break;
 
-                    int drawY = (y - User.CurrentLocation.Y + OffSetY) * CellHeight - User.MovingOffSet.Y;
+                    int drawY = (y - User.CurrentLocation.Y + OffSetY) * CellHeight - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
 
                     for (int x = minX; x <= maxX; x++)
                     {
                         if (x < 0) continue;
                         if (x >= GameScene.Game.MapControl.Width) break;
 
-                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X;
+                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X - User.ShakeScreenOffset.X;
 
                         Cell tile = GameScene.Game.MapControl.Cells[x, y];
 
@@ -1347,11 +1347,11 @@ namespace Client.Scenes.Views
 
                 for (int y = minY; y <= maxY; y++)
                 {
-                    int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight - User.MovingOffSet.Y;
+                    int drawY = (y - User.CurrentLocation.Y + OffSetY + 1) * CellHeight - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
 
                     for (int x = minX; x <= maxX; x++)
                     {
-                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X;
+                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X - User.ShakeScreenOffset.X;
 
                         Cell cell = GameScene.Game.MapControl.Cells[x, y];
 
@@ -1461,7 +1461,6 @@ namespace Client.Scenes.Views
                     return;
                 }
 
-
                 foreach (MapObject ob in GameScene.Game.MapControl.Objects)
                 {
                     if (ob.Light > 0 && (!ob.Dead || ob == MapObject.User || ob.Race == ObjectType.Spell))
@@ -1518,14 +1517,14 @@ namespace Client.Scenes.Views
                     if (y < 0) continue;
                     if (y >= GameScene.Game.MapControl.Height) break;
 
-                    int drawY = (y - User.CurrentLocation.Y + OffSetY)*CellHeight - User.MovingOffSet.Y;
+                    int drawY = (y - User.CurrentLocation.Y + OffSetY) * CellHeight - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
 
                     for (int x = minX; x <= maxX; x++)
                     {
                         if (x < 0) continue;
                         if (x >= GameScene.Game.MapControl.Width) break;
 
-                        int drawX = (x - User.CurrentLocation.X + OffSetX)*CellWidth - User.MovingOffSet.X;
+                        int drawX = (x - User.CurrentLocation.X + OffSetX) * CellWidth - User.MovingOffSet.X - User.ShakeScreenOffset.X;
 
                         Cell tile = GameScene.Game.MapControl.Cells[x, y];
 

@@ -282,6 +282,12 @@ namespace Client.Controls
                     case ButtonType.SmallButton:
                         DrawSmallButton();
                         break;
+                    case ButtonType.AddButton:
+                        InterfaceLibrary.Draw(241, 0, 0, Color.White, false, 1F, ImageType.Image);
+                        break;
+                    case ButtonType.RemoveButton:
+                        InterfaceLibrary.Draw(242, 0, 0, Color.White, false, 1F, ImageType.Image);
+                        break;
                 }
 
                 DXManager.SetSurface(oldSurface);
@@ -399,6 +405,7 @@ namespace Client.Controls
             s = InterfaceLibrary.GetSize(54);
             InterfaceLibrary.Draw(54, Size.Width - s.Width, 0, Color.White, false, 1F, ImageType.Image);
         }
+
         private void DrawSmallButton()
         {
             Size s = InterfaceLibrary.GetSize(41);
@@ -456,6 +463,8 @@ namespace Client.Controls
         Default,
         SelectedTab,
         DeselectedTab,
-        SmallButton
+        SmallButton,
+        AddButton,
+        RemoveButton
     }
 }

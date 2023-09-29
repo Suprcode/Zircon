@@ -1,5 +1,4 @@
-﻿
-namespace Server.Envir.Commands.Command
+﻿namespace Server.Envir.Commands.Command
 {
     public interface ICommand
     {

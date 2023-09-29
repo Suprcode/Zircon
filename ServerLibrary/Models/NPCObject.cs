@@ -23,7 +23,6 @@ namespace Server.Models
 
         public override bool Blocking => Visible;
 
-
         public void NPCCall(PlayerObject ob, NPCPage page)
         {
             while (true)

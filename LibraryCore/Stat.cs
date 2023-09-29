@@ -879,6 +879,8 @@ namespace Library
         [StatDescription(Title = "Finder Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         FinderChance,
 
+        [StatDescription(Title = "You are immune to all damage.", Mode = StatType.Text)]
+        Invincibility,
 
         [StatDescription(Title = "Duration", Mode = StatType.Time)]
         Duration = 10000,

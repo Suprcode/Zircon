@@ -53,7 +53,10 @@ namespace Server.Models
         public virtual bool HasBladeStorm => false;
         public virtual bool HasDanceOfSallows => false;
         public virtual bool HasMassacre => false;
-        public virtual bool HasSwiftBlade => false;
+        public virtual bool HasSwiftBlade(bool primary)
+        {
+            return false;
+        }
         public virtual bool HasSeismicSlam => false;
 
 

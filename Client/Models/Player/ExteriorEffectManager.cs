@@ -1,7 +1,6 @@
 ﻿using Client.Envir;
 using Client.Scenes;
 using Library;
-using System;
 using System.Drawing;
 
 namespace Client.Models.Player
@@ -15,10 +14,21 @@ namespace Client.Models.Player
                 return;
             }
 
-            MirAction mirAction = player.CurrentAction;
-            if (mirAction - 7 <= MirAction.Moving) //TODO - Probably name all the compatible enums instead, as MirActions are not numbers so can easily change
+            switch (player.CurrentAction)
             {
-                return;
+                case MirAction.Standing:
+                case MirAction.Moving:
+                case MirAction.Pushed:
+                case MirAction.Attack:
+                case MirAction.RangeAttack:
+                case MirAction.Spell:
+                case MirAction.Harvest:
+                //case MirAction.Struck:
+                case MirAction.Die:
+                case MirAction.Dead:
+                    break;
+                default:
+                    return;
             }
 
             if (player.CostumeShape < 0)

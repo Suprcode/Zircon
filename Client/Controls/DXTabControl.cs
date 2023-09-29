@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using Client.Envir;
+﻿using Client.Envir;
 using Library;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Client.Controls
 {
@@ -89,7 +89,6 @@ namespace Client.Controls
             TabsChanged();
         }
         #endregion
-
 
         public List<DXButton> TabButtons = new List<DXButton>();
 
@@ -401,7 +400,7 @@ namespace Client.Controls
 
             CurrentTabControl = tab;
         }
-        
+
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
             if (IsResizing)
@@ -596,7 +595,6 @@ namespace Client.Controls
                 new Vector2(1 , 1)
             };
         }
-
 
         public override void Draw()
         {

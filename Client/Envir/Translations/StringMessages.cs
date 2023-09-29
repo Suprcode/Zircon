@@ -352,6 +352,10 @@ namespace Client.Envir.Translations
         public abstract string ChatOptionsPanelChatNameLabel { get; set; }
         public abstract string ChatOptionsPanelTransparentLabel { get; set; }
         public abstract string ChatOptionsPanelShowAlertLabel { get; set; }
+        public abstract string ChatOptionsPanelHideTabLabel { get; set; }
+        public abstract string ChatOptionsPanelReverseLabel { get; set; }
+        public abstract string ChatOptionsPanelCleanUpLabel { get; set; }
+        public abstract string ChatOptionsPanelFadeOutLabel { get; set; }
         public abstract string ChatOptionsPanelLocalChatLabel { get; set; }
         public abstract string ChatOptionsPanelWhisperChatLabel { get; set; }
         public abstract string ChatOptionsPanelGroupChatLabel { get; set; }

@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
-using Client.Properties;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -113,7 +110,7 @@ namespace Client.Scenes.Views
                 Index = 15,
                 LibraryFile = LibraryFile.Interface,
             };
-            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 5, 5);
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
             CloseButton.MouseClick += (o, e) => Visible = false;
 
             TitleLabel = new DXLabel
@@ -429,6 +426,7 @@ namespace Client.Scenes.Views
 
             if (SelectedQuest?.QuestInfo == null)
             {
+                QuestLabel.Text = string.Empty;
                 TasksLabel.Text = string.Empty;
                 DescriptionLabel.Text = string.Empty;
                 
@@ -497,6 +495,7 @@ namespace Client.Scenes.Views
                 }
             }
 
+            QuestLabel.Text = SelectedQuest.QuestInfo.QuestName;
             DescriptionLabel.Text = GameScene.Game.GetQuestText(SelectedQuest.QuestInfo, SelectedQuest.UserQuest, true);
             TasksLabel.Text = GameScene.Game.GetTaskText(SelectedQuest.QuestInfo, SelectedQuest.UserQuest);
 
@@ -512,7 +511,7 @@ namespace Client.Scenes.Views
 
         public DXVScrollBar ScrollBar;
 
-        public DXLabel TasksLabel, DescriptionLabel, EndLabel, StartLabel;
+        public DXLabel QuestLabel, TasksLabel, DescriptionLabel, EndLabel, StartLabel;
 
         public DXItemGrid RewardGrid, ChoiceGrid;
         
@@ -555,6 +554,14 @@ namespace Client.Scenes.Views
             };
             
             Tree.SelectedEntryChanged += (o, e) => SelectedQuest = Tree.SelectedEntry;
+
+            QuestLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false,
+                Location = new Point(width, 9)
+            };
 
             DXLabel label = new DXLabel
             {

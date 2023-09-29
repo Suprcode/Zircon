@@ -11,7 +11,12 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool IgnoreAccuracy => true;
-        public override bool HasSwiftBlade => true;
+
+        public override bool HasSwiftBlade(bool primary)
+        {
+            return true;
+        }
+
         public override bool HasSeismicSlam => true;
 
         public SeismicSlam(PlayerObject player, UserMagic magic) : base(player, magic)

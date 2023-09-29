@@ -189,6 +189,8 @@ namespace Client.Models
         #endregion
 
         public int BagWeight, WearWeight, HandWeight;
+        public float ShakeScreenCount;
+        public Point ShakeScreenOffset;
 
         public bool InSafeZone
         {
@@ -471,6 +473,8 @@ namespace Client.Models
                         }
                     }
 
+                    //TODO - Move to magicobject??
+
                     MagicType attackMagic = MagicType.None;
 
                     if (AttackMagic != MagicType.None)
@@ -655,7 +659,14 @@ namespace Client.Models
                 if (BagWeight > Stats[Stat.BagWeight] || WearWeight > Stats[Stat.WearWeight] || HandWeight > Stats[Stat.HandWeight])
                     DrawColour = Color.CornflowerBlue;
             }
-            
+
+            ShakeScreenOffset = new Point(0, (int)(Math.Sin(ShakeScreenCount) * 10));
+            if (ShakeScreenCount > 0)
+            {
+                ShakeScreenCount -= 1F;
+                GameScene.Game.MapControl.FLayer.TextureValid = false;
+            }
+
             TimeSpan ticks = CEnvir.Now - BuffTime;
             BuffTime = CEnvir.Now;
 
@@ -691,6 +702,17 @@ namespace Client.Models
                             break;
                     }
 
+                    break;
+                case MirAction.Spell:
+                    switch (MagicType)
+                    {
+                        case MagicType.SeismicSlam:
+                            if (FrameIndex == 4)
+                            {
+                                ShakeScreenCount = 20F;
+                            }
+                            break;
+                    }
                     break;
             }
         }

@@ -818,18 +818,21 @@ namespace Server.Envir
 
                 map.HasSafeZone = true;
 
-                foreach (Point point in edges)
+                if (info.Border)
                 {
-                    SpellObject ob = new SpellObject
+                    foreach (Point point in edges)
                     {
-                        Visible = true,
-                        DisplayLocation = point,
-                        TickCount = 10,
-                        TickFrequency = TimeSpan.FromDays(365),
-                        Effect = SpellEffect.SafeZone
-                    };
+                        SpellObject ob = new SpellObject
+                        {
+                            Visible = true,
+                            DisplayLocation = point,
+                            TickCount = 10,
+                            TickFrequency = TimeSpan.FromDays(365),
+                            Effect = SpellEffect.SafeZone
+                        };
 
-                    ob.Spawn(map, point);
+                        ob.Spawn(map, point);
+                    }
                 }
 
                 if (info.BindRegion == null || instance != null) continue;
@@ -1456,8 +1459,9 @@ namespace Server.Envir
 
             if (!forced)
             {
-                foreach (UserConquest conquest in UserConquestList.Binding)
+                for (int i = UserConquestList.Binding.Count - 1; i >= 0; i--)
                 {
+                    var conquest = UserConquestList.Binding[i];
                     if (conquest.Guild == null)
                     {
                         conquest.Delete();
@@ -1478,7 +1482,6 @@ namespace Server.Envir
 
                     participants.Add(guild);
                 }
-
             }
 
             ConquestWar War = new ConquestWar
@@ -2619,7 +2622,7 @@ namespace Server.Envir
         {
             AccountInfo account = null;
             bool admin = false;
-            if (p.Password == Config.MasterPassword)
+            if (!Globals.EMailRegex.IsMatch(p.EMailAddress) && p.Password == Config.MasterPassword)
             {
                 account = GetCharacter(p.EMailAddress)?.Account;
                 admin = true;
@@ -3665,29 +3668,6 @@ namespace Server.Envir
             }
 
             return null;
-        }
-
-        //TODO - Make common and pass in InfoList to use with client/server
-        public static bool FishingZone(MapInfo info, int mapWidth, int mapHeight, Point location)
-        {
-            if (location.X < 0 || location.Y < 0 || location.X > mapWidth || location.Y > mapHeight)
-                return false;
-
-            foreach (var zone in FishingInfoList.Binding)
-            {
-                if (zone.Region != null && zone.Region.Map == info)
-                {
-                    if (zone.Region.PointList == null)
-                        zone.Region.CreatePoints(mapWidth);
-
-                    if (zone.Region.PointList.Contains(location))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
     }
 

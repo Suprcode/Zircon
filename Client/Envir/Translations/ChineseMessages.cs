@@ -354,6 +354,10 @@ namespace Client.Envir.Translations
         public override string ChatOptionsPanelChatNameLabel { get; set; } = "Chat Name:";
         public override string ChatOptionsPanelTransparentLabel { get; set; } = "Transparent:";
         public override string ChatOptionsPanelShowAlertLabel { get; set; } = "Show Alert:";
+        public override string ChatOptionsPanelHideTabLabel { get; set; } = "Hide Tab:";
+        public override string ChatOptionsPanelReverseLabel { get; set; } = "Reverse List:";
+        public override string ChatOptionsPanelCleanUpLabel { get; set; } = "Remove Old:";
+        public override string ChatOptionsPanelFadeOutLabel { get; set; } = "Fade Out:";
         public override string ChatOptionsPanelLocalChatLabel { get; set; } = "Local Chat:";
         public override string ChatOptionsPanelWhisperChatLabel { get; set; } = "Whisper Chat:";
         public override string ChatOptionsPanelGroupChatLabel { get; set; } = "Group Chat:";

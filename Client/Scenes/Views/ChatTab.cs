@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
-using static Client.Scenes.Views.NPCDialog;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -31,6 +28,34 @@ namespace Client.Scenes.Views
 
         public List<DXLabel> ItemLabels = new List<DXLabel>();
         public List<ChatHistory> History = new List<ChatHistory>();
+
+        #region HideChat
+
+        public bool HideChat
+        {
+            get => _HideChat;
+            set
+            {
+                if (_HideChat == value) return;
+
+                bool oldValue = _HideChat;
+                _HideChat = value;
+
+                OnHideChatChanged(oldValue, value);
+            }
+        }
+        private bool _HideChat;
+        public event EventHandler<EventArgs> HideChatChanged;
+        public void OnHideChatChanged(bool oValue, bool nValue)
+        {
+            HideChatChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private float chatFade = 1F;
+        private DateTime nextFadeCheck;
+        private DateTime nextCleanUpCheck;
+
+        #endregion
 
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
@@ -118,6 +143,88 @@ namespace Client.Scenes.Views
 
         #region Methods
 
+        public override void Process()
+        {
+            base.Process();
+
+            FadeOutChatHistory();
+            CleanUpChat();
+        }
+
+        private void FadeOutChatHistory()
+        {
+            if (!Panel.FadeOutCheckBox.Checked && chatFade == 1F)
+            {
+                return;
+            }
+
+            if (HideChat && nextFadeCheck < DateTime.UtcNow && chatFade > 0F)
+            {
+                chatFade -= 0.2F;
+
+                chatFade = Math.Max(0F, chatFade);
+
+                nextFadeCheck = DateTime.UtcNow.AddMilliseconds(100);
+            }
+
+            bool hideChat = false;
+
+            DXTabControl tab = TabButton.Parent as DXTabControl;
+
+            if (tab.SelectedTab == this && !GameScene.Game.ChatOptionsBox.Visible &&
+                GameScene.Game.ChatTextBox.TextBox != DXTextBox.ActiveTextBox && 
+                Panel.FadeOutCheckBox.Checked && Panel.TransparentCheckBox.Checked)
+            {
+                var newest = History.LastOrDefault();
+
+                if (newest != null && newest.SentDate < DateTime.UtcNow.AddSeconds(-10))
+                {
+                    hideChat = true;
+                }
+            }
+
+            HideChat = hideChat;
+
+            if (!HideChat)
+            {
+                chatFade = 1F;
+            }
+
+            foreach (var item in History)
+            {
+                item.Label.Opacity = chatFade;
+            }
+        }
+
+        private void CleanUpChat()
+        {
+            if (nextCleanUpCheck < DateTime.UtcNow)
+            {
+                if (Panel.CleanUpCheckBox.Checked)
+                {
+                    bool chatCleaned = false;
+                    for (int i = History.Count - 1; i >= 0; i--)
+                    {
+                        TimeSpan timeDifference = DateTime.UtcNow - History[i].SentDate;
+
+                        if (timeDifference > TimeSpan.FromSeconds(5))
+                        {
+                            History[i].Dispose();
+                            History.RemoveAt(i);
+                            chatCleaned = true;
+                        }
+                    }
+
+                    if (chatCleaned)
+                    {
+                        UpdateItems();
+                    }
+                }
+
+                nextCleanUpCheck = DateTime.UtcNow.AddSeconds(1);
+            }
+        }
+
         public void ResizeChat()
         {
             if (!IsResizing)
@@ -136,15 +243,34 @@ namespace Client.Scenes.Views
                 UpdateScrollBar();
             }
         }
+
         public void UpdateItems()
         {
-            int y = -ScrollBar.Value;
+            if (Panel == null) return;
 
-            foreach (DXLabel control in History.Select(x => x.Label))
+            if (Panel.ReverseListCheckBox.Checked)
             {
-                control.Location = new Point(0, y);
-                y += control.Size.Height;
+                int y = Size.Height - 20 + ScrollBar.Value;
+
+                for (int i = 0; i < History.Count; i++)
+                {
+                    var label = History[i].Label;
+                    y -= label.Size.Height;
+                    label.Location = new Point(0, y);
+                }
             }
+            else
+            {
+                int y = -ScrollBar.Value;
+
+                for (int i = 0; i < History.Count; i++)
+                {
+                    var label = History[i].Label;
+                    label.Location = new Point(0, y);
+                    y += label.Size.Height;
+                }
+            }
+
             ProcessLinkedItems();
         }
 
@@ -166,6 +292,8 @@ namespace Client.Scenes.Views
 
             switch (type)
             {
+                case MessageType.Announcement:
+                    break;
                 case MessageType.Normal:
                     if (!Panel.LocalCheckBox.Checked) return;
                     break;
@@ -235,7 +363,7 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(new ChatHistory() { Message = message, Label = label, LinkedItems = linkedItems });
+            History.Add(new ChatHistory { Message = message, Label = label, LinkedItems = linkedItems, SentDate = DateTime.UtcNow });
 
             while (History.Count > 250)
             {
@@ -294,7 +422,7 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(new ChatHistory() { Message = label.Text, Label = label });
+            History.Add(new ChatHistory { Message = label.Text, Label = label, SentDate = DateTime.UtcNow });
 
             while (History.Count > 250)
             {
@@ -581,6 +709,7 @@ namespace Client.Scenes.Views
         public string Message;
         public DXLabel Label;
         public List<ClientUserItem> LinkedItems;
+        public DateTime SentDate;
 
         public void Dispose()
         {

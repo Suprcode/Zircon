@@ -286,6 +286,9 @@ namespace Server.Models
                         break;
                 }
 
+                if (Stats[Stat.Invincibility] > 0)
+                    damage = 0;
+
                 if (damage > 0)
                 {
                     if (Race == ObjectType.Monster && ((MonsterObject)this).MonsterInfo.IsBoss)
@@ -1280,6 +1283,7 @@ namespace Server.Models
                         case BuffType.DarkConversion:
                         case BuffType.Evasion:
                         case BuffType.RagingWind:
+                        case BuffType.Invincibility:
                             buffs.Add(buff);
                             result++;
                             break;

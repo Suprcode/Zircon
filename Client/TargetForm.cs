@@ -163,7 +163,7 @@ namespace Client
             CEnvir.Alt = e.Alt;
             CEnvir.Ctrl = e.Control;
 
-            if (e.KeyCode == Keys.Pause)
+            if (e.KeyCode == Keys.Pause || e.KeyCode == Keys.PrintScreen)
                CreateScreenShot();
 
             try

@@ -9,5 +9,13 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Buff\" />
+    <Folder Include="Models\Player\" />
+    <Folder Include="Models\NPC\Checks\" />
+    <Folder Include="Models\NPC\Actions\" />
+    <Folder Include="Models\NPC\Values\" />
+  </ItemGroup>
+
 
 </Project>
