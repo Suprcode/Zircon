@@ -310,6 +310,8 @@ namespace Server.Envir
 
         public static List<MonsterInfo> BossList = new List<MonsterInfo>();
 
+        public static List<Type> MagicTypes = new List<Type>();
+
         #endregion
 
         #region Game Variables
@@ -326,7 +328,7 @@ namespace Server.Envir
         public static List<MapObject> ActiveObjects = new List<MapObject>();
 
         public static List<PlayerObject> Players = new List<PlayerObject>();
-        public static List<ConquestWar> ConquestWars = new List<ConquestWar>(); 
+        public static List<ConquestWar> ConquestWars = new List<ConquestWar>();
 
         public static List<SpawnInfo> Spawns = new List<SpawnInfo>();
 
@@ -517,6 +519,8 @@ namespace Server.Envir
 
                 BossList.Add(monster);
             }
+
+            CreateMagic();
         }
 
         public static void RankingSort(CharacterInfo character, bool updateLead = true)
@@ -888,6 +892,19 @@ namespace Server.Envir
         private static void RemoveSpawns(InstanceInfo instance = null, byte instanceSequence = 0)
         {
             Spawns.RemoveAll(x => x.CurrentMap.Instance == instance && x.CurrentMap.InstanceSequence == instanceSequence);
+        }
+
+        private static void CreateMagic()
+        {
+            MagicTypes.Clear();
+
+            var types = typeof(MagicObject).Assembly.GetTypes().Where(type =>
+                type.BaseType != null &&
+                !type.IsAbstract &&
+                type.BaseType == typeof(MagicObject) &&
+                type.IsDefined(typeof(MagicTypeAttribute))).ToList();
+
+            MagicTypes.AddRange(types);
         }
 
         private static void StopEnvir()

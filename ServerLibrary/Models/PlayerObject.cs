@@ -244,22 +244,16 @@ namespace Server.Models
 
             AddDefaultCurrencies();
 
-            SetupMagic();
+            SetupMagic(null);
         }
 
         public void SetupMagic(UserMagic addMagic = null)
         {
-            var types = typeof(MagicObject).Assembly.GetTypes().Where(type => 
-                type.BaseType != null && 
-                !type.IsAbstract && 
-                type.BaseType == typeof(MagicObject) && 
-                type.IsDefined(typeof(MagicTypeAttribute))).ToList();
-
             Type found;
 
             if (addMagic != null)
             {
-                found = types.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == addMagic.Info.Magic);
+                found = SEnvir.MagicTypes.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == addMagic.Info.Magic);
 
                 if (found != null)
                 {
@@ -270,7 +264,7 @@ namespace Server.Models
             {
                 foreach (UserMagic magic in Character.Magics)
                 {
-                    found = types.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == magic.Info.Magic);
+                    found = SEnvir.MagicTypes.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == magic.Info.Magic);
 
                     if (found != null)
                     {
