@@ -9,7 +9,6 @@ using System.Linq;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
     public sealed  class GroupDialog : DXImageControl
@@ -58,7 +57,6 @@ namespace Client.Scenes.Views
 
         public DXTab MemberTab;
 
-
         public List<ClientPlayerInfo> Members = new List<ClientPlayerInfo>();
         
         public List<DXLabel> Labels = new List<DXLabel>();
@@ -101,7 +99,77 @@ namespace Client.Scenes.Views
 
         #endregion
 
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            if (IsVisible)
+                BringToFront();
+
+            if (Settings != null)
+                Settings.Visible = nValue;
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
+
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    if (CloseButton.Visible)
+                    {
+                        CloseButton.InvokeMouseClick();
+                        if (!Config.EscapeCloseAll)
+                            e.Handled = true;
+                    }
+                    break;
+            }
+        }
+
+        #region Settings
+
+        public WindowSetting Settings;
         public WindowType Type => WindowType.GroupBox;
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        #endregion
 
         #endregion
 

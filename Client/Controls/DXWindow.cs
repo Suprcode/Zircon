@@ -488,12 +488,13 @@ namespace Client.Controls
                 return;
             }
 
-            Settings = CEnvir.WindowSettings.CreateNewObject();
             UpdateSettings();
         }
 
         public void UpdateSettings()
         {
+            Settings ??= CEnvir.WindowSettings.CreateNewObject();
+
             Settings.Resolution = Config.GameSize;
             Settings.Window = Type;
             Settings.Size = Size;

@@ -289,7 +289,8 @@ namespace Client.Scenes.Views
             systemTab.Panel.GlobalCheckBox.Checked = false;
             systemTab.Panel.ObserverCheckBox.Checked = false;
             systemTab.Panel.AlertCheckBox.Checked = false;
-
+            systemTab.Panel.HintCheckBox.Checked = false;
+            
             systemTab.Panel.ReverseListCheckBox.Checked = true;
             systemTab.Panel.CleanUpCheckBox.Checked = true;
             systemTab.Panel.TransparentCheckBox.Checked = true;
