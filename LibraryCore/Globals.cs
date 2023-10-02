@@ -41,6 +41,7 @@ namespace Library
         public static readonly Regex CharacterReg = new Regex(@"^[A-Za-z0-9]{" + MinCharacterNameLength + "," + MaxCharacterNameLength + @"}$", RegexOptions.Compiled);
         public static readonly Regex GuildNameRegex = new Regex(@"^[A-Za-z0-9]{" + MinGuildNameLength + "," + MaxGuildNameLength + "}$", RegexOptions.Compiled);
         public static readonly Regex CaptionReg = new Regex(@"^[A-Za-z0-9]{" + MinCaptionLength + "," + MaxCaptionLength + @"}$", RegexOptions.Compiled);
+        public static readonly Regex GuildTaxReg = new Regex(@"^(0|[1-9][0-9]?|100)$", RegexOptions.Compiled);
 
         public static Color NoneColour = Color.White,
                             FireColour = Color.OrangeRed,

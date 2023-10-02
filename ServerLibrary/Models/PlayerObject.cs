@@ -181,12 +181,6 @@ namespace Server.Models
         public Point FishingLocation;
         public MirDirection FishingDirection;
 
-        public bool HasFishingRobe
-        {
-            get { return Equipment[(int)EquipmentSlot.Armour]?.Info.ItemEffect == ItemEffect.FishingRobe; }
-        }
-
-
         public PlayerObject(CharacterInfo info, SConnection con)
         {
             Character = info;

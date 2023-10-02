@@ -387,7 +387,6 @@ namespace Client.Scenes.Views
 
         #endregion
 
-
         #region SelectedQuest
 
         public QuestTreeEntry SelectedQuest
@@ -499,6 +498,11 @@ namespace Client.Scenes.Views
             DescriptionLabel.Text = GameScene.Game.GetQuestText(SelectedQuest.QuestInfo, SelectedQuest.UserQuest, true);
             TasksLabel.Text = GameScene.Game.GetTaskText(SelectedQuest.QuestInfo, SelectedQuest.UserQuest);
 
+            int height = DXLabel.GetHeight(DescriptionLabel, DescriptionLabel.Size.Width).Height;
+
+            DescriptionLabel.Size = new Size(DescriptionContainer.Size.Width, height);
+            DescriptionScrollBar.MaxValue = DescriptionLabel.Size.Height - DescriptionContainer.Size.Height + 14;
+
             EndLabel.Text = SelectedQuest.QuestInfo.FinishNPC.RegionName;
             StartLabel.Text = SelectedQuest.QuestInfo.StartNPC.RegionName;
             
@@ -509,8 +513,9 @@ namespace Client.Scenes.Views
 
         public List<QuestInfo> Quests = new List<QuestInfo>();
 
-        public DXVScrollBar ScrollBar;
+        public DXVScrollBar ScrollBar, DescriptionScrollBar;
 
+        public DXControl DescriptionContainer;
         public DXLabel QuestLabel, TasksLabel, DescriptionLabel, EndLabel, StartLabel;
 
         public DXItemGrid RewardGrid, ChoiceGrid;
@@ -588,15 +593,38 @@ namespace Client.Scenes.Views
                 GameScene.Game.QuestTrackerBox.PopulateQuests();
             };
 
+            DescriptionContainer = new DXControl
+            {
+                Parent = this,
+                Size = new Size(313, 81),
+                Location = new Point(width + 3, label.Location.Y + label.Size.Height + 5)
+            };
+
             DescriptionLabel = new DXLabel
             {
                 AutoSize = false,
                 Size = new Size(313, 81),
                 Border = false,
                 ForeColour = Color.White,
-                Location = new Point(width + 3, label.Location.Y + label.Size.Height + 5),
-                Parent = this,
+                Location = new Point(0, 0),
+                Parent = DescriptionContainer,
             };
+
+            DescriptionScrollBar = new DXVScrollBar
+            {
+                Parent = this,
+                Size = new Size(20, 115),
+                Location = new Point(width + 319, 26),
+                VisibleSize = 6,
+                Change = 1,
+                Border = false,
+                BackColour = Color.Empty,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+            };
+            DescriptionScrollBar.ValueChanged += DescriptionScrollBar_ValueChanged;
+            DescriptionLabel.MouseWheel += DescriptionScrollBar.DoMouseWheel;
 
             label = new DXLabel
             {
@@ -607,7 +635,7 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Location = new Point(width + 0, DescriptionLabel.Location.Y + DescriptionLabel.Size.Height + 9),
+                Location = new Point(width + 0, DescriptionContainer.Location.Y + DescriptionContainer.Size.Height + 9),
             };
 
             TasksLabel = new DXLabel
@@ -722,6 +750,13 @@ namespace Client.Scenes.Views
 
         #region Methods
 
+        private void DescriptionScrollBar_ValueChanged(object sender, EventArgs e)
+        {
+            int y = -DescriptionScrollBar.Value;
+
+            DescriptionLabel.Location = new Point(0, 0 + y);
+        }
+
         public void UpdateQuestTree()
         {
             NeedUpdate = false;
@@ -797,12 +832,28 @@ namespace Client.Scenes.Views
                     ScrollBar = null;
                 }
 
+                if (DescriptionScrollBar != null)
+                {
+                    if (!DescriptionScrollBar.IsDisposed)
+                        DescriptionScrollBar.Dispose();
+
+                    DescriptionScrollBar = null;
+                }
+
                 if (TasksLabel != null)
                 {
                     if (!TasksLabel.IsDisposed)
                         TasksLabel.Dispose();
 
                     TasksLabel = null;
+                }
+                
+                if (DescriptionContainer != null)
+                {
+                    if (!DescriptionContainer.IsDisposed)
+                        DescriptionContainer.Dispose();
+
+                    DescriptionContainer = null;
                 }
 
                 if (DescriptionLabel != null)
