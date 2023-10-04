@@ -3746,10 +3746,7 @@ namespace Client.Envir
 
         public void Process(S.GuildWar p)
         {
-            GameScene.Game.GuildBox.WarAttempted = false;
 
-            if (p.Success)
-                GameScene.Game.GuildBox.GuildWarTextBox.TextBox.Text = string.Empty;
         }
 
         public void Process(S.GuildWarStarted p)

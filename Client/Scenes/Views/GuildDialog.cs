@@ -185,65 +185,8 @@ namespace Client.Scenes.Views
         private DXTab WarTab;
         public DXButton AddMemberButton, EditDefaultMemberButton, SetTaxButton, IncreaseMemberButton, IncreaseStorageButton, StartWarButton;
         public DXControl AddMemberPanel, TreasuryPanel, StoragePanel, WarPanel;
-        public DXTextBox GuildWarTextBox;
 
         public Dictionary<CastleInfo, GuildCastlePanel> CastlePanels = new Dictionary<CastleInfo, GuildCastlePanel>();
-
-        #region GuildWarNameValid
-
-        public bool GuildWarNameValid
-        {
-            get { return _GuildWarNameValid; }
-            set
-            {
-                if (_GuildWarNameValid == value) return;
-
-                bool oldValue = _GuildWarNameValid;
-                _GuildWarNameValid = value;
-
-                OnGuildWarNameValidChanged(oldValue, value);
-            }
-        }
-        private bool _GuildWarNameValid;
-        public event EventHandler<EventArgs> GuildWarNameValidChanged;
-        public void OnGuildWarNameValidChanged(bool oValue, bool nValue)
-        {
-            GuildWarNameValidChanged?.Invoke(this, EventArgs.Empty);
-
-            StartWarButton.Enabled = CanWar;
-        }
-
-        #endregion
-
-        #region WarAttempted
-
-        public bool WarAttempted
-        {
-            get { return _WarAttempted; }
-            set
-            {
-                if (_WarAttempted == value) return;
-
-                bool oldValue = _WarAttempted;
-                _WarAttempted = value;
-
-                OnWarAttemptedChanged(oldValue, value);
-            }
-        }
-        private bool _WarAttempted;
-        public event EventHandler<EventArgs> WarAttemptedChanged;
-        public void OnWarAttemptedChanged(bool oValue, bool nValue)
-        {
-            WarAttemptedChanged?.Invoke(this, EventArgs.Empty);
-            StartWarButton.Enabled = CanWar;
-        }
-
-        #endregion
-        
-        public bool CanWar => !WarAttempted && GuildWarNameValid;
-
-
-
 
         #endregion
 
@@ -297,7 +240,6 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-
 
         public DateTime SabukWarDate;
 
@@ -440,7 +382,7 @@ namespace Client.Scenes.Views
             DailyContributionLabel.Text = GuildInfo.DailyContribution.ToString("#,##0");
             GuildTaxLabel.Text = $"{GuildInfo.Tax}%";
 
-
+            StyleColour.BackColour = GuildInfo.Colour;
 
             UpdateMemberRows();
 
@@ -1534,7 +1476,7 @@ namespace Client.Scenes.Views
                 };
                 window.ConfirmButton.MouseClick += (o1, e1) =>
                 {
-                    StartWar(window.Value);
+                    CEnvir.Enqueue(new C.GuildWar { GuildName = window.Value });
                 };
             };
 
@@ -1569,28 +1511,6 @@ namespace Client.Scenes.Views
             };*/
             
 
-        }
-        
-        public void StartWar(string guildName)
-        {
-            WarAttempted = true;
-
-            C.GuildWar p = new C.GuildWar
-            {
-                GuildName = guildName,
-            };
-
-            CEnvir.Enqueue(p);
-        }
-
-        private void GuildWarTextBox_TextChanged(object sender, EventArgs e)
-        {
-            GuildWarNameValid = Globals.GuildNameRegex.IsMatch(GuildWarTextBox.TextBox.Text);
-
-            if (string.IsNullOrEmpty(GuildWarTextBox.TextBox.Text))
-                GuildWarTextBox.BorderColour = Color.FromArgb(198, 166, 99);
-            else
-                GuildWarTextBox.BorderColour = GuildWarNameValid ? Color.Green : Color.Red;
         }
 
         #endregion
@@ -1654,7 +1574,7 @@ namespace Client.Scenes.Views
             };
             StyleColourButton.MouseClick += (o, e) =>
             {
-                //CEnvir.Enqueue(new C.GuildColour { Colour = StyleColour.BackColour });
+                CEnvir.Enqueue(new C.GuildColour { Colour = StyleColour.BackColour });
             };
 
             StyleFlagPanel = new DXControl
