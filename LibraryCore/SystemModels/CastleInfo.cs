@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LibraryCore.SystemModels;
 using MirDB;
 
 namespace Library.SystemModels
@@ -26,6 +25,7 @@ namespace Library.SystemModels
         }
         private string _Name;
 
+        [Association("Castles", true)]
         public MapInfo Map
         {
             get { return _Map; }
@@ -146,9 +146,8 @@ namespace Library.SystemModels
         }
         private decimal _Discount;
 
-
-        //[Association("Flags", true)]
-        //public DBBindingList<FlagInfo> Flags { get; set; }
+        [Association("Flags", true)]
+        public DBBindingList<FlagInfo> Flags { get; set; }
 
         public DateTime WarDate;
     }

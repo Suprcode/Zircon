@@ -12,7 +12,7 @@ namespace Server.Views
 
 
             CastleInfoGridControl.DataSource = SMain.Session.GetCollection<CastleInfo>().Binding;
-            
+
             MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
             RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;

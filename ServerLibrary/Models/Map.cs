@@ -108,19 +108,19 @@ namespace Server.Models
 
         private void CreateFlags()
         {
-            //foreach (var castle in Info.Castles)
-            //{
-            //    foreach (var info in castle.Flags)
-            //    {
-            //        MonsterObject mob = MonsterObject.GetMonster(info.Monster);
+            foreach (var castle in Info.Castles)
+            {
+                foreach (var info in castle.Flags)
+                {
+                    MonsterObject mob = MonsterObject.GetMonster(info.Monster);
 
-            //        if (!mob.Spawn(this, new Point(info.X, info.Y)))
-            //        {
-            //            SEnvir.Log($"Failed to spawn Flag Map:{Info.Description}, Location: {info.X}, {info.Y}");
-            //            continue;
-            //        }
-            //    }
-            //}
+                    if (!mob.Spawn(this, new Point(info.X, info.Y)))
+                    {
+                        SEnvir.Log($"Failed to spawn Flag Map:{Info.Description}, Location: {info.X}, {info.Y}");
+                        continue;
+                    }
+                }
+            }
         }
 
         public void Process()
