@@ -11,10 +11,8 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public class CastleLord : JinchonDevil
+    public class CastleLord : CastleObjective
     {
-        public ConquestWar War;
-
         public override int Attacked(MapObject attacker, int power, Element element, bool canReflect = true, bool ignoreShield = false, bool canCrit = true, bool canStruck = true)
         {
             if (attacker == null || attacker.Race != ObjectType.Player) return 0;

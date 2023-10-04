@@ -330,6 +330,9 @@ namespace Library.Network.ServerPackets
         public List<BuffType> Buffs { get; set; }
         public bool Extra { get; set; }
 
+        public int Extra1 { get; set; }
+        public Color Colour { get; set; }
+
         public ClientCompanionObject CompanionObject { get; set; }
 
         //public bool Extra { get; set; }

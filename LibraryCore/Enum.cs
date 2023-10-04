@@ -1019,6 +1019,8 @@ namespace Library
         MonasteryMon4,
         MonasteryMon5,
         MonasteryMon6,
+
+        CastleFlag
     }
 
     

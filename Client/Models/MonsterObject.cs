@@ -36,6 +36,10 @@ namespace Client.Models
 
         public bool Extra, EasterEvent, ChristmasEvent, HalloweenEvent;
 
+        public int Extra1;
+
+        public Color Colour;
+
         public override int RenderY
         {
             get
@@ -98,7 +102,10 @@ namespace Client.Models
             PetOwner = info.PetOwner;
             NameColour = info.NameColour;
             Extra = info.Extra;
-            
+
+            Extra1 = info.Extra1;
+            Colour = info.Colour;
+
             CurrentLocation = info.Location;
             Direction = info.Direction;
             
@@ -2046,6 +2053,17 @@ namespace Client.Models
                     //Fuckjed up Mob
 
                     break;
+                case MonsterImage.CastleFlag:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.CastleFlag, out BodyLibrary);
+
+                    BodyOffSet = 100;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.CastleFlag)
+                        Frames[frame.Key] = frame.Value;
+
+                    BodyShape = Extra1;
+
+                    break;
                 default:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_1, out BodyLibrary);
                     BodyShape = 0;
@@ -2231,6 +2249,10 @@ namespace Client.Models
                     BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
                     BodyLibrary.Draw(BodyFrame + 1000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
                     BodyLibrary.Draw(BodyFrame + 2000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
+                    break;
+                case MonsterImage.CastleFlag:
+                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
+                    BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Colour, true, 1F, ImageType.Overlay);
                     break;
                 default:
                     BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
