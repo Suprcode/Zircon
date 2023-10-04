@@ -8,6 +8,7 @@ using Library.SystemModels;
 using S = Library.Network.ServerPackets;
 using MirDB;
 using Server.Envir;
+using System.Drawing;
 
 namespace Server.DBModels
 {
@@ -241,7 +242,37 @@ namespace Server.DBModels
             }
         }
         private CastleInfo _Castle;
-        
+
+        public Color Colour
+        {
+            get { return _Colour; }
+            set
+            {
+                if (_Colour == value) return;
+
+                var oldValue = _Colour;
+                _Colour = value;
+
+                OnChanged(oldValue, value, "Colour");
+            }
+        }
+        private Color _Colour;
+
+        public int Flag
+        {
+            get { return _Flag; }
+            set
+            {
+                if (_Flag == value) return;
+
+                var oldValue = _Colour;
+                _Flag = value;
+
+                OnChanged(oldValue, value, "Flag");
+            }
+        }
+        private int _Flag;
+
 
 
         public UserItem[] Storage = new UserItem[1000];
@@ -271,7 +302,10 @@ namespace Server.DBModels
 
                 DefaultPermission = DefaultPermission,
                 DefaultRank = DefaultRank,
-                
+
+                Colour = Colour,
+                Flag = Flag,
+
                 Tax = (int)(GuildTax * 100),
 
                 Members = Members.Select(x => x.ToClientInfo()).ToList(),
@@ -302,6 +336,9 @@ namespace Server.DBModels
 
             DefaultRank = "New Member";
             DefaultPermission = GuildPermission.None;
+
+            Colour = Color.FromArgb(SEnvir.Random.Next(255), SEnvir.Random.Next(255), SEnvir.Random.Next(255));
+            Flag = SEnvir.Random.Next(9);
         }
 
         protected override void OnDeleted()
@@ -330,6 +367,9 @@ namespace Server.DBModels
 
                 DefaultPermission = DefaultPermission,
                 DefaultRank = DefaultRank,
+
+                Colour = Colour,
+                Flag = Flag,
 
                 Members = new List<ClientGuildMemberInfo>(),
 

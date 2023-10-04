@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 using C = Library.Network.ClientPackets;
 
 //Cleaned
@@ -181,9 +182,9 @@ namespace Client.Scenes.Views
         
         #region Manage Tab
 
-        private DXTab ManageTab;
+        private DXTab WarTab;
         public DXButton AddMemberButton, EditDefaultMemberButton, SetTaxButton, IncreaseMemberButton, IncreaseStorageButton, StartWarButton;
-        public DXControl AddMemberPanel, TreasuryPanel, StoragePanel, GuildWarPanel;
+        public DXControl AddMemberPanel, TreasuryPanel, StoragePanel, WarPanel;
         public DXTextBox GuildWarTextBox;
 
         public Dictionary<CastleInfo, GuildCastlePanel> CastlePanels = new Dictionary<CastleInfo, GuildCastlePanel>();
@@ -246,6 +247,16 @@ namespace Client.Scenes.Views
 
         #endregion
 
+        #region Style Tab
+
+        private DXTab StyleTab;
+        private DXControl StyleColourPanel, StyleFlagPanel;
+        public DXLabel StyleFlagLabel, StyleColourLabel;
+        public DXColourControl StyleColour;
+        public DXButton StyleColourButton, StyleFlagPreviousButton, StyleFlagNextButton;
+
+        #endregion
+
         #region GuildInfo
 
         public ClientGuildInfo GuildInfo
@@ -286,6 +297,7 @@ namespace Client.Scenes.Views
         }
 
         #endregion
+
 
         public DateTime SabukWarDate;
 
@@ -354,7 +366,9 @@ namespace Client.Scenes.Views
 
             CreateStorageTab();
             
-            CreateManageTab();
+            CreateWarTab();
+
+            CreateStyleTab();
 
             ClearGuild();
         }
@@ -368,7 +382,8 @@ namespace Client.Scenes.Views
             HomeTab.TabButton.Visible = GuildInfo != null;
             MemberTab.TabButton.Visible = GuildInfo != null;
             StorageTab.TabButton.Visible = GuildInfo != null;
-            ManageTab.TabButton.Visible = GuildInfo != null;
+            WarTab.TabButton.Visible = GuildInfo != null;
+            StyleTab.TabButton.Visible = GuildInfo != null;
 
             GuildTabs.TabsChanged();
 
@@ -470,7 +485,7 @@ namespace Client.Scenes.Views
 
             TreasuryPanel.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
             StoragePanel.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
-            GuildWarPanel.Enabled = (GuildInfo.Permission & GuildPermission.StartWar) == GuildPermission.StartWar;
+            WarPanel.Enabled = (GuildInfo.Permission & GuildPermission.StartWar) == GuildPermission.StartWar;
 
             foreach (KeyValuePair<CastleInfo, GuildCastlePanel> pair in CastlePanels)
                 pair.Value.RequestButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
@@ -506,10 +521,14 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty,
                 Location = new Point(0, 23)
             };
-            //CreateTab.TabButton.MouseClick += (o, e) =>
-            //{
-            //    BackgroundImage.Index = 261;
-            //};
+            CreateTab.TabButton.MouseClick += (o, e) =>
+            {
+                BackgroundImage.Index = 261;
+                AddMemberPanel.Visible = false;
+                TreasuryPanel.Visible = false;
+                StoragePanel.Visible = false;
+                WarPanel.Visible = false;
+            };
 
             DXLabel stepLabel = new DXLabel
             {
@@ -795,6 +814,7 @@ namespace Client.Scenes.Views
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = true;
                 StoragePanel.Visible = false;
+                WarPanel.Visible = false;
             };
 
             new DXLabel
@@ -1123,6 +1143,7 @@ namespace Client.Scenes.Views
                 AddMemberPanel.Visible = true;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
+                WarPanel.Visible = false;
             };
 
             new GuildMemberRow
@@ -1269,6 +1290,7 @@ namespace Client.Scenes.Views
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = true;
+                WarPanel.Visible = false;
             };
 
             DXControl filterPanel = new DXControl
@@ -1460,95 +1482,70 @@ namespace Client.Scenes.Views
 
         #endregion
         
-        #region Manage Tab
+        #region War Tab
 
-        public void CreateManageTab()
+        public void CreateWarTab()
         {
-            ManageTab = new DXTab
+            WarTab = new DXTab
             {
-                TabButton = { Label = { Text = CEnvir.Language.GuildDialogManageTabLabel } },
+                TabButton = { Label = { Text = CEnvir.Language.GuildDialogWarTabLabel } },
                 Parent = GuildTabs,
                 BackColour = Color.Empty,
                 Location = new Point(0, 23)
             };
-            ManageTab.TabButton.MouseClick += (o, e) =>
+            WarTab.TabButton.MouseClick += (o, e) =>
             {
                 BackgroundImage.Index = 264;
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
+                WarPanel.Visible = true;
             };
          
-            GuildWarPanel = new DXControl
+            WarPanel = new DXControl
             {
-                Parent = ManageTab,
-                Location = new Point(10 + (HomeTab.Size.Width - 11 - 5) / 2, 5),
-                Size = new Size((HomeTab.Size.Width - 11 - 5) / 2, 83),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Visible = false
+                Parent = this,
+                Location = new Point(10, 500),
+                Size = new Size(436, 50),
+                Border = false,
+                Visible = true
             };
-
-            new DXLabel
-            {
-                Text = CEnvir.Language.GuildDialogManageTabGuildWarLabel,
-                Parent = GuildWarPanel,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
-                Size = new Size(GuildWarPanel.Size.Width, 22),
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
-            };
-
-
-            var label = new DXLabel
-            {
-                Parent = GuildWarPanel,
-                Text = CEnvir.Language.GuildDialogManageTabGuildWarGuildLabel,
-            };
-            label.Location = new Point(055 - label.Size.Width, 32);
-
-            GuildWarTextBox = new DXTextBox
-            {
-                Parent = GuildWarPanel,
-                Location = new Point(055, label.Location.Y),
-                Size = new Size(110, 20),
-                MaxLength = Globals.MaxCharacterNameLength
-            };
-            GuildWarTextBox.TextBox.TextChanged += GuildWarTextBox_TextChanged;
-            GuildWarTextBox.TextBox.KeyPress += GuildWarTextBox_KeyPress;
 
             StartWarButton = new DXButton
             {
-                Parent = GuildWarPanel,
-                Location = new Point(0170, label.Location.Y - 1),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(60, SmallButtonHeight),
-                Label = { Text = CEnvir.Language.GuildDialogManageTabGuildWarStartWarButtonLabel },
-                Enabled =  false,
+                Parent = WarPanel,
+                Location = new Point(10, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(110, DefaultHeight),
+                Label = { Text = CEnvir.Language.GuildDialogWarTabGuildWarStartWarButtonLabel }
             };
-            StartWarButton.MouseClick += (o, e) => StartWar();
-
-            label = new DXLabel
+            StartWarButton.MouseClick += (o, e) =>
             {
-                Parent = GuildWarPanel,
-                Text = string.Format(CEnvir.Language.GuildDialogManageTabGuildWarCostLabel, Globals.GuildWarCost),
-                Location = new Point(055, label.Location.Y + 25),
+                DXInputWindow window = new DXInputWindow(CEnvir.Language.GuildDialogWarTabGuildWarConfirmMessage, CEnvir.Language.GuildDialogWarTabGuildWarStartWarButtonLabel)
+                {
+                    ConfirmButton = { Enabled = false },
+                    Modal = true
+                };
+                window.ValueTextBox.TextBox.TextChanged += (o1, e1) =>
+                {
+                    window.ConfirmButton.Enabled = Globals.GuildNameRegex.IsMatch(window.ValueTextBox.TextBox.Text);
+                };
+                window.ConfirmButton.MouseClick += (o1, e1) =>
+                {
+                    StartWar(window.Value);
+                };
             };
 
-            
 
             int count = 0;
             foreach (CastleInfo castle in CEnvir.CastleInfoList.Binding)
             {
                 CastlePanels[castle] = new GuildCastlePanel
                 {
-                    Parent = ManageTab,
+                    Parent = WarTab,
                     Castle = castle,
-                    Location =  new Point(5 + count * 255, 275),
-                    Visible = false
+                    Location =  new Point(14, (142 * count) + 7),
+                    Visible = true
                 };
                 count++;
             }
@@ -1572,25 +1569,16 @@ namespace Client.Scenes.Views
 
         }
         
-        public void StartWar()
+        public void StartWar(string guildName)
         {
             WarAttempted = true;
 
             C.GuildWar p = new C.GuildWar
             {
-                GuildName = GuildWarTextBox.TextBox.Text,
+                GuildName = guildName,
             };
 
             CEnvir.Enqueue(p);
-        }
-        private void GuildWarTextBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar != (char)Keys.Enter) return;
-
-            e.Handled = true;
-
-            if (StartWarButton.Enabled)
-                StartWar();
         }
 
         private void GuildWarTextBox_TextChanged(object sender, EventArgs e)
@@ -1601,6 +1589,139 @@ namespace Client.Scenes.Views
                 GuildWarTextBox.BorderColour = Color.FromArgb(198, 166, 99);
             else
                 GuildWarTextBox.BorderColour = GuildWarNameValid ? Color.Green : Color.Red;
+        }
+
+        #endregion
+
+        #region Style Tab
+
+        public void CreateStyleTab()
+        {
+            StyleTab = new DXTab
+            {
+                TabButton = { Label = { Text = "Style" } },
+                Parent = GuildTabs,
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
+            };
+            StyleTab.TabButton.MouseClick += (o, e) =>
+            {
+                BackgroundImage.Index = 265;
+                AddMemberPanel.Visible = false;
+                TreasuryPanel.Visible = false;
+                StoragePanel.Visible = false;
+                WarPanel.Visible = false;
+            };
+            StyleTab.BeforeChildrenDraw += StyleTab_BeforeChildrenDraw;
+
+            StyleColourPanel = new DXControl
+            {
+                Parent = StyleTab,
+                Location = new Point(231, 7),
+                Size = new Size(212, 89),
+                Border = false
+            };
+
+            new DXLabel
+            {
+                Text = "Colour",
+                Parent = StyleColourPanel,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+                Size = new Size(StyleColourPanel.Size.Width, 22),
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+            };
+
+            StyleColour = new DXColourControl
+            {
+                Parent = StyleColourPanel,
+                Size = new Size(110, 20),
+                Location = new Point(9, 34),
+                BackColour = Color.FromArgb(CEnvir.Random.Next(256), CEnvir.Random.Next(256), CEnvir.Random.Next(256))
+            };
+            StyleColourButton = new DXButton
+            {
+                Parent = StyleColourPanel,
+                Location = new Point(125, 32),
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(80, SmallButtonHeight),
+                Label = { Text = "Save" },
+            };
+            StyleColourButton.MouseClick += (o, e) =>
+            {
+                //CEnvir.Enqueue(new C.GuildColour { Colour = StyleColour.BackColour });
+            };
+
+            StyleFlagPanel = new DXControl
+            {
+                Parent = StyleTab,
+                Location = new Point(14, 7),
+                Size = new Size(212, 292),
+                Border = false
+            };
+
+            new DXLabel
+            {
+                Text = "Flag",
+                Parent = StyleFlagPanel,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+                Size = new Size(StyleFlagPanel.Size.Width, 22),
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+            };
+
+            StyleFlagPreviousButton = new DXButton
+            {
+                Parent = StyleFlagPanel,
+                Location = new Point(5, StyleFlagPanel.Size.Height - 30),
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(60, SmallButtonHeight),
+                Label = { Text = "Previous" },
+            };
+            StyleFlagPreviousButton.MouseClick += (o, e) =>
+            {
+                int newFlag = GuildInfo.Flag - 1;
+
+                if (newFlag < 0) newFlag = 9;
+
+                //CEnvir.Enqueue(new C.GuildFlag { Flag = newFlag });
+            };
+
+            StyleFlagNextButton = new DXButton
+            {
+                Parent = StyleFlagPanel,
+                Location = new Point(StyleFlagPanel.Size.Width - 65, StyleFlagPanel.Size.Height - 30),
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(60, SmallButtonHeight),
+                Label = { Text = "Next" },
+            };
+            StyleFlagNextButton.MouseClick += (o, e) =>
+            {
+                int newFlag = GuildInfo.Flag + 1;
+
+                if (newFlag > 9) newFlag = 0;
+
+                //CEnvir.Enqueue(new C.GuildFlag { Flag = newFlag });
+            };
+        }
+
+        private void StyleTab_BeforeChildrenDraw(object sender, EventArgs e)
+        {
+            MirLibrary library;
+
+            int x = 100;
+            int y = 270;
+
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.CastleFlag, out library)) return;
+
+            library.Draw(GuildInfo.Flag * 100, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+            library.Draw(GuildInfo.Flag * 100, DisplayArea.X + x, DisplayArea.Y + y, GuildInfo.Colour, true, 1F, ImageType.Overlay);
         }
 
         #endregion
@@ -1910,12 +2031,12 @@ namespace Client.Scenes.Views
                 
                 #region Manage Tab
 
-                if (ManageTab != null)
+                if (WarTab != null)
                 {
-                    if (!ManageTab.IsDisposed)
-                        ManageTab.Dispose();
+                    if (!WarTab.IsDisposed)
+                        WarTab.Dispose();
 
-                    ManageTab = null;
+                    WarTab = null;
                 }
 
                 if (AddMemberButton != null)
@@ -2657,9 +2778,11 @@ namespace Client.Scenes.Views
 
         public GuildCastlePanel()
         {
-            Size = new Size(250, 118);
-            Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            Size = new Size(428, 133);
+
+            Border = false;
+
+            AfterDraw += GuildCastlePanel_AfterDraw;
 
             CastleNameLabel =  new DXLabel
             {
@@ -2670,23 +2793,22 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Size = new Size(Size.Width, 22),
+                Size = new Size(348, 30),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
             };
-           // CastleNameLabel.SizeChanged += (o, e) => CastleNameLabel.Location = new Point((Size.Width - CastleNameLabel.Size.Width) / 2, 0);
 
             DXLabel label = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelOwnerLabel,
             };
-            label.Location = new Point(80 - label.Size.Width, 25);
+            label.Location = new Point(110 - label.Size.Width, 35);
 
             CastleOwnerLabel = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelNoneText,
-                Location = new Point(80, 25),
+                Location = new Point(110, 35),
                 ForeColour = Color.White
             };
 
@@ -2695,44 +2817,56 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelScheduleLabel,
             };
-            label.Location = new Point(80 - label.Size.Width, 45);
-
+            label.Location = new Point(110 - label.Size.Width, 60);
 
             CastleDateLabel = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelNoneText,
-                Location = new Point(80, 45),
+                Location = new Point(110, 60),
                 ForeColour = Color.White
             };
 
             RequestButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(80, 75),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(100, SmallButtonHeight),
+                Location = new Point(359, 85),
+                ButtonType = ButtonType.Default,
+                Size = new Size(60, DefaultHeight),
                 Label = { Text = CEnvir.Language.GuildCastlePanelRequestButtonLabel },
                 Enabled = false,
             };
             RequestButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GuildRequestConquest { Index = Castle.Index });
-
 
             label = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelCostLabel,
             };
-            label.Location = new Point(80 - label.Size.Width, 95);
+            label.Location = new Point(110 - label.Size.Width, 110);
 
             ItemLabel = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelNoneText,
-                Location = new Point(80, 95),
+                Location = new Point(110, 110),
                 ForeColour = Color.White
             };
+        }
 
+        private void GuildCastlePanel_AfterDraw(object sender, EventArgs e)
+        {
+            if (CEnvir.LibraryList.TryGetValue(LibraryFile.Inventory, out MirLibrary library))
+            {
+                if (library != null && Castle.Item != null)
+                {
+                    var s = library.GetSize(Castle.Item.Image);
+                    var x = (36 - s.Width) / 2 + DisplayArea.X;
+                    var y = (36 - s.Height) / 2 + DisplayArea.Y;
+
+                    library.Draw(Castle.Item.Image, x + 372, y + 18, Color.White, false, 1F, ImageType.Image);
+                }
+            }
         }
 
         public void Update()

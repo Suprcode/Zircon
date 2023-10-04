@@ -939,6 +939,9 @@ namespace Library.Network.ServerPackets
         public string DefaultRank { get; set; }
         public GuildPermission DefaultPermission { get; set; }
 
+        public Color Colour { get; set; }
+        public int Flag { get; set; }
+
         public List<ClientGuildMemberInfo> Members { get; set; }
     }
     public sealed class GuildKick : Packet

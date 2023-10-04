@@ -29,6 +29,8 @@ namespace Library
             [LibraryFile.MiniMap] = @"Data\MiniMap.Zl",
             [LibraryFile.Fmmap] = @"Data\Fmmap.Zl",
 
+            [LibraryFile.CastleFlag] = @"Data\Flag.Zl",
+
             [LibraryFile.MagicIcon] = @"Data\MIcon.Zl",
             [LibraryFile.CBIcon] = @"Data\CBIcons.Zl",
             [LibraryFile.QuestIcon] = @"Data\QuestIcons.Zl",
@@ -461,6 +463,7 @@ namespace Library
         CBIcon,
         QuestIcon,
         MiniGames,
+        CastleFlag,
 
         NPCImage,
         MonImage,
