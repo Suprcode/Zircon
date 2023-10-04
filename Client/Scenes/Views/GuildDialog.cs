@@ -440,6 +440,8 @@ namespace Client.Scenes.Views
             DailyContributionLabel.Text = GuildInfo.DailyContribution.ToString("#,##0");
             GuildTaxLabel.Text = $"{GuildInfo.Tax}%";
 
+
+
             UpdateMemberRows();
 
             PermissionChanged();
@@ -1645,7 +1647,7 @@ namespace Client.Scenes.Views
             StyleColourButton = new DXButton
             {
                 Parent = StyleColourPanel,
-                Location = new Point(125, 32),
+                Location = new Point(125, 34),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(80, SmallButtonHeight),
                 Label = { Text = "Save" },
@@ -1679,7 +1681,7 @@ namespace Client.Scenes.Views
             StyleFlagPreviousButton = new DXButton
             {
                 Parent = StyleFlagPanel,
-                Location = new Point(5, StyleFlagPanel.Size.Height - 30),
+                Location = new Point(5, StyleFlagPanel.Size.Height - 23),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(60, SmallButtonHeight),
                 Label = { Text = "Previous" },
@@ -1696,7 +1698,7 @@ namespace Client.Scenes.Views
             StyleFlagNextButton = new DXButton
             {
                 Parent = StyleFlagPanel,
-                Location = new Point(StyleFlagPanel.Size.Width - 65, StyleFlagPanel.Size.Height - 30),
+                Location = new Point(StyleFlagPanel.Size.Width - 65, StyleFlagPanel.Size.Height - 23),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(60, SmallButtonHeight),
                 Label = { Text = "Next" },

@@ -3586,6 +3586,9 @@ namespace Client.Envir
             GameScene.Game.GuildBox.GuildInfo.DefaultPermission = p.DefaultPermission;
             GameScene.Game.GuildBox.GuildInfo.DefaultRank = p.DefaultRank;
 
+            GameScene.Game.GuildBox.GuildInfo.Colour = p.Colour;
+            GameScene.Game.GuildBox.GuildInfo.Flag = p.Flag;
+
             foreach (ClientGuildMemberInfo member in p.Members)
             {
                 ClientGuildMemberInfo info = GameScene.Game.GuildBox.GuildInfo.Members.FirstOrDefault(x => x.Index == member.Index);
