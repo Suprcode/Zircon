@@ -12,7 +12,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 using C = Library.Network.ClientPackets;
 
 //Cleaned
@@ -157,6 +156,8 @@ namespace Client.Scenes.Views
         public DXVScrollBar NoticeScrollBar;
         public DXTextBox NoticeTextBox;
         public DXButton EditNoticeButton, SaveNoticeButton, CancelNoticeButton;
+        public DXButton SetTaxButton;
+        public DXControl TreasuryPanel;
 
         #endregion
 
@@ -165,6 +166,8 @@ namespace Client.Scenes.Views
         private DXTab MemberTab;
         public GuildMemberRow[] MemberRows;
         public DXVScrollBar MemberScrollBar;
+        public DXButton AddMemberButton, EditDefaultMemberButton, IncreaseMemberButton;
+        public DXControl AddMemberPanel;
 
         #endregion
 
@@ -177,14 +180,15 @@ namespace Client.Scenes.Views
         public DXButton ClearButton;
         public DXVScrollBar StorageScrollBar;
         public ClientUserItem[] GuildStorage = new ClientUserItem[1000];
-
+        public DXButton IncreaseStorageButton;
+        public DXControl StoragePanel;
         #endregion
-        
-        #region Manage Tab
+
+        #region War Tab
 
         private DXTab WarTab;
-        public DXButton AddMemberButton, EditDefaultMemberButton, SetTaxButton, IncreaseMemberButton, IncreaseStorageButton, StartWarButton;
-        public DXControl AddMemberPanel, TreasuryPanel, StoragePanel, WarPanel;
+        public DXButton StartWarButton;
+        public DXControl WarPanel;
 
         public Dictionary<CastleInfo, GuildCastlePanel> CastlePanels = new Dictionary<CastleInfo, GuildCastlePanel>();
 
@@ -244,6 +248,10 @@ namespace Client.Scenes.Views
         public DateTime SabukWarDate;
 
         //TODO - Custom load/save
+        //TODO - Dispose style tab controls
+        //TODO - Dispose backgroundimage
+        //TODO - Dispose TitleLabel
+        //TODO - Dispose CloseButton
 
         public DXLabel TitleLabel;
         public DXButton CloseButton;
@@ -326,6 +334,11 @@ namespace Client.Scenes.Views
             StorageTab.TabButton.Visible = GuildInfo != null;
             WarTab.TabButton.Visible = GuildInfo != null;
             StyleTab.TabButton.Visible = GuildInfo != null;
+
+            if (CreateTab.TabButton.Visible)
+                CreateTab.TabButton.InvokeMouseClick();
+            else
+                HomeTab.TabButton.InvokeMouseClick();
 
             GuildTabs.TabsChanged();
 
@@ -467,7 +480,7 @@ namespace Client.Scenes.Views
             };
             CreateTab.TabButton.MouseClick += (o, e) =>
             {
-                BackgroundImage.Index = 261;
+                BackgroundImage.Index = 266;
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;

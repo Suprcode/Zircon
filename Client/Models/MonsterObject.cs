@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Controls;
-using Client.Envir;
+﻿using Client.Envir;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
 using Library.SystemModels;
-using SlimDX;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Client.Models
@@ -2236,8 +2232,8 @@ namespace Client.Models
                     BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
                     break;
             }
-
         }
+
         public void DrawBody(int x, int y)
         {
             switch (Image)
@@ -2258,7 +2254,6 @@ namespace Client.Models
                     BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
                     break;
             }
-
 
             MirLibrary library;
             switch (Image)

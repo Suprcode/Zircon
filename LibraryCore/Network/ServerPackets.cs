@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Library.SystemModels;
 
 namespace Library.Network.ServerPackets
 {
@@ -334,11 +334,8 @@ namespace Library.Network.ServerPackets
         public Color Colour { get; set; }
 
         public ClientCompanionObject CompanionObject { get; set; }
-
-        //public bool Extra { get; set; }
-        //public int ExtraInt { get; set; }
-
     }
+
     public sealed class ObjectNPC : Packet
     {
         public uint ObjectID { get; set; }

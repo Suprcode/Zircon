@@ -59,6 +59,9 @@ namespace Server.Envir.Translations
         public override string ConquestCapture { get; set; } = "{0} has Captured {1}.";
         public override string ConquestOwner { get; set; } = "{0} are the now the owners of {1}.";
         public override string ConquestLost { get; set; } = "{0} have lost {1}.";
+        public override string ConquestTakingFlag { get; set; } = "{0} is taking the flag for {1}. They must hold it for {2} seconds.";
+        public override string ConquestPreventingFlag { get; set; } = "{0} is preventing {1} from taking the flag for {2}.";
+        public override string ConquestNotTakingFlag { get; set; } = "{0} is no longer taking the flag for {1}.";
 
         public override string BossSpawn { get; set; } = "An evil lurks within {0}.";
         public override string HarvestRare { get; set; } = "Something valuable is hidden inside the {0}.";
