@@ -145,13 +145,30 @@ namespace Server.Models
         }
         public void SpawnBoss()
         {
-            CastleTarget = new CastleLord
+            if (Castle.Monster != null)
             {
-                MonsterInfo = Castle.Monster,
-                War = this,
-            };
+                switch (Castle.Monster.AI)
+                {
+                    case 1000: //CastleLord
+                        CastleTarget = new CastleLord
+                        {
+                            MonsterInfo = Castle.Monster,
+                            War = this,
+                        };
 
-            CastleTarget.Spawn(Castle.CastleRegion, null, 0); //TODO - Instance
+                        CastleTarget.Spawn(Castle.CastleRegion, null, 0);
+                        break;
+                    case 1001: //CastleFlag
+                        CastleTarget = new CastleFlag
+                        {
+                            MonsterInfo = Castle.Monster,
+                            War = this,
+                        };
+
+                        CastleTarget.Spawn(Castle.CastleRegion, null, 0);
+                        break;
+                }
+            }
         }
 
         public UserConquestStats GetStat(CharacterInfo character)

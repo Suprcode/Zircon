@@ -31,7 +31,6 @@ namespace Server.Models.Monsters
         private Color _colour = Color.White;
 
         private TimeSpan _messageDuration = TimeSpan.FromSeconds(5);
-        private static int _messageImageIndex = 31;
 
         public CastleFlag()
         {
