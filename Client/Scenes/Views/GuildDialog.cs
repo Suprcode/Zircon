@@ -1690,7 +1690,7 @@ namespace Client.Scenes.Views
 
                 if (newFlag < 0) newFlag = 9;
 
-                //CEnvir.Enqueue(new C.GuildFlag { Flag = newFlag });
+                CEnvir.Enqueue(new C.GuildFlag { Flag = newFlag });
             };
 
             StyleFlagNextButton = new DXButton
@@ -1707,7 +1707,7 @@ namespace Client.Scenes.Views
 
                 if (newFlag > 9) newFlag = 0;
 
-                //CEnvir.Enqueue(new C.GuildFlag { Flag = newFlag });
+                CEnvir.Enqueue(new C.GuildFlag { Flag = newFlag });
             };
         }
 

@@ -4583,6 +4583,42 @@ namespace Server.Models
                 member.Account.Connection.Enqueue(new S.GuildConquestDate { Index = castle.Index, WarTime = (date + castle.StartTime) - SEnvir.Now, ObserverPacket = false });
             }
         }
+        public void GuildColour(Color colour)
+        {
+            if (Character.Account.GuildMember == null) return;
+
+            if ((Character.Account.GuildMember.Permission & GuildPermission.Leader) != GuildPermission.Leader)
+            {
+                Connection.ReceiveChat(Connection.Language.GuildManagePermission, MessageType.System);
+                return;
+            }
+
+            Character.Account.GuildMember.Guild.Colour = colour;
+
+            S.GuildUpdate update = Character.Account.GuildMember.Guild.GetUpdatePacket();
+
+            foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
+                member.Account.Connection?.Player?.Enqueue(update);
+        }
+        public void GuildFlag(int flag)
+        {
+            if (Character.Account.GuildMember == null) return;
+
+            if ((Character.Account.GuildMember.Permission & GuildPermission.Leader) != GuildPermission.Leader)
+            {
+                Connection.ReceiveChat(Connection.Language.GuildManagePermission, MessageType.System);
+                return;
+            }
+
+            if (flag < 0 || flag > 9) return;
+
+            Character.Account.GuildMember.Guild.Flag = flag;
+
+            S.GuildUpdate update = Character.Account.GuildMember.Guild.GetUpdatePacket();
+
+            foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
+                member.Account.Connection?.Player?.Enqueue(update);
+        }
         public void GuildJoin()
         {
             if (GuildInvitation != null && GuildInvitation.Node == null) GuildInvitation = null;
