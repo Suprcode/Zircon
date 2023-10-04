@@ -18,7 +18,7 @@ namespace Server.Models
         public List<GuildInfo> Participants;
         public Map Map;
 
-        public CastleLord CastleBoss;
+        public CastleObjective CastleTarget;
         public bool Ended;
 
         public Dictionary<CharacterInfo, UserConquestStats> Stats = new Dictionary<CharacterInfo, UserConquestStats>();
@@ -135,23 +135,23 @@ namespace Server.Models
 
         public void DespawnBoss()
         {
-            if (CastleBoss == null) return;
+            if (CastleTarget == null) return;
 
-            CastleBoss.EXPOwner = null;
-            CastleBoss.War = null;
-            CastleBoss.Die();
-            CastleBoss.Despawn();
-            CastleBoss = null;
+            CastleTarget.EXPOwner = null;
+            CastleTarget.War = null;
+            CastleTarget.Die();
+            CastleTarget.Despawn();
+            CastleTarget = null;
         }
         public void SpawnBoss()
         {
-            CastleBoss = new CastleLord
+            CastleTarget = new CastleLord
             {
                 MonsterInfo = Castle.Monster,
                 War = this,
             };
 
-            CastleBoss.Spawn(Castle.CastleRegion, null, 0); //TODO - Instance
+            CastleTarget.Spawn(Castle.CastleRegion, null, 0); //TODO - Instance
         }
 
         public UserConquestStats GetStat(CharacterInfo character)

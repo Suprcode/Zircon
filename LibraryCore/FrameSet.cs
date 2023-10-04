@@ -719,6 +719,12 @@ namespace Library
                 [MirAnimation.Show] = new Frame(400, 7, 10, TimeSpan.FromMilliseconds(100)) ,
                 [MirAnimation.Hide] = new Frame(400, 7, 10, TimeSpan.FromMilliseconds(100)) { Reversed = true, },
             };
+
+            CastleFlag = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Struck] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(100)),
+            };
         }
     }
 
