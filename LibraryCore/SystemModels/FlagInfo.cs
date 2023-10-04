@@ -3,71 +3,71 @@ using MirDB;
 
 namespace LibraryCore.SystemModels
 {
-    public sealed class FlagInfo : DBObject
-    {
-        [IsIdentity]
-        [Association("Flags")]
-        public CastleInfo Castle
-        {
-            get { return _Castle; }
-            set
-            {
-                if (_Castle == value) return;
+    //public sealed class FlagInfo : DBObject
+    //{
+    //    //[IsIdentity]
+    //    //[Association("Flags")]
+    //    //public CastleInfo Castle
+    //    //{
+    //    //    get { return _Castle; }
+    //    //    set
+    //    //    {
+    //    //        if (_Castle == value) return;
 
-                var oldValue = _Castle;
-                _Castle = value;
+    //    //        var oldValue = _Castle;
+    //    //        _Castle = value;
 
-                OnChanged(oldValue, value, "Castle");
-            }
-        }
-        private CastleInfo _Castle;
+    //    //        OnChanged(oldValue, value, "Castle");
+    //    //    }
+    //    //}
+    //    //private CastleInfo _Castle;
 
-        [IsIdentity]
-        public MonsterInfo Monster
-        {
-            get { return _Monster; }
-            set
-            {
-                if (_Monster == value) return;
+    //    //[IsIdentity]
+    //    //public MonsterInfo Monster
+    //    //{
+    //    //    get { return _Monster; }
+    //    //    set
+    //    //    {
+    //    //        if (_Monster == value) return;
 
-                var oldValue = _Monster;
-                _Monster = value;
+    //    //        var oldValue = _Monster;
+    //    //        _Monster = value;
 
-                OnChanged(oldValue, value, "Monster");
-            }
-        }
-        private MonsterInfo _Monster;
+    //    //        OnChanged(oldValue, value, "Monster");
+    //    //    }
+    //    //}
+    //    //private MonsterInfo _Monster;
 
-        [IsIdentity]
-        public int X
-        {
-            get { return _X; }
-            set
-            {
-                if (_X == value) return;
+    //    //[IsIdentity]
+    //    //public int X
+    //    //{
+    //    //    get { return _X; }
+    //    //    set
+    //    //    {
+    //    //        if (_X == value) return;
 
-                var oldValue = _X;
-                _X = value;
+    //    //        var oldValue = _X;
+    //    //        _X = value;
 
-                OnChanged(oldValue, value, "X");
-            }
-        }
-        private int _X;
+    //    //        OnChanged(oldValue, value, "X");
+    //    //    }
+    //    //}
+    //    //private int _X;
 
-        [IsIdentity]
-        public int Y
-        {
-            get { return _Y; }
-            set
-            {
-                if (_Y == value) return;
+    //    //[IsIdentity]
+    //    //public int Y
+    //    //{
+    //    //    get { return _Y; }
+    //    //    set
+    //    //    {
+    //    //        if (_Y == value) return;
 
-                var oldValue = _Y;
-                _Y = value;
+    //    //        var oldValue = _Y;
+    //    //        _Y = value;
 
-                OnChanged(oldValue, value, "Y");
-            }
-        }
-        private int _Y;
-    }
+    //    //        OnChanged(oldValue, value, "Y");
+    //    //    }
+    //    //}
+    //    //private int _Y;
+    //}
 }
