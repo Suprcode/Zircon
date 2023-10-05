@@ -316,7 +316,6 @@ namespace Client.Scenes.Views
         {
             if (SelectedInfo == null) return;
 
-
             DXControl control;
 
             if (!MapInfoObjects.TryGetValue(ob, out control))
@@ -348,7 +347,6 @@ namespace Client.Scenes.Views
 
             if (ob.MonsterInfo != null)
             {
-
                 name = $"{ob.MonsterInfo.MonsterName}";
                 if (ob.MonsterInfo.AI < 0)
                 {
@@ -360,6 +358,11 @@ namespace Client.Scenes.Views
 
                     if (GameScene.Game.HasQuest(ob.MonsterInfo, GameScene.Game.MapControl.MapInfo))
                         colour = Color.Orange;
+                }
+
+                if (ob.MonsterInfo.Flag == MonsterFlag.ConquestObjective)
+                {
+                    control.Visible = false;
                 }
 
                 if (ob.MonsterInfo.IsBoss)
@@ -381,7 +384,6 @@ namespace Client.Scenes.Views
                         control.Controls[0].BackColour = colour;
 
                     colour = Color.White;
-
                 }
 
                 if (!string.IsNullOrEmpty(ob.PetOwner))

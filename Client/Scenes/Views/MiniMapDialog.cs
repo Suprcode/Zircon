@@ -314,7 +314,12 @@ namespace Client.Scenes.Views
                     if (GameScene.Game.HasQuest(ob.MonsterInfo, GameScene.Game.MapControl.MapInfo))
                         colour = Color.Orange; 
                 }
-                
+
+                if (ob.MonsterInfo.Flag == MonsterFlag.ConquestObjective)
+                {
+                    control.Visible = false;
+                }
+
                 if (ob.MonsterInfo.IsBoss)
                 {
                     size = new Size(5, 5);
