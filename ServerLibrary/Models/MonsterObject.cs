@@ -605,6 +605,8 @@ namespace Server.Models
                     };
                 case 127:
                     return new JinchonDevil { MonsterInfo = monsterInfo, CastDelay = TimeSpan.FromSeconds(8), DeathCloudDurationMin = 2000, DeathCloudDurationRandom = 5000 };
+                case 1001:
+                    return new CastleFlag { MonsterInfo = monsterInfo };
                 default:
                     return new MonsterObject { MonsterInfo = monsterInfo };
             }

@@ -135,6 +135,8 @@ namespace Client.Scenes.Views
             }
         }
 
+        #endregion
+
         #region Settings
 
         public WindowSetting Settings;
@@ -168,8 +170,6 @@ namespace Client.Scenes.Views
 
             Visible = Settings.Visible;
         }
-
-        #endregion
 
         #endregion
 

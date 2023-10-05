@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DevExpress.XtraBars;
 using Library.SystemModels;
 
@@ -10,10 +11,9 @@ namespace Server.Views
         {
             InitializeComponent();
 
-
             CastleInfoGridControl.DataSource = SMain.Session.GetCollection<CastleInfo>().Binding;
-            
-            MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
+
+            MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding.Where(x => x.Flag == Library.MonsterFlag.ConquestObjective);
             RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;

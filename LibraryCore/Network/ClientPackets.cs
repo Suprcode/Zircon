@@ -527,6 +527,16 @@ namespace Library.Network.ClientPackets
         public int Index { get; set; }
     }
 
+    public sealed class GuildColour : Packet
+    {
+        public Color Colour { get; set; }
+    }
+
+    public sealed class GuildFlag : Packet
+    {
+        public int Flag { get; set; }
+    }
+
     public sealed class QuestAccept : Packet
     {
         public int Index { get; set; }

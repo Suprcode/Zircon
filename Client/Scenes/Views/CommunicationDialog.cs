@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
-using Sentry;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
-    //TODO - MAKE SURE DISPOSE IS CLEARING ALL EVENTS
-
     public sealed class CommunicationDialog : DXImageControl
     {
         #region Properties
@@ -133,6 +131,11 @@ namespace Client.Scenes.Views
             ReadDateBox.TextBox.Text = ReadMail.Date.ToLongDateString() + " " + ReadMail.Date.ToLongTimeString();
             ReadMessageLabel.Text = ReadMail.Message;
 
+            int height = DXLabel.GetHeight(ReadMessageLabel, ReadMessageLabel.Size.Width).Height;
+
+            ReadMessageLabel.Size = new Size(ReadMessageContainer.Size.Width, height);
+            ReadMessageScrollBar.MaxValue = ReadMessageLabel.Size.Height - ReadMessageContainer.Size.Height + 14;
+
             foreach (DXItemCell cell in ReadGrid.Grid)
                 cell.Item = ReadMail.Items.FirstOrDefault(x => x.Slot == cell.Slot);
 
@@ -195,6 +198,7 @@ namespace Client.Scenes.Views
 
         //Send Mail
         private DXTextBox SendRecipientBox, SendSubjectBox, SendMessageBox;
+        private DXVScrollBar SendMessageScrollBar;
         private ClientUserItem[] SendMailItems;
         public DXItemGrid SendGrid;
         private DXNumberBox SendGoldBox;
@@ -202,7 +206,9 @@ namespace Client.Scenes.Views
 
         //Read Mail
         public DXTextBox ReadSenderBox, ReadSubjectBox, ReadDateBox;
+        public DXControl ReadMessageContainer;
         public DXLabel ReadMessageLabel;
+        public DXVScrollBar ReadMessageScrollBar;
         public DXButton ReadReplyButton, ReadDeleteButton;
         public DXItemGrid ReadGrid;
         public ClientUserItem[] ReadMailItems;
@@ -651,21 +657,15 @@ namespace Client.Scenes.Views
                 Size = new Size(20, ReceivedTab.Size.Height - 9),
                 Location = new Point(ReceivedTab.Size.Width - 31, 3),
                 VisibleSize = 5,
-                Change = 20,
+                Change = 1,
                 Border = false,
-                BackColour = Color.Empty
+                BackColour = Color.Empty,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
             };
 
-            RecievedScrollBar.UpButton.Index = 61;
-            RecievedScrollBar.UpButton.LibraryFile = LibraryFile.Interface;
-
-            RecievedScrollBar.DownButton.Index = 62;
-            RecievedScrollBar.DownButton.LibraryFile = LibraryFile.Interface;
-
-            RecievedScrollBar.PositionBar.Index = 60;
-            RecievedScrollBar.PositionBar.LibraryFile = LibraryFile.Interface;
-
-            RecievedScrollBar.ValueChanged += ScrollBar_ValueChanged;
+            RecievedScrollBar.ValueChanged += ReceivedScrollBar_ValueChanged;
             ReceivedTab.MouseWheel += RecievedScrollBar.DoMouseWheel;
 
             for (int i = 0; i < 5; i++)
@@ -815,6 +815,37 @@ namespace Client.Scenes.Views
                 Size = new Size(SendTab.Size.Width - 55, 185),
                 MaxLength = 300
             };
+            SendMessageBox.TextBox.TextChanged += (o, e) => UpdateSendMessagePosition();
+            SendMessageBox.TextBox.MouseMove += (o, e) => UpdateSendMessagePosition();
+            SendMessageBox.TextBox.MouseDown += (o, e) => UpdateSendMessagePosition();
+            SendMessageBox.TextBox.MouseUp += (o, e) => UpdateSendMessagePosition();
+            SendMessageBox.TextBox.KeyDown += (o, e) => UpdateSendMessagePosition();
+            SendMessageBox.TextBox.KeyUp += (o, e) => UpdateSendMessagePosition();
+            SendMessageBox.TextBox.KeyPress += (o, e) =>
+            {
+                if (e.KeyChar == (char)1)
+                {
+                    SendMessageBox.TextBox.SelectAll();
+                    e.Handled = true;
+                }
+
+                UpdateSendMessagePosition();
+            };
+
+            SendMessageScrollBar = new DXVScrollBar
+            {
+                Parent = SendTab,
+                Size = new Size(20, 198),
+                Location = new Point(SendTab.Size.Width - 34, 49),
+                VisibleSize = 13,
+                Change = 1,
+                Border = false,
+                BackColour = Color.Empty,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+            };
+            SendMessageScrollBar.ValueChanged += (o, e) => SetSendMessageLineIndex(SendMessageScrollBar.Value);
 
             label = new DXLabel
             {
@@ -1008,16 +1039,42 @@ namespace Client.Scenes.Views
                 Size = new Size(155, 16)
             };
 
+            ReadMessageContainer = new DXControl
+            {
+                Parent = ReadTab,
+                Location = new Point(15, label.Location.Y + 24),
+                Size = new Size(ReadTab.Size.Width - 55, 167),
+            };
+
             ReadMessageLabel = new DXLabel
             {
                 AutoSize = false,
                 BackColour = Color.Black,
-                Parent = ReadTab,
+                Parent = ReadMessageContainer,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
-                Location = new Point(15, label.Location.Y + 24),
-                Size = new Size(ReadTab.Size.Width - 55, 167),
-                ForeColour = Color.White
+                Location = new Point(0, 0),
+                Size = new Size(ReadMessageContainer.Size.Width, ReadMessageContainer.Size.Height),
+                ForeColour = Color.White,
+                DrawFormat = TextFormatFlags.WordBreak
             };
+
+            ReadMessageScrollBar = new DXVScrollBar
+            {
+                Parent = ReadTab,
+                Size = new Size(20, 178),
+                Location = new Point(ReadTab.Size.Width - 34, 68),
+                VisibleSize = 12,
+                Change = 1,
+                MinValue = 0,
+                MaxValue = 100,
+                Border = false,
+                BackColour = Color.Empty,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+            };
+            ReadMessageScrollBar.ValueChanged += ReadMessageScrollBar_ValueChanged;
+            ReadMessageLabel.MouseWheel += ReadMessageScrollBar.DoMouseWheel;
 
             label = new DXLabel
             {
@@ -1097,9 +1154,42 @@ namespace Client.Scenes.Views
 
         #region Methods
 
-        private void ScrollBar_ValueChanged(object sender, EventArgs e)
+        public void UpdateSendMessagePosition()
+        {
+            SendMessageScrollBar.MaxValue = SendMessageBox.TextBox.GetLineFromCharIndex(SendMessageBox.TextBox.TextLength) + 1;
+            SendMessageScrollBar.Value = GetSendMessageCurrentLine();
+        }
+
+        private int GetSendMessageCurrentLine()
+        {
+            return SendMessage(SendMessageBox.TextBox.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
+        }
+
+        const int EM_GETFIRSTVISIBLELINE = 0x00CE;
+        const int EM_LINESCROLL = 0x00B6;
+
+        [DllImport("user32.dll")]
+        static extern int SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
+
+        private void SetSendMessageLineIndex(int lineIndex)
+        {
+            int line = GetSendMessageCurrentLine();
+            if (line == lineIndex) return;
+
+            SendMessage(SendMessageBox.TextBox.Handle, EM_LINESCROLL, 0, lineIndex - GetSendMessageCurrentLine());
+            SendMessageBox.DisposeTexture();
+        }
+
+        private void ReceivedScrollBar_ValueChanged(object sender, EventArgs e)
         {
             RefreshList();
+        }
+
+        private void ReadMessageScrollBar_ValueChanged(object sender, EventArgs e)
+        {
+            int y = -ReadMessageScrollBar.Value;
+
+            ReadMessageLabel.Location = new Point(0, 0 + y);
         }
 
         public void RefreshList()
@@ -1471,6 +1561,14 @@ namespace Client.Scenes.Views
                     SendMessageBox = null;
                 }
 
+                if (SendMessageScrollBar != null)
+                {
+                    if (!SendMessageScrollBar.IsDisposed)
+                        SendMessageScrollBar.Dispose();
+
+                    SendMessageScrollBar = null;
+                }
+
                 SendMailItems = null;
 
                 if (SendGrid != null)
@@ -1520,7 +1618,14 @@ namespace Client.Scenes.Views
 
                     ReadDateBox = null;
                 }
+                
+                if (ReadMessageContainer != null)
+                {
+                    if (!ReadMessageContainer.IsDisposed)
+                        ReadMessageContainer.Dispose();
 
+                    ReadMessageContainer = null;
+                }
                 if (ReadMessageLabel != null)
                 {
                     if (!ReadMessageLabel.IsDisposed)
@@ -1528,6 +1633,14 @@ namespace Client.Scenes.Views
 
                     ReadMessageLabel = null;
                 }
+
+                if (ReadMessageScrollBar != null)
+                {
+                    if (!ReadMessageScrollBar.IsDisposed)
+                        ReadMessageScrollBar.Dispose();
+
+                    ReadMessageScrollBar = null;
+                }   
 
                 if (ReadReplyButton != null)
                 {

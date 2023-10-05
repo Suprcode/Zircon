@@ -3372,22 +3372,17 @@ namespace Client.Envir
             GameScene.Game.User.AttackMode = p.Mode;
 
             GameScene.Game.ReceiveChat(GameScene.Game.MainPanel.AttackModeLabel.Text, MessageType.System);
-
         }
+
         public void Process(S.ChangePetMode p)
         {
-
-
             GameScene.Game.User.PetMode = p.Mode;
 
             GameScene.Game.ReceiveChat(GameScene.Game.MainPanel.PetModeLabel.Text, MessageType.System);
-
         }
 
         public void Process(S.WeightUpdate p)
         {
-
-
             GameScene.Game.User.BagWeight = p.BagWeight;
             GameScene.Game.User.WearWeight = p.WearWeight;
             GameScene.Game.User.HandWeight = p.HandWeight;
@@ -3395,11 +3390,8 @@ namespace Client.Envir
             GameScene.Game.WeightChanged();
         }
 
-
         public void Process(S.TradeRequest p)
         {
-
-
             DXMessageBox messageBox = new DXMessageBox($"{p.Name} wishes to trade with you, Do you want to accept?", "Trade Request", DXMessageBoxButtons.YesNo);
 
             messageBox.YesButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.TradeRequestResponse { Accept = true });
@@ -3408,23 +3400,17 @@ namespace Client.Envir
         }
         public void Process(S.TradeOpen p)
         {
-
-
             GameScene.Game.TradeBox.Visible = true;
             GameScene.Game.TradeBox.IsTrading = true;
             GameScene.Game.TradeBox.PlayerLabel.Text = p.Name;
         }
         public void Process(S.TradeClose p)
         {
-
-
             GameScene.Game.TradeBox.Visible = false;
             GameScene.Game.TradeBox.Clear();
         }
         public void Process(S.TradeAddItem p)
         {
-
-
             DXItemCell fromCell;
 
             switch (p.Cell.GridType)
@@ -3472,10 +3458,9 @@ namespace Client.Envir
             }
 
         }
+
         public void Process(S.TradeItemAdded p)
         {
-
-
             foreach (DXItemCell cell in GameScene.Game.TradeBox.PlayerGrid.Grid)
             {
                 if (cell.Item != null) continue;
@@ -3484,29 +3469,24 @@ namespace Client.Envir
                 return;
             }
         }
+
         public void Process(S.TradeAddGold p)
         {
-
-
             GameScene.Game.TradeBox.UserGoldLabel.Text = p.Gold.ToString("#,##0");
         }
+
         public void Process(S.TradeGoldAdded p)
         {
-
-
             GameScene.Game.TradeBox.PlayerGoldLabel.Text = p.Gold.ToString("#,##0");
         }
+
         public void Process(S.TradeUnlock p)
         {
-
-
             GameScene.Game.TradeBox.ConfirmButton.Enabled = true;
         }
 
         public void Process(S.GuildCreate p)
         {
-
-
             GameScene.Game.GuildBox.CreateAttempted = false;
         }
         public void Process(S.GuildInfo p)
@@ -3538,20 +3518,17 @@ namespace Client.Envir
                 GameScene.Game.MiniMapBox.Update(data);
             }
         }
+
         public void Process(S.GuildNoticeChanged p)
         {
-
-
             GameScene.Game.GuildBox.GuildInfo.Notice = p.Notice;
 
             if (!GameScene.Game.GuildBox.NoticeTextBox.Editable)
                 GameScene.Game.GuildBox.NoticeTextBox.TextBox.Text = p.Notice;
         }
+
         public void Process(S.GuildGetItem p)
         {
-
-
-
             DXItemCell[] grid;
 
             switch (p.Grid)
@@ -3586,12 +3563,12 @@ namespace Client.Envir
 
             fromCell.Item = p.Item;
         }
+
         public void Process(S.GuildNewItem p)
         {
-
-
             GameScene.Game.GuildBox.StorageGrid.Grid[p.Slot].Item = p.Item;
         }
+
         public void Process(S.GuildUpdate p)
         {
             GameScene.Game.GuildBox.GuildInfo.GuildFunds = p.GuildFunds;
@@ -3608,6 +3585,9 @@ namespace Client.Envir
 
             GameScene.Game.GuildBox.GuildInfo.DefaultPermission = p.DefaultPermission;
             GameScene.Game.GuildBox.GuildInfo.DefaultRank = p.DefaultRank;
+
+            GameScene.Game.GuildBox.GuildInfo.Colour = p.Colour;
+            GameScene.Game.GuildBox.GuildInfo.Flag = p.Flag;
 
             foreach (ClientGuildMemberInfo member in p.Members)
             {
@@ -3641,13 +3621,12 @@ namespace Client.Envir
                 GameScene.Game.MiniMapBox.Update(data);
             }
 
+
             if (GameScene.Game.GuildBox.Visible)
                 GameScene.Game.GuildBox.RefreshGuildDisplay();
         }
         public void Process(S.GuildKick p)
         {
-
-
             ClientGuildMemberInfo info = GameScene.Game.GuildBox.GuildInfo.Members.First(x => x.Index == p.Index);
 
             GameScene.Game.GuildBox.GuildInfo.Members.Remove(info);
@@ -3664,33 +3643,26 @@ namespace Client.Envir
         }
         public void Process(S.GuildIncreaseMember p)
         {
-
-
             GameScene.Game.GuildBox.IncreaseMemberButton.Enabled = true;
         }
+
         public void Process(S.GuildIncreaseStorage p)
         {
             GameScene.Game.GuildBox.IncreaseStorageButton.Enabled = true;
         }
+
         public void Process(S.GuildInviteMember p)
         {
-
-
-            GameScene.Game.GuildBox.AddMemberTextBox.Enabled = true;
             GameScene.Game.GuildBox.AddMemberButton.Enabled = true;
         }
+
         public void Process(S.GuildTax p)
         {
-
-
-            GameScene.Game.GuildBox.GuildTaxBox.Enabled = true;
             GameScene.Game.GuildBox.SetTaxButton.Enabled = true;
         }
 
         public void Process(S.GuildMemberOffline p)
         {
-
-
             ClientGuildMemberInfo info = GameScene.Game.GuildBox.GuildInfo.Members.First(x => x.Index == p.Index);
 
             info.LastOnline = CEnvir.Now;
@@ -3702,8 +3674,6 @@ namespace Client.Envir
         }
         public void Process(S.GuildInvite p)
         {
-
-
             DXMessageBox messageBox = new DXMessageBox($"{p.Name} has invited you to the guild {p.GuildName}\n" +
                                                        $"Do you want to join the guild?", "Guild Invitation", DXMessageBoxButtons.YesNo);
 
@@ -3716,8 +3686,6 @@ namespace Client.Envir
         }
         public void Process(S.GuildMemberOnline p)
         {
-
-
             ClientGuildMemberInfo info = GameScene.Game.GuildBox.GuildInfo.Members.First(x => x.Index == p.Index);
 
             info.LastOnline = DateTime.MaxValue;
@@ -3729,8 +3697,6 @@ namespace Client.Envir
         }
         public void Process(S.GuildMemberContribution p)
         {
-
-
             ClientGuildMemberInfo info = GameScene.Game.GuildBox.GuildInfo.Members.First(x => x.Index == p.Index);
 
             info.DailyContribution += p.Contribution;
@@ -3747,8 +3713,6 @@ namespace Client.Envir
         }
         public void Process(S.GuildDayReset p)
         {
-
-
             foreach (ClientGuildMemberInfo member in GameScene.Game.GuildBox.GuildInfo.Members)
                 member.DailyContribution = 0;
 
@@ -3758,16 +3722,16 @@ namespace Client.Envir
             if (GameScene.Game.GuildBox.Visible)
                 GameScene.Game.GuildBox.RefreshGuildDisplay();
         }
+
         public void Process(S.GuildFundsChanged p)
         {
-
-
             GameScene.Game.GuildBox.GuildInfo.GuildFunds += p.Change;
             GameScene.Game.GuildBox.GuildInfo.DailyGrowth += p.Change;
 
             if (GameScene.Game.GuildBox.Visible)
                 GameScene.Game.GuildBox.RefreshGuildDisplay();
         }
+
         public void Process(S.GuildChanged p)
         {
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
@@ -3779,13 +3743,12 @@ namespace Client.Envir
                 return;
             }
         }
+
         public void Process(S.GuildWar p)
         {
-            GameScene.Game.GuildBox.WarAttempted = false;
 
-            if (p.Success)
-                GameScene.Game.GuildBox.GuildWarTextBox.TextBox.Text = string.Empty;
         }
+
         public void Process(S.GuildWarStarted p)
         {
             GameScene.Game.GuildWars.Add(p.GuildName);
@@ -3795,6 +3758,7 @@ namespace Client.Envir
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
                 ob.NameChanged();
         }
+
         public void Process(S.GuildWarFinished p)
         {
             GameScene.Game.GuildWars.Remove(p.GuildName);
@@ -3804,6 +3768,7 @@ namespace Client.Envir
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
                 ob.NameChanged();
         }
+
         public void Process(S.GuildConquestStarted p)
         {
             GameScene.Game.ConquestWars.Add(CEnvir.CastleInfoList.Binding.First(x => x.Index == p.Index));
@@ -3835,11 +3800,8 @@ namespace Client.Envir
             castle.WarDate = p.WarDate;
         }
 
-
         public void Process(S.ReviveTimers p)
         {
-
-
             GameScene.Game.ItemReviveTime = CEnvir.Now + p.ItemReviveTime;
             GameScene.Game.ReincarnationPillTime = CEnvir.Now + p.ReincarnationPillTime;
         }

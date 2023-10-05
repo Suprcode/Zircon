@@ -1019,6 +1019,8 @@ namespace Library
         MonasteryMon4,
         MonasteryMon5,
         MonasteryMon6,
+
+        CastleFlag
     }
 
     
@@ -1469,6 +1471,7 @@ namespace Library
 
         MirrorImage = 7,
 
+        ConquestObjective = 10,
 
         Larva = 100,
 
@@ -1518,7 +1521,7 @@ namespace Library
         QuartzMiniTurtle = 204,
         QuartzTurtleSub = 205,
 
-        Sacrifice = 210,
+        Sacrifice = 210
     }
 
     public enum FishingState : byte

@@ -1094,6 +1094,19 @@ namespace Server.Envir
             Player.GuildConquest(p.Index);
         }
 
+        public void Process(C.GuildColour p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GuildColour(p.Colour);
+        }
+        public void Process(C.GuildFlag p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GuildFlag(p.Flag);
+        }
+
         public void Process(C.QuestAccept p)
         {
             if (Stage != GameStage.Game) return;

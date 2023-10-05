@@ -3634,8 +3634,6 @@ namespace Server.Envir
                 }
             }
 
-            //TODO - Dispose of all spawns/npcs/spell objects on map
-
             RemoveSpawns(instance, instanceSequence);
 
             Instances[instance][instanceSequence] = null;

@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -49,6 +50,16 @@ namespace Client.Scenes.Views
         public void OnHideChatChanged(bool oValue, bool nValue)
         {
             HideChatChanged?.Invoke(this, EventArgs.Empty);
+
+            if (!HideChat)
+            {
+                chatFade = 1F;
+
+                foreach (var item in History)
+                {
+                    item.Label.Opacity = chatFade;
+                }
+            }
         }
 
         private float chatFade = 1F;
@@ -151,6 +162,7 @@ namespace Client.Scenes.Views
             CleanUpChat();
         }
 
+        //TODO - Make more efficient
         private void FadeOutChatHistory()
         {
             if (!Panel.FadeOutCheckBox.Checked && chatFade == 1F)
@@ -164,7 +176,13 @@ namespace Client.Scenes.Views
 
                 chatFade = Math.Max(0F, chatFade);
 
+                foreach (var item in History)
+                {
+                    item.Label.Opacity = chatFade;
+                }
+
                 nextFadeCheck = DateTime.UtcNow.AddMilliseconds(100);
+                return;
             }
 
             bool hideChat = false;
@@ -184,16 +202,6 @@ namespace Client.Scenes.Views
             }
 
             HideChat = hideChat;
-
-            if (!HideChat)
-            {
-                chatFade = 1F;
-            }
-
-            foreach (var item in History)
-            {
-                item.Label.Opacity = chatFade;
-            }
         }
 
         private void CleanUpChat()
@@ -258,6 +266,8 @@ namespace Client.Scenes.Views
                     y -= label.Size.Height;
                     label.Location = new Point(0, y);
                 }
+
+                ScrollBar.Value = Math.Max(ScrollBar.MinValue, Math.Min(ScrollBar.MaxValue - ScrollBar.VisibleSize, ScrollBar.MaxValue));
             }
             else
             {

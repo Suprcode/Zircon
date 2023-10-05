@@ -455,6 +455,10 @@ namespace Library.SystemModels
         [Association("Mining", true)]
         public DBBindingList<MineInfo> Mining { get; set; }
 
+        [JsonIgnore]
+        [Association("Castles", true)]
+        public DBBindingList<CastleInfo> Castles { get; set; }
+
         protected internal override void OnCreated()
         {
             base.OnCreated();

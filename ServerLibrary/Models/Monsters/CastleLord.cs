@@ -1,25 +1,150 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
-using Library.SystemModels;
+﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public class CastleLord : JinchonDevil
+    public class CastleLord : CastleObjective
     {
-        public ConquestWar War;
+        public DateTime CastTime;
+        public TimeSpan CastDelay = TimeSpan.FromSeconds(15);
+
+        protected override bool InAttackRange()
+        {
+            if (Target.CurrentMap != CurrentMap) return false;
+            if (Target.CurrentLocation == CurrentLocation) return false;
+
+            int x = Math.Abs(Target.CurrentLocation.X - CurrentLocation.X);
+            int y = Math.Abs(Target.CurrentLocation.Y - CurrentLocation.Y);
+
+            if (x > 3 || y > 3) return false;
+
+
+            return x == 0 || x == y || y == 0;
+        }
+
+        public override void ProcessTarget()
+        {
+            if (Target == null) return;
+
+            if (CanAttack && SEnvir.Now > CastTime)
+            {
+                List<MapObject> targets = GetTargets(CurrentMap, CurrentLocation, ViewRange);
+
+                if (targets.Count > 0)
+                {
+                    foreach (MapObject ob in targets)
+                    {
+                        if (CurrentHP > Stats[Stat.Health] / 2 && SEnvir.Random.Next(2) > 0) continue;
+
+                        DeathCloud(ob.CurrentLocation);
+                    }
+
+                    UpdateAttackTime();
+                    Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, CurrentLocation = CurrentLocation, Cast = true, Type = MagicType.None, Targets = new List<uint> { Target.ObjectID } });
+                    CastTime = SEnvir.Now + CastDelay;
+                }
+            }
+
+            if (!InAttackRange())
+            {
+                if (CurrentLocation == Target.CurrentLocation)
+                {
+                    MirDirection direction = (MirDirection)SEnvir.Random.Next(8);
+                    int rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
+
+                    for (int d = 0; d < 8; d++)
+                    {
+                        if (Walk(direction)) break;
+
+                        direction = Functions.ShiftDirection(direction, rotation);
+                    }
+                }
+                else
+                    MoveTo(Target.CurrentLocation);
+                return;
+            }
+
+            if (!CanAttack) return;
+
+            Attack();
+        }
+
+        protected override void Attack()
+        {
+            Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
+
+            if (SEnvir.Random.Next(3) == 0 || !Functions.InRange(Target.CurrentLocation, CurrentLocation, 2))
+            {
+                Broadcast(new S.ObjectRangeAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Targets = new List<uint>() });
+                LineAttack(3);
+            }
+            else
+            {
+                Broadcast(new S.ObjectAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation }); //Animation ?
+
+                foreach (MapObject ob in GetTargets(CurrentMap, Functions.Move(CurrentLocation, Direction), 1))
+                {
+                    ActionList.Add(new DelayedAction(
+                        SEnvir.Now.AddMilliseconds(400),
+                        ActionType.DelayAttack,
+                        ob,
+                        GetDC(),
+                        AttackElement));
+                    break;
+                }
+            }
+
+            UpdateAttackTime();
+        }
+
+        protected void LineAttack(int distance)
+        {
+            for (int i = 1; i <= distance; i++)
+            {
+                Point target = Functions.Move(CurrentLocation, Direction, i);
+
+                if (target == Target.CurrentLocation)
+                {
+                    ActionList.Add(new DelayedAction(
+                        SEnvir.Now.AddMilliseconds(400),
+                        ActionType.DelayAttack,
+                        Target,
+                        GetDC(),
+                        AttackElement));
+                }
+                else
+                {
+                    Cell cell = CurrentMap.GetCell(target);
+                    if (cell?.Objects == null) continue;
+
+                    foreach (MapObject ob in cell.Objects)
+                    {
+                        if (!CanAttackTarget(ob)) continue;
+
+                        ActionList.Add(new DelayedAction(
+                            SEnvir.Now.AddMilliseconds(400),
+                            ActionType.DelayAttack,
+                            ob,
+                            GetDC(),
+                            AttackElement));
+
+                        break;
+                    }
+                }
+            }
+        }
 
         public override int Attacked(MapObject attacker, int power, Element element, bool canReflect = true, bool ignoreShield = false, bool canCrit = true, bool canStruck = true)
         {
             if (attacker == null || attacker.Race != ObjectType.Player) return 0;
 
-            PlayerObject player = (PlayerObject) attacker;
+            PlayerObject player = (PlayerObject)attacker;
 
             if (War == null) return 0;
 
@@ -36,13 +161,13 @@ namespace Server.Models.Monsters
             switch (attacker.Race)
             {
                 case ObjectType.Player:
-                    UserConquestStats conquest = SEnvir.GetConquestStats((PlayerObject) attacker);
+                    UserConquestStats conquest = SEnvir.GetConquestStats((PlayerObject)attacker);
 
                     if (conquest != null)
                         conquest.BossDamageDealt += result;
                     break;
                 case ObjectType.Monster:
-                    MonsterObject mob = (MonsterObject) attacker;
+                    MonsterObject mob = (MonsterObject)attacker;
                     if (mob.PetOwner != null)
                     {
                         conquest = SEnvir.GetConquestStats(mob.PetOwner);
@@ -93,7 +218,7 @@ namespace Server.Models.Monsters
             switch (ob.Race)
             {
                 case ObjectType.Player:
-                    PlayerObject player = (PlayerObject) ob;
+                    PlayerObject player = (PlayerObject)ob;
                     if (player.GameMaster) return false;
 
                     return player.Character.Account.GuildMember?.Guild.Castle != War.Castle;
@@ -113,11 +238,11 @@ namespace Server.Models.Monsters
                 case ObjectType.Monster:
                     return false;
             }
-            
+
             switch (ob.Race)
             {
                 case ObjectType.Player:
-                    PlayerObject player = (PlayerObject) ob;
+                    PlayerObject player = (PlayerObject)ob;
 
                     if (player.GameMaster) return false;
 
@@ -125,7 +250,6 @@ namespace Server.Models.Monsters
                 default:
                     throw new NotImplementedException();
             }
-
         }
 
         public override void Die()
@@ -142,7 +266,7 @@ namespace Server.Models.Monsters
 
                 #region Conquest Stats
 
-                UserConquestStats conquest = SEnvir.GetConquestStats((PlayerObject) EXPOwner);
+                UserConquestStats conquest = SEnvir.GetConquestStats((PlayerObject)EXPOwner);
 
                 if (conquest != null)
                     conquest.BossKillCount++;
@@ -161,7 +285,7 @@ namespace Server.Models.Monsters
 
                 SEnvir.Broadcast(new S.GuildCastleInfo { Index = War.Castle.Index, Owner = EXPOwner.Character.Account.GuildMember.Guild.GuildName });
 
-                War.CastleBoss = null;
+                War.CastleTarget = null;
 
                 War.PingPlayers();
                 War.SpawnBoss();
@@ -171,7 +295,6 @@ namespace Server.Models.Monsters
 
                 foreach (PlayerObject player in SEnvir.Players)
                     player.ApplyCastleBuff();
-
 
                 War = null;
             }

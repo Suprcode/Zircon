@@ -350,6 +350,7 @@ namespace Client.Scenes
             RankingBox?.LoadSettings();
             QuestBox?.LoadSettings();
             FishingBox?.LoadSettings();
+            GroupBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -687,6 +688,7 @@ namespace Client.Scenes
             RankingBox.LoadSettings();
             QuestBox.LoadSettings();
             FishingBox.LoadSettings();
+            GroupBox.LoadSettings();
         }
 
         #region Methods

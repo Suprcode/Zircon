@@ -14,12 +14,12 @@ namespace Library
         public static Dictionary<MirAnimation, Frame> DefaultMonster;
 
 
-        public static Dictionary<MirAnimation, Frame> 
+        public static Dictionary<MirAnimation, Frame>
             ForestYeti, ChestnutTree, CarnivorousPlant,
-            DevouringGhost, 
-            Larva, 
+            DevouringGhost,
+            Larva,
             ZumaGuardian, ZumaKing,
-            Monkey, 
+            Monkey,
             NumaMage, CursedCactus, NetherWorldGate,
             WestDesertLizard,
             BanyaGuard, EmperorSaWoo,
@@ -36,11 +36,13 @@ namespace Library
             OrangeTiger, RedTiger, OrangeBossTiger, BigBossTiger,
 
             SDMob3, SDMob8, SDMob15, SDMob16, SDMob17, SDMob18, SDMob19, SDMob21, SDMob22, SDMob23, SDMob24, SDMob25, SDMob26,
-            
+
             LobsterLord, LobsterSpawn,
 
             DeadTree, BobbitWorm,
-            MonasteryMon1, MonasteryMon3;
+            MonasteryMon1, MonasteryMon3,
+
+            CastleFlag;
 
 
         static FrameSet()
@@ -716,6 +718,12 @@ namespace Library
             {
                 [MirAnimation.Show] = new Frame(400, 7, 10, TimeSpan.FromMilliseconds(100)) ,
                 [MirAnimation.Hide] = new Frame(400, 7, 10, TimeSpan.FromMilliseconds(100)) { Reversed = true, },
+            };
+
+            CastleFlag = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Struck] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(100)),
             };
         }
     }

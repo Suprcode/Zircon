@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Envir;
+using Client.Models;
+using Client.UserModels;
+using Library;
+using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -6,18 +12,12 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Client.Controls;
-using Client.Envir;
-using Client.Models;
-using Client.UserModels;
-using Library;
-using Library.SystemModels;
 using C = Library.Network.ClientPackets;
 
 //Cleaned
 namespace Client.Scenes.Views
 {
-    public sealed class GuildDialog : DXWindow
+    public sealed class GuildDialog : DXImageControl
     {
         #region Properties
 
@@ -31,6 +31,8 @@ namespace Client.Scenes.Views
         public DXNumberTextBox MemberTextBox, StorageTextBox, TotalCostBox;
 
         public DXCheckBox GoldCheckBox, HornCheckBox;
+
+        public DXControl CreatePanel;
 
         #region MemberLimit
 
@@ -140,7 +142,6 @@ namespace Client.Scenes.Views
 
         #endregion
 
-
         public bool CanCreate => !CreateAttempted && GuildNameValid && GameScene.Game != null && TotalCost <= GameScene.Game.User.Gold.Amount;
         public int TotalCost => (int) Math.Min(int.MaxValue, (GoldCheckBox.Checked ? Globals.GuildCreationCost : 0) + (MemberLimit * Globals.GuildMemberCost) + (StorageSize * Globals.GuildStorageCost));
 
@@ -151,11 +152,13 @@ namespace Client.Scenes.Views
         #region HomeTab
 
         private DXTab HomeTab;
-        public DXLabel MemberLimitLabel, GuildFundLabel, DailyGrowthLabel, TotalContributionLabel, DailyContributionLabel;
+        public DXLabel MemberLimitLabel, GuildFundLabel, DailyGrowthLabel, TotalContributionLabel, DailyContributionLabel, GuildTaxLabel;
 
         public DXVScrollBar NoticeScrollBar;
         public DXTextBox NoticeTextBox;
         public DXButton EditNoticeButton, SaveNoticeButton, CancelNoticeButton;
+        public DXButton SetTaxButton;
+        public DXControl TreasuryPanel;
 
         #endregion
 
@@ -164,6 +167,8 @@ namespace Client.Scenes.Views
         private DXTab MemberTab;
         public GuildMemberRow[] MemberRows;
         public DXVScrollBar MemberScrollBar;
+        public DXButton AddMemberButton, EditDefaultMemberButton, IncreaseMemberButton;
+        public DXControl AddMemberPanel;
 
         #endregion
 
@@ -176,77 +181,27 @@ namespace Client.Scenes.Views
         public DXButton ClearButton;
         public DXVScrollBar StorageScrollBar;
         public ClientUserItem[] GuildStorage = new ClientUserItem[1000];
-
+        public DXButton IncreaseStorageButton;
+        public DXControl StoragePanel;
         #endregion
-        
-        #region Manage Tab
 
-        private DXTab ManageTab;
-        public DXLabel GuildFundLabel1, MemberLimitLabel1, StorageSizeLabel;
-        public DXTextBox AddMemberTextBox;
-        public DXNumberTextBox MemberTaxBox;
-        public DXButton AddMemberButton, EditDefaultMemberButton, SetTaxButton, IncreaseMemberButton, IncreaseStorageButton, StartWarButton;
-        public DXNumberTextBox GuildTaxBox;
-        public DXControl AddMemberPanel, TreasuryPanel, UpgradePanel, GuildWarPanel;
-        public DXTextBox GuildWarTextBox;
+        #region War Tab
+
+        private DXTab WarTab;
+        public DXButton StartWarButton;
+        public DXControl WarPanel;
 
         public Dictionary<CastleInfo, GuildCastlePanel> CastlePanels = new Dictionary<CastleInfo, GuildCastlePanel>();
 
-        #region GuildWarNameValid
-
-        public bool GuildWarNameValid
-        {
-            get { return _GuildWarNameValid; }
-            set
-            {
-                if (_GuildWarNameValid == value) return;
-
-                bool oldValue = _GuildWarNameValid;
-                _GuildWarNameValid = value;
-
-                OnGuildWarNameValidChanged(oldValue, value);
-            }
-        }
-        private bool _GuildWarNameValid;
-        public event EventHandler<EventArgs> GuildWarNameValidChanged;
-        public void OnGuildWarNameValidChanged(bool oValue, bool nValue)
-        {
-            GuildWarNameValidChanged?.Invoke(this, EventArgs.Empty);
-
-            StartWarButton.Enabled = CanWar;
-        }
-
         #endregion
 
-        #region WarAttempted
+        #region Style Tab
 
-        public bool WarAttempted
-        {
-            get { return _WarAttempted; }
-            set
-            {
-                if (_WarAttempted == value) return;
-
-                bool oldValue = _WarAttempted;
-                _WarAttempted = value;
-
-                OnWarAttemptedChanged(oldValue, value);
-            }
-        }
-        private bool _WarAttempted;
-        public event EventHandler<EventArgs> WarAttemptedChanged;
-        public void OnWarAttemptedChanged(bool oValue, bool nValue)
-        {
-            WarAttemptedChanged?.Invoke(this, EventArgs.Empty);
-            StartWarButton.Enabled = CanWar;
-        }
-
-        #endregion
-        
-        public bool CanWar => !WarAttempted && GuildWarNameValid;
-
-
-
+        private DXTab StyleTab;
+        private DXControl StyleColourPanel, StyleFlagPanel;
+        public DXLabel StyleFlagLabel, StyleColourLabel;
+        public DXColourControl StyleColour;
+        public DXButton StyleColourButton, StyleFlagPreviousButton, StyleFlagNextButton;
 
         #endregion
 
@@ -293,23 +248,127 @@ namespace Client.Scenes.Views
 
         public DateTime SabukWarDate;
 
-        public override WindowType Type => WindowType.GuildBox;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => true;
+        public DXLabel TitleLabel;
+        public DXButton CloseButton;
+
+        public DXImageControl BackgroundImage;
+
+        public WindowSetting Settings;
+        public WindowType Type => WindowType.GuildBox;
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            if (IsVisible)
+                BringToFront();
+
+            if (Settings != null)
+                Settings.Visible = nValue;
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
+
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    if (CloseButton.Visible)
+                    {
+                        CloseButton.InvokeMouseClick();
+                        if (!Config.EscapeCloseAll)
+                            e.Handled = true;
+                    }
+                    break;
+            }
+        }
 
         #endregion
 
         public GuildDialog()
         {
-            TitleLabel.Text = CEnvir.Language.GuildDialogTitle;
+            Index = 260;
+            LibraryFile = LibraryFile.Interface;
+            Movable = true;
+            Sort = true;
+            Size = new Size(456, 556);
 
-            SetClientSize(new Size(516, 419));
+            CloseButton = new DXButton
+            {
+                Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
+            {
+                Text = CEnvir.Language.GuildDialogTitle,
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             GuildTabs = new DXTabControl
             {
                 Parent = this,
-                Size = ClientArea.Size,
-                Location = ClientArea.Location,
+                Location = new Point(0, 39),
+                Size = new Size(456, 464),
+                MarginLeft = 15,
+                Border = false
+            };
+
+            BackgroundImage = new DXImageControl
+            {
+                Parent = GuildTabs,
+                Index = 261,
+                LibraryFile = LibraryFile.Interface,
+                Location = new Point(0, 23),
+                Size = new Size(456, 440),
+                Visible = true
             };
 
             CreateCreateTab();
@@ -320,7 +379,9 @@ namespace Client.Scenes.Views
 
             CreateStorageTab();
             
-            CreateManageTab();
+            CreateWarTab();
+
+            CreateStyleTab();
 
             ClearGuild();
         }
@@ -334,7 +395,13 @@ namespace Client.Scenes.Views
             HomeTab.TabButton.Visible = GuildInfo != null;
             MemberTab.TabButton.Visible = GuildInfo != null;
             StorageTab.TabButton.Visible = GuildInfo != null;
-            ManageTab.TabButton.Visible = GuildInfo != null;
+            WarTab.TabButton.Visible = GuildInfo != null;
+            StyleTab.TabButton.Visible = GuildInfo != null;
+
+            if (CreateTab.TabButton.Visible)
+                CreateTab.TabButton.InvokeMouseClick();
+            else
+                HomeTab.TabButton.InvokeMouseClick();
 
             GuildTabs.TabsChanged();
 
@@ -350,15 +417,9 @@ namespace Client.Scenes.Views
             DailyGrowthLabel.Text = string.Empty;
             TotalContributionLabel.Text = string.Empty;
             DailyContributionLabel.Text = string.Empty;
-
-            AddMemberTextBox.TextBox.Text = string.Empty;
-            GuildTaxBox.TextBox.Text = string.Empty;
-            GuildFundLabel1.Text = string.Empty;
-            MemberLimitLabel1.Text = string.Empty;
-            StorageSizeLabel.Text = string.Empty;
+            GuildTaxLabel.Text = string.Empty;
 
             MemberScrollBar.MaxValue = 0;
-
 
             foreach (GuildMemberRow row in MemberRows)
                 row.MemberInfo = null;
@@ -385,6 +446,7 @@ namespace Client.Scenes.Views
         public void RefreshGuildDisplay()
         {
             TitleLabel.Text = GuildInfo.GuildName;
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             if (!NoticeTextBox.Editable)
                 NoticeTextBox.TextBox.Text = GuildInfo.Notice;
@@ -394,22 +456,19 @@ namespace Client.Scenes.Views
             DailyGrowthLabel.Text = GuildInfo.DailyGrowth.ToString("#,##0");
             TotalContributionLabel.Text = GuildInfo.TotalContribution.ToString("#,##0");
             DailyContributionLabel.Text = GuildInfo.DailyContribution.ToString("#,##0");
+            GuildTaxLabel.Text = $"{GuildInfo.Tax}%";
+
+            StyleColour.BackColour = GuildInfo.Colour;
 
             UpdateMemberRows();
 
             PermissionChanged();
 
             ApplyStorageFilter();
-
-            GuildFundLabel1.Text = GuildInfo.GuildFunds.ToString("#,##0");
-            MemberLimitLabel1.Text = GuildInfo.MemberLimit.ToString();
-            StorageSizeLabel.Text = GuildInfo.StorageLimit.ToString(); ;
-
-            GuildTaxBox.Value = GuildInfo.Tax;
         }
         private void RefreshStorage()
         {
-            StorageGrid.GridSize = new Size(14, Math.Max(20, (int)Math.Ceiling(GuildInfo.StorageLimit / (float)14)));
+            StorageGrid.GridSize = new Size(11, Math.Max(20, (int)Math.Ceiling(GuildInfo.StorageLimit / (float)14)));
 
             StorageScrollBar.MaxValue = StorageGrid.GridSize.Height;
 
@@ -445,8 +504,12 @@ namespace Client.Scenes.Views
             EditDefaultMemberButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
 
             TreasuryPanel.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
-            UpgradePanel.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
-            GuildWarPanel.Enabled = (GuildInfo.Permission & GuildPermission.StartWar) == GuildPermission.StartWar;
+            StoragePanel.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
+            WarPanel.Enabled = (GuildInfo.Permission & GuildPermission.StartWar) == GuildPermission.StartWar;
+
+            StyleColourButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
+            StyleFlagPreviousButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
+            StyleFlagNextButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
 
             foreach (KeyValuePair<CastleInfo, GuildCastlePanel> pair in CastlePanels)
                 pair.Value.RequestButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
@@ -479,8 +542,37 @@ namespace Client.Scenes.Views
             {
                 TabButton = { Label = { Text = CEnvir.Language.GuildDialogCreateTabLabel } },
                 Parent = GuildTabs,
-                Border = true,
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
             };
+            CreateTab.TabButton.MouseClick += (o, e) =>
+            {
+                BackgroundImage.Index = 266;
+                CreatePanel.Visible = true;
+                AddMemberPanel.Visible = false;
+                TreasuryPanel.Visible = false;
+                StoragePanel.Visible = false;
+                WarPanel.Visible = false;
+            };
+
+            CreatePanel = new DXControl
+            {
+                Parent = this,
+                Location = new Point(10, 500),
+                Size = new Size(436, 50),
+                Border = false,
+                Visible = true
+            };
+
+            StarterGuildButton = new DXButton
+            {
+                Parent = CreatePanel,
+                Location = new Point(10, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(120, DefaultHeight),
+                Label = { Text = CEnvir.Language.GuildDialogCreateTabStarterGuildButtonLabel }
+            };
+            StarterGuildButton.MouseClick += StarterGuildButton_MouseClick;
 
             DXLabel stepLabel = new DXLabel
             {
@@ -688,18 +780,7 @@ namespace Client.Scenes.Views
 
             CreateButton.MouseClick += CreateButton_MouseClick;
 
-            StarterGuildButton = new DXButton
-            {
-                Parent = CreateTab,
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(120, SmallButtonHeight),
-                Label = { Text = CEnvir.Language.GuildDialogCreateTabStarterGuildButtonLabel },
-                Location = new Point(ClientArea.Left, TotalCostBox.Location.Y + 40)
-            };
-            StarterGuildButton.MouseClick += StarterGuildButton_MouseClick;
-
         }
-
 
         private void StarterGuildButton_MouseClick(object sender, MouseEventArgs e)
         {
@@ -707,6 +788,7 @@ namespace Client.Scenes.Views
             {
             });
         }
+
         private void CreateButton_MouseClick(object sender, MouseEventArgs e)
         {
             CreateAttempted = true;
@@ -757,10 +839,20 @@ namespace Client.Scenes.Views
             {
                 TabButton = { Label = { Text = CEnvir.Language.GuildDialogHomeTabLabel } },
                 Parent = GuildTabs,
-                Border = true,
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
+            };
+            HomeTab.TabButton.MouseClick += (o, e) =>
+            {
+                BackgroundImage.Index = 261;
+                CreatePanel.Visible = false;
+                AddMemberPanel.Visible = false;
+                TreasuryPanel.Visible = true;
+                StoragePanel.Visible = false;
+                WarPanel.Visible = false;
             };
 
-             new DXLabel
+            new DXLabel
             {
                 Text = CEnvir.Language.GuildDialogHomeTabNoticeLabel,
                 Parent = HomeTab,
@@ -769,17 +861,23 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Size = new Size(HomeTab.Size.Width, 22),
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                Size = new Size(HomeTab.Size.Width, 21),
+                Location = new Point(20, 6),
+                DrawFormat = TextFormatFlags.VerticalCenter,
             };
 
             NoticeScrollBar = new DXVScrollBar
             {
                 Parent = HomeTab,
-                Location = new Point(HomeTab.Size.Width - 20, 25),
-                Size = new Size(14, 275),
+                Location = new Point(HomeTab.Size.Width - 34, 30),
+                Size = new Size(22, 262),
                 VisibleSize = 17,
                 Change = 1,
+                Border = false,
+                BackColour = Color.Empty,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
             };
             NoticeScrollBar.ValueChanged += (o, e) => SetLineIndex(NoticeScrollBar.Value);
 
@@ -787,10 +885,11 @@ namespace Client.Scenes.Views
             {
                 Parent = HomeTab,
                 TextBox = { Multiline = true },
-                Location = new Point(5, 25),
-                Size = new Size(HomeTab.Size.Width - 25, 275),
+                Location = new Point(16, 33),
+                Size = new Size(403, 252),
                 KeepFocus = false,
                 Editable = false,
+                Border = false,
                 MaxLength = Globals.MaxGuildNoticeLength
             };
             NoticeTextBox.TextBox.TextChanged += (o, e) => UpdateNoticePosition();
@@ -816,7 +915,7 @@ namespace Client.Scenes.Views
             {
                 Parent = HomeTab,
                 Size = new Size(60, SmallButtonHeight),
-                Location = new Point(HomeTab.Size.Width - 66, 4),
+                Location = new Point(HomeTab.Size.Width - 75, 9),
                 Label = { Text = CEnvir.Language.GuildDialogHomeTabNoticeEditButtonLabel },
                 ButtonType = ButtonType.SmallButton
             };
@@ -829,12 +928,11 @@ namespace Client.Scenes.Views
                 NoticeTextBox.SetFocus();
             };
 
-
             SaveNoticeButton = new DXButton
             {
                 Parent = HomeTab,
                 Size = new Size(60, SmallButtonHeight),
-                Location = new Point(HomeTab.Size.Width - 131, 4),
+                Location = new Point(HomeTab.Size.Width - 145, 9),
                 Label = { Text = CEnvir.Language.GuildDialogHomeTabNoticeSaveButtonLabel },
                 ButtonType = ButtonType.SmallButton,
                 Visible = false,
@@ -853,7 +951,7 @@ namespace Client.Scenes.Views
             {
                 Parent = HomeTab,
                 Size = new Size(60, SmallButtonHeight),
-                Location = new Point(HomeTab.Size.Width - 66, 4),
+                Location = new Point(HomeTab.Size.Width - 75, 9),
                 Label = { Text = CEnvir.Language.CommonControlCancel },
                 ButtonType = ButtonType.SmallButton,
                 Visible = false,
@@ -871,9 +969,9 @@ namespace Client.Scenes.Views
             DXControl panel = new DXControl
             {
                 Parent = HomeTab,
-                Location = new Point(5, NoticeTextBox.Size.Height + 5 + NoticeTextBox.Location.Y),
-                Size = new Size(HomeTab.Size.Width - 11, 88),
-                Border = true,
+                Location = new Point(0, NoticeTextBox.Size.Height + 5 + NoticeTextBox.Location.Y),
+                Size = new Size(HomeTab.Size.Width, 140),
+                Border = false,
                 BorderColour = Color.FromArgb(198, 166, 99)
             };
 
@@ -887,7 +985,8 @@ namespace Client.Scenes.Views
                 OutlineColour = Color.Black,
                 IsControl = false,
                 Size = new Size(HomeTab.Size.Width, 22),
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                Location = new Point(20, 0),
+                DrawFormat = TextFormatFlags.VerticalCenter,
             };
 
             DXLabel label = new DXLabel
@@ -980,6 +1079,58 @@ namespace Client.Scenes.Views
                 Location = new Point(390, label.Location.Y),
             };
 
+            label = new DXLabel
+            {
+                Text = CEnvir.Language.GuildDialogHomeTabNoticeStatsTaxLabel,
+                Parent = panel,
+                Outline = true,
+                IsControl = false,
+            };
+            label.Location = new Point(120 - label.Size.Width, 75);
+
+            GuildTaxLabel = new DXLabel
+            {
+                Parent = panel,
+                Outline = true,
+                ForeColour = Color.White,
+                IsControl = false,
+                Location = new Point(120, label.Location.Y),
+            };
+
+            TreasuryPanel = new DXControl
+            {
+                Parent = this,
+                Location = new Point(10, 500),
+                Size = new Size(436, 50),
+                Border = false,
+                Visible = true
+            };
+
+            SetTaxButton = new DXButton
+            {
+                Parent = TreasuryPanel,
+                Location = new Point(10, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(120, DefaultHeight),
+                Label = { Text = CEnvir.Language.GuildDialogManageTabTreasuryChangeButtonLabel },
+            };
+            SetTaxButton.MouseClick += (o, e) =>
+            {
+                DXInputWindow window = new DXInputWindow(CEnvir.Language.GuildDialogManageTabTreasuryTaxConfirmMessage, CEnvir.Language.GuildDialogManageTabTreasuryLabel)
+                {
+                    ConfirmButton = { Enabled = false },
+                    Modal = true
+                };
+                window.ValueTextBox.TextBox.TextChanged += (o1, e1) =>
+                {
+                    window.ConfirmButton.Enabled = Globals.GuildTaxReg.IsMatch(window.ValueTextBox.TextBox.Text);
+                };
+                window.ConfirmButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.GuildTax { Tax = long.Parse(window.Value) });
+                };
+            };
+
         }
 
         public void UpdateNoticePosition()
@@ -1018,40 +1169,126 @@ namespace Client.Scenes.Views
             {
                 TabButton = { Label = { Text = CEnvir.Language.GuildDialogMembersTabLabel } },
                 Parent = GuildTabs,
-                Border = true,
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
+            };
+            MemberTab.TabButton.MouseClick += (o, e) =>
+            {
+                BackgroundImage.Index = 262;
+                CreatePanel.Visible = false;
+                AddMemberPanel.Visible = true;
+                TreasuryPanel.Visible = false;
+                StoragePanel.Visible = false;
+                WarPanel.Visible = false;
             };
 
             new GuildMemberRow
             {
-                Location = new Point(5, 5),
+                Location = new Point(7, 9),
                 Parent = MemberTab,
                 IsHeader = true,
             };
 
-
             MemberScrollBar = new DXVScrollBar
             {
                 Parent = MemberTab,
-                Location = new Point(MemberTab.Size.Width - 20, 29),
-                Size = new Size(14, 363),
+                Location = new Point(HomeTab.Size.Width - 34, 30),
+                Size = new Size(22, 397),
                 VisibleSize = 16,
                 Change = 1,
+                Border = false,
+                BackColour = Color.Empty,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
             };
             MemberScrollBar.ValueChanged += MemberScrollBar_ValueChanged;
 
-            MemberRows = new GuildMemberRow[16];
+            MemberRows = new GuildMemberRow[17];
             for (int i = 0; i < MemberRows.Length; i++)
             {
                 MemberRows[i] = new GuildMemberRow
                 {
                     Parent = MemberTab,
-                    Location = new Point(5, 5 + i * 23 + 23),
+                    Location = new Point(16, 11 + i * 23 + 23),
                     Visible = false
                 };
 
                 MemberRows[i].MouseWheel += MemberScrollBar.DoMouseWheel;
             }
             MouseWheel += MemberScrollBar.DoMouseWheel;
+
+
+            AddMemberPanel = new DXControl
+            {
+                Parent = this,
+                Location = new Point(10, 500),
+                Size = new Size(436, 50),
+                Border = false,
+                Visible = true
+            };
+
+            AddMemberButton = new DXButton
+            {
+                Parent = AddMemberPanel,
+                Location = new Point(10, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(110, DefaultHeight),
+                Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipAddButtonLabel },
+            };
+            AddMemberButton.MouseClick += (o, e) =>
+            {
+                DXInputWindow window = new DXInputWindow(CEnvir.Language.GuildDialogManageTabMembershipMemberConfirmMessage, CEnvir.Language.GuildDialogManageTabMembershipLabel)
+                {
+                    ConfirmButton = { Enabled = false },
+                    Modal = true
+                };
+                window.ValueTextBox.TextBox.TextChanged += (o1, e1) =>
+                {
+                    window.ConfirmButton.Enabled = Globals.CharacterReg.IsMatch(window.ValueTextBox.TextBox.Text);
+                };
+                window.ConfirmButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.GuildInviteMember { Name = window.Value });
+                };
+            };
+
+            EditDefaultMemberButton = new DXButton
+            {
+                Parent = AddMemberPanel,
+                Location = new Point(AddMemberButton.DisplayArea.Right + 5, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(110, DefaultHeight),
+                Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipEditDefaultButtonLabel },
+            };
+            EditDefaultMemberButton.MouseClick += (o, e) =>
+            {
+                GameScene.Game.GuildMemberBox.MemberNameLabel.Text = "Default Member";
+                GameScene.Game.GuildMemberBox.RankTextBox.TextBox.Text = GuildInfo.DefaultRank;
+                GameScene.Game.GuildMemberBox.Permission = GuildInfo.DefaultPermission;
+                GameScene.Game.GuildMemberBox.MemberIndex = 0;
+
+                GameScene.Game.GuildMemberBox.Visible = true;
+                GameScene.Game.GuildMemberBox.BringToFront();
+            };
+
+            IncreaseMemberButton = new DXButton
+            {
+                Parent = AddMemberPanel,
+                Location = new Point(EditDefaultMemberButton.DisplayArea.Right + 5, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(110, DefaultHeight),
+                Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipMembersIncreaseButtonLabel },
+            };
+            IncreaseMemberButton.MouseClick += (o, e) =>
+            {
+                DXMessageBox window = new DXMessageBox(string.Format(CEnvir.Language.GuildDialogManageTabMembershipIncreaseMemberConfirmMessage, Globals.GuildMemberCost), CEnvir.Language.GuildDialogManageTabMembershipLabel, DXMessageBoxButtons.YesNo);
+                window.YesButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.GuildIncreaseMember());
+                };
+            };
+
         }
 
         private void MemberScrollBar_ValueChanged(object sender, EventArgs e)
@@ -1080,48 +1317,57 @@ namespace Client.Scenes.Views
             {
                 TabButton = { Label = { Text = CEnvir.Language.GuildDialogStorageTabLabel } },
                 Parent = GuildTabs,
-                Border = true,
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
+            };
+            StorageTab.TabButton.MouseClick += (o, e) =>
+            {
+                BackgroundImage.Index = 263;
+                CreatePanel.Visible = false;
+                AddMemberPanel.Visible = false;
+                TreasuryPanel.Visible = false;
+                StoragePanel.Visible = true;
+                WarPanel.Visible = false;
             };
 
             DXControl filterPanel = new DXControl
             {
                 Parent = StorageTab,
-                Size = new Size(StorageTab.Size.Width - 13, 26),
-                Location = new Point(6, 6),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99)
+                Size = new Size(StorageTab.Size.Width - 14, 25),
+                Location = new Point(6, 11),
+                Border = false
             };
 
             DXLabel label = new DXLabel
             {
                 Parent = filterPanel,
-                Location = new Point(5, 5),
+                Location = new Point(10, 7),
                 Text = CEnvir.Language.GuildDialogStorageTabNameLabel,
             };
 
             ItemNameTextBox = new DXTextBox
             {
                 Parent = filterPanel,
-                Size = new Size(180, 20),
-                Location = new Point(label.Location.X + label.Size.Width + 5, label.Location.Y),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
+                Size = new Size(110, 16),
+                Border = false,
+                Location = new Point(label.Location.X + label.Size.Width + 2, label.Location.Y),
             };
             ItemNameTextBox.TextBox.TextChanged += (o, e) => ApplyStorageFilter();
 
             label = new DXLabel
             {
                 Parent = filterPanel,
-                Location = new Point(ItemNameTextBox.Location.X + ItemNameTextBox.Size.Width + 10, 5),
+                Location = new Point(ItemNameTextBox.Location.X + ItemNameTextBox.Size.Width + 33, 5),
                 Text = CEnvir.Language.GuildDialogStorageTabItemLabel,
             };
 
-
-
             ItemTypeComboBox = new DXComboBox
             {
+                Border = false,
                 Parent = filterPanel,
-                Location = new Point(label.Location.X + label.Size.Width + 5, label.Location.Y),
-                Size = new Size(95, DXComboBox.DefaultNormalHeight),
-                DropDownHeight = 198
+                Location = new Point(label.Location.X + label.Size.Width + 1, label.Location.Y + 1),
+                Size = new Size(122, DXComboBox.DefaultNormalHeight)
             };
             ItemTypeComboBox.SelectedItemChanged += (o, e) => ApplyStorageFilter();
 
@@ -1150,11 +1396,10 @@ namespace Client.Scenes.Views
 
             ItemTypeComboBox.ListBox.SelectItem(null);
 
-
             ClearButton = new DXButton
             {
-                Size = new Size(80, SmallButtonHeight),
-                Location = new Point(ItemTypeComboBox.Location.X + ItemTypeComboBox.Size.Width + 33, label.Location.Y - 1),
+                Size = new Size(40, SmallButtonHeight),
+                Location = new Point(ItemTypeComboBox.Location.X + ItemTypeComboBox.Size.Width + 30, label.Location.Y - 1),
                 Parent = filterPanel,
                 ButtonType = ButtonType.SmallButton,
                 Label = { Text = CEnvir.Language.GuildDialogStorageTabClearButtonLabel }
@@ -1169,15 +1414,15 @@ namespace Client.Scenes.Views
             {
                 Parent = StorageTab,
                 GridSize = new Size(1, 1),
-                Location = new Point(5, 42),
+                Location = new Point(24, 51),
                 GridType = GridType.GuildStorage,
                 ItemGrid = GuildStorage,
                 VisibleHeight = 10,
+                Border = false,
+                GridPadding = 1,
+                BackColour = Color.Empty
             };
             StorageGrid.GridSizeChanged += StorageGrid_GridSizeChanged;
-
-
-
 
             StorageScrollBar = new DXVScrollBar
             {
@@ -1186,8 +1431,36 @@ namespace Client.Scenes.Views
                 Size = new Size(14, 349),
                 VisibleSize = 10,
                 Change = 1,
+                Visible = false
             };
             StorageScrollBar.ValueChanged += StorageScrollBar_ValueChanged;
+
+
+            StoragePanel = new DXControl
+            {
+                Parent = this,
+                Location = new Point(10, 500),
+                Size = new Size(436, 50),
+                Border = false,
+                Visible = true
+            };
+
+            IncreaseStorageButton = new DXButton
+            {
+                Parent = StoragePanel,
+                Location = new Point(10, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(110, DefaultHeight),
+                Label = { Text = string.Format(CEnvir.Language.GuildDialogManageTabUpgradeStorageIncreaseButtonLabel, Globals.GuildStorageCost) },
+            };
+            IncreaseStorageButton.MouseClick += (o, e) =>
+            {
+                DXMessageBox window = new DXMessageBox(string.Format(CEnvir.Language.GuildDialogManageTabUpgradeStorageConfirmMessage, Globals.GuildStorageCost), CEnvir.Language.GuildDialogManageTabUpgradeStorageLabel, DXMessageBoxButtons.YesNo);
+                window.YesButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.GuildIncreaseStorage());
+                };
+            };
 
         }
 
@@ -1195,6 +1468,12 @@ namespace Client.Scenes.Views
         {
             foreach (DXItemCell cell in StorageGrid.Grid)
                 cell.ItemChanged += (o, e1) => FilterCell(cell);
+
+            if (StorageScrollBar != null)
+            {
+                foreach (DXItemCell cell in StorageGrid.Grid)
+                    cell.MouseWheel += StorageScrollBar.DoMouseWheel;
+            }
         }
 
         public void ApplyStorageFilter()
@@ -1240,330 +1519,71 @@ namespace Client.Scenes.Views
 
         #endregion
         
-        #region Manage Tab
+        #region War Tab
 
-        public void CreateManageTab()
+        public void CreateWarTab()
         {
-            ManageTab = new DXTab
+            WarTab = new DXTab
             {
-                TabButton = { Label = { Text = CEnvir.Language.GuildDialogManageTabLabel } },
+                TabButton = { Label = { Text = CEnvir.Language.GuildDialogWarTabLabel } },
                 Parent = GuildTabs,
-                Border = true,
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
             };
-
-            AddMemberPanel = new DXControl
+            WarTab.TabButton.MouseClick += (o, e) =>
             {
-                Parent = ManageTab,
-                Location = new Point(5, 5),
-                Size = new Size((HomeTab.Size.Width - 11 - 5) / 2, 83),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99)
+                BackgroundImage.Index = 264;
+                CreatePanel.Visible = false;
+                AddMemberPanel.Visible = false;
+                TreasuryPanel.Visible = false;
+                StoragePanel.Visible = false;
+                WarPanel.Visible = true;
             };
-
-            new DXLabel
+         
+            WarPanel = new DXControl
             {
-                Text = CEnvir.Language.GuildDialogManageTabMembershipLabel,
-                Parent = AddMemberPanel,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
-                Size = new Size(AddMemberPanel.Size.Width, 22),
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                Parent = this,
+                Location = new Point(10, 500),
+                Size = new Size(436, 50),
+                Border = false,
+                Visible = true
             };
-
-
-            DXLabel label = new DXLabel
-            {
-                Parent = AddMemberPanel,
-                Text = CEnvir.Language.GuildDialogManageTabMembershipMemberLabel,
-            };
-            label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 32);
-
-            AddMemberTextBox = new DXTextBox
-            {
-                Parent = AddMemberPanel,
-                Location = new Point(ClientArea.X + 55, label.Location.Y),
-                Size = new Size(110, 20),
-                MaxLength = Globals.MaxCharacterNameLength
-            };
-
-
-            AddMemberButton = new DXButton
-            {
-                Parent = AddMemberPanel,
-                Location = new Point(ClientArea.X + 170, label.Location.Y - 1),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(60, SmallButtonHeight),
-                Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipAddButtonLabel },
-            };
-            AddMemberButton.MouseClick += (o, e) =>
-            {
-                CEnvir.Enqueue(new C.GuildInviteMember { Name = AddMemberTextBox.TextBox.Text });
-                AddMemberButton.Enabled = false;
-                AddMemberTextBox.Enabled = false;
-            };
-
-            EditDefaultMemberButton = new DXButton
-            {
-                Parent = AddMemberPanel,
-                Location = new Point(ClientArea.X + 55, label.Location.Y + 25),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(110, SmallButtonHeight),
-                Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipEditDefaultButtonLabel },
-            };
-            EditDefaultMemberButton.MouseClick += (o, e) =>
-            {
-                GameScene.Game.GuildMemberBox.MemberNameLabel.Text = "Default Member";
-                GameScene.Game.GuildMemberBox.RankTextBox.TextBox.Text = GuildInfo.DefaultRank;
-                GameScene.Game.GuildMemberBox.Permission = GuildInfo.DefaultPermission;
-                GameScene.Game.GuildMemberBox.MemberIndex = 0;
-
-                GameScene.Game.GuildMemberBox.Visible = true;
-                GameScene.Game.GuildMemberBox.BringToFront();
-            };
-
-
-            TreasuryPanel = new DXControl
-            {
-                Parent = ManageTab,
-                Location = new Point(5, 93),
-                Size = new Size((HomeTab.Size.Width - 11 - 5) / 2, 73),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99)
-            };
-
-            new DXLabel
-            {
-                Text = CEnvir.Language.GuildDialogManageTabTreasuryLabel,
-                Parent = TreasuryPanel,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
-                Size = new Size(TreasuryPanel.Size.Width, 22),
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
-            };
-
-            label = new DXLabel
-            {
-                Parent = TreasuryPanel,
-                Text = CEnvir.Language.GuildDialogManageTabTreasuryGuildTaxLabel,
-            };
-            label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 32);
-
-            GuildTaxBox = new DXNumberTextBox
-            {
-                Parent = TreasuryPanel,
-                Location = new Point(ClientArea.X + 55, label.Location.Y),
-                Size = new Size(60, 20),
-                MaxValue = 100,
-                MinValue = 0,
-            };
-            label = new DXLabel
-            {
-                Parent = TreasuryPanel,
-                Text = CEnvir.Language.GuildDialogManageTabTreasuryPercentLabel,
-                Location = new Point(ClientArea.X + 115, 32),
-            };
-
-
-            SetTaxButton = new DXButton
-            {
-                Parent = TreasuryPanel,
-                Location = new Point(ClientArea.X + 170, label.Location.Y - 1),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(60, SmallButtonHeight),
-                Label = { Text = CEnvir.Language.GuildDialogManageTabTreasuryChangeButtonLabel },
-            };
-            SetTaxButton.MouseClick += (o, e) =>
-            {
-                CEnvir.Enqueue(new C.GuildTax { Tax = GuildTaxBox.Value });
-
-                GuildTaxBox.Enabled = false;
-                SetTaxButton.Enabled = false;
-            };
-
-            label = new DXLabel
-            {
-                Parent = TreasuryPanel,
-                Text = CEnvir.Language.GuildDialogManageTabTreasuryBalanceLabel,
-            };
-            label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 54);
-
-            GuildFundLabel1 = new DXLabel
-            {
-                Parent = TreasuryPanel,
-                Text = "10,000,000,000",
-                Location = new Point(ClientArea.X + 52, label.Location.Y),
-                ForeColour = Color.White,
-            };
-
-
-            UpgradePanel = new DXControl
-            {
-                Parent = ManageTab,
-                Location = new Point(5, 171),
-                Size = new Size((HomeTab.Size.Width - 11 - 5) / 2, 90),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99)
-            };
-
-            new DXLabel
-            {
-                Text = CEnvir.Language.GuildDialogManageTabUpgradeLabel,
-                Parent = UpgradePanel,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
-                Size = new Size(UpgradePanel.Size.Width, 22),
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
-            };
-
-            label = new DXLabel
-            {
-                Parent = UpgradePanel,
-                Text = CEnvir.Language.GuildDialogManageTabUpgradeMembersLabel,
-            };
-            label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 35);
-
-            IncreaseMemberButton = new DXButton
-            {
-                Parent = UpgradePanel,
-                Location = new Point(ClientArea.X + 55, label.Location.Y - 1),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(110, SmallButtonHeight),
-                Label = { Text = string.Format(CEnvir.Language.GuildDialogManageTabUpgradeMembersIncreaseButtonLabel, Globals.GuildMemberCost) },
-            };
-            IncreaseMemberButton.MouseClick += (o, e) =>
-            {
-                CEnvir.Enqueue(new C.GuildIncreaseMember());
-                IncreaseMemberButton.Enabled = false;
-            };
-
-            DXLabel label1 = new DXLabel
-            {
-                Parent = UpgradePanel,
-                Text = CEnvir.Language.GuildDialogManageTabUpgradeMembersLimitLabel,
-            };
-            label1.Location = new Point(ClientArea.X + 205 - label1.Size.Width, label.Location.Y);
-
-            MemberLimitLabel1 = new DXLabel
-            {
-                Parent = UpgradePanel,
-                ForeColour = Color.White,
-                Location = new Point(ClientArea.X + 205, label.Location.Y)
-            };
-
-
-            label = new DXLabel
-            {
-                Parent = UpgradePanel,
-                Text = CEnvir.Language.GuildDialogManageTabUpgradeStorageLabel,
-            };
-            label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 60);
-
-            IncreaseStorageButton = new DXButton
-            {
-                Parent = UpgradePanel,
-                Location = new Point(ClientArea.X + 55, label.Location.Y - 1),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(110, SmallButtonHeight),
-                Label = { Text = string.Format(CEnvir.Language.GuildDialogManageTabUpgradeStorageIncreaseButtonLabel, Globals.GuildStorageCost) },
-            };
-            IncreaseStorageButton.MouseClick += (o, e) =>
-            {
-                CEnvir.Enqueue(new C.GuildIncreaseStorage());
-                IncreaseStorageButton.Enabled = false;
-            };
-
-            label1 = new DXLabel
-            {
-                Parent = UpgradePanel,
-                Text = CEnvir.Language.GuildDialogManageTabUpgradeStorageLimitLabel,
-            };
-            label1.Location = new Point(ClientArea.X + 205 - label1.Size.Width, label.Location.Y);
-
-            StorageSizeLabel = new DXLabel
-            {
-                Parent = UpgradePanel,
-                ForeColour = Color.White,
-                Location = new Point(ClientArea.X + 205, label.Location.Y)
-            };
-
-
-            GuildWarPanel = new DXControl
-            {
-                Parent = ManageTab,
-                Location = new Point(10 + (HomeTab.Size.Width - 11 - 5) / 2, 5),
-                Size = new Size((HomeTab.Size.Width - 11 - 5) / 2, 83),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-            };
-
-            new DXLabel
-            {
-                Text = CEnvir.Language.GuildDialogManageTabGuildWarLabel,
-                Parent = GuildWarPanel,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
-                Outline = true,
-                OutlineColour = Color.Black,
-                IsControl = false,
-                Size = new Size(GuildWarPanel.Size.Width, 22),
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
-            };
-
-
-            label = new DXLabel
-            {
-                Parent = GuildWarPanel,
-                Text = CEnvir.Language.GuildDialogManageTabGuildWarGuildLabel,
-            };
-            label.Location = new Point(ClientArea.X + 55 - label.Size.Width, 32);
-
-            GuildWarTextBox = new DXTextBox
-            {
-                Parent = GuildWarPanel,
-                Location = new Point(ClientArea.X + 55, label.Location.Y),
-                Size = new Size(110, 20),
-                MaxLength = Globals.MaxCharacterNameLength
-            };
-            GuildWarTextBox.TextBox.TextChanged += GuildWarTextBox_TextChanged;
-            GuildWarTextBox.TextBox.KeyPress += GuildWarTextBox_KeyPress;
 
             StartWarButton = new DXButton
             {
-                Parent = GuildWarPanel,
-                Location = new Point(ClientArea.X + 170, label.Location.Y - 1),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(60, SmallButtonHeight),
-                Label = { Text = CEnvir.Language.GuildDialogManageTabGuildWarStartWarButtonLabel },
-                Enabled =  false,
+                Parent = WarPanel,
+                Location = new Point(10, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(110, DefaultHeight),
+                Label = { Text = CEnvir.Language.GuildDialogWarTabGuildWarStartWarButtonLabel }
             };
-            StartWarButton.MouseClick += (o, e) => StartWar();
-
-            label = new DXLabel
+            StartWarButton.MouseClick += (o, e) =>
             {
-                Parent = GuildWarPanel,
-                Text = string.Format(CEnvir.Language.GuildDialogManageTabGuildWarCostLabel, Globals.GuildWarCost),
-                Location = new Point(ClientArea.X + 55, label.Location.Y + 25),
+                DXInputWindow window = new DXInputWindow(CEnvir.Language.GuildDialogWarTabGuildWarConfirmMessage, CEnvir.Language.GuildDialogWarTabGuildWarStartWarButtonLabel)
+                {
+                    ConfirmButton = { Enabled = false },
+                    Modal = true
+                };
+                window.ValueTextBox.TextBox.TextChanged += (o1, e1) =>
+                {
+                    window.ConfirmButton.Enabled = Globals.GuildNameRegex.IsMatch(window.ValueTextBox.TextBox.Text);
+                };
+                window.ConfirmButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.GuildWar { GuildName = window.Value });
+                };
             };
 
-            
 
             int count = 0;
             foreach (CastleInfo castle in CEnvir.CastleInfoList.Binding)
             {
                 CastlePanels[castle] = new GuildCastlePanel
                 {
-                    Parent = ManageTab,
+                    Parent = WarTab,
                     Castle = castle,
-                    Location =  new Point(5 + count * 255, 275)
+                    Location =  new Point(14, (142 * count) + 7),
+                    Visible = true
                 };
                 count++;
             }
@@ -1586,36 +1606,139 @@ namespace Client.Scenes.Views
             
 
         }
-        
-        public void StartWar()
-        {
-            WarAttempted = true;
 
-            C.GuildWar p = new C.GuildWar
+        #endregion
+
+        #region Style Tab
+
+        public void CreateStyleTab()
+        {
+            StyleTab = new DXTab
             {
-                GuildName = GuildWarTextBox.TextBox.Text,
+                TabButton = { Label = { Text = "Style" } },
+                Parent = GuildTabs,
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
+            };
+            StyleTab.TabButton.MouseClick += (o, e) =>
+            {
+                BackgroundImage.Index = 265;
+                CreatePanel.Visible = false;
+                AddMemberPanel.Visible = false;
+                TreasuryPanel.Visible = false;
+                StoragePanel.Visible = false;
+                WarPanel.Visible = false;
+            };
+            StyleTab.BeforeChildrenDraw += StyleTab_BeforeChildrenDraw;
+
+            StyleColourPanel = new DXControl
+            {
+                Parent = StyleTab,
+                Location = new Point(231, 7),
+                Size = new Size(212, 89),
+                Border = false
             };
 
-            CEnvir.Enqueue(p);
+            new DXLabel
+            {
+                Text = "Colour",
+                Parent = StyleColourPanel,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+                Size = new Size(StyleColourPanel.Size.Width, 22),
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+            };
+
+            StyleColour = new DXColourControl
+            {
+                Parent = StyleColourPanel,
+                Size = new Size(110, 20),
+                Location = new Point(9, 34),
+                BackColour = Color.FromArgb(CEnvir.Random.Next(256), CEnvir.Random.Next(256), CEnvir.Random.Next(256))
+            };
+            StyleColourButton = new DXButton
+            {
+                Parent = StyleColourPanel,
+                Location = new Point(125, 34),
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(80, SmallButtonHeight),
+                Label = { Text = "Save" },
+            };
+            StyleColourButton.MouseClick += (o, e) =>
+            {
+                CEnvir.Enqueue(new C.GuildColour { Colour = StyleColour.BackColour });
+            };
+
+            StyleFlagPanel = new DXControl
+            {
+                Parent = StyleTab,
+                Location = new Point(14, 7),
+                Size = new Size(212, 292),
+                Border = false
+            };
+
+            new DXLabel
+            {
+                Text = "Flag",
+                Parent = StyleFlagPanel,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+                Size = new Size(StyleFlagPanel.Size.Width, 22),
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+            };
+
+            StyleFlagPreviousButton = new DXButton
+            {
+                Parent = StyleFlagPanel,
+                Location = new Point(5, StyleFlagPanel.Size.Height - 23),
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(60, SmallButtonHeight),
+                Label = { Text = "Previous" },
+            };
+            StyleFlagPreviousButton.MouseClick += (o, e) =>
+            {
+                int newFlag = GuildInfo.Flag - 1;
+
+                if (newFlag < 0) newFlag = 9;
+
+                CEnvir.Enqueue(new C.GuildFlag { Flag = newFlag });
+            };
+
+            StyleFlagNextButton = new DXButton
+            {
+                Parent = StyleFlagPanel,
+                Location = new Point(StyleFlagPanel.Size.Width - 65, StyleFlagPanel.Size.Height - 23),
+                ButtonType = ButtonType.SmallButton,
+                Size = new Size(60, SmallButtonHeight),
+                Label = { Text = "Next" },
+            };
+            StyleFlagNextButton.MouseClick += (o, e) =>
+            {
+                int newFlag = GuildInfo.Flag + 1;
+
+                if (newFlag > 9) newFlag = 0;
+
+                CEnvir.Enqueue(new C.GuildFlag { Flag = newFlag });
+            };
         }
-        private void GuildWarTextBox_KeyPress(object sender, KeyPressEventArgs e)
+
+        private void StyleTab_BeforeChildrenDraw(object sender, EventArgs e)
         {
-            if (e.KeyChar != (char)Keys.Enter) return;
+            MirLibrary library;
 
-            e.Handled = true;
+            int x = 100;
+            int y = 270;
 
-            if (StartWarButton.Enabled)
-                StartWar();
-        }
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.CastleFlag, out library)) return;
 
-        private void GuildWarTextBox_TextChanged(object sender, EventArgs e)
-        {
-            GuildWarNameValid = Globals.GuildNameRegex.IsMatch(GuildWarTextBox.TextBox.Text);
-
-            if (string.IsNullOrEmpty(GuildWarTextBox.TextBox.Text))
-                GuildWarTextBox.BorderColour = Color.FromArgb(198, 166, 99);
-            else
-                GuildWarTextBox.BorderColour = GuildWarNameValid ? Color.Green : Color.Red;
+            library.Draw(GuildInfo.Flag * 100, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+            library.Draw(GuildInfo.Flag * 100, DisplayArea.X + x, DisplayArea.Y + y, GuildInfo.Colour, true, 1F, ImageType.Overlay);
         }
 
         #endregion
@@ -1638,6 +1761,30 @@ namespace Client.Scenes.Views
                     GuildTabs = null;
                 }
 
+                if (BackgroundImage != null)
+                {
+                    if (!BackgroundImage.IsDisposed)
+                        BackgroundImage.Dispose();
+
+                    BackgroundImage = null;
+                }
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
                 #region Create Tab
 
                 if (CreateTab != null)
@@ -1646,6 +1793,14 @@ namespace Client.Scenes.Views
                         CreateTab.Dispose();
 
                     CreateTab = null;
+                }
+
+                if (TreasuryPanel != null)
+                {
+                    if (!TreasuryPanel.IsDisposed)
+                        TreasuryPanel.Dispose();
+
+                    TreasuryPanel = null;
                 }
 
                 if (GuildNameBox != null)
@@ -1728,6 +1883,14 @@ namespace Client.Scenes.Views
                     HomeTab = null;
                 }
 
+                if (SetTaxButton != null)
+                {
+                    if (!SetTaxButton.IsDisposed)
+                        SetTaxButton.Dispose();
+
+                    SetTaxButton = null;
+                }
+
                 if (MemberLimitLabel != null)
                 {
                     if (!MemberLimitLabel.IsDisposed)
@@ -1766,6 +1929,14 @@ namespace Client.Scenes.Views
                         DailyContributionLabel.Dispose();
 
                     DailyContributionLabel = null;
+                }
+
+                if (GuildTaxLabel != null)
+                {
+                    if (!GuildTaxLabel.IsDisposed)
+                        GuildTaxLabel.Dispose();
+
+                    GuildTaxLabel = null;
                 }
 
                 if (NoticeScrollBar != null)
@@ -1820,6 +1991,38 @@ namespace Client.Scenes.Views
                     MemberTab = null;
                 }
 
+                if (AddMemberPanel != null)
+                {
+                    if (!AddMemberPanel.IsDisposed)
+                        AddMemberPanel.Dispose();
+
+                    AddMemberPanel = null;
+                }
+
+                if (AddMemberButton != null)
+                {
+                    if (!AddMemberButton.IsDisposed)
+                        AddMemberButton.Dispose();
+
+                    AddMemberButton = null;
+                }
+
+                if (EditDefaultMemberButton != null)
+                {
+                    if (!EditDefaultMemberButton.IsDisposed)
+                        EditDefaultMemberButton.Dispose();
+
+                    EditDefaultMemberButton = null;
+                }
+
+                if (IncreaseMemberButton != null)
+                {
+                    if (!IncreaseMemberButton.IsDisposed)
+                        IncreaseMemberButton.Dispose();
+
+                    IncreaseMemberButton = null;
+                }
+
                 if (MemberRows != null)
                 {
                     for (int i = 0; i < MemberRows.Length; i++)
@@ -1853,6 +2056,22 @@ namespace Client.Scenes.Views
                         StorageTab.Dispose();
 
                     StorageTab = null;
+                }
+
+                if (StoragePanel != null)
+                {
+                    if (!StoragePanel.IsDisposed)
+                        StoragePanel.Dispose();
+
+                    StoragePanel = null;
+                }
+
+                if (IncreaseStorageButton != null)
+                {
+                    if (!IncreaseStorageButton.IsDisposed)
+                        IncreaseStorageButton.Dispose();
+
+                    IncreaseStorageButton = null;
                 }
 
                 if (ItemNameTextBox != null)
@@ -1907,135 +2126,97 @@ namespace Client.Scenes.Views
 
                 #endregion
                 
-                #region Manage Tab
+                #region War Tab
 
-                if (ManageTab != null)
+                if (WarTab != null)
                 {
-                    if (!ManageTab.IsDisposed)
-                        ManageTab.Dispose();
+                    if (!WarTab.IsDisposed)
+                        WarTab.Dispose();
 
-                    ManageTab = null;
+                    WarTab = null;
                 }
 
-                if (GuildFundLabel1 != null)
-                {
-                    if (!GuildFundLabel1.IsDisposed)
-                        GuildFundLabel1.Dispose();
+                #endregion
 
-                    GuildFundLabel1 = null;
+                #region StyleTab
+
+                if (StyleTab != null)
+                {
+                    if (!StyleTab.IsDisposed)
+                        StyleTab.Dispose();
+
+                    StyleTab = null;
                 }
 
-                if (MemberLimitLabel1 != null)
+                if (StyleColourPanel != null)
                 {
-                    if (!MemberLimitLabel1.IsDisposed)
-                        MemberLimitLabel1.Dispose();
+                    if (!StyleColourPanel.IsDisposed)
+                        StyleColourPanel.Dispose();
 
-                    MemberLimitLabel1 = null;
+                    StyleColourPanel = null;
                 }
 
-                if (StorageSizeLabel != null)
+                if (StyleFlagPanel != null)
                 {
-                    if (!StorageSizeLabel.IsDisposed)
-                        StorageSizeLabel.Dispose();
+                    if (!StyleFlagPanel.IsDisposed)
+                        StyleFlagPanel.Dispose();
 
-                    StorageSizeLabel = null;
-                }
-                
-                if (AddMemberTextBox != null)
-                {
-                    if (!AddMemberTextBox.IsDisposed)
-                        AddMemberTextBox.Dispose();
-
-                    AddMemberTextBox = null;
+                    StyleFlagPanel = null;
                 }
 
-                if (MemberTaxBox != null)
+                if (StyleColourButton != null)
                 {
-                    if (!MemberTaxBox.IsDisposed)
-                        MemberTaxBox.Dispose();
+                    if (!StyleColourButton.IsDisposed)
+                        StyleColourButton.Dispose();
 
-                    MemberTaxBox = null;
+                    StyleColourButton = null;
                 }
 
-                if (AddMemberButton != null)
+                if (StyleFlagPreviousButton != null)
                 {
-                    if (!AddMemberButton.IsDisposed)
-                        AddMemberButton.Dispose();
+                    if (!StyleFlagPreviousButton.IsDisposed)
+                        StyleFlagPreviousButton.Dispose();
 
-                    AddMemberButton = null;
+                    StyleFlagPreviousButton = null;
                 }
 
-                if (EditDefaultMemberButton != null)
+                if (StyleFlagNextButton != null)
                 {
-                    if (!EditDefaultMemberButton.IsDisposed)
-                        EditDefaultMemberButton.Dispose();
+                    if (!StyleFlagNextButton.IsDisposed)
+                        StyleFlagNextButton.Dispose();
 
-                    EditDefaultMemberButton = null;
+                    StyleFlagNextButton = null;
                 }
 
-                if (SetTaxButton != null)
+                if (StyleFlagLabel != null)
                 {
-                    if (!SetTaxButton.IsDisposed)
-                        SetTaxButton.Dispose();
+                    if (!StyleFlagLabel.IsDisposed)
+                        StyleFlagLabel.Dispose();
 
-                    SetTaxButton = null;
+                    StyleFlagLabel = null;
                 }
 
-                if (IncreaseMemberButton != null)
+                if (StyleColourLabel != null)
                 {
-                    if (!IncreaseMemberButton.IsDisposed)
-                        IncreaseMemberButton.Dispose();
+                    if (!StyleColourLabel.IsDisposed)
+                        StyleColourLabel.Dispose();
 
-                    IncreaseMemberButton = null;
+                    StyleColourLabel = null;
                 }
 
-                if (IncreaseStorageButton != null)
+                if (StyleColour != null)
                 {
-                    if (!IncreaseStorageButton.IsDisposed)
-                        IncreaseStorageButton.Dispose();
+                    if (!StyleColour.IsDisposed)
+                        StyleColour.Dispose();
 
-                    IncreaseStorageButton = null;
+                    StyleColour = null;
                 }
-                
-                if (GuildTaxBox != null)
-                {
-                    if (!GuildTaxBox.IsDisposed)
-                        GuildTaxBox.Dispose();
-
-                    GuildTaxBox = null;
-                }
-
-                if (AddMemberPanel != null)
-                {
-                    if (!AddMemberPanel.IsDisposed)
-                        AddMemberPanel.Dispose();
-
-                    AddMemberPanel = null;
-                }
-
-                if (TreasuryPanel != null)
-                {
-                    if (!TreasuryPanel.IsDisposed)
-                        TreasuryPanel.Dispose();
-
-                    TreasuryPanel = null;
-                }
-
-                if (UpgradePanel != null)
-                {
-                    if (!UpgradePanel.IsDisposed)
-                        UpgradePanel.Dispose();
-
-                    UpgradePanel = null;
-                }
-
 
                 #endregion
 
                 _GuildInfo = null;
                 GuildInfoChanged = null;
             }
-
         }
 
         #endregion
@@ -2127,7 +2308,7 @@ namespace Client.Scenes.Views
 
         public GuildMemberRow()
         {
-            Size = new Size(488, 20);
+            Size = new Size(402, 20);
 
             DrawTexture = true;
             BackColour = /*Selected ? Color.FromArgb(80, 80, 125) :*/ Color.FromArgb(25, 20, 0);
@@ -2393,13 +2574,13 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = CEnvir.Language.GuildMemberDialogMemberLabel,
             };
-            label.Location = new Point(ClientArea.X + 80 - label.Size.Width, ClientArea.Y);
+            label.Location = new Point(080 - label.Size.Width, ClientArea.Y);
 
 
             MemberNameLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(ClientArea.X + 80, label.Location.Y),
+                Location = new Point(080, label.Location.Y),
                 ForeColour = Color.White,
             };
 
@@ -2409,12 +2590,12 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = CEnvir.Language.GuildMemberDialogRankLabel,
             };
-            label.Location = new Point(ClientArea.X + 80 - label.Size.Width, MemberNameLabel.Location.Y + 20);
+            label.Location = new Point(080 - label.Size.Width, MemberNameLabel.Location.Y + 20);
 
             RankTextBox = new DXTextBox
             {
                 Parent = this,
-                Location = new Point(ClientArea.X + 80, label.Location.Y), 
+                Location = new Point(080, label.Location.Y), 
                 Size = new Size(120, 20),
                 MaxLength = Globals.MaxCharacterNameLength
             };
@@ -2425,7 +2606,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.GuildMemberDialogLeaderLabel },
             };
             LeaderBox.CheckedChanged += (o, e) => UpdatePermission();
-            LeaderBox.Location = new Point(ClientArea.X + 94 - LeaderBox.Size.Width, RankTextBox.Location.Y + 24);
+            LeaderBox.Location = new Point(094 - LeaderBox.Size.Width, RankTextBox.Location.Y + 24);
 
             EditNoticeBox = new DXCheckBox
             {
@@ -2433,7 +2614,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.GuildMemberDialogEditNoticeLabel },
             };
             EditNoticeBox.CheckedChanged += (o, e) => UpdatePermission();
-            EditNoticeBox.Location = new Point(ClientArea.X + 94 - EditNoticeBox.Size.Width, LeaderBox.Location.Y + 20);
+            EditNoticeBox.Location = new Point(094 - EditNoticeBox.Size.Width, LeaderBox.Location.Y + 20);
 
             AddMemberBox = new DXCheckBox
             {
@@ -2441,7 +2622,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.GuildMemberDialogAddMemberLabel },
             };
             AddMemberBox.CheckedChanged += (o, e) => UpdatePermission();
-            AddMemberBox.Location = new Point(ClientArea.X + 94 - AddMemberBox.Size.Width, EditNoticeBox.Location.Y + 20);
+            AddMemberBox.Location = new Point(094 - AddMemberBox.Size.Width, EditNoticeBox.Location.Y + 20);
             
             StorageBox = new DXCheckBox
             {
@@ -2449,7 +2630,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.GuildMemberDialogUseStorageLabel },
             };
             StorageBox.CheckedChanged += (o, e) => UpdatePermission();
-            StorageBox.Location = new Point(ClientArea.X + 94 - StorageBox.Size.Width, AddMemberBox.Location.Y + 20);
+            StorageBox.Location = new Point(094 - StorageBox.Size.Width, AddMemberBox.Location.Y + 20);
 
             StartWarBox = new DXCheckBox
             {
@@ -2457,7 +2638,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.GuildMemberDialogStartWarLabel },
             };
             StartWarBox.CheckedChanged += (o, e) => UpdatePermission();
-            StartWarBox.Location = new Point(ClientArea.X + 94 - StartWarBox.Size.Width, StorageBox.Location.Y + 20);
+            StartWarBox.Location = new Point(094 - StartWarBox.Size.Width, StorageBox.Location.Y + 20);
 
             RepairBox = new DXCheckBox
             {
@@ -2465,7 +2646,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.GuildMemberDialogRepairLabel },
             };
             RepairBox.CheckedChanged += (o, e) => UpdatePermission();
-            RepairBox.Location = new Point(ClientArea.X + 200 - RepairBox.Size.Width, EditNoticeBox.Location.Y );
+            RepairBox.Location = new Point(0200 - RepairBox.Size.Width, EditNoticeBox.Location.Y );
 
 
             MerchantBox = new DXCheckBox
@@ -2474,7 +2655,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.GuildMemberDialogMerchantLabel },
             };
             MerchantBox.CheckedChanged += (o, e) => UpdatePermission();
-            MerchantBox.Location = new Point(ClientArea.X + 200 - MerchantBox.Size.Width, RepairBox.Location.Y + 20);
+            MerchantBox.Location = new Point(0200 - MerchantBox.Size.Width, RepairBox.Location.Y + 20);
 
             MarketBox = new DXCheckBox
             {
@@ -2482,13 +2663,13 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.GuildMemberDialogMarketLabel },
             };
             MarketBox.CheckedChanged += (o, e) => UpdatePermission();
-            MarketBox.Location = new Point(ClientArea.X + 200 - MarketBox.Size.Width, MerchantBox.Location.Y + 20);
+            MarketBox.Location = new Point(0200 - MarketBox.Size.Width, MerchantBox.Location.Y + 20);
 
 
             ConfirmButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(ClientArea.X + 120, StorageBox.Location.Y + 40),
+                Location = new Point(0120, StorageBox.Location.Y + 40),
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(80, SmallButtonHeight),
                 Label = { Text = CEnvir.Language.CommonControlConfirm },
@@ -2704,9 +2885,11 @@ namespace Client.Scenes.Views
 
         public GuildCastlePanel()
         {
-            Size = new Size(250, 118);
-            Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            Size = new Size(428, 133);
+
+            Border = false;
+
+            AfterDraw += GuildCastlePanel_AfterDraw;
 
             CastleNameLabel =  new DXLabel
             {
@@ -2717,23 +2900,22 @@ namespace Client.Scenes.Views
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
-                Size = new Size(Size.Width, 22),
+                Size = new Size(348, 30),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
             };
-           // CastleNameLabel.SizeChanged += (o, e) => CastleNameLabel.Location = new Point((Size.Width - CastleNameLabel.Size.Width) / 2, 0);
 
             DXLabel label = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelOwnerLabel,
             };
-            label.Location = new Point(80 - label.Size.Width, 25);
+            label.Location = new Point(110 - label.Size.Width, 35);
 
             CastleOwnerLabel = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelNoneText,
-                Location = new Point(80, 25),
+                Location = new Point(110, 35),
                 ForeColour = Color.White
             };
 
@@ -2742,44 +2924,56 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelScheduleLabel,
             };
-            label.Location = new Point(80 - label.Size.Width, 45);
-
+            label.Location = new Point(110 - label.Size.Width, 60);
 
             CastleDateLabel = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelNoneText,
-                Location = new Point(80, 45),
+                Location = new Point(110, 60),
                 ForeColour = Color.White
             };
 
             RequestButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(80, 75),
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(100, SmallButtonHeight),
+                Location = new Point(359, 85),
+                ButtonType = ButtonType.Default,
+                Size = new Size(60, DefaultHeight),
                 Label = { Text = CEnvir.Language.GuildCastlePanelRequestButtonLabel },
                 Enabled = false,
             };
             RequestButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GuildRequestConquest { Index = Castle.Index });
-
 
             label = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelCostLabel,
             };
-            label.Location = new Point(80 - label.Size.Width, 95);
+            label.Location = new Point(110 - label.Size.Width, 110);
 
             ItemLabel = new DXLabel
             {
                 Parent = this,
                 Text = CEnvir.Language.GuildCastlePanelNoneText,
-                Location = new Point(80, 95),
+                Location = new Point(110, 110),
                 ForeColour = Color.White
             };
+        }
 
+        private void GuildCastlePanel_AfterDraw(object sender, EventArgs e)
+        {
+            if (CEnvir.LibraryList.TryGetValue(LibraryFile.Inventory, out MirLibrary library))
+            {
+                if (library != null && Castle.Item != null)
+                {
+                    var s = library.GetSize(Castle.Item.Image);
+                    var x = (36 - s.Width) / 2 + DisplayArea.X;
+                    var y = (36 - s.Height) / 2 + DisplayArea.Y;
+
+                    library.Draw(Castle.Item.Image, x + 372, y + 18, Color.White, false, 1F, ImageType.Image);
+                }
+            }
         }
 
         public void Update()

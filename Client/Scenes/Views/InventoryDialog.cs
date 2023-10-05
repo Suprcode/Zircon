@@ -428,7 +428,7 @@ namespace Client.Scenes.Views
             RefreshSecondaryCurrency();
         }
 
-        public void SetPrimaryCurrency(CurrencyInfo currency)
+        private void SetPrimaryCurrency(CurrencyInfo currency)
         {
             PrimaryCurrency = currency ?? Globals.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold);
         }
@@ -443,7 +443,6 @@ namespace Client.Scenes.Views
             PrimaryCurrencyLabel.Text = userCurrency.Amount.ToString("#,##0");
         }
 
-        //TODO - Allow secondary currency to change its default??
         private void SetSecondaryCurrency(CurrencyInfo currency)
         {
             SecondaryCurrency = currency ?? Globals.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.GameGold);

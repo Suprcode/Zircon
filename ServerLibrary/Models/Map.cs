@@ -30,6 +30,7 @@ namespace Server.Models
         public List<MapObject> Objects { get; } = new List<MapObject>();
         public List<PlayerObject> Players { get; } = new List<PlayerObject>();
         public List<MonsterObject> Bosses { get; } = new List<MonsterObject>();
+        public List<MonsterObject> Flags { get; } = new List<MonsterObject>();
         public List<NPCObject> NPCs { get; } = new List<NPCObject>();
         public HashSet<MapObject>[] OrderedObjects;
 
@@ -86,6 +87,7 @@ namespace Server.Models
         public void Setup()
         {
             CreateGuards();
+            CreateFlags();
 
             LastPlayer = DateTime.UtcNow;
         }
@@ -105,6 +107,35 @@ namespace Server.Models
             }
         }
 
+        private void CreateFlags()
+        {
+            foreach (var castle in Info.Castles)
+            {
+                foreach (var info in castle.Flags)
+                {
+                    MonsterObject mob = MonsterObject.GetMonster(info.Monster);
+
+                    if (!mob.Spawn(this, new Point(info.X, info.Y)))
+                    {
+                        SEnvir.Log($"Failed to spawn Flag Map:{Info.Description}, Location: {info.X}, {info.Y}");
+                        continue;
+                    }
+
+                    Flags.Add(mob);
+                }
+            }
+        }
+
+        public void RefreshFlags()
+        {
+            foreach (var ob in Flags)
+            {
+                if (ob is CastleFlag flag)
+                {
+                    flag.CurrentGuild = null;
+                }
+            }
+        }
 
         public void Process()
         {

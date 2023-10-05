@@ -130,13 +130,6 @@ namespace Server
         {
             base.OnClosing(e);
 
-            //TODO
-            //if (XtraMessageBox.Show("Are you sure you want to close the server?", "Close Server", MessageBoxButtons.YesNo) != DialogResult.Yes)
-            //{
-            //    e.Cancel = true;
-            //    return;
-            //}
-
             Session.BackUpDelay = 0;
             Session?.Save(true);
 

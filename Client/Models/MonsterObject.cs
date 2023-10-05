@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Controls;
-using Client.Envir;
+﻿using Client.Envir;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
 using Library.SystemModels;
-using SlimDX;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Client.Models
@@ -35,6 +31,10 @@ namespace Client.Models
         public SoundIndex AttackSound, StruckSound, DieSound;
 
         public bool Extra, EasterEvent, ChristmasEvent, HalloweenEvent;
+
+        public int Extra1;
+
+        public Color Colour;
 
         public override int RenderY
         {
@@ -98,7 +98,10 @@ namespace Client.Models
             PetOwner = info.PetOwner;
             NameColour = info.NameColour;
             Extra = info.Extra;
-            
+
+            Extra1 = info.Extra1;
+            Colour = info.Colour;
+
             CurrentLocation = info.Location;
             Direction = info.Direction;
             
@@ -2046,6 +2049,17 @@ namespace Client.Models
                     //Fuckjed up Mob
 
                     break;
+                case MonsterImage.CastleFlag:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.CastleFlag, out BodyLibrary);
+
+                    BodyOffSet = 100;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.CastleFlag)
+                        Frames[frame.Key] = frame.Value;
+
+                    BodyShape = Extra1;
+
+                    break;
                 default:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_1, out BodyLibrary);
                     BodyShape = 0;
@@ -2218,8 +2232,8 @@ namespace Client.Models
                     BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
                     break;
             }
-
         }
+
         public void DrawBody(int x, int y)
         {
             switch (Image)
@@ -2232,11 +2246,14 @@ namespace Client.Models
                     BodyLibrary.Draw(BodyFrame + 1000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
                     BodyLibrary.Draw(BodyFrame + 2000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
                     break;
+                case MonsterImage.CastleFlag:
+                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
+                    BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Colour, true, 1F, ImageType.Overlay);
+                    break;
                 default:
                     BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
                     break;
             }
-
 
             MirLibrary library;
             switch (Image)

@@ -264,7 +264,7 @@ namespace Client.Scenes.Views
             TabControl = new DXTabControl
             {
                 Parent = this,
-                Location = new Point(0, 20),
+                Location = new Point(0, 19),
                 Size = new Size(DisplayArea.Width, DisplayArea.Height),
                 MarginLeft = 18
             };
@@ -617,6 +617,7 @@ namespace Client.Scenes.Views
                 TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabLabel } },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
+                Location = new Point(0, 22),
             };
 
             StatsDefenseTab = new DXTab
@@ -625,6 +626,7 @@ namespace Client.Scenes.Views
                 TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsDefenseTabLabel } },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
+                Location = new Point(0, 22),
             };
             StatsWeightTab = new DXTab
             {
@@ -632,6 +634,7 @@ namespace Client.Scenes.Views
                 TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsWeightTabLabel } },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
+                Location = new Point(0, 22),
             };
             StatsOtherTab = new DXTab
             {
@@ -639,6 +642,7 @@ namespace Client.Scenes.Views
                 TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsOtherTabLabel } },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
+                Location = new Point(0, 22),
             };
             StatsElementAttackTab = new DXTab
             {
@@ -646,6 +650,7 @@ namespace Client.Scenes.Views
                 TabButton = { Label = { Text = CEnvir.Language.CommonStatusElementAttack } },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
+                Location = new Point(0, 22),
             };
             StatsElementAdvantageTab = new DXTab
             {
@@ -653,6 +658,7 @@ namespace Client.Scenes.Views
                 TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsElementAdvantageTabLabel } },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
+                Location = new Point(0, 22),
             };
             StatsElementDisadvantageTab = new DXTab
             {
@@ -660,6 +666,7 @@ namespace Client.Scenes.Views
                 TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsElementDisadvantageTabLabel } },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
+                Location = new Point(0, 22),
             };
 
             #endregion
@@ -1691,15 +1698,15 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Label = { Text = CEnvir.Language.CharacterHermitTabShowConfirmationLabel },
                 Checked = true,
+                Location = new Point(175, 78)
             };
-            HermitShowConfirmation.Location = new Point(175, 77);
 
             label = new DXLabel
             {
                 Parent = HermitTab,
                 Text = CEnvir.Language.CharacterHermitTabUnspentPointsLabel
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 28, 150);
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + 28, 151);
 
             HermitRemainingLabel = new DXLabel
             {
@@ -1716,7 +1723,7 @@ namespace Client.Scenes.Views
             var button = new DXButton
             {
                 Parent = HermitTab,
-                Location = new Point(x, 97),
+                Location = new Point(x, 98),
                 Label = { Text = CEnvir.Language.CommonStatusAC },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(65, SmallButtonHeight)
@@ -1743,7 +1750,7 @@ namespace Client.Scenes.Views
             button = new DXButton
             {
                 Parent = HermitTab,
-                Location = new Point(x, 122),
+                Location = new Point(x, 123),
                 Label = { Text = CEnvir.Language.CommonStatusMR },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(65, SmallButtonHeight),
@@ -1772,7 +1779,7 @@ namespace Client.Scenes.Views
             button = new DXButton
             {
                 Parent = HermitTab,
-                Location = new Point(x, 97),
+                Location = new Point(x, 98),
                 Label = { Text = CEnvir.Language.CommonStatusHealth },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(65, SmallButtonHeight)
@@ -1799,7 +1806,7 @@ namespace Client.Scenes.Views
             button = new DXButton
             {
                 Parent = HermitTab,
-                Location = new Point(x, 122),
+                Location = new Point(x, 123),
                 Label = { Text = CEnvir.Language.CommonStatusMana },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(65, SmallButtonHeight)
@@ -1828,7 +1835,7 @@ namespace Client.Scenes.Views
             button = new DXButton
             {
                 Parent = HermitTab,
-                Location = new Point(x, 97),
+                Location = new Point(x, 98),
                 Label = { Text = CEnvir.Language.CommonStatusDC },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(65, SmallButtonHeight)
@@ -1855,7 +1862,7 @@ namespace Client.Scenes.Views
             button = new DXButton
             {
                 Parent = HermitTab,
-                Location = new Point(x, 122),
+                Location = new Point(x, 123),
                 Label = { Text = CEnvir.Language.CharacterHermitTabButtonsMCLabel },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(65, SmallButtonHeight)
@@ -1884,7 +1891,7 @@ namespace Client.Scenes.Views
             button = new DXButton
             {
                 Parent = HermitTab,
-                Location = new Point(x, 97),
+                Location = new Point(x, 98),
                 Label = { Text = CEnvir.Language.CharacterHermitTabButtonsSCLabel },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(65, SmallButtonHeight)
@@ -1911,7 +1918,7 @@ namespace Client.Scenes.Views
             button = new DXButton
             {
                 Parent = HermitTab,
-                Location = new Point(x, 122),
+                Location = new Point(x, 123),
                 Label = { Text = CEnvir.Language.CharacterHermitTabButtonsElementLabel },
                 ButtonType = ButtonType.SmallButton,
                 Size = new Size(65, SmallButtonHeight)
@@ -1945,7 +1952,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = CEnvir.Language.CommonStatusAC + ":"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + xOffset, 175);
+            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + xOffset, 176);
 
             HermitDisplayStats[Stat.MaxAC] = new DXLabel
             {
@@ -1960,7 +1967,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = CEnvir.Language.CommonStatusMR + ":"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + xOffset, 175);
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + xOffset, 176);
 
             HermitDisplayStats[Stat.MaxMR] = new DXLabel
             {
@@ -1975,7 +1982,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = CEnvir.Language.CommonStatusDC + ":"
             };
-            label.Location = new Point(HermitTab.Size.Width / 5 - label.Size.Width + xOffset, 205);
+            label.Location = new Point(HermitTab.Size.Width / 5 - label.Size.Width + xOffset, 206);
 
             HermitDisplayStats[Stat.MaxDC] = new DXLabel
             {
@@ -1990,7 +1997,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = CEnvir.Language.CommonStatusMC + ":"
             };
-            label.Location = new Point(HermitTab.Size.Width / 5 * 2 - label.Size.Width + xOffset, 205);
+            label.Location = new Point(HermitTab.Size.Width / 5 * 2 - label.Size.Width + xOffset, 206);
 
             HermitDisplayStats[Stat.MaxMC] = new DXLabel
             {
@@ -2005,7 +2012,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = CEnvir.Language.CommonStatusSC + ":"
             };
-            label.Location = new Point(HermitTab.Size.Width / 5 * 3 - label.Size.Width + xOffset, 205);
+            label.Location = new Point(HermitTab.Size.Width / 5 * 3 - label.Size.Width + xOffset, 206);
 
             HermitDisplayStats[Stat.MaxSC] = new DXLabel
             {
@@ -2020,7 +2027,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = CEnvir.Language.CommonStatusHealth + ":"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + xOffset, 235);
+            label.Location = new Point(HermitTab.Size.Width / 4 - label.Size.Width + xOffset, 236);
 
             HermitDisplayStats[Stat.Health] = new DXLabel
             {
@@ -2035,7 +2042,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = CEnvir.Language.CommonStatusMana + ":"
             };
-            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + xOffset, 235);
+            label.Location = new Point(HermitTab.Size.Width / 4 * 2 - label.Size.Width + xOffset, 236);
 
             HermitDisplayStats[Stat.Mana] = new DXLabel
             {
@@ -2053,7 +2060,7 @@ namespace Client.Scenes.Views
                 Parent = HermitTab,
                 Text = CEnvir.Language.CommonStatusElementAttack + ":"
             };
-            label.Location = new Point(65 - label.Size.Width, 295);
+            label.Location = new Point(65 - label.Size.Width, 296);
 
             icon = new DXImageControl
             {
@@ -2144,7 +2151,7 @@ namespace Client.Scenes.Views
             HermitAttackStats[Stat.HolyAttack] = new DXLabel
             {
                 Parent = HermitTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 30),
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 31),
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Text = "0",
                 Tag = icon,
@@ -2158,12 +2165,12 @@ namespace Client.Scenes.Views
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusDark,
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 30);
+            icon.Location = new Point(label.Location.X + label.Size.Width + 50, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 31);
 
             HermitAttackStats[Stat.DarkAttack] = new DXLabel
             {
                 Parent = HermitTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 30),
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 31),
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Text = "0",
                 Tag = icon,
@@ -2177,12 +2184,12 @@ namespace Client.Scenes.Views
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusPhantom,
             };
-            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 30);
+            icon.Location = new Point(label.Location.X + label.Size.Width + 100, label.Location.Y + (label.Size.Height - icon.Size.Height) / 2 + 31);
 
             HermitAttackStats[Stat.PhantomAttack] = new DXLabel
             {
                 Parent = HermitTab,
-                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 30),
+                Location = new Point(icon.Location.X + icon.Size.Width, label.Location.Y + 31),
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Text = "0",
                 Tag = icon,
@@ -2204,7 +2211,7 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.Interface,
                 Size = new Size(256, 192)
             };
-            DisciplineLevel.Location = new Point((Size.Width - DisciplineLevel.Size.Width) / 2, 63);
+            DisciplineLevel.Location = new Point((Size.Width - DisciplineLevel.Size.Width) / 2, 64);
 
             label = new DXLabel
             {
@@ -2219,7 +2226,7 @@ namespace Client.Scenes.Views
                 Parent = DisciplineTab,
                 AutoSize = false,
                 Size = new Size(46, 18),
-                Location = new Point(116, 313),
+                Location = new Point(116, 314),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Text = "0",
                 ForeColour = Color.White
@@ -2232,14 +2239,14 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
                 Visible = false
             };
-            label.Location = new Point(166, 313);
+            label.Location = new Point(166, 314);
 
             DisciplineUnusedLabel = new DXLabel
             {
                 Parent = DisciplineTab,
                 AutoSize = false,
                 Size = new Size(49, 18),
-                Location = new Point(266, 313),
+                Location = new Point(266, 314),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Text = "???",
                 ForeColour = Color.White,
@@ -2252,14 +2259,14 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.CharacterDisciplineTabExpLabel,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left
             };
-            label.Location = new Point(13, 335);
+            label.Location = new Point(13, 336);
 
             DisciplineExperienceLabel = new DXLabel
             {
                 Parent = DisciplineTab,
                 AutoSize = false,
                 Size = new Size(303, 18),
-                Location = new Point(14, 335),
+                Location = new Point(14, 336),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Text = "0/0",
                 ForeColour = Color.White
@@ -2269,7 +2276,7 @@ namespace Client.Scenes.Views
             {
                 Parent = DisciplineTab,
                 Label = { Text = CEnvir.Language.CharacterDisciplineTabButtonGainLabel },
-                Location = new Point(182, 265),
+                Location = new Point(182, 266),
                 Size = new Size(120, DefaultHeight),
                 Enabled = false
             };
@@ -2684,7 +2691,7 @@ namespace Client.Scenes.Views
                             Parent = DisciplineTab,
                             Info = magic.Info,
                             BackColour = Color.Empty,
-                            Location = new Point(x, 379)
+                            Location = new Point(x, 380)
                         };
                         DisciplineMagics[magic.Info] = cell;
                     }

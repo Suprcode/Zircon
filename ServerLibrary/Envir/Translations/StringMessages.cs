@@ -63,6 +63,9 @@ namespace Server.Envir
         public abstract string ConquestCapture { get; set; }
         public abstract string ConquestOwner { get; set; }
         public abstract string ConquestLost { get; set; }
+        public abstract string ConquestTakingFlag { get; set; }
+        public abstract string ConquestPreventingFlag { get; set; }
+        public abstract string ConquestNotTakingFlag { get; set; }
 
         [ConfigSection("Monster")]
         public abstract string BossSpawn { get; set; }
