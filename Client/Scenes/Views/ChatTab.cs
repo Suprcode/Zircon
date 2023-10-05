@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -265,6 +266,8 @@ namespace Client.Scenes.Views
                     y -= label.Size.Height;
                     label.Location = new Point(0, y);
                 }
+
+                ScrollBar.Value = Math.Max(ScrollBar.MinValue, Math.Min(ScrollBar.MaxValue - ScrollBar.VisibleSize, ScrollBar.MaxValue));
             }
             else
             {

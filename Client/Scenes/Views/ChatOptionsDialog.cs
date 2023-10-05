@@ -204,7 +204,7 @@ namespace Client.Scenes.Views
 
             panel.ReverseListCheckBox.CheckedChanged += (o, e1) =>
             {
-                tab.ScrollBar.Value = tab.ScrollBar.MaxValue;
+                
                 tab.UpdateItems();
             };
 
@@ -279,8 +279,8 @@ namespace Client.Scenes.Views
 
             ChatTab systemTab = AddNewTab(null);
 
-            systemTab.CurrentTabControl.Size = new Size(350, 100);
-            systemTab.CurrentTabControl.Location = new Point(GameScene.Game.MainPanel.Location.X + GameScene.Game.MainPanel.Size.Width - 350, GameScene.Game.MainPanel.Location.Y - 100);
+            systemTab.CurrentTabControl.Size = new Size(350, 104);
+            systemTab.CurrentTabControl.Location = new Point(GameScene.Game.MainPanel.Location.X + GameScene.Game.MainPanel.Size.Width - 350, GameScene.Game.MainPanel.Location.Y - 104);
 
             systemTab.Panel.LocalCheckBox.Checked = false;
             systemTab.Panel.WhisperCheckBox.Checked = false;

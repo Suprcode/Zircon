@@ -129,7 +129,7 @@ namespace Server.Models
 
                 if (player.Character.Account.GuildMember?.Guild?.Castle == Castle) continue;
 
-                player.Teleport(Castle.AttackSpawnRegion, null, 0); //TODO
+                player.Teleport(Castle.AttackSpawnRegion, null, 0);
             }
         }
 

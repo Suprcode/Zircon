@@ -235,7 +235,6 @@ namespace Server.Models.Monsters
             {
                 case ObjectType.Player:
                     PlayerObject player = (PlayerObject)ob;
-                    //if (player.GameMaster) return false;
 
                     return player.Character.Account.GuildMember?.Guild.Castle != War.Castle;
                 default:
@@ -259,7 +258,6 @@ namespace Server.Models.Monsters
             {
                 case ObjectType.Player:
                     PlayerObject player = (PlayerObject)ob;
-                    //if (player.GameMaster) return false;
 
                     return player.Character.Account.GuildMember?.Guild.Castle != War.Castle;
                 default:

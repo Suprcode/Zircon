@@ -28,7 +28,6 @@ namespace Server.Models.Monsters
             return x == 0 || x == y || y == 0;
         }
 
-
         public override void ProcessTarget()
         {
             if (Target == null) return;
@@ -39,7 +38,6 @@ namespace Server.Models.Monsters
 
                 if (targets.Count > 0)
                 {
-
                     foreach (MapObject ob in targets)
                     {
                         if (CurrentHP > Stats[Stat.Health] / 2 && SEnvir.Random.Next(2) > 0) continue;
@@ -51,7 +49,6 @@ namespace Server.Models.Monsters
                     Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, CurrentLocation = CurrentLocation, Cast = true, Type = MagicType.None, Targets = new List<uint> { Target.ObjectID } });
                     CastTime = SEnvir.Now + CastDelay;
                 }
-
             }
 
             if (!InAttackRange())
@@ -140,8 +137,6 @@ namespace Server.Models.Monsters
                         break;
                     }
                 }
-
-
             }
         }
 
@@ -255,7 +250,6 @@ namespace Server.Models.Monsters
                 default:
                     throw new NotImplementedException();
             }
-
         }
 
         public override void Die()
@@ -301,7 +295,6 @@ namespace Server.Models.Monsters
 
                 foreach (PlayerObject player in SEnvir.Players)
                     player.ApplyCastleBuff();
-
 
                 War = null;
             }
