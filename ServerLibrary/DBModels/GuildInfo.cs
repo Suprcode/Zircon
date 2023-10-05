@@ -270,8 +270,6 @@ namespace Server.DBModels
         }
         private int _Flag;
 
-
-
         public UserItem[] Storage = new UserItem[1000];
 
         [Association("Members", true)]

@@ -25,7 +25,7 @@ namespace Server.Models.Monsters
         private GuildInfo Contester = null;
         private DateTime ContesterTime = DateTime.MaxValue;
 
-        private GuildInfo oldGuild = null;
+        public GuildInfo CurrentGuild = null;
 
         private int _flag = 0;
         private Color _colour = Color.White;
@@ -56,7 +56,7 @@ namespace Server.Models.Monsters
 
             GuildInfo ownerGuild = SEnvir.GuildInfoList.Binding.FirstOrDefault(x => x.Castle == castle);
 
-            if (oldGuild != ownerGuild)
+            if (CurrentGuild != ownerGuild)
             {
                 _flag = ownerGuild?.Flag ?? 0;
                 _colour = Color.FromArgb(ownerGuild?.Colour.R ?? 0, ownerGuild?.Colour.G ?? 0, ownerGuild?.Colour.B ?? 0);
@@ -67,7 +67,7 @@ namespace Server.Models.Monsters
                 Visible = true;
                 AddAllObjects();
 
-                oldGuild = ownerGuild;
+                CurrentGuild = ownerGuild;
             }
 
             if (Target != null && !InAttackRange())

@@ -4583,6 +4583,7 @@ namespace Server.Models
                 member.Account.Connection.Enqueue(new S.GuildConquestDate { Index = castle.Index, WarTime = (date + castle.StartTime) - SEnvir.Now, ObserverPacket = false });
             }
         }
+
         public void GuildColour(Color colour)
         {
             if (Character.Account.GuildMember == null) return;
@@ -4595,11 +4596,18 @@ namespace Server.Models
 
             Character.Account.GuildMember.Guild.Colour = colour;
 
+            if (Character.Account.GuildMember.Guild.Castle != null)
+            {
+                var map = SEnvir.GetMap(Character.Account.GuildMember.Guild.Castle.Map);
+                map.RefreshFlags();
+            }
+
             S.GuildUpdate update = Character.Account.GuildMember.Guild.GetUpdatePacket();
 
             foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
                 member.Account.Connection?.Player?.Enqueue(update);
         }
+
         public void GuildFlag(int flag)
         {
             if (Character.Account.GuildMember == null) return;
@@ -4614,11 +4622,18 @@ namespace Server.Models
 
             Character.Account.GuildMember.Guild.Flag = flag;
 
+            if (Character.Account.GuildMember.Guild.Castle != null)
+            {
+                var map = SEnvir.GetMap(Character.Account.GuildMember.Guild.Castle.Map);
+                map.RefreshFlags();
+            }
+
             S.GuildUpdate update = Character.Account.GuildMember.Guild.GetUpdatePacket();
 
             foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
                 member.Account.Connection?.Player?.Enqueue(update);
         }
+
         public void GuildJoin()
         {
             if (GuildInvitation != null && GuildInvitation.Node == null) GuildInvitation = null;
@@ -4653,7 +4668,6 @@ namespace Server.Models
                 return;
             }
 
-
             GuildMemberInfo memberInfo = SEnvir.GuildMemberInfoList.CreateNewObject();
 
             memberInfo.Account = Character.Account;
@@ -4661,7 +4675,6 @@ namespace Server.Models
             memberInfo.Rank = GuildInvitation.Character.Account.GuildMember.Guild.DefaultRank;
             memberInfo.JoinDate = SEnvir.Now;
             memberInfo.Permission = GuildInvitation.Character.Account.GuildMember.Guild.DefaultPermission;
-
 
             SendGuildInfo();
             Connection.ReceiveChat(string.Format(Connection.Language.GuildJoinWelcome, Name), MessageType.System);
@@ -4687,6 +4700,7 @@ namespace Server.Models
             ApplyCastleBuff();
             ApplyGuildBuff();
         }
+
         public void GuildLeave()
         {
             if (Character.Account.GuildMember == null) return;
@@ -4714,8 +4728,6 @@ namespace Server.Models
 
             Broadcast(new S.GuildChanged { ObjectID = ObjectID });
             RemoveAllObjects();
-
-
 
             foreach (GuildMemberInfo member in guild.Members)
             {
@@ -4754,6 +4766,7 @@ namespace Server.Models
 
             return false;
         }
+
         public void SendGuildInfo()
         {
             if (Character.Account.GuildMember == null) return;

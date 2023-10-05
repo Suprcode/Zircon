@@ -30,6 +30,7 @@ namespace Server.Models
         public List<MapObject> Objects { get; } = new List<MapObject>();
         public List<PlayerObject> Players { get; } = new List<PlayerObject>();
         public List<MonsterObject> Bosses { get; } = new List<MonsterObject>();
+        public List<MonsterObject> Flags { get; } = new List<MonsterObject>();
         public List<NPCObject> NPCs { get; } = new List<NPCObject>();
         public HashSet<MapObject>[] OrderedObjects;
 
@@ -119,6 +120,19 @@ namespace Server.Models
                         SEnvir.Log($"Failed to spawn Flag Map:{Info.Description}, Location: {info.X}, {info.Y}");
                         continue;
                     }
+
+                    Flags.Add(mob);
+                }
+            }
+        }
+
+        public void RefreshFlags()
+        {
+            foreach (var ob in Flags)
+            {
+                if (ob is CastleFlag flag)
+                {
+                    flag.CurrentGuild = null;
                 }
             }
         }

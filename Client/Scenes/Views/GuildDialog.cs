@@ -32,6 +32,8 @@ namespace Client.Scenes.Views
 
         public DXCheckBox GoldCheckBox, HornCheckBox;
 
+        public DXControl CreatePanel;
+
         #region MemberLimit
 
         public int MemberLimit
@@ -140,7 +142,6 @@ namespace Client.Scenes.Views
 
         #endregion
 
-
         public bool CanCreate => !CreateAttempted && GuildNameValid && GameScene.Game != null && TotalCost <= GameScene.Game.User.Gold.Amount;
         public int TotalCost => (int) Math.Min(int.MaxValue, (GoldCheckBox.Checked ? Globals.GuildCreationCost : 0) + (MemberLimit * Globals.GuildMemberCost) + (StorageSize * Globals.GuildStorageCost));
 
@@ -247,16 +248,78 @@ namespace Client.Scenes.Views
 
         public DateTime SabukWarDate;
 
-        //TODO - Custom load/save
-        //TODO - Dispose style tab controls
-        //TODO - Dispose backgroundimage
-        //TODO - Dispose TitleLabel
-        //TODO - Dispose CloseButton
-
         public DXLabel TitleLabel;
         public DXButton CloseButton;
 
         public DXImageControl BackgroundImage;
+
+        public WindowSetting Settings;
+        public WindowType Type => WindowType.GuildBox;
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Visible = Visible;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            if (IsVisible)
+                BringToFront();
+
+            if (Settings != null)
+                Settings.Visible = nValue;
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
+
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    if (CloseButton.Visible)
+                    {
+                        CloseButton.InvokeMouseClick();
+                        if (!Config.EscapeCloseAll)
+                            e.Handled = true;
+                    }
+                    break;
+            }
+        }
 
         #endregion
 
@@ -444,6 +507,10 @@ namespace Client.Scenes.Views
             StoragePanel.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
             WarPanel.Enabled = (GuildInfo.Permission & GuildPermission.StartWar) == GuildPermission.StartWar;
 
+            StyleColourButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
+            StyleFlagPreviousButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
+            StyleFlagNextButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
+
             foreach (KeyValuePair<CastleInfo, GuildCastlePanel> pair in CastlePanels)
                 pair.Value.RequestButton.Enabled = (GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader;
 
@@ -481,11 +548,31 @@ namespace Client.Scenes.Views
             CreateTab.TabButton.MouseClick += (o, e) =>
             {
                 BackgroundImage.Index = 266;
+                CreatePanel.Visible = true;
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
                 WarPanel.Visible = false;
             };
+
+            CreatePanel = new DXControl
+            {
+                Parent = this,
+                Location = new Point(10, 500),
+                Size = new Size(436, 50),
+                Border = false,
+                Visible = true
+            };
+
+            StarterGuildButton = new DXButton
+            {
+                Parent = CreatePanel,
+                Location = new Point(10, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(120, DefaultHeight),
+                Label = { Text = CEnvir.Language.GuildDialogCreateTabStarterGuildButtonLabel }
+            };
+            StarterGuildButton.MouseClick += StarterGuildButton_MouseClick;
 
             DXLabel stepLabel = new DXLabel
             {
@@ -693,16 +780,6 @@ namespace Client.Scenes.Views
 
             CreateButton.MouseClick += CreateButton_MouseClick;
 
-            StarterGuildButton = new DXButton
-            {
-                Parent = CreateTab,
-                ButtonType = ButtonType.SmallButton,
-                Size = new Size(120, SmallButtonHeight),
-                Label = { Text = CEnvir.Language.GuildDialogCreateTabStarterGuildButtonLabel },
-                Location = new Point(0, TotalCostBox.Location.Y + 40)
-            };
-            StarterGuildButton.MouseClick += StarterGuildButton_MouseClick;
-
         }
 
         private void StarterGuildButton_MouseClick(object sender, MouseEventArgs e)
@@ -768,6 +845,7 @@ namespace Client.Scenes.Views
             HomeTab.TabButton.MouseClick += (o, e) =>
             {
                 BackgroundImage.Index = 261;
+                CreatePanel.Visible = false;
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = true;
                 StoragePanel.Visible = false;
@@ -1097,6 +1175,7 @@ namespace Client.Scenes.Views
             MemberTab.TabButton.MouseClick += (o, e) =>
             {
                 BackgroundImage.Index = 262;
+                CreatePanel.Visible = false;
                 AddMemberPanel.Visible = true;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
@@ -1244,6 +1323,7 @@ namespace Client.Scenes.Views
             StorageTab.TabButton.MouseClick += (o, e) =>
             {
                 BackgroundImage.Index = 263;
+                CreatePanel.Visible = false;
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = true;
@@ -1453,6 +1533,7 @@ namespace Client.Scenes.Views
             WarTab.TabButton.MouseClick += (o, e) =>
             {
                 BackgroundImage.Index = 264;
+                CreatePanel.Visible = false;
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
@@ -1542,6 +1623,7 @@ namespace Client.Scenes.Views
             StyleTab.TabButton.MouseClick += (o, e) =>
             {
                 BackgroundImage.Index = 265;
+                CreatePanel.Visible = false;
                 AddMemberPanel.Visible = false;
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
@@ -1687,6 +1769,22 @@ namespace Client.Scenes.Views
                     BackgroundImage = null;
                 }
 
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
                 #region Create Tab
 
                 if (CreateTab != null)
@@ -1695,6 +1793,14 @@ namespace Client.Scenes.Views
                         CreateTab.Dispose();
 
                     CreateTab = null;
+                }
+
+                if (TreasuryPanel != null)
+                {
+                    if (!TreasuryPanel.IsDisposed)
+                        TreasuryPanel.Dispose();
+
+                    TreasuryPanel = null;
                 }
 
                 if (GuildNameBox != null)
@@ -1775,6 +1881,14 @@ namespace Client.Scenes.Views
                         HomeTab.Dispose();
 
                     HomeTab = null;
+                }
+
+                if (SetTaxButton != null)
+                {
+                    if (!SetTaxButton.IsDisposed)
+                        SetTaxButton.Dispose();
+
+                    SetTaxButton = null;
                 }
 
                 if (MemberLimitLabel != null)
@@ -1877,6 +1991,38 @@ namespace Client.Scenes.Views
                     MemberTab = null;
                 }
 
+                if (AddMemberPanel != null)
+                {
+                    if (!AddMemberPanel.IsDisposed)
+                        AddMemberPanel.Dispose();
+
+                    AddMemberPanel = null;
+                }
+
+                if (AddMemberButton != null)
+                {
+                    if (!AddMemberButton.IsDisposed)
+                        AddMemberButton.Dispose();
+
+                    AddMemberButton = null;
+                }
+
+                if (EditDefaultMemberButton != null)
+                {
+                    if (!EditDefaultMemberButton.IsDisposed)
+                        EditDefaultMemberButton.Dispose();
+
+                    EditDefaultMemberButton = null;
+                }
+
+                if (IncreaseMemberButton != null)
+                {
+                    if (!IncreaseMemberButton.IsDisposed)
+                        IncreaseMemberButton.Dispose();
+
+                    IncreaseMemberButton = null;
+                }
+
                 if (MemberRows != null)
                 {
                     for (int i = 0; i < MemberRows.Length; i++)
@@ -1910,6 +2056,22 @@ namespace Client.Scenes.Views
                         StorageTab.Dispose();
 
                     StorageTab = null;
+                }
+
+                if (StoragePanel != null)
+                {
+                    if (!StoragePanel.IsDisposed)
+                        StoragePanel.Dispose();
+
+                    StoragePanel = null;
+                }
+
+                if (IncreaseStorageButton != null)
+                {
+                    if (!IncreaseStorageButton.IsDisposed)
+                        IncreaseStorageButton.Dispose();
+
+                    IncreaseStorageButton = null;
                 }
 
                 if (ItemNameTextBox != null)
@@ -1964,7 +2126,7 @@ namespace Client.Scenes.Views
 
                 #endregion
                 
-                #region Manage Tab
+                #region War Tab
 
                 if (WarTab != null)
                 {
@@ -1974,77 +2136,87 @@ namespace Client.Scenes.Views
                     WarTab = null;
                 }
 
-                if (AddMemberButton != null)
-                {
-                    if (!AddMemberButton.IsDisposed)
-                        AddMemberButton.Dispose();
+                #endregion
 
-                    AddMemberButton = null;
+                #region StyleTab
+
+                if (StyleTab != null)
+                {
+                    if (!StyleTab.IsDisposed)
+                        StyleTab.Dispose();
+
+                    StyleTab = null;
                 }
 
-                if (EditDefaultMemberButton != null)
+                if (StyleColourPanel != null)
                 {
-                    if (!EditDefaultMemberButton.IsDisposed)
-                        EditDefaultMemberButton.Dispose();
+                    if (!StyleColourPanel.IsDisposed)
+                        StyleColourPanel.Dispose();
 
-                    EditDefaultMemberButton = null;
+                    StyleColourPanel = null;
                 }
 
-                if (SetTaxButton != null)
+                if (StyleFlagPanel != null)
                 {
-                    if (!SetTaxButton.IsDisposed)
-                        SetTaxButton.Dispose();
+                    if (!StyleFlagPanel.IsDisposed)
+                        StyleFlagPanel.Dispose();
 
-                    SetTaxButton = null;
+                    StyleFlagPanel = null;
                 }
 
-                if (IncreaseMemberButton != null)
+                if (StyleColourButton != null)
                 {
-                    if (!IncreaseMemberButton.IsDisposed)
-                        IncreaseMemberButton.Dispose();
+                    if (!StyleColourButton.IsDisposed)
+                        StyleColourButton.Dispose();
 
-                    IncreaseMemberButton = null;
+                    StyleColourButton = null;
                 }
 
-                if (IncreaseStorageButton != null)
+                if (StyleFlagPreviousButton != null)
                 {
-                    if (!IncreaseStorageButton.IsDisposed)
-                        IncreaseStorageButton.Dispose();
+                    if (!StyleFlagPreviousButton.IsDisposed)
+                        StyleFlagPreviousButton.Dispose();
 
-                    IncreaseStorageButton = null;
-                }
-                
-                if (AddMemberPanel != null)
-                {
-                    if (!AddMemberPanel.IsDisposed)
-                        AddMemberPanel.Dispose();
-
-                    AddMemberPanel = null;
+                    StyleFlagPreviousButton = null;
                 }
 
-                if (TreasuryPanel != null)
+                if (StyleFlagNextButton != null)
                 {
-                    if (!TreasuryPanel.IsDisposed)
-                        TreasuryPanel.Dispose();
+                    if (!StyleFlagNextButton.IsDisposed)
+                        StyleFlagNextButton.Dispose();
 
-                    TreasuryPanel = null;
+                    StyleFlagNextButton = null;
                 }
 
-                if (StoragePanel != null)
+                if (StyleFlagLabel != null)
                 {
-                    if (!StoragePanel.IsDisposed)
-                        StoragePanel.Dispose();
+                    if (!StyleFlagLabel.IsDisposed)
+                        StyleFlagLabel.Dispose();
 
-                    StoragePanel = null;
+                    StyleFlagLabel = null;
                 }
 
+                if (StyleColourLabel != null)
+                {
+                    if (!StyleColourLabel.IsDisposed)
+                        StyleColourLabel.Dispose();
+
+                    StyleColourLabel = null;
+                }
+
+                if (StyleColour != null)
+                {
+                    if (!StyleColour.IsDisposed)
+                        StyleColour.Dispose();
+
+                    StyleColour = null;
+                }
 
                 #endregion
 
                 _GuildInfo = null;
                 GuildInfoChanged = null;
             }
-
         }
 
         #endregion
