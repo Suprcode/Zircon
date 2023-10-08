@@ -315,7 +315,7 @@ namespace Client.Scenes.Views
                         colour = Color.Orange; 
                 }
 
-                if (ob.MonsterInfo.Flag == MonsterFlag.ConquestObjective)
+                if (ob.MonsterInfo.Flag == MonsterFlag.CastleObjective)
                 {
                     control.Visible = false;
                 }

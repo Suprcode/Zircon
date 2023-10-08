@@ -933,6 +933,8 @@ namespace Server.Models
             BuffRemove(BuffType.Ranking);
             BuffRemove(BuffType.Castle);
             BuffRemove(BuffType.Veteran);
+            BuffRemove(BuffType.ElementalHurricane);
+            BuffRemove(BuffType.SuperiorMagicShield);
 
             if (GroupMembers != null) GroupLeave();
 
@@ -1941,7 +1943,7 @@ namespace Server.Models
 
             if (Level >= Config.MaxLevel || Experience < MaxExperience)
             {
-                SEnvir.RankingSort(Character);
+                //SEnvir.RankingSort(Character);
                 return;
             }
 
@@ -8353,6 +8355,8 @@ namespace Server.Models
                 case BuffType.Ranking:
                 case BuffType.Developer:
                 case BuffType.Castle:
+                case BuffType.ElementalHurricane:
+                case BuffType.SuperiorMagicShield:
                     info.IsTemporary = true;
                     break;
             }
@@ -13133,7 +13137,7 @@ namespace Server.Models
                 }
             }
 
-            Element element = Functions.GetElement(Stats);
+            Element element = Functions.GetAttackElement(Stats);
 
             if (Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
             {
@@ -13278,6 +13282,8 @@ namespace Server.Models
                 ActionTime += slow;
             }
 
+            var element = magicObject.GetElement(Element.None);
+
             Broadcast(new S.ObjectMagic
             {
                 ObjectID = ObjectID,
@@ -13287,7 +13293,8 @@ namespace Server.Models
                 Targets = targets,
                 Locations = locations,
                 Cast = cast,
-                Slow = slow
+                Slow = slow,
+                AttackElement = element
             });
         }
 
@@ -14089,7 +14096,23 @@ namespace Server.Models
             #endregion
 
             LastHitter = attacker;
-            ChangeHP(-power);
+
+            if (!ignoreShield && Buffs.Any(x => x.Type == BuffType.SuperiorMagicShield))
+            {
+                buff = Buffs.FirstOrDefault(x => x.Type == BuffType.SuperiorMagicShield);
+
+                if (buff != null)
+                {
+                    buff.Stats[Stat.SuperiorMagicShield] -= power;
+                    if (buff.Stats[Stat.SuperiorMagicShield] <= 0)
+                        BuffRemove(buff);
+                    else
+                        Enqueue(new S.BuffChanged() { Index = buff.Index, Stats = new Stats(buff.Stats) });
+                }
+            }
+            else
+                ChangeHP(-power);
+
             LastHitter = null;
 
             if (canReflect && CanAttackTarget(attacker) && attacker.Race != ObjectType.Player)

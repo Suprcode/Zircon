@@ -29,7 +29,7 @@ namespace Server.Models
                 con.ReceiveChat(string.Format(con.Language.ConquestStarted, Castle.Name), MessageType.System);
             
 
-            Map = SEnvir.GetMap(Castle.Map); //TODO - Instance
+            Map = SEnvir.GetMap(Castle.Map);
 
             for (int i = Map.NPCs.Count - 1; i >= 0; i--)
             {

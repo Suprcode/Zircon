@@ -418,7 +418,6 @@ namespace Library
             return this[Stat.FireAttack] + this[Stat.IceAttack] + this[Stat.LightningAttack] + this[Stat.WindAttack] + this[Stat.HolyAttack] + this[Stat.DarkAttack] + this[Stat.PhantomAttack];
         }
 
-
         public int GetElementValue(Element element)
         {
             switch (element)
@@ -492,32 +491,34 @@ namespace Library
         }
         public Element GetAffinityElement()
         {
-            List<Element> elements = new List<Element>();
+            return Functions.GetAffinityElement(this);
 
-            if (this[Stat.FireAffinity] > 0)
-                elements.Add(Element.Fire);
+            //List<Element> elements = new List<Element>();
 
-            if (this[Stat.IceAffinity] > 0)
-                elements.Add(Element.Ice);
+            //if (this[Stat.FireAffinity] > 0)
+            //    elements.Add(Element.Fire);
 
-            if (this[Stat.LightningAffinity] > 0)
-                elements.Add(Element.Lightning);
+            //if (this[Stat.IceAffinity] > 0)
+            //    elements.Add(Element.Ice);
 
-            if (this[Stat.WindAffinity] > 0)
-                elements.Add(Element.Wind);
+            //if (this[Stat.LightningAffinity] > 0)
+            //    elements.Add(Element.Lightning);
 
-            if (this[Stat.HolyAffinity] > 0)
-                elements.Add(Element.Holy);
+            //if (this[Stat.WindAffinity] > 0)
+            //    elements.Add(Element.Wind);
 
-            if (this[Stat.DarkAffinity] > 0)
-                elements.Add(Element.Dark);
+            //if (this[Stat.HolyAffinity] > 0)
+            //    elements.Add(Element.Holy);
 
-            if (this[Stat.PhantomAffinity] > 0)
-                elements.Add(Element.Phantom);
+            //if (this[Stat.DarkAffinity] > 0)
+            //    elements.Add(Element.Dark);
 
-            if (elements.Count == 0) return Element.None;
+            //if (this[Stat.PhantomAffinity] > 0)
+            //    elements.Add(Element.Phantom);
 
-            return elements[Globals.Random.Next(elements.Count)];
+            //if (elements.Count == 0) return Element.None;
+
+            //return elements[Globals.Random.Next(elements.Count)];
         }
     }
 
@@ -863,6 +864,11 @@ namespace Library
         [StatDescription(Title = "Growth Level", Format = "{0}", Mode = StatType.Default)]
         GrowthLevel,
 
+        [StatDescription(Title = "You are immune to all damage.", Mode = StatType.Text)]
+        Invincibility,
+
+        [StatDescription(Title = "Absorbing Power", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default, UsageHint = "Used in Superior Magic Shield Skill to represent remaining power to absorb.")]
+        SuperiorMagicShield,
 
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,
@@ -878,9 +884,6 @@ namespace Library
         NibbleChance,
         [StatDescription(Title = "Finder Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         FinderChance,
-
-        [StatDescription(Title = "You are immune to all damage.", Mode = StatType.Text)]
-        Invincibility,
 
         [StatDescription(Title = "Duration", Mode = StatType.Time)]
         Duration = 10000,

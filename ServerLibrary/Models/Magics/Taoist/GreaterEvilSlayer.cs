@@ -95,18 +95,18 @@ namespace Server.Models.Magics.Taoist
             MapObject target = (MapObject)data[1];
             bool primary = (bool)data[2];
             var stats = (Stats)data[3];
-            var aug = (bool)data[4];
+            var hasAugmentExplosiveTalisman = (bool)data[4];
 
             var magics = new List<MagicType> { Type };
 
-            if (aug)
+            if (hasAugmentExplosiveTalisman)
             {
                 magics.Add(MagicType.AugmentExplosiveTalisman);
             }
 
             var damage = Player.MagicAttack(magics, target, primary, stats);
 
-            if (!primary && damage > 0 && aug && Player.Magics.TryGetValue(MagicType.AugmentEvilSlayer, out UserMagic augMagic))
+            if (!primary && damage > 0 && hasAugmentExplosiveTalisman && Player.Magics.TryGetValue(MagicType.AugmentEvilSlayer, out UserMagic augMagic))
             {
                 Player.LevelMagic(augMagic);
             }

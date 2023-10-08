@@ -734,8 +734,8 @@ namespace Server.DBModels
         }
         private string _FiltersItemType;
 
-        public Dictionary<RequiredClass, int> LastRank = new Dictionary<RequiredClass, int>();
-        public Dictionary<RequiredClass, int> CurrentRank = new Dictionary<RequiredClass, int>();
+        public Dictionary<RequiredClass, int> CurrentRank = new ();
+        public Dictionary<RequiredClass, int> RankChange = new ();
 
         protected override void OnLoaded()
         {

@@ -341,10 +341,7 @@ namespace Client.Models
                 Magics[magic.Info] = magic;
 
             foreach (ClientBuffInfo buff in info.Buffs)
-            {
-                Buffs.Add(buff);
-                VisibleBuffs.Add(buff.Type);
-            }
+                AddBuff(buff);
 
             foreach (ClientUserCurrency currency in info.Currencies)
             {
@@ -440,7 +437,7 @@ namespace Client.Models
                     if (CEnvir.Now < MoveTime) return;
                     break;
                 case MirAction.Attack:
-                    action.Extra[2] = Functions.GetElement(Stats);
+                    action.Extra[2] = Functions.GetAttackElement(Stats);
                     
                     if (GameScene.Game.Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
                     {
@@ -733,6 +730,18 @@ namespace Client.Models
             GameScene.Game.CharacterBox.CharacterNameLabel.Text = Name;
 
             GameScene.Game.TradeBox.UserLabel.Text = Name;
+        }
+
+        public void AddBuff(ClientBuffInfo buff)
+        {
+            Buffs.Add(buff);
+            VisibleBuffs.Add(buff.Type);
+
+            if (buff.Type == BuffType.SuperiorMagicShield)
+            {
+                MaximumSuperiorMagicShield = buff.Stats[Stat.SuperiorMagicShield];
+                MagicShieldEnd();
+            }
         }
 
         public ClientUserCurrency GetCurrency(ItemInfo item)

@@ -190,6 +190,7 @@ namespace Library.Network.ServerPackets
         public List<uint> Targets { get; set; } = new List<uint>();
         public List<Point> Locations { get; set; } = new List<Point>();
         public bool Cast { get; set; }
+        public Element AttackElement { get; set; }
 
         public TimeSpan Slow { get; set; }
     }

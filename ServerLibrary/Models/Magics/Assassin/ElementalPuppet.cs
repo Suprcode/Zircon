@@ -16,41 +16,11 @@ namespace Server.Models.Magics
 
         }
 
-        public override Element GetElement(Element currentElement, Stats stats = null)
+        public override Element GetElement(Element element)
         {
-            if (stats == null || stats.Count == 0)
-            {
-                return currentElement;
-            }
+            bool hasStone = Player.Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone;
 
-            foreach (KeyValuePair<Stat, int> s in stats.Values)
-            {
-                switch (s.Key)
-                {
-                    case Stat.FireAffinity:
-                        break;
-                    case Stat.IceAffinity:
-                        currentElement = Element.Ice;
-                        break;
-                    case Stat.LightningAffinity:
-                        currentElement = Element.Lightning;
-                        break;
-                    case Stat.WindAffinity:
-                        currentElement = Element.Wind;
-                        break;
-                    case Stat.HolyAffinity:
-                        currentElement = Element.Holy;
-                        break;
-                    case Stat.DarkAffinity:
-                        currentElement = Element.Dark;
-                        break;
-                    case Stat.PhantomAffinity:
-                        currentElement = Element.Phantom;
-                        break;
-                }
-            }
-
-            return currentElement;
+            return hasStone ? Player.Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement() : base.GetElement(element);
         }
 
         public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
@@ -89,7 +59,7 @@ namespace Server.Models.Magics
                 }
             }
 
-            return Slow;
+            return base.GetSlow(slow, stats);
         }
 
         public override int GetSlowLevel(int slowLevel, Stats stats = null)
@@ -105,7 +75,7 @@ namespace Server.Models.Magics
                 }
             }
 
-            return Slow;
+            return base.GetSlowLevel(slowLevel, stats);
         }
 
         public override int GetRepel(int repel, Stats stats = null)
@@ -121,7 +91,7 @@ namespace Server.Models.Magics
                 }
             }
 
-            return Repel;
+            return base.GetRepel(repel, stats);
         }
 
         public override int GetSilence(int silence, Stats stats = null)
@@ -137,7 +107,7 @@ namespace Server.Models.Magics
                 }
             }
 
-            return Silence;
+            return base.GetSilence(silence, stats);
         }
     }
 }

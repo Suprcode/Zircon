@@ -213,12 +213,17 @@ namespace Client.Scenes.Views
                     bool chatCleaned = false;
                     for (int i = History.Count - 1; i >= 0; i--)
                     {
+                        var history = History[i];
+
                         TimeSpan timeDifference = DateTime.UtcNow - History[i].SentDate;
 
-                        if (timeDifference > TimeSpan.FromSeconds(5))
+                        if (timeDifference > TimeSpan.FromSeconds(5) && history.Action == MessageAction.None)
                         {
-                            History[i].Dispose();
-                            History.RemoveAt(i);
+                            history.Dispose();
+
+                            if (History.Contains(history))
+                                History.RemoveAt(i);
+
                             chatCleaned = true;
                         }
                     }
@@ -432,7 +437,7 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(new ChatHistory { Message = label.Text, Label = label, SentDate = DateTime.UtcNow });
+            History.Add(new ChatHistory { Message = label.Text, Label = label, SentDate = DateTime.UtcNow, Action = action });
 
             while (History.Count > 250)
             {
@@ -445,7 +450,6 @@ namespace Client.Scenes.Views
             bool update = ScrollBar.Value >= ScrollBar.MaxValue - ScrollBar.VisibleSize;
 
             UpdateScrollBar();
-
 
             if (update)
             {
@@ -720,6 +724,8 @@ namespace Client.Scenes.Views
         public DXLabel Label;
         public List<ClientUserItem> LinkedItems;
         public DateTime SentDate;
+
+        public MessageAction Action;
 
         public void Dispose()
         {

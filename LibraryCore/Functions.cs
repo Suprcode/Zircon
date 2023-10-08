@@ -20,8 +20,7 @@ namespace Library
             return value1 < value2 ? value1 : value2;
         }
 
-
-        public static Element GetElement(Stats stats)
+        public static Element GetAttackElement(Stats stats)
         {
             Element attackElement = Element.None;
             int value = 0;
@@ -63,59 +62,62 @@ namespace Library
             }
 
             if (stats[Stat.PhantomAttack] > value)
+            {
                 attackElement = Element.Phantom;
+            }
 
             return attackElement;
         }
-        public static int GetElement(Stats stats, out Element element)
+
+        public static Element GetAffinityElement(Stats stats)
         {
-            element = Element.None;
+            Element affinityElement = Element.None;
             int value = 0;
 
-            if (stats[Stat.FireAttack] > value)
+            if (stats[Stat.FireAffinity] > value)
             {
-                element = Element.Fire;
-                value = stats[Stat.FireAttack];
+                affinityElement = Element.Fire;
+                value = stats[Stat.FireAffinity];
             }
 
-            if (stats[Stat.IceAttack] > value)
+            if (stats[Stat.IceAffinity] > value)
             {
-                element = Element.Ice;
-                value = stats[Stat.IceAttack];
+                affinityElement = Element.Ice;
+                value = stats[Stat.IceAffinity];
             }
 
-            if (stats[Stat.LightningAttack] > value)
+            if (stats[Stat.LightningAffinity] > value)
             {
-                element = Element.Lightning;
-                value = stats[Stat.LightningAttack];
+                affinityElement = Element.Lightning;
+                value = stats[Stat.LightningAffinity];
             }
 
-            if (stats[Stat.WindAttack] > value)
+            if (stats[Stat.WindAffinity] > value)
             {
-                element = Element.Wind;
-                value = stats[Stat.WindAttack];
+                affinityElement = Element.Wind;
+                value = stats[Stat.WindAffinity];
             }
 
-            if (stats[Stat.HolyAttack] > value)
+            if (stats[Stat.HolyAffinity] > value)
             {
-                element = Element.Holy;
-                value = stats[Stat.HolyAttack];
+                affinityElement = Element.Holy;
+                value = stats[Stat.HolyAffinity];
             }
 
-            if (stats[Stat.DarkAttack] > value)
+            if (stats[Stat.DarkAffinity] > value)
             {
-                element = Element.Dark;
-                value = stats[Stat.DarkAttack];
+                affinityElement = Element.Dark;
+                value = stats[Stat.DarkAffinity];
             }
 
-            if (stats[Stat.PhantomAttack] > value)
+            if (stats[Stat.PhantomAffinity] > value)
             {
-                element = Element.Phantom;
-                value = stats[Stat.PhantomAttack];
+                affinityElement = Element.Phantom;
             }
 
-            return value;
+            return affinityElement;
         }
+
         public static MirAnimation GetAttackAnimation(MirClass @class, int weaponShape, MagicType magicType)
         {
             MirAnimation animation;
@@ -254,7 +256,11 @@ namespace Library
                 case MagicType.SummonDemonicCreature:
                 case MagicType.DemonExplosion:
                 case MagicType.Scarecrow:
+                case MagicType.SuperiorMagicShield:
                     return MirAnimation.Combat2;
+
+                case MagicType.ElementalHurricane:
+                    return MirAnimation.ChannellingStart;
 
                 case MagicType.PoisonousCloud:
                 case MagicType.SummonPuppet:
@@ -296,6 +302,36 @@ namespace Library
                 default:
                     throw new NotImplementedException();
             }
+        }
+        public static Color GetElementColour(Element element)
+        {
+            Color colour = Globals.NoneColour;
+            switch (element)
+            {
+                case Element.Fire:
+                    colour = Globals.FireColour;
+                    break;
+                case Element.Ice:
+                    colour = Globals.IceColour;
+                    break;
+                case Element.Lightning:
+                    colour = Globals.LightningColour;
+                    break;
+                case Element.Wind:
+                    colour = Globals.WindColour;
+                    break;
+                case Element.Holy:
+                    colour = Globals.HolyColour;
+                    break;
+                case Element.Dark:
+                    colour = Globals.DarkColour;
+                    break;
+                case Element.Phantom:
+                    colour = Globals.PhantomColour;
+                    break;
+            }
+
+            return colour;
         }
 
         public static bool IsMatch(byte[] a, byte[] b, long offSet = 0)

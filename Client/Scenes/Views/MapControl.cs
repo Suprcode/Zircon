@@ -760,8 +760,10 @@ namespace Client.Scenes.Views
                 User.MagicAction = null;
                 Mining = false;
             }
-            
-            if (MapObject.TargetObject != null && !MapObject.TargetObject.Dead && ((MapObject.TargetObject.Race == ObjectType.Monster && string.IsNullOrEmpty(MapObject.TargetObject.PetOwner)) || CEnvir.Shift))
+
+            bool haselementalhurricane = MapObject.User.VisibleBuffs.Contains(BuffType.ElementalHurricane);
+
+            if (!haselementalhurricane && MapObject.TargetObject != null && !MapObject.TargetObject.Dead && ((MapObject.TargetObject.Race == ObjectType.Monster && string.IsNullOrEmpty(MapObject.TargetObject.PetOwner)) || CEnvir.Shift))
             {
                 if (Functions.Distance(MapObject.TargetObject.CurrentLocation, MapObject.User.CurrentLocation) ==  1 && CEnvir.Now > User.AttackTime && User.Horse == HorseType.None)
                 {
@@ -780,7 +782,7 @@ namespace Client.Scenes.Views
 
             MirDirection direction = MouseDirection(), best;
 
-            if (GameScene.Game.AutoRun)
+            if (GameScene.Game.AutoRun && !haselementalhurricane)
             {
                 if (!GameScene.Game.MoveFrame || (User.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip) return;
                 Run(direction);
@@ -798,7 +800,7 @@ namespace Client.Scenes.Views
                         {
                             if (FishingState != FishingState.None) return;
 
-                            if (CEnvir.Now > User.AttackTime && User.Horse == HorseType.None)
+                            if (CEnvir.Now > User.AttackTime && User.Horse == HorseType.None && !haselementalhurricane)
                                 MapObject.User.AttemptAction(new ObjectAction(MirAction.Attack, direction, MapObject.User.CurrentLocation, 0, MagicType.None, Element.None));
 
                             return;
@@ -809,6 +811,7 @@ namespace Client.Scenes.Views
 
                         if (CEnvir.Alt)
                         {
+                            if (haselementalhurricane) return;
                             if (User.Horse != HorseType.None) return;
                             if (FishingState != FishingState.None) return;
 
@@ -850,7 +853,7 @@ namespace Client.Scenes.Views
 
                         if (MapObject.MouseObject != null && MapObject.MouseObject.Race != ObjectType.Item && !MapObject.MouseObject.Dead) break;
 
-                        if (MapInfo.CanMine && weap != null && weap.Info.ItemEffect == ItemEffect.PickAxe)
+                        if (!haselementalhurricane && MapInfo.CanMine && weap != null && weap.Info.ItemEffect == ItemEffect.PickAxe)
                         {
                             MiningPoint = Functions.Move(User.CurrentLocation, direction);
 
@@ -861,7 +864,7 @@ namespace Client.Scenes.Views
                             }
                         }
 
-                        if (!CanMove(direction, 1))
+                        if (!CanMove(direction, 1) || haselementalhurricane)
                         {
                             best = MouseDirectionBest(direction, 1);
 
@@ -874,7 +877,8 @@ namespace Client.Scenes.Views
 
                             direction = best;
                         }
-                        if (GameScene.Game.MoveFrame && (User.Poison & PoisonType.WraithGrip) != PoisonType.WraithGrip)
+
+                        if (!haselementalhurricane && GameScene.Game.MoveFrame && (User.Poison & PoisonType.WraithGrip) != PoisonType.WraithGrip)
                             MapObject.User.AttemptAction(new ObjectAction(MirAction.Moving, direction, Functions.Move(MapObject.User.CurrentLocation, direction), 1, MagicType.None));
                         return;
                     case MouseButtons.Right:
@@ -890,7 +894,7 @@ namespace Client.Scenes.Views
 
                         if (!GameScene.Game.MoveFrame || (User.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip) break;
                         
-                        if (Functions.InRange(MapLocation, MapObject.User.CurrentLocation, 2))
+                        if (Functions.InRange(MapLocation, MapObject.User.CurrentLocation, 2) || haselementalhurricane)
                         {
                             if (direction != User.Direction)
                                 MapObject.User.AttemptAction(new ObjectAction(MirAction.Standing, direction, MapObject.User.CurrentLocation));
@@ -953,7 +957,7 @@ namespace Client.Scenes.Views
 
             direction = Functions.DirectionFromPoint(MapObject.User.CurrentLocation, MapObject.TargetObject.CurrentLocation);
 
-            if (!CanMove(direction, 1))
+            if (!CanMove(direction, 1) || haselementalhurricane)
             {
                 best = DirectionBest(direction, 1, MapObject.TargetObject.CurrentLocation);
 
@@ -966,7 +970,7 @@ namespace Client.Scenes.Views
                 direction = best;
             }
 
-            if (GameScene.Game.MoveFrame && (User.Poison & PoisonType.WraithGrip) != PoisonType.WraithGrip)
+            if (!haselementalhurricane && GameScene.Game.MoveFrame && (User.Poison & PoisonType.WraithGrip) != PoisonType.WraithGrip)
                 MapObject.User.AttemptAction(new ObjectAction(MirAction.Moving, direction, Functions.Move(MapObject.User.CurrentLocation, direction), 1, MagicType.None));
         }
 

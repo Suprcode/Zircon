@@ -24,7 +24,19 @@ namespace Client.Models
         public int FrameCount;
         public TimeSpan[] Delays;
 
-        public int FrameIndex;
+        public int FrameIndex
+        {
+            get { return _FrameIndex; }
+            set
+            {
+                if (_FrameIndex == value) return;
+
+                _FrameIndex = value;
+                FrameIndexAction?.Invoke();
+            }
+        }
+        private int _FrameIndex;
+
         public Color DrawColour = Color.White;
         public bool Blend;
         public bool Reversed;
@@ -106,6 +118,7 @@ namespace Client.Models
 
         public Action CompleteAction;
         public Action FrameAction;
+        public Action FrameIndexAction;
 
         public Point AdditionalOffSet;
 
@@ -222,6 +235,7 @@ namespace Client.Models
         {
             CompleteAction = null;
             FrameAction = null;
+            FrameIndexAction = null;
             GameScene.Game.MapControl.Effects.Remove(this);
             Target?.Effects.Remove(this);
         }

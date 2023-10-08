@@ -207,6 +207,8 @@ namespace Client.Envir
             
             [SoundIndex.FrostBiteStart] = new DXSound(SoundPath + @"m135-2.wav", SoundType.Magic),
 
+            [SoundIndex.ElementalHurricane] = new DXSound(SoundPath + @"m141-1.wav", SoundType.Magic),
+
             [SoundIndex.HealStart] = new DXSound(SoundPath + @"M2-1.wav", SoundType.Magic),
             [SoundIndex.HealEnd] = new DXSound(SoundPath + @"M2-3.wav", SoundType.Magic),
 

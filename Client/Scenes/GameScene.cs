@@ -2890,7 +2890,9 @@ namespace Client.Scenes
                     //Endurance
             }
 
-            if (CEnvir.Now < User.NextMagicTime || User.Dead || User.Buffs.Any(x => x.Type == BuffType.DragonRepulse || x.Type ==  BuffType.FrostBite) ||     
+            if (CEnvir.Now < User.NextMagicTime || User.Dead || 
+                User.Buffs.Any(x => x.Type == BuffType.DragonRepulse || x.Type ==  BuffType.FrostBite) ||
+                (User.Buffs.Any(x => x.Type == BuffType.ElementalHurricane) && magic.Info.Magic != MagicType.ElementalHurricane) ||     
                 (User.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || 
                 (User.Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
 
@@ -2957,6 +2959,21 @@ namespace Client.Scenes
                         {
                             OutputTime = CEnvir.Now.AddSeconds(1);
                             ReceiveChat(string.Format(CEnvir.Language.GameSceneCastNoEnoughMana, magic.Info.Name), MessageType.Hint);
+                        }
+                        return;
+                    }
+                    break;
+                case MagicType.ElementalHurricane:
+                    int cost = magic.Cost;
+                    if (MapObject.User.VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                        cost = 0;
+
+                    if (cost > User.CurrentMP)
+                    {
+                        if (CEnvir.Now >= OutputTime)
+                        {
+                            OutputTime = CEnvir.Now.AddSeconds(1);
+                            ReceiveChat($"Unable to cast {magic.Info.Name}, You do not have enough Mana.", MessageType.Hint);
                         }
                         return;
                     }
@@ -3094,7 +3111,10 @@ namespace Client.Scenes
                 case MagicType.StrengthOfFaith:
                     break;
                 case MagicType.MagicShield:
-                    if (User.Buffs.Any(x => x.Type == BuffType.MagicShield)) return;
+                    if (User.Buffs.Any(x => x.Type == BuffType.MagicShield || x.Type == BuffType.SuperiorMagicShield)) return;
+                    break;
+                case MagicType.SuperiorMagicShield:
+                    if (User.Buffs.Any(x => x.Type == BuffType.SuperiorMagicShield)) return;
                     break;
                 case MagicType.FrostBite:
                     if (User.Buffs.Any(x => x.Type == BuffType.FrostBite)) return;
@@ -3114,6 +3134,7 @@ namespace Client.Scenes
                 case MagicType.GreaterFrozenEarth:
                 case MagicType.ThunderStrike:
                 case MagicType.MirrorImage:
+                case MagicType.ElementalHurricane:
 
                 // case MagicType.SummonSkeleton:
                 case MagicType.Invisibility:
@@ -3209,7 +3230,7 @@ namespace Client.Scenes
             if (MouseObject != null && MouseObject.Race == ObjectType.Monster)
                 FocusObject = (MonsterObject) MouseObject;
 
-            User.MagicAction = new ObjectAction(MirAction.Spell, direction, MapObject.User.CurrentLocation, magic.Info.Magic, new List<uint> { targetID }, new List<Point> { targetLocation }, false);
+            User.MagicAction = new ObjectAction(MirAction.Spell, direction, MapObject.User.CurrentLocation, magic.Info.Magic, new List<uint> { targetID }, new List<Point> { targetLocation }, false, Element.None);
         }
 
         private bool CanAttackTarget(MapObject ob)

@@ -1228,6 +1228,7 @@ namespace Client.Envir
                 MapObject.User.MagicLocations = p.Locations;
                 MapObject.User.MagicCast = p.Cast;
                 MapObject.User.NextActionTime += p.Slow;
+                MapObject.User.AttackElement = p.AttackElement;
                 return;
             }
 
@@ -1235,7 +1236,7 @@ namespace Client.Envir
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                ob.ActionQueue.Add(new ObjectAction(MirAction.Spell, p.Direction, p.CurrentLocation, p.Type, p.Targets, p.Locations, p.Cast));
+                ob.ActionQueue.Add(new ObjectAction(MirAction.Spell, p.Direction, p.CurrentLocation, p.Type, p.Targets, p.Locations, p.Cast, p.AttackElement));
                 return;
             }
         }
@@ -1548,6 +1549,10 @@ namespace Client.Envir
                 if (ob.ObjectID != p.ObjectID) continue;
 
                 ob.VisibleBuffs.Add(p.Type);
+
+                if (p.Type == BuffType.SuperiorMagicShield && ob.MagicShieldEffect != null)
+                    ob.MagicShieldEnd();
+
                 return;
             }
         }
@@ -3097,8 +3102,7 @@ namespace Client.Envir
 
         public void Process(S.BuffAdd p)
         {
-            MapObject.User.Buffs.Add(p.Buff);
-            MapObject.User.VisibleBuffs.Add(p.Buff.Type);
+            MapObject.User.AddBuff(p.Buff);
 
             GameScene.Game.BuffBox.BuffsChanged();
         }

@@ -66,11 +66,6 @@ namespace Server.Models
             Magic = magic;
         }
 
-        public virtual Element GetElement(Element currentElement, Stats stats = null)
-        {
-            return Element;
-        }
-
         public virtual bool CheckCost()
         {
             if (Magic.Cost > Player.CurrentMP)
@@ -168,29 +163,52 @@ namespace Server.Models
             return new Stats();
         }
 
+        public virtual Element GetElement(Element element)
+        {
+            if (Element != Element.None)
+                return Element;
+
+            return element;
+        }
+
         public virtual int GetSlow(int slow, Stats stats = null)
         {
-            return Slow;
+            if (Slow > 0)
+                return Slow;
+
+            return slow;
         }
 
         public virtual int GetSlowLevel(int slowLevel, Stats stats = null)
         {
-            return SlowLevel;
+            if (SlowLevel > 0)
+                return SlowLevel;
+
+            return slowLevel;
         }
 
         public virtual int GetRepel(int repel, Stats stats = null)
         {
-            return Repel;
+            if (Repel > 0)
+                return Repel;
+
+            return repel;
         }
 
         public virtual int GetSilence(int silence, Stats stats = null)
         {
-            return Silence;
+            if (Silence > 0)
+                return Silence;
+
+            return silence;
         }
 
         public virtual int GetShock(int shock, Stats stats = null)
         {
-            return Shock;
+            if (Shock > 0)
+                return Shock;
+
+            return shock;
         }
 
         protected UserMagic GetAugmentedSkill(MagicType type)

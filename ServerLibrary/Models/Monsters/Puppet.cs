@@ -102,21 +102,34 @@ namespace Server.Models.Monsters
                     0));
             }
 
-            Effect effect = Effect.Puppet;
+            var element = Functions.GetAffinityElement(DarkStoneStats);
 
-            if (DarkStoneStats.GetAffinityValue(Element.Fire) > 0)
-                effect = Effect.PuppetFire;
-            else if (DarkStoneStats.GetAffinityValue(Element.Ice) > 0)
-                effect = Effect.PuppetIce;
-            else if (DarkStoneStats.GetAffinityValue(Element.Lightning) > 0)
-                effect = Effect.PuppetLightning;
-            else if (DarkStoneStats.GetAffinityValue(Element.Wind) > 0)
-                effect = Effect.PuppetWind;
+            Effect effect;
+
+            switch (element)
+            {
+                default:
+                    effect = Effect.Puppet;
+                    break;
+                case Element.Fire:
+                    effect = Effect.PuppetFire;
+                    break;
+                case Element.Ice:
+                    effect = Effect.PuppetIce;
+                    break;
+                case Element.Lightning:
+                    effect = Effect.PuppetLightning;
+                    break;
+                case Element.Wind:
+                    effect = Effect.PuppetWind;
+                    break;
+            }
 
             Broadcast(new S.ObjectEffect { Effect = effect, ObjectID = ObjectID });
 
             DeadTime = SEnvir.Now.AddSeconds(2);
         }
+
         public override Packet GetInfoPacket(PlayerObject ob)
         {
             if (Player?.Node == null) return null;

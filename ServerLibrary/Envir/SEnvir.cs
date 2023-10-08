@@ -498,8 +498,10 @@ namespace Server.Envir
             TopRankings = new HashSet<CharacterInfo>();
             foreach (CharacterInfo info in CharacterInfoList.Binding)
             {
+                if (info.Deleted) continue;
+
                 info.RankingNode = Rankings.AddLast(info);
-                RankingSort(info, false);
+                RankingSort(info, false, true);
             }
             UpdateLead();
             #endregion
@@ -523,16 +525,41 @@ namespace Server.Envir
             CreateMagic();
         }
 
-        public static void RankingSort(CharacterInfo character, bool updateLead = true)
+        public static void RankingSort(CharacterInfo character, bool updateLead = true, bool initialSetup = false)
         {
             //Only works on Increasing EXP, still need to do Rebirth or loss of exp ranking update.
             bool changed = false;
 
             LinkedListNode<CharacterInfo> node;
+
             while ((node = character.RankingNode.Previous) != null)
             {
                 if (node.Value.Level > character.Level) break;
                 if (node.Value.Level == character.Level && node.Value.Experience >= character.Experience) break;
+
+                if (!initialSetup)
+                {
+                    SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.All);
+
+                    if (character.Class == node.Value.Class)
+                    {
+                        switch (character.Class)
+                        {
+                            case MirClass.Warrior:
+                                SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.Warrior);
+                                break;
+                            case MirClass.Wizard:
+                                SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.Wizard);
+                                break;
+                            case MirClass.Taoist:
+                                SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.Taoist);
+                                break;
+                            case MirClass.Assassin:
+                                SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.Assassin);
+                                break;
+                        }
+                    }
+                }
 
                 changed = true;
 
@@ -543,6 +570,18 @@ namespace Server.Envir
             if (!updateLead || (TopRankings.Count >= 20 && !changed)) return; //5 * 4
 
             UpdateLead();
+        }
+
+        private static void SwapRankPosition(Dictionary<RequiredClass, int> rankA, Dictionary<RequiredClass, int> rankB, RequiredClass cls)
+        {
+            if (!rankA.ContainsKey(cls))
+                rankA[cls] = 0;
+
+            if (!rankB.ContainsKey(cls))
+                rankB[cls] = 0;
+
+            rankA[cls] = rankA[cls] + 1;
+            rankB[cls] = rankB[cls] - 1;
         }
 
         public static void UpdateLead()
@@ -3500,18 +3539,22 @@ namespace Server.Envir
 
             int total = 0;
             int rank = 0;
+            bool reset = false;
 
-            bool resetRankChange = false;
-
-            if (NextRankChangeReset < Now)
+            if (Now > NextRankChangeReset)
             {
-                resetRankChange = true;
+                reset = true;
                 NextRankChangeReset = Now + Config.RankChangeResetDelay;
             }
 
             foreach (CharacterInfo info in Rankings)
             {
                 if (info.Deleted) continue;
+
+                if (reset)
+                {
+                    info.RankChange = new();
+                }
 
                 switch (info.Class)
                 {
@@ -3531,18 +3574,17 @@ namespace Server.Envir
 
                 rank++;
 
-                //TODO - Needs changing so it runs this periodicly - instead of just when requested
-                if (resetRankChange || !info.LastRank.TryGetValue(p.Class, out int lastRank))
-                {
-                    info.LastRank[p.Class] = rank;
-                    lastRank = rank;
-                }
-
                 info.CurrentRank[p.Class] = rank;
+
+                if (!info.RankChange.ContainsKey(p.Class))
+                {
+                    info.RankChange[p.Class] = 0;
+                }
 
                 if (p.OnlineOnly && info.Player == null) continue;
 
                 if (total++ < p.StartIndex || result.Ranks.Count > 20) continue;
+
 
                 result.Ranks.Add(new RankInfo
                 {
@@ -3556,7 +3598,7 @@ namespace Server.Envir
                     Online = info.Player != null,
                     Observable = info.Observable || isGM,
                     Rebirth = info.Rebirth,
-                    RankChange = lastRank - rank
+                    RankChange = info.RankChange[p.Class]
                 });
             }
 

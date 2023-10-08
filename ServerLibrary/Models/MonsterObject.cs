@@ -1756,12 +1756,11 @@ namespace Server.Models
 
             UpdateAttackTime();
 
-
             for (int d = min; d <= max; d++)
             {
                 MirDirection direction = Functions.ShiftDirection(Direction, d);
 
-                if (magic == MagicType.LightningBeam || magic == MagicType.BlowEarth)
+                if (magic == MagicType.LightningBeam || magic == MagicType.BlowEarth || magic == MagicType.ElementalHurricane)
                     locations.Add(Functions.Move(CurrentLocation, direction, distance));
 
                 for (int i = 1; i <= distance; i++)
@@ -1771,7 +1770,7 @@ namespace Server.Models
 
                     if (cell == null) continue;
 
-                    if (magic != MagicType.LightningBeam && magic != MagicType.BlowEarth)
+                    if (magic != MagicType.LightningBeam && magic != MagicType.BlowEarth && magic != MagicType.ElementalHurricane)
                         locations.Add(cell.Location);
 
                     if (cell.Objects != null)
@@ -2347,9 +2346,16 @@ namespace Server.Models
                 Critical();
             }
 
+            buff = Buffs.FirstOrDefault(x => x.Type == BuffType.SuperiorMagicShield);
 
-
-            ChangeHP(-power);
+            if (buff != null)
+            {
+                Stats[Stat.SuperiorMagicShield] -= power;
+                if (Stats[Stat.SuperiorMagicShield] <= 0)
+                    BuffRemove(buff);
+            }
+            else
+                ChangeHP(-power);
 
 
 

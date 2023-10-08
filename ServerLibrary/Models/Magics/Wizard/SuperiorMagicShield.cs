@@ -7,13 +7,13 @@ using System.Linq;
 
 namespace Server.Models.Magics
 {
-    [MagicType(MagicType.MagicShield)]
-    public class MagicShield : MagicObject
+    [MagicType(MagicType.SuperiorMagicShield)]
+    public class SuperiorMagicShield : MagicObject
     {
         protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
 
-        public MagicShield(PlayerObject player, UserMagic magic) : base(player, magic)
+        public SuperiorMagicShield(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
@@ -34,14 +34,16 @@ namespace Server.Models.Magics
 
         public override void MagicComplete(params object[] data)
         {
-            if (Player.Buffs.Any(x => x.Type == BuffType.MagicShield) || Player.Buffs.Any(x => x.Type == BuffType.SuperiorMagicShield)) return;
+            if (Player.Buffs.Any(x => x.Type == BuffType.SuperiorMagicShield)) return;
+
+            Player.BuffRemove(BuffType.MagicShield);
 
             Stats buffStats = new Stats
             {
-                [Stat.MagicShield] = 50
+                [Stat.SuperiorMagicShield] = (int)(Player.Stats[Stat.Mana] * (0.25F + Magic.Level * 0.05F))
             };
 
-            Player.BuffAdd(BuffType.MagicShield, TimeSpan.FromSeconds(30 + Magic.Level * 20 + Player.GetMC() / 2 + Player.Stats[Stat.PhantomAttack] * 2), buffStats, true, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.SuperiorMagicShield, TimeSpan.MaxValue, buffStats, true, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
         }

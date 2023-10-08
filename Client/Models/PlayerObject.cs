@@ -539,6 +539,10 @@ namespace Client.Models
                         animation = MirAnimation.DragonRepulseMiddle;
                     else if (CurrentAnimation == MirAnimation.DragonRepulseMiddle)
                         animation = MirAnimation.DragonRepulseEnd;
+
+                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                        animation = MirAnimation.ChannellingMiddle;
+
                     break;
                 case MirAction.Moving:
                     //if(VisibleBuffs.Contains(BuffType.Stealth))
@@ -587,6 +591,10 @@ namespace Client.Models
 
                     if (type == MagicType.PoisonousCloud)
                         DrawWeapon = false;
+
+                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                        animation = MirAnimation.ChannellingEnd;
+
                     break;
                 // case MirAction.Struck:
                 //    animation = MirAnimation.Struck;
@@ -1164,17 +1172,29 @@ namespace Client.Models
         {
             if (this == User && !Config.ShowUserHealth) return;
 
-            ClientObjectData data;
-            if (!GameScene.Game.DataDictionary.TryGetValue(ObjectID, out data)) return;
+            if (!GameScene.Game.DataDictionary.TryGetValue(ObjectID, out ClientObjectData data)) return;
 
             if (!GameScene.Game.IsAlly(ObjectID) && User.Buffs.All(x => x.Type != BuffType.Developer)) return;
 
+            if (this == User && User.Buffs.Any(x => x.Type == BuffType.SuperiorMagicShield))
+            {
+                if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary library)) return;
+
+                float percent = Math.Min(1, Math.Max(0, User.Buffs.First(x => x.Type == BuffType.SuperiorMagicShield).Stats[Stat.SuperiorMagicShield] / (float)User.MaximumSuperiorMagicShield));
+
+                if (percent == 0) return;
+
+                Size size = library.GetSize(79);
+
+                Color color = Color.Goldenrod;
+
+                library.Draw(80, DrawX, DrawY - 59, Color.White, false, 1F, ImageType.Image);
+                library.Draw(79, DrawX + 1, DrawY - 59 + 1, color, new Rectangle(0, 0, (int)(size.Width * percent), size.Height), 1F, ImageType.Image);
+            }
+
             if (data.MaxHealth > 0)
             {
-                MirLibrary library;
-
-                if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out library)) return;
-
+                if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary library)) return;
 
                 float percent = Math.Min(1, Math.Max(0, data.Health / (float)data.MaxHealth));
 
@@ -1190,10 +1210,7 @@ namespace Client.Models
 
             if (data.MaxMana > 0)
             {
-                MirLibrary library;
-
-                if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out library)) return;
-
+                if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary library)) return;
 
                 float percent = Math.Min(1, Math.Max(0, data.Mana / (float)data.MaxMana));
 
@@ -1202,7 +1219,6 @@ namespace Client.Models
                 Size size = library.GetSize(79);
 
                 Color color = Color.DodgerBlue;
-
 
                 library.Draw(80, DrawX, DrawY - 51, Color.White, false, 1F, ImageType.Image);
                 library.Draw(79, DrawX + 1, DrawY - 51 + 1, color, new Rectangle(0, 0, (int)(size.Width * percent), size.Height), 1F, ImageType.Image);

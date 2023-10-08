@@ -257,7 +257,7 @@ namespace Client.Models
         public Color LightColour = Globals.NoneColour;
 
         public MirEffect MagicShieldEffect, WraithGripEffect, WraithGripEffect2, AssaultEffect, CelestialLightEffect, LifeStealEffect, SilenceEffect, BlindEffect, AbyssEffect, DragonRepulseEffect, DragonRepulseEffect1,
-                         RankingEffect, DeveloperEffect, FrostBiteEffect, InfectionEffect;
+                         ElementalHurrianeMagicEffect, ElementalHurrianeMagicEffect1, RankingEffect, DeveloperEffect, FrostBiteEffect, InfectionEffect;
 
         public bool CanShowWraithGrip = true;
 
@@ -287,6 +287,7 @@ namespace Client.Models
         public DateTime FrameStart;
         public Dictionary<MirAnimation, Frame> Frames;
         public Color DrawColour;
+        public int MaximumSuperiorMagicShield;
 
         public Color DefaultColour = Color.White;
 
@@ -416,7 +417,7 @@ namespace Client.Models
             else
                 Opacity = 1f;
 
-            if (VisibleBuffs.Contains(BuffType.MagicShield))
+            if (VisibleBuffs.Contains(BuffType.MagicShield) || VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
             {
                 if (MagicShieldEffect == null)
                     MagicShieldCreate();
@@ -2358,7 +2359,10 @@ namespace Client.Models
             List<uint> targets;
 
             if (action.Action != MirAction.Standing)
+            {
                 DragonRepulseEnd();
+                ElementalHurricaneEnd();
+            }
 
             switch (action.Action)
             {
@@ -2387,17 +2391,34 @@ namespace Client.Models
 
                     break;
                 case MirAction.Standing:
+                    bool haselementalhurricane = VisibleBuffs.Contains(BuffType.ElementalHurricane);
+                    bool hasdragonrepulse = VisibleBuffs.Contains(BuffType.DragonRepulse);
 
-                    if (!VisibleBuffs.Contains(BuffType.DragonRepulse))
+                    if (!hasdragonrepulse && DragonRepulseEffect != null)
                     {
-                        if (DragonRepulseEffect != null)
-                            DragonRepulseEnd();
+                        DragonRepulseEnd();
                         break;
                     }
 
-                    if (DragonRepulseEffect == null)
-                        DragonRepulseCreate();
+                    if (!haselementalhurricane && ElementalHurrianeMagicEffect != null)
+                    {
+                        ElementalHurricaneEnd();
+                        break;
+                    }
 
+                    if (hasdragonrepulse)
+                    {
+                        if (DragonRepulseEffect == null)
+                            DragonRepulseCreate();
+                    }
+
+                    if (haselementalhurricane)
+                    {
+                        if (ElementalHurrianeMagicEffect == null)
+                            ElementalHurricaneCreate();
+
+                        ElementalHurrianeMagicEffect.Direction = Direction;
+                    }
                     break;
                 case MirAction.Pushed:
                     MoveDistance = 1;
@@ -2490,32 +2511,8 @@ namespace Client.Models
                     MagicType = (MagicType)action.Extra[1];
                     AttackElement = (Element)action.Extra[2];
 
-                    Color attackColour = Globals.NoneColour;
-                    switch (AttackElement)
-                    {
-                        case Element.Fire:
-                            attackColour = Globals.FireColour;
-                            break;
-                        case Element.Ice:
-                            attackColour = Globals.IceColour;
-                            break;
-                        case Element.Lightning:
-                            attackColour = Globals.LightningColour;
-                            break;
-                        case Element.Wind:
-                            attackColour = Globals.WindColour;
-                            break;
-                        case Element.Holy:
-                            attackColour = Globals.HolyColour;
-                            break;
-                        case Element.Dark:
-                            attackColour = Globals.DarkColour;
-                            break;
-                        case Element.Phantom:
-                            attackColour = Globals.PhantomColour;
-                            break;
-                    }
-
+                    Color attackColour = Functions.GetElementColour(AttackElement);
+                    
                     switch (MagicType)
                     {
                         case MagicType.None:
@@ -2678,6 +2675,7 @@ namespace Client.Models
                     }
                     MagicLocations = (List<Point>)action.Extra[2];
                     MagicCast = (bool)action.Extra[3];
+                    AttackElement = (Element)action.Extra[4];
 
                     Point location;
                     switch (MagicType)
@@ -3229,6 +3227,18 @@ namespace Client.Models
 
                         #endregion
 
+                        #region Superior Magic Shield
+
+                        case MagicType.SuperiorMagicShield:
+                            Effects.Add(new MirEffect(1900, 17, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx2, 10, 35, Globals.FireColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            DXSoundManager.Play(SoundIndex.MagicShieldStart);
+                            break;
+
+                        #endregion
 
                         //Ice Sonic
 
@@ -3920,7 +3930,6 @@ namespace Client.Models
             ActionQueue.RemoveAt(0);
         }
 
-
         public virtual void DrawFrameChanged()
         {
             GameScene.Game.MapControl.TextureValid = false;
@@ -3953,10 +3962,12 @@ namespace Client.Models
         public virtual void CreateProjectile()
         {
         }
+
         public virtual void MovingOffSetChanged()
         {
             GameScene.Game.MapControl.TextureValid = false;
         }
+
         public virtual void LocationChanged()
         {
             if (CurrentCell == null) return;
@@ -3965,8 +3976,8 @@ namespace Client.Models
 
             if (CurrentLocation.X < GameScene.Game.MapControl.Width && CurrentLocation.Y < GameScene.Game.MapControl.Height)
                 GameScene.Game.MapControl.Cells[CurrentLocation.X, CurrentLocation.Y].AddObject(this);
-
         }
+
         public virtual void DeadChanged()
         {
             ;//      GameScene.Game.BigMapBox.Update(this);
@@ -3979,7 +3990,7 @@ namespace Client.Models
 
             PlayStruckSound();
 
-            if (VisibleBuffs.Contains(BuffType.MagicShield))
+            if (VisibleBuffs.Contains(BuffType.MagicShield) || VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
                 MagicShieldStruck();
 
             if (VisibleBuffs.Contains(BuffType.CelestialLight))
@@ -4257,6 +4268,9 @@ namespace Client.Models
             if (CEnvir.Now < DrawHealthTime)
                 y -= 20;
 
+            if (this == User && User.VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+                y -= 10;
+
             if (Dead)
                 y += 35;
 
@@ -4344,24 +4358,49 @@ namespace Client.Models
         }
         public void MagicShieldCreate()
         {
-            MagicShieldEffect = new MirEffect(850, 3, TimeSpan.FromMilliseconds(200), LibraryFile.Magic, 40, 40, Globals.WindColour)
+            if (VisibleBuffs.Contains(BuffType.MagicShield))
             {
-                Blend = true,
-                Target = this,
-                Loop = true,
-            };
+                MagicShieldEffect = new MirEffect(850, 3, TimeSpan.FromMilliseconds(200), LibraryFile.Magic, 40, 40, Globals.WindColour)
+                {
+                    Blend = true,
+                    Target = this,
+                    Loop = true,
+                };
+            }
+            else
+            {
+                MagicShieldEffect = new MirEffect(1920, 3, TimeSpan.FromMilliseconds(200), LibraryFile.MagicEx2, 40, 40, Globals.FireColour)
+                {
+                    Blend = true,
+                    Target = this,
+                    Loop = true,
+                };
+            }
             MagicShieldEffect.Process();
         }
         public void MagicShieldStruck()
         {
             MagicShieldEnd();
 
-            MagicShieldEffect = new MirEffect(853, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 40, 40, Globals.WindColour)
+            if (VisibleBuffs.Contains(BuffType.MagicShield))
             {
-                Blend = true,
-                Target = this,
-                CompleteAction = MagicShieldCreate,
-            };
+                MagicShieldEffect = new MirEffect(853, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 40, 40, Globals.WindColour)
+                {
+                    Blend = true,
+                    Target = this,
+                    CompleteAction = MagicShieldCreate,
+                };
+            }
+            else
+            {
+                MagicShieldEffect = new MirEffect(1923, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.FireColour)
+                {
+                    Blend = true,
+                    Target = this,
+                    CompleteAction = MagicShieldCreate,
+                };
+            }
+
             MagicShieldEffect.Process();
 
         }
@@ -4525,6 +4564,42 @@ namespace Client.Models
             DragonRepulseEffect1 = null;
         }
 
+
+        public void ElementalHurricaneCreate()
+        {
+            if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+            {
+                if (Config.DrawEffects) // && Race != ObjectType.Monster
+                {
+                    Color attackColour = Functions.GetElementColour(AttackElement);
+ 
+                    ElementalHurrianeMagicEffect = new MirEffect(370, 4, TimeSpan.FromMilliseconds(140), LibraryFile.MagicEx3, 0, 0, Globals.LightningColour)
+                    {
+                        Blend = true,
+                        Target = this,
+                        Direction = Direction,
+                        DrawColour = attackColour,
+                        Loop = true,
+                    };
+                    ElementalHurrianeMagicEffect.FrameIndexAction = () =>
+                    {
+                        if (ElementalHurrianeMagicEffect.FrameIndex == 0)
+                            DXSoundManager.Play(SoundIndex.ElementalHurricane);
+
+                    };
+                    ElementalHurrianeMagicEffect.Process();
+                }
+            }
+        }
+        public void ElementalHurricaneEnd()
+        {
+            ElementalHurrianeMagicEffect?.Remove();
+            ElementalHurrianeMagicEffect = null;
+            ElementalHurrianeMagicEffect1?.Remove();
+            ElementalHurrianeMagicEffect1 = null;
+        }
+
+
         public void RankingCreate()
         {
             RankingEffect = new MirEffect(3420, 7, TimeSpan.FromMilliseconds(150), LibraryFile.GameInter, 0, 0, Globals.NoneColour)
@@ -4575,6 +4650,7 @@ namespace Client.Models
             AssaultEnd();
             FrostBiteEnd();
             InfectionEnd();
+            ElementalHurricaneEnd();
 
             for (int i = Effects.Count - 1; i >= 0; i--)
             {

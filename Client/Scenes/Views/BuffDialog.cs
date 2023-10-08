@@ -71,9 +71,6 @@ namespace Client.Scenes.Views
 
             buffs.Sort((x1, x2) => x2.RemainingTime.CompareTo(x1.RemainingTime));
 
-
-
-
             foreach (ClientBuffInfo buff in buffs)
             {
                 DXImageControl icon;
@@ -139,7 +136,6 @@ namespace Client.Scenes.Views
                     case BuffType.Veteran:
                         icon.Index = 171;
                         break;
-
                     case BuffType.Brown:
                         icon.Index = 229;
                         break;
@@ -222,6 +218,12 @@ namespace Client.Scenes.Views
                     case BuffType.Invincibility:
                         icon.Index = 143;
                         break;
+                    case BuffType.ElementalHurricane:
+                        icon.Index = 98;
+                        break;
+                    case BuffType.SuperiorMagicShield:
+                        icon.Index = 161;
+                        break;
                     default:
                         icon.Index = 73;
                         break;
@@ -237,9 +239,9 @@ namespace Client.Scenes.Views
             for (int i = 0; i < buffs.Count; i++)
                 Icons[buffs[i]].Location = new Point(3 + (i%6)*27, 3 + (i/6)*27);
 
-            Size = new Size(3 + Math.Min(6, Math.Max(1, Icons.Count))*27, 3 + Math.Max(1, 1 +  (Icons.Count - 1)/6) * 27);
-            
+            Size = new Size(3 + Math.Min(6, Math.Max(1, Icons.Count))*27, 3 + Math.Max(1, 1 +  (Icons.Count - 1)/6) * 27);    
         }
+
         private string GetBuffHint(ClientBuffInfo buff)
         {
             string text = string.Empty;
@@ -382,6 +384,12 @@ namespace Client.Scenes.Views
                     break;
                 case BuffType.Invincibility:
                     text = $"Invincibility\n";
+                    break;
+                case BuffType.ElementalHurricane:
+                    text = $"Elemental Hurricane\n";
+                    break;
+                case BuffType.SuperiorMagicShield:
+                    text = $"Superior Magic Shield\n";
                     break;
                 case BuffType.MagicWeakness:
                     text = $"Magic Weakness\n\n" +

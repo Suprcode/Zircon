@@ -258,6 +258,8 @@ namespace Library
         Renounce = 200,
         MagicShield = 201,
         JudgementOfHeaven = 202,
+        ElementalHurricane = 203,
+        SuperiorMagicShield = 204,
 
         //Tao
         Heal = 300,
@@ -464,6 +466,10 @@ namespace Library
         DragonRepulseMiddle,
         DragonRepulseEnd,
 
+        ChannellingStart,
+        ChannellingMiddle,
+        ChannellingEnd,
+
         FishingCast,
         FishingWait,
         FishingReel
@@ -622,6 +628,8 @@ namespace Library
         FrostBite = 239,
         Asteroid = 240,
         FireBounce = 241,
+        ElementalHurricane = 242,
+        SuperiorMagicShield = 243,
 
         Heal = 300,
         SpiritSword = 301,
@@ -1471,7 +1479,7 @@ namespace Library
 
         MirrorImage = 7,
 
-        ConquestObjective = 10,
+        CastleObjective = 10,
 
         Larva = 100,
 
@@ -1893,6 +1901,7 @@ namespace Library
 
         FrostBiteStart,
 
+        ElementalHurricane,
 
         HealStart,
         HealEnd,
