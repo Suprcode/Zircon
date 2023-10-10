@@ -5,7 +5,7 @@ using Server.Envir;
 using System.Drawing;
 using System.Linq;
 
-namespace Server.Models.Magics.Taoist
+namespace Server.Models.Magics
 {
     [MagicType(MagicType.SummonDemonicCreature)]
     public class SummonDemonicCreature : MagicObject

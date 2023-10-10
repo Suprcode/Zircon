@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Library;
 using Library.Network;
 using Server.DBModels;
@@ -169,6 +170,24 @@ namespace Server.Models
                         if (player == null || !player.CanAttackTarget(ob)) return;
 
                         int damage = player.MagicAttack(new List<MagicType> { MagicType.Tempest }, ob, true);
+
+                        if (damage > 0 && ob.Race == ObjectType.Player)
+                        {
+                            foreach (SpellObject spell in player.SpellList)
+                            {
+                                if (spell.Effect != Effect) continue;
+
+                                spell.TickCount--;
+                            }
+                        }
+                    }
+                    break;
+                case SpellEffect.DarkSoulPrison:
+                    {
+                        var player = Owner as PlayerObject;
+                        if (player == null || !player.CanAttackTarget(ob)) return;
+
+                        int damage = player.MagicAttack(new List<MagicType> { MagicType.DarkSoulPrison }, ob, true);
 
                         if (damage > 0 && ob.Race == ObjectType.Player)
                         {

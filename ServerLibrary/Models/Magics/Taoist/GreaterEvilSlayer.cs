@@ -6,7 +6,7 @@ using System.Drawing;
 
 using S = Library.Network.ServerPackets;
 
-namespace Server.Models.Magics.Taoist
+namespace Server.Models.Magics
 {
     [MagicType(MagicType.GreaterEvilSlayer)]
     public class GreaterEvilSlayer : MagicObject
@@ -25,17 +25,16 @@ namespace Server.Models.Magics.Taoist
                 Ob = target
             };
 
-            Player.Magics.TryGetValue(MagicType.AugmentEvilSlayer, out UserMagic augMagic);
+            var augmentEvilSlayer = GetAugmentedSkill(MagicType.AugmentEvilSlayer);
 
             var realTargets = new HashSet<MapObject>();
 
             if (Player.CanAttackTarget(target))
                 realTargets.Add(target);
 
-
-            if (augMagic != null && SEnvir.Now > augMagic.Cooldown && Player.Level >= augMagic.Info.NeedLevel1)
+            if (augmentEvilSlayer != null && SEnvir.Now > augmentEvilSlayer.Cooldown && Player.Level >= augmentEvilSlayer.Info.NeedLevel1)
             {
-                var power = augMagic.GetPower() + 1;
+                var power = augmentEvilSlayer.GetPower() + 1;
 
                 var possibleTargets = Player.GetTargets(CurrentMap, location, 2);
 
@@ -53,7 +52,7 @@ namespace Server.Models.Magics.Taoist
                 }
             }
 
-            bool aug = false;
+            bool hasAugmentEvilSlayer = false;
             var count = -1;
 
             foreach (MapObject realTarget in realTargets)
@@ -65,23 +64,23 @@ namespace Server.Models.Magics.Taoist
                 else
                     stats = null;
 
-                if (augMagic != null)
+                if (augmentEvilSlayer != null)
                 {
                     count++;
-                    aug = true;
+                    hasAugmentEvilSlayer = true;
                 }
 
                 response.Targets.Add(realTarget.ObjectID);
 
                 var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, realTarget.CurrentLocation) * 48);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, realTarget == target, stats, aug));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, realTarget == target, stats, hasAugmentEvilSlayer));
             }
 
             if (count > 0)
             {
-                augMagic.Cooldown = SEnvir.Now.AddMilliseconds(augMagic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augMagic.Info.Index, Delay = augMagic.Info.Delay });
+                augmentEvilSlayer.Cooldown = SEnvir.Now.AddMilliseconds(augmentEvilSlayer.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentEvilSlayer.Info.Index, Delay = augmentEvilSlayer.Info.Delay });
             }
 
             if (target == null)

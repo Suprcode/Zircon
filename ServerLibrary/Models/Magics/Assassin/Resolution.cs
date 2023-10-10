@@ -13,6 +13,7 @@ namespace Server.Models.Magics
         public Resolution(PlayerObject player, UserMagic magic) : base(player, magic)
         {
             //TODO
+            //Increases the accuracy of Karma and allows it to ignore your opponent's defense by a set amount. Accuracy and defense ignored increases with training.
         }
     }
 }

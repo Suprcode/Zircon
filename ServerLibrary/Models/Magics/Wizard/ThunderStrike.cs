@@ -23,7 +23,16 @@ namespace Server.Models.Magics
                 Ob = null
             };
 
-            var cells = CurrentMap.GetCells(CurrentLocation, 0, 6);
+            var augmentThunderStrike = GetAugmentedSkill(MagicType.AugmentThunderStrike);
+
+            int range = 3;
+
+            if (augmentThunderStrike != null && Player.Level >= augmentThunderStrike.Info.NeedLevel1)
+            {
+                range = 6;
+            }
+
+            var cells = CurrentMap.GetCells(CurrentLocation, 0, range);
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 

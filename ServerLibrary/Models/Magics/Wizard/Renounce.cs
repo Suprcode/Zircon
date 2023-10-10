@@ -19,6 +19,15 @@ namespace Server.Models.Magics
 
         }
 
+        public override Stats GetPassiveStats()
+        {
+            var stats = new Stats();
+
+            stats[Stat.MCPercent] += (1 + Magic.Level) * 10;
+
+            return stats;
+        }
+
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             var response = new MagicCast

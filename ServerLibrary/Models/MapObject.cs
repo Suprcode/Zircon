@@ -266,9 +266,6 @@ namespace Server.Models
 
                         foreach (MapObject ob in poison.Owner.GetTargets(CurrentMap, CurrentLocation, 1))
                         {
-                            //if (ob.Race != ObjectType.Monster) continue;
-
-
                             if (ob.Race == ObjectType.Monster && ((MonsterObject)ob).MonsterInfo.IsBoss) continue;
 
                             if (ob.PoisonList.Any(x => x.Type == PoisonType.Infection)) continue;

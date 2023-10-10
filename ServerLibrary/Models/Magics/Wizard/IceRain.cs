@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace Server.Models.Magics
 {
-    [MagicType(MagicType.BurstOfEnergy)]
-    public class BurstOfEnergy : MagicObject
+    [MagicType(MagicType.IceRain)]
+    public class IceRain : MagicObject
     {
         protected override Element Element => Element.None;
 
-        public BurstOfEnergy(PlayerObject player, UserMagic magic) : base(player, magic)
+        public IceRain(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
+            //TODO - blizzard type skill
         }
     }
 }

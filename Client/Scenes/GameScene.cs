@@ -3050,6 +3050,7 @@ namespace Client.Scenes
                 case MagicType.GreaterEvilSlayer:
                 case MagicType.ImprovedExplosiveTalisman:
                 case MagicType.Infection:
+                case MagicType.Neutralize:
                     //Has Target
                     if (CanAttackTarget(MagicObject))
                         target = MagicObject;
@@ -3136,7 +3137,6 @@ namespace Client.Scenes
                 case MagicType.MirrorImage:
                 case MagicType.ElementalHurricane:
 
-                // case MagicType.SummonSkeleton:
                 case MagicType.Invisibility:
                 case MagicType.TaoistCombatKick:
                 case MagicType.ThunderKick:
@@ -3146,6 +3146,7 @@ namespace Client.Scenes
                 case MagicType.SummonDemonicCreature:
                 case MagicType.DemonExplosion:
                 case MagicType.Scarecrow:
+                case MagicType.DarkSoulPrison:
 
                 case MagicType.PoisonousCloud:
                 case MagicType.Cloak:
@@ -3216,6 +3217,7 @@ namespace Client.Scenes
                 case MagicType.ExplosiveTalisman:
                 case MagicType.ImprovedExplosiveTalisman:
                 case MagicType.PoisonDust:
+                case MagicType.Neutralize:
                     targetLocation = MapControl.MapLocation;
                     break;
                 default:

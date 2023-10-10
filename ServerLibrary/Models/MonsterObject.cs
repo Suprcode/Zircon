@@ -2270,10 +2270,17 @@ namespace Server.Models
             ActionTime = SEnvir.Now.AddMilliseconds(Math.Min(MoveDelay, AttackDelay - 100));
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
+
             if (poison != null)
             {
                 AttackTime += TimeSpan.FromMilliseconds(poison.Value * 100);
                 ActionTime += TimeSpan.FromMilliseconds(poison.Value * 100);
+            }
+
+            if (PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            {
+                AttackTime += TimeSpan.FromMilliseconds(AttackDelay);
+                ActionTime += TimeSpan.FromMilliseconds(Math.Min(MoveDelay, AttackDelay - 100));
             }
         }
         public void UpdateMoveTime()
@@ -2282,10 +2289,17 @@ namespace Server.Models
             ActionTime = SEnvir.Now.AddMilliseconds(Math.Min(MoveDelay - 100, AttackDelay));
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
+
             if (poison != null)
             {
                 AttackTime += TimeSpan.FromMilliseconds(poison.Value * 100);
                 ActionTime += TimeSpan.FromMilliseconds(poison.Value * 100);
+            }
+
+            if (PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            {
+                AttackTime += TimeSpan.FromMilliseconds(MoveDelay);
+                ActionTime += TimeSpan.FromMilliseconds(Math.Min(MoveDelay - 100, AttackDelay));
             }
         }
 

@@ -3,13 +3,13 @@ using Server.DBModels;
 
 namespace Server.Models.Magics
 {
-    [MagicType(MagicType.AugmentPoisonDust)]
-    public class GreaterPoisonDust : MagicObject
+    [MagicType(MagicType.AugmentNeutralize)]
+    public class AugmentNeutralize : MagicObject
     {
         protected override Element Element => Element.None;
         public override bool AugmentedSkill => true;
 
-        public GreaterPoisonDust(PlayerObject player, UserMagic magic) : base(player, magic)
+        public AugmentNeutralize(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }

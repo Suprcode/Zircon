@@ -578,14 +578,17 @@ namespace Library
         Endurance = 116,
         ReflectDamage = 117,
         Fetter = 118,
-        SwirlingBlade = 119,//NOT CODED
-        ReigningStep = 120,//NOT CODED
-        MaelstromBlade = 121,//NOT CODED
+        AugmentDestructiveSurge = 119,//NOT CODED
+        AugmentDefiance = 120,//NOT CODED
+        AugmentReflectDamage = 121,//NOT CODED
         AdvancedPotionMastery = 122,
         MassBeckon = 123,
         SeismicSlam = 124,
         Invincibility = 125,
         CrushingWave = 126,
+        DefensiveMastery = 127,//NOT CODED
+        PhysicalImmunity = 128,//NOT CODED
+        MagicImmunity = 129,//NOT CODED
 
         FireBall = 201,
         LightningBall = 202,
@@ -617,19 +620,17 @@ namespace Library
         Tempest = 228,
         JudgementOfHeaven = 229,
         ThunderStrike = 230,
-        RayOfLight = 231,//NOT CODED
-        BurstOfEnergy = 232,//NOT CODED
-        ShieldOfPreservation = 233,//NOT CODED
-        RetrogressionOfEnergy = 234,//NOT CODED
-        FuryBlast = 235,//NOT CODED
-        TempestOfUnstableEnergy = 236,//NOT CODED
+        AugmentThunderStrike = 231,
+        ElementalHurricane = 232,
+        SuperiorMagicShield = 233,
+        Burning = 234,//NOT CODED 
+        Shock = 235,//NOT CODED
+        LightningStrike = 236,//NOT CODED
         MirrorImage = 237,//NOT CODED
-        AdvancedRenounce = 238,
+        IceRain = 238, //NOT CODED
         FrostBite = 239,
         Asteroid = 240,
-        FireBounce = 241,
-        ElementalHurricane = 242,
-        SuperiorMagicShield = 243,
+        FireBounce = 241,//Custom
 
         Heal = 300,
         SpiritSword = 301,
@@ -653,12 +654,12 @@ namespace Library
         EmpoweredHealing = 319,
         LifeSteal = 320,
         ImprovedExplosiveTalisman = 321,
-        GreaterPoisonDust = 322,
-        Scarecrow = 323,
+        AugmentPoisonDust = 322,
+        Scarecrow = 323,//NOT CODED
         ThunderKick = 324,
-        DragonBreath = 325,//NOT CODED
-        MassTransparency = 326,//NOT CODED
-        GreaterHolyStrike = 327,//NOT CODED
+        SoulResonance = 325,//NOT CODED
+        Parasite = 326,//NOT CODED
+        Seance = 327,//NOT CODED
         AugmentExplosiveTalisman = 328,
         AugmentEvilSlayer = 329,
         AugmentPurification = 330,
@@ -671,6 +672,10 @@ namespace Library
         DemonExplosion = 337,
         Infection = 338,
         DemonicRecovery = 339,
+        Neutralize = 340,
+        AugmentNeutralize = 341,
+        DarkSoulPrison = 342,
+        Mindfulness = 343,//NOT CODED
 
         WillowDance = 401,
         VineTreeDance = 402,
@@ -1084,6 +1089,7 @@ namespace Library
         Silenced = 64,
         Abyss = 128,
         Infection = 256,
+        Neutralize = 512
     }
 
     public enum SpellEffect
@@ -1099,6 +1105,7 @@ namespace Library
         TrapOctagon,
 
         PoisonousCloud,
+        DarkSoulPrison,
 
         Rubble,
 
@@ -1957,6 +1964,10 @@ namespace Library
         StrengthOfFaithStart,
         StrengthOfFaithEnd,
 
+        NeutralizeTravel,
+        NeutralizeEnd,
+
+        DarkSoulPrison,
 
         PoisonousCloudStart,
 

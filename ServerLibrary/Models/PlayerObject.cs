@@ -12516,6 +12516,9 @@ namespace Server.Models
 
             ActionTime = SEnvir.Now + Globals.TurnTime;
 
+            if (PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+                ActionTime += Globals.TurnTime;
+
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
             TimeSpan slow = TimeSpan.Zero;
             if (poison != null)
@@ -12549,6 +12552,9 @@ namespace Server.Models
 
             Direction = direction;
             ActionTime = SEnvir.Now + Globals.HarvestTime;
+
+            if (PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+                ActionTime += Globals.TurnTime;
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
             TimeSpan slow = TimeSpan.Zero;
@@ -13116,7 +13122,7 @@ namespace Server.Models
                 ActionTime += slow;
             }
 
-            if (BagWeight > Stats[Stat.BagWeight])
+            if (BagWeight > Stats[Stat.BagWeight] || PoisonList.Any(x => x.Type == PoisonType.Neutralize))
                 AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
             MagicType validMagic = MagicType.None;
@@ -13270,7 +13276,7 @@ namespace Server.Models
             ActionTime = SEnvir.Now + Globals.CastTime;
             MagicTime = SEnvir.Now + Globals.MagicDelay;
 
-            if (BagWeight > Stats[Stat.BagWeight])
+            if (BagWeight > Stats[Stat.BagWeight] || PoisonList.Any(x => x.Type == PoisonType.Neutralize))
                 MagicTime += Globals.MagicDelay;
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
@@ -13343,7 +13349,9 @@ namespace Server.Models
             int aspeed = Stats[Stat.AttackSpeed];
             int attackDelay = Globals.AttackDelay - aspeed * Globals.ASpeedRate;
             attackDelay = Math.Max(800, attackDelay);
-            AttackTime = SEnvir.Now.AddMilliseconds(attackDelay);
+
+            if (BagWeight > Stats[Stat.BagWeight] || PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+                AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
             TimeSpan slow = TimeSpan.Zero;
@@ -13702,6 +13710,7 @@ namespace Server.Models
             }
 
             //Massacre
+            //TODO - move in to own class?
             if (ob.Dead && ob.Race == ObjectType.Monster && ob.CurrentHP < 0)
             {
                 if (Magics.TryGetValue(MagicType.Massacre, out magic) && Level >= magic.Info.NeedLevel1)
@@ -13938,9 +13947,6 @@ namespace Server.Models
             }
 
             if (Buffs.Any(x => x.Type == BuffType.Renounce) && Magics.TryGetValue(MagicType.Renounce, out UserMagic temp))
-                LevelMagic(temp);
-
-            if (Magics.TryGetValue(MagicType.AdvancedRenounce, out temp))
                 LevelMagic(temp);
 
             return damage;

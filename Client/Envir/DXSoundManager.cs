@@ -263,6 +263,11 @@ namespace Client.Envir
             [SoundIndex.StrengthOfFaithStart] = new DXSound(SoundPath + @"M123-1.wav", SoundType.Magic),
             [SoundIndex.StrengthOfFaithEnd] = new DXSound(SoundPath + @"M123-3.wav", SoundType.Magic),
 
+            [SoundIndex.NeutralizeTravel] = new DXSound(SoundPath + @"M19-2.wav", SoundType.Magic),
+            [SoundIndex.NeutralizeEnd] = new DXSound(SoundPath + @"m138-2.wav", SoundType.Magic),
+
+            [SoundIndex.DarkSoulPrison] = new DXSound(SoundPath + @"m136-2.wav", SoundType.Magic),
+
             [SoundIndex.PoisonousCloudStart] = new DXSound(SoundPath + @"as_157-1.wav", SoundType.Magic),
 
             [SoundIndex.CloakStart] = new DXSound(SoundPath + @"as_163.wav", SoundType.Magic),

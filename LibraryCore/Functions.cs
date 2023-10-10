@@ -208,11 +208,12 @@ namespace Library
                 case MagicType.GreaterEvilSlayer:
                 case MagicType.GreaterFrozenEarth:
                 case MagicType.Infection:
-
                 case MagicType.ElementalSuperiority:
                 case MagicType.BloodLust:
                 case MagicType.LifeSteal:
                 case MagicType.ImprovedExplosiveTalisman:
+                case MagicType.Neutralize:
+                    return MirAnimation.Combat1;
 
                 case MagicType.Interchange:
 
@@ -239,6 +240,7 @@ namespace Library
                 case MagicType.ThunderStrike:
                 case MagicType.MirrorImage:
                 case MagicType.Asteroid:
+                case MagicType.SuperiorMagicShield:
 
                 case MagicType.Heal:
                 case MagicType.PoisonDust:
@@ -252,11 +254,11 @@ namespace Library
                 case MagicType.SummonShinsu:
                 case MagicType.StrengthOfFaith:
                 case MagicType.CelestialLight:
-                case MagicType.GreaterPoisonDust:
+                case MagicType.AugmentPoisonDust:
                 case MagicType.SummonDemonicCreature:
                 case MagicType.DemonExplosion:
                 case MagicType.Scarecrow:
-                case MagicType.SuperiorMagicShield:
+                case MagicType.DarkSoulPrison:
                     return MirAnimation.Combat2;
 
                 case MagicType.ElementalHurricane:
@@ -265,6 +267,7 @@ namespace Library
                 case MagicType.PoisonousCloud:
                 case MagicType.SummonPuppet:
                     return MirAnimation.Combat14;
+
                 case MagicType.DragonRepulse:
                     return MirAnimation.DragonRepulseStart;
 

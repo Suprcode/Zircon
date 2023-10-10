@@ -7,7 +7,7 @@ using System.Drawing;
 
 using S = Library.Network.ServerPackets;
 
-namespace Server.Models.Magics.Taoist
+namespace Server.Models.Magics
 {
     [MagicType(MagicType.PoisonDust)]
     public class PoisonDust : MagicObject
@@ -35,7 +35,7 @@ namespace Server.Models.Magics.Taoist
 
             List<uint> targets = new List<uint>();
 
-            var greaterPoisonDust = GetAugmentedSkill(MagicType.GreaterPoisonDust);
+            var greaterPoisonDust = GetAugmentedSkill(MagicType.AugmentPoisonDust);
 
             if (greaterPoisonDust != null && SEnvir.Now > greaterPoisonDust.Cooldown && Player.Level >= greaterPoisonDust.Info.NeedLevel1)
             {
@@ -116,7 +116,7 @@ namespace Server.Models.Magics.Taoist
 
             Player.LevelMagic(Magic);
 
-            var greaterPoisonDust = GetAugmentedSkill(MagicType.GreaterPoisonDust);
+            var greaterPoisonDust = GetAugmentedSkill(MagicType.AugmentPoisonDust);
 
             if (hasGreaterPoisonDust && greaterPoisonDust != null)
             {

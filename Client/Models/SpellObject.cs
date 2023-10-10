@@ -100,6 +100,13 @@ namespace Client.Models
                     Light = 0;
                     DXSoundManager.Play(SoundIndex.PoisonousCloudStart);
                     break;
+                case SpellEffect.DarkSoulPrison:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.MagicEx6, out BodyLibrary);
+                    Frames[MirAnimation.Standing] = new Frame(700, 10, 0, TimeSpan.FromMilliseconds(100));
+                    Blended = true;
+                    Light = 0;
+                    DXSoundManager.Play(SoundIndex.DarkSoulPrison);
+                    break;
                 case SpellEffect.MonsterDeathCloud:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx2, out BodyLibrary);
                     Frames[MirAnimation.Standing] = new Frame(850, 10, 0, TimeSpan.FromMilliseconds(100));
