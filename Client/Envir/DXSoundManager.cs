@@ -21,7 +21,9 @@ namespace Client.Envir
         public static Dictionary<SoundIndex, DXSound> SoundList = new Dictionary<SoundIndex, DXSound>
         {
             #region Music
-            [SoundIndex.LoginScene] = new DXSound(SoundPath + @"Opening.wav", SoundType.Music) { Loop = true },
+            [SoundIndex.LoginScene1] = new DXSound(SoundPath + @"Opening.wav", SoundType.Music) { Loop = true },
+            [SoundIndex.LoginScene2] = new DXSound(SoundPath + @"Main.wav", SoundType.Music) { Loop = true },
+            [SoundIndex.LoginScene3] = new DXSound(SoundPath + @"Ending.wav", SoundType.Music) { Loop = true },
             [SoundIndex.SelectScene] = new DXSound(SoundPath + @"SelChr.wav", SoundType.Music) { Loop = true },
             [SoundIndex.B000] = new DXSound(SoundPath + @"B000.wav", SoundType.Music) { Loop = true },
             [SoundIndex.B100] = new DXSound(SoundPath + @"B100.wav", SoundType.Music) { Loop = true },
@@ -206,6 +208,9 @@ namespace Client.Envir
             [SoundIndex.ChainLightningEnd] = new DXSound(SoundPath + @"M111-3.wav", SoundType.Magic),
             
             [SoundIndex.FrostBiteStart] = new DXSound(SoundPath + @"m135-2.wav", SoundType.Magic),
+
+            [SoundIndex.ParasiteTravel] = new DXSound(SoundPath + @"m139-1.wav", SoundType.Magic),
+            [SoundIndex.ParasiteExplode] = new DXSound(SoundPath + @"m139-2.wav", SoundType.Magic),
 
             [SoundIndex.ElementalHurricane] = new DXSound(SoundPath + @"m141-1.wav", SoundType.Magic),
 

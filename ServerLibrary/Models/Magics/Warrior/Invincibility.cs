@@ -15,7 +15,7 @@ namespace Server.Models.Magics
 
         public Invincibility(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Needs anim and sound confirming
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

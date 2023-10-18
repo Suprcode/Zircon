@@ -12,6 +12,7 @@ namespace Server.Models.Magics
         public IceRain(PlayerObject player, UserMagic magic) : base(player, magic)
         {
             //TODO - blizzard type skill
+            //MagicEx7 - 700
         }
     }
 }

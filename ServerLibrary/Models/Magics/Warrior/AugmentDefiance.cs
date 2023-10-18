@@ -12,8 +12,7 @@ namespace Server.Models.Magics
 
         public AugmentDefiance(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //Increases HP,AC,MA of Defiance
+
         }
     }
 }

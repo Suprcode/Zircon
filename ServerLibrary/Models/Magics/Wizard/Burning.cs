@@ -11,7 +11,7 @@ namespace Server.Models.Magics
 
         public Burning(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO - adds burning to all fire spells
+
         }
     }
 }

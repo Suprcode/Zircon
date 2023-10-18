@@ -38,18 +38,19 @@ namespace Server.Models.Magics
             if (Player.Buffs.Any(x => x.Type == BuffType.Defiance))
             {
                 Player.BuffRemove(BuffType.Defiance);
-                Player.ChangeHP(-(Player.CurrentHP / 2));
             }
 
-            int value = 4 + Magic.Level * 6;
+            var duration = TimeSpan.FromSeconds(60 + Magic.Level * 30);
+
+            var amount = 5 + Magic.Level * 5;
 
             Stats buffStats = new Stats
             {
-                [Stat.MinDC] = value,
-                [Stat.MaxDC] = value,
+                [Stat.OffencePercent] = amount,
+                [Stat.DefencePercent] = -amount
             };
 
-            Player.BuffAdd(BuffType.Might, TimeSpan.FromSeconds(60 + Magic.Level * 30), buffStats, false, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.Might, duration, buffStats, false, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
         }

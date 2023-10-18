@@ -2870,11 +2870,6 @@ namespace Client.Scenes
                         User.AttackMagic = magic.Info.Magic;
                     }
                     return;
-                case MagicType.Endurance:
-                    if (CEnvir.Now < magic.NextCast || magic.Cost > User.CurrentMP) return;
-                    magic.NextCast = CEnvir.Now.AddSeconds(0.5D); //Act as an anti spam
-                    CEnvir.Enqueue(new C.MagicToggle { Magic = magic.Info.Magic });
-                    return;
                 case MagicType.Karma:
                     if (CEnvir.Now < ToggleTime || CEnvir.Now < magic.NextCast || User.Buffs.All(x => x.Type != BuffType.Cloak)) return;
 
@@ -2886,8 +2881,6 @@ namespace Client.Scenes
                         User.AttackMagic = magic.Info.Magic;
                     }
                     return;
-
-                    //Endurance
             }
 
             if (CEnvir.Now < User.NextMagicTime || User.Dead || 
@@ -3049,7 +3042,7 @@ namespace Client.Scenes
                 case MagicType.EvilSlayer:
                 case MagicType.GreaterEvilSlayer:
                 case MagicType.ImprovedExplosiveTalisman:
-                case MagicType.Infection:
+                case MagicType.Parasite:
                 case MagicType.Neutralize:
                     //Has Target
                     if (CanAttackTarget(MagicObject))
@@ -3104,7 +3097,7 @@ namespace Client.Scenes
                     if (User.Buffs.Any(x => x.Type == BuffType.ReflectDamage)) return;
                     direction = MirDirection.Down;
                     break;
-                case MagicType.Fetter:
+                case MagicType.Endurance:
                     direction = MirDirection.Down;                    
                     break;
                 case MagicType.Renounce:
@@ -3138,8 +3131,9 @@ namespace Client.Scenes
                 case MagicType.ElementalHurricane:
 
                 case MagicType.Invisibility:
-                case MagicType.TaoistCombatKick:
+                case MagicType.CombatKick:
                 case MagicType.ThunderKick:
+                case MagicType.Fetter:
                 case MagicType.SummonSkeleton:
                 case MagicType.SummonShinsu:
                 case MagicType.SummonJinSkeleton:

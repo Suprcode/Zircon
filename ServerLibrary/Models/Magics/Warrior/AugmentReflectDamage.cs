@@ -12,8 +12,7 @@ namespace Server.Models.Magics
 
         public AugmentReflectDamage(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //increases duration, damage, and success chance of reflect damage
+
         }
     }
 }

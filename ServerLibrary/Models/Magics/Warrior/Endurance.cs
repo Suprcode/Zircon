@@ -1,12 +1,8 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
 using System;
 using System.Drawing;
-using System.Linq;
-
-using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
 {
@@ -14,10 +10,11 @@ namespace Server.Models.Magics
     public class Endurance : MagicObject
     {
         protected override Element Element => Element.None;
+        public override bool UpdateCombatTime => false;
 
         public Endurance(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Needs anim and sound
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
@@ -35,23 +32,11 @@ namespace Server.Models.Magics
             return response;
         }
 
-        public override void Toggle(bool canUse)
+        public override void MagicComplete(params object[] data)
         {
-            if (Magic.Cost > Player.CurrentMP || SEnvir.Now < Magic.Cooldown || Player.Dead || (Player.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Player.Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
-
-            Player.ChangeMP(-Magic.Cost);
-
             Player.BuffAdd(BuffType.Endurance, TimeSpan.FromSeconds(10 + Magic.Level * 5), null, false, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
-
-            Magic.Cooldown = SEnvir.Now.AddMilliseconds(Magic.Info.Delay);
-            Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = Magic.Info.Delay });
-        }
-
-        public override void MagicComplete(params object[] data)
-        {
-            //??
         }
     }
 }

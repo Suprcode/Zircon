@@ -67,7 +67,7 @@ namespace Server.Models.Magics
 
             foreach (MapObject target in targets)
             {
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, Type, target, true, null, target.Race == ObjectType.Player ? damagePvP : damagePvE));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, new List<MagicType> { Type }, target, true, null, target.Race == ObjectType.Player ? damagePvP : damagePvE));
             }
         }
 

@@ -1,20 +1,17 @@
 ﻿using Library;
-using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace Server.Models.Magics
 {
-    [MagicType(MagicType.TaoistCombatKick)]
-    public class TaoistCombatKick : MagicObject
+    [MagicType(MagicType.CombatKick)]
+    public class CombatKick : MagicObject
     {
         protected override Element Element => Element.None;
-        //public override bool UpdateCombatTime => false;
 
-        public TaoistCombatKick(PlayerObject player, UserMagic magic) : base(player, magic)
+        public CombatKick(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }

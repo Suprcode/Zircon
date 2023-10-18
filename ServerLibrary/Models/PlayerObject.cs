@@ -2216,11 +2216,13 @@ namespace Server.Models
             Stats[Stat.Health] = Math.Max(10, Stats[Stat.Health]);
             Stats[Stat.Mana] = Math.Max(10, Stats[Stat.Mana]);
 
-            if (Stats[Stat.Defiance] > 0)
-            {
-                Stats[Stat.MinAC] = Stats[Stat.MaxAC];
-                Stats[Stat.MinMR] = Stats[Stat.MaxMR];
-            }
+            Stats[Stat.MinAC] += (Stats[Stat.MinAC] * Stats[Stat.OffencePercent]) / 100;
+            Stats[Stat.MaxAC] += (Stats[Stat.MaxAC] * Stats[Stat.OffencePercent]) / 100;
+            Stats[Stat.MinMR] += (Stats[Stat.MinMR] * Stats[Stat.OffencePercent]) / 100;
+            Stats[Stat.MaxMR] += (Stats[Stat.MaxMR] * Stats[Stat.OffencePercent]) / 100;
+
+            Stats[Stat.MinDC] += (Stats[Stat.MinDC] * Stats[Stat.DefencePercent]) / 100;
+            Stats[Stat.MaxDC] += (Stats[Stat.MaxDC] * Stats[Stat.DefencePercent]) / 100;
 
             if (Buffs.Any(x => x.Type == BuffType.MagicWeakness))
             {
@@ -5565,10 +5567,8 @@ namespace Server.Models
                                     case PoisonType.Paralysis:
                                     case PoisonType.HellFire:
                                     case PoisonType.Silenced:
-                                        work = true;
-                                        PoisonList.Remove(pois);
-                                        break;
                                     case PoisonType.Abyss:
+                                    case PoisonType.Burn:
                                         work = true;
                                         PoisonList.Remove(pois);
                                         break;
@@ -13621,6 +13621,7 @@ namespace Server.Models
                 LevelMagic(magic);
             }
 
+            //todo - move in to magicObject - LifeSteal method
             decimal lifestealAmount = damage * Stats[Stat.LifeSteal] / 100M;
 
             if (hasSwiftBlade)
@@ -13634,6 +13635,7 @@ namespace Server.Models
                 lifestealAmount = Math.Min(lifestealAmount, 750 - FlameSplashLifeSteal);
                 FlameSplashLifeSteal += lifestealAmount;
             }
+
             if (hasDestructiveSurge)
             {
                 lifestealAmount = Math.Min(lifestealAmount, 750 - DestructiveSurgeLifeSteal);
@@ -13649,8 +13651,6 @@ namespace Server.Models
                 LifeSteal -= heal;
                 ChangeHP(Math.Min((hasLotus ? 1500 : 750), heal));
             }
-
-            //  if (primary)
 
             int psnRate = 200;
 
@@ -13882,6 +13882,25 @@ namespace Server.Models
                 });
             }
 
+            if (element == Element.Fire && Magics.TryGetValue(MagicType.Burning, out UserMagic burning) && Level >= burning.Info.NeedLevel1)
+            {
+                var value = (damage / 10) * (burning.Level + 1) / 5;
+
+                if (value > 0)
+                {
+                    ob.ApplyPoison(new Poison
+                    {
+                        Owner = this,
+                        Value = value,
+                        Type = PoisonType.Burn,
+                        TickFrequency = TimeSpan.FromSeconds(2),
+                        TickCount = 5 + burning.Level,
+                    });
+
+                    LevelMagic(burning);
+                }
+            }
+
             switch (ob.Race)
             {
                 case ObjectType.Player:
@@ -13938,16 +13957,15 @@ namespace Server.Models
 
             foreach (MagicType type in types)
             {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject))
-                {
-                    continue;
-                }
+                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
                 LevelMagic(magicObject.Magic);
             }
 
-            if (Buffs.Any(x => x.Type == BuffType.Renounce) && Magics.TryGetValue(MagicType.Renounce, out UserMagic temp))
-                LevelMagic(temp);
+            if (Buffs.Any(x => x.Type == BuffType.Renounce) && Magics.TryGetValue(MagicType.Renounce, out UserMagic renounce))
+            {
+                LevelMagic(renounce);
+            }
 
             return damage;
         }
@@ -13967,6 +13985,17 @@ namespace Server.Models
                     DisplayMiss = true;
                     return 0;
                 }
+
+                if (Magics.TryGetValue(MagicType.MagicImmunity, out magic) && Level >= magic.Info.NeedLevel1)
+                {
+                    power -= power * magic.GetPower() / 100;
+
+                    if (power <= 0)
+                    {
+                        DisplayMiss = true;
+                        return 0;
+                    }
+                }
             }
             else
             {
@@ -13974,6 +14003,17 @@ namespace Server.Models
                 {
                     DisplayMiss = true;
                     return 0;
+                }
+
+                if (Magics.TryGetValue(MagicType.PhysicalImmunity, out magic) && Level >= magic.Info.NeedLevel1)
+                {
+                    power -= power * magic.GetPower() / 100;
+
+                    if (power <= 0)
+                    {
+                        DisplayMiss = true;
+                        return 0;
+                    }
                 }
             }
 
@@ -14820,7 +14860,6 @@ namespace Server.Models
             BuffAdd(BuffType.Brown, Config.BrownDuration, new Stats { [Stat.Brown] = 1 }, false, false, TimeSpan.Zero);
         }
 
-
         public void IncreasePKPoints(int count)
         {
             BuffInfo buff = Buffs.FirstOrDefault(x => x.Type == BuffType.PKPoint);
@@ -14886,6 +14925,27 @@ namespace Server.Models
             else if (luck < 0)
             {
                 if (luck < -SEnvir.Random.Next(10)) return min;
+            }
+
+            return SEnvir.Random.Next(min, max + 1);
+        }
+
+        //TODO - change to stat (similar to luck)
+        public override int GetAC()
+        {
+            int min = Stats[Stat.MinAC];
+            int max = Stats[Stat.MaxAC];
+
+            if (min < 0) min = 0;
+            if (min >= max) return max;
+
+            if (Magics.TryGetValue(MagicType.DefensiveMastery, out UserMagic magic) && Level >= magic.Info.NeedLevel1)
+            {
+                if (10 + magic.Level * 10 > SEnvir.Random.Next(100))
+                {
+                    min = max;
+                    LevelMagic(magic);
+                }
             }
 
             return SEnvir.Random.Next(min, max + 1);

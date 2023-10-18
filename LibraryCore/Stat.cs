@@ -621,7 +621,6 @@ namespace Library
         [StatDescription(Title = "Pick Up Range", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
         PickUpRadius,
 
-
         [StatDescription(Title = "Total Healing", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
         Healing,
         [StatDescription(Title = "Max Heal per Tick", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
@@ -682,9 +681,9 @@ namespace Library
         [StatDescription(Title = "PK Points:", Format = "{0}", Mode = StatType.Default)]
         PKPoint,
 
-
         [StatDescription(Title = "Global Shout no level restriction", Mode = StatType.Text)]
         GlobalShout,
+
         [StatDescription(Title = "MC", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         MCPercent,
 
@@ -714,7 +713,7 @@ namespace Library
         GoldRate,
 
         [StatDescription(Title = "OldDuration", Mode = StatType.Time)]
-        OldDuration,
+        OldDuration,//UNUSED
         [StatDescription(Title = "Available Hunt Gold", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
         AvailableHuntGold,
         [StatDescription(Title = "Maximum Available Hunt Gold", Format = "{0:#0}", Mode = StatType.Default)]
@@ -748,10 +747,10 @@ namespace Library
 
         [StatDescription(Title = "Weight Rate", Format = "x{0}", Mode = StatType.Default)]
         WeightRate,
-        [StatDescription(Title = "MinAC and MinMR have been greatly Increased.", Mode = StatType.Text)]
-        Defiance,
-        [StatDescription(Title = "You sacrfice your Defense for Offense.", Mode = StatType.Text)]
-        Might,
+        [StatDescription(Title = "Offence", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        OffencePercent,
+        [StatDescription(Title = "Defence", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        DefencePercent,
         [StatDescription(Title = "Mana", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         ManaPercent,
 

@@ -556,7 +556,7 @@ namespace Client.Envir
                     }
 
                     login.Dispose();
-                    DXSoundManager.Stop(SoundIndex.LoginScene);
+                    DXSoundManager.Stop(SoundIndex.LoginScene3);
                     DXSoundManager.Play(SoundIndex.SelectScene);
 
                     p.Characters.Sort((x1, x2) => x2.LastLogin.CompareTo(x1.LastLogin));
@@ -1498,6 +1498,15 @@ namespace Client.Envir
                         });
 
                         //DXSoundManager.Play(SoundIndex.FlashOfLightEnd);
+                        break;
+                    case Effect.ParasiteExplode:
+                        ob.Effects.Add(new MirEffect(700, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 30, 60, Globals.NoneColour)
+                        {
+                            Target = ob,
+                            Blend = true
+                        });
+
+                        DXSoundManager.Play(SoundIndex.ParasiteExplode);
                         break;
                     case Effect.FrostBiteEnd:
                         ob.Effects.Add(new MirEffect(700, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 30, 60, Globals.IceColour)

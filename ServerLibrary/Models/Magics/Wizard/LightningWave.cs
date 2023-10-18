@@ -48,7 +48,6 @@ namespace Server.Models.Magics
             Cell cell = (Cell)data[1];
 
             if (cell?.Objects == null) return;
-            if (cell.Objects.Count == 0) return;
 
             for (int i = cell.Objects.Count - 1; i >= 0; i--)
             {

@@ -23,11 +23,9 @@ namespace Server.Models.Magics
                 Ob = null
             };
 
-            var augmentThunderStrike = GetAugmentedSkill(MagicType.AugmentThunderStrike);
-
             int range = 3;
 
-            if (augmentThunderStrike != null && Player.Level >= augmentThunderStrike.Info.NeedLevel1)
+            if (Magic.Level >= 4)
             {
                 range = 6;
             }

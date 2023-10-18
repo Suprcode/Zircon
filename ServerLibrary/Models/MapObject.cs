@@ -207,7 +207,6 @@ namespace Server.Models
         {
             PoisonType current = PoisonType.None;
 
-
             for (int i = PoisonList.Count - 1; i >= 0; i--)
             {
                 Poison poison = PoisonList[i];
@@ -217,15 +216,15 @@ namespace Server.Models
                     continue;
                 }
 
-
                 current |= poison.Type;
 
                 if (SEnvir.Now < poison.TickTime) continue;
-                if (poison.TickCount-- <= 0) PoisonList.RemoveAt(i);
+                if (poison.TickCount-- <= 0) 
+                    PoisonList.RemoveAt(i);
                 poison.TickTime = SEnvir.Now + poison.TickFrequency;
 
-                bool infection = false;
                 int damage = 0;
+                bool explode = false;
                 MonsterObject mob;
                 switch (poison.Type)
                 {
@@ -241,44 +240,53 @@ namespace Server.Models
                     case PoisonType.HellFire:
                         damage += poison.Value;
                         break;
-                    case PoisonType.Infection:
-                        if (Race == ObjectType.Player)
-                            damage += 1 + Stats[Stat.Health] / 100;
+                    case PoisonType.Parasite:
+                        damage += poison.Value;
+
+                        if (poison.TickCount < 0)
+                        {
+                            explode = true;
+                        }
                         else
                         {
-                            damage += poison.Value;
-
-                            for (int x = 0; x < poison.Owner.Stats[Stat.Rebirth]; x++)
-                                damage = (int)(damage * 1.5F);
-                        }
-
-                        infection = true;
-
-                        if (Race == ObjectType.Monster && poison.Owner.Race == ObjectType.Player)
-                        {
-                            mob = (MonsterObject)this;
-
-                            if (mob.EXPOwner == null)
-                                mob.EXPOwner = (PlayerObject)poison.Owner;
-                        }
-
-                        if (poison.TickCount <= 0) break;
-
-                        foreach (MapObject ob in poison.Owner.GetTargets(CurrentMap, CurrentLocation, 1))
-                        {
-                            if (ob.Race == ObjectType.Monster && ((MonsterObject)ob).MonsterInfo.IsBoss) continue;
-
-                            if (ob.PoisonList.Any(x => x.Type == PoisonType.Infection)) continue;
-
-                            ob.ApplyPoison(new Poison
+                            if ((poison.Owner is PlayerObject owner) && owner.Magics.TryGetValue(MagicType.Infection, out UserMagic infection))
                             {
-                                Value = poison.Value,
-                                Owner = poison.Owner,
-                                TickCount = poison.TickCount,
-                                TickFrequency = poison.TickFrequency,
-                                Type = poison.Type,
-                                TickTime = poison.TickTime
-                            });
+                                if (owner.Level >= infection.Info.NeedLevel1)
+                                {
+                                    var targets = poison.Owner.GetTargets(CurrentMap, CurrentLocation, 1);
+
+                                    foreach (MapObject target in targets)
+                                    {
+                                        if (target.Race != ObjectType.Monster) continue;
+
+                                        if (((MonsterObject)target).MonsterInfo.IsBoss) continue;
+
+                                        if (target.PoisonList.Any(x => x.Type == PoisonType.Parasite)) continue;
+
+                                        foreach (var p in PoisonList)
+                                        {
+                                            if (target.PoisonList.Any(x => x.Type == p.Type)) continue;
+
+                                            target.ApplyPoison(new Poison
+                                            {
+                                                Value = (p.Value * infection.Level + 1) / 10,
+                                                Owner = p.Owner,
+                                                TickCount = infection.GetPower(),
+                                                TickFrequency = p.TickFrequency,
+                                                Type = p.Type
+                                            });
+                                        }
+
+                                        owner.LevelMagic(infection);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case PoisonType.Burn:
+                        {
+                            damage += poison.Value;
                         }
                         break;
                 }
@@ -290,7 +298,7 @@ namespace Server.Models
                 {
                     if (Race == ObjectType.Monster && ((MonsterObject)this).MonsterInfo.IsBoss)
                         damage = 0;
-                    else if (!infection)
+                    else
                         damage = Math.Min(CurrentHP - 1, damage);
 
                     if (damage > 0)
@@ -371,6 +379,43 @@ namespace Server.Models
 
                     RegenTime = SEnvir.Now + RegenDelay;
                     ShockTime = DateTime.MinValue;
+                }
+
+                if (explode)
+                {
+                    mob = (MonsterObject)this;
+
+                    mob.EXPOwner ??= (PlayerObject)poison.Owner;
+
+                    switch (poison.Type)
+                    {
+                        case PoisonType.Parasite:
+                            {
+                                if (poison.Owner is not PlayerObject owner) break;
+
+                                if (owner.Magics.TryGetValue(MagicType.Parasite, out UserMagic parasite) && owner.Level >= parasite.Info.NeedLevel1)
+                                {
+                                    var cells = CurrentMap.GetCells(CurrentLocation, 0, 1);
+
+                                    foreach (var cell in cells)
+                                    {
+                                        if (cell?.Objects == null) continue;
+
+                                        for (int j = cell.Objects.Count - 1; j >= 0; j--)
+                                        {
+                                            if (j >= cell.Objects.Count) continue;
+                                            MapObject ob = cell.Objects[j];
+                                            if (!owner.CanAttackTarget(ob)) continue;
+
+                                            owner.MagicAttack(new List<MagicType> { MagicType.Parasite }, this, true);
+                                        }
+                                    }
+
+                                    Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.ParasiteExplode });
+                                }
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -1317,7 +1362,7 @@ namespace Server.Models
 
                 for (int i = ob.PoisonList.Count - 1; i >= 0; i--)
                 {
-                    if (ob.PoisonList[i].Type == PoisonType.Infection) continue;
+                    if (ob.PoisonList[i].Type == PoisonType.Parasite) continue;
 
                     ob.PoisonList.RemoveAt(i);
                 }
@@ -1789,7 +1834,7 @@ namespace Server.Models
 
             return SEnvir.Random.Next(min, max + 1);
         }
-        public int GetAC()
+        public virtual int GetAC()
         {
             int min = Stats[Stat.MinAC];
             int max = Stats[Stat.MaxAC];

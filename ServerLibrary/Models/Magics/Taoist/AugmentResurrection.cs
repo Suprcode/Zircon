@@ -3,13 +3,13 @@ using Server.DBModels;
 
 namespace Server.Models.Magics
 {
-    [MagicType(MagicType.OathOfThePerished)]
-    public class OathOfThePerished : MagicObject
+    [MagicType(MagicType.AugmentResurrection)]
+    public class AugmentResurrection : MagicObject
     {
         protected override Element Element => Element.None;
         public override bool AugmentedSkill => true;
 
-        public OathOfThePerished(PlayerObject player, UserMagic magic) : base(player, magic)
+        public AugmentResurrection(PlayerObject player, UserMagic magic) : base(player, magic)
         {
             
         }

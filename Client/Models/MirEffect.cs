@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Envir;
+﻿using Client.Envir;
 using Client.Models.Particles;
 using Client.Scenes;
 using Library;
-using SlimDX;
+using System;
+using System.Drawing;
 
 namespace Client.Models
 {
@@ -109,7 +104,6 @@ namespace Client.Models
                     enlapsed = TimeSpan.FromTicks(enlapsed.Ticks % TotalDuration.Ticks);
 
                 return StartLight + (EndLight - StartLight)*enlapsed.Ticks/TotalDuration.Ticks;
-
             }
         }
         public Color FrameLightColour => LightColours[FrameIndex];

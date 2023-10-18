@@ -9,7 +9,7 @@ namespace Server.Models.Magics
     [MagicType(MagicType.Fetter)]
     public class Fetter : MagicObject
     {
-        protected override Element Element => Element.None;
+        protected override Element Element => Element.None;       
 
         public Fetter(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -20,8 +20,7 @@ namespace Server.Models.Magics
         {
             var response = new MagicCast
             {
-                Ob = null,
-                Direction = MirDirection.Down
+                Ob = null
             };
 
             var cells = CurrentMap.GetCells(CurrentLocation, 0, 2);

@@ -10,8 +10,7 @@ namespace Server.Models.Magics
 
         public MagicImmunity(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //passive, reduces magic attack
+
         }
     }
 }

@@ -272,6 +272,7 @@ namespace Library
         CelestialLight = 307,
         Transparency = 308,
         LifeSteal = 309,
+        FrostBite = 310,
 
         //Ass
         PoisonousCloud = 400,
@@ -285,7 +286,6 @@ namespace Library
         DragonRepulse = 408,
         Evasion = 409,
         RagingWind = 410,
-        FrostBite = 411,
 
         MagicWeakness = 500,
     }
@@ -411,10 +411,10 @@ namespace Library
         Moving,
         Pushed,
         Attack,
-        RangeAttack, //?
+        RangeAttack,
         Spell,
         Harvest,
-      //  Struck,
+        Struck,
         Die,
         Dead,
         Show,
@@ -575,20 +575,20 @@ namespace Library
         Might = 113,
         SwiftBlade = 114,
         Assault = 115,
-        Endurance = 116,
-        ReflectDamage = 117,
+        Endurance = 116,//TODO
+        ReflectDamage = 117,//TODO
         Fetter = 118,
         AugmentDestructiveSurge = 119,//NOT CODED
-        AugmentDefiance = 120,//NOT CODED
-        AugmentReflectDamage = 121,//NOT CODED
+        AugmentDefiance = 120,
+        AugmentReflectDamage = 121,
         AdvancedPotionMastery = 122,
         MassBeckon = 123,
         SeismicSlam = 124,
-        Invincibility = 125,
+        Invincibility = 125,//TODO
         CrushingWave = 126,
-        DefensiveMastery = 127,//NOT CODED
-        PhysicalImmunity = 128,//NOT CODED
-        MagicImmunity = 129,//NOT CODED
+        DefensiveMastery = 127,
+        PhysicalImmunity = 128,
+        MagicImmunity = 129,
 
         FireBall = 201,
         LightningBall = 202,
@@ -620,7 +620,7 @@ namespace Library
         Tempest = 228,
         JudgementOfHeaven = 229,
         ThunderStrike = 230,
-        AugmentThunderStrike = 231,
+        BLANK = 231, //BLANK
         ElementalHurricane = 232,
         SuperiorMagicShield = 233,
         Burning = 234,//NOT CODED 
@@ -643,7 +643,7 @@ namespace Library
         GreaterEvilSlayer = 308,
         Resilience = 309,
         TrapOctagon = 310,
-        TaoistCombatKick = 311,
+        CombatKick = 311,
         ElementalSuperiority = 312,
         MassHeal = 313,
         BloodLust = 314,
@@ -658,12 +658,12 @@ namespace Library
         Scarecrow = 323,//NOT CODED
         ThunderKick = 324,
         SoulResonance = 325,//NOT CODED
-        Parasite = 326,//NOT CODED
+        Parasite = 326,
         Seance = 327,//NOT CODED
         AugmentExplosiveTalisman = 328,
         AugmentEvilSlayer = 329,
         AugmentPurification = 330,
-        OathOfThePerished = 331,
+        AugmentResurrection = 331,
         SummonSkeleton = 332,
         SummonShinsu = 333,
         SummonJinSkeleton = 334,
@@ -1073,6 +1073,7 @@ namespace Library
         FlashOfLight,
 
         DemonExplosion,
+        ParasiteExplode,
         FrostBiteEnd
     }
 
@@ -1080,16 +1081,17 @@ namespace Library
     public enum PoisonType
     {
         None = 0,
-        Green = 1,
-        Red = 2,
-        Slow = 4,
-        Paralysis = 8,
-        WraithGrip = 16,
-        HellFire = 32,
-        Silenced = 64,
-        Abyss = 128,
-        Infection = 256,
-        Neutralize = 512
+        Green = 1 << 0,
+        Red = 1 << 1,
+        Slow = 1 << 2,
+        Paralysis = 1 << 3,
+        WraithGrip = 1 << 4,
+        HellFire = 1 << 5,
+        Silenced = 1 << 6,
+        Abyss = 1 << 7,
+        Parasite = 1 << 8,
+        Neutralize = 1 << 9,
+        Burn = 1 << 10
     }
 
     public enum SpellEffect
@@ -1698,7 +1700,9 @@ namespace Library
     public enum SoundIndex
     {
         None,
-        LoginScene,
+        LoginScene1,
+        LoginScene2,
+        LoginScene3,
         SelectScene,
 
         // ProvinceMusic,
@@ -1829,7 +1833,6 @@ namespace Library
 
         SwiftBladeEnd,
 
-
         FireBallStart,
         FireBallTravel,
         FireBallEnd,
@@ -1872,7 +1875,6 @@ namespace Library
 
         LightningBeamEnd,
 
-
         FrozenEarthStart,
         FrozenEarthEnd,
 
@@ -1905,6 +1907,9 @@ namespace Library
 
         ChainLightningStart,
         ChainLightningEnd,
+
+        ParasiteTravel,
+        ParasiteExplode,
 
         FrostBiteStart,
 
@@ -1984,6 +1989,8 @@ namespace Library
         SweetBrier,
         SweetBrierMale,
         SweetBrierFemale,
+
+        RakeStart,
 
         Karma,
 
@@ -2115,7 +2122,6 @@ namespace Library
         AntNeedlerStruck,
         AntNeedlerDie,
 
-
         KeratoidAttack,
         KeratoidStruck,
         KeratoidDie,
@@ -2128,7 +2134,6 @@ namespace Library
         VisceralWormStruck,
         VisceralWormDie,
 
-
         MutantFleaAttack,
         MutantFleaStruck,
         MutantFleaDie,
@@ -2140,7 +2145,6 @@ namespace Library
         BlasterMutantFleaAttack,
         BlasterMutantFleaStruck,
         BlasterMutantFleaDie,
-
 
         WasHatchlingAttack,
         WasHatchlingStruck,
@@ -2343,7 +2347,6 @@ namespace Library
         DeathLordJichonAttack2,
         DeathLordJichonAttack3,
 
-
         MinotaurAttack,
         MinotaurStruck,
         MinotaurDie,
@@ -2359,8 +2362,6 @@ namespace Library
         EmperorSaWooAttack,
         EmperorSaWooStruck,
         EmperorSaWooDie,
-
-
 
         BoneArcherAttack,
         BoneArcherStruck,
@@ -2406,7 +2407,6 @@ namespace Library
         RazorTuskStruck,
         RazorTuskDie,
 
-
         PinkGoddessAttack,
         PinkGoddessStruck,
         PinkGoddessDie,
@@ -2440,7 +2440,6 @@ namespace Library
 
         ShinsuShow,
 
-
         CorpseStalkerAttack,
         CorpseStalkerStruck,
         CorpseStalkerDie,
@@ -2464,7 +2463,6 @@ namespace Library
         AquaLizardAttack,
         AquaLizardStruck,
         AquaLizardDie,
-
 
         CrimsonNecromancerAttack,
         CrimsonNecromancerStruck,
@@ -2498,8 +2496,6 @@ namespace Library
         NumaArmoredSoldierAttack,
         NumaArmoredSoldierStruck,
         NumaArmoredSoldierDie,
-
-
 
         IcyRangerAttack,
         IcyRangerStruck,
@@ -2567,8 +2563,6 @@ namespace Library
         QueenOfDawnStruck,
         QueenOfDawnDie,
 
-
-
         OYoungBeastAttack,
         OYoungBeastStruck,
         OYoungBeastDie,
@@ -2609,8 +2603,6 @@ namespace Library
         FerociousIceTigerStruck,
         FerociousIceTigerDie,
 
-
-
         SamaFireGuardianAttack,
         SamaFireGuardianStruck,
         SamaFireGuardianDie,
@@ -2626,7 +2618,6 @@ namespace Library
         SamaWindGuardianAttack,
         SamaWindGuardianStruck,
         SamaWindGuardianDie,
-
 
         PhoenixAttack,
         PhoenixStruck,
@@ -2644,16 +2635,8 @@ namespace Library
         WhiteTigerStruck,
         WhiteTigerDie,
 
-
-
-
         #endregion
-
-        ThunderKickEnd,
-
-        ThunderKickStart,
-        RakeStart,
-
     }
+
     #endregion
 }

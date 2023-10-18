@@ -257,7 +257,7 @@ namespace Client.Models
         public Color LightColour = Globals.NoneColour;
 
         public MirEffect MagicShieldEffect, WraithGripEffect, WraithGripEffect2, AssaultEffect, CelestialLightEffect, LifeStealEffect, SilenceEffect, BlindEffect, AbyssEffect, DragonRepulseEffect, DragonRepulseEffect1,
-                         ElementalHurrianeMagicEffect, ElementalHurrianeMagicEffect1, RankingEffect, DeveloperEffect, FrostBiteEffect, InfectionEffect, NeutralizeEffect;
+                         ElementalHurrianeMagicEffect, ElementalHurrianeMagicEffect1, RankingEffect, DeveloperEffect, FrostBiteEffect, ParasiteEffect, NeutralizeEffect;
 
         public bool CanShowWraithGrip = true;
 
@@ -367,6 +367,9 @@ namespace Client.Models
             if ((Poison & PoisonType.Paralysis) == PoisonType.Paralysis)
                 DrawColour = Color.DimGray;
 
+            if ((Poison & PoisonType.Burn) == PoisonType.Burn)
+                DrawColour = Color.OrangeRed;
+
             if ((Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip)
             {
                 if (CanShowWraithGrip && WraithGripEffect == null)
@@ -401,15 +404,15 @@ namespace Client.Models
                     BlindEnd();
             }
 
-            if ((Poison & PoisonType.Infection) == PoisonType.Infection)
+            if ((Poison & PoisonType.Parasite) == PoisonType.Parasite)
             {
-                if (InfectionEffect == null)
-                    InfectionCreate();
+                if (ParasiteEffect == null)
+                    ParasiteCreate();
             }
             else
             {
-                if (InfectionEffect != null)
-                    InfectionEnd();
+                if (ParasiteEffect != null)
+                    ParasiteEnd();
             }
 
             if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
@@ -1881,37 +1884,18 @@ namespace Client.Models
 
                         //Demon Explosion
 
-                        #region Thunder Kick
+                        //Thunder Kick
 
-                        case MagicType.ThunderKick:
-                            foreach (MapObject attackTarget in AttackTargets)
-                            {
-                                attackTarget.Effects.Add(spell = new MirEffect(1190, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 20, 40, Globals.NoneColour)
-                                {
-                                    Blend = true,
-                                    Target = attackTarget,
-                                });
-                                spell.Process();
-                            }
+                        #region Parasite
 
-                            if (AttackTargets.Count > 0)
-                                DXSoundManager.Play(SoundIndex.FireStormEnd);
-                            break;
-
-                        #endregion
-
-                        #region Infection
-
-                        case MagicType.Infection:
+                        case MagicType.Parasite:
                             foreach (Point point in MagicLocations)
                             {
                                 Effects.Add(spell = new MirProjectile(800, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 35, 35, Globals.NoneColour, CurrentLocation)
                                 {
                                     Blend = true,
                                     MapTarget = point,
-                                    Direction = Direction,
-                                    Skip = 10
-                                    //  DrawColour = Color.FromArgb(76, 34, 4),
+                                    Has16Directions = false
                                 });
                                 spell.Process();
                             }
@@ -1922,16 +1906,22 @@ namespace Client.Models
                                 {
                                     Blend = true,
                                     Target = attackTarget,
-                                    Direction = Direction,
-                                    Skip = 10
-                                    //   DrawColour = Color.FromArgb(76, 34, 4),
+                                    Has16Directions = false
                                 });
-
+                                spell.CompleteAction = () =>
+                                {
+                                    attackTarget.Effects.Add(spell = new MirEffect(1200, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 20, 50, Globals.NoneColour)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget,
+                                    });
+                                    spell.Process();
+                                };
                                 spell.Process();
                             }
 
                             if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
-                                DXSoundManager.Play(SoundIndex.FireBallTravel);
+                                DXSoundManager.Play(SoundIndex.ParasiteTravel);
                             break;
 
                         #endregion
@@ -2783,8 +2773,20 @@ namespace Client.Models
                         #region Defiance
 
                         case MagicType.Defiance:
-                        case MagicType.Invincibility:
                             Effects.Add(new MirEffect(40, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 60, 60, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            DXSoundManager.Play(SoundIndex.DefianceStart);
+                            break;
+
+                        #endregion
+
+                        #region Invincibility
+
+                        case MagicType.Invincibility:
+                            Effects.Add(new MirEffect(100, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 60, 60, Globals.NoneColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -2850,9 +2852,20 @@ namespace Client.Models
 
                         //Swift Blade
 
-                        //Assault - will be passive?
+                        //Assault
 
-                        //Endurance
+                        #region Endurance
+
+                        case MagicType.Endurance:
+                        //    Effects.Add(new MirEffect(400, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 60, 60, Globals.FireColour)
+                        //    {
+                        //        Blend = true,
+                        //        Target = this,
+                        //        //Direction = action.Direction,
+                        //    }); 
+                            break;
+
+                        #endregion
 
                         #region Reflect Damage
 
@@ -2875,6 +2888,7 @@ namespace Client.Models
                                 Blend = true,
                                 Target = this
                             });
+                            DXSoundManager.Play(SoundIndex.DragonRise);
                             break;
 
                         #endregion
@@ -3469,7 +3483,7 @@ namespace Client.Models
 
                         #region Taoist Combat Kick
 
-                        case MagicType.TaoistCombatKick:
+                        case MagicType.CombatKick:
                             DXSoundManager.Play(SoundIndex.TaoistCombatKickStart);
                             break;
 
@@ -3629,7 +3643,37 @@ namespace Client.Models
                         #region Thunder Kick
 
                         case MagicType.ThunderKick:
+
+                            var front = Functions.Move(action.Location, action.Direction);
+
+                            if (GameScene.Game.MapControl.HasTarget(front))
+                            {
+                                Effects.Add(spell = new MirEffect(1190, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 20, 40, Globals.NoneColour)
+                                {
+                                    Blend = true,
+                                    MapTarget = front,
+                                    StartTime = CEnvir.Now.AddMilliseconds(400)
+                                });
+
+                                DXSoundManager.Play(SoundIndex.FireStormEnd);
+                            }
+
                             DXSoundManager.Play(SoundIndex.TaoistCombatKickStart);
+                            break;
+
+                        #endregion
+
+                        #region Parasite
+
+                        case MagicType.Parasite:
+                            Effects.Add(spell = new MirEffect(1000, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 35, 35, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Direction = action.Direction
+                            });
+
+                            //DXSoundManager.Play(SoundIndex.FireBallStart);
                             break;
 
                         #endregion
@@ -4013,10 +4057,10 @@ namespace Client.Models
                     CreateProjectile();
                     PlayAttackSound();
                     break;
-                /*  case MirAction.Struck:
-					  if (FrameIndex == 0)
-						  PlayStruckSound();
-					  break;*/
+                //case MirAction.Struck:
+                //    if (FrameIndex == 0)
+                //        PlayStruckSound();
+                //    break;
                 case MirAction.Die:
                     if (FrameIndex == 0)
                         PlayDieSound();
@@ -4060,6 +4104,9 @@ namespace Client.Models
 
             if (VisibleBuffs.Contains(BuffType.CelestialLight))
                 CelestialLightStruck();
+
+            //if (VisibleBuffs.Contains(BuffType.ReflectDamage))
+            //    ReflectDamageStruck(AttackerID);
 
             switch (element)
             {
@@ -4126,8 +4173,8 @@ namespace Client.Models
         {
 
 
-
         }
+
         public virtual void DrawBlend()
         {
 
@@ -4383,7 +4430,15 @@ namespace Client.Models
             }
 
             if ((Poison & PoisonType.Green) == PoisonType.Green)
+            {
                 DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.SeaGreen);
+                count++;
+            }
+
+            if ((Poison & PoisonType.Burn) == PoisonType.Burn)
+            {
+                DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.OrangeRed);
+            }
         }
         public virtual void DrawHealth()
         {
@@ -4511,13 +4566,29 @@ namespace Client.Models
                 CompleteAction = CelestialLightCreate,
             };
             CelestialLightEffect.Process();
-
         }
         public void CelestialLightEnd()
         {
             CelestialLightEffect?.Remove();
             CelestialLightEffect = null;
         }
+
+        public void ReflectDamageStruck(uint attackerID)
+        {
+            MapObject attackTarget = GameScene.Game.MapControl.Objects.FirstOrDefault(x => x.ObjectID == attackerID);
+
+            if (attackTarget != null)
+            {
+                var dir = Functions.DirectionFromPoint(CurrentLocation, attackTarget.CurrentLocation);
+                Effects.Add(new MirEffect(2000, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 10, Globals.NoneColour)
+                {
+                    Blend = true,
+                    Target = this,
+                    Direction = dir
+                });
+            }
+        }
+
         public void LifeStealCreate()
         {
             LifeStealEffect = new MirEffect(1260, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx2, 40, 40, Globals.DarkColour)
@@ -4589,9 +4660,9 @@ namespace Client.Models
             AbyssEffect?.Remove();
             AbyssEffect = null;
         }
-        public void InfectionCreate()
+        public void ParasiteCreate()
         {
-            InfectionEffect = new MirEffect(900, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
+            ParasiteEffect = new MirEffect(900, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
             {
                 Blend = true,
                 Target = this,
@@ -4600,10 +4671,10 @@ namespace Client.Models
                 Opacity = 0.8F
             };
         }
-        public void InfectionEnd()
+        public void ParasiteEnd()
         {
-            InfectionEffect?.Remove();
-            InfectionEffect = null;
+            ParasiteEffect?.Remove();
+            ParasiteEffect = null;
         }
         public void NeutralizeCreate()
         {
@@ -4728,7 +4799,7 @@ namespace Client.Models
             DeveloperEnd();
             AssaultEnd();
             FrostBiteEnd();
-            InfectionEnd();
+            ParasiteEnd();
             ElementalHurricaneEnd();
 
             for (int i = Effects.Count - 1; i >= 0; i--)

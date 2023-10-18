@@ -14,7 +14,7 @@ namespace Server.Models.Magics
 
         public ReflectDamage(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Needs anim and sound
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
@@ -34,12 +34,25 @@ namespace Server.Models.Magics
 
         public override void MagicComplete(params object[] data)
         {
+            var damage = 5 + Magic.Level * 3;
+            var duration = TimeSpan.FromSeconds(15 + Magic.Level * 10);
+
+            var augmentReflectDamage = GetAugmentedSkill(MagicType.AugmentReflectDamage);
+
+            if (augmentReflectDamage != null && Player.Level >= augmentReflectDamage.Info.NeedLevel1)
+            {
+                damage += augmentReflectDamage.GetPower();
+                duration += TimeSpan.FromSeconds(5 + augmentReflectDamage.Level * 5);
+
+                Player.LevelMagic(augmentReflectDamage);
+            }
+
             Stats buffStats = new Stats
             {
-                [Stat.ReflectDamage] = 5 + Magic.Level * 3,
+                [Stat.ReflectDamage] = damage,
             };
 
-            Player.BuffAdd(BuffType.ReflectDamage, TimeSpan.FromSeconds(15 + Magic.Level * 10), buffStats, false, false, TimeSpan.Zero);
+            Player.BuffAdd(BuffType.ReflectDamage, duration, buffStats, false, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
         }

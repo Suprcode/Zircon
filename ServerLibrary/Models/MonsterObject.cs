@@ -1418,7 +1418,7 @@ namespace Server.Models
                 if (ob.Level >= Level) return false;
             }
 
-            if (ob.Buffs.Any(x => x.Type == BuffType.Transparency) && ((Poison & PoisonType.Infection) != PoisonType.Infection || Level < 100)) return false;
+            if (ob.Buffs.Any(x => x.Type == BuffType.Transparency) && ((Poison & PoisonType.Parasite) != PoisonType.Parasite || Level < 100)) return false;
 
             switch (ob.Race)
             {
@@ -1654,7 +1654,6 @@ namespace Server.Models
                 return 0;
             }
 
-
             damage = ob.Attacked(this, damage, element, true, IgnoreShield);
 
             if (damage <= 0) return damage;
@@ -1681,7 +1680,6 @@ namespace Server.Models
                 TickFrequency = TimeSpan.FromSeconds(PoisonFrequency),
                 TickCount = PoisonTicks,
             });
-
 
             return damage;
         }

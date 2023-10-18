@@ -2,6 +2,7 @@
 using Server.DBModels;
 using Server.Envir;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -53,6 +54,8 @@ namespace Server.Models.Magics
         {
             Player.LevelMagic(Magic);
 
+            var delay = SEnvir.Now.AddMilliseconds(500);
+
             foreach (MapObject ob in Player.GetTargets(CurrentMap, CurrentLocation, 3))
             {
                 if (!Player.CanAttackTarget(ob)) continue;
@@ -63,9 +66,7 @@ namespace Server.Models.Magics
 
                 if (mob.MonsterInfo.IsBoss) continue;
 
-                var delay = SEnvir.Now.AddMilliseconds(500);
-
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, Type, ob, true, buff.Stats));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, new List<MagicType> { Type }, ob, true, buff.Stats));
             }
         }
 

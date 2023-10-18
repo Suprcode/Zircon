@@ -1,11 +1,9 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection.PortableExecutable;
 
 namespace Server.Models.Magics
 {

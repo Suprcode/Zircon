@@ -207,7 +207,7 @@ namespace Library
                 case MagicType.MassInvisibility:
                 case MagicType.GreaterEvilSlayer:
                 case MagicType.GreaterFrozenEarth:
-                case MagicType.Infection:
+                case MagicType.Parasite:
                 case MagicType.ElementalSuperiority:
                 case MagicType.BloodLust:
                 case MagicType.LifeSteal:
@@ -272,7 +272,7 @@ namespace Library
                     return MirAnimation.DragonRepulseStart;
 
                 case MagicType.ThunderKick:
-                case MagicType.TaoistCombatKick:
+                case MagicType.CombatKick:
                     return MirAnimation.Combat7;
 
                 case MagicType.Cloak:
@@ -294,6 +294,7 @@ namespace Library
                 case MagicType.Might:
                 case MagicType.ReflectDamage:
                 case MagicType.Fetter:
+                case MagicType.Endurance:
                 case MagicType.Invincibility:
                     return MirAnimation.Combat15;
 

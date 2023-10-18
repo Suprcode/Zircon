@@ -10,8 +10,7 @@ namespace Server.Models.Magics
 
         public DefensiveMastery(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //passive, Chance of getting MaxAC increases with training
+
         }
     }
 }

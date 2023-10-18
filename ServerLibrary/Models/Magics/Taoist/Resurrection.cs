@@ -37,11 +37,11 @@ namespace Server.Models.Magics
                 response.Ob = null;
             }
 
-            var oathOfThePerished = GetAugmentedSkill(MagicType.OathOfThePerished);
+            var augmentResurrection = GetAugmentedSkill(MagicType.AugmentResurrection);
 
-            if (oathOfThePerished != null && SEnvir.Now > oathOfThePerished.Cooldown && Player.Level >= oathOfThePerished.Info.NeedLevel1)
+            if (augmentResurrection != null && SEnvir.Now > augmentResurrection.Cooldown && Player.Level >= augmentResurrection.Info.NeedLevel1)
             {
-                var power = oathOfThePerished.GetPower() + 1;
+                var power = augmentResurrection.GetPower() + 1;
 
                 var possibleTargets = Player.GetAllObjects(location, 3);
 
@@ -62,16 +62,16 @@ namespace Server.Models.Magics
 
             var count = -1;
 
-            var hasOathOfThePerished = false;
+            var hasAugmentResurrection = false;
 
             foreach (MapObject realTarget in realTargets)
             {
                 if (!Player.UseAmulet(1, 1))
                     break;
 
-                if (oathOfThePerished != null)
+                if (augmentResurrection != null)
                 {
-                    hasOathOfThePerished = true;
+                    hasAugmentResurrection = true;
                     count++;
                 }
 
@@ -79,13 +79,13 @@ namespace Server.Models.Magics
 
                 var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, realTarget.CurrentLocation) * 48);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, realTarget == target, hasOathOfThePerished));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, realTarget == target, hasAugmentResurrection));
             }
 
             if (count > 0)
             {
-                oathOfThePerished.Cooldown = SEnvir.Now.AddMilliseconds(oathOfThePerished.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = oathOfThePerished.Info.Index, Delay = oathOfThePerished.Info.Delay });
+                augmentResurrection.Cooldown = SEnvir.Now.AddMilliseconds(augmentResurrection.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentResurrection.Info.Index, Delay = augmentResurrection.Info.Delay });
             }
 
             return response;
@@ -95,7 +95,7 @@ namespace Server.Models.Magics
         {
             var ob = (MapObject)data[1];
             var primary = (bool)data[2];
-            var hasOathOfThePerished = (bool)data[3];
+            var hasAugmentResurrection = (bool)data[3];
 
             if (ob?.Node == null || !ob.Dead) return;
 
@@ -113,11 +113,11 @@ namespace Server.Models.Magics
             Magic.Cooldown = SEnvir.Now.AddSeconds(20);
             Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = 20000 });
 
-            var oathOfThePerished = GetAugmentedSkill(MagicType.OathOfThePerished);
+            var augmentResurrection = GetAugmentedSkill(MagicType.AugmentResurrection);
 
-            if (!primary && hasOathOfThePerished && oathOfThePerished != null)
+            if (!primary && hasAugmentResurrection && augmentResurrection != null)
             {
-                Player.LevelMagic(oathOfThePerished);
+                Player.LevelMagic(augmentResurrection);
             }
         }
     }
