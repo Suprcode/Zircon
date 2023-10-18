@@ -21,7 +21,7 @@ namespace Client.Envir
         public static Dictionary<SoundIndex, DXSound> SoundList = new Dictionary<SoundIndex, DXSound>
         {
             #region Music
-            [SoundIndex.LoginScene1] = new DXSound(SoundPath + @"Opening.wav", SoundType.Music) { Loop = true },
+            [SoundIndex.LoginScene] = new DXSound(SoundPath + @"Opening.wav", SoundType.Music) { Loop = true },
             [SoundIndex.LoginScene2] = new DXSound(SoundPath + @"Main.wav", SoundType.Music) { Loop = true },
             [SoundIndex.LoginScene3] = new DXSound(SoundPath + @"Ending.wav", SoundType.Music) { Loop = true },
             [SoundIndex.SelectScene] = new DXSound(SoundPath + @"SelChr.wav", SoundType.Music) { Loop = true },

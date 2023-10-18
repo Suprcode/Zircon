@@ -1700,13 +1700,11 @@ namespace Library
     public enum SoundIndex
     {
         None,
-        LoginScene1,
-        LoginScene2,
-        LoginScene3,
+        LoginScene,
         SelectScene,
 
-        // ProvinceMusic,
-        B000,
+        #region Province Music
+        B000 = 3,
         B2,
         B8,
         B009D,
@@ -1744,8 +1742,12 @@ namespace Library
         TS001,
         TS002,
         TS003,
+        #endregion
 
-        ButtonA,
+        LoginScene2,
+        LoginScene3,
+
+        ButtonA = 100,
         ButtonB,
         ButtonC,
 

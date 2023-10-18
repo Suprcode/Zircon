@@ -258,7 +258,7 @@ namespace Client.Scenes
 
 
 
-            DXSoundManager.Play(SoundIndex.LoginScene3);
+            DXSoundManager.Play(SoundIndex.LoginScene2);
         }
 
         #region Methods

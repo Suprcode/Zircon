@@ -556,7 +556,7 @@ namespace Client.Envir
                     }
 
                     login.Dispose();
-                    DXSoundManager.Stop(SoundIndex.LoginScene3);
+                    DXSoundManager.Stop(SoundIndex.LoginScene2);
                     DXSoundManager.Play(SoundIndex.SelectScene);
 
                     p.Characters.Sort((x1, x2) => x2.LastLogin.CompareTo(x1.LastLogin));
