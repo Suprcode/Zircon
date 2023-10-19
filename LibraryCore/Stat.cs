@@ -567,7 +567,7 @@ namespace Library
         [StatDescription(Title = "Strength", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
         Strength, //Also known as Inten (Intensity)
         [StatDescription(Title = "Luck", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default)]
-        Luck, //does nothing at the moment
+        Luck,
 
         [StatDescription(Title = "Fire", Format = "{0:+#0;-#0;#0}", Mode = StatType.AttackElement)]
         FireAttack,
@@ -868,6 +868,9 @@ namespace Library
 
         [StatDescription(Title = "Absorbing Power", Format = "{0:+#0;-#0;#0}", Mode = StatType.Default, UsageHint = "Used in Superior Magic Shield Skill to represent remaining power to absorb.")]
         SuperiorMagicShield,
+
+        [StatDescription(Title = "Defensive Mastery", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent, UsageHint = "Used in Defensive Mastery Skill to give Luck on AC")]
+        DefensiveMastery,
 
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,

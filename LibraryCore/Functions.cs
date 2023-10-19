@@ -657,5 +657,23 @@ namespace Library
             return null;
 
         }
+
+        public static Point[] CreateGridPoints(int gridSize, int middleIgnore = -1)
+        {
+            List<Point> gridPoints = new List<Point>();
+
+            // Iterate through X and Y coordinates
+            for (int x = -gridSize; x <= gridSize; x++)
+            {
+                for (int y = -gridSize; y <= gridSize; y++)
+                {
+                    if (middleIgnore >= 0 && Math.Abs(x) <= middleIgnore && Math.Abs(y) <= middleIgnore) continue;
+
+                    gridPoints.Add(new Point(x, y));
+                }
+            }
+
+            return gridPoints.ToArray();
+        }
     }
 }

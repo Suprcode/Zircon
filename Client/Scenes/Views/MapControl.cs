@@ -1460,8 +1460,13 @@ namespace Client.Scenes.Views
                     DXManager.Sprite.Transform = Matrix.Identity;
 
                     DXManager.SetBlend(false);
-                    
-                    MapObject.User.AbyssEffect.Draw();
+
+                    var abyssEffects = MapObject.User.CreateMagicEffect(MagicEffect.Abyss);
+
+                    foreach (var effect in abyssEffects)
+                    {
+                        effect.Draw();
+                    }
                     return;
                 }
 

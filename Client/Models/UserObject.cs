@@ -743,7 +743,7 @@ namespace Client.Models
             if (buff.Type == BuffType.SuperiorMagicShield)
             {
                 MaximumSuperiorMagicShield = buff.Stats[Stat.SuperiorMagicShield];
-                MagicShieldEnd();
+                EndMagicEffect(MagicEffect.MagicShield);
             }
         }
 

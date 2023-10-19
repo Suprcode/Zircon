@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models.Particles;
 using Client.Scenes;
@@ -14,6 +7,11 @@ using Library;
 using Library.SystemModels;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 using Frame = Library.Frame;
 
 namespace Client.Models
@@ -33,7 +31,7 @@ namespace Client.Models
                 if (GameScene.Game.MouseObject == value) return;
 
                 GameScene.Game.MouseObject = value;
-                //GameScene.Game.HuntingLogPanel.MouseMonsterIndex = value?.MonsterIndex ?? 0;
+
                 GameScene.Game.MapControl.TextureValid = false;
             }
         }
@@ -45,7 +43,7 @@ namespace Client.Models
                 if (GameScene.Game.TargetObject == value) return;
 
                 GameScene.Game.TargetObject = value;
-                //if (value != null) GameScene.Game.OldTargetObjectID = value.ObjectID;
+
                 GameScene.Game.MapControl.TextureValid = false;
             }
         }
@@ -57,7 +55,7 @@ namespace Client.Models
                 if (GameScene.Game.MagicObject == value) return;
 
                 GameScene.Game.MagicObject = value;
-                //if (value != null) GameScene.Game.OldTargetObjectID = value.ObjectID;
+
                 GameScene.Game.MapControl.TextureValid = false;
             }
         }
@@ -256,11 +254,10 @@ namespace Client.Models
         public float Opacity = 1F;
         public Color LightColour = Globals.NoneColour;
 
-        public MirEffect MagicShieldEffect, WraithGripEffect, WraithGripEffect2, AssaultEffect, CelestialLightEffect, LifeStealEffect, SilenceEffect, BlindEffect, AbyssEffect, DragonRepulseEffect, DragonRepulseEffect1,
-                         ElementalHurrianeMagicEffect, ElementalHurrianeMagicEffect1, RankingEffect, DeveloperEffect, FrostBiteEffect, ParasiteEffect, NeutralizeEffect;
+        public Dictionary<MagicEffect, List<MirEffect>> MagicEffects = new Dictionary<MagicEffect, List<MirEffect>>();
+        private Point[] DragonRepulseGrid;
 
         public bool CanShowWraithGrip = true;
-
 
         public bool Skeleton;
 
@@ -326,8 +323,9 @@ namespace Client.Models
             {
                 DamageInfo damageInfo = DamageList[index];
                 if (DamageList.Count - index > 3 && CEnvir.Now - damageInfo.StartTime > damageInfo.AppearDelay && CEnvir.Now - damageInfo.StartTime < damageInfo.AppearDelay + damageInfo.ShowDelay)
+                {
                     damageInfo.StartTime = CEnvir.Now - damageInfo.AppearDelay - damageInfo.ShowDelay;
-
+                }
 
                 damageInfo.Process(previous);
 
@@ -372,58 +370,48 @@ namespace Client.Models
 
             if ((Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip)
             {
-                if (CanShowWraithGrip && WraithGripEffect == null)
-                    WraithGripCreate();
+                if (CanShowWraithGrip)
+                    CreateMagicEffect(MagicEffect.WraithGrip);
             }
             else
             {
-                if (WraithGripEffect != null)
-                    WraithGripEnd();
+                EndMagicEffect(MagicEffect.WraithGrip);
             }
 
             if ((Poison & PoisonType.Silenced) == PoisonType.Silenced)
             {
-                if (SilenceEffect == null)
-                    SilenceCreate();
+                CreateMagicEffect(MagicEffect.Silence);
             }
             else
             {
-                if (SilenceEffect != null)
-                    SilenceEnd();
+                EndMagicEffect(MagicEffect.Silence);
             }
-
 
             if ((Poison & PoisonType.Abyss) == PoisonType.Abyss)
             {
-                if (BlindEffect == null)
-                    BlindCreate();
+                CreateMagicEffect(MagicEffect.Blind);
             }
             else
             {
-                if (BlindEffect != null)
-                    BlindEnd();
+                EndMagicEffect(MagicEffect.Blind);
             }
 
             if ((Poison & PoisonType.Parasite) == PoisonType.Parasite)
             {
-                if (ParasiteEffect == null)
-                    ParasiteCreate();
+                CreateMagicEffect(MagicEffect.Parasite);
             }
             else
             {
-                if (ParasiteEffect != null)
-                    ParasiteEnd();
+                EndMagicEffect(MagicEffect.Parasite);
             }
 
             if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
             {
-                if (NeutralizeEffect == null)
-                    NeutralizeCreate();
+                CreateMagicEffect(MagicEffect.Neutralize);
             }
             else
             {
-                if (NeutralizeEffect != null)
-                    NeutralizeEnd();
+                EndMagicEffect(MagicEffect.Neutralize);
             }
 
             if (Stats?[Stat.ClearRing] > 0 || VisibleBuffs.Contains(BuffType.Invisibility) || VisibleBuffs.Contains(BuffType.Cloak) || VisibleBuffs.Contains(BuffType.Transparency))
@@ -431,67 +419,75 @@ namespace Client.Models
             else
                 Opacity = 1f;
 
-            if (VisibleBuffs.Contains(BuffType.MagicShield) || VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+            if (VisibleBuffs.Contains(BuffType.MagicShield))
             {
-                if (MagicShieldEffect == null)
-                    MagicShieldCreate();
-            }
-            else if (MagicShieldEffect != null)
-                MagicShieldEnd();
-
-
-            if (VisibleBuffs.Contains(BuffType.Developer))
-            {
-                if (RankingEffect != null)
-                    RankingEnd();
-
-                if (DeveloperEffect == null)
-                    DeveloperCreate();
+                CreateMagicEffect(MagicEffect.MagicShield);
             }
             else
             {
-                if (DeveloperEffect != null)
-                    DeveloperEnd();
+                EndMagicEffect(MagicEffect.MagicShield);
+            }
+
+            if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+            {
+                CreateMagicEffect(MagicEffect.SuperiorMagicShield);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.SuperiorMagicShield);
+            }
+
+            if (VisibleBuffs.Contains(BuffType.Developer))
+            {
+                EndMagicEffect(MagicEffect.Ranking);
+
+                CreateMagicEffect(MagicEffect.Developer);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.Developer);
 
                 if (VisibleBuffs.Contains(BuffType.Ranking))
                 {
-                    if (RankingEffect == null)
-                        RankingCreate();
+                    CreateMagicEffect(MagicEffect.Ranking);
                 }
-                else if (RankingEffect != null)
-                    RankingEnd();
+                else
+                {
+                    EndMagicEffect(MagicEffect.Ranking);
+                }
             }
-
 
             if (VisibleBuffs.Contains(BuffType.LifeSteal))
             {
-                if (LifeStealEffect == null)
-                    LifeStealCreate();
+                CreateMagicEffect(MagicEffect.LifeSteal);
             }
-            else if (LifeStealEffect != null)
-                LifeStealEnd();
+            else
+            {
+                EndMagicEffect(MagicEffect.LifeSteal);
+            }
 
             if (VisibleBuffs.Contains(BuffType.CelestialLight))
             {
-                if (CelestialLightEffect == null)
-                    CelestialLightCreate();
+                CreateMagicEffect(MagicEffect.CelestialLight);
             }
-            else if (CelestialLightEffect != null)
-                CelestialLightEnd();
+            else
+            {
+                EndMagicEffect(MagicEffect.CelestialLight);
+            }
 
             if (VisibleBuffs.Contains(BuffType.FrostBite))
             {
-                if (FrostBiteEffect == null)
-                    FrostBiteCreate();
+                CreateMagicEffect(MagicEffect.FrostBite);
             }
-            else if (FrostBiteEffect != null)
-                FrostBiteEnd();
+            else
+            {
+                EndMagicEffect(MagicEffect.FrostBite);
+            }
         }
 
         public virtual void UpdateFrame()
         {
             if (Frames == null || CurrentFrame == null) return;
-
 
             switch (CurrentAction)
             {
@@ -2012,6 +2008,7 @@ namespace Client.Models
                                     Blend = true,
                                     Target = attackTarget,
                                     BlendRate = 0.4f,
+                                    DrawType = DrawType.Floor
                                 });
                                 spell.CompleteAction = () => attackTarget.CanShowWraithGrip = true;
 
@@ -2022,6 +2019,7 @@ namespace Client.Models
                                     Blend = true,
                                     Target = attackTarget,
                                     BlendRate = 0.4f,
+                                    DrawType = DrawType.Floor
                                 });
                                 spell.Process();
                             }
@@ -2410,13 +2408,13 @@ namespace Client.Models
             Direction = action.Direction;
             CurrentLocation = action.Location;
 
-            AssaultEnd();
+            EndMagicEffect(MagicEffect.Assault);
             List<uint> targets;
 
             if (action.Action != MirAction.Standing)
             {
-                DragonRepulseEnd();
-                ElementalHurricaneEnd();
+                EndMagicEffect(MagicEffect.DragonRepulse);
+                EndMagicEffect(MagicEffect.ElementalHurricane);
             }
 
             switch (action.Action)
@@ -2440,7 +2438,7 @@ namespace Client.Models
                     {
                         case MagicType.Assault:
                             DXSoundManager.Play(SoundIndex.AssaultStart);
-                            AssaultCreate();
+                            CreateMagicEffect(MagicEffect.Assault);
                             break;
                     }
 
@@ -2449,30 +2447,27 @@ namespace Client.Models
                     bool haselementalhurricane = VisibleBuffs.Contains(BuffType.ElementalHurricane);
                     bool hasdragonrepulse = VisibleBuffs.Contains(BuffType.DragonRepulse);
 
-                    if (!hasdragonrepulse && DragonRepulseEffect != null)
+                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
                     {
-                        DragonRepulseEnd();
-                        break;
-                    }
+                        var effects = CreateMagicEffect(MagicEffect.ElementalHurricane);
 
-                    if (!haselementalhurricane && ElementalHurrianeMagicEffect != null)
+                        foreach (var effect in effects)
+                        {
+                            effect.Direction = Direction;
+                        }
+                    }
+                    else
                     {
-                        ElementalHurricaneEnd();
-                        break;
+                        EndMagicEffect(MagicEffect.ElementalHurricane);
                     }
 
                     if (hasdragonrepulse)
                     {
-                        if (DragonRepulseEffect == null)
-                            DragonRepulseCreate();
+                        CreateMagicEffect(MagicEffect.DragonRepulse);
                     }
-
-                    if (haselementalhurricane)
+                    else
                     {
-                        if (ElementalHurrianeMagicEffect == null)
-                            ElementalHurricaneCreate();
-
-                        ElementalHurrianeMagicEffect.Direction = Direction;
+                        EndMagicEffect(MagicEffect.DragonRepulse);
                     }
                     break;
                 case MirAction.Pushed:
@@ -3717,6 +3712,7 @@ namespace Client.Models
                                 Blend = true,
                                 Target = this,
                                 BlendRate = 0.4f,
+                                DrawType = DrawType.Floor
                             });
                             DXSoundManager.Play(SoundIndex.WraithGripStart);
                             break;
@@ -4099,14 +4095,14 @@ namespace Client.Models
 
             PlayStruckSound();
 
-            if (VisibleBuffs.Contains(BuffType.MagicShield) || VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
-                MagicShieldStruck();
+            if (VisibleBuffs.Contains(BuffType.MagicShield))
+                CreateMagicEffect(MagicEffect.MagicShieldStruck);
+
+            if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+                CreateMagicEffect(MagicEffect.SuperiorMagicShieldStruck);
 
             if (VisibleBuffs.Contains(BuffType.CelestialLight))
-                CelestialLightStruck();
-
-            //if (VisibleBuffs.Contains(BuffType.ReflectDamage))
-            //    ReflectDamageStruck(AttackerID);
+                CreateMagicEffect(MagicEffect.CelestialLightStruck);
 
             switch (element)
             {
@@ -4452,355 +4448,353 @@ namespace Client.Models
 
         }
 
-        public void WraithGripCreate()
+        public List<MirEffect> CreateMagicEffect(MagicEffect magic)
         {
-            WraithGripEffect = new MirEffect(1424, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 40, 40, Globals.NoneColour)
+            if (MagicEffects.TryGetValue(magic, out List<MirEffect> effects))
             {
-                Blend = true,
-                Target = this,
-                Loop = true,
-                BlendRate = 0.4f,
-            };
-            WraithGripEffect2 = new MirEffect(1444, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 40, 40, Globals.NoneColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-                BlendRate = 0.4f,
-            };
-        }
-        public void WraithGripEnd()
-        {
-            WraithGripEffect?.Remove();
-            WraithGripEffect = null;
-            WraithGripEffect2?.Remove();
-            WraithGripEffect2 = null;
-        }
-        public void MagicShieldCreate()
-        {
-            if (VisibleBuffs.Contains(BuffType.MagicShield))
-            {
-                MagicShieldEffect = new MirEffect(850, 3, TimeSpan.FromMilliseconds(200), LibraryFile.Magic, 40, 40, Globals.WindColour)
-                {
-                    Blend = true,
-                    Target = this,
-                    Loop = true,
-                };
-            }
-            else
-            {
-                MagicShieldEffect = new MirEffect(1920, 3, TimeSpan.FromMilliseconds(200), LibraryFile.MagicEx2, 40, 40, Globals.FireColour)
-                {
-                    Blend = true,
-                    Target = this,
-                    Loop = true,
-                };
-            }
-            MagicShieldEffect.Process();
-        }
-        public void MagicShieldStruck()
-        {
-            MagicShieldEnd();
-
-            if (VisibleBuffs.Contains(BuffType.MagicShield))
-            {
-                MagicShieldEffect = new MirEffect(853, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 40, 40, Globals.WindColour)
-                {
-                    Blend = true,
-                    Target = this,
-                    CompleteAction = MagicShieldCreate,
-                };
-            }
-            else
-            {
-                MagicShieldEffect = new MirEffect(1923, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.FireColour)
-                {
-                    Blend = true,
-                    Target = this,
-                    CompleteAction = MagicShieldCreate,
-                };
+                return effects;
             }
 
-            MagicShieldEffect.Process();
+            effects = new List<MirEffect>();
 
-        }
-        public void MagicShieldEnd()
-        {
-            MagicShieldEffect?.Remove();
-            MagicShieldEffect = null;
-        }
-        public void AssaultCreate()
-        {
-            AssaultEffect = new MirEffect(740, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.NoneColour)
+            switch (magic)
             {
-                Blend = true,
-                Target = this,
-                Loop = true,
-                Direction = Direction,
-            };
-            AssaultEffect.Process();
-        }
-        public void AssaultEnd()
-        {
-            AssaultEffect?.Remove();
-            AssaultEffect = null;
-        }
-        public void CelestialLightCreate()
-        {
-            CelestialLightEffect = new MirEffect(300, 3, TimeSpan.FromMilliseconds(200), LibraryFile.MagicEx2, 40, 40, Globals.HolyColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-            };
-            CelestialLightEffect.Process();
-        }
-        public void CelestialLightStruck()
-        {
-            CelestialLightEnd();
-
-            CelestialLightEffect = new MirEffect(303, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.HolyColour)
-            {
-                Blend = true,
-                Target = this,
-                CompleteAction = CelestialLightCreate,
-            };
-            CelestialLightEffect.Process();
-        }
-        public void CelestialLightEnd()
-        {
-            CelestialLightEffect?.Remove();
-            CelestialLightEffect = null;
-        }
-
-        public void ReflectDamageStruck(uint attackerID)
-        {
-            MapObject attackTarget = GameScene.Game.MapControl.Objects.FirstOrDefault(x => x.ObjectID == attackerID);
-
-            if (attackTarget != null)
-            {
-                var dir = Functions.DirectionFromPoint(CurrentLocation, attackTarget.CurrentLocation);
-                Effects.Add(new MirEffect(2000, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 10, Globals.NoneColour)
-                {
-                    Blend = true,
-                    Target = this,
-                    Direction = dir
-                });
-            }
-        }
-
-        public void LifeStealCreate()
-        {
-            LifeStealEffect = new MirEffect(1260, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx2, 40, 40, Globals.DarkColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-            };
-        }
-        public void LifeStealEnd()
-        {
-            LifeStealEffect?.Remove();
-            LifeStealEffect = null;
-        }
-
-        public void FrostBiteCreate()
-        {
-            FrostBiteEffect = new MirEffect(600, 7, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx5, 40, 40, Globals.IceColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-            };
-        }
-        public void FrostBiteEnd()
-        {
-            FrostBiteEffect?.Remove();
-            FrostBiteEffect = null;
-        }
-        public void SilenceCreate()
-        {
-            SilenceEffect = new MirEffect(680, 6, TimeSpan.FromMilliseconds(150), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-            };
-        }
-        public void SilenceEnd()
-        {
-            SilenceEffect?.Remove();
-            SilenceEffect = null;
-        }
-        public void BlindCreate()
-        {
-            BlindEffect = new MirEffect(680, 6, TimeSpan.FromMilliseconds(150), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
-            {
-                //Blend = true,
-                Target = this,
-                Loop = true,
-                DrawColour = Color.Black,
-                Opacity = 0.8F
-            };
-
-            if (this != User) return;
-
-            AbyssEffect = new MirEffect(2100, 19, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 0, 0, Globals.NoneColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-                AdditionalOffSet = new Point(0, -64)
-            };
-        }
-        public void BlindEnd()
-        {
-            BlindEffect?.Remove();
-            BlindEffect = null;
-            AbyssEffect?.Remove();
-            AbyssEffect = null;
-        }
-        public void ParasiteCreate()
-        {
-            ParasiteEffect = new MirEffect(900, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-                //  DrawColour = Color.SaddleBrown,
-                Opacity = 0.8F
-            };
-        }
-        public void ParasiteEnd()
-        {
-            ParasiteEffect?.Remove();
-            ParasiteEffect = null;
-        }
-        public void NeutralizeCreate()
-        {
-            NeutralizeEffect = new MirEffect(470, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx7, 0, 0, Globals.NoneColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-                Opacity = 0.8F
-            };
-        }
-        public void NeutralizeEnd()
-        {
-            NeutralizeEffect?.Remove();
-            NeutralizeEffect = null;
-        }
-
-        public void DragonRepulseCreate()
-        {
-            DragonRepulseEffect = new MirEffect(1011, 4, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx4, 0, 0, Globals.NoneColour)
-            {
-                Target = this,
-                Loop = true,
-            };
-            DragonRepulseEffect1 = new MirEffect(1031, 4, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx4, 80, 80, Globals.LightningColour)
-            {
-                Blend = true,
-                Target = this,
-                Loop = true,
-            };
-        }
-        public void DragonRepulseEnd()
-        {
-            DragonRepulseEffect?.Remove();
-            DragonRepulseEffect = null;
-            DragonRepulseEffect1?.Remove();
-            DragonRepulseEffect1 = null;
-        }
-
-
-        public void ElementalHurricaneCreate()
-        {
-            if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
-            {
-                if (Config.DrawEffects) // && Race != ObjectType.Monster
-                {
-                    Color attackColour = Functions.GetElementColour(AttackElement);
- 
-                    ElementalHurrianeMagicEffect = new MirEffect(370, 4, TimeSpan.FromMilliseconds(140), LibraryFile.MagicEx3, 0, 0, Globals.LightningColour)
+                case MagicEffect.WraithGrip:
                     {
-                        Blend = true,
-                        Target = this,
-                        Direction = Direction,
-                        DrawColour = attackColour,
-                        Loop = true,
-                    };
-                    ElementalHurrianeMagicEffect.FrameIndexAction = () =>
+                        effects.Add(new MirEffect(1424, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            BlendRate = 0.4f,
+                        });
+                        effects.Add(new MirEffect(1444, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            BlendRate = 0.4f,
+                        });
+                    }
+                    break;
+                case MagicEffect.MagicShield:
                     {
-                        if (ElementalHurrianeMagicEffect.FrameIndex == 0)
-                            DXSoundManager.Play(SoundIndex.ElementalHurricane);
+                        if (MagicEffects.TryGetValue(MagicEffect.MagicShieldStruck, out effects))
+                        {
+                            return effects;
+                        }
 
-                    };
-                    ElementalHurrianeMagicEffect.Process();
+                        effects = new List<MirEffect>
+                        {
+                            new MirEffect(850, 3, TimeSpan.FromMilliseconds(200), LibraryFile.Magic, 40, 40, Globals.WindColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Loop = true,
+                            }
+                        };
+                    }
+                    break;
+                case MagicEffect.MagicShieldStruck:
+                    {
+                        EndMagicEffect(MagicEffect.MagicShield);
+                        effects.Add(new MirEffect(853, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 40, 40, Globals.WindColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            CompleteAction = () =>
+                            {
+                                EndMagicEffect(MagicEffect.MagicShieldStruck);
+                                CreateMagicEffect(MagicEffect.MagicShield);
+                            }
+                        });
+                    }
+                    break;
+                case MagicEffect.SuperiorMagicShield:
+                    {
+                        if (MagicEffects.TryGetValue(MagicEffect.SuperiorMagicShieldStruck, out effects))
+                        {
+                            return effects;
+                        }
+
+                        effects = new List<MirEffect>
+                        {
+                            new MirEffect(1920, 3, TimeSpan.FromMilliseconds(200), LibraryFile.MagicEx2, 40, 40, Globals.FireColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Loop = true,
+                            }
+                        };
+                    }
+                    break;
+                case MagicEffect.SuperiorMagicShieldStruck:
+                    {
+                        EndMagicEffect(MagicEffect.SuperiorMagicShield);
+                        effects.Add(new MirEffect(1923, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.FireColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            CompleteAction = () =>
+                            {
+                                EndMagicEffect(MagicEffect.SuperiorMagicShieldStruck);
+                                CreateMagicEffect(MagicEffect.SuperiorMagicShield);
+                            }
+                        });
+                    }
+                    break;
+                case MagicEffect.CelestialLight:
+                    {
+                        if (MagicEffects.TryGetValue(MagicEffect.CelestialLightStruck, out effects))
+                        {
+                            return effects;
+                        }
+
+                        effects = new List<MirEffect>
+                        {
+                            new MirEffect(300, 3, TimeSpan.FromMilliseconds(200), LibraryFile.MagicEx2, 40, 40, Globals.HolyColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Loop = true,
+                            }
+                        };
+                    }
+                    break;
+                case MagicEffect.CelestialLightStruck:
+                    {
+                        EndMagicEffect(MagicEffect.CelestialLight);
+                        effects.Add(new MirEffect(303, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.HolyColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            CompleteAction = () =>
+                            {
+                                EndMagicEffect(MagicEffect.CelestialLightStruck);
+                                CreateMagicEffect(MagicEffect.CelestialLight);
+                            }
+                        });
+                    }
+                    break;
+                case MagicEffect.Assault:
+                    {
+                        effects.Add(new MirEffect(740, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            Direction = Direction,
+                        });
+                    }
+                    break;
+                case MagicEffect.LifeSteal:
+                    {
+                        effects.Add(new MirEffect(1260, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx2, 40, 40, Globals.DarkColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                        });
+                    }
+                    break;
+                case MagicEffect.FrostBite:
+                    {
+                        effects.Add(new MirEffect(600, 7, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx5, 40, 40, Globals.IceColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                        });
+                    }
+                    break;
+                case MagicEffect.Silence:
+                    {
+                        effects.Add(new MirEffect(680, 6, TimeSpan.FromMilliseconds(150), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                        });
+                    }
+                    break;
+                case MagicEffect.Blind:
+                    {
+                        effects.Add(new MirEffect(680, 6, TimeSpan.FromMilliseconds(150), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
+                        {
+                            Target = this,
+                            Loop = true,
+                            DrawColour = Color.Black,
+                            Opacity = 0.8F
+                        });
+
+                        if (this == User)
+                        {
+                            effects.Add(new MirEffect(2100, 19, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 0, 0, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Loop = true,
+                                AdditionalOffSet = new Point(0, -64)
+                            });
+                        }
+                    }
+                    break;
+                case MagicEffect.Parasite:
+                    {
+                        effects.Add(new MirEffect(900, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            Opacity = 0.8F
+                        });
+                    }
+                    break;
+                case MagicEffect.Neutralize:
+                    {
+                        effects.Add(new MirEffect(470, 6, TimeSpan.FromMilliseconds(120), LibraryFile.MagicEx7, 0, 0, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            Opacity = 0.8F
+                        });
+                    }
+                    break;
+                case MagicEffect.DragonRepulse:
+                    {
+                        MirEffect effect;
+                        effects.Add(effect = new MirEffect(1011, 4, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx4, 0, 0, Globals.NoneColour)
+                        {
+                            Target = this,
+                            Loop = true,
+                            DrawType = DrawType.Floor
+                        });
+                        effects.Add(new MirEffect(1031, 4, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx4, 80, 80, Globals.LightningColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            DrawType = DrawType.Floor
+                        });
+
+                        effect.FrameIndexAction = () =>
+                        {
+                            if (effect.FrameIndex == 0)
+                            {
+                                DragonRepulseGrid ??= Functions.CreateGridPoints(2, 1);
+
+                                for (int i = 0; i < DragonRepulseGrid.Length; i++)
+                                {
+                                    if (CEnvir.Random.Next(7) != 0) continue;
+
+                                    var location = this.CurrentLocation;
+                                    location.Offset(DragonRepulseGrid[i]);
+
+                                    var delay = CEnvir.Now.AddMilliseconds(CEnvir.Random.Next(300));
+
+                                    effects.Add(new MirEffect(1050, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 0, 0, Globals.NoneColour)
+                                    {
+                                        MapTarget = location,
+                                        DrawType = DrawType.Final,
+                                        StartTime = delay
+                                    });
+
+                                    effects.Add(new MirEffect(1060, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 0, 0, Globals.NoneColour)
+                                    {
+                                        MapTarget = location,
+                                        Blend = true,
+                                        DrawType = DrawType.Final,
+                                        StartTime = delay
+                                    });
+                                }
+                            }
+                        };
+                    }
+                    break;
+                case MagicEffect.ElementalHurricane:
+                    {
+                        Color attackColour = Functions.GetElementColour(AttackElement);
+
+                        MirEffect effect;
+                        effects.Add(effect = new MirEffect(370, 4, TimeSpan.FromMilliseconds(140), LibraryFile.MagicEx3, 0, 0, Globals.LightningColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Direction = Direction,
+                            DrawColour = attackColour,
+                            Loop = true,
+                        });
+
+                        effect.FrameIndexAction = () =>
+                        {
+                            if (effect.FrameIndex == 1)
+                                DXSoundManager.Play(SoundIndex.ElementalHurricane);
+                        };
+                    }
+                    break;
+                case MagicEffect.Ranking:
+                    {
+                        effects.Add(new MirEffect(3420, 7, TimeSpan.FromMilliseconds(150), LibraryFile.GameInter, 0, 0, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            AdditionalOffSet = new Point(0, -25)
+                        });
+                    }
+                    break;
+                case MagicEffect.Developer:
+                    {
+                        effects.Add(new MirEffect(3410, 7, TimeSpan.FromMilliseconds(150), LibraryFile.GameInter, 0, 0, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            AdditionalOffSet = new Point(10, -25)
+                        });
+                    }
+                    break;
+            }
+
+            if (effects.Any())
+            {
+                foreach (var effect in effects)
+                {
+                    effect.Process();
                 }
+
+                MagicEffects.Add(magic, effects);
             }
-        }
-        public void ElementalHurricaneEnd()
-        {
-            ElementalHurrianeMagicEffect?.Remove();
-            ElementalHurrianeMagicEffect = null;
-            ElementalHurrianeMagicEffect1?.Remove();
-            ElementalHurrianeMagicEffect1 = null;
-        }
 
-
-        public void RankingCreate()
+            return effects;
+        }
+        public void EndMagicEffect(MagicEffect magic)
         {
-            RankingEffect = new MirEffect(3420, 7, TimeSpan.FromMilliseconds(150), LibraryFile.GameInter, 0, 0, Globals.NoneColour)
+            if (!MagicEffects.TryGetValue(magic, out List<MirEffect> effects))
             {
-                Blend = true,
-                Target = this,
-                Loop = true,
-                AdditionalOffSet = new Point(0, -25)
-            };
-            RankingEffect.Process();
-        }
-        public void RankingEnd()
-        {
-            RankingEffect?.Remove();
-            RankingEffect = null;
-        }
+                return;
+            }
 
-        public void DeveloperCreate()
-        {
-            DeveloperEffect = new MirEffect(3410, 7, TimeSpan.FromMilliseconds(150), LibraryFile.GameInter, 0, 0, Globals.NoneColour)
+            foreach (var effect in effects)
             {
-                Blend = true,
-                Target = this,
-                Loop = true,
-                AdditionalOffSet = new Point(10, -25)
-            };
-            DeveloperEffect.Process();
-        }
-        public void DeveloperEnd()
-        {
-            DeveloperEffect?.Remove();
-            DeveloperEffect = null;
+                effect?.Remove();
+            }
+
+            effects.Clear();
+            MagicEffects.Remove(magic);
         }
 
         public virtual void Remove()
         {
             GameScene.Game.MapControl.RemoveObject(this);
 
-            MagicShieldEnd();
-            CelestialLightEnd();
-            WraithGripEnd();
-            LifeStealEnd();
-            SilenceEnd();
-            BlindEnd();
-            DragonRepulseEnd();
-            RankingEnd();
-            DeveloperEnd();
-            AssaultEnd();
-            FrostBiteEnd();
-            ParasiteEnd();
-            ElementalHurricaneEnd();
+            var keys = new List<MagicEffect>(MagicEffects.Keys);
+
+            foreach (var key in keys)
+            {
+                EndMagicEffect(key);
+            }
 
             for (int i = Effects.Count - 1; i >= 0; i--)
             {

@@ -456,12 +456,14 @@ namespace Library
         Skeleton,
         Show,
         Hide,
+
         HorseStanding,
         HorseWalking,
         HorseRunning,
         HorseStruck,
 
         StoneStanding,
+
         DragonRepulseStart,
         DragonRepulseMiddle,
         DragonRepulseEnd,
@@ -1112,6 +1114,34 @@ namespace Library
         Rubble,
 
         MonsterDeathCloud,
+    }
+
+
+    public enum MagicEffect
+    {
+        Assault,
+
+        MagicShield,
+        MagicShieldStruck,
+        SuperiorMagicShield,
+        SuperiorMagicShieldStruck,
+        ElementalHurricane,
+        FrostBite,
+
+        CelestialLight,
+        CelestialLightStruck,
+        Parasite,
+        Neutralize,
+
+        WraithGrip,
+        LifeSteal,
+        Silence,
+        Blind,
+        Abyss,
+        DragonRepulse,
+
+        Ranking,
+        Developer,
     }
 
     public enum MarketPlaceSort
@@ -2641,4 +2671,5 @@ namespace Library
     }
 
     #endregion
+
 }

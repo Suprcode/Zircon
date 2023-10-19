@@ -14929,27 +14929,6 @@ namespace Server.Models
 
             return SEnvir.Random.Next(min, max + 1);
         }
-
-        //TODO - change to stat (similar to luck)
-        public override int GetAC()
-        {
-            int min = Stats[Stat.MinAC];
-            int max = Stats[Stat.MaxAC];
-
-            if (min < 0) min = 0;
-            if (min >= max) return max;
-
-            if (Magics.TryGetValue(MagicType.DefensiveMastery, out UserMagic magic) && Level >= magic.Info.NeedLevel1)
-            {
-                if (10 + magic.Level * 10 > SEnvir.Random.Next(100))
-                {
-                    min = max;
-                    LevelMagic(magic);
-                }
-            }
-
-            return SEnvir.Random.Next(min, max + 1);
-        }
         #endregion
 
         public void Enqueue(Packet p) => Connection.Enqueue(p);

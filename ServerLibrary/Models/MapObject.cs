@@ -1834,13 +1834,21 @@ namespace Server.Models
 
             return SEnvir.Random.Next(min, max + 1);
         }
-        public virtual int GetAC()
+        public int GetAC()
         {
             int min = Stats[Stat.MinAC];
             int max = Stats[Stat.MaxAC];
+            int defensiveMastery = Stats[Stat.DefensiveMastery];
 
             if (min < 0) min = 0;
             if (min >= max) return max;
+
+            if (defensiveMastery > 0)
+            {
+                if (defensiveMastery >= 10) return max;
+
+                if (SEnvir.Random.Next(10) < defensiveMastery) return max;
+            }
 
             return SEnvir.Random.Next(min, max + 1);
         }

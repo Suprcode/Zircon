@@ -1,14 +1,14 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using Client.Envir;
 using Client.Models.Player;
 using Client.Scenes;
 using Library;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using Frame = Library.Frame;
 using S = Library.Network.ServerPackets;
 
@@ -232,7 +232,6 @@ namespace Client.Models
         public int ArmourShift;
         public Color ArmourColour;
         public int ArmourFrame => DrawFrame + (CostumeShape >= 0 ? (CostumeShape % 10) : (ArmourShape % 11)) * ArmourShapeOffSet + ArmourShift;
-
 
         public MirLibrary HorseLibrary, HorseShapeLibrary, HorseShapeLibrary2;
         public int HorseShape;

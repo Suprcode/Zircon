@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.Scenes.Views;
@@ -14,8 +6,15 @@ using Client.UserModels;
 using Library;
 using Library.SystemModels;
 using MirDB;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
-using UserObject = Client.Models.UserObject;
 
 //Cleaned
 namespace Client.Scenes
@@ -963,8 +962,8 @@ namespace Client.Scenes
                 ob.Process();
 
             for (int i = MapControl.Effects.Count - 1; i >= 0; i--)
-                MapControl.Effects[i].Process();
-
+                    MapControl.Effects[i].Process();
+           
             for (int i = MapControl.ParticleEffects.Count - 1; i >= 0; i--)
                 MapControl.ParticleEffects[i].Process();
 
@@ -3275,8 +3274,6 @@ namespace Client.Scenes
 
             if (image >= 0 && CEnvir.LibraryList.TryGetValue(LibraryFile.Inventory, out library))
             {
-
-
                 Size imageSize = library.GetSize(image);
                 Point p = new Point(CEnvir.MouseLocation.X - imageSize.Width/2, CEnvir.MouseLocation.Y - imageSize.Height/2);
 
