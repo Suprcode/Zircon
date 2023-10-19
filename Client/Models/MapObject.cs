@@ -4463,6 +4463,8 @@ namespace Client.Models
 
             effects = new List<MirEffect>();
 
+            bool process = true;
+
             switch (magic)
             {
                 case MagicEffect.WraithGrip:
@@ -4495,6 +4497,7 @@ namespace Client.Models
                     break;
                 case MagicEffect.MagicShieldStruck:
                     {
+                        EndMagicEffect(MagicEffect.MagicShield);
                         effects.Add(new MirEffect(853, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 40, 40, Globals.WindColour)
                         {
                             Blend = true,
@@ -4504,6 +4507,7 @@ namespace Client.Models
                                 CreateMagicEffect(MagicEffect.MagicShield);
                             }
                         });
+                        process = false;
                     }
                     break;
                 case MagicEffect.SuperiorMagicShield:
@@ -4518,6 +4522,7 @@ namespace Client.Models
                     break;
                 case MagicEffect.SuperiorMagicShieldStruck:
                     {
+                        EndMagicEffect(MagicEffect.SuperiorMagicShield);
                         effects.Add(new MirEffect(1923, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.FireColour)
                         {
                             Blend = true,
@@ -4527,6 +4532,7 @@ namespace Client.Models
                                 CreateMagicEffect(MagicEffect.SuperiorMagicShield);
                             }
                         });
+                        process = false;
                     }
                     break;
                 case MagicEffect.Assault:
@@ -4702,9 +4708,12 @@ namespace Client.Models
 
             if (effects.Any())
             {
-                foreach (var effect in effects)
+                if (process)
                 {
-                    effect.Process();
+                    foreach (var effect in effects)
+                    {
+                        effect.Process();
+                    }
                 }
 
                 MagicEffects.Add(magic, effects);
