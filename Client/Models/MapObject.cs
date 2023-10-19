@@ -2452,25 +2452,7 @@ namespace Client.Models
                     bool haselementalhurricane = VisibleBuffs.Contains(BuffType.ElementalHurricane);
                     bool hasdragonrepulse = VisibleBuffs.Contains(BuffType.DragonRepulse);
 
-                    if (!hasdragonrepulse)
-                    {
-                        EndMagicEffect(MagicEffect.DragonRepulse);
-                        break;
-                    }
-
-                    if (!haselementalhurricane)
-                    {
-                        EndMagicEffect(MagicEffect.ElementalHurrianeMagic);
-                        break;
-                    }
-
-                    if (hasdragonrepulse)
-                    {
-                        CreateMagicEffect(MagicEffect.DragonRepulse);
-                        DragonRepulseUpdate();
-                    }
-
-                    if (haselementalhurricane)
+                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
                     {
                         var effects = CreateMagicEffect(MagicEffect.ElementalHurrianeMagic);
 
@@ -2478,6 +2460,20 @@ namespace Client.Models
                         {
                             effect.Direction = Direction;
                         }
+                    }
+                    else
+                    {
+                        EndMagicEffect(MagicEffect.ElementalHurrianeMagic);
+                    }
+
+                    if (hasdragonrepulse)
+                    {
+                        CreateMagicEffect(MagicEffect.DragonRepulse);
+                        DragonRepulseUpdate();
+                    }
+                    else
+                    {
+                        EndMagicEffect(MagicEffect.DragonRepulse);
                     }
                     break;
                 case MirAction.Pushed:
@@ -4649,14 +4645,14 @@ namespace Client.Models
                         {
                             Target = this,
                             Loop = true,
-                            //DrawType = DrawType.Floor
+                            DrawType = DrawType.Floor
                         });
                         effects.Add(new MirEffect(1031, 4, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx4, 80, 80, Globals.LightningColour)
                         {
                             Blend = true,
                             Target = this,
                             Loop = true,
-                            //DrawType = DrawType.Floor
+                            DrawType = DrawType.Floor
                         });
                     }
                     break;
