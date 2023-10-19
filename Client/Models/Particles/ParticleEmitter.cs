@@ -149,11 +149,6 @@ namespace Client.Models.Particles
             GameScene.Game.MapControl.ParticleEffects.Remove(this);
         }
 
-        public ParticleType GetType(Type type)
-        {
-            return ParticleTypes.FirstOrDefault(x => type == x.GetType());
-        }
-
         #region IDisposable
 
         public bool IsDisposed { get; private set; }

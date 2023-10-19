@@ -1559,8 +1559,8 @@ namespace Client.Envir
 
                 ob.VisibleBuffs.Add(p.Type);
 
-                if (p.Type == BuffType.SuperiorMagicShield && ob.MagicShieldEffect != null)
-                    ob.MagicShieldEnd();
+                if (p.Type == BuffType.SuperiorMagicShield)
+                    ob.EndMagicEffect(MagicEffect.MagicShield);
 
                 return;
             }

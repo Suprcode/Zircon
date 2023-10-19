@@ -170,7 +170,7 @@ namespace Client.Scenes.Views
                 return;
             }
 
-            if (HideChat && nextFadeCheck < DateTime.UtcNow && chatFade > 0F)
+            if (HideChat && nextFadeCheck < CEnvir.Now && chatFade > 0F)
             {
                 chatFade -= 0.2F;
 
@@ -181,7 +181,7 @@ namespace Client.Scenes.Views
                     item.Label.Opacity = chatFade;
                 }
 
-                nextFadeCheck = DateTime.UtcNow.AddMilliseconds(100);
+                nextFadeCheck = CEnvir.Now.AddMilliseconds(100);
                 return;
             }
 
@@ -195,7 +195,7 @@ namespace Client.Scenes.Views
             {
                 var newest = History.LastOrDefault();
 
-                if (newest != null && newest.SentDate < DateTime.UtcNow.AddSeconds(-10))
+                if (newest != null && newest.SentDate < CEnvir.Now.AddSeconds(-10))
                 {
                     hideChat = true;
                 }
@@ -206,7 +206,7 @@ namespace Client.Scenes.Views
 
         private void CleanUpChat()
         {
-            if (nextCleanUpCheck < DateTime.UtcNow)
+            if (nextCleanUpCheck < CEnvir.Now)
             {
                 if (Panel.CleanUpCheckBox.Checked)
                 {
@@ -215,7 +215,7 @@ namespace Client.Scenes.Views
                     {
                         var history = History[i];
 
-                        TimeSpan timeDifference = DateTime.UtcNow - History[i].SentDate;
+                        TimeSpan timeDifference = CEnvir.Now - History[i].SentDate;
 
                         if (timeDifference > TimeSpan.FromSeconds(5) && history.Action == MessageAction.None)
                         {
@@ -378,7 +378,7 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(new ChatHistory { Message = message, Label = label, LinkedItems = linkedItems, SentDate = DateTime.UtcNow });
+            History.Add(new ChatHistory { Message = message, Label = label, LinkedItems = linkedItems, SentDate = CEnvir.Now });
 
             while (History.Count > 250)
             {
@@ -437,7 +437,7 @@ namespace Client.Scenes.Views
             Size size = DXLabel.GetHeight(label, TextPanel.Size.Width);
             label.Size = new Size(size.Width, size.Height);
 
-            History.Add(new ChatHistory { Message = label.Text, Label = label, SentDate = DateTime.UtcNow, Action = action });
+            History.Add(new ChatHistory { Message = label.Text, Label = label, SentDate = CEnvir.Now, Action = action });
 
             while (History.Count > 250)
             {

@@ -98,12 +98,12 @@ namespace Client.Models
             {
                 if (CEnvir.Now < StartTime) return 0;
 
-                TimeSpan enlapsed = CEnvir.Now - StartTime;
+                TimeSpan elapsed = CEnvir.Now - StartTime;
 
                 if (Loop)
-                    enlapsed = TimeSpan.FromTicks(enlapsed.Ticks % TotalDuration.Ticks);
+                    elapsed = TimeSpan.FromTicks(elapsed.Ticks % TotalDuration.Ticks);
 
-                return StartLight + (EndLight - StartLight)*enlapsed.Ticks/TotalDuration.Ticks;
+                return StartLight + (EndLight - StartLight) * elapsed.Ticks / TotalDuration.Ticks;
             }
         }
         public Color FrameLightColour => LightColours[FrameIndex];
@@ -129,7 +129,7 @@ namespace Client.Models
             }
         }
         
-        public MirEffect(int startIndex, int frameCount, TimeSpan frameDelay, LibraryFile file, int startLight, int endLight, Color lightColour)
+        public MirEffect(int startIndex, int frameCount, TimeSpan frameDelay, LibraryFile file, int startLight, int endLight, Color lightColour, bool frontEffect = false)
         {
             StartIndex = startIndex;
             FrameCount = frameCount;
@@ -186,17 +186,17 @@ namespace Client.Models
     
         protected virtual int GetFrame()
         {
-            TimeSpan enlapsed = CEnvir.Now - StartTime;
+            TimeSpan elapsed = CEnvir.Now - StartTime;
 
             if (Loop)
-                enlapsed = TimeSpan.FromTicks(enlapsed.Ticks%TotalDuration.Ticks);
+                elapsed = TimeSpan.FromTicks(elapsed.Ticks % TotalDuration.Ticks);
 
             if (Reversed)
             {
                 for (int i = 0; i < Delays.Length; i++)
                 {
-                    enlapsed -= Delays[Delays.Length - 1 - i];
-                    if (enlapsed >= TimeSpan.Zero) continue;
+                    elapsed -= Delays[Delays.Length - 1 - i];
+                    if (elapsed >= TimeSpan.Zero) continue;
 
                     return i;
                 }
@@ -205,8 +205,8 @@ namespace Client.Models
             {
                 for (int i = 0; i < Delays.Length; i++)
                 {
-                    enlapsed -= Delays[i];
-                    if (enlapsed >= TimeSpan.Zero) continue;
+                    elapsed -= Delays[i];
+                    if (elapsed >= TimeSpan.Zero) continue;
 
                     return i;
                 }
@@ -239,6 +239,6 @@ namespace Client.Models
     {
         Floor,
         Object,
-        Final,
+        Final
     }
 }
