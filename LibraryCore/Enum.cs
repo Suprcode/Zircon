@@ -1119,23 +1119,26 @@ namespace Library
 
     public enum MagicEffect
     {
+        Assault,
+
         MagicShield,
         MagicShieldStruck,
         SuperiorMagicShield,
         SuperiorMagicShieldStruck,
-        WraithGrip,
-        Assault,
+        ElementalHurricane,
+        FrostBite,
+
         CelestialLight,
         CelestialLightStruck,
+        Parasite,
+        Neutralize,
+
+        WraithGrip,
         LifeSteal,
         Silence,
         Blind,
         Abyss,
         DragonRepulse,
-        ElementalHurrianeMagic,
-        FrostBite,
-        Parasite,
-        Neutralize,
 
         Ranking,
         Developer,
