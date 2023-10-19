@@ -129,7 +129,7 @@ namespace Client.Models
             }
         }
         
-        public MirEffect(int startIndex, int frameCount, TimeSpan frameDelay, LibraryFile file, int startLight, int endLight, Color lightColour, bool frontEffect = false)
+        public MirEffect(int startIndex, int frameCount, TimeSpan frameDelay, LibraryFile file, int startLight, int endLight, Color lightColour)
         {
             StartIndex = startIndex;
             FrameCount = frameCount;

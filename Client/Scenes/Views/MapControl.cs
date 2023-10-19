@@ -169,7 +169,6 @@ namespace Client.Scenes.Views
         public List<DXControl> MapInfoObjects = new List<DXControl>();
         public List<MapObject> Objects = new List<MapObject>();
         public List<MirEffect> Effects = new List<MirEffect>();
-        public List<MirEffect> FrontEffects = new List<MirEffect>();
         public List<Models.Particles.ParticleEmitter> ParticleEffects = new List<Models.Particles.ParticleEmitter>();
 
         public const int CellWidth = 48, CellHeight = 32;
