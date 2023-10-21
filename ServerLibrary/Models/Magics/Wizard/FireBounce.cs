@@ -41,7 +41,7 @@ namespace Server.Models.Magics
             if (!Functions.InRange(target.CurrentLocation, targetLocation, Globals.MagicRange))
                 return;
 
-            if (Player.MagicAttack(new List<MagicType> { Type }, target, true) < 1)
+            if (Player.MagicAttack(new List<MagicType> { Type }, target, true, null, bounce) < 1)
                 return;
 
             var targets = new List<MapObject>();
@@ -87,7 +87,7 @@ namespace Server.Models.Magics
                     ObjectID = source.ObjectID,
                     Direction = source.Direction,
                     CurrentLocation = source.CurrentLocation,
-                    Type = Magic.Info.Magic,
+                    Type = Type,
                     Targets = new List<uint> { target.ObjectID },
                     Locations = new List<Point>()
                 });
@@ -98,7 +98,7 @@ namespace Server.Models.Magics
             return response;
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int bounce = 0)
         {
             power += Magic.GetPower() + Player.GetMC();
 

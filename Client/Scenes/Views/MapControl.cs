@@ -748,7 +748,7 @@ namespace Client.Scenes.Views
         {
             if (GameScene.Game.Observer) return;
 
-            if (User.Dead || (User.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || User.Buffs.Any(x => x.Type == BuffType.DragonRepulse || x.Type == BuffType.FrostBite)) return; //Para or Frozen??
+            if (User.Dead || (User.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || User.Buffs.Any(x => x.Type == BuffType.DragonRepulse)) return; //Para or Frozen??
 
             if (User.MagicAction != null)
             {

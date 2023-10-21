@@ -149,17 +149,26 @@ namespace Server.Models
                     break;
                 case SpellEffect.FireWall:
                     {
-                        if (!(Owner is PlayerObject player) || !player.CanAttackTarget(ob)) return;
-
-                        int damage = player.MagicAttack(new List<MagicType> { MagicType.FireWall }, ob, true);
-
-                        if (damage > 0 && ob.Race == ObjectType.Player)
+                        if (Owner is MonsterObject monster)
                         {
-                            foreach (SpellObject spell in player.SpellList)
-                            {
-                                if (spell.Effect != Effect) continue;
+                            if (monster == null || !monster.CanAttackTarget(ob)) return;
 
-                                spell.TickCount--;
+                            monster.Attack(ob, monster.GetDC(), Element.Fire);
+                        }
+                        else if (Owner is PlayerObject player)
+                        {
+                            if (!player.CanAttackTarget(ob)) return;
+
+                            int damage = player.MagicAttack(new List<MagicType> { MagicType.FireWall }, ob, true);
+
+                            if (damage > 0 && ob.Race == ObjectType.Player)
+                            {
+                                foreach (SpellObject spell in player.SpellList)
+                                {
+                                    if (spell.Effect != Effect) continue;
+
+                                    spell.TickCount--;
+                                }
                             }
                         }
                     }
@@ -199,12 +208,6 @@ namespace Server.Models
                             }
                         }
                     }
-                    break;
-                case SpellEffect.MonsterFireWall:
-                    MonsterObject monster = Owner as MonsterObject;
-                    if (monster == null || !monster.CanAttackTarget(ob)) return;
-
-                    monster.Attack(ob, monster.GetDC(), Element.Fire);
                     break;
             }
         }

@@ -199,6 +199,7 @@ namespace Library
                 case MagicType.IceBlades:
                 case MagicType.FrozenEarth:
                 case MagicType.MeteorShower:
+                case MagicType.LightningStrike:
 
                 case MagicType.ExplosiveTalisman:
                 case MagicType.EvilSlayer:
@@ -241,6 +242,7 @@ namespace Library
                 case MagicType.MirrorImage:
                 case MagicType.Asteroid:
                 case MagicType.SuperiorMagicShield:
+                case MagicType.IceRain:
 
                 case MagicType.Heal:
                 case MagicType.PoisonDust:

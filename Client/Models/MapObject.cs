@@ -1213,15 +1213,26 @@ namespace Client.Models
                         case MagicType.LightningWave:
                             foreach (Point point in MagicLocations)
                             {
-                                spell = new MirEffect(980, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.LightningColour)
+                                Effects.Add(spell = new MirProjectile(980, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 35, 35, Globals.LightningColour, CurrentLocation)
                                 {
                                     Blend = true,
                                     MapTarget = point,
-                                };
+                                });
                                 spell.Process();
                             }
 
-                            DXSoundManager.Play(SoundIndex.LightningWaveEnd);
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                Effects.Add(spell = new MirProjectile(980, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 35, 35, Globals.LightningColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                });
+                                spell.Process();
+                            }
+
+                            if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
+                                DXSoundManager.Play(SoundIndex.LightningWaveEnd);
                             break;
 
                         #endregion
@@ -1354,6 +1365,59 @@ namespace Client.Models
                         //Mirror Image
 
 
+                        #region Lightning Strike
+
+                        case MagicType.LightningStrike:
+                            foreach (Point point in MagicLocations)
+                            {
+                                spell = new MirEffect(500, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 50, 50, Globals.LightningColour)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                };
+                                spell.Process();
+                            }
+
+                            if (MagicLocations.Count > 0)
+                                DXSoundManager.Play(SoundIndex.ChainLightningEnd);
+                            break;
+
+                        #endregion
+
+                        #region Ice Rain
+
+                        case MagicType.IceRain:
+                            int delay = 0;
+
+                            foreach (Point point in MagicLocations)
+                            {
+                                MirProjectile eff;
+                                Point p = new(point.X, point.Y - 10);
+                                Effects.Add(eff = new MirProjectile(700, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 50, 80, Globals.IceColour, p)
+                                {
+                                    MapTarget = point,
+                                    Skip = 0,
+                                    Explode = true,
+                                    Blend = true,
+                                    StartTime = CEnvir.Now.AddMilliseconds(delay)
+                                });
+
+                                eff.CompleteAction = () =>
+                                {
+                                    Effects.Add(new MirEffect(720, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 100, 100, Globals.IceColour)
+                                    {
+                                        MapTarget = eff.MapTarget,
+                                        Blend = true,
+                                    });
+
+                                    DXSoundManager.Play(SoundIndex.IceBoltEnd);
+                                };
+                                delay += 200;
+                            }
+
+                            break;
+
+                        #endregion
 
                         #endregion
 
@@ -3314,7 +3378,34 @@ namespace Client.Models
 
                         #endregion
 
-                        //Ice Sonic
+                        #region Lightning Strike
+
+                        case MagicType.LightningStrike:
+                            Effects.Add(spell = new MirEffect(400, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 10, 35, Globals.LightningColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Direction = action.Direction
+                            });
+                            DXSoundManager.Play(SoundIndex.ChainLightningStart);
+                            break;
+
+                        #endregion
+
+
+                        #region Ice Rain
+
+                        case MagicType.IceRain:
+                            Effects.Add(spell = new MirEffect(1430, 12, TimeSpan.FromMilliseconds(50), LibraryFile.Magic, 10, 35, Globals.LightningColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            DXSoundManager.Play(SoundIndex.LightningStrikeStart);
+                            break;
+
+                        #endregion
+
 
 
                         #endregion

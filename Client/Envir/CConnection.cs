@@ -1278,6 +1278,23 @@ namespace Client.Envir
                             DXSoundManager.Play(SoundIndex.ChainLightningEnd);
                     }
                     break;
+                case MagicType.LightningStrike:
+                    {
+                        foreach (MapObject attackTarget in targets)
+                        {
+                            source.Effects.Add(spell = new MirProjectile(500, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 35, 35, Globals.LightningColour, source.CurrentLocation)
+                            {
+                                Blend = true,
+                                Target = attackTarget,
+                                Skip = 0
+                            });
+                            spell.Process();
+                        }
+
+                        if (targets.Count > 0)
+                            DXSoundManager.Play(SoundIndex.ChainLightningEnd);
+                    }
+                    break;
                 case MagicType.FireBounce:
                     {
                         foreach (MapObject attackTarget in targets)

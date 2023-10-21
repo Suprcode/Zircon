@@ -44,7 +44,6 @@ namespace Client.Models
             switch (Effect)
             {
                 case SpellEffect.FireWall:
-                case SpellEffect.MonsterFireWall:
                 case SpellEffect.MonsterDeathCloud:
                     FrameStart -= TimeSpan.FromMilliseconds(CEnvir.Random.Next(300));
                     break;
@@ -70,11 +69,10 @@ namespace Client.Models
                     BlendRate =0.3f;
                     break;
                 case SpellEffect.FireWall:
-                case SpellEffect.MonsterFireWall:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Magic, out BodyLibrary);
                     Frames[MirAnimation.Standing] = new Frame(920, 3, 0, TimeSpan.FromMilliseconds(150));
                     Blended = true;
-                    LightColour = Color.LightSalmon;
+                    LightColour = Globals.FireColour;
                     BlendRate = 0.55f;
                     Light = 15;
                     break;

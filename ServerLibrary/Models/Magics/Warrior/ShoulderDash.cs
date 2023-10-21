@@ -26,6 +26,7 @@ namespace Server.Models.Magics
                 Return = true
             };
 
+            //TODO - change to CanMove check?
             if ((Player.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip)
             {
                 return response;

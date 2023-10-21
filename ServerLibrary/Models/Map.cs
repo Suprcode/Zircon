@@ -202,7 +202,7 @@ namespace Server.Models
         {
             return GetCell(location.X, location.Y);
         }
-        public List<Cell> GetCells(Point location, int minRadius, int maxRadius)
+        public List<Cell> GetCells(Point location, int minRadius, int maxRadius, bool randomOrder = false)
         {
             List<Cell> cells = new List<Cell>();
 
@@ -225,6 +225,11 @@ namespace Server.Models
                         cells.Add(cell);
                     }
                 }
+            }
+
+            if (randomOrder)
+            {
+                return cells.OrderBy(item => SEnvir.Random.Next()).ToList();
             }
 
             return cells;

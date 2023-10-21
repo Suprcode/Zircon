@@ -627,9 +627,9 @@ namespace Library
         SuperiorMagicShield = 233,
         Burning = 234,//NOT CODED 
         Shock = 235,//NOT CODED
-        LightningStrike = 236,//NOT CODED
+        LightningStrike = 236,
         MirrorImage = 237,//NOT CODED
-        IceRain = 238, //NOT CODED
+        IceRain = 238,
         FrostBite = 239,
         Asteroid = 240,
         FireBounce = 241,//Custom
@@ -1071,29 +1071,31 @@ namespace Library
         SummonShinsu,
 
         ThunderBolt,
+        FrostBiteEnd,
+
         DanceOfSwallow,
         FlashOfLight,
 
         DemonExplosion,
-        ParasiteExplode,
-        FrostBiteEnd
+        ParasiteExplode
     }
 
     [Flags]
     public enum PoisonType
     {
         None = 0,
-        Green = 1 << 0,
-        Red = 1 << 1,
-        Slow = 1 << 2,
-        Paralysis = 1 << 3,
-        WraithGrip = 1 << 4,
-        HellFire = 1 << 5,
-        Silenced = 1 << 6,
-        Abyss = 1 << 7,
-        Parasite = 1 << 8,
-        Neutralize = 1 << 9,
-        Burn = 1 << 10
+        Green = 1 << 0,         //Tick damage, displays green
+        Red = 1 << 1,           //Increases damage received by 20%, displays red
+        Slow = 1 << 2,          //Reduces attackTime, actionTime, 100ms per value, displays blue
+        Paralysis = 1 << 3,     //Stops movement, physical and magical attacks (all races), displays grey
+        WraithGrip = 1 << 4,    //Stops shoulderdash, movement, displays effect (needs code revisiting)
+        HellFire = 1 << 5,      //Tick damage, no colour
+        Silenced = 1 << 6,      //Stops movement (all races), physical and magical attacks (monster), displays effect
+        Abyss = 1 << 7,         //Reduces monster viewrange, displays blinding effect (player)
+        Parasite = 1 << 8,      //Tick damage, explosion, ignores transparency (monster), displays effect
+        Neutralize = 1 << 9,    //Stops attackTime, slows actionTime, displays effect (needs code revisiting)
+        Burn = 1 << 10,         //Tick damage, displays orange
+        Freeze = 1 << 11,       //Todo
     }
 
     public enum SpellEffect
@@ -1103,7 +1105,6 @@ namespace Library
         SafeZone,
 
         FireWall,
-        MonsterFireWall,
         Tempest,
 
         TrapOctagon,

@@ -37,10 +37,14 @@ namespace Server.Models.Magics
             var delay = SEnvir.Now.AddMilliseconds(1200);
 
             foreach (Cell cell in cells)
+            {
                 Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
+            }
 
-            if (Player.Magics.TryGetValue(MagicType.FireWall, out UserMagic augMagic) && augMagic.Info.NeedLevel1 > Player.Level)
+            if (!Player.Magics.TryGetValue(MagicType.FireWall, out UserMagic augMagic) || augMagic.Info.NeedLevel1 > Player.Level)
+            {
                 augMagic = null;
+            }
 
             if (augMagic != null)
             {
@@ -87,7 +91,7 @@ namespace Server.Models.Magics
             }
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power += Magic.GetPower() + Player.GetMC();
 

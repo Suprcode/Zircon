@@ -65,7 +65,7 @@ namespace Server.Models.Magics
             }
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power = power * Magic.GetPower() / 100;
 

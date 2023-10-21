@@ -41,8 +41,8 @@ namespace Server.Models.Magics
 
             Stats buffStats = new Stats
             {
-                [Stat.FrostBiteDamage] = Player.GetMC() + Player.Stats[Stat.IceAttack] * 2 + Magic.GetPower(),
-                [Stat.FrostBiteMaxDamage] = Player.Stats[Stat.MaxMC] * 50 + Player.Stats[Stat.IceAttack] * 70,
+                [Stat.FrostBiteDamage] = Player.GetMC() + Magic.GetPower() + Player.Stats[Stat.IceAttack] * 2,
+                [Stat.FrostBiteChance] = 5 + (Magic.Level * 5)
             };
 
             Player.BuffAdd(BuffType.FrostBite, TimeSpan.FromSeconds(3 + Magic.Level * 3), buffStats, false, false, TimeSpan.Zero);
@@ -66,13 +66,13 @@ namespace Server.Models.Magics
 
                 if (mob.MonsterInfo.IsBoss) continue;
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, new List<MagicType> { Type }, ob, true, buff.Stats));
+                ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, new List<MagicType> { Type }, ob, true, buff.Stats, 0));
             }
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
-            power += Math.Min(stats[Stat.FrostBiteDamage], stats[Stat.FrostBiteMaxDamage]) - Player.Stats[Stat.IceAttack] * 2;
+            power += Math.Min(stats[Stat.FrostBiteDamage], Player.Stats[Stat.MaxMC] * 50);
 
             return power;
         }

@@ -81,9 +81,9 @@ namespace Server.Models
         public DateTime ActionTime, MoveTime, RegenTime, AttackTime, MagicTime, CellTime, StruckTime, BuffTime, ShockTime, DisplayHPMPTime, ItemReviveTime;
         public List<DelayedAction> ActionList;
 
-        public virtual bool CanMove => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= MoveTime && SEnvir.Now > ShockTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && (Poison & PoisonType.WraithGrip) != PoisonType.WraithGrip && Buffs.All(x => x.Type != BuffType.DragonRepulse && x.Type != BuffType.FrostBite);
-        public virtual bool CanAttack => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= AttackTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && Buffs.All(x => x.Type != BuffType.DragonRepulse && x.Type != BuffType.FrostBite);
-        public virtual bool CanCast => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= MagicTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && (Poison & PoisonType.Silenced) != PoisonType.Silenced && Buffs.All(x => x.Type != BuffType.DragonRepulse && x.Type != BuffType.FrostBite);
+        public virtual bool CanMove => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= MoveTime && SEnvir.Now > ShockTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && (Poison & PoisonType.WraithGrip) != PoisonType.WraithGrip && Buffs.All(x => x.Type != BuffType.DragonRepulse);
+        public virtual bool CanAttack => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= AttackTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && Buffs.All(x => x.Type != BuffType.DragonRepulse);
+        public virtual bool CanCast => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= MagicTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && (Poison & PoisonType.Silenced) != PoisonType.Silenced && Buffs.All(x => x.Type != BuffType.DragonRepulse);
 
         public List<SpellObject> SpellList = new List<SpellObject>();
 
@@ -285,9 +285,7 @@ namespace Server.Models
                         }
                         break;
                     case PoisonType.Burn:
-                        {
-                            damage += poison.Value;
-                        }
+                        damage += poison.Value;
                         break;
                 }
 

@@ -44,7 +44,7 @@ namespace Server.Models.Magics
                 if (Player.MagicAttack(new List<MagicType> { Type }, ob, true) > 0) break;
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power += Player.GetDC() * Magic.GetPower() / 100;
 

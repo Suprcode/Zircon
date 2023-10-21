@@ -1926,7 +1926,7 @@ namespace Server.Models
 
                     SpellObject spell = (SpellObject)cell.Objects[i];
 
-                    if (spell.Effect != SpellEffect.FireWall && spell.Effect != SpellEffect.MonsterFireWall && spell.Effect != SpellEffect.Tempest) continue;
+                    if (spell.Effect != SpellEffect.FireWall && spell.Effect != SpellEffect.Tempest) continue;
 
                     spell.Despawn();
                 }
@@ -1938,7 +1938,7 @@ namespace Server.Models
                 TickCount = 15,
                 TickFrequency = TimeSpan.FromSeconds(2),
                 Owner = this,
-                Effect = SpellEffect.MonsterFireWall
+                Effect = SpellEffect.FireWall
             };
 
             ob.Spawn(cell.Map, cell.Location);
@@ -2973,7 +2973,6 @@ namespace Server.Models
                     switch (spell.Effect)
                     {
                         case SpellEffect.FireWall:
-                        case SpellEffect.MonsterFireWall:
                         case SpellEffect.Tempest:
                             break;
                         default:

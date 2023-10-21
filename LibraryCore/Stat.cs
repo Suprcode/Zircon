@@ -829,8 +829,8 @@ namespace Library
         [StatDescription(Title = "Chance to summon map ", Mode = StatType.Text)]
         MapSummoning,
 
-        [StatDescription(Title = "Max Frost Bite Damage", Format = "{0}", Mode = StatType.Default)]
-        FrostBiteMaxDamage,
+        [StatDescription(Title = "Frost Bite Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        FrostBiteChance,
 
         [StatDescription(Title = "Paralysis Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         ParalysisChance,

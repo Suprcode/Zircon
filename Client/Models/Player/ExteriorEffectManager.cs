@@ -328,11 +328,11 @@ namespace Client.Models.Player
                     case ExteriorEffect.A_WhiteAura:
                         library.DrawBlend(800 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
                         break;
-                    case ExteriorEffect.A_BlueAura:
-                        library.DrawBlend(840 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
-                        break;
                     case ExteriorEffect.A_FlameAura:
                         library.DrawBlend(820 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
+                        break;
+                    case ExteriorEffect.A_BlueAura:
+                        library.DrawBlend(840 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_GreenWings:
                         library.DrawBlend(400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);

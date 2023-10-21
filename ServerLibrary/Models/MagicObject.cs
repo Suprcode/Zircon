@@ -148,12 +148,12 @@ namespace Server.Models
             return delay;
         }
 
-        public virtual int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        public virtual int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             return power;
         }
 
-        public virtual int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
+        public virtual int ModifyPowerMultiplier(bool primary, int power, Stats stats = null, int extra = 0)
         {
             return power;
         }

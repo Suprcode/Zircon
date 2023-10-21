@@ -13503,7 +13503,7 @@ namespace Server.Models
             {
                 if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-                power = magicObject.ModifyPower1(primary, power, ob, null, extra);
+                power = magicObject.ModifyPowerAdditionner(primary, power, ob, null, extra);
             }
 
             Element element = Element.None;
@@ -13652,10 +13652,10 @@ namespace Server.Models
                 ChangeHP(Math.Min((hasLotus ? 1500 : 750), heal));
             }
 
-            int psnRate = 200;
+            int psnRate = Globals.PhysicalPoisonRate;
 
             if (ob.Level >= 250)
-                psnRate = 2000;
+                psnRate = Globals.PhysicalPoisonRate * 10;
 
             if (SEnvir.Random.Next(psnRate) < Stats[Stat.ParalysisChance] || hasSeismicSlam)
             {
@@ -13766,7 +13766,7 @@ namespace Server.Models
             {
                 if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-                power = magicObject.ModifyPower1(primary, power, ob, stats, extra);
+                power = magicObject.ModifyPowerAdditionner(primary, power, ob, stats, extra);
 
                 slow = magicObject.GetSlow(slow, stats);
                 slowLevel = magicObject.GetSlowLevel(slowLevel, stats);
@@ -13783,7 +13783,7 @@ namespace Server.Models
             {
                 if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-                power = magicObject.ModifyPowerMultiplier(primary, power, stats);
+                power = magicObject.ModifyPowerMultiplier(primary, power, stats, extra);
             }
 
             power -= ob.GetMR();
@@ -13843,10 +13843,10 @@ namespace Server.Models
                 }
             }
 
-            int psnRate = 100;
+            int psnRate = Globals.MagicalPoisonRate;
 
             if (ob.Level >= 250)
-                psnRate = 1000;
+                psnRate = Globals.MagicalPoisonRate * 10;
 
             if (SEnvir.Random.Next(psnRate) < Stats[Stat.ParalysisChance])
             {
@@ -14046,6 +14046,11 @@ namespace Server.Models
                 Critical();
             }
 
+            int psnRate = Globals.PhysicalPoisonRate;
+
+            if (attacker.Level >= 250)
+                psnRate = Globals.PhysicalPoisonRate * 10;
+
             BuffInfo buff;
 
             buff = Buffs.FirstOrDefault(x => x.Type == BuffType.FrostBite);
@@ -14054,7 +14059,17 @@ namespace Server.Models
             {
                 buff.Stats[Stat.FrostBiteDamage] += power;
                 Enqueue(new S.BuffChanged() { Index = buff.Index, Stats = new Stats(buff.Stats) });
-                return 0;
+
+                if (SEnvir.Random.Next(psnRate) < buff.Stats[Stat.FrostBiteChance])
+                {
+                    attacker.ApplyPoison(new Poison
+                    {
+                        Type = PoisonType.Slow,
+                        TickCount = 5,
+                        Owner = this,
+                        TickFrequency = TimeSpan.FromSeconds(2),
+                    });
+                }
             }
 
             if (attacker.Race == ObjectType.Monster && SEnvir.Now < FrostBiteImmunity) return 0;

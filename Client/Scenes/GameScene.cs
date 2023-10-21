@@ -2883,7 +2883,7 @@ namespace Client.Scenes
             }
 
             if (CEnvir.Now < User.NextMagicTime || User.Dead || 
-                User.Buffs.Any(x => x.Type == BuffType.DragonRepulse || x.Type ==  BuffType.FrostBite) ||
+                User.Buffs.Any(x => x.Type == BuffType.DragonRepulse) ||
                 (User.Buffs.Any(x => x.Type == BuffType.ElementalHurricane) && magic.Info.Magic != MagicType.ElementalHurricane) ||     
                 (User.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || 
                 (User.Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
@@ -3035,6 +3035,8 @@ namespace Client.Scenes
                 case MagicType.IceBlades:
                 case MagicType.Cyclone:
                 case MagicType.ExpelUndead:
+                case MagicType.LightningStrike:
+                case MagicType.IceRain:
 
                 case MagicType.PoisonDust:
                 case MagicType.ExplosiveTalisman:

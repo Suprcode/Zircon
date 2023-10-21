@@ -75,7 +75,7 @@ namespace Server.Models.Magics
 
                     SpellObject spell = (SpellObject)cell.Objects[i];
 
-                    if (spell.Effect != SpellEffect.FireWall && spell.Effect != SpellEffect.MonsterFireWall && spell.Effect != SpellEffect.Tempest) continue;
+                    if (spell.Effect != SpellEffect.FireWall && spell.Effect != SpellEffect.Tempest) continue;
 
                     spell.Despawn();
                 }
@@ -96,14 +96,14 @@ namespace Server.Models.Magics
             Player.LevelMagic(Magic);
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power += Magic.GetPower() + Player.GetMC();
 
             return power;
         }
 
-        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null)
+        public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null, int extra = 0)
         {
             power = (int)(power * 0.80F);
 

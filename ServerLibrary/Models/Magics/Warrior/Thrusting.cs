@@ -57,7 +57,7 @@ namespace Server.Models.Magics
             Player.AttackLocation(Functions.Move(Player.CurrentLocation, Player.Direction, 2), magics, false);
         }
 
-        public override int ModifyPower1(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             if (!primary)
                 power = power * Magic.GetPower() / 100;
