@@ -14051,9 +14051,7 @@ namespace Server.Models
             if (attacker.Level >= 250)
                 psnRate = Globals.PhysicalPoisonRate * 10;
 
-            BuffInfo buff;
-
-            buff = Buffs.FirstOrDefault(x => x.Type == BuffType.FrostBite);
+            BuffInfo buff = Buffs.FirstOrDefault(x => x.Type == BuffType.FrostBite);
 
             if (buff != null)
             {

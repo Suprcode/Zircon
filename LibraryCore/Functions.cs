@@ -312,6 +312,7 @@ namespace Library
         public static Color GetElementColour(Element element)
         {
             Color colour = Globals.NoneColour;
+
             switch (element)
             {
                 case Element.Fire:

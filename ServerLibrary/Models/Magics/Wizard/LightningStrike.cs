@@ -1,7 +1,6 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using S = Library.Network.ServerPackets;
@@ -89,7 +88,7 @@ namespace Server.Models.Magics
                     ObjectID = source.ObjectID,
                     Direction = source.Direction,
                     CurrentLocation = source.CurrentLocation,
-                    Type = Type,
+                    Type = MagicType.LightningStrike,
                     Targets = new List<uint> { target.ObjectID },
                     Locations = new List<Point>()
                 });
@@ -109,9 +108,9 @@ namespace Server.Models.Magics
 
         public override int ModifyPowerMultiplier(bool primary, int power, Stats stats = null, int strikesRemaining = 0)
         {
-            var multiplier = Math.Max(1, MaxStrike - strikesRemaining);
+            var multiplier = (int)((MaxStrike - strikesRemaining) * (1 / MaxStrike));
 
-            power = multiplier * power;
+            power += (power * multiplier);
 
             return power;
         }

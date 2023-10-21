@@ -1135,30 +1135,29 @@ namespace Client.Models
                         #region Blow Earth
 
                         case MagicType.BlowEarth:
-                            if (Config.DrawEffects && Race != ObjectType.Monster)
-                                foreach (Point point in MagicLocations)
+                            foreach (Point point in MagicLocations)
+                            {
+                                Effects.Add(spell = new MirProjectile(1990, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour, CurrentLocation)
                                 {
-                                    Effects.Add(spell = new MirProjectile(1990, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour, CurrentLocation)
+                                    Blend = true,
+                                    MapTarget = point,
+                                    Skip = 0,
+                                    Explode = true,
+                                });
+
+                                spell.CompleteAction = () =>
+                                {
+                                    spell = new MirEffect(2000, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour)
                                     {
                                         Blend = true,
-                                        MapTarget = point,
-                                        Skip = 0,
-                                        Explode = true,
-                                    });
-
-                                    spell.CompleteAction = () =>
-                                    {
-                                        spell = new MirEffect(2000, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour)
-                                        {
-                                            Blend = true,
-                                            MapTarget = point
-                                        };
-                                        spell.Process();
-                                        DXSoundManager.Play(SoundIndex.BlowEarthEnd);
+                                        MapTarget = point
                                     };
-
                                     spell.Process();
-                                }
+                                    DXSoundManager.Play(SoundIndex.BlowEarthEnd);
+                                };
+
+                                spell.Process();
+                            }
 
                             if (MagicLocations.Count > 0)
                                 DXSoundManager.Play(SoundIndex.BlowEarthTravel);
@@ -1213,28 +1212,16 @@ namespace Client.Models
                         case MagicType.LightningWave:
                             foreach (Point point in MagicLocations)
                             {
-                                Effects.Add(spell = new MirProjectile(980, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 35, 35, Globals.LightningColour, CurrentLocation)
+                                spell = new MirEffect(980, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.LightningColour)
                                 {
                                     Blend = true,
                                     MapTarget = point,
-                                });
+                                };
                                 spell.Process();
                             }
 
-                            foreach (MapObject attackTarget in AttackTargets)
-                            {
-                                Effects.Add(spell = new MirProjectile(980, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 35, 35, Globals.LightningColour, CurrentLocation)
-                                {
-                                    Blend = true,
-                                    Target = attackTarget,
-                                });
-                                spell.Process();
-                            }
-
-                            if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
-                                DXSoundManager.Play(SoundIndex.LightningWaveEnd);
+                            DXSoundManager.Play(SoundIndex.LightningWaveEnd);
                             break;
-
                         #endregion
 
                         #region Ice Storm
@@ -1364,21 +1351,33 @@ namespace Client.Models
 
                         //Mirror Image
 
-
                         #region Lightning Strike
 
                         case MagicType.LightningStrike:
                             foreach (Point point in MagicLocations)
                             {
-                                spell = new MirEffect(500, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 50, 50, Globals.LightningColour)
+                                Effects.Add(spell = new MirProjectile(500, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 50, 50, Globals.LightningColour, CurrentLocation)
                                 {
                                     Blend = true,
                                     MapTarget = point,
-                                };
+                                    Skip = 0
+                                });
                                 spell.Process();
                             }
 
-                            if (MagicLocations.Count > 0)
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                Effects.Add(spell = new MirProjectile(500, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 50, 50, Globals.LightningColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Skip = 0
+                                });
+
+                                spell.Process();
+                            }
+
+                            if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
                                 DXSoundManager.Play(SoundIndex.ChainLightningEnd);
                             break;
 

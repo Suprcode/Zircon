@@ -257,7 +257,7 @@ namespace Server.Models
 
     public class AttackCast
     {
-        public List<MagicType> Magics = new List<MagicType>();
+        public List<MagicType> Magics = new();
         public bool Cast = false;
     }
 
