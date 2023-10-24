@@ -15205,16 +15205,16 @@ namespace Server.Models
             //Check previously joined instance and try to rejoin
             if (instance.UserRecord.ContainsKey(Name))
             {
-                if (CheckLiveInstance(instance, instance.UserRecord[Name]))
+                if (CheckJoinInstance(instance, instance.UserRecord[Name]))
                     return (instance.UserRecord[Name], InstanceResult.Success);
             }
 
-            //Check live instance conditions are met -> if any pass then will join an existing instance
+            //Check live conditions to see if we can join an existing instance
             for (int i = 0; i < mapInstance.Length; i++)
             {
                 if (mapInstance[i] == null) continue;
 
-                if (!CheckLiveInstance(instance, i)) continue;
+                if (!CheckJoinInstance(instance, i)) continue;
 
                 if (!checkOnly)
                 {
@@ -15231,11 +15231,30 @@ namespace Server.Models
                 return ((byte)i, InstanceResult.Success);
             }
 
-            if (instance.Type == InstanceType.Group && dungeonFinder && GroupMembers[0] != this)
-                return (null, InstanceResult.NotGroupLeader);
+            //Check final live conditions to make sure we're okay to setup a new instance
+            switch (instance.Type)
+            {
+                case InstanceType.Group:
+                    {
+                        if (dungeonFinder && GroupMembers[0] != this)
+                            return (null, InstanceResult.NotGroupLeader);
+
+                        if (GroupMembers.Any(x => x.CurrentMap.Instance == instance))
+                            return (null, InstanceResult.NoRejoin);
+                    }
+                    break;
+                case InstanceType.Guild:
+                    {
+                        foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
+                        {
+                            if (member.Account.Connection?.Player?.CurrentMap.Instance == instance)
+                                return (null, InstanceResult.NoRejoin);
+                        }
+                    }
+                    break;
+            }
 
             byte? index = null;
-
             for (int i = 0; i < mapInstance.Length; i++)
             {
                 if (mapInstance[i] == null)
@@ -15274,7 +15293,7 @@ namespace Server.Models
             return (index.Value, InstanceResult.Success);
         }
 
-        public bool CheckLiveInstance(InstanceInfo instance, int index)
+        public bool CheckJoinInstance(InstanceInfo instance, int index)
         {
             var mapInstance = SEnvir.Instances[instance];
 
@@ -15301,15 +15320,26 @@ namespace Server.Models
                 case InstanceType.Solo:
                     if (!instance.AllowRejoin)
                     {
-                        if (playersOnInstance.Count() >= instance.MaxPlayerCount)
-                            return false; 
+                        if (instance.MaxPlayerCount > 0)
+                        {
+                            if (playersOnInstance.Count() >= instance.MaxPlayerCount)
+                                return false;
+                        }
+                        else
+                        {
+                            if (playerRecord.Contains(Name))
+                                return false;
+                        }
                     }
                     else
                     {
-                        if (!playerRecord.Contains(Name))
+                        if (instance.MaxPlayerCount > 0)
                         {
-                            if (playerRecord.Count >= instance.MaxPlayerCount)
-                                return false;
+                            if (!playerRecord.Contains(Name))
+                            {
+                                if (playerRecord.Count >= instance.MaxPlayerCount)
+                                    return false;
+                            }
                         }
                     }
                     break;
@@ -15326,6 +15356,14 @@ namespace Server.Models
                     {
                         if (playerRecord.Contains(Name))
                             return false;
+                    }
+                    else
+                    {
+                        if (!playerRecord.Contains(Name))
+                        {
+                            if (playerRecord.Count >= instance.MaxPlayerCount)
+                                return false;
+                        }
                     }
                     if (!playersOnInstance.Any(x => x.InGuild(this))) return false;
                     break;
@@ -15415,6 +15453,14 @@ namespace Server.Models
 
                         foreach (SConnection con in Connection.Observers)
                             con.ReceiveChat(con.Language.InstanceNoSlots, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.NoRejoin:
+                    {
+                        Connection.ReceiveChat(Connection.Language.InstanceNoRejoin, MessageType.System);
+
+                        foreach (SConnection con in Connection.Observers)
+                            con.ReceiveChat(con.Language.InstanceNoRejoin, MessageType.System);
                     }
                     break;
                 case InstanceResult.MissingItem:
