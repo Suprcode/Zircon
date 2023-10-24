@@ -15089,7 +15089,7 @@ namespace Server.Models
             S.JoinInstance joinResult = new S.JoinInstance { Success = false };
 
             //Load up instance
-            var (index, result) = GetInstance(instance, false, true);
+            var (index, result) = GetInstance(instance, dungeonFinder: true);
 
             joinResult.Result = result;
 
@@ -15202,49 +15202,34 @@ namespace Server.Models
                     break;
             }
 
-            //Check live instance conditions are met -> if any pass then will join an existing instance
-            switch (instance.Type)
+            //Check previously joined instance and try to rejoin
+            if (instance.UserRecord.ContainsKey(Name))
             {
-                case InstanceType.Solo:
-                case InstanceType.Group:
-                case InstanceType.Guild:
-                    {
-                        for (int i = 0; i < mapInstance.Length; i++)
-                        {
-                            if (mapInstance[i] == null) continue;
-
-                            var maps = mapInstance[i];
-
-                            var playersOnInstance = maps.Values.SelectMany(x => x.Players);
-
-                            switch (instance.Type)
-                            {
-                                case InstanceType.Solo:
-                                    if (instance.MaxPlayerCount <= 1) break; //always new instance when solo is max 1 player
-                                    else if (playersOnInstance.Count() >= instance.MaxPlayerCount) continue;
-                                    break;
-                                case InstanceType.Group:
-                                    if (!playersOnInstance.Any(x => x.InGroup(this))) continue;
-                                    break;
-                                case InstanceType.Guild: //max player count doesn't apply to guild instances
-                                    if (!playersOnInstance.Any(x => x.InGuild(this))) continue;
-                                    break;
-                            }
-
-                            if (!checkOnly)
-                            {
-                                if (!instance.UserRecord.ContainsKey(Name))
-                                    instance.UserRecord.Add(Name, (byte)i);
-                            }
-
-                            return ((byte)i, InstanceResult.Success);
-                        }
-                    }
-                    break;
+                if (CheckLiveInstance(instance, instance.UserRecord[Name]))
+                    return (instance.UserRecord[Name], InstanceResult.Success);
             }
 
-            if (instance.UserRecord.ContainsKey(Name))
-                return (instance.UserRecord[Name], InstanceResult.Success);
+            //Check live instance conditions are met -> if any pass then will join an existing instance
+            for (int i = 0; i < mapInstance.Length; i++)
+            {
+                if (mapInstance[i] == null) continue;
+
+                if (!CheckLiveInstance(instance, i)) continue;
+
+                if (!checkOnly)
+                {
+                    if (instance.UserRecord.ContainsKey(Name))
+                    {
+                        instance.UserRecord[Name] = (byte)i;
+                    }
+                    else
+                    {
+                        instance.UserRecord.Add(Name, (byte)i);
+                    }
+                }
+
+                return ((byte)i, InstanceResult.Success);
+            }
 
             if (instance.Type == InstanceType.Group && dungeonFinder && GroupMembers[0] != this)
                 return (null, InstanceResult.NotGroupLeader);
@@ -15276,10 +15261,68 @@ namespace Server.Models
             {
                 SEnvir.LoadInstance(instance, index.Value);
 
-                instance.UserRecord.Add(Name, index.Value);
+                if (instance.UserRecord.ContainsKey(Name))
+                {
+                    instance.UserRecord[Name] = index.Value;
+                }
+                else
+                {
+                    instance.UserRecord.Add(Name, index.Value);
+                }
             }
 
             return (index.Value, InstanceResult.Success);
+        }
+
+        public bool CheckLiveInstance(InstanceInfo instance, int index)
+        {
+            var mapInstance = SEnvir.Instances[instance];
+
+            if (index < 0 || index >= mapInstance.Length)
+                return false;
+
+            var maps = mapInstance[index];
+
+            if (maps == null)
+                return false;
+
+            var playersOnInstance = maps.Values.SelectMany(x => x.Players);
+
+            switch (instance.Type)
+            {
+                case InstanceType.Solo:
+
+                    var playerRecord = new List<string>();
+
+                    foreach (var userRecord in instance.UserRecord)
+                    {
+                        if (userRecord.Value != index) continue;
+                        playerRecord.Add(userRecord.Key);
+                    }
+
+                    if (playerRecord.Contains(Name))
+                    {
+                        if (!instance.AllowRejoin)
+                            return false;
+                    }
+                    else
+                    {
+                        if (instance.MaxPlayerCount > 0)
+                        {
+                            if (playerRecord.Count >= instance.MaxPlayerCount)
+                                return false;
+                        }
+                    }
+                    break;
+                case InstanceType.Group:
+                    if (!playersOnInstance.Any(x => x.InGroup(this))) return false;
+                    break;
+                case InstanceType.Guild:
+                    if (!playersOnInstance.Any(x => x.InGuild(this))) return false;
+                    break;
+            }
+
+            return true;
         }
 
         public void SetTimer(string key, DateTime expiry)

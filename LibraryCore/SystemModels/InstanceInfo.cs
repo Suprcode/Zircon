@@ -5,9 +5,6 @@ using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
-    //TODO - 
-    //Add conquest on instances
-
     public sealed class InstanceInfo : DBObject
     {
         [IsIdentity]
@@ -85,6 +82,21 @@ namespace Library.SystemModels
             }
         }
         private bool _SafeZoneOnly;
+
+        public bool AllowRejoin
+        {
+            get { return _AllowRejoin; }
+            set
+            {
+                if (_AllowRejoin == value) return;
+
+                var oldValue = _AllowRejoin;
+                _AllowRejoin = value;
+
+                OnChanged(oldValue, value, "AllowRejoin");
+            }
+        }
+        private bool _AllowRejoin;
 
         public byte MinPlayerLevel
         {

@@ -3694,7 +3694,7 @@ namespace Server.Envir
 
                 if (instance.CooldownTimeInMinutes > 0)
                 {
-                    var cooldown = DateTime.UtcNow.AddMinutes(instance.CooldownTimeInMinutes);
+                    var cooldown = SEnvir.Now.AddMinutes(instance.CooldownTimeInMinutes);
 
                     switch (instance.Type)
                     {
