@@ -15288,26 +15288,25 @@ namespace Server.Models
 
             var playersOnInstance = maps.Values.SelectMany(x => x.Players);
 
+            var playerRecord = new List<string>();
+
+            foreach (var userRecord in instance.UserRecord)
+            {
+                if (userRecord.Value != index) continue;
+                playerRecord.Add(userRecord.Key);
+            }
+
             switch (instance.Type)
             {
                 case InstanceType.Solo:
-
-                    var playerRecord = new List<string>();
-
-                    foreach (var userRecord in instance.UserRecord)
+                    if (!instance.AllowRejoin)
                     {
-                        if (userRecord.Value != index) continue;
-                        playerRecord.Add(userRecord.Key);
-                    }
-
-                    if (playerRecord.Contains(Name))
-                    {
-                        if (!instance.AllowRejoin)
-                            return false;
+                        if (playersOnInstance.Count() >= instance.MaxPlayerCount)
+                            return false; 
                     }
                     else
                     {
-                        if (instance.MaxPlayerCount > 0)
+                        if (!playerRecord.Contains(Name))
                         {
                             if (playerRecord.Count >= instance.MaxPlayerCount)
                                 return false;
@@ -15315,9 +15314,19 @@ namespace Server.Models
                     }
                     break;
                 case InstanceType.Group:
+                    if (!instance.AllowRejoin)
+                    {
+                        if (playerRecord.Contains(Name))
+                            return false;
+                    }
                     if (!playersOnInstance.Any(x => x.InGroup(this))) return false;
                     break;
                 case InstanceType.Guild:
+                    if (!instance.AllowRejoin)
+                    {
+                        if (playerRecord.Contains(Name))
+                            return false;
+                    }
                     if (!playersOnInstance.Any(x => x.InGuild(this))) return false;
                     break;
             }
