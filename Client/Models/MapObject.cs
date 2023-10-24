@@ -1135,29 +1135,30 @@ namespace Client.Models
                         #region Blow Earth
 
                         case MagicType.BlowEarth:
-                            foreach (Point point in MagicLocations)
-                            {
-                                Effects.Add(spell = new MirProjectile(1990, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour, CurrentLocation)
+                            if (Config.DrawEffects && Race != ObjectType.Monster)
+                                foreach (Point point in MagicLocations)
                                 {
-                                    Blend = true,
-                                    MapTarget = point,
-                                    Skip = 0,
-                                    Explode = true,
-                                });
-
-                                spell.CompleteAction = () =>
-                                {
-                                    spell = new MirEffect(2000, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour)
+                                    Effects.Add(spell = new MirProjectile(1990, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour, CurrentLocation)
                                     {
                                         Blend = true,
-                                        MapTarget = point
-                                    };
-                                    spell.Process();
-                                    DXSoundManager.Play(SoundIndex.BlowEarthEnd);
-                                };
+                                        MapTarget = point,
+                                        Skip = 0,
+                                        Explode = true,
+                                    });
 
-                                spell.Process();
-                            }
+                                    spell.CompleteAction = () =>
+                                    {
+                                        spell = new MirEffect(2000, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour)
+                                        {
+                                            Blend = true,
+                                            MapTarget = point
+                                        };
+                                        spell.Process();
+                                        DXSoundManager.Play(SoundIndex.BlowEarthEnd);
+                                    };
+
+                                    spell.Process();
+                                }
 
                             if (MagicLocations.Count > 0)
                                 DXSoundManager.Play(SoundIndex.BlowEarthTravel);
@@ -1296,7 +1297,7 @@ namespace Client.Models
                         case MagicType.ChainLightning:
                             foreach (Point point in MagicLocations)
                             {
-                                spell = new MirEffect(830, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.LightningColour)
+                                spell = new MirEffect(470, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 50, 80, Globals.LightningColour)
                                 {
                                     Blend = true,
                                     MapTarget = point,
@@ -1373,12 +1374,22 @@ namespace Client.Models
                                     Target = attackTarget,
                                     Skip = 0
                                 });
+                                spell.CompleteAction += () =>
+                                {
+                                    attackTarget.Effects.Add(spell = new MirEffect(500, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 10, 35, Globals.LightningColour)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget
+                                    });
+                                    spell.Process();
 
+                                    DXSoundManager.Play(SoundIndex.LightningBeamEnd);
+                                };
                                 spell.Process();
                             }
 
                             if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
-                                DXSoundManager.Play(SoundIndex.ChainLightningEnd);
+                                DXSoundManager.Play(SoundIndex.LightningBeamEnd);
                             break;
 
                         #endregion
@@ -2857,7 +2868,6 @@ namespace Client.Models
                         #region Beckon
 
                         case MagicType.Beckon:
-                        case MagicType.MassBeckon:
                             Effects.Add(new MirEffect(580, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 60, 60, Globals.NoneColour)
                             {
                                 Blend = true,
@@ -2934,6 +2944,19 @@ namespace Client.Models
                                 Target = this
                             });
                             DXSoundManager.Play(SoundIndex.DefianceStart);
+                            break;
+
+                        #endregion
+
+                        #region Mass Beckon
+
+                        case MagicType.MassBeckon:
+                            Effects.Add(new MirEffect(100, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 60, 60, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this
+                            });
+                            DXSoundManager.Play(SoundIndex.TeleportationStart);
                             break;
 
                         #endregion
@@ -3137,6 +3160,7 @@ namespace Client.Models
                                 Target = this,
                                 Direction = action.Direction
                             });
+                            DXSoundManager.Play(SoundIndex.ThunderBoltStart);
                             break;
 
                         #endregion
@@ -3404,8 +3428,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-
 
                         #endregion
 

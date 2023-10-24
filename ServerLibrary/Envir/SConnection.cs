@@ -45,8 +45,7 @@ namespace Server.Envir
             IPAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
             SessionID = ++SessionCount;
 
-
-            Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)]; //Todo Language Selections
+            Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)];
 
             OnException += (o, e) =>
             {
@@ -243,10 +242,10 @@ namespace Server.Envir
             switch (p.Language.ToUpper())
             {
                 case "ENGLISH":
-                    Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)]; //Todo Language Selections
+                    Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)];
                     break;
                 case "CHINESE":
-                    Language = (StringMessages)ConfigReader.ConfigObjects[typeof(ChineseMessages)]; //Todo Language Selections
+                    Language = (StringMessages)ConfigReader.ConfigObjects[typeof(ChineseMessages)];
                     break;
             }
 

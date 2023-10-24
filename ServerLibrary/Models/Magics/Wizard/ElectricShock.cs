@@ -50,7 +50,7 @@ namespace Server.Models.Magics
 
             if (ob.MonsterInfo.IsBoss) return;
 
-            if (SEnvir.Random.Next(4 - Magic.Level) > 0)
+            if (SEnvir.Random.Next(Globals.MagicMaxLevel + 1) > Magic.Level)
             {
                 if (SEnvir.Random.Next(2) == 0) Player.LevelMagic(Magic);
                 return;
@@ -83,6 +83,7 @@ namespace Server.Models.Magics
                 }
                 return;
             }
+
             if (Player.Pets.Count >= 3) return;
 
             if (SEnvir.Random.Next(4) > 0) return;

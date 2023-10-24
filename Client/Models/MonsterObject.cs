@@ -3460,7 +3460,6 @@ namespace Client.Models
         public override void UpdateQuests()
         {
             if (GameScene.Game.HasQuest(MonsterInfo, GameScene.Game.MapControl.MapInfo)) //Todo Optimize by variable.
-
                 Title = "(Quest)";
             else
                 Title = string.Empty;

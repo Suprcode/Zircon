@@ -15,7 +15,7 @@ namespace Server.Models.Magics
 
         public LightningStrike(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Effect should be a particle effect connecting the targets together, not a projectile
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
@@ -88,7 +88,7 @@ namespace Server.Models.Magics
                     ObjectID = source.ObjectID,
                     Direction = source.Direction,
                     CurrentLocation = source.CurrentLocation,
-                    Type = MagicType.LightningStrike,
+                    Type = Type,
                     Targets = new List<uint> { target.ObjectID },
                     Locations = new List<Point>()
                 });

@@ -591,6 +591,8 @@ namespace Library
         DefensiveMastery = 127,
         PhysicalImmunity = 128,
         MagicImmunity = 129,
+        DefensiveBlow = 130,//NOT CODED
+        ElementalSwords = 131,//NOT CODED
 
         FireBall = 201,
         LightningBall = 202,
@@ -622,7 +624,7 @@ namespace Library
         Tempest = 228,
         JudgementOfHeaven = 229,
         ThunderStrike = 230,
-        BLANK = 231, //BLANK
+        Freezing = 231,//NOT CODED 
         ElementalHurricane = 232,
         SuperiorMagicShield = 233,
         Burning = 234,//NOT CODED 
@@ -632,7 +634,9 @@ namespace Library
         IceRain = 238,
         FrostBite = 239,
         Asteroid = 240,
-        FireBounce = 241,//Custom
+        FireBounce = 241,
+        Storm = 242,//NOT CODED
+        Tornado = 243,//NOT CODED
 
         Heal = 300,
         SpiritSword = 301,
@@ -678,6 +682,9 @@ namespace Library
         AugmentNeutralize = 341,
         DarkSoulPrison = 342,
         Mindfulness = 343,//NOT CODED
+        AugmentCelestialLight = 344,//NOT CODED
+        CorpseExploder = 345,//NOT CODED
+        SummonDead = 346,//NOT CODED
 
         WillowDance = 401,
         VineTreeDance = 402,
@@ -1094,8 +1101,9 @@ namespace Library
         Abyss = 1 << 7,         //Reduces monster viewrange, displays blinding effect (player)
         Parasite = 1 << 8,      //Tick damage, explosion, ignores transparency (monster), displays effect
         Neutralize = 1 << 9,    //Stops attackTime, slows actionTime, displays effect (needs code revisiting)
-        Burn = 1 << 10,         //Tick damage, displays orange
-        Freeze = 1 << 11,       //Todo
+        Burn = 1 << 10,         //Todo, tick damage, displays orange?
+        Freeze = 1 << 11,       //Todo, slows movement and attacks, displays blue?
+        Shock = 1 << 12,        //Todo, stops movement and attacks, display lightblue?
     }
 
     public enum SpellEffect
@@ -1716,6 +1724,7 @@ namespace Library
         TooManyInGroup,
         ConnectRegionNotSet,
         NoSlots,
+        NoRejoin,
         NotGroupLeader,
         UserCooldown,
         GuildCooldown,
@@ -1904,7 +1913,6 @@ namespace Library
         TeleportationStart,
 
         LavaStrikeStart,
-        // LavaStrikeEnd,
 
         LightningBeamEnd,
 

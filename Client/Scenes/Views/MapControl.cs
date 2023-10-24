@@ -423,7 +423,6 @@ namespace Client.Scenes.Views
                     ob.Draw();
                 }
             }
-
         }
 
         private void LoadMap()

@@ -84,7 +84,7 @@ namespace Library
             MaxAutoPotionCount = 8,
 
             MagicRange = 10,
-            MagicMaxLevel = 5,
+            MagicMaxLevel = 4,
 
             DuraLossRate = 15,
 

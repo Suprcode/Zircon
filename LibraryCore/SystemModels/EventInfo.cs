@@ -247,7 +247,6 @@ namespace Library.SystemModels
         
     }
 
-
     public enum EventActionType
     {
         None,

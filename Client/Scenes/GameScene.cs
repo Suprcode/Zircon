@@ -3070,8 +3070,6 @@ namespace Client.Scenes
                     if (CanAttackTarget(MouseObject))
                         target = MouseObject;
                     break;
-                case MagicType.MassBeckon:
-                    break;
 
                 case MagicType.Heal:
                 case MagicType.Purification:
@@ -3092,6 +3090,9 @@ namespace Client.Scenes
                     direction = MirDirection.Down;
                     break;
                 case MagicType.Might:
+                    direction = MirDirection.Down;
+                    break;
+                case MagicType.MassBeckon:
                     direction = MirDirection.Down;
                     break;
                 case MagicType.ReflectDamage:

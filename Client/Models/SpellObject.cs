@@ -142,6 +142,7 @@ namespace Client.Models
             if (!Frames.TryGetValue(CurrentAnimation, out CurrentFrame))
                 CurrentFrame = Frame.EmptyFrame;
         }
+
         public override void Draw()
         {
             if (Blended)

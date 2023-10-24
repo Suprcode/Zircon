@@ -5,8 +5,6 @@ using System.Net.Sockets;
 using System.Reflection;
 using G = Library.Network.GeneralPackets;
 
-
-//TODO Dispose ?
 namespace Library.Network
 {
     public abstract class BaseConnection

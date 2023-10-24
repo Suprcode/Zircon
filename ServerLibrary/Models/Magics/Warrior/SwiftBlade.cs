@@ -11,9 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
-
         public override bool IgnoreAccuracy => true;
-        public override bool HasLotus => true;
 
         public SwiftBlade(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -56,10 +54,6 @@ namespace Server.Models.Magics
             for (int i = cell.Objects.Count - 1; i >= 0; i--)
             {
                 if (!Player.CanAttackTarget(cell.Objects[i])) continue;
-
-                //TODO
-                //ignoreAccuracy = true;
-                //hasSwiftBlade = true;
 
                 Player.Attack(cell.Objects[i], new List<MagicType> { Type }, true, 0);
             }

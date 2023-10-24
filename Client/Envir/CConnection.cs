@@ -1264,16 +1264,6 @@ namespace Client.Envir
             {
                 case MagicType.ChainLightning:
                     {
-                        foreach (Point point in locations)
-                        {
-                            spell = new MirEffect(830, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.LightningColour)
-                            {
-                                Blend = true,
-                                MapTarget = point,
-                            };
-                            spell.Process();
-                        }
-
                         if (locations.Count > 0)
                             DXSoundManager.Play(SoundIndex.ChainLightningEnd);
                     }
@@ -1292,7 +1282,7 @@ namespace Client.Envir
                         }
 
                         if (targets.Count > 0)
-                            DXSoundManager.Play(SoundIndex.ChainLightningEnd);
+                            DXSoundManager.Play(SoundIndex.LightningBeamEnd);
                     }
                     break;
                 case MagicType.FireBounce:
@@ -2417,8 +2407,6 @@ namespace Client.Envir
             GameScene.Game.ReceiveChat(p.Text, p.Type, p.LinkedItems);
 
             if (p.Type != MessageType.Normal || p.ObjectID <= 0) return;
-
-            //TODO Items?
 
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {

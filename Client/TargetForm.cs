@@ -49,7 +49,6 @@ namespace Client
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            //TODO Move to other locations instead?
             if (Config.ClipMouse && Focused)
                 Cursor.Clip = RectangleToScreen(ClientRectangle);
             else

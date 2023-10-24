@@ -144,8 +144,6 @@ namespace Client.Models.Particles
 
         public void Remove()
         {
-            //TODO: Dispose?
-
             GameScene.Game.MapControl.ParticleEffects.Remove(this);
         }
 

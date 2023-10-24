@@ -181,7 +181,7 @@ namespace Client.Envir
             [SoundIndex.FireStormEnd] = new DXSound(SoundPath + @"M23-3.wav", SoundType.Magic),
 
             [SoundIndex.LightningWaveStart] = new DXSound(SoundPath + @"M24-1.wav", SoundType.Magic),
-            [SoundIndex.LightningWaveEnd] = new DXSound(SoundPath + @"M24-3.wav", SoundType.Magic),
+            [SoundIndex.LightningWaveEnd] = new DXSound(SoundPath + @"M24-2.wav", SoundType.Magic),
 
             [SoundIndex.FrozenEarthStart] = new DXSound(SoundPath + @"M53-1.wav", SoundType.Magic),
             [SoundIndex.FrozenEarthEnd] = new DXSound(SoundPath + @"M53-3.wav", SoundType.Magic),
