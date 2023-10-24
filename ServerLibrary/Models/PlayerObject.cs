@@ -15212,8 +15212,6 @@ namespace Server.Models
             //Check live conditions to see if we can join an existing instance
             for (int i = 0; i < mapInstance.Length; i++)
             {
-                if (mapInstance[i] == null) continue;
-
                 if (!CheckJoinInstance(instance, i)) continue;
 
                 if (!checkOnly)
@@ -15307,65 +15305,75 @@ namespace Server.Models
 
             var playersOnInstance = maps.Values.SelectMany(x => x.Players);
 
-            var playerRecord = new List<string>();
+            var instanceUserRecord = new List<string>();
 
             foreach (var userRecord in instance.UserRecord)
             {
                 if (userRecord.Value != index) continue;
-                playerRecord.Add(userRecord.Key);
+                instanceUserRecord.Add(userRecord.Key);
             }
 
             switch (instance.Type)
             {
                 case InstanceType.Solo:
-                    if (!instance.AllowRejoin)
                     {
-                        if (instance.MaxPlayerCount > 0)
+                        if (!instance.AllowRejoin)
                         {
-                            if (playersOnInstance.Count() >= instance.MaxPlayerCount)
-                                return false;
+                            if (instance.MaxPlayerCount > 0)
+                            {
+                                if (playersOnInstance.Count() >= instance.MaxPlayerCount)
+                                    return false;
+                            }
+                            else
+                            {
+                                if (instanceUserRecord.Contains(Name))
+                                    return false;
+                            }
                         }
                         else
                         {
-                            if (playerRecord.Contains(Name))
-                                return false;
-                        }
-                    }
-                    else
-                    {
-                        if (instance.MaxPlayerCount > 0)
-                        {
-                            if (!playerRecord.Contains(Name))
+                            if (instance.MaxPlayerCount > 0)
                             {
-                                if (playerRecord.Count >= instance.MaxPlayerCount)
-                                    return false;
+                                if (!instanceUserRecord.Contains(Name))
+                                {
+                                    if (instanceUserRecord.Count >= instance.MaxPlayerCount)
+                                        return false;
+                                }
                             }
                         }
                     }
                     break;
                 case InstanceType.Group:
-                    if (!instance.AllowRejoin)
                     {
-                        if (playerRecord.Contains(Name))
-                            return false;
-                    }
-                    if (!playersOnInstance.Any(x => x.InGroup(this))) return false;
-                    break;
-                case InstanceType.Guild:
-                    if (!instance.AllowRejoin)
-                    {
-                        if (playerRecord.Contains(Name))
-                            return false;
-                    }
-                    else
-                    {
-                        if (!playerRecord.Contains(Name))
+                        if (!instance.AllowRejoin)
                         {
-                            if (playerRecord.Count >= instance.MaxPlayerCount)
+                            if (instanceUserRecord.Contains(Name))
                                 return false;
                         }
+
+                        if (!playersOnInstance.Any(x => x.InGroup(this)))
+                            return false;
                     }
-                    if (!playersOnInstance.Any(x => x.InGuild(this))) return false;
+                    break;
+                case InstanceType.Guild:
+                    {
+                        if (!instance.AllowRejoin)
+                        {
+                            if (instanceUserRecord.Contains(Name))
+                                return false;
+                        }
+                        else
+                        {
+                            if (!instanceUserRecord.Contains(Name))
+                            {
+                                if (instanceUserRecord.Count >= instance.MaxPlayerCount)
+                                    return false;
+                            }
+                        }
+
+                        if (!playersOnInstance.Any(x => x.InGuild(this)))
+                            return false;
+                    }
                     break;
             }
 
