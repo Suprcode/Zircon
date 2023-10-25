@@ -66,6 +66,7 @@
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            gridColumn18 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)InstanceMapGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapInfoLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InstanceInfoGridControl).BeginInit();
@@ -161,7 +162,7 @@
             // 
             // InstanceInfoGridView
             // 
-            InstanceInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn6, gridColumn5, gridColumn17, gridColumn3, gridColumn4, gridColumn7, gridColumn8, gridColumn10, gridColumn9, gridColumn11, gridColumn12, gridColumn13, gridColumn14, gridColumn15, gridColumn16 });
+            InstanceInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn6, gridColumn5, gridColumn17, gridColumn18, gridColumn3, gridColumn4, gridColumn7, gridColumn8, gridColumn10, gridColumn9, gridColumn11, gridColumn12, gridColumn13, gridColumn14, gridColumn15, gridColumn16 });
             InstanceInfoGridView.GridControl = InstanceInfoGridControl;
             InstanceInfoGridView.Name = "InstanceInfoGridView";
             InstanceInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -209,7 +210,7 @@
             gridColumn3.FieldName = "MinPlayerLevel";
             gridColumn3.Name = "gridColumn3";
             gridColumn3.Visible = true;
-            gridColumn3.VisibleIndex = 6;
+            gridColumn3.VisibleIndex = 7;
             // 
             // gridColumn4
             // 
@@ -217,7 +218,7 @@
             gridColumn4.FieldName = "MaxPlayerLevel";
             gridColumn4.Name = "gridColumn4";
             gridColumn4.Visible = true;
-            gridColumn4.VisibleIndex = 7;
+            gridColumn4.VisibleIndex = 8;
             // 
             // gridColumn7
             // 
@@ -225,7 +226,7 @@
             gridColumn7.FieldName = "MinPlayerCount";
             gridColumn7.Name = "gridColumn7";
             gridColumn7.Visible = true;
-            gridColumn7.VisibleIndex = 8;
+            gridColumn7.VisibleIndex = 9;
             // 
             // gridColumn8
             // 
@@ -233,7 +234,7 @@
             gridColumn8.FieldName = "MaxPlayerCount";
             gridColumn8.Name = "gridColumn8";
             gridColumn8.Visible = true;
-            gridColumn8.VisibleIndex = 9;
+            gridColumn8.VisibleIndex = 10;
             // 
             // gridColumn10
             // 
@@ -242,7 +243,7 @@
             gridColumn10.FieldName = "ConnectRegion";
             gridColumn10.Name = "gridColumn10";
             gridColumn10.Visible = true;
-            gridColumn10.VisibleIndex = 14;
+            gridColumn10.VisibleIndex = 15;
             // 
             // RegionLookUpEdit
             // 
@@ -261,7 +262,7 @@
             gridColumn9.FieldName = "ReconnectRegion";
             gridColumn9.Name = "gridColumn9";
             gridColumn9.Visible = true;
-            gridColumn9.VisibleIndex = 15;
+            gridColumn9.VisibleIndex = 16;
             // 
             // gridColumn11
             // 
@@ -284,7 +285,7 @@
             gridColumn12.FieldName = "CooldownTimeInMinutes";
             gridColumn12.Name = "gridColumn12";
             gridColumn12.Visible = true;
-            gridColumn12.VisibleIndex = 12;
+            gridColumn12.VisibleIndex = 13;
             // 
             // gridColumn13
             // 
@@ -301,7 +302,7 @@
             gridColumn14.FieldName = "RequiredItem";
             gridColumn14.Name = "gridColumn14";
             gridColumn14.Visible = true;
-            gridColumn14.VisibleIndex = 10;
+            gridColumn14.VisibleIndex = 11;
             // 
             // ItemLookUpEdit
             // 
@@ -318,7 +319,7 @@
             gridColumn15.FieldName = "RequiredItemSingleUse";
             gridColumn15.Name = "gridColumn15";
             gridColumn15.Visible = true;
-            gridColumn15.VisibleIndex = 11;
+            gridColumn15.VisibleIndex = 12;
             // 
             // gridColumn16
             // 
@@ -326,7 +327,7 @@
             gridColumn16.FieldName = "TimeLimitInMinutes";
             gridColumn16.Name = "gridColumn16";
             gridColumn16.Visible = true;
-            gridColumn16.VisibleIndex = 13;
+            gridColumn16.VisibleIndex = 14;
             // 
             // ribbon
             // 
@@ -386,6 +387,14 @@
             JsonImportExport.ItemLinks.Add(ExportButton);
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
+            // 
+            // gridColumn18
+            // 
+            gridColumn18.Caption = "Save Place";
+            gridColumn18.FieldName = "SavePlace";
+            gridColumn18.Name = "gridColumn18";
+            gridColumn18.Visible = true;
+            gridColumn18.VisibleIndex = 6;
             // 
             // InstanceInfoView
             // 
@@ -448,5 +457,6 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn16;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn17;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn18;
     }
 }

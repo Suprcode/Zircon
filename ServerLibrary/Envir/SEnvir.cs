@@ -1169,13 +1169,13 @@ namespace Server.Envir
                                 {
                                     pair.Value.Process();
 
-                                    if (pair.Value.InstanceExpiryDateTime < DateTime.UtcNow)
+                                    if (pair.Value.InstanceExpiryDateTime < SEnvir.Now)
                                     {
                                         expired = true;
                                     }
                                 }
 
-                                if (expired || instance.Value[instanceSequence].Values.All(x => x.LastPlayer.AddMinutes(5) < DateTime.UtcNow))
+                                if (expired || instance.Value[instanceSequence].Values.All(x => x.LastPlayer.AddMinutes(Globals.InstanceUnloadTimeInMinutes) < DateTime.UtcNow))
                                 {
                                     UnloadInstance(instance.Key, instanceSequence);
                                     break;

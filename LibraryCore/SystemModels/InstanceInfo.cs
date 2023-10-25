@@ -98,6 +98,21 @@ namespace Library.SystemModels
         }
         private bool _AllowRejoin;
 
+        public bool SavePlace
+        {
+            get { return _SavePlace; }
+            set
+            {
+                if (_SavePlace == value) return;
+
+                var oldValue = _SavePlace;
+                _SavePlace = value;
+
+                OnChanged(oldValue, value, "SavePlace");
+            }
+        }
+        private bool _SavePlace;
+
         public byte MinPlayerLevel
         {
             get { return _MinPlayerLevel; }

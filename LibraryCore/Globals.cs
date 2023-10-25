@@ -86,6 +86,8 @@ namespace Library
             MagicRange = 10,
             MagicMaxLevel = 4,
 
+            InstanceUnloadTimeInMinutes = 5,
+
             DuraLossRate = 15,
 
             GroupLimit = 15,

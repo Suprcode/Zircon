@@ -15143,13 +15143,12 @@ namespace Server.Models
             if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
                 return (null, InstanceResult.InsufficientLevel);
 
-            if (dungeonFinder)
-            {
-                if (instance.SafeZoneOnly && !InSafeZone)
-                    return (null, InstanceResult.SafeZoneOnly);
-            }
+            if (dungeonFinder && instance.SafeZoneOnly && !InSafeZone)
+                return (null, InstanceResult.SafeZoneOnly);
 
-            //Check static instance conditions are met -> if any fail cannot join instance
+            if (instance.UserRecord.ContainsKey(Name) && !instance.AllowRejoin)
+                return (null, InstanceResult.NoRejoin);
+
             switch (instance.Type)
             {
                 case InstanceType.Solo:
@@ -15162,10 +15161,45 @@ namespace Server.Models
                             if (!checkOnly)
                                 instance.UserCooldown.Remove(Name);
                         }
+
+                        if (instance.UserRecord.ContainsKey(Name))
+                        {
+                            if (CheckInstanceFreeSpace(instance, instance.UserRecord[Name]))
+                                return (instance.UserRecord[Name], InstanceResult.Success);
+                        }
+
+                        for (int i = 0; i < mapInstance.Length; i++)
+                        {
+                            if (CheckInstanceFreeSpace(instance, i))
+                            {
+                                if (!checkOnly)
+                                {
+                                    if (instance.UserRecord.ContainsKey(Name))
+                                    {
+                                        instance.UserRecord[Name] = (byte)i;
+                                    }
+                                    else
+                                    {
+                                        instance.UserRecord.Add(Name, (byte)i);
+                                    }
+                                }
+
+                                return ((byte)i, InstanceResult.Success);
+                            }
+                        }
                     }
                     break;
                 case InstanceType.Group:
                     {
+                        if (instance.UserCooldown.TryGetValue(Name, out DateTime cooldown))
+                        {
+                            if (cooldown > SEnvir.Now)
+                                return (null, InstanceResult.UserCooldown);
+
+                            if (!checkOnly)
+                                instance.UserCooldown.Remove(Name);
+                        }
+
                         if (GroupMembers == null)
                             return (null, InstanceResult.NotInGroup);
 
@@ -15175,14 +15209,27 @@ namespace Server.Models
                         if (instance.MaxPlayerCount > 1 && (GroupMembers.Count > instance.MaxPlayerCount))
                             return (null, InstanceResult.TooManyInGroup);
 
-                        if (instance.UserCooldown.TryGetValue(Name, out DateTime cooldown))
+                        foreach (var member in GroupMembers)
                         {
-                            if (cooldown > SEnvir.Now)
-                                return (null, InstanceResult.UserCooldown);
+                            if (member.CurrentMap.Instance == instance)
+                            {
+                                var sequence = member.CurrentMap.InstanceSequence;
 
-                            if (!checkOnly)
-                                instance.UserCooldown.Remove(Name);
+                                if (CheckInstanceFreeSpace(instance, sequence))
+                                    return (sequence, InstanceResult.Success);
+
+                                return (sequence, InstanceResult.Invalid);
+                            }
                         }
+
+                        if (instance.UserRecord.ContainsKey(Name))
+                        {
+                            if (CheckInstanceFreeSpace(instance, instance.UserRecord[Name]))
+                                return (instance.UserRecord[Name], InstanceResult.Success);
+                        }
+
+                        if (dungeonFinder && GroupMembers[0] != this)
+                            return (null, InstanceResult.NotGroupLeader);
                     }
                     break;
                 case InstanceType.Guild:
@@ -15198,71 +15245,40 @@ namespace Server.Models
                             if (!checkOnly)
                                 instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
                         }
-                    }
-                    break;
-            }
 
-            //Check previously joined instance and try to rejoin
-            if (instance.UserRecord.ContainsKey(Name))
-            {
-                if (CheckJoinInstance(instance, instance.UserRecord[Name]))
-                    return (instance.UserRecord[Name], InstanceResult.Success);
-            }
-
-            //Check live conditions to see if we can join an existing instance
-            for (int i = 0; i < mapInstance.Length; i++)
-            {
-                if (!CheckJoinInstance(instance, i)) continue;
-
-                if (!checkOnly)
-                {
-                    if (instance.UserRecord.ContainsKey(Name))
-                    {
-                        instance.UserRecord[Name] = (byte)i;
-                    }
-                    else
-                    {
-                        instance.UserRecord.Add(Name, (byte)i);
-                    }
-                }
-
-                return ((byte)i, InstanceResult.Success);
-            }
-
-            //Check final live conditions to make sure we're okay to setup a new instance
-            switch (instance.Type)
-            {
-                case InstanceType.Group:
-                    {
-                        if (dungeonFinder && GroupMembers[0] != this)
-                            return (null, InstanceResult.NotGroupLeader);
-
-                        if (GroupMembers.Any(x => x.CurrentMap.Instance == instance))
-                            return (null, InstanceResult.NoRejoin);
-                    }
-                    break;
-                case InstanceType.Guild:
-                    {
                         foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
                         {
                             if (member.Account.Connection?.Player?.CurrentMap.Instance == instance)
-                                return (null, InstanceResult.NoRejoin);
+                            {
+                                var sequence = member.Account.Connection.Player.CurrentMap.InstanceSequence;
+
+                                if (CheckInstanceFreeSpace(instance, sequence))
+                                    return (sequence, InstanceResult.Success);
+
+                                return (sequence, InstanceResult.Invalid);
+                            }
+                        }
+
+                        if (instance.UserRecord.ContainsKey(Name))
+                        {
+                            if (CheckInstanceFreeSpace(instance, instance.UserRecord[Name]))
+                                return (instance.UserRecord[Name], InstanceResult.Success);
                         }
                     }
                     break;
             }
 
-            byte? index = null;
+            byte? instanceSequence = null;
             for (int i = 0; i < mapInstance.Length; i++)
             {
                 if (mapInstance[i] == null)
                 {
-                    index = (byte)i;
+                    instanceSequence = (byte)i;
                     break;
                 }
             }
 
-            if (index == null)
+            if (instanceSequence == null)
                 return (null, InstanceResult.NoSlots);
 
             if (instance.RequiredItem != null)
@@ -15276,105 +15292,58 @@ namespace Server.Models
 
             if (!checkOnly)
             {
-                SEnvir.LoadInstance(instance, index.Value);
+                SEnvir.LoadInstance(instance, instanceSequence.Value);
 
                 if (instance.UserRecord.ContainsKey(Name))
                 {
-                    instance.UserRecord[Name] = index.Value;
+                    instance.UserRecord[Name] = instanceSequence.Value;
                 }
                 else
                 {
-                    instance.UserRecord.Add(Name, index.Value);
+                    instance.UserRecord.Add(Name, instanceSequence.Value);
                 }
             }
 
-            return (index.Value, InstanceResult.Success);
+            return (instanceSequence.Value, InstanceResult.Success);
         }
 
-        public bool CheckJoinInstance(InstanceInfo instance, int index)
+        public bool CheckInstanceFreeSpace(InstanceInfo instance, int instanceSequence)
         {
             var mapInstance = SEnvir.Instances[instance];
 
-            if (index < 0 || index >= mapInstance.Length)
+            if (instanceSequence < 0 || instanceSequence >= mapInstance.Length)
                 return false;
 
-            var maps = mapInstance[index];
+            var maps = mapInstance[instanceSequence];
 
             if (maps == null)
                 return false;
 
-            var playersOnInstance = maps.Values.SelectMany(x => x.Players);
-
-            var instanceUserRecord = new List<string>();
-
-            foreach (var userRecord in instance.UserRecord)
+            if (instance.MaxPlayerCount > 0)
             {
-                if (userRecord.Value != index) continue;
-                instanceUserRecord.Add(userRecord.Key);
-            }
+                if (instance.SavePlace)
+                {
+                    var instanceUserRecord = new List<string>();
 
-            switch (instance.Type)
-            {
-                case InstanceType.Solo:
+                    foreach (var userRecord in instance.UserRecord)
                     {
-                        if (!instance.AllowRejoin)
-                        {
-                            if (instance.MaxPlayerCount > 0)
-                            {
-                                if (playersOnInstance.Count() >= instance.MaxPlayerCount)
-                                    return false;
-                            }
-                            else
-                            {
-                                if (instanceUserRecord.Contains(Name))
-                                    return false;
-                            }
-                        }
-                        else
-                        {
-                            if (instance.MaxPlayerCount > 0)
-                            {
-                                if (!instanceUserRecord.Contains(Name))
-                                {
-                                    if (instanceUserRecord.Count >= instance.MaxPlayerCount)
-                                        return false;
-                                }
-                            }
-                        }
+                        if (userRecord.Value != instanceSequence) continue;
+                        instanceUserRecord.Add(userRecord.Key);
                     }
-                    break;
-                case InstanceType.Group:
-                    {
-                        if (!instance.AllowRejoin)
-                        {
-                            if (instanceUserRecord.Contains(Name))
-                                return false;
-                        }
 
-                        if (!playersOnInstance.Any(x => x.InGroup(this)))
+                    if (!instanceUserRecord.Contains(Name))
+                    {
+                        if (instanceUserRecord.Count >= instance.MaxPlayerCount)
                             return false;
                     }
-                    break;
-                case InstanceType.Guild:
-                    {
-                        if (!instance.AllowRejoin)
-                        {
-                            if (instanceUserRecord.Contains(Name))
-                                return false;
-                        }
-                        else
-                        {
-                            if (!instanceUserRecord.Contains(Name))
-                            {
-                                if (instanceUserRecord.Count >= instance.MaxPlayerCount)
-                                    return false;
-                            }
-                        }
+                }
+                else
+                {
+                    var playersOnInstance = maps.Values.SelectMany(x => x.Players);
 
-                        if (!playersOnInstance.Any(x => x.InGuild(this)))
-                            return false;
-                    }
-                    break;
+                    if (playersOnInstance.Count() >= instance.MaxPlayerCount)
+                        return false;
+                }
             }
 
             return true;

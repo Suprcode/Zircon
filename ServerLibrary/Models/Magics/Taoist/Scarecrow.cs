@@ -10,7 +10,8 @@ namespace Server.Models.Magics
 
         public Scarecrow(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
+            //TODO - choose a target, summon a scarecrow in front of the caster - any damage done to the scarecrow is dealt to the target
+            //HP of scarecrow increases with level??
         }
     }
 }
