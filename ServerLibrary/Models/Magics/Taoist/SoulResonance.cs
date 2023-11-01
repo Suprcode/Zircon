@@ -13,6 +13,9 @@ namespace Server.Models.Magics
         {
             //TODO
             //Increase target max HP by depending on your own max HP. Only in groups. Cancelled when ungrouped or dead. Infinite buff.
+            //If they die, you die
+
+            //MagicEx7 - 1200 ???
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Server.Models.Magics
 
             var release = GetAugmentedSkill(MagicType.Release);
 
-            if (release != null && Player.Level >= release.Info.NeedLevel1)
+            if (release != null)
             {
                 cost -= cost * release.GetPower() / 100;
                 response.Magics.Add(MagicType.Release);

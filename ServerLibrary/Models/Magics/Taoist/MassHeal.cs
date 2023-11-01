@@ -65,7 +65,7 @@ namespace Server.Models.Magics
 
                 var empoweredHealing = GetAugmentedSkill(MagicType.EmpoweredHealing);
 
-                if (empoweredHealing != null && Player.Level >= empoweredHealing.Info.NeedLevel1)
+                if (empoweredHealing != null)
                 {
                     bonus = empoweredHealing.GetPower();
                     cap += (1 + empoweredHealing.Level) * 30;

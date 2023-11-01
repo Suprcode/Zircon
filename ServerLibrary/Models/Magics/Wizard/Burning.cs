@@ -8,9 +8,11 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.Fire;
 
+        public override bool AugmentedSkill => true;
+
         public Burning(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO - adds burning to all fire spells
+
         }
     }
 }

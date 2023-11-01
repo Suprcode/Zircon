@@ -42,6 +42,8 @@ namespace Library
             DeadTree, BobbitWorm,
             MonasteryMon1, MonasteryMon3,
 
+            Tornado,
+
             CastleFlag;
 
 
@@ -720,6 +722,16 @@ namespace Library
             {
                 [MirAnimation.Show] = new Frame(400, 7, 10, TimeSpan.FromMilliseconds(100)) ,
                 [MirAnimation.Hide] = new Frame(400, 7, 10, TimeSpan.FromMilliseconds(100)) { Reversed = true, },
+            };
+
+            Tornado = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Show] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Standing] = new Frame(10, 9, 0, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Walking] = new Frame(10, 9, 0, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat1] = new Frame(10, 9, 0, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Hide] = new Frame(20, 7, 0, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Die] = new Frame(20, 7, 0, TimeSpan.FromMilliseconds(100)),
             };
 
             CastleFlag = new Dictionary<MirAnimation, Frame>

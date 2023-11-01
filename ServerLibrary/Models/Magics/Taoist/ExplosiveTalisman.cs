@@ -33,7 +33,7 @@ namespace Server.Models.Magics
 
             var augmentExplosiveTalisman = GetAugmentedSkill(MagicType.AugmentExplosiveTalisman);
 
-            if (augmentExplosiveTalisman != null && SEnvir.Now > augmentExplosiveTalisman.Cooldown && Player.Level >= augmentExplosiveTalisman.Info.NeedLevel1)
+            if (augmentExplosiveTalisman != null && SEnvir.Now > augmentExplosiveTalisman.Cooldown)
             {
                 var power = augmentExplosiveTalisman.GetPower() + 1;
                 var possibleTargets = Player.GetTargets(CurrentMap, location, 2);

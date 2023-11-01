@@ -44,14 +44,15 @@ namespace Server.Models.Magics
 
             Stats buffStats = new Stats
             {
-                [Stat.DefencePercent] = 5 + Magic.Level * 5
+                [Stat.PhysicalDefencePercent] = 5 + Magic.Level * 5,
+                [Stat.MagicDefencePercent] = 5 + Magic.Level * 5
             };
 
             int offence = 20;
 
             var augmentDefiance = GetAugmentedSkill(MagicType.AugmentDefiance);
 
-            if (augmentDefiance != null && Player.Level >= augmentDefiance.Info.NeedLevel1)
+            if (augmentDefiance != null)
             {
                 offence = Math.Max(0, 20 - Magic.Level * 5);
 
@@ -60,7 +61,7 @@ namespace Server.Models.Magics
                 Player.LevelMagic(augmentDefiance);
             }
 
-            buffStats[Stat.OffencePercent] = -offence;
+            buffStats[Stat.DCPercent] = -offence;
 
             Player.BuffAdd(BuffType.Defiance, duration, buffStats, false, false, TimeSpan.Zero);
 

@@ -313,6 +313,7 @@ namespace Library.Network.ServerPackets
     {
         public uint ObjectID { get; set; }
         public int MonsterIndex { get; set; }
+        public string CustomName { get; set; }
         public Color NameColour { get; set; }
         public string PetOwner { get; set; }
 

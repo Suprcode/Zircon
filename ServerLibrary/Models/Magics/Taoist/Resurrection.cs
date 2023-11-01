@@ -39,7 +39,7 @@ namespace Server.Models.Magics
 
             var augmentResurrection = GetAugmentedSkill(MagicType.AugmentResurrection);
 
-            if (augmentResurrection != null && SEnvir.Now > augmentResurrection.Cooldown && Player.Level >= augmentResurrection.Info.NeedLevel1)
+            if (augmentResurrection != null && SEnvir.Now > augmentResurrection.Cooldown)
             {
                 var power = augmentResurrection.GetPower() + 1;
 

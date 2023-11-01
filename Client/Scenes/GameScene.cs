@@ -3084,6 +3084,14 @@ namespace Client.Scenes
 
                     target = MouseObject;
                     break;
+                case MagicType.CursedDoll:
+                    if (CanAttackTarget(MouseObject))
+                        target = MouseObject;
+                    break;
+                case MagicType.CorpseExploder:
+                    if (MouseObject != null && MouseObject.Dead && (MouseObject.Race == ObjectType.Player || MouseObject.Race == ObjectType.Monster))
+                        target = MouseObject;
+                    break;
 
                 case MagicType.Defiance:
                 case MagicType.Invincibility:
@@ -3141,7 +3149,6 @@ namespace Client.Scenes
                 case MagicType.SummonJinSkeleton:
                 case MagicType.SummonDemonicCreature:
                 case MagicType.DemonExplosion:
-                case MagicType.Scarecrow:
                 case MagicType.DarkSoulPrison:
 
                 case MagicType.PoisonousCloud:
@@ -3167,7 +3174,7 @@ namespace Client.Scenes
                 case MagicType.MeteorShower:
                 case MagicType.Tempest:
                 case MagicType.Asteroid:
-
+                case MagicType.Tornado:
 
                 case MagicType.MagicResistance:
                 case MagicType.Resilience:
@@ -3205,6 +3212,8 @@ namespace Client.Scenes
             uint targetID = target?.ObjectID ?? 0;
             Point targetLocation;
 
+            //Allows area casting instead of direct lock on (augmentations required)
+            //targetID and separate maplocation passed through - allowing for target lock and area lookup to work
             switch (magic.Info.Magic)
             {
                 case MagicType.Purification:
@@ -3219,9 +3228,7 @@ namespace Client.Scenes
                 default:
                     targetLocation = target?.CurrentLocation ?? MapControl.MapLocation;
                     break;
-
             }
-
 
             //switch spell type.
 

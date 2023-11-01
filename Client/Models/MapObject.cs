@@ -365,9 +365,6 @@ namespace Client.Models
             if ((Poison & PoisonType.Paralysis) == PoisonType.Paralysis)
                 DrawColour = Color.DimGray;
 
-            if ((Poison & PoisonType.Burn) == PoisonType.Burn)
-                DrawColour = Color.OrangeRed;
-
             if ((Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip)
             {
                 if (CanShowWraithGrip)
@@ -403,6 +400,15 @@ namespace Client.Models
             else
             {
                 EndMagicEffect(MagicEffect.Parasite);
+            }
+
+            if ((Poison & PoisonType.Burn) == PoisonType.Burn)
+            {
+                CreateMagicEffect(MagicEffect.Burn);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.Burn);
             }
 
             if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
@@ -1340,16 +1346,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Meteor Shower -> Adam Fire Ball
-
-                        //Renounce
-
-                        //Tempest
-
-                        //Judgement Of Heaven
-
-                        //Thunder Strike -> Thunder Bolt
-
                         //Mirror Image
 
                         #region Lightning Strike
@@ -1452,8 +1448,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-                        //SpiritSword
 
                         #region Poison Dust & Greater Poison Dust
 
@@ -1560,10 +1554,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-                        //SummonSkeleton
-
-                        //Invisibility
 
                         #region Magic Resistance
 
@@ -1717,8 +1707,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Taoist Combat Kick
-
                         #region Elemental Superiority
 
                         case MagicType.ElementalSuperiority:
@@ -1752,8 +1740,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Shinsu
-
                         #region Mass Heal
 
                         case MagicType.MassHeal:
@@ -1772,8 +1758,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-                        //Summon Jin Skeleton
 
                         #region Blood Lust
 
@@ -1862,8 +1846,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Transparency
-
                         #region Celestial Light
 
                         case MagicType.CelestialLight:
@@ -1879,8 +1861,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-                        //Empowered Healing
 
                         #region LifeSteal
 
@@ -1907,7 +1887,7 @@ namespace Client.Models
                         case MagicType.ImprovedExplosiveTalisman:
                             foreach (Point point in MagicLocations)
                             {
-                                Effects.Add(spell = new MirProjectile(980, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 35, 35, Globals.DarkColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(980, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 35, 35, Globals.DarkColour, CurrentLocation)
                                 {
                                     Blend = true,
                                     MapTarget = point,
@@ -1918,7 +1898,7 @@ namespace Client.Models
 
                             foreach (MapObject attackTarget in AttackTargets)
                             {
-                                Effects.Add(spell = new MirProjectile(980, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 35, 35, Globals.DarkColour, CurrentLocation)
+                                Effects.Add(spell = new MirProjectile(980, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 35, 35, Globals.DarkColour, CurrentLocation)
                                 {
                                     Blend = true,
                                     Target = attackTarget,
@@ -1945,16 +1925,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-                        //Greater Poison Dust -> Poison Dust
-
-                        //Summon Demon
-
-                        //Scarecrow
-
-                        //Demon Explosion
-
-                        //Thunder Kick
 
                         #region Parasite
 
@@ -2048,6 +2018,50 @@ namespace Client.Models
                             });
                             DXSoundManager.Play(SoundIndex.DarkSoulPrison);
                             break;
+                        #endregion
+
+                        #region Corpse Exploder
+
+                        case MagicType.CorpseExploder:
+                            foreach (Point point in MagicLocations)
+                            {
+                                Effects.Add(spell = new MirProjectile(300, 4, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 35, 35, Globals.FireColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    MapTarget = point
+                                });
+                                spell.Process();
+                            }
+
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                var location = attackTarget.CurrentLocation;
+                                Effects.Add(spell = new MirProjectile(300, 4, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 35, 35, Globals.FireColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Explode = true
+                                });
+
+                                spell.CompleteAction = () =>
+                                {
+                                    spell = new MirEffect(1000, 17, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 20, 50, Globals.FireColour)
+                                    {
+                                        Blend = true,
+                                        MapTarget = location,
+                                    };
+                                    spell.Process();
+
+                                    DXSoundManager.Play(SoundIndex.CorpseExploderEnd);
+                                };
+                                spell.Process();
+                            }
+
+                            if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
+                                DXSoundManager.Play(SoundIndex.ExplosiveTalismanTravel);
+
+                            break;
+
                         #endregion
 
                         #endregion
@@ -3429,6 +3443,20 @@ namespace Client.Models
 
                         #endregion
 
+                        #region Tornado
+
+                        case MagicType.Tornado:
+                            //Effects.Add(spell = new MirEffect(2400, 4, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 10, Globals.WindColour)
+                            //{
+                            //    Blend = true,
+                            //    Target = this,
+                                
+                            //});
+                            DXSoundManager.Play(SoundIndex.BlowEarthStart);
+                            break;
+
+                        #endregion
+
                         #endregion
 
                         #region Taoist
@@ -3495,7 +3523,6 @@ namespace Client.Models
 
                         case MagicType.SummonSkeleton:
                         case MagicType.SummonJinSkeleton:
-                        case MagicType.Scarecrow:
                             Effects.Add(new MirEffect(740, 10, TimeSpan.FromMilliseconds(60), LibraryFile.Magic, 10, 35, Globals.PhantomColour)
                             {
                                 Blend = true,
@@ -3633,8 +3660,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Summon Jin Skeleton -> Summon Skeleton
-
                         #region Blood Lust
 
                         case MagicType.BloodLust:
@@ -3745,7 +3770,18 @@ namespace Client.Models
 
                         //Greater Poison Dust -> Poison Dust
 
-                        //Scarecrow -> Summon Skeleton
+                        #region Cursed Doll
+
+                        case MagicType.CursedDoll:
+                            Effects.Add(new MirEffect(740, 10, TimeSpan.FromMilliseconds(60), LibraryFile.Magic, 10, 35, Globals.PhantomColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            DXSoundManager.Play(SoundIndex.SummonShinsuStart);
+                            break;
+
+                        #endregion
 
                         #region Thunder Kick
 
@@ -3784,6 +3820,37 @@ namespace Client.Models
                             break;
 
                         #endregion
+
+                        #region Neutralize
+
+                        case MagicType.Neutralize:
+                            Effects.Add(spell = new MirEffect(2080, 6, TimeSpan.FromMilliseconds(80), LibraryFile.Magic, 10, 35, Globals.DarkColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Direction = action.Direction
+                            });
+
+                            DXSoundManager.Play(SoundIndex.ExplosiveTalismanStart);
+                            break;
+
+                        #endregion
+
+                        #region Corpse Exploder
+
+                        case MagicType.CorpseExploder:
+                            Effects.Add(spell = new MirEffect(2080, 6, TimeSpan.FromMilliseconds(80), LibraryFile.Magic, 10, 35, Globals.DarkColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Direction = action.Direction
+                            });
+
+                            DXSoundManager.Play(SoundIndex.ExplosiveTalismanStart);
+                            break;
+
+                        #endregion
+
 
                         #endregion
 
@@ -4515,7 +4582,6 @@ namespace Client.Models
 
         public void DrawPoison()
         {
-            //   if (this is SpellObject || Dead) return;
             if (Dead) return;
 
             int count = 0;
@@ -4525,6 +4591,7 @@ namespace Client.Models
                 DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.DimGray);
                 count++;
             }
+
             if ((Poison & PoisonType.Slow) == PoisonType.Slow)
             {
                 DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.CornflowerBlue);
@@ -4548,6 +4615,7 @@ namespace Client.Models
                 DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.OrangeRed);
             }
         }
+
         public virtual void DrawHealth()
         {
 
@@ -4843,6 +4911,16 @@ namespace Client.Models
                             if (effect.FrameIndex == 1)
                                 DXSoundManager.Play(SoundIndex.ElementalHurricane);
                         };
+                    }
+                    break;
+                case MagicEffect.Burn:
+                    {
+                        effects.Add(new MirEffect(790, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.FireColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true
+                        });
                     }
                     break;
                 case MagicEffect.Ranking:

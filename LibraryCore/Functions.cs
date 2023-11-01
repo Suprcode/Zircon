@@ -214,6 +214,7 @@ namespace Library
                 case MagicType.LifeSteal:
                 case MagicType.ImprovedExplosiveTalisman:
                 case MagicType.Neutralize:
+                case MagicType.CorpseExploder:
                     return MirAnimation.Combat1;
 
                 case MagicType.Interchange:
@@ -243,6 +244,7 @@ namespace Library
                 case MagicType.Asteroid:
                 case MagicType.SuperiorMagicShield:
                 case MagicType.IceRain:
+                case MagicType.Tornado:
 
                 case MagicType.Heal:
                 case MagicType.PoisonDust:
@@ -259,7 +261,7 @@ namespace Library
                 case MagicType.AugmentPoisonDust:
                 case MagicType.SummonDemonicCreature:
                 case MagicType.DemonExplosion:
-                case MagicType.Scarecrow:
+                case MagicType.CursedDoll:
                 case MagicType.DarkSoulPrison:
                     return MirAnimation.Combat2;
 

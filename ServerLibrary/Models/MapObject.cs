@@ -3,6 +3,7 @@ using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
+using Server.Models.Magics;
 using Server.Models.Monsters;
 using System;
 using System.Collections.Generic;
@@ -249,38 +250,13 @@ namespace Server.Models
                         }
                         else
                         {
-                            if ((poison.Owner is PlayerObject owner) && owner.Magics.TryGetValue(MagicType.Infection, out UserMagic infection))
+                            if ((poison.Owner is PlayerObject owner) && owner.GetMagic(MagicType.Infection, out MagicObject infection))
                             {
-                                if (owner.Level >= infection.Info.NeedLevel1)
+                                infection.MagicComplete(new object[]
                                 {
-                                    var targets = poison.Owner.GetTargets(CurrentMap, CurrentLocation, 1);
-
-                                    foreach (MapObject target in targets)
-                                    {
-                                        if (target.Race != ObjectType.Monster) continue;
-
-                                        if (((MonsterObject)target).MonsterInfo.IsBoss) continue;
-
-                                        if (target.PoisonList.Any(x => x.Type == PoisonType.Parasite)) continue;
-
-                                        foreach (var p in PoisonList)
-                                        {
-                                            if (target.PoisonList.Any(x => x.Type == p.Type)) continue;
-
-                                            target.ApplyPoison(new Poison
-                                            {
-                                                Value = (p.Value * infection.Level + 1) / 10,
-                                                Owner = p.Owner,
-                                                TickCount = infection.GetPower(),
-                                                TickFrequency = p.TickFrequency,
-                                                Type = p.Type
-                                            });
-                                        }
-
-                                        owner.LevelMagic(infection);
-                                        break;
-                                    }
-                                }
+                                    MagicType.Infection,
+                                    this
+                                });
                             }
                         }
                         break;
@@ -297,8 +273,11 @@ namespace Server.Models
                     if (Race == ObjectType.Monster && ((MonsterObject)this).MonsterInfo.IsBoss)
                         damage = 0;
                     else
-                        damage = Math.Min(CurrentHP - 1, damage);
-
+                    {
+                        if (!poison.CanKill)
+                            damage = Math.Min(CurrentHP - 1, damage);
+                    }
+                        
                     if (damage > 0)
                     {
                         #region Conquest Stats
@@ -389,27 +368,9 @@ namespace Server.Models
                     {
                         case PoisonType.Parasite:
                             {
-                                if (poison.Owner is not PlayerObject owner) break;
-
-                                if (owner.Magics.TryGetValue(MagicType.Parasite, out UserMagic parasite) && owner.Level >= parasite.Info.NeedLevel1)
+                                if ((poison.Owner is PlayerObject owner) && owner.GetMagic(MagicType.Parasite, out MagicObject parasite))
                                 {
-                                    var cells = CurrentMap.GetCells(CurrentLocation, 0, 1);
-
-                                    foreach (var cell in cells)
-                                    {
-                                        if (cell?.Objects == null) continue;
-
-                                        for (int j = cell.Objects.Count - 1; j >= 0; j--)
-                                        {
-                                            if (j >= cell.Objects.Count) continue;
-                                            MapObject ob = cell.Objects[j];
-                                            if (!owner.CanAttackTarget(ob)) continue;
-
-                                            owner.MagicAttack(new List<MagicType> { MagicType.Parasite }, this, true);
-                                        }
-                                    }
-
-                                    Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.ParasiteExplode });
+                                    ((Parasite)parasite).Explode(this);
                                 }
                             }
                             break;
@@ -1339,12 +1300,14 @@ namespace Server.Models
             CurrentHP = Stats[Stat.Health] * Stats[Stat.CelestialLight] / 100;
             BuffRemove(BuffType.CelestialLight);
         }
+
         public virtual void ItemRevive()
         {
             CurrentHP = Stats[Stat.Health];
             CurrentMP = Stats[Stat.Mana];
             ItemReviveTime = SEnvir.Now.AddSeconds(Stats[Stat.ItemReviveTime]);
         }
+
         public virtual int Purify(MapObject ob)
         {
             if (ob?.Node == null || ob.Dead) return 0;
@@ -1743,7 +1706,6 @@ namespace Server.Models
             return ob?.GroupMembers != null && ob.GroupMembers == GroupMembers;
         }
 
-
         public int GetDC()
         {
             int min = Stats[Stat.MinDC];
@@ -1871,5 +1833,6 @@ namespace Server.Models
         public int TickCount;
         public DateTime TickTime;
         public object Extra;
+        public bool CanKill;
     }
 }

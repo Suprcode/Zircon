@@ -2216,13 +2216,11 @@ namespace Server.Models
             Stats[Stat.Health] = Math.Max(10, Stats[Stat.Health]);
             Stats[Stat.Mana] = Math.Max(10, Stats[Stat.Mana]);
 
-            Stats[Stat.MinAC] += (Stats[Stat.MinAC] * Stats[Stat.OffencePercent]) / 100;
-            Stats[Stat.MaxAC] += (Stats[Stat.MaxAC] * Stats[Stat.OffencePercent]) / 100;
-            Stats[Stat.MinMR] += (Stats[Stat.MinMR] * Stats[Stat.OffencePercent]) / 100;
-            Stats[Stat.MaxMR] += (Stats[Stat.MaxMR] * Stats[Stat.OffencePercent]) / 100;
+            Stats[Stat.MinAC] += (Stats[Stat.MinAC] * Stats[Stat.PhysicalDefencePercent]) / 100;
+            Stats[Stat.MaxAC] += (Stats[Stat.MaxAC] * Stats[Stat.PhysicalDefencePercent]) / 100;
 
-            Stats[Stat.MinDC] += (Stats[Stat.MinDC] * Stats[Stat.DefencePercent]) / 100;
-            Stats[Stat.MaxDC] += (Stats[Stat.MaxDC] * Stats[Stat.DefencePercent]) / 100;
+            Stats[Stat.MinMR] += (Stats[Stat.MinMR] * Stats[Stat.MagicDefencePercent]) / 100;
+            Stats[Stat.MaxMR] += (Stats[Stat.MaxMR] * Stats[Stat.MagicDefencePercent]) / 100;
 
             if (Buffs.Any(x => x.Type == BuffType.MagicWeakness))
             {
@@ -13755,8 +13753,7 @@ namespace Server.Models
 
             int power = 0;
             int slow = 0, slowLevel = 0, repel = 0, silence = 0;
-
-            int shock = 0;
+            int shock = 0, burn = 0, burnLevel = 0;
 
             bool canStruck = true;
 
@@ -13773,6 +13770,8 @@ namespace Server.Models
                 repel = magicObject.GetRepel(repel, stats);
                 silence = magicObject.GetSilence(silence, stats);
                 shock = magicObject.GetShock(shock, stats);
+                burn = magicObject.GetBurn(burn, stats);
+                burnLevel = magicObject.GetBurnLevel(burnLevel, stats);
 
                 canStruck = magicObject.CanStruck;
 
@@ -13843,10 +13842,24 @@ namespace Server.Models
                 }
             }
 
+            if (burn > 0)
+            {
+                ob.ApplyPoison(new Poison
+                {
+                    Owner = this,
+                    Type = PoisonType.Burn,
+                    Value = (damage * burnLevel) / 10,
+                    TickFrequency = TimeSpan.FromSeconds(2),
+                    TickCount = burn,
+                });
+            }
+
             int psnRate = Globals.MagicalPoisonRate;
 
             if (ob.Level >= 250)
+            {
                 psnRate = Globals.MagicalPoisonRate * 10;
+            }
 
             if (SEnvir.Random.Next(psnRate) < Stats[Stat.ParalysisChance])
             {
@@ -13882,23 +13895,11 @@ namespace Server.Models
                 });
             }
 
-            if (element == Element.Fire && Magics.TryGetValue(MagicType.Burning, out UserMagic burning) && Level >= burning.Info.NeedLevel1)
+            foreach (MagicType type in types)
             {
-                var value = (damage / 10) * (burning.Level + 1) / 5;
+                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-                if (value > 0)
-                {
-                    ob.ApplyPoison(new Poison
-                    {
-                        Owner = this,
-                        Value = value,
-                        Type = PoisonType.Burn,
-                        TickFrequency = TimeSpan.FromSeconds(2),
-                        TickCount = 5 + burning.Level,
-                    });
-
-                    LevelMagic(burning);
-                }
+                magicObject.MagicAttackSuccess(ob, damage);
             }
 
             switch (ob.Race)
@@ -13923,17 +13924,20 @@ namespace Server.Models
                         });
                     }
 
-                    if (repel > 0 && ob.CurrentMap == CurrentMap && Level > ob.Level && SEnvir.Random.Next(repel) == 0)
+                    if (repel > 0 && SEnvir.Random.Next(repel) == 0)
                     {
-                        MirDirection dir = Functions.DirectionFromPoint(CurrentLocation, ob.CurrentLocation);
-                        if (ob.Pushed(dir, 1) == 0)
+                        if (ob.CurrentMap == CurrentMap && Level > ob.Level)
                         {
-                            int rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
-
-                            for (int i = 1; i < 2; i++)
+                            MirDirection dir = Functions.DirectionFromPoint(CurrentLocation, ob.CurrentLocation);
+                            if (ob.Pushed(dir, 1) == 0)
                             {
-                                if (ob.Pushed(Functions.ShiftDirection(dir, i * rotation), 1) > 0) break;
-                                if (ob.Pushed(Functions.ShiftDirection(dir, i * -rotation), 1) > 0) break;
+                                int rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
+
+                                for (int i = 1; i < 2; i++)
+                                {
+                                    if (ob.Pushed(Functions.ShiftDirection(dir, i * rotation), 1) > 0) break;
+                                    if (ob.Pushed(Functions.ShiftDirection(dir, i * -rotation), 1) > 0) break;
+                                }
                             }
                         }
                     }
@@ -13943,7 +13947,6 @@ namespace Server.Models
                         ob.ApplyPoison(new Poison
                         {
                             Type = PoisonType.Silenced,
-                            Value = slowLevel,
                             TickCount = 1,
                             TickFrequency = TimeSpan.FromSeconds(silence),
                             Owner = this,
@@ -13954,18 +13957,6 @@ namespace Server.Models
             }
 
             CheckBrown(ob);
-
-            foreach (MagicType type in types)
-            {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
-
-                LevelMagic(magicObject.Magic);
-            }
-
-            if (Buffs.Any(x => x.Type == BuffType.Renounce) && Magics.TryGetValue(MagicType.Renounce, out UserMagic renounce))
-            {
-                LevelMagic(renounce);
-            }
 
             return damage;
         }
@@ -14345,6 +14336,16 @@ namespace Server.Models
                 default:
                     return false;
             }
+        }
+
+        public bool GetMagic(MagicType type, out MagicObject magic)
+        {
+            var hasMagic = MagicObjects.TryGetValue(type, out magic);
+
+            if (hasMagic && Level >= magic.Magic.Info.NeedLevel1)
+                return true;
+
+            return false;
         }
 
         public void LevelMagic(UserMagic magic)

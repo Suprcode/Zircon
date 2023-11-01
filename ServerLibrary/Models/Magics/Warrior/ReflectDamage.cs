@@ -39,7 +39,7 @@ namespace Server.Models.Magics
 
             var augmentReflectDamage = GetAugmentedSkill(MagicType.AugmentReflectDamage);
 
-            if (augmentReflectDamage != null && Player.Level >= augmentReflectDamage.Info.NeedLevel1)
+            if (augmentReflectDamage != null)
             {
                 damage += augmentReflectDamage.GetPower();
                 duration += TimeSpan.FromSeconds(5 + augmentReflectDamage.Level * 5);

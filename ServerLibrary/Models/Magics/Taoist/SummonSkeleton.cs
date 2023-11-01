@@ -60,6 +60,8 @@ namespace Server.Models.Magics
 
             ob = MonsterObject.GetMonster(info);
 
+            if (ob == null) return;
+
             ob.PetOwner = Player;
             Player.Pets.Add(ob);
 

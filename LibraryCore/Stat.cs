@@ -678,7 +678,7 @@ namespace Library
 
         [StatDescription(Title = "Brown, People can attack you freely", Mode = StatType.Text)]
         Brown,
-        [StatDescription(Title = "PK Points:", Format = "{0}", Mode = StatType.Default)]
+        [StatDescription(Title = "PK Points", Format = "{0}", Mode = StatType.Default)]
         PKPoint,
 
         [StatDescription(Title = "Global Shout no level restriction", Mode = StatType.Text)]
@@ -747,10 +747,10 @@ namespace Library
 
         [StatDescription(Title = "Weight Rate", Format = "x{0}", Mode = StatType.Default)]
         WeightRate,
-        [StatDescription(Title = "Offence", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
-        OffencePercent,
-        [StatDescription(Title = "Defence", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
-        DefencePercent,
+        [StatDescription(Title = "Magic Defence", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        MagicDefencePercent,
+        [StatDescription(Title = "Physical Defence", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
+        PhysicalDefencePercent,
         [StatDescription(Title = "Mana", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         ManaPercent,
 

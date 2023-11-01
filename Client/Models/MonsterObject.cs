@@ -93,7 +93,7 @@ namespace Client.Models
 
             Light = Stats[Stat.Light];
 
-            Name = CompanionObject?.Name ?? MonsterInfo.MonsterName;
+            Name = string.IsNullOrEmpty(info.CustomName) ? (CompanionObject?.Name ?? MonsterInfo.MonsterName) : info.CustomName;
 
             PetOwner = info.PetOwner;
             NameColour = info.NameColour;
@@ -2060,6 +2060,15 @@ namespace Client.Models
                     BodyShape = Extra1;
 
                     break;
+
+                case MonsterImage.Tornado:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_56, out BodyLibrary);
+                    BodyShape = 6;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Tornado)
+                        Frames[frame.Key] = frame.Value;
+
+                    break;
                 default:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_1, out BodyLibrary);
                     BodyShape = 0;
@@ -2213,7 +2222,6 @@ namespace Client.Models
 
             DrawShadow(DrawX, y);
 
-
             DrawBody(DrawX, y);
         }
 
@@ -2222,6 +2230,7 @@ namespace Client.Models
             switch (Image)
             {
                 case MonsterImage.DustDevil:
+                case MonsterImage.Tornado:
                     break;
                 case MonsterImage.LobsterLord:
                     BodyLibrary.Draw(BodyFrame, x, y, Color.White, true, 0.5f, ImageType.Shadow, Scale);
@@ -2239,6 +2248,7 @@ namespace Client.Models
             switch (Image)
             {
                 case MonsterImage.DustDevil:
+                case MonsterImage.Tornado:
                     BodyLibrary.DrawBlend(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image);
                     break;
                 case MonsterImage.LobsterLord:
@@ -2248,7 +2258,7 @@ namespace Client.Models
                     break;
                 case MonsterImage.CastleFlag:
                     BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
-                    BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Colour, true, 1F, ImageType.Overlay);
+                    BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Colour, true, 1F, ImageType.Overlay, Scale);
                     break;
                 default:
                     BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);

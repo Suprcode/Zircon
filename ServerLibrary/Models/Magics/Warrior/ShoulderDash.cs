@@ -201,7 +201,7 @@ namespace Server.Models.Magics
             {
                 var assault = GetAugmentedSkill(MagicType.Assault);
 
-                if (assault != null && Player.Level >= assault.Info.NeedLevel1 && SEnvir.Now >= assault.Cooldown)
+                if (assault != null && SEnvir.Now >= assault.Cooldown)
                 {
                     target.ApplyPoison(new Poison
                     {

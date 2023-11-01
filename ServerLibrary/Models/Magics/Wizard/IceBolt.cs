@@ -9,7 +9,7 @@ namespace Server.Models.Magics
     public class IceBolt : MagicObject
     {
         protected override Element Element => Element.Ice;
-        protected override  int Slow => 10;
+        protected override int Slow => 10;
         protected override int SlowLevel => 3;
 
         public IceBolt(PlayerObject player, UserMagic magic) : base(player, magic)

@@ -35,7 +35,7 @@ namespace Server.Models.Magics
 
             var augmentEvilSlayer = GetAugmentedSkill(MagicType.AugmentEvilSlayer);
 
-            if (augmentEvilSlayer != null && SEnvir.Now > augmentEvilSlayer.Cooldown && Player.Level >= augmentEvilSlayer.Info.NeedLevel1)
+            if (augmentEvilSlayer != null && SEnvir.Now > augmentEvilSlayer.Cooldown)
             {
                 var power = augmentEvilSlayer.GetPower() + 1;
 

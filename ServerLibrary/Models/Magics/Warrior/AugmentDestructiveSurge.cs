@@ -9,6 +9,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AugmentedSkill => true;
+        public override bool AttackSkill => true;
 
         public AugmentDestructiveSurge(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -17,6 +18,13 @@ namespace Server.Models.Magics
             //1.Line stalemate - Can inflict damage over a wider area than aggravated damage.
             //2.You must be at level 4 in the circuit-advanced martial arts skill to learn it.
             //3.When learning martial arts, Line Cham -Advanced martial arts are deleted.
+        }
+
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        {
+            power += Magic.GetPower();
+
+            return power;
         }
     }
 }

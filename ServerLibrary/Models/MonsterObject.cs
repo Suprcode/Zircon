@@ -605,6 +605,10 @@ namespace Server.Models
                     };
                 case 127:
                     return new JinchonDevil { MonsterInfo = monsterInfo, CastDelay = TimeSpan.FromSeconds(8), DeathCloudDurationMin = 2000, DeathCloudDurationRandom = 5000 };
+                case 128:
+                    return new Doll { MonsterInfo = monsterInfo };
+                case 129:
+                    return new Tornado { MonsterInfo = monsterInfo};
                 case 1001:
                     return new CastleFlag { MonsterInfo = monsterInfo };
                 default:
@@ -1408,7 +1412,6 @@ namespace Server.Models
                     return false;
             }
 
-
             if (ob.Buffs.Any(x => x.Type == BuffType.Invisibility) && !CoolEye) return false;
 
             if (ob.Buffs.Any(x => x.Type == BuffType.Cloak) && Stats[Stat.IgnoreStealth] == 0)
@@ -1560,7 +1563,6 @@ namespace Server.Models
                                 return false;
                             break;
                     }
-
 
                     if (PetOwner.Pets.Any(x =>
                     {
@@ -2307,8 +2309,6 @@ namespace Server.Models
 
             PlayerObject player;
 
-
-
             switch (attacker.Race)
             {
                 case ObjectType.Player:
@@ -2397,7 +2397,6 @@ namespace Server.Models
         {
             base.Die();
 
-
             YieldReward();
 
             Master?.MinionList.Remove(this);
@@ -2450,7 +2449,7 @@ namespace Server.Models
                             SEnvir.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
                             break;
                         case EventActionType.MapMessage:
-                            map = SEnvir.GetMap(action.MapParameter1);
+                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
                             if (map == null) continue;
 
                             map.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });

@@ -242,9 +242,6 @@ namespace Library.SystemModels
             }
         }
         private MapInfo _MapParameter1;
-        
-        
-        
     }
 
     public enum EventActionType

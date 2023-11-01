@@ -41,7 +41,7 @@ namespace Server.Models.Magics
 
             var augmentPurification = GetAugmentedSkill(MagicType.AugmentPurification);
 
-            if (augmentPurification != null && SEnvir.Now > augmentPurification.Cooldown && Player.Level >= augmentPurification.Info.NeedLevel1)
+            if (augmentPurification != null && SEnvir.Now > augmentPurification.Cooldown)
             {
                 var power = augmentPurification.GetPower() + 1;
 

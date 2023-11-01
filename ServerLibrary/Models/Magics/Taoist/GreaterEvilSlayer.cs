@@ -32,7 +32,7 @@ namespace Server.Models.Magics
             if (Player.CanAttackTarget(target))
                 realTargets.Add(target);
 
-            if (augmentEvilSlayer != null && SEnvir.Now > augmentEvilSlayer.Cooldown && Player.Level >= augmentEvilSlayer.Info.NeedLevel1)
+            if (augmentEvilSlayer != null && SEnvir.Now > augmentEvilSlayer.Cooldown)
             {
                 var power = augmentEvilSlayer.GetPower() + 1;
 

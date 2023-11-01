@@ -69,7 +69,7 @@ namespace Server.Models.Magics
             var pledgeofBlood = GetAugmentedSkill(MagicType.PledgeOfBlood);
 
             int value = 0;
-            if (pledgeofBlood != null && Player.Level >= pledgeofBlood.Info.NeedLevel1)
+            if (pledgeofBlood != null)
                 value = pledgeofBlood.GetPower();
 
             Stats buffStats = new Stats
@@ -87,7 +87,7 @@ namespace Server.Models.Magics
             {
                 var ghostWalk = GetAugmentedSkill(MagicType.GhostWalk);
 
-                if (ghostWalk == null || Player.Level < ghostWalk.Info.NeedLevel1) return;
+                if (ghostWalk == null) return;
 
                 int rate = (ghostWalk.Level + 1) * 3;
 

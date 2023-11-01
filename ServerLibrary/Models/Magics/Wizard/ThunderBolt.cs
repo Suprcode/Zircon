@@ -16,6 +16,18 @@ namespace Server.Models.Magics
 
         }
 
+        public override int GetShock(int shock, Stats stats = null)
+        {
+            var shocked = GetAugmentedSkill(MagicType.Shocked);
+
+            if (shocked != null && SEnvir.Random.Next(4) <= shocked.Level)
+            {
+                return shocked.GetPower();
+            }
+
+            return base.GetShock(shock, stats);
+        }
+
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             var response = new MagicCast

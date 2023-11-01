@@ -1,9 +1,11 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using Server.Models.Magics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Server.Models
 {
@@ -25,6 +27,7 @@ namespace Server.Models
 
         protected abstract Element Element { get; }
         public virtual bool UpdateCombatTime => true;
+        public virtual bool PassiveSkill => false; //TODO
 
 
         //Magic variables
@@ -36,10 +39,13 @@ namespace Server.Models
         protected virtual int Repel => 0;
         protected virtual int Silence => 0;
         protected virtual int Shock => 0;
+        protected virtual int Burn => 0;
+        protected virtual int BurnLevel => 0;
 
 
         //Attack variables
         public virtual bool AttackSkill => false;
+        public virtual bool ToggleSkill => false; //TODO
         public virtual bool IgnoreAccuracy => false;
         public virtual bool HasFlameSplash(bool primary)
         {
@@ -211,14 +217,48 @@ namespace Server.Models
             return shock;
         }
 
+        public virtual int GetBurn(int burn, Stats stats = null)
+        {
+            if (Burn > 0)
+                return Burn;
+
+            return burn;
+        }
+
+        public virtual int GetBurnLevel(int burnLevel, Stats stats = null)
+        {
+            if (BurnLevel > 0)
+                return BurnLevel;
+
+            return burnLevel;
+        }
+
         protected UserMagic GetAugmentedSkill(MagicType type)
         {
-            if (Player.Magics.TryGetValue(type, out UserMagic augMagic))
+            if (Player.GetMagic(type, out MagicObject augMagic))
             {
-                return augMagic;
+                if (Player.Level >= augMagic.Magic.Info.NeedLevel1)
+                {
+                    return augMagic.Magic;
+                }
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Perform any magic actions after the MagicAttack damage has been dealt to the target object
+        /// </summary>
+        /// <param name="ob">Target object that was attacked</param>
+        /// <param name="damageDealt">Calculated damage which was dealt to the target object</param>
+        public virtual void MagicAttackSuccess(MapObject ob, int damageDealt)
+        {
+            Player.LevelMagic(Magic);
+
+            if (Player.Buffs.Any(x => x.Type == BuffType.Renounce) && Player.GetMagic(MagicType.Renounce, out MagicObject renounce))
+            {
+                Player.LevelMagic(renounce.Magic);
+            }
         }
     }
 

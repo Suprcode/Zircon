@@ -46,8 +46,9 @@ namespace Server.Models.Magics
 
             Stats buffStats = new Stats
             {
-                [Stat.OffencePercent] = amount,
-                [Stat.DefencePercent] = -amount
+                [Stat.DCPercent] = amount,
+                [Stat.MagicDefencePercent] = -amount,
+                [Stat.PhysicalDefencePercent] = -amount
             };
 
             Player.BuffAdd(BuffType.Might, duration, buffStats, false, false, TimeSpan.Zero);

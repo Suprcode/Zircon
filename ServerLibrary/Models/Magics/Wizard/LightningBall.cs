@@ -1,5 +1,6 @@
 ﻿using Library;
 using Server.DBModels;
+using Server.Envir;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -13,6 +14,18 @@ namespace Server.Models.Magics
         public LightningBall(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
+        }
+
+        public override int GetShock(int shock, Stats stats = null)
+        {
+            var shocked = GetAugmentedSkill(MagicType.Shocked);
+
+            if (shocked != null && SEnvir.Random.Next(4) <= shocked.Level)
+            {
+                return shocked.GetPower();
+            }
+
+            return base.GetShock(shock, stats);
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

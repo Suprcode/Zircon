@@ -8,7 +8,6 @@ namespace Server.Models.Monsters
 {
     public class SpittingSpider : MonsterObject
     {
-
         protected override bool InAttackRange()
         {
             if (Target.CurrentMap != CurrentMap) return false;

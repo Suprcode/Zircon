@@ -38,7 +38,7 @@ namespace Server.Models.Magics
             var augmentNeutralize = GetAugmentedSkill(MagicType.AugmentNeutralize);
             bool hasAugmentNeutralize = false;
 
-            if (augmentNeutralize != null && SEnvir.Now > augmentNeutralize.Cooldown && Player.Level >= augmentNeutralize.Info.NeedLevel1)
+            if (augmentNeutralize != null && SEnvir.Now > augmentNeutralize.Cooldown)
             {
                 types.Add(MagicType.AugmentNeutralize);
                 var power = augmentNeutralize.GetPower() + 1;

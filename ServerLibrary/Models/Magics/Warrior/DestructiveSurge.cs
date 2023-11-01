@@ -1,7 +1,6 @@
 ﻿using Library;
 using Server.DBModels;
 using System.Collections.Generic;
-
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
@@ -53,6 +52,14 @@ namespace Server.Models.Magics
                 response.Cast = true;
                 response.Magics.Add(Type);
 
+                var augmentDestructiveSurge = GetAugmentedSkill(MagicType.AugmentDestructiveSurge);
+                var hasAugmentDestructiveSurge = augmentDestructiveSurge != null && Magic.Level >= 3;
+
+                if (hasAugmentDestructiveSurge)
+                {
+                    response.Magics.Add(augmentDestructiveSurge.Info.Magic);
+                }
+
                 return response;
             }
 
@@ -63,6 +70,15 @@ namespace Server.Models.Magics
         {
             for (int i = 1; i < 8; i++)
                 Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, i)), magics, false);
+
+            var augmentDestructiveSurge = GetAugmentedSkill(MagicType.AugmentDestructiveSurge);
+            var hasAugmentDestructiveSurge = augmentDestructiveSurge != null && Magic.Level >= 3;
+
+            if (hasAugmentDestructiveSurge)
+            {
+                for (int i = 1; i < 8; i++)
+                    Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, i), 2), magics, false);
+            }
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

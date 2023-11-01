@@ -580,7 +580,7 @@ namespace Library
         Endurance = 116,//TODO
         ReflectDamage = 117,//TODO
         Fetter = 118,
-        AugmentDestructiveSurge = 119,//NOT CODED
+        AugmentDestructiveSurge = 119,
         AugmentDefiance = 120,
         AugmentReflectDamage = 121,
         AdvancedPotionMastery = 122,
@@ -624,19 +624,18 @@ namespace Library
         Tempest = 228,
         JudgementOfHeaven = 229,
         ThunderStrike = 230,
-        Freezing = 231,//NOT CODED 
+        FireBounce = 231,//Custom
         ElementalHurricane = 232,
         SuperiorMagicShield = 233,
-        Burning = 234,//NOT CODED 
-        Shock = 235,//NOT CODED
+        Burning = 234,
+        Shocked = 235,
         LightningStrike = 236,
         MirrorImage = 237,//NOT CODED
         IceRain = 238,
         FrostBite = 239,
         Asteroid = 240,
-        FireBounce = 241,
-        Storm = 242,//NOT CODED
-        Tornado = 243,//NOT CODED
+        Storm = 241,//NOT CODED
+        Tornado = 242,//NOT CODED
 
         Heal = 300,
         SpiritSword = 301,
@@ -661,7 +660,7 @@ namespace Library
         LifeSteal = 320,
         ImprovedExplosiveTalisman = 321,
         AugmentPoisonDust = 322,
-        Scarecrow = 323,//NOT CODED
+        CursedDoll = 323,
         ThunderKick = 324,
         SoulResonance = 325,//NOT CODED
         Parasite = 326,
@@ -682,9 +681,9 @@ namespace Library
         AugmentNeutralize = 341,
         DarkSoulPrison = 342,
         Mindfulness = 343,//NOT CODED
-        AugmentCelestialLight = 344,//NOT CODED
-        CorpseExploder = 345,//NOT CODED
-        SummonDead = 346,//NOT CODED
+        AugmentCelestialLight = 344,
+        CorpseExploder = 345,
+        Necromancy = 346,//NOT CODED
 
         WillowDance = 401,
         VineTreeDance = 402,
@@ -1042,7 +1041,9 @@ namespace Library
         MonasteryMon5,
         MonasteryMon6,
 
-        CastleFlag
+        CastleFlag,
+
+        Tornado
     }
 
     
@@ -1076,6 +1077,7 @@ namespace Library
 
         SummonSkeleton,
         SummonShinsu,
+        CursedDoll,
 
         ThunderBolt,
         FrostBiteEnd,
@@ -1094,16 +1096,14 @@ namespace Library
         Green = 1 << 0,         //Tick damage, displays green
         Red = 1 << 1,           //Increases damage received by 20%, displays red
         Slow = 1 << 2,          //Reduces attackTime, actionTime, 100ms per value, displays blue
-        Paralysis = 1 << 3,     //Stops movement, physical and magical attacks (all races), displays grey
+        Paralysis = 1 << 3,     //Stops movement, physical and magic attacks (all races), displays grey
         WraithGrip = 1 << 4,    //Stops shoulderdash, movement, displays effect (needs code revisiting)
         HellFire = 1 << 5,      //Tick damage, no colour
-        Silenced = 1 << 6,      //Stops movement (all races), physical and magical attacks (monster), displays effect
+        Silenced = 1 << 6,      //Stops movement (all races), physical and magic attacks (monster), displays effect
         Abyss = 1 << 7,         //Reduces monster viewrange, displays blinding effect (player)
         Parasite = 1 << 8,      //Tick damage, explosion, ignores transparency (monster), displays effect
         Neutralize = 1 << 9,    //Stops attackTime, slows actionTime, displays effect (needs code revisiting)
-        Burn = 1 << 10,         //Todo, tick damage, displays orange?
-        Freeze = 1 << 11,       //Todo, slows movement and attacks, displays blue?
-        Shock = 1 << 12,        //Todo, stops movement and attacks, display lightblue?
+        Burn = 1 << 10,         //Tick damage, displays effect
     }
 
     public enum SpellEffect
@@ -1136,6 +1136,7 @@ namespace Library
         SuperiorMagicShieldStruck,
         ElementalHurricane,
         FrostBite,
+        Burn,
 
         CelestialLight,
         CelestialLightStruck,
@@ -1521,11 +1522,12 @@ namespace Library
         JinSkeleton = 2,
         Shinsu = 3,
         InfernalSoldier = 4,
-        Scarecrow = 5,
+        CursedDoll = 5,
 
         SummonPuppet = 6,
 
         MirrorImage = 7,
+        Tornado = 8,
 
         CastleObjective = 10,
 
@@ -2014,6 +2016,8 @@ namespace Library
         NeutralizeEnd,
 
         DarkSoulPrison,
+
+        CorpseExploderEnd,
 
         PoisonousCloudStart,
 

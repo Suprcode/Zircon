@@ -57,7 +57,7 @@ namespace Server.Models.Magics
             var artOfShadows = GetAugmentedSkill(MagicType.ArtOfShadows);
 
             Stats darkstoneStats = new();
-            if (elementalPuppet != null && Player.Level >= elementalPuppet.Info.NeedLevel1)
+            if (elementalPuppet != null)
             {
                 if (Player.Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
                     darkstoneStats = Player.Equipment[(int)EquipmentSlot.Amulet].Info.Stats;
@@ -68,7 +68,7 @@ namespace Server.Models.Magics
             }
 
             int range = 1;
-            if (artOfShadows != null && Player.Level >= artOfShadows.Info.NeedLevel1)
+            if (artOfShadows != null)
             {
                 count += artOfShadows.GetPower();
                 range = 3;
@@ -129,7 +129,7 @@ namespace Server.Models.Magics
             var pledgeofBlood = GetAugmentedSkill(MagicType.PledgeOfBlood);
 
             int value = 0;
-            if (pledgeofBlood != null && Player.Level >= pledgeofBlood.Info.NeedLevel1)
+            if (pledgeofBlood != null)
             {
                 value = pledgeofBlood.GetPower();
                 Player.LevelMagic(pledgeofBlood);
@@ -149,7 +149,7 @@ namespace Server.Models.Magics
             {
                 var ghostWalk = GetAugmentedSkill(MagicType.GhostWalk);
 
-                if (ghostWalk == null || Player.Level < ghostWalk.Info.NeedLevel1) return;
+                if (ghostWalk == null) return;
 
                 int rate = (ghostWalk.Level + 1) * 3;
 

@@ -2,7 +2,9 @@
 using Server.DBModels;
 using Server.Envir;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
 {
@@ -62,6 +64,27 @@ namespace Server.Models.Magics
             power += Magic.GetPower() + Player.GetSC() / 2;
 
             return power;
+        }
+
+        public void Explode(MapObject target)
+        {
+            var cells = CurrentMap.GetCells(CurrentLocation, 0, 1);
+
+            foreach (var cell in cells)
+            {
+                if (cell?.Objects == null) continue;
+
+                for (int j = cell.Objects.Count - 1; j >= 0; j--)
+                {
+                    if (j >= cell.Objects.Count) continue;
+                    MapObject ob = cell.Objects[j];
+                    if (!Player.CanAttackTarget(ob)) continue;
+
+                    Player.MagicAttack(new List<MagicType> { MagicType.Parasite }, target, true);
+                }
+            }
+
+            target.Broadcast(new S.ObjectEffect { ObjectID = target.ObjectID, Effect = Effect.ParasiteExplode });
         }
     }
 }

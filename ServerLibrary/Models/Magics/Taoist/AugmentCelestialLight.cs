@@ -11,9 +11,7 @@ namespace Server.Models.Magics
 
         public AugmentCelestialLight(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO - Additional recovery
-            //Icon - 462
-            //Just provide this ability at level 4 Celestial Light??
+
         }
     }
 }

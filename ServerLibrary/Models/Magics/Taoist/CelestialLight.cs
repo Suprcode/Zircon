@@ -51,10 +51,21 @@ namespace Server.Models.Magics
         {
             if (Player.Buffs.Any(x => x.Type == BuffType.CelestialLight)) return;
 
+            var augmentCelestialLight = GetAugmentedSkill(MagicType.AugmentCelestialLight);
+            var hasAugmentCelestialLight = augmentCelestialLight != null && Magic.Level >= 3;
+
             Stats buffStats = new Stats
             {
-                [Stat.CelestialLight] = (Magic.Level + 1) * 10,
+                [Stat.CelestialLight] = (Magic.Level + 1) * (hasAugmentCelestialLight ? 12 : 10),
             };
+
+            if (hasAugmentCelestialLight)
+            {
+                buffStats[Stat.SCPercent] = 2 + augmentCelestialLight.Level * 2;
+                buffStats[Stat.MagicDefencePercent] = 2 + augmentCelestialLight.Level * 2;
+
+                Player.LevelMagic(augmentCelestialLight);
+            }
 
             Player.BuffAdd(BuffType.CelestialLight, TimeSpan.FromSeconds(Magic.GetPower()), buffStats, true, false, TimeSpan.Zero);
 

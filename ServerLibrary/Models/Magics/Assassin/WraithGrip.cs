@@ -64,7 +64,7 @@ namespace Server.Models.Magics
 
             UserMagic touchOfTheDeparted = GetAugmentedSkill(MagicType.TouchOfTheDeparted);
 
-            if (touchOfTheDeparted != null && Player.Level < touchOfTheDeparted.Info.NeedLevel1)
+            if (touchOfTheDeparted != null)
             {
                 touchOfTheDeparted = null;
             }

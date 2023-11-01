@@ -37,7 +37,7 @@ namespace Server.Models.Magics
 
             var greaterPoisonDust = GetAugmentedSkill(MagicType.AugmentPoisonDust);
 
-            if (greaterPoisonDust != null && SEnvir.Now > greaterPoisonDust.Cooldown && Player.Level >= greaterPoisonDust.Info.NeedLevel1)
+            if (greaterPoisonDust != null && SEnvir.Now > greaterPoisonDust.Cooldown)
             {
                 var power = greaterPoisonDust.GetPower() + 1;
                 var possibleTargets = Player.GetTargets(CurrentMap, location, 3);

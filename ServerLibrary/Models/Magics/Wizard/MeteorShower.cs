@@ -16,6 +16,30 @@ namespace Server.Models.Magics
 
         }
 
+        public override int GetBurn(int burn, Stats stats = null)
+        {
+            var burning = GetAugmentedSkill(MagicType.Burning);
+
+            if (burning != null)
+            {
+                return burning.GetPower();
+            }
+
+            return base.GetBurn(burn, stats);
+        }
+
+        public override int GetBurnLevel(int burnLevel, Stats stats = null)
+        {
+            var burning = GetAugmentedSkill(MagicType.Burning);
+
+            if (burning != null)
+            {
+                return burning.Level + 1;
+            }
+
+            return base.GetBurnLevel(burnLevel, stats);
+        }
+
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             var response = new MagicCast
