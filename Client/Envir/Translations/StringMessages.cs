@@ -31,6 +31,7 @@ namespace Client.Envir.Translations
         public abstract string WeaponEnergyFlamingSword { get; set; }
         public abstract string WeaponEnergyDragonRise { get; set; }
         public abstract string WeaponEnergyBladeStorm { get; set; }
+        public abstract string WeaponEnergyDefensiveBlow { get; set; }
         public abstract string LevelIncreased { get; set; }
         public abstract string GainedExperience { get; set; }
         public abstract string LostExperience { get; set; }
@@ -54,8 +55,8 @@ namespace Client.Envir.Translations
         public abstract string DoNotUseThrusting { get; set; }
         public abstract string UseHalfMoon { get; set; }
         public abstract string DoNotUseHalfMoon { get; set; }
-        public abstract string UseDestructiveBlow { get; set; }
-        public abstract string DoNotUseDestructiveBlow { get; set; }
+        public abstract string UseDestructiveSurge { get; set; }
+        public abstract string DoNotUseDestructiveSurge { get; set; }
         public abstract string UseFlameSplash { get; set; }
         public abstract string DoNotUseFlameSplash { get; set; }
         public abstract string GameSceneAutoRunOn { get; set; }

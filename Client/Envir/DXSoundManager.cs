@@ -123,8 +123,9 @@ namespace Client.Envir
             [SoundIndex.FlamingSword] = new DXSound(SoundPath + @"M26-3.wav", SoundType.Magic),
             [SoundIndex.DragonRise] = new DXSound(SoundPath + @"M26-1.wav", SoundType.Magic),
             [SoundIndex.BladeStorm] = new DXSound(SoundPath + @"M34-1.wav", SoundType.Magic),
+            [SoundIndex.DefensiveBlow] = new DXSound(SoundPath + @"M140-1.wav", SoundType.Magic),
 
-            [SoundIndex.DestructiveBlow] = new DXSound(SoundPath + @"M103-1.wav", SoundType.Magic),
+            [SoundIndex.DestructiveSurge] = new DXSound(SoundPath + @"M103-1.wav", SoundType.Magic),
 
             [SoundIndex.DefianceStart] = new DXSound(SoundPath + @"M106-3.wav", SoundType.Magic),
 

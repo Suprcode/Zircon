@@ -1316,7 +1316,6 @@ namespace Server.Models
 
             List<BuffInfo> buffs = new List<BuffInfo>();
 
-
             if (CanHelpTarget(ob))
             {
                 result += ob.PoisonList.Count;
@@ -1333,6 +1332,7 @@ namespace Server.Models
                     switch (buff.Type)
                     {
                         case BuffType.MagicWeakness:
+                        case BuffType.DefensiveBlow:
                             buffs.Add(buff);
                             result++;
                             break;
@@ -1651,6 +1651,7 @@ namespace Server.Models
             BuffRemove(BuffType.Heal);
             BuffRemove(BuffType.DragonRepulse);
             BuffRemove(BuffType.ElementalHurricane);
+            BuffRemove(BuffType.DefensiveBlow);
 
             PoisonList.Clear();
 

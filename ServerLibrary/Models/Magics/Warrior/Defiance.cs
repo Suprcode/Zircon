@@ -52,6 +52,9 @@ namespace Server.Models.Magics
 
             var augmentDefiance = GetAugmentedSkill(MagicType.AugmentDefiance);
 
+            //TODO - BuffIcon 201
+            //Add as Separate buff??
+
             if (augmentDefiance != null)
             {
                 offence = Math.Max(0, 20 - Magic.Level * 5);

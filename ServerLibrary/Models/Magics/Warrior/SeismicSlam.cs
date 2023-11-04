@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -11,13 +12,6 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool IgnoreAccuracy => true;
-
-        public override bool HasSwiftBlade(bool primary)
-        {
-            return true;
-        }
-
-        public override bool HasSeismicSlam => true;
 
         public SeismicSlam(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -65,6 +59,33 @@ namespace Server.Models.Magics
                 power /= 2;
 
             return power;
+        }
+
+        public override void AttackComplete(MapObject target)
+        {
+            target.ApplyPoison(new Poison
+            {
+                Owner = Player,
+                Type = PoisonType.Paralysis,
+                TickFrequency = TimeSpan.FromSeconds(3),
+                TickCount = 1,
+            });
+
+            target.ApplyPoison(new Poison
+            {
+                Type = PoisonType.WraithGrip,
+                Owner = Player,
+                TickCount = 1,
+                TickFrequency = TimeSpan.FromMilliseconds(1500),
+            });
+
+            target.ApplyPoison(new Poison
+            {
+                Owner = Player,
+                Type = PoisonType.Silenced,
+                TickFrequency = TimeSpan.FromSeconds(5),
+                TickCount = 1,
+            });
         }
     }
 }

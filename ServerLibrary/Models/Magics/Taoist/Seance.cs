@@ -12,6 +12,8 @@ namespace Server.Models.Magics
         {
             //TODO
             //Depending on the talisman worn, one's abilities are strengthened and the effectiveness of martial arts of that attribute is increased.
+            //BuffIcon - 394
+            //MagicEx2 1580
         }
     }
 }

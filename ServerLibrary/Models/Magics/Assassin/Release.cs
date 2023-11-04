@@ -12,7 +12,8 @@ namespace Server.Models.Magics
 
         public Release(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            
+            //TODO
+            //BuffIcon - 165
         }
     }
 }

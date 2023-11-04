@@ -127,6 +127,7 @@ namespace Library
                 case MagicType.Slaying:
                 case MagicType.Thrusting:
                 case MagicType.FlamingSword:
+                case MagicType.DefensiveBlow:
                     animation = MirAnimation.Combat3;
                     break;
                 case MagicType.HalfMoon:

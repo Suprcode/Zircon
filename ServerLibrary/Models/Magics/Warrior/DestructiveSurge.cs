@@ -1,5 +1,6 @@
 ﻿using Library;
 using Server.DBModels;
+using System;
 using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
@@ -10,10 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
-        public override bool HasDestructiveSurge(bool primary)
-        {
-            return !primary;
-        }
+        public decimal DestructiveSurgeLifeSteal { get; private set; }
 
         public DestructiveSurge(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -87,6 +85,17 @@ namespace Server.Models.Magics
                 power = power * Magic.GetPower() / 100;
 
             return power;
+        }
+
+        public override decimal LifeSteal(bool primary, decimal lifestealAmount)
+        {
+            if (!primary)
+            {
+                lifestealAmount = Math.Min(lifestealAmount, 2000 - DestructiveSurgeLifeSteal);
+                DestructiveSurgeLifeSteal += lifestealAmount;
+            }
+
+            return lifestealAmount;
         }
     }
 }

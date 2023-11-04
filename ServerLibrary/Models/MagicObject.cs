@@ -1,7 +1,6 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
-using Server.Models.Magics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -52,19 +51,9 @@ namespace Server.Models
             return false;
         }
         public virtual bool HasLotus => false;
-        public virtual bool HasDestructiveSurge(bool primary)
-        {
-            return false;
-        }
-        public virtual bool HasBladeStorm => false;
-        public virtual bool HasDanceOfSallows => false;
-        public virtual bool HasMassacre => false;
-        public virtual bool HasSwiftBlade(bool primary)
-        {
-            return false;
-        }
-        public virtual bool HasSeismicSlam => false;
 
+        public virtual bool HasBladeStorm => false;
+        public virtual bool HasMassacre => false;
 
         public MagicObject(PlayerObject player, UserMagic magic) 
         {
@@ -88,11 +77,6 @@ namespace Server.Models
         }
 
         public virtual void MagicComplete(params object[] data)
-        {
-
-        }
-
-        public virtual void AttackLocations(List<MagicType> magics)
         {
 
         }
@@ -145,6 +129,34 @@ namespace Server.Models
         public virtual AttackCast AttackCast(MagicType attackType)
         {
             return new AttackCast();
+        }
+
+        public virtual void AttackLocations(List<MagicType> magics)
+        {
+
+        }
+
+        public virtual decimal LifeSteal(bool primary, decimal lifestealAmount)
+        {
+            return lifestealAmount;
+        }
+
+        public virtual void AttackComplete(MapObject target)
+        {
+        }
+
+        public virtual void AttackCompletePassive(MapObject target, List<MagicType> types)
+        {
+        }
+
+        public virtual void AttackCompleteSuccess(MapObject target)
+        {
+            Player.LevelMagic(Magic);
+
+            if (Player.Buffs.Any(x => x.Type == BuffType.Might) && Player.GetMagic(MagicType.Might, out MagicObject might))
+            {
+                Player.LevelMagic(might.Magic);
+            }
         }
 
         protected DateTime GetDelayFromDistance(int start, MapObject target)

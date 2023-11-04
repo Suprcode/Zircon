@@ -247,20 +247,20 @@ namespace Client.Models
             }
         }
         private bool _CanHalfMoon;
-        public bool CanDestructiveBlow
+        public bool CanDestructiveSurge
         {
-            get { return _CanDestructiveBlow; }
+            get { return _CanDestructiveSurge; }
             set
             {
-                if (_CanDestructiveBlow == value) return;
-                _CanDestructiveBlow = value;
+                if (_CanDestructiveSurge == value) return;
+                _CanDestructiveSurge = value;
 
-                GameScene.Game.ReceiveChat(CanDestructiveBlow ? CEnvir.Language.UseDestructiveBlow : CEnvir.Language.DoNotUseDestructiveBlow, MessageType.Hint);
+                GameScene.Game.ReceiveChat(CanDestructiveSurge ? CEnvir.Language.UseDestructiveSurge : CEnvir.Language.DoNotUseDestructiveSurge, MessageType.Hint);
             }
         }
-        private bool _CanDestructiveBlow;
+        private bool _CanDestructiveSurge;
 
-        public bool CanFlamingSword, CanDragonRise, CanBladeStorm;
+        public bool CanFlamingSword, CanDragonRise, CanBladeStorm, CanDefensiveBlow;
 
         public bool CanFlameSplash
         {
@@ -537,7 +537,7 @@ namespace Client.Models
                     }
 
 
-                    if (CanDestructiveBlow && (TargetObject != null || (GameScene.Game.MapControl.CanDestructiveBlow(action.Direction) &&
+                    if (CanDestructiveSurge && (TargetObject != null || (GameScene.Game.MapControl.CanDestructiveSurge(action.Direction) &&
                                                                         (GameScene.Game.MapControl.HasTarget(Functions.Move(CurrentLocation, action.Direction)) || attackMagic != MagicType.Thrusting))))
                     {
                         foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in Magics)
@@ -551,7 +551,7 @@ namespace Client.Models
                         }
                     }
 
-                    if (attackMagic == MagicType.None && CanFlameSplash && (TargetObject != null || GameScene.Game.MapControl.CanDestructiveBlow(action.Direction)))
+                    if (attackMagic == MagicType.None && CanFlameSplash && (TargetObject != null || GameScene.Game.MapControl.CanDestructiveSurge(action.Direction)))
                     {
                         foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in Magics)
                         {
@@ -564,7 +564,9 @@ namespace Client.Models
                         }
                     }
 
-                    if (CanBladeStorm)
+                    if (CanDefensiveBlow && GameScene.Game.MapControl.HasTarget(Functions.Move(CurrentLocation, action.Direction)))
+                        attackMagic = MagicType.DefensiveBlow;
+                    else if (CanBladeStorm)
                         attackMagic = MagicType.BladeStorm;
                     else if (CanDragonRise)
                         attackMagic = MagicType.DragonRise;

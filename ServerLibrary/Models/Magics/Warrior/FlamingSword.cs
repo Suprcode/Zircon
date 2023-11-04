@@ -1,7 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
-using System.Collections.Generic;
+using System;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
@@ -12,6 +12,9 @@ namespace Server.Models.Magics
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
 
+        public bool CanFlamingSword { get; private set; }
+        public DateTime FlamingSwordTime { get; private set; }
+
         public FlamingSword(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
@@ -19,14 +22,14 @@ namespace Server.Models.Magics
 
         public override void Process()
         {
-            if (Player.CanFlamingSword && SEnvir.Now >= Player.FlamingSwordTime)
+            if (CanFlamingSword && SEnvir.Now >= FlamingSwordTime)
             {
-                Player.CanFlamingSword = false;
-                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = Player.CanFlamingSword });
+                CanFlamingSword = false;
+                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = CanFlamingSword });
 
-                Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.ChargeExpire, Player.Magics[Type].Info.Name), MessageType.System);
+                Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
                 foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.ChargeExpire, Player.Magics[Type].Info.Name), MessageType.System);
+                    con.ReceiveChat(string.Format(con.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
             }
         }
 
@@ -38,7 +41,7 @@ namespace Server.Models.Magics
             Magic.Cooldown = SEnvir.Now.AddMilliseconds(Magic.Info.Delay);
             Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = Magic.Info.Delay });
 
-            if (Player.CanFlamingSword)
+            if (CanFlamingSword)
             {
                 Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.ChargeFail, Magic.Info.Name), MessageType.System);
 
@@ -47,9 +50,9 @@ namespace Server.Models.Magics
             }
             else
             {
-                Player.FlamingSwordTime = SEnvir.Now.AddSeconds(12);
-                Player.CanFlamingSword = true;
-                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = Player.CanFlamingSword });
+                FlamingSwordTime = SEnvir.Now.AddSeconds(12);
+                CanFlamingSword = true;
+                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = CanFlamingSword });
             }
 
             //Delay DragonRise
@@ -71,13 +74,13 @@ namespace Server.Models.Magics
         {
             var response = new AttackCast();
 
-            if (attackType != Type || !Player.CanFlamingSword)
+            if (attackType != Type || !CanFlamingSword)
                 return response;
 
             if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
-            Player.CanFlamingSword = false;
+            CanFlamingSword = false;
             Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
 
             response.Cast = true;

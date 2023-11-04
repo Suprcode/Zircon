@@ -175,6 +175,9 @@ namespace Client.Scenes.Views
                     case BuffType.LifeSteal:
                         icon.Index = 98;
                         break;
+                    case BuffType.DefensiveBlow:
+                        icon.Index = 157;
+                        break;
                     case BuffType.DarkConversion:
                         icon.Index = 166;
                         break;
@@ -216,7 +219,7 @@ namespace Client.Scenes.Views
                         icon.Index = 140;
                         break;
                     case BuffType.Invincibility:
-                        icon.Index = 143;
+                        icon.Index = 203;
                         break;
                     case BuffType.ElementalHurricane:
                         icon.Index = 98;
@@ -390,6 +393,9 @@ namespace Client.Scenes.Views
                     break;
                 case BuffType.SuperiorMagicShield:
                     text = $"Superior Magic Shield\n";
+                    break;
+                case BuffType.DefensiveBlow:
+                    text = $"Defensive Blow\n";
                     break;
                 case BuffType.MagicWeakness:
                     text = $"Magic Weakness\n\n" +

@@ -1,7 +1,7 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
+using System;
 using System.Collections.Generic;
 
 using S = Library.Network.ServerPackets;
@@ -13,6 +13,8 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public decimal FlameSplashLifeSteal { get; private set; }
+
         public override bool HasFlameSplash(bool primary)
         {
             return primary;
@@ -89,6 +91,14 @@ namespace Server.Models.Magics
                 power = power * Magic.GetPower() / 100;
 
             return power;
+        }
+
+        public override decimal LifeSteal(bool primary, decimal lifestealAmount)
+        {
+            lifestealAmount = Math.Min(lifestealAmount, 2000 - FlameSplashLifeSteal);
+            FlameSplashLifeSteal += lifestealAmount;
+
+            return lifestealAmount;
         }
     }
 }

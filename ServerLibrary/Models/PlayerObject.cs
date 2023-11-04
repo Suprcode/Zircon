@@ -106,7 +106,7 @@ namespace Server.Models
             set { Character.Direction = value; }
         }
 
-        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, FlamingSwordTime, DragonRiseTime, BladeStormTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime;
+        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime;
         public bool PacketWaiting;
 
         public bool CanPowerAttack, GameMaster, Observer;
@@ -166,8 +166,6 @@ namespace Server.Models
         public List<AutoPotionLink> AutoPotions = new List<AutoPotionLink>();
         public CellLinkInfo DelayItemUse;
         public decimal MaxExperience;
-
-        public bool CanFlamingSword, CanDragonRise, CanBladeStorm;
 
         public decimal SwiftBladeLifeSteal, FlameSplashLifeSteal, DestructiveSurgeLifeSteal;
 
@@ -323,34 +321,6 @@ namespace Server.Models
 
             foreach (MagicType type in MagicObjects.Keys)
                 MagicObjects[type].Process();
-
-            //if (CanFlamingSword && SEnvir.Now >= FlamingSwordTime)
-            //{
-            //    CanFlamingSword = false;
-            //    Enqueue(new S.MagicToggle { Magic = MagicType.FlamingSword, CanUse = CanFlamingSword });
-
-            //    Connection.ReceiveChat(string.Format(Connection.Language.ChargeExpire, Magics[MagicType.FlamingSword].Info.Name), MessageType.System);
-            //    foreach (SConnection con in Connection.Observers)
-            //        con.ReceiveChat(string.Format(con.Language.ChargeExpire, Magics[MagicType.FlamingSword].Info.Name), MessageType.System);
-            //}
-            //if (CanDragonRise && SEnvir.Now >= DragonRiseTime)
-            //{
-            //    CanDragonRise = false;
-            //    Enqueue(new S.MagicToggle { Magic = MagicType.DragonRise, CanUse = CanDragonRise });
-
-            //    Connection.ReceiveChat(string.Format(Connection.Language.ChargeExpire, Magics[MagicType.DragonRise].Info.Name), MessageType.System);
-            //    foreach (SConnection con in Connection.Observers)
-            //        con.ReceiveChat(string.Format(con.Language.ChargeExpire, Magics[MagicType.DragonRise].Info.Name), MessageType.System);
-            //}
-            //if (CanBladeStorm && SEnvir.Now >= BladeStormTime)
-            //{
-            //    CanBladeStorm = false; ;
-            //    Enqueue(new S.MagicToggle { Magic = MagicType.BladeStorm, CanUse = CanBladeStorm });
-
-            //    Connection.ReceiveChat(string.Format(Connection.Language.ChargeExpire, Magics[MagicType.BladeStorm].Info.Name), MessageType.System);
-            //    foreach (SConnection con in Connection.Observers)
-            //        con.ReceiveChat(string.Format(con.Language.ChargeExpire, Magics[MagicType.BladeStorm].Info.Name), MessageType.System);
-            //}
 
             if (Dead && SEnvir.Now >= RevivalTime)
                 TownRevive();
@@ -13464,10 +13434,9 @@ namespace Server.Models
 
             int power = GetDC();
             int karmaDamage = 0;
-            bool ignoreAccuracy = false, hasFlameSplash = false, hasLotus = false, hasDestructiveSurge = false;
-            bool hasBladeStorm = false, hasDanceOfSallows = false;
+            bool ignoreAccuracy = false, hasFlameSplash = false, hasLotus = false;
+            bool hasBladeStorm = false;
             bool hasMassacre = false;
-            bool hasSwiftBlade = false, hasSeismicSlam = false;
 
             foreach (MagicType type in types)
             {
@@ -13476,13 +13445,9 @@ namespace Server.Models
                 if (magicObject.IgnoreAccuracy) ignoreAccuracy = true;
                 if (magicObject.HasLotus) hasLotus = true;
                 if (magicObject.HasBladeStorm) hasBladeStorm = true;
-                if (magicObject.HasDanceOfSallows) hasDanceOfSallows = true;
                 if (magicObject.HasMassacre) hasMassacre = true;
-                if (magicObject.HasSwiftBlade(primary)) hasSwiftBlade = true;
-                if (magicObject.HasSeismicSlam) hasSeismicSlam = true;
 
                 if (magicObject.HasFlameSplash(primary)) hasFlameSplash = true;
-                if (magicObject.HasDestructiveSurge(primary)) hasDestructiveSurge = true;
             }
 
             int accuracy = Stats[Stat.Accuracy];
@@ -13592,52 +13557,14 @@ namespace Server.Models
             CheckBrown(ob);
 
             DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon, SEnvir.Random.Next(2) + 1);
-            if (hasDanceOfSallows && ob.Level < Level)
-            {
-                if (MagicObjects.TryGetValue(MagicType.DanceOfSwallow, out MagicObject magicObject))
-                {
-                    ob.ApplyPoison(new Poison
-                    {
-                        Type = PoisonType.Silenced,
-                        TickCount = 1,
-                        Owner = this,
-                        TickFrequency = TimeSpan.FromSeconds(magicObject.Magic.GetPower() + 1),
-                    });
 
-                    ob.ApplyPoison(new Poison
-                    {
-                        Owner = this,
-                        Type = PoisonType.Paralysis,
-                        TickFrequency = TimeSpan.FromSeconds(1),
-                        TickCount = 1,
-                    });
-                }
-            }
-
-            if (Buffs.Any(x => x.Type == BuffType.Might) && Magics.TryGetValue(MagicType.Might, out UserMagic magic))
-            {
-                LevelMagic(magic);
-            }
-
-            //todo - move in to magicObject - LifeSteal method
             decimal lifestealAmount = damage * Stats[Stat.LifeSteal] / 100M;
 
-            if (hasSwiftBlade)
+            foreach (MagicType type in types)
             {
-                lifestealAmount = Math.Min(lifestealAmount, 2000 - SwiftBladeLifeSteal);
-                SwiftBladeLifeSteal += lifestealAmount;
-            }
+                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-            if (hasFlameSplash)
-            {
-                lifestealAmount = Math.Min(lifestealAmount, 750 - FlameSplashLifeSteal);
-                FlameSplashLifeSteal += lifestealAmount;
-            }
-
-            if (hasDestructiveSurge)
-            {
-                lifestealAmount = Math.Min(lifestealAmount, 750 - DestructiveSurgeLifeSteal);
-                DestructiveSurgeLifeSteal += lifestealAmount;
+                lifestealAmount = magicObject.LifeSteal(primary, lifestealAmount);
             }
 
             if (primary || Class == MirClass.Warrior || hasFlameSplash)
@@ -13655,7 +13582,7 @@ namespace Server.Models
             if (ob.Level >= 250)
                 psnRate = Globals.PhysicalPoisonRate * 10;
 
-            if (SEnvir.Random.Next(psnRate) < Stats[Stat.ParalysisChance] || hasSeismicSlam)
+            if (SEnvir.Random.Next(psnRate) < Stats[Stat.ParalysisChance])
             {
                 ob.ApplyPoison(new Poison
                 {
@@ -13663,17 +13590,6 @@ namespace Server.Models
                     Type = PoisonType.Paralysis,
                     TickFrequency = TimeSpan.FromSeconds(3),
                     TickCount = 1,
-                });
-            }
-
-            if (hasSeismicSlam)
-            {
-                ob.ApplyPoison(new Poison
-                {
-                    Type = PoisonType.WraithGrip,
-                    Owner = this,
-                    TickCount = 1,
-                    TickFrequency = TimeSpan.FromMilliseconds(1500),
                 });
             }
 
@@ -13689,7 +13605,7 @@ namespace Server.Models
                 });
             }
 
-            if (SEnvir.Random.Next(psnRate) < Stats[Stat.SilenceChance] || hasSeismicSlam)
+            if (SEnvir.Random.Next(psnRate) < Stats[Stat.SilenceChance])
             {
                 ob.ApplyPoison(new Poison
                 {
@@ -13704,35 +13620,13 @@ namespace Server.Models
             {
                 if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
 
-                LevelMagic(magicObject.Magic);
+                magicObject.AttackComplete(ob);
+                magicObject.AttackCompleteSuccess(ob);
             }
 
-            //Massacre
-            //TODO - move in to own class?
-            if (ob.Dead && ob.Race == ObjectType.Monster && ob.CurrentHP < 0)
+            foreach (MagicType type in MagicObjects.Keys)
             {
-                if (Magics.TryGetValue(MagicType.Massacre, out magic) && Level >= magic.Info.NeedLevel1)
-                {
-                    types.Add(MagicType.Massacre);
-                }
-
-                if (magic != null)
-                {
-                    power = Math.Abs(ob.CurrentHP) * magic.GetPower() / 100;
-
-                    foreach (MapObject target in GetTargets(CurrentMap, ob.CurrentLocation, 2))
-                    {
-                        if (target.Race != ObjectType.Monster) continue;
-
-                        MonsterObject mob = (MonsterObject)target;
-
-                        if (mob.MonsterInfo.IsBoss) continue;
-
-                        var delay = SEnvir.Now.AddMilliseconds(600);
-
-                        ActionList.Add(new DelayedAction(delay, ActionType.DelayAttack, target, types, false, power));
-                    }
-                }
+                MagicObjects[type].AttackCompletePassive(ob, types);
             }
         }
 
@@ -14395,9 +14289,13 @@ namespace Server.Models
 
         public override int Pushed(MirDirection direction, int distance)
         {
-            UserMagic magic;
-            if (Buffs.Any(x => x.Type == BuffType.Endurance) && Magics.TryGetValue(MagicType.Endurance, out magic))
-                LevelMagic(magic);
+            if (Buffs.Any(x => x.Type == BuffType.Endurance))
+            {
+                if (Magics.TryGetValue(MagicType.Endurance, out UserMagic magic))
+                    LevelMagic(magic);
+
+                return 0;
+            }
 
             RemoveMount();
 
@@ -14414,8 +14312,7 @@ namespace Server.Models
 
             if (Buffs.Any(x => x.Type == BuffType.Endurance))
             {
-                UserMagic magic;
-                if (Magics.TryGetValue(MagicType.Endurance, out magic))
+                if (Magics.TryGetValue(MagicType.Endurance, out UserMagic magic))
                     LevelMagic(magic);
 
                 return false;

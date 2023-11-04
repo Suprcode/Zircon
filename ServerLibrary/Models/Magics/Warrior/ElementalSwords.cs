@@ -12,7 +12,7 @@ namespace Server.Models.Magics
         {
             //TODO - Throws swords at the enemy. Number of swords increases with training.
             //Icon - 502
-            //MagicEx7 - 800 ??
+            //Anim???
         }
     }
 }

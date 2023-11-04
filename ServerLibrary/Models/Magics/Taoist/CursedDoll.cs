@@ -15,7 +15,7 @@ namespace Server.Models.Magics
 
         public CursedDoll(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Find correct anims
         }
 
 

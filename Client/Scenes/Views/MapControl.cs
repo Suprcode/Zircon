@@ -1205,7 +1205,7 @@ namespace Client.Scenes.Views
             return false;
         }
 
-        public bool CanDestructiveBlow(MirDirection direction)
+        public bool CanDestructiveSurge(MirDirection direction)
         {
             for (int i = 1; i < 8; i++)
                 if (HasTarget(Functions.Move(MapObject.User.CurrentLocation, Functions.ShiftDirection(direction, i)))) return true;

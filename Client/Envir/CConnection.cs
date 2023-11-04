@@ -1687,7 +1687,7 @@ namespace Client.Envir
                     GameScene.Game.User.CanHalfMoon = p.CanUse;
                     break;
                 case MagicType.DestructiveSurge:
-                    GameScene.Game.User.CanDestructiveBlow = p.CanUse;
+                    GameScene.Game.User.CanDestructiveSurge = p.CanUse;
                     break;
                 case MagicType.FlamingSword:
                     GameScene.Game.User.CanFlamingSword = p.CanUse;
@@ -1706,6 +1706,11 @@ namespace Client.Envir
                     break;
                 case MagicType.FlameSplash:
                     GameScene.Game.User.CanFlameSplash = p.CanUse;
+                    break;
+                case MagicType.DefensiveBlow:
+                    GameScene.Game.User.CanDefensiveBlow = p.CanUse;
+                    if (p.CanUse)
+                        GameScene.Game.ReceiveChat(CEnvir.Language.WeaponEnergyDefensiveBlow, MessageType.Hint);
                     break;
                 case MagicType.FullBloom:
                 case MagicType.WhiteLotus:

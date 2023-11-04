@@ -252,7 +252,8 @@ namespace Library
         Might = 101,
         Endurance = 102,
         ReflectDamage = 103,
-        Invincibility= 104,
+        Invincibility = 104,
+        DefensiveBlow = 105,
 
         //Wiz
         Renounce = 200,
@@ -577,8 +578,8 @@ namespace Library
         Might = 113,
         SwiftBlade = 114,
         Assault = 115,
-        Endurance = 116,//TODO
-        ReflectDamage = 117,//TODO
+        Endurance = 116,
+        ReflectDamage = 117,
         Fetter = 118,
         AugmentDestructiveSurge = 119,
         AugmentDefiance = 120,
@@ -586,12 +587,12 @@ namespace Library
         AdvancedPotionMastery = 122,
         MassBeckon = 123,
         SeismicSlam = 124,
-        Invincibility = 125,//TODO
+        Invincibility = 125,
         CrushingWave = 126,
         DefensiveMastery = 127,
         PhysicalImmunity = 128,
         MagicImmunity = 129,
-        DefensiveBlow = 130,//NOT CODED
+        DefensiveBlow = 130,
         ElementalSwords = 131,//NOT CODED
 
         FireBall = 201,
@@ -707,7 +708,7 @@ namespace Library
         ElementalPuppet = 420,
         Rejuvenation = 421,
         Resolution = 422,//NOT CODED
-        ChangeOfSeasons = 423,//NOT CODED
+        ChangeOfSeasons = 423,//Removed From Official
         Release = 424,
         FlameSplash = 425,
         BloodyFlower = 426,
@@ -722,9 +723,22 @@ namespace Library
         Stealth = 435,//NOT CODED
         Evasion = 436,
         RagingWind = 437,
-        AdvancedBloodyFlower = 438,
-        Massacre = 439,
-        ArtOfShadows = 440,
+        Unused = 438,//UNUSED
+        Massacre = 439,//Custom
+        ArtOfShadows = 440,//Custom
+        FatalBlow = 441,//TODO
+        LastStand = 442,//TODO
+        Vitality = 443,//TODO
+        Chain = 444,//TODO
+        Concentration = 445,//TODO
+        DualWeaponSkills = 446,//TODO
+        Containment = 447,//TODO
+        Unknown = 448,//TODO
+        ChainOfFire = 449,//TODO
+        DragonBlood = 450,//TODO
+        DragonWave = 451,//TODO
+        MagicCombustion = 452,//TODO
+        BurningFire = 453,//TODO
 
         MonsterScortchedEarth = 501,
         MonsterIceStorm = 502,
@@ -1129,6 +1143,7 @@ namespace Library
     public enum MagicEffect
     {
         Assault,
+        DefensiveBlow,
 
         MagicShield,
         MagicShieldStruck,
@@ -1869,7 +1884,9 @@ namespace Library
 
         BladeStorm,
 
-        DestructiveBlow,
+        DefensiveBlow,
+
+        DestructiveSurge,
 
         DefianceStart,
 

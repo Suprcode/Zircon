@@ -1,5 +1,8 @@
 ﻿using Library;
 using Server.DBModels;
+using Server.Envir;
+using System;
+using System.Collections.Generic;
 
 namespace Server.Models.Magics
 {
@@ -12,6 +15,32 @@ namespace Server.Models.Magics
         public Massacre(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
+        }
+
+        public override void AttackCompletePassive(MapObject target, List<MagicType> types)
+        {
+            if (target.Dead && target.Race == ObjectType.Monster && target.CurrentHP < 0)
+            {
+                if (Player.Level >= Magic.Info.NeedLevel1)
+                {
+                    types.Add(MagicType.Massacre);
+
+                    var power = Math.Abs(target.CurrentHP) * Magic.GetPower() / 100;
+
+                    foreach (MapObject t in Player.GetTargets(CurrentMap, target.CurrentLocation, 2))
+                    {
+                        if (t.Race != ObjectType.Monster) continue;
+
+                        MonsterObject mob = (MonsterObject)t;
+
+                        if (mob.MonsterInfo.IsBoss) continue;
+
+                        var delay = SEnvir.Now.AddMilliseconds(600);
+
+                        ActionList.Add(new DelayedAction(delay, ActionType.DelayAttack, t, types, false, power));
+                    }
+                }
+            }
         }
     }
 }

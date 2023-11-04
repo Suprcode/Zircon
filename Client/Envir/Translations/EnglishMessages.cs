@@ -32,6 +32,7 @@ namespace Client.Envir.Translations
         public override string WeaponEnergyFlamingSword { get; set; } = "Energy builds up within your weapon, Flaming Sword is ready.";
         public override string WeaponEnergyDragonRise { get; set; } = "Energy builds up within your weapon, Dragon Rise is ready.";
         public override string WeaponEnergyBladeStorm { get; set; } = "Energy builds up within your weapon, Blade Storm is ready.";
+        public override string WeaponEnergyDefensiveBlow { get; set; } = "Energy builds up within your weapon, Defensive Blow is ready.";
         public override string LevelIncreased { get; set; } = "Level Increased";
         public override string GainedExperience { get; set; } = "Experience Gained {0:#,##0.#}";
         public override string LostExperience { get; set; } = "Experience Lost {0:#,##0.#}.";
@@ -54,8 +55,8 @@ namespace Client.Envir.Translations
         public override string DoNotUseThrusting { get; set; } = "Do not use Thrusting.";
         public override string UseHalfMoon { get; set; } = "Use Half Moon Strike.";
         public override string DoNotUseHalfMoon { get; set; } = "Do not use Half Moon Strike.";
-        public override string UseDestructiveBlow { get; set; } = "Use Destructive Blow.";
-        public override string DoNotUseDestructiveBlow { get; set; } = "Do not use Destructive Blow.";
+        public override string UseDestructiveSurge { get; set; } = "Use Destructive Blow.";
+        public override string DoNotUseDestructiveSurge { get; set; } = "Do not use Destructive Blow.";
         public override string UseFlameSplash { get; set; } = "Use Flame Splash.";
         public override string DoNotUseFlameSplash { get; set; } = "Do not use Flame Splash.";
         public override string GameSceneAutoRunOn { get; set; } = "[AutoRun: On]";

@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using Server.Envir.Commands.Command.Admin;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,7 +14,6 @@ namespace Server.Models.Magics
     public class DanceOfSwallow : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool HasDanceOfSallows => true;
 
         public DanceOfSwallow(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -215,6 +215,28 @@ namespace Server.Models.Magics
             ob.Broadcast(new S.ObjectEffect { ObjectID = ob.ObjectID, Effect = Effect.DanceOfSwallow });
 
             return power;
+        }
+
+        public override void AttackComplete(MapObject target)
+        {
+            if (target.Level < Player.Level)
+            {
+                target.ApplyPoison(new Poison
+                {
+                    Owner = Player,
+                    Type = PoisonType.Silenced,
+                    TickCount = 1,
+                    TickFrequency = TimeSpan.FromSeconds(Magic.GetPower() + 1)
+                });
+
+                target.ApplyPoison(new Poison
+                {
+                    Owner = Player,
+                    Type = PoisonType.Paralysis,
+                    TickCount = 1,
+                    TickFrequency = TimeSpan.FromSeconds(1)
+                });
+            }
         }
     }
 }

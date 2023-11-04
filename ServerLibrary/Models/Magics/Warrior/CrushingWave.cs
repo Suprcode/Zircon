@@ -16,11 +16,6 @@ namespace Server.Models.Magics
 
         }
 
-        public override bool HasSwiftBlade(bool primary)
-        {
-            return !primary;
-        }
-
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             var response = new MagicCast

@@ -489,6 +489,15 @@ namespace Client.Models
             {
                 EndMagicEffect(MagicEffect.FrostBite);
             }
+
+            if (VisibleBuffs.Contains(BuffType.DefensiveBlow))
+            {
+                CreateMagicEffect(MagicEffect.DefensiveBlow);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.DefensiveBlow);
+            }
         }
 
         public virtual void UpdateFrame()
@@ -2127,6 +2136,7 @@ namespace Client.Models
                                 {
                                     Blend = true,
                                     Target = attackTarget,
+                                    DrawType = DrawType.Floor
                                 });
 
                                 spell.Process();
@@ -2724,7 +2734,7 @@ namespace Client.Models
                                 Target = this,
                                 DrawColour = attackColour
                             });
-                            DXSoundManager.Play(SoundIndex.DestructiveBlow);
+                            DXSoundManager.Play(SoundIndex.DestructiveSurge);
                             break;
 
                         #endregion
@@ -2773,6 +2783,24 @@ namespace Client.Models
                             });
 
                             DXSoundManager.Play(SoundIndex.BladeStorm);
+                            break;
+
+                        #endregion
+
+                        #region Defensive Blow
+
+                        case MagicType.DefensiveBlow:
+                            Effects.Add(new MirEffect(800, 9, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 10, 50, Globals.FireColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                                Direction = action.Direction,
+                                DrawColour = attackColour,
+                                StartTime = CEnvir.Now.AddMilliseconds(200),
+                                DrawType = DrawType.Floor
+                            });
+
+                            DXSoundManager.Play(SoundIndex.DefensiveBlow);
                             break;
 
                         #endregion
@@ -2869,7 +2897,7 @@ namespace Client.Models
                         #region Invincibility
 
                         case MagicType.Invincibility:
-                            Effects.Add(new MirEffect(100, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 60, 60, Globals.NoneColour)
+                            Effects.Add(new MirEffect(400, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 60, 60, Globals.NoneColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -2901,7 +2929,7 @@ namespace Client.Models
                                 Blend = true,
                                 Target = this,
                             });
-                            DXSoundManager.Play(SoundIndex.DragonRise); //Same file as Beckon
+                            DXSoundManager.Play(SoundIndex.DragonRise);
                             break;
 
                         #endregion
@@ -2934,17 +2962,15 @@ namespace Client.Models
 
                         //Swift Blade
 
-                        //Assault
-
                         #region Endurance
 
                         case MagicType.Endurance:
-                        //    Effects.Add(new MirEffect(400, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 60, 60, Globals.FireColour)
-                        //    {
-                        //        Blend = true,
-                        //        Target = this,
-                        //        //Direction = action.Direction,
-                        //    }); 
+                            Effects.Add(new MirEffect(190, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 60, 60, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            DXSoundManager.Play(SoundIndex.DefianceStart);
                             break;
 
                         #endregion
@@ -4032,6 +4058,7 @@ namespace Client.Models
                             {
                                 Blend = true,
                                 MapTarget = CurrentLocation,
+                                DrawType = DrawType.Floor
                             });
                             DXSoundManager.Play(SoundIndex.EvasionStart);
                             break;
@@ -4045,6 +4072,7 @@ namespace Client.Models
                             {
                                 Blend = true,
                                 MapTarget = CurrentLocation,
+                                DrawType = DrawType.Floor
                             });
                             DXSoundManager.Play(SoundIndex.RagingWindStart);
                             break;
@@ -4764,6 +4792,23 @@ namespace Client.Models
                             Target = this,
                             Loop = true,
                             Direction = Direction,
+                        });
+                    }
+                    break;
+                case MagicEffect.DefensiveBlow:
+                    {
+                        effects.Add(new MirEffect(880, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            StartTime = CEnvir.Now.AddMilliseconds(300)
+                        });
+                        effects.Add(new MirEffect(886, 1, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            StartTime = CEnvir.Now.AddMilliseconds(800)
                         });
                     }
                     break;

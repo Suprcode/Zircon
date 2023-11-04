@@ -839,7 +839,7 @@ namespace Client.Models
                                     Speed = 100,
                                 });
                                 spell.Process();
-                                DXSoundManager.Play(SoundIndex.DestructiveBlow);
+                                DXSoundManager.Play(SoundIndex.DestructiveSurge);
 
                                 Effects.Add(new MirEffect(300, 9, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx6, 10, 35, Globals.LightningColour)
                                 {

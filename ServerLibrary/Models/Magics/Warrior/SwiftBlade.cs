@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -12,6 +13,7 @@ namespace Server.Models.Magics
         protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
         public override bool IgnoreAccuracy => true;
+        public decimal SwiftBladeLifeSteal { get; private set; }
 
         public SwiftBlade(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -57,6 +59,14 @@ namespace Server.Models.Magics
 
                 Player.Attack(cell.Objects[i], new List<MagicType> { Type }, true, 0);
             }
+        }
+
+        public override decimal LifeSteal(bool primary, decimal lifestealAmount)
+        {
+            lifestealAmount = Math.Min(lifestealAmount, 2000 - SwiftBladeLifeSteal);
+            SwiftBladeLifeSteal += lifestealAmount;
+
+            return lifestealAmount;
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

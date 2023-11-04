@@ -2837,12 +2837,13 @@ namespace Client.Scenes
                 case MagicType.DestructiveSurge:
                     if (CEnvir.Now < ToggleTime) return;
                     ToggleTime = CEnvir.Now.AddSeconds(1);
-                    CEnvir.Enqueue(new C.MagicToggle { Magic = magic.Info.Magic, CanUse = !User.CanDestructiveBlow });
+                    CEnvir.Enqueue(new C.MagicToggle { Magic = magic.Info.Magic, CanUse = !User.CanDestructiveSurge });
                     return;
                 case MagicType.FlamingSword:
                 case MagicType.DragonRise:
                 case MagicType.BladeStorm:
                 case MagicType.DemonicRecovery:
+                case MagicType.DefensiveBlow:
                     if (CEnvir.Now < magic.NextCast || magic.Cost > User.CurrentMP) return;
                     magic.NextCast = CEnvir.Now.AddSeconds(0.5D); //Act as an anti spam
                     CEnvir.Enqueue(new C.MagicToggle { Magic = magic.Info.Magic });
