@@ -261,6 +261,7 @@ namespace Library
         JudgementOfHeaven = 202,
         ElementalHurricane = 203,
         SuperiorMagicShield = 204,
+        FrostBite = 205,
 
         //Tao
         Heal = 300,
@@ -273,7 +274,7 @@ namespace Library
         CelestialLight = 307,
         Transparency = 308,
         LifeSteal = 309,
-        FrostBite = 310,
+        Spiritualism = 310,
 
         //Ass
         PoisonousCloud = 400,
@@ -665,7 +666,7 @@ namespace Library
         ThunderKick = 324,
         SoulResonance = 325,//NOT CODED
         Parasite = 326,
-        Seance = 327,//NOT CODED
+        Spiritualism = 327,
         AugmentExplosiveTalisman = 328,
         AugmentEvilSlayer = 329,
         AugmentPurification = 330,

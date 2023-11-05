@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Server.Models.Magics
 {
@@ -16,6 +17,24 @@ namespace Server.Models.Magics
             //If they die, you die
 
             //MagicEx7 - 500
+        }
+
+        public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
+        {
+            var response = new MagicCast
+            {
+                Ob = target
+            };
+
+            var realTargets = new HashSet<MapObject>();
+
+            if (Player.InGroup(target))
+                realTargets.Add(target);
+         
+            if (target == null)
+                response.Locations.Add(location);
+
+            return response;
         }
     }
 }

@@ -3085,6 +3085,11 @@ namespace Client.Scenes
 
                     target = MouseObject;
                     break;
+                case MagicType.SoulResonance:
+                    //if (MouseObject == null || MouseObject.Dead || MouseObject.Race != ObjectType.Player || !IsAlly(MouseObject.ObjectID)) return;
+
+                    target = MouseObject;
+                    break;
                 case MagicType.CursedDoll:
                     if (CanAttackTarget(MouseObject))
                         target = MouseObject;
@@ -3092,6 +3097,12 @@ namespace Client.Scenes
                 case MagicType.CorpseExploder:
                     if (MouseObject != null && MouseObject.Dead && (MouseObject.Race == ObjectType.Player || MouseObject.Race == ObjectType.Monster))
                         target = MouseObject;
+                    break;
+
+                case MagicType.Spiritualism:
+                    if (Equipment[(int)EquipmentSlot.Amulet] == null || Equipment[(int)EquipmentSlot.Amulet].Info.Shape != 0 || Equipment[(int)EquipmentSlot.Amulet].Count < 1) return;
+
+                    direction = MirDirection.Down;
                     break;
 
                 case MagicType.Defiance:

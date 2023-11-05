@@ -193,6 +193,9 @@ namespace Client.Scenes.Views
                     case BuffType.MagicWeakness:
                         icon.Index = 182;
                         break;
+                    case BuffType.Spiritualism:
+                        icon.Index = 202;
+                        break;
                     case BuffType.ItemBuff:
                         icon.Index = Globals.ItemInfoList.Binding.First(x => x.Index == buff.ItemIndex).BuffIcon;
                         break;
@@ -350,6 +353,9 @@ namespace Client.Scenes.Views
                     break;
                 case BuffType.LifeSteal:
                     text = $"Life Steal\n";
+                    break;
+                case BuffType.Spiritualism:
+                    text = $"Spiritualism\n";
                     break;
                 case BuffType.PoisonousCloud:
                     text = $"Poisonous Cloud\n";

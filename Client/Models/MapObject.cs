@@ -610,6 +610,7 @@ namespace Client.Models
         public virtual void SetAction(ObjectAction action)
         {
             MirEffect spell;
+            Color attackColour;
 
             switch (CurrentAction)
             {
@@ -631,35 +632,6 @@ namespace Client.Models
                     {
                         #region Warrior
 
-                        //Swordsmanship
-
-                        //Potion Mastery 
-
-                        //Slaying
-
-                        //Thrusting
-
-                        //Half Moon
-
-                        //Shoulder Dash
-
-                        //Flaming Sword
-
-                        //Dragon Rise
-
-                        //Blade Storm
-
-                        //Destructive Surge
-
-                        //Interchange
-
-                        //Defiance
-
-                        //Beckon
-
-                        //Might
-
-
                         #region Swift Blade
 
                         case MagicType.SwiftBlade:
@@ -678,14 +650,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-                        //Assault
-
-                        //Endurance
-
-                        //Reflect Damage
-
-                        //Fetter
 
                         #endregion
 
@@ -2659,14 +2623,14 @@ namespace Client.Models
                     MagicType = (MagicType)action.Extra[1];
                     AttackElement = (Element)action.Extra[2];
 
-                    Color attackColour = Functions.GetElementColour(AttackElement);
+                    attackColour = Functions.GetElementColour(AttackElement);
                     
                     switch (MagicType)
                     {
                         case MagicType.None:
                             if (Race != ObjectType.Player || CurrentAnimation != MirAnimation.Combat3 || AttackElement == Element.None) break;
 
-                            Effects.Add(new MirEffect(1090, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 25, attackColour) //Element style?
+                            Effects.Add(new MirEffect(1090, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 25, attackColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -2696,7 +2660,7 @@ namespace Client.Models
                         #region Thrusting
 
                         case MagicType.Thrusting:
-                            Effects.Add(new MirEffect(0, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 20, 70, attackColour) //Element style?
+                            Effects.Add(new MirEffect(0, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 20, 70, attackColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -2728,7 +2692,7 @@ namespace Client.Models
 
                         case MagicType.DestructiveSurge:
 
-                            Effects.Add(new MirEffect(1420, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 20, 70, attackColour) //Element style?
+                            Effects.Add(new MirEffect(1420, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 20, 70, attackColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -2742,7 +2706,7 @@ namespace Client.Models
                         #region Flaming Sword
 
                         case MagicType.FlamingSword:
-                            Effects.Add(new MirEffect(1470, 6, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 10, 50, Globals.FireColour) //Element style?
+                            Effects.Add(new MirEffect(1470, 6, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 10, 50, Globals.FireColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -2774,7 +2738,7 @@ namespace Client.Models
                         #region Blade Storm
 
                         case MagicType.BladeStorm:
-                            Effects.Add(new MirEffect(1780, 10, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx, 20, 70, attackColour) //Element style?
+                            Effects.Add(new MirEffect(1780, 10, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx, 20, 70, attackColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -2808,7 +2772,7 @@ namespace Client.Models
                         #region Flame Splash
 
                         case MagicType.FlameSplash:
-                            Effects.Add(new MirEffect(900, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 20, 70, Globals.FireColour) //Element style?
+                            Effects.Add(new MirEffect(900, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 20, 70, Globals.FireColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -2843,30 +2807,13 @@ namespace Client.Models
                     MagicCast = (bool)action.Extra[3];
                     AttackElement = (Element)action.Extra[4];
 
+                    attackColour = Functions.GetElementColour(AttackElement);
+
                     Point location;
                     switch (MagicType)
                     {
 
                         #region Warrior
-                        //Swordsmanship
-
-                        //Potion Mastery 
-
-                        //Slaying
-
-                        //Thrusting
-
-                        //Half Moon
-
-                        //Shoulder Dash
-
-                        //Flaming Sword
-
-                        //Dragon Rise
-
-                        //Blade Storm
-
-                        //Destructive Surge
 
                         #region Interchange
 
@@ -3500,8 +3447,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Spirit Sword
-
                         #region Poison Dust
 
                         case MagicType.PoisonDust:
@@ -3794,8 +3739,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Greater Poison Dust -> Poison Dust
-
                         #region Cursed Doll
 
                         case MagicType.CursedDoll:
@@ -3877,6 +3820,28 @@ namespace Client.Models
 
                         #endregion
 
+                        #region Spiritualism
+
+                        case MagicType.Spiritualism:
+                            {
+                                if (MapObject.User == this)
+                                {
+                                    var attackElement = Functions.GetAffinityElement(GameScene.Game.Equipment[(int)EquipmentSlot.Amulet].Info.Stats);
+
+                                    attackColour = Functions.GetElementColour(attackElement);
+                                }
+
+                                Effects.Add(new MirEffect(1580, 11, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 60, 60, attackColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                    DrawColour = attackColour
+                                });
+                                DXSoundManager.Play(SoundIndex.DefianceStart);
+                            }
+                            break;
+
+                        #endregion
 
                         #endregion
 

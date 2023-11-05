@@ -216,6 +216,7 @@ namespace Library
                 case MagicType.ImprovedExplosiveTalisman:
                 case MagicType.Neutralize:
                 case MagicType.CorpseExploder:
+                case MagicType.SoulResonance:
                     return MirAnimation.Combat1;
 
                 case MagicType.Interchange:
@@ -301,6 +302,7 @@ namespace Library
                 case MagicType.Fetter:
                 case MagicType.Endurance:
                 case MagicType.Invincibility:
+                case MagicType.Spiritualism:
                     return MirAnimation.Combat15;
 
                 case MagicType.SwiftBlade:

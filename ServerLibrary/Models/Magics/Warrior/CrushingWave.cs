@@ -13,7 +13,7 @@ namespace Server.Models.Magics
 
         public CrushingWave(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Make slower projectile, has charge up. MagicEx6 - 0
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

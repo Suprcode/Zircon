@@ -492,33 +492,6 @@ namespace Library
         public Element GetAffinityElement()
         {
             return Functions.GetAffinityElement(this);
-
-            //List<Element> elements = new List<Element>();
-
-            //if (this[Stat.FireAffinity] > 0)
-            //    elements.Add(Element.Fire);
-
-            //if (this[Stat.IceAffinity] > 0)
-            //    elements.Add(Element.Ice);
-
-            //if (this[Stat.LightningAffinity] > 0)
-            //    elements.Add(Element.Lightning);
-
-            //if (this[Stat.WindAffinity] > 0)
-            //    elements.Add(Element.Wind);
-
-            //if (this[Stat.HolyAffinity] > 0)
-            //    elements.Add(Element.Holy);
-
-            //if (this[Stat.DarkAffinity] > 0)
-            //    elements.Add(Element.Dark);
-
-            //if (this[Stat.PhantomAffinity] > 0)
-            //    elements.Add(Element.Phantom);
-
-            //if (elements.Count == 0) return Element.None;
-
-            //return elements[Globals.Random.Next(elements.Count)];
         }
     }
 

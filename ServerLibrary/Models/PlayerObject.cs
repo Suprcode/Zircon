@@ -7545,6 +7545,7 @@ namespace Server.Models
 
             return true;
         }
+
         public bool UseAmulet(int count, int shape)
         {
             UserItem amulet = Equipment[(int)EquipmentSlot.Amulet];
@@ -7560,8 +7561,6 @@ namespace Server.Models
             });
 
 
-
-
             if (amulet.Count != 0) return true;
 
             RemoveItem(amulet);
@@ -7573,6 +7572,7 @@ namespace Server.Models
 
             return true;
         }
+
         public bool UseAmulet(int count, int shape, out Stats stats)
         {
             stats = null;
@@ -13210,6 +13210,8 @@ namespace Server.Models
             List<uint> targets = new List<uint>();
             List<Point> locations = new List<Point>();
 
+            var element = magicObject.GetElement(Element.None);
+
             var castObject = magicObject.MagicCast(ob, p.Location, p.Direction);
 
             if (castObject.Return)
@@ -13255,8 +13257,6 @@ namespace Server.Models
                 slow = TimeSpan.FromMilliseconds(poison.Value * 100);
                 ActionTime += slow;
             }
-
-            var element = magicObject.GetElement(Element.None);
 
             Broadcast(new S.ObjectMagic
             {

@@ -836,7 +836,7 @@ namespace Client.Models
                                     Blend = true,
                                     Has16Directions = false,
                                     MapTarget = Functions.Move(CurrentLocation, Direction, Globals.MagicRange),
-                                    Speed = 100,
+                                    //Speed = 100,
                                 });
                                 spell.Process();
                                 DXSoundManager.Play(SoundIndex.DestructiveSurge);
