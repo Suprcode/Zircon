@@ -51,52 +51,60 @@ namespace Server.Models.Magics
 
             Stats buffStats = new()
             {
-                [Stat.MaxSC] = 5 + Magic.GetPower()
+                [Stat.MaxAC] = 5 + Magic.Level,
+                [Stat.MaxMR] = 5 + Magic.Level
             };
 
             if (stats[Stat.FireAffinity] > 0)
             {
-                buffStats[Stat.FireAttack] = 5 + Magic.GetPower();
-                buffStats[Stat.MaxSC] = 0;
+                buffStats[Stat.FireResistance] = 5 + Magic.Level;
+                buffStats[Stat.MaxAC] = 0;
+                buffStats[Stat.MaxMR] = 0;
             }
 
             if (stats[Stat.IceAffinity] > 0)
             {
-                buffStats[Stat.IceAttack] = 5 + Magic.GetPower();
-                buffStats[Stat.MaxSC] = 0;
+                buffStats[Stat.IceResistance] = 5 + Magic.Level;
+                buffStats[Stat.MaxAC] = 0;
+                buffStats[Stat.MaxMR] = 0;
             }
 
             if (stats[Stat.LightningAffinity] > 0)
             {
-                buffStats[Stat.LightningAttack] = 5 + Magic.GetPower();
-                buffStats[Stat.MaxSC] = 0;
+                buffStats[Stat.LightningResistance] = 5 + Magic.Level;
+                buffStats[Stat.MaxAC] = 0;
+                buffStats[Stat.MaxMR] = 0;
             }
 
             if (stats[Stat.WindAffinity] > 0)
             {
-                buffStats[Stat.WindAttack] = 5 + Magic.GetPower();
-                buffStats[Stat.MaxSC] = 0;
+                buffStats[Stat.WindResistance] = 5 + Magic.Level;
+                buffStats[Stat.MaxAC] = 0;
+                buffStats[Stat.MaxMR] = 0;
             }
 
             if (stats[Stat.HolyAffinity] > 0)
             {
-                buffStats[Stat.HolyAttack] = 5 + Magic.GetPower();
-                buffStats[Stat.MaxSC] = 0;
+                buffStats[Stat.HolyResistance] = 5 + Magic.Level;
+                buffStats[Stat.MaxAC] = 0;
+                buffStats[Stat.MaxMR] = 0;
             }
 
             if (stats[Stat.DarkAffinity] > 0)
             {
-                buffStats[Stat.DarkAttack] = 5 + Magic.GetPower();
-                buffStats[Stat.MaxSC] = 0;
+                buffStats[Stat.DarkResistance] = 5 + Magic.Level;
+                buffStats[Stat.MaxAC] = 0;
+                buffStats[Stat.MaxMR] = 0;
             }
 
             if (stats[Stat.PhantomAffinity] > 0)
             {
-                buffStats[Stat.PhantomAttack] = 5 + Magic.GetPower();
-                buffStats[Stat.MaxSC] = 0;
+                buffStats[Stat.PhantomResistance] = 5 + Magic.Level;
+                buffStats[Stat.MaxAC] = 0;
+                buffStats[Stat.MaxMR] = 0;
             }
 
-            TimeSpan duration = TimeSpan.FromSeconds(60 + Magic.Level * 30);
+            TimeSpan duration = TimeSpan.FromSeconds(Magic.GetPower() + Player.GetSC() * 2);
 
             Player.BuffAdd(BuffType.Spiritualism, duration, buffStats, false, false, TimeSpan.Zero);
 

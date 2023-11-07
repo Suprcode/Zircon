@@ -11,6 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public override bool ToggleSkill => true;
 
         public bool CanDefensiveBlow { get; private set; }
         public DateTime DefensiveBlowTime {  get; private set; }
@@ -84,6 +85,8 @@ namespace Server.Models.Magics
             };
 
             target.BuffAdd(BuffType.DefensiveBlow, TimeSpan.FromSeconds(10), stats, true, false, TimeSpan.Zero);
+
+            base.AttackComplete(target);
         }
     }
 }

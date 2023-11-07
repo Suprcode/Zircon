@@ -2,7 +2,6 @@
 using Server.DBModels;
 using Server.Envir;
 using System;
-
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
@@ -12,6 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public override bool ToggleSkill => true;
 
         public bool CanBladeStorm { get; private set; }
         public DateTime BladeStormTime {  get; private set; }

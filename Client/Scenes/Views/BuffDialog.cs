@@ -169,6 +169,9 @@ namespace Client.Scenes.Views
                     case BuffType.CelestialLight:
                         icon.Index = 142;
                         break;
+                    case BuffType.SoulResonance:
+                        icon.Index = 149;
+                        break;
                     case BuffType.Transparency:
                         icon.Index = 160;
                         break;
@@ -403,6 +406,9 @@ namespace Client.Scenes.Views
                 case BuffType.DefensiveBlow:
                     text = $"Defensive Blow\n";
                     break;
+                case BuffType.SoulResonance:
+                    text = $"Soul Resonance\n";
+                    break;
                 case BuffType.MagicWeakness:
                     text = $"Magic Weakness\n\n" +
                            $"Your Magic Resistance has been greatly reduced.\n";
@@ -461,8 +467,6 @@ namespace Client.Scenes.Views
             }
 
             Hint = Icons.Count > 0 ? null : "Buff Area";
-
-
         }
         #endregion
 

@@ -3512,6 +3512,7 @@ namespace Server.Envir
 
             return null;
         }
+
         public static CharacterInfo GetCharacter(int index)
         {
             for (int i = 0; i < CharacterInfoList.Count; i++)

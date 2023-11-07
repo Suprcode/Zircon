@@ -3024,6 +3024,9 @@ namespace Client.Scenes
 
                     CEnvir.Enqueue(new C.Magic { Action = MirAction.Spell, Type = magic.Info.Magic, Target = target.ObjectID });
                     return;
+
+                case MagicType.ElementalSwords:
+
                 case MagicType.FireBall:
                 case MagicType.IceBolt:
                 case MagicType.LightningBall:
@@ -3046,6 +3049,7 @@ namespace Client.Scenes
                 case MagicType.ImprovedExplosiveTalisman:
                 case MagicType.Parasite:
                 case MagicType.Neutralize:
+                case MagicType.Mindfulness:
                     //Has Target
                     if (CanAttackTarget(MagicObject))
                         target = MagicObject;

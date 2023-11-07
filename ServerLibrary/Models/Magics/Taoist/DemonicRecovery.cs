@@ -1,8 +1,6 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
-using System.Collections.Generic;
 using System.Linq;
 using S = Library.Network.ServerPackets;
 
@@ -13,6 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AugmentedSkill => true;
+        public override bool ToggleSkill => true;
 
         public DemonicRecovery(PlayerObject player, UserMagic magic) : base(player, magic)
         {

@@ -11,6 +11,8 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public override bool ToggleSkill => true;
+
         public decimal DestructiveSurgeLifeSteal { get; private set; }
 
         public DestructiveSurge(PlayerObject player, UserMagic magic) : base(player, magic)

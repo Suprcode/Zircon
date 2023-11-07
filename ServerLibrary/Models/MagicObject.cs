@@ -4,14 +4,10 @@ using Server.Envir;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace Server.Models
 {
     //TODO - Send list to client of which magics are toggled, casted, targetted etc (allows removing of lots of client switches)
-    //TODO - Add MonsterObject methods
-    //TODO - Add client side version of MagicObject
-
     public abstract class MagicObject
     {
         public PlayerObject Player { get; }
@@ -23,15 +19,13 @@ namespace Server.Models
         public Point CurrentLocation => Player.CurrentLocation;
         public MirDirection Direction => Player.Direction;
 
-
         protected abstract Element Element { get; }
         public virtual bool UpdateCombatTime => true;
         public virtual bool PassiveSkill => false; //TODO
-
+        public virtual bool AugmentedSkill => false;
 
         //Magic variables
         public virtual bool MagicSkill => false; //TODO
-        public virtual bool AugmentedSkill => false;
         public virtual bool CanStruck => true;
         protected virtual int Slow => 0;
         protected virtual int SlowLevel => 0;
@@ -41,17 +35,15 @@ namespace Server.Models
         protected virtual int Burn => 0;
         protected virtual int BurnLevel => 0;
 
-
         //Attack variables
         public virtual bool AttackSkill => false;
-        public virtual bool ToggleSkill => false; //TODO
+        public virtual bool ToggleSkill => false;
         public virtual bool IgnoreAccuracy => false;
         public virtual bool HasFlameSplash(bool primary)
         {
             return false;
         }
         public virtual bool HasLotus => false;
-
         public virtual bool HasBladeStorm => false;
         public virtual bool HasMassacre => false;
 
@@ -141,22 +133,22 @@ namespace Server.Models
             return lifestealAmount;
         }
 
+        /// <summary>
+        /// Perform any magic actions after the Attack damage has been dealt to the target object
+        /// </summary>
+        /// <param name="target"></param>
         public virtual void AttackComplete(MapObject target)
         {
+            Player.LevelMagic(Magic);
         }
 
+        /// <summary>
+        /// Perform any magic actions after the Attack damage has been dealt, even if this magic has not been cast
+        /// </summary>
+        /// <param name="target">Attacked target</param>
+        /// <param name="types">List of magics used in attack</param>
         public virtual void AttackCompletePassive(MapObject target, List<MagicType> types)
         {
-        }
-
-        public virtual void AttackCompleteSuccess(MapObject target)
-        {
-            Player.LevelMagic(Magic);
-
-            if (Player.Buffs.Any(x => x.Type == BuffType.Might) && Player.GetMagic(MagicType.Might, out MagicObject might))
-            {
-                Player.LevelMagic(might.Magic);
-            }
         }
 
         protected DateTime GetDelayFromDistance(int start, MapObject target)
@@ -266,11 +258,16 @@ namespace Server.Models
         public virtual void MagicAttackSuccess(MapObject ob, int damageDealt)
         {
             Player.LevelMagic(Magic);
+        }
 
-            if (Player.Buffs.Any(x => x.Type == BuffType.Renounce) && Player.GetMagic(MagicType.Renounce, out MagicObject renounce))
-            {
-                Player.LevelMagic(renounce.Magic);
-            }
+        /// <summary>
+        /// Perform any magic actions after the MagicAttack damage has been dealt, even if this magic has not been cast
+        /// </summary>
+        /// <param name="ob">Attacked target</param>
+        /// <param name="types">List of magics used in attack</param>
+        public virtual void MagicAttackSuccessPassive(MapObject ob, List<MagicType> types)
+        {
+
         }
     }
 

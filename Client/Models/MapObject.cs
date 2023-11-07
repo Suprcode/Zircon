@@ -651,6 +651,49 @@ namespace Client.Models
 
                         #endregion
 
+                        #region Elemental Swords
+
+                        case MagicType.ElementalSwords:
+                            foreach (Point point in MagicLocations)
+                            {
+                                Effects.Add(spell = new MirProjectile(100, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 0, 0, Globals.NoneColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                });
+                                spell.Process();
+                            }
+
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                Effects.Add(spell = new MirProjectile(100, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 0, 0, Globals.NoneColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Explode = true
+                                });
+
+                                spell.CompleteAction = () =>
+                                {
+                                    attackTarget.Effects.Add(spell = new MirEffect(280, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 20, 50, Globals.NoneColour)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget,
+                                    });
+                                    spell.Process();
+
+                                    //DXSoundManager.Play(SoundIndex.ElementalSwordsEnd);
+                                };
+                                spell.Process();
+                            }
+
+                            //if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
+                            //    DXSoundManager.Play(SoundIndex.ElementalSwordsEnd);
+
+                            break;
+
+                        #endregion
+
                         #endregion
 
                         #region Wizard
@@ -852,8 +895,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-                        //Teleportation
 
                         #region AdamantineFireBall & MeteorShower & FireBounce
 
@@ -1145,8 +1186,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Fire Wall
-
                         #region Expel Undead
 
                         case MagicType.ExpelUndead:
@@ -1164,10 +1203,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
-                        //Geo Manipulation
-
-                        //Magic Shield
 
                         #region Fire Storm
 
@@ -1376,7 +1411,6 @@ namespace Client.Models
                                 {
                                     MapTarget = point,
                                     Skip = 0,
-                                    Explode = true,
                                     Blend = true,
                                     StartTime = CEnvir.Now.AddMilliseconds(delay)
                                 });
@@ -1701,13 +1735,13 @@ namespace Client.Models
                                     };
                                     spell.Process();
 
-                                    DXSoundManager.Play(SoundIndex.BloodLustTravel);
+                                    DXSoundManager.Play(SoundIndex.BloodLustEnd);
                                 };
                                 spell.Process();
                             }
 
                             if (MagicLocations.Count > 0)
-                                DXSoundManager.Play(SoundIndex.BloodLustEnd);
+                                DXSoundManager.Play(SoundIndex.BloodLustTravel);
 
                             break;
 
@@ -2012,8 +2046,7 @@ namespace Client.Models
                                 Effects.Add(spell = new MirProjectile(300, 4, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 35, 35, Globals.FireColour, CurrentLocation)
                                 {
                                     Blend = true,
-                                    Target = attackTarget,
-                                    Explode = true
+                                    Target = attackTarget
                                 });
 
                                 spell.CompleteAction = () =>
@@ -2033,6 +2066,93 @@ namespace Client.Models
                             if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
                                 DXSoundManager.Play(SoundIndex.ExplosiveTalismanTravel);
 
+                            break;
+
+                        #endregion
+
+                        #region Mindfulness
+
+                        case MagicType.Mindfulness:
+                            foreach (Point point in MagicLocations)
+                            {
+                                Effects.Add(spell = new MirProjectile(1210, 10, TimeSpan.FromMilliseconds(70), LibraryFile.MagicEx3, 35, 35, Globals.HolyColour, CurrentLocation, null)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                    Has16Directions = false
+                                });
+                                spell.Process();
+                            }
+
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                Effects.Add(spell = new MirProjectile(1210, 10, TimeSpan.FromMilliseconds(70), LibraryFile.MagicEx3, 35, 35, Globals.HolyColour, CurrentLocation, null)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Has16Directions = false
+                                });
+
+                                spell.CompleteAction += () =>
+                                {
+                                    attackTarget.Effects.Add(spell = new MirEffect(1300, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 10, 35, Globals.FireColour)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget,
+                                    });
+                                    spell.Process();
+
+                                    DXSoundManager.Play(SoundIndex.FireBallEnd);
+                                };
+
+                                spell.Process();
+                            }
+
+                            if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
+                                DXSoundManager.Play(SoundIndex.HolyStrikeTravel);
+                            break;
+
+                        #endregion
+
+                        #region Soul Resonance
+
+                        case MagicType.SoulResonance:
+                            foreach (Point point in MagicLocations)
+                            {
+                                Effects.Add(spell = new MirProjectile(500, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 35, 35, Globals.NoneColour, CurrentLocation, null)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                });
+                                spell.Process();
+                            }
+
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                Effects.Add(spell = new MirProjectile(500, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 35, 35, Globals.NoneColour, CurrentLocation, null)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Has16Directions = true,
+                                });
+
+                                spell.CompleteAction += () =>
+                                {
+                                    attackTarget.Effects.Add(spell = new MirEffect(670, 9, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 10, 35, Globals.NoneColour)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget,
+                                    });
+                                    spell.Process();
+
+                                    //DXSoundManager.Play(SoundIndex.FireBallEnd);
+                                };
+
+                                spell.Process();
+                            }
+
+                            //if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
+                            //    DXSoundManager.Play(SoundIndex.FireBallTravel);
                             break;
 
                         #endregion
@@ -3839,6 +3959,20 @@ namespace Client.Models
                                 });
                                 DXSoundManager.Play(SoundIndex.DefianceStart);
                             }
+                            break;
+
+                        #endregion
+
+                        #region Mindfulness
+
+                        case MagicType.Mindfulness:
+                            Effects.Add(spell = new MirEffect(1190, 8, TimeSpan.FromMilliseconds(70), LibraryFile.MagicEx3, 10, 35, Globals.HolyColour)
+                            {
+                                Blend = true,
+                                Target = this
+                            });
+
+                            //DXSoundManager.Play(SoundIndex.HolyStrikeStart);
                             break;
 
                         #endregion

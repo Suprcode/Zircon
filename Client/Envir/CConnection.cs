@@ -1373,6 +1373,15 @@ namespace Client.Envir
 
                         DXSoundManager.Play(SoundIndex.TeleportIn);
                         break;
+                    case Effect.ThunderBolt:
+                        ob.Effects.Add(new MirEffect(1450, 3, TimeSpan.FromMilliseconds(150), LibraryFile.Magic, 150, 50, Globals.LightningColour)
+                        {
+                            Blend = true,
+                            Target = ob
+                        });
+
+                        DXSoundManager.Play(SoundIndex.LightningStrikeEnd);
+                        break;
                     case Effect.FullBloom:
                         ob.Effects.Add(new MirEffect(1700, 4, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 30, 60, Color.White)
                         {
@@ -1464,22 +1473,8 @@ namespace Client.Envir
                             BlendRate = 0.6F
                         });
                         break;
-                    #region Thunder Bolt & Thunder Strike
-
-                    case Effect.ThunderBolt:
-
-                        ob.Effects.Add(new MirEffect(1450, 3, TimeSpan.FromMilliseconds(150), LibraryFile.Magic, 150, 50, Globals.LightningColour)
-                        {
-                            Blend = true,
-                            Target = ob
-                        });
-
-                        DXSoundManager.Play(SoundIndex.LightningStrikeEnd);
-                        break;
-
-                    #endregion
                     case Effect.DanceOfSwallow:
-                        ob.Effects.Add(new MirEffect(1300, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 20, 70, Globals.NoneColour) //Element style?
+                        ob.Effects.Add(new MirEffect(1300, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 20, 70, Globals.NoneColour)
                         {
                             Blend = true,
                             Target = ob,
@@ -1488,7 +1483,7 @@ namespace Client.Envir
                         DXSoundManager.Play(SoundIndex.DanceOfSwallowsEnd);
                         break;
                     case Effect.FlashOfLight:
-                        ob.Effects.Add(new MirEffect(2400, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 20, 70, Globals.NoneColour) //Element style?
+                        ob.Effects.Add(new MirEffect(2400, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 20, 70, Globals.NoneColour)
                         {
                             Blend = true,
                             Target = ob,
@@ -1555,7 +1550,12 @@ namespace Client.Envir
                     DXSoundManager.Play(SoundIndex.SummonShinsuEnd);
                     break;
                 case Effect.CursedDoll:
-                    new MirEffect(2900, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 30, 60, Globals.NoneColour)
+                    //new MirEffect(2900, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 30, 60, Globals.NoneColour)
+                    //{
+                    //    MapTarget = p.Location,
+                    //    Blend = true,
+                    //};
+                    new MirEffect(0, 16, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 35, Globals.NoneColour)
                     {
                         MapTarget = p.Location,
                         Blend = true,

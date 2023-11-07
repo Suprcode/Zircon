@@ -3,6 +3,7 @@ using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
+using Server.Models.Magics;
 using Server.Models.Monsters;
 using System;
 using System.Collections.Generic;
@@ -172,7 +173,7 @@ namespace Server.Models
         public string FiltersClass;
         public string FiltersRarity;
         public string FiltersItemType;
-     
+
         public bool Fishing = false, FishFound = false;
         public int FishThrowQuality = 0, FishPointsCurrent = 0, FishAttempts = 0, FishFails = 0;
 
@@ -5021,6 +5022,9 @@ namespace Server.Models
             List<PlayerObject> oldGroup = GroupMembers;
             GroupMembers = null;
 
+            if (Buffs.Any(x => x.Type == BuffType.SoulResonance))
+                SoulResonance.Remove(this);
+
             foreach (PlayerObject ob in oldGroup)
             {
                 ob.Enqueue(p);
@@ -5032,6 +5036,7 @@ namespace Server.Models
             if (oldGroup.Count == 1) oldGroup[0].GroupLeave();
 
             GroupMembers = null;
+
             Enqueue(p);
             RemoveAllObjects();
             RefreshStats();
@@ -8339,7 +8344,6 @@ namespace Server.Models
             base.BuffRemove(info);
 
             Enqueue(new S.BuffRemove { Index = info.Index });
-
 
             switch (info.Type)
             {
@@ -12707,7 +12711,6 @@ namespace Server.Models
 
             Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
         }
-
         public void FishingCast(FishingState state, MirDirection castDirection, Point floatLocation, bool caught = false)
         {
             if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
@@ -13553,7 +13556,6 @@ namespace Server.Models
 
             if (damage <= 0) return;
 
-
             CheckBrown(ob);
 
             DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon, SEnvir.Random.Next(2) + 1);
@@ -13616,17 +13618,16 @@ namespace Server.Models
                 });
             }
 
-            foreach (MagicType type in types)
+            foreach (var type in MagicObjects.Keys)
             {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
+                var magicObject = MagicObjects[type];
 
-                magicObject.AttackComplete(ob);
-                magicObject.AttackCompleteSuccess(ob);
-            }
+                if (types.Contains(type))
+                {
+                    magicObject.AttackComplete(ob);
+                }
 
-            foreach (MagicType type in MagicObjects.Keys)
-            {
-                MagicObjects[type].AttackCompletePassive(ob, types);
+                magicObject.AttackCompletePassive(ob, types);
             }
         }
 
@@ -13789,11 +13790,16 @@ namespace Server.Models
                 });
             }
 
-            foreach (MagicType type in types)
+            foreach (var type in MagicObjects.Keys)
             {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
+                var magicObject = MagicObjects[type];
 
-                magicObject.MagicAttackSuccess(ob, damage);
+                if (types.Contains(type))
+                {
+                    magicObject.MagicAttackSuccess(ob, damage);
+                }
+
+                magicObject.MagicAttackSuccessPassive(ob, types);
             }
 
             switch (ob.Race)
@@ -14357,7 +14363,11 @@ namespace Server.Models
 
             for (int i = Pets.Count - 1; i >= 0; i--)
                 Pets[i].Die();
+
             Pets.Clear();
+
+            if (Buffs.Any(x => x.Type == BuffType.SoulResonance))
+                SoulResonance.Activate(this);
 
             #region Conquest Stats
 
@@ -14450,7 +14460,6 @@ namespace Server.Models
                 // Enqueue(new S.LevelChanged { Level = Level, Experience = Experience });
                 // Broadcast(new S.ObjectLeveled { ObjectID = ObjectID });
             }
-
 
             BuffInfo buff;
             int rate;
@@ -14559,6 +14568,7 @@ namespace Server.Models
             if (Stats[Stat.DeathDrops] > 0)
                 DeathDrop();
         }
+
         public void DeathDrop()
         {
             for (int i = 0; i < Inventory.Length; i++)

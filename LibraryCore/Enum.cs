@@ -275,6 +275,7 @@ namespace Library
         Transparency = 308,
         LifeSteal = 309,
         Spiritualism = 310,
+        SoulResonance = 311,
 
         //Ass
         PoisonousCloud = 400,
@@ -594,7 +595,7 @@ namespace Library
         PhysicalImmunity = 128,
         MagicImmunity = 129,
         DefensiveBlow = 130,
-        ElementalSwords = 131,//NOT CODED
+        ElementalSwords = 131,
 
         FireBall = 201,
         LightningBall = 202,
@@ -664,7 +665,7 @@ namespace Library
         AugmentPoisonDust = 322,
         CursedDoll = 323,
         ThunderKick = 324,
-        SoulResonance = 325,//NOT CODED
+        SoulResonance = 325,
         Parasite = 326,
         Spiritualism = 327,
         AugmentExplosiveTalisman = 328,
@@ -682,7 +683,7 @@ namespace Library
         Neutralize = 340,
         AugmentNeutralize = 341,
         DarkSoulPrison = 342,
-        Mindfulness = 343,//NOT CODED
+        Mindfulness = 343,
         AugmentCelestialLight = 344,
         CorpseExploder = 345,
         Necromancy = 346,//NOT CODED

@@ -14,6 +14,7 @@ namespace Server.Models.Magics
         {
             //TODO
             //Increases the accuracy of Karma and allows it to ignore your opponent's defense by a set amount. Accuracy and defense ignored increases with training.
+            //Buff skill
         }
     }
 }

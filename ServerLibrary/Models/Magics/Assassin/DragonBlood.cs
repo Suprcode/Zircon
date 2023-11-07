@@ -20,6 +20,7 @@ namespace Server.Models.Magics.Assassin
             // Inflicts poison on the target hit by your attacks, dealing a percentage of damage every 2 seconds for 10 seconds. Up to 4 times
             //Zee effects stack.You must wear a poison bottle for free use
             //Passive?
+            //MagicEx5 - 200
         }
     }
 }

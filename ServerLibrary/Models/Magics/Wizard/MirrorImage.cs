@@ -8,11 +8,11 @@ namespace Server.Models.Magics
     public class MirrorImage : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool UpdateCombatTime => false;
 
         public MirrorImage(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //MagicEx - 2020
+            //Magic - 2390?
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

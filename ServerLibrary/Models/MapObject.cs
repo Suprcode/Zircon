@@ -1684,8 +1684,6 @@ namespace Server.Models
 
                 ActionTime += Globals.TurnTime;
 
-
-
                 CurrentCell = cell.GetMovement(this); //Repel same direction across map ?
 
                 RemoveAllObjects();
@@ -1696,8 +1694,6 @@ namespace Server.Models
             }
             PreventSpellCheck = false;
 
-            /*    if (count > 0 && checkSpells)
-                    CheckSpellObjects();*/
             return count;
         }
 

@@ -237,6 +237,8 @@ namespace Server.Models.Magics
                     TickFrequency = TimeSpan.FromSeconds(1)
                 });
             }
+
+            base.AttackComplete(target);
         }
     }
 }

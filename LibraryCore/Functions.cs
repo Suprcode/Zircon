@@ -182,12 +182,14 @@ namespace Library
 
             return animation;
         }
+
         public static MirAnimation GetMagicAnimation(MagicType m)
         {
             switch (m)
             {
                 case MagicType.Beckon:
                 case MagicType.MassBeckon:
+                case MagicType.ElementalSwords:
 
                 case MagicType.FireBall:
                 case MagicType.IceBolt:
@@ -217,6 +219,7 @@ namespace Library
                 case MagicType.Neutralize:
                 case MagicType.CorpseExploder:
                 case MagicType.SoulResonance:
+                case MagicType.Mindfulness:
                     return MirAnimation.Combat1;
 
                 case MagicType.Interchange:
@@ -365,7 +368,6 @@ namespace Library
 
             return true;
         }
-
 
         public static Color Lerp(Color source, Color destination, float rate)
         {

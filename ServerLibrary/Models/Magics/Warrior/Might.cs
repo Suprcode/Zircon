@@ -2,6 +2,7 @@
 using Server.DBModels;
 using Server.Envir;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -54,6 +55,14 @@ namespace Server.Models.Magics
             Player.BuffAdd(BuffType.Might, duration, buffStats, false, false, TimeSpan.Zero);
 
             Player.LevelMagic(Magic);
+        }
+
+        public override void AttackCompletePassive(MapObject target, List<MagicType> types)
+        {
+            if (Player.Buffs.Any(x => x.Type == BuffType.Might))
+            {
+                Player.LevelMagic(Magic);
+            }
         }
     }
 }

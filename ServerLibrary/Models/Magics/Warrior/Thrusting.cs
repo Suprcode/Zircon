@@ -1,6 +1,5 @@
 ﻿using Library;
 using Server.DBModels;
-using Server.Envir;
 using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
@@ -11,6 +10,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public override bool ToggleSkill => true;
 
         public Thrusting(PlayerObject player, UserMagic magic) : base(player, magic)
         {

@@ -225,7 +225,6 @@ namespace Library
 
                     if (stat != Stat.MaxSC) return null;
 
-
                     return "Spell Power: " + string.Format(description.Format, this[description.MinStat], this[stat]);
                 case StatType.AttackElement:
 
@@ -251,7 +250,6 @@ namespace Library
                     }
                     return value;
                 case StatType.ElementResistance:
-
 
                     list = new List<Stat>();
                     foreach (KeyValuePair<Stat, int> pair in Values)
@@ -439,8 +437,8 @@ namespace Library
                 default:
                     return 0;
             }
-
         }
+
         public int GetAffinityValue(Element element)
         {
             switch (element)
@@ -462,8 +460,8 @@ namespace Library
                 default:
                     return 0;
             }
-
         }
+
         public int GetResistanceValue(Element element)
         {
             switch (element)
@@ -487,7 +485,6 @@ namespace Library
                 default:
                     return 0;
             }
-
         }
         public Element GetAffinityElement()
         {
@@ -844,6 +841,9 @@ namespace Library
 
         [StatDescription(Title = "Defensive Mastery", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent, UsageHint = "Used in Defensive Mastery Skill to give Luck on AC")]
         DefensiveMastery,
+
+        [StatDescription(Title = "You are soulbound to another player.", Mode = StatType.Text, UsageHint = "Used in Soul Resonance to tie together 2 players HP")]
+        SoulResonance,
 
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,

@@ -2,6 +2,7 @@
 using Server.DBModels;
 using Server.Envir;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using S = Library.Network.ServerPackets;
@@ -57,6 +58,14 @@ namespace Server.Models.Magics
             Player.Enqueue(new S.BuffChanged() { Index = buff.Index, Stats = new Stats(buff.Stats) });
 
             Player.LevelMagic(Magic);
+        }
+
+        public override void MagicAttackSuccessPassive(MapObject ob, List<MagicType> types)
+        {
+            if (Player.Buffs.Any(x => x.Type == BuffType.Renounce))
+            {
+               Player.LevelMagic(Magic);
+            }
         }
     }
 }

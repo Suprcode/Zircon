@@ -13,6 +13,8 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public override bool ToggleSkill => true;
+
         public decimal FlameSplashLifeSteal { get; private set; }
 
         public override bool HasFlameSplash(bool primary)
