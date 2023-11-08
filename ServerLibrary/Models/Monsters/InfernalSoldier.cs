@@ -1,23 +1,32 @@
 ﻿using Library;
 using Server.Envir;
-using System;
 using System.Collections.Generic;
+using System;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public class GiantLizard : MonsterObject
+    public sealed class InfernalSoldier : MonsterObject
     {
         public int AttackRange = 7;
         public DateTime RangeTime;
         public TimeSpan RangeCooldown;
         public bool CanPvPRange = true;
 
+        protected override void OnSpawned()
+        {
+            base.OnSpawned();
+
+            ActionTime = SEnvir.Now.AddSeconds(2);
+
+            Broadcast(new S.ObjectShow { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
+        }
+
         protected override bool InAttackRange()
         {
             if (Target.CurrentMap != CurrentMap) return false;
             if (Target.CurrentLocation == CurrentLocation) return false;
-            
+
             if (SEnvir.Now > RangeTime && (CanPvPRange || Target.Race != ObjectType.Player))
                 return Functions.InRange(CurrentLocation, Target.CurrentLocation, AttackRange);
 

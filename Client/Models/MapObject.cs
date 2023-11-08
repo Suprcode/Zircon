@@ -3610,10 +3610,11 @@ namespace Client.Models
 
                         #endregion
 
-                        #region Summon Skeleton & Summon Jin Skeleton
+                        #region Summon Skeleton & Summon Jin Skeleton & Summon Demonic Creature
 
                         case MagicType.SummonSkeleton:
                         case MagicType.SummonJinSkeleton:
+                        case MagicType.SummonDemonicCreature:
                             Effects.Add(new MirEffect(740, 10, TimeSpan.FromMilliseconds(60), LibraryFile.Magic, 10, 35, Globals.PhantomColour)
                             {
                                 Blend = true,

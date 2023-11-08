@@ -1347,7 +1347,11 @@ namespace Client.Models
                     break;
                 case MonsterImage.InfernalSoldier:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_26, out BodyLibrary);
-                    BodyShape = 2;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.InfernalSoldier)
+                        Frames[frame.Key] = frame.Value;
+
+                    BodyShape = 0;
                     break;
                 case MonsterImage.OmaWarlord:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_3, out BodyLibrary);
@@ -2282,6 +2286,7 @@ namespace Client.Models
                     if (CurrentAction == MirAction.Dead) break;
                     if (!CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx8, out library)) break;
                     library.DrawBlend(DrawFrame, x, y, Color.White, true, 1f, ImageType.Image);
+                    library.DrawBlend(DrawFrame + 1000, x, y, Color.White, true, 1f, ImageType.Image);
                     break;
                 case MonsterImage.JinamStoneGate:
                     if (CurrentAction == MirAction.Dead) break;

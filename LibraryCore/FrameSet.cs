@@ -44,6 +44,8 @@ namespace Library
 
             Tornado,
 
+            InfernalSoldier,
+
             CastleFlag;
 
 
@@ -732,6 +734,20 @@ namespace Library
                 [MirAnimation.Combat1] = new Frame(10, 9, 0, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.Hide] = new Frame(20, 7, 0, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.Die] = new Frame(20, 7, 0, TimeSpan.FromMilliseconds(100)),
+            };
+
+            InfernalSoldier = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(0, 4, 10, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Walking] = new Frame(80, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Pushed] = new Frame(80, 6, 10, TimeSpan.FromMilliseconds(50)) { Reversed = true, StaticSpeed = true },
+                [MirAnimation.Combat1] = new Frame(160, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat2] = new Frame(240, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Struck] = new Frame(320, 3, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Die] = new Frame(400, 9, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Dead] = new Frame(409, 1, 10, TimeSpan.FromMilliseconds(1000)),
+                [MirAnimation.Show] = new Frame(480, 9, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Hide] = new Frame(480, 9, 10, TimeSpan.FromMilliseconds(100)) { Reversed = true }
             };
 
             CastleFlag = new Dictionary<MirAnimation, Frame>

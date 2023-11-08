@@ -504,7 +504,7 @@ namespace Server.Models
                          }
                     };
                 case 103:
-                    return new GiantLizard { MonsterInfo = monsterInfo, AttackRange = 5 };
+                    return new InfernalSoldier { MonsterInfo = monsterInfo, AttackRange = 5 };
                 case 104:
                     return new FerociousIceTiger { MonsterInfo = monsterInfo };
                 case 105:
