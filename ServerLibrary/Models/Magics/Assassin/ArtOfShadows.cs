@@ -12,7 +12,7 @@ namespace Server.Models.Magics
 
         public ArtOfShadows(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //Custom Skill
         }
     }
 }

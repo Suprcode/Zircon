@@ -30,7 +30,7 @@ namespace Server.Models.Magics.Taoist
                 return response;
             }
 
-            if (!Functions.InRange(CurrentLocation, target.CurrentLocation, Globals.MagicRange) || !Player.UseAmulet(2, 0))
+            if (!Player.UseAmulet(2, 0))
             {
                 response.Cast = false;
                 return response;

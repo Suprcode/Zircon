@@ -4,12 +4,12 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public class WhiteBone : MonsterObject
+    public sealed class UndeadSoul : MonsterObject
     {
-        public WhiteBone()
+        public UndeadSoul()
         {
             Visible = false;
-            ActionList.Add(new DelayedAction(SEnvir.Now.AddSeconds(1), ActionType.Function));
+            ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(500), ActionType.Function));
             Direction = MirDirection.DownLeft;
         }
 
@@ -17,9 +17,9 @@ namespace Server.Models.Monsters
         {
             base.OnSpawned();
 
-            CurrentMap.Broadcast(CurrentLocation, new S.MapEffect { Location = CurrentLocation, Effect = Effect.SummonSkeleton });
+            CurrentMap.Broadcast(CurrentLocation, new S.MapEffect { Location = CurrentLocation, Effect = Effect.UndeadSoul });
 
-            ActionTime = SEnvir.Now.AddSeconds(1);
+            ActionTime = SEnvir.Now.AddMilliseconds(1000);
         }
 
         public override bool CanBeSeenBy(PlayerObject ob)
@@ -38,7 +38,7 @@ namespace Server.Models.Monsters
 
             base.ProcessAction(action);
         }
-        
+
         public void Appear()
         {
             Visible = true;

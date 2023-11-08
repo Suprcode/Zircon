@@ -14,7 +14,7 @@ namespace Server.Models.Magics
 
         public Massacre(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //Custom Skill
         }
 
         public override void AttackCompletePassive(MapObject target, List<MagicType> types)

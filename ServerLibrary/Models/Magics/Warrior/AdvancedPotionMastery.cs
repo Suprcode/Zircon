@@ -12,7 +12,7 @@ namespace Server.Models.Magics
 
         public AdvancedPotionMastery(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //Custom Skill
         }
     }
 }

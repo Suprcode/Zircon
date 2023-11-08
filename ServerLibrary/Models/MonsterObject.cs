@@ -609,6 +609,9 @@ namespace Server.Models
                     return new Doll { MonsterInfo = monsterInfo };
                 case 129:
                     return new Tornado { MonsterInfo = monsterInfo};
+                case 130:
+                    return new UndeadSoul() { MonsterInfo = monsterInfo };
+
                 case 1001:
                     return new CastleFlag { MonsterInfo = monsterInfo };
                 default:
@@ -734,18 +737,17 @@ namespace Server.Models
             {
                 Stats[Stat.MinDC] += Stats[Stat.MinDC] * PetOwner.Stats[Stat.PetDCPercent] / 100;
                 Stats[Stat.MaxDC] += Stats[Stat.MaxDC] * PetOwner.Stats[Stat.PetDCPercent] / 100;
-
-                foreach (UserMagic magic in Magics)
-                {
-                    switch (magic.Info.Magic)
-                    {
-                        case MagicType.DemonicRecovery:
-                            Stats[Stat.Health] += (magic.Level + 1) * 300;
-                            break;
-                    }
-                }
             }
 
+            foreach (UserMagic magic in Magics)
+            {
+                switch (magic.Info.Magic)
+                {
+                    case MagicType.DemonicRecovery:
+                        Stats[Stat.Health] += (magic.Level + 1) * 300;
+                        break;
+                }
+            }
 
             /*
             Stats[Stat.FireResistance] = Math.Min(5, Stats[Stat.FireResistance]);
@@ -809,6 +811,7 @@ namespace Server.Models
             if (CurrentHP > Stats[Stat.Health]) SetHP(Stats[Stat.Health]);
             if (CurrentMP > Stats[Stat.Mana]) SetMP(Stats[Stat.Mana]);
         }
+
         public virtual void ApplyBonusStats()
         {
 

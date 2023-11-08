@@ -1550,12 +1550,15 @@ namespace Client.Envir
                     DXSoundManager.Play(SoundIndex.SummonShinsuEnd);
                     break;
                 case Effect.CursedDoll:
-                    //new MirEffect(2900, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 30, 60, Globals.NoneColour)
-                    //{
-                    //    MapTarget = p.Location,
-                    //    Blend = true,
-                    //};
                     new MirEffect(0, 16, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 35, Globals.NoneColour)
+                    {
+                        MapTarget = p.Location,
+                        Blend = true,
+                    };
+                    DXSoundManager.Play(SoundIndex.SummonSkeletonEnd);
+                    break;
+                case Effect.UndeadSoul:
+                    new MirEffect(700, 13, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 30, 60, Globals.NoneColour)
                     {
                         MapTarget = p.Location,
                         Blend = true,

@@ -69,19 +69,13 @@ namespace Server.Models.Magics
             ob.SummonLevel = Magic.Level * 2;
             ob.TameTime = SEnvir.Now.AddDays(365);
 
-            var strengthOfFaith = GetAugmentedSkill(MagicType.StrengthOfFaith);
-
-            if (Player.Buffs.Any(x => x.Type == BuffType.StrengthOfFaith) && strengthOfFaith != null)
-            {
-                ob.Magics.Add(strengthOfFaith);
-            }
+            if (Player.Buffs.Any(x => x.Type == BuffType.StrengthOfFaith))
+                ob.Magics.Add(Player.Magics[MagicType.StrengthOfFaith]);
 
             var demonicRecovery = GetAugmentedSkill(MagicType.DemonicRecovery);
 
             if (demonicRecovery != null)
-            {
                 ob.Magics.Add(demonicRecovery);
-            }
 
             Cell cell = map.GetCell(location);
 

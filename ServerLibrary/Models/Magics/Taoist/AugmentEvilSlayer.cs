@@ -11,7 +11,7 @@ namespace Server.Models.Magics
 
         public AugmentEvilSlayer(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //Custom Skill
         }
     }
 }

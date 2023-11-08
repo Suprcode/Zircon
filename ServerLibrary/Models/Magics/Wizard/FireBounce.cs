@@ -14,7 +14,7 @@ namespace Server.Models.Magics
 
         public FireBounce(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //Custom Skill
         }
 
         public override int GetBurn(int burn, Stats stats = null)

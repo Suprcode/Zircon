@@ -3977,6 +3977,19 @@ namespace Client.Models
 
                         #endregion
 
+                        #region Summon Dead
+
+                        case MagicType.SummonDead:
+                            Effects.Add(new MirEffect(690, 10, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx3, 10, 35, Globals.FireColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            DXSoundManager.Play(SoundIndex.SummonSkeletonStart);
+                            break;
+
+                        #endregion
+
                         #endregion
 
                         #region Assassin

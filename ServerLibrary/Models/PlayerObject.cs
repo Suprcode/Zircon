@@ -1007,18 +1007,6 @@ namespace Server.Models
                 MagicObjects[key].RefreshToggle();
             }
 
-            //if (Character.CanThrusting && Magics.ContainsKey(MagicType.Thrusting))
-            //    Enqueue(new S.MagicToggle { Magic = MagicType.Thrusting, CanUse = true });
-
-            //if (Character.CanHalfMoon && Magics.ContainsKey(MagicType.HalfMoon))
-            //    Enqueue(new S.MagicToggle { Magic = MagicType.HalfMoon, CanUse = true });
-
-            //if (Character.CanDestructiveSurge && Magics.ContainsKey(MagicType.DestructiveSurge))
-            //    Enqueue(new S.MagicToggle { Magic = MagicType.DestructiveSurge, CanUse = true });
-
-            //if (Character.CanFlameSplash && Magics.ContainsKey(MagicType.FlameSplash))
-            //    Enqueue(new S.MagicToggle { Magic = MagicType.FlameSplash, CanUse = true });
-
             List<ClientRefineInfo> refines = new List<ClientRefineInfo>();
 
             foreach (RefineInfo info in Character.Refines)
@@ -8316,8 +8304,8 @@ namespace Server.Models
                 case BuffType.StrengthOfFaith:
                     foreach (MonsterObject pet in Pets)
                     {
-                        pet.RefreshStats();
                         pet.Magics.Add(Magics[MagicType.StrengthOfFaith]);
+                        pet.RefreshStats();
                     }
                     break;
                 case BuffType.DragonRepulse:

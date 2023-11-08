@@ -1,11 +1,9 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
-using Server.Envir.Commands.Command.Admin;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
@@ -238,7 +236,7 @@ namespace Server.Models.Magics
                 });
             }
 
-            base.AttackComplete(target);
+            Player.LevelMagic(Magic);
         }
     }
 }

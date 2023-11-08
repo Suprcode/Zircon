@@ -25,9 +25,6 @@ namespace Server.Models.Magics
                 Ob = target
             };
 
-            response.Targets.Add(target.ObjectID);
-            return response;
-
             if (!Player.InGroup(target) || target.Buffs.Any(x => x.Type == BuffType.SoulResonance))
             {
                 response.Ob = null;
@@ -54,7 +51,6 @@ namespace Server.Models.Magics
 
             Stats ownerStats = new()
             {
-                [Stat.HealthPercent] = Magic.GetPower(),
                 [Stat.SoulResonance] = target.Character.Index
             };
 

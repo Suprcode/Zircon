@@ -51,9 +51,7 @@ namespace Server.Models.Magics
             var location = (Point)data[1];
             var info = (MonsterInfo)data[2];
 
-            Server.Models.Monsters.Tornado ob = MonsterObject.GetMonster(info) as Server.Models.Monsters.Tornado;
-
-            if (ob == null) return;
+            if (MonsterObject.GetMonster(info) is not Monsters.Tornado ob) return;
 
             ob.VisibleTime = SEnvir.Now.AddSeconds(10);
 

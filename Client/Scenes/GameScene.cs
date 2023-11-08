@@ -3099,6 +3099,7 @@ namespace Client.Scenes
                         target = MouseObject;
                     break;
                 case MagicType.CorpseExploder:
+                case MagicType.SummonDead:
                     if (MouseObject != null && MouseObject.Dead && (MouseObject.Race == ObjectType.Player || MouseObject.Race == ObjectType.Monster))
                         target = MouseObject;
                     break;

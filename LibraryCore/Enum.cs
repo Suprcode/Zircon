@@ -627,7 +627,7 @@ namespace Library
         Tempest = 228,
         JudgementOfHeaven = 229,
         ThunderStrike = 230,
-        FireBounce = 231,//Custom
+        FireBounce = 231,
         ElementalHurricane = 232,
         SuperiorMagicShield = 233,
         Burning = 234,
@@ -686,7 +686,7 @@ namespace Library
         Mindfulness = 343,
         AugmentCelestialLight = 344,
         CorpseExploder = 345,
-        Necromancy = 346,//NOT CODED
+        SummonDead = 346,
 
         WillowDance = 401,
         VineTreeDance = 402,
@@ -726,8 +726,8 @@ namespace Library
         Evasion = 436,
         RagingWind = 437,
         Unused = 438,//UNUSED
-        Massacre = 439,//Custom
-        ArtOfShadows = 440,//Custom
+        Massacre = 439,
+        ArtOfShadows = 440,
         FatalBlow = 441,//TODO
         LastStand = 442,//TODO
         Vitality = 443,//TODO
@@ -1094,6 +1094,7 @@ namespace Library
         SummonSkeleton,
         SummonShinsu,
         CursedDoll,
+        UndeadSoul,
 
         ThunderBolt,
         FrostBiteEnd,
@@ -1545,6 +1546,8 @@ namespace Library
 
         MirrorImage = 7,
         Tornado = 8,
+
+        UndeadSoul = 9,
 
         CastleObjective = 10,
 

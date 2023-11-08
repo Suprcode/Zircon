@@ -17,6 +17,7 @@ namespace Server.Models.Magics
         {
 
         }
+
         public override void Toggle(bool canUse)
         {
             if (Magic.Cost > Player.CurrentMP || SEnvir.Now < Magic.Cooldown || Player.Dead || (Player.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Player.Poison & PoisonType.Silenced) == PoisonType.Silenced) return;

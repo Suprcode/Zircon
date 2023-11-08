@@ -11,7 +11,7 @@ namespace Server.Models.Magics
 
         public AugmentExplosiveTalisman(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //Custom Skill
         }
     }
 }

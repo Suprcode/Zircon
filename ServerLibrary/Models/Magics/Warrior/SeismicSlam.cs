@@ -87,7 +87,7 @@ namespace Server.Models.Magics
                 TickCount = 1,
             });
 
-            base.AttackComplete(target);
+            Player.LevelMagic(Magic);
         }
     }
 }

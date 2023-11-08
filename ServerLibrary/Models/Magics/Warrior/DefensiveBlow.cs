@@ -86,7 +86,7 @@ namespace Server.Models.Magics
 
             target.BuffAdd(BuffType.DefensiveBlow, TimeSpan.FromSeconds(10), stats, true, false, TimeSpan.Zero);
 
-            base.AttackComplete(target);
+            Player.LevelMagic(Magic);
         }
     }
 }

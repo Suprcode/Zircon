@@ -268,6 +268,7 @@ namespace Library
                 case MagicType.DemonExplosion:
                 case MagicType.CursedDoll:
                 case MagicType.DarkSoulPrison:
+                case MagicType.SummonDead:
                     return MirAnimation.Combat2;
 
                 case MagicType.ElementalHurricane:

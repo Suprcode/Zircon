@@ -74,6 +74,11 @@ namespace Server.Models.Magics
             if (Player.Buffs.Any(x => x.Type == BuffType.StrengthOfFaith))
                 ob.Magics.Add(Player.Magics[MagicType.StrengthOfFaith]);
 
+            var demonicRecovery = GetAugmentedSkill(MagicType.DemonicRecovery);
+
+            if (demonicRecovery != null)
+                ob.Magics.Add(demonicRecovery);
+
             Cell cell = map.GetCell(location);
 
             if (cell == null || cell.Movements != null || !ob.Spawn(map, location))
