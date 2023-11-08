@@ -132,6 +132,9 @@ namespace Client.Envir
             [SoundIndex.AssaultStart] = new DXSound(SoundPath + @"M109-1.wav", SoundType.Magic),
 
             [SoundIndex.SwiftBladeEnd] = new DXSound(SoundPath + @"M131-2.wav", SoundType.Magic),
+            
+            [SoundIndex.ElementalSwordStart] = new DXSound(SoundPath + @"cs252-1.wav", SoundType.Magic),
+            [SoundIndex.ElementalSwordEnd] = new DXSound(SoundPath + @"cs252-2.wav", SoundType.Magic),
 
             [SoundIndex.FireBallStart] = new DXSound(SoundPath + @"M1-1.wav", SoundType.Magic),
             [SoundIndex.FireBallTravel] = new DXSound(SoundPath + @"M1-2.wav", SoundType.Magic),
@@ -215,6 +218,8 @@ namespace Client.Envir
 
             [SoundIndex.ElementalHurricane] = new DXSound(SoundPath + @"m141-1.wav", SoundType.Magic),
 
+            [SoundIndex.TornadoStart] = new DXSound(SoundPath + @"cs255-1.wav", SoundType.Magic),
+
             [SoundIndex.HealStart] = new DXSound(SoundPath + @"M2-1.wav", SoundType.Magic),
             [SoundIndex.HealEnd] = new DXSound(SoundPath + @"M2-3.wav", SoundType.Magic),
 
@@ -273,6 +278,8 @@ namespace Client.Envir
             [SoundIndex.NeutralizeEnd] = new DXSound(SoundPath + @"m138-2.wav", SoundType.Magic),
 
             [SoundIndex.DarkSoulPrison] = new DXSound(SoundPath + @"m136-2.wav", SoundType.Magic),
+
+            [SoundIndex.SummonDeadEnd] = new DXSound(SoundPath + @"cs258-1.wav", SoundType.Magic),
 
             [SoundIndex.PoisonousCloudStart] = new DXSound(SoundPath + @"as_157-1.wav", SoundType.Magic),
 

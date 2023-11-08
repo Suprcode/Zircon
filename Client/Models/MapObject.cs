@@ -3545,7 +3545,7 @@ namespace Client.Models
                             //    Target = this,
                                 
                             //});
-                            DXSoundManager.Play(SoundIndex.BlowEarthStart);
+                            DXSoundManager.Play(SoundIndex.TornadoStart);
                             break;
 
                         #endregion
@@ -3862,12 +3862,12 @@ namespace Client.Models
                         #region Cursed Doll
 
                         case MagicType.CursedDoll:
-                            Effects.Add(new MirEffect(740, 10, TimeSpan.FromMilliseconds(60), LibraryFile.Magic, 10, 35, Globals.PhantomColour)
+                            Effects.Add(new MirEffect(690, 10, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx3, 10, 35, Globals.FireColour)
                             {
                                 Blend = true,
                                 Target = this,
                             });
-                            DXSoundManager.Play(SoundIndex.SummonShinsuStart);
+                            DXSoundManager.Play(SoundIndex.SummonSkeletonStart);
                             break;
 
                         #endregion
@@ -3980,7 +3980,7 @@ namespace Client.Models
                         #region Summon Dead
 
                         case MagicType.SummonDead:
-                            Effects.Add(new MirEffect(690, 10, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx3, 10, 35, Globals.FireColour)
+                            Effects.Add(new MirEffect(740, 10, TimeSpan.FromMilliseconds(60), LibraryFile.Magic, 10, 35, Globals.PhantomColour)
                             {
                                 Blend = true,
                                 Target = this,

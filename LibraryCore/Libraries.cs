@@ -291,7 +291,9 @@ namespace Library
             [LibraryFile.MagicEx7] = @"Data\MagicEx7.Zl",
             [LibraryFile.MagicEx8] = @"Data\MagicEx8.Zl",
             [LibraryFile.MagicEx9] = @"Data\MagicEx9.Zl",
-            
+            [LibraryFile.MagicEx10] = @"Data\MagicEx10.Zl",
+            [LibraryFile.MagicEx11] = @"Data\MagicEx11.Zl",
+
             [LibraryFile.Animationsc] = @"Data\Map Data\Animationsc.Zl",
             [LibraryFile.Cliffsc] = @"Data\Map Data\Cliffsc.Zl",
             [LibraryFile.Dungeonsc] = @"Data\Map Data\Dungeonsc.Zl",
@@ -700,7 +702,6 @@ namespace Library
         Mon_55,
         Mon_56,
 
-
         Magic, 
         MagicEx,
         MagicEx2,
@@ -711,6 +712,8 @@ namespace Library
         MagicEx7,
         MagicEx8,
         MagicEx9,
+        MagicEx10,
+        MagicEx11,
 
         Animationsc,
         Cliffsc,

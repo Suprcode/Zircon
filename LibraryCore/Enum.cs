@@ -1899,6 +1899,9 @@ namespace Library
 
         SwiftBladeEnd,
 
+        ElementalSwordStart,
+        ElementalSwordEnd,
+
         FireBallStart,
         FireBallTravel,
         FireBallEnd,
@@ -1980,6 +1983,8 @@ namespace Library
 
         ElementalHurricane,
 
+        TornadoStart,
+
         HealStart,
         HealEnd,
 
@@ -2040,6 +2045,8 @@ namespace Library
         DarkSoulPrison,
 
         CorpseExploderEnd,
+
+        SummonDeadEnd,
 
         PoisonousCloudStart,
 

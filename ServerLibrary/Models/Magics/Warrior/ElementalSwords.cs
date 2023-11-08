@@ -13,7 +13,8 @@ namespace Server.Models.Magics
 
         public ElementalSwords(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Redo anim
+            //Magic Ex10 - 0
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

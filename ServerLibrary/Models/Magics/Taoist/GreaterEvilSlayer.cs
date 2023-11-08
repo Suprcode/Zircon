@@ -94,20 +94,22 @@ namespace Server.Models.Magics
             MapObject target = (MapObject)data[1];
             bool primary = (bool)data[2];
             var stats = (Stats)data[3];
-            var hasAugmentExplosiveTalisman = (bool)data[4];
+            var hasAugmentEvilSlayer = (bool)data[4];
 
             var magics = new List<MagicType> { Type };
 
-            if (hasAugmentExplosiveTalisman)
+            if (hasAugmentEvilSlayer)
             {
-                magics.Add(MagicType.AugmentExplosiveTalisman);
+                magics.Add(MagicType.AugmentEvilSlayer);
             }
 
             var damage = Player.MagicAttack(magics, target, primary, stats);
 
-            if (!primary && damage > 0 && hasAugmentExplosiveTalisman && Player.Magics.TryGetValue(MagicType.AugmentEvilSlayer, out UserMagic augMagic))
+            var augmentEvilSlayer = GetAugmentedSkill(MagicType.AugmentEvilSlayer);
+
+            if (!primary && damage > 0 && hasAugmentEvilSlayer && augmentEvilSlayer != null)
             {
-                Player.LevelMagic(augMagic);
+                Player.LevelMagic(augmentEvilSlayer);
             }
         }
 
