@@ -1,14 +1,15 @@
 ﻿using ManagedSquish;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace LibraryEditor
 {
+
     public enum ImageType
     {
         Image,
@@ -18,6 +19,14 @@ namespace LibraryEditor
 
     public sealed class Mir3Library
     {
+        /// <summary>
+        /// V0 - Default version - Dxt1 Images
+        /// V1 - First version - Dxt5 Images
+        /// </summary>
+        public const int LIBRARY_VERSION = 1;
+
+        public int Version;
+
         public string FileName;
         public string _fileName;
 
@@ -47,8 +56,17 @@ namespace LibraryEditor
 
             using (MemoryStream mstream = new MemoryStream(_bReader.ReadBytes(_bReader.ReadInt32())))
             using (BinaryReader reader = new BinaryReader(mstream))
-            {                
-                int count = reader.ReadInt32();
+            {
+                int value = reader.ReadInt32();
+
+                int count = value & 0x1FFFFFF;
+                Version = (value >> 25) & 0x7F;
+
+                if (Version == 0)
+                {
+                    count = value;
+                }
+
                 for (int i = 0; i < count; i++)
                     Images.Add(null);
 
@@ -56,9 +74,10 @@ namespace LibraryEditor
                 {
                     if (!reader.ReadBoolean()) continue;
 
-                    Images[i] = new Mir3Image(reader);
+                    Images[i] = new Mir3Image(reader, Version);
                 }
             }
+
             for (int i = 0; i < Images.Count; i++)
             {
                 if (Images[i] == null) continue;
@@ -212,21 +231,21 @@ namespace LibraryEditor
         }
         public void AddImage(Bitmap image, short x, short y)
         {
-            Mir3Image mImage = new Mir3Image(image) { OffSetX = x, OffSetY = y };
+            Mir3Image mImage = new Mir3Image(image, Version) { OffSetX = x, OffSetY = y };
 
             Images.Add(mImage);
         }
 
         public void ReplaceImage(int Index, Bitmap image, short x, short y)
         {
-            Mir3Image mImage = new Mir3Image(image) { OffSetX = x, OffSetY = y };
+            Mir3Image mImage = new Mir3Image(image, Version) { OffSetX = x, OffSetY = y };
 
             Images[Index] = mImage;
         }
 
         public void InsertImage(int index, Bitmap image, short x, short y)
         {
-            Mir3Image mImage = new Mir3Image(image) { OffSetX = x, OffSetY = y };
+            Mir3Image mImage = new Mir3Image(image, Version) { OffSetX = x, OffSetY = y };
 
             Images.Insert(index, mImage);
         }
@@ -260,7 +279,8 @@ namespace LibraryEditor
             using (BinaryWriter writer = new BinaryWriter(buffer))
             {
                 writer.Write(headerSize);
-                writer.Write(Images.Count);
+
+                writer.Write((Version & 0x7F) << 25 | (Images.Count & 0x1FFFFFF));
 
                 foreach (Mir3Image image in Images)
                 {
@@ -293,6 +313,8 @@ namespace LibraryEditor
         {
             public const int HeaderSize = 25;
 
+            public int Version;
+
             public int DataSize => (FBytes?.Length ?? 0) + (ShadowFBytes?.Length ?? 0) + (OverlayFBytes?.Length ?? 0);
 
             public int Position;
@@ -314,7 +336,14 @@ namespace LibraryEditor
                     int w = Width + (4 - Width % 4) % 4;
                     int h = Height + (4 - Height % 4) % 4;
 
-                    return w * h / 2;
+                    if (Version > 0)
+                    {
+                        return w * h;
+                    }
+                    else
+                    {
+                        return w * h / 2;
+                    }
                 }
             }
             public byte[] FBytes;
@@ -338,7 +367,14 @@ namespace LibraryEditor
                     int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
                     int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
 
-                    return w * h / 2;
+                    if (Version > 0)
+                    {
+                        return w * h;
+                    }
+                    else
+                    {
+                        return w * h / 2;
+                    }
                 }
             }
             #endregion
@@ -358,7 +394,14 @@ namespace LibraryEditor
                     int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
                     int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
 
-                    return w * h / 2;
+                    if (Version > 0)
+                    {
+                        return w * h;
+                    }
+                    else
+                    {
+                        return w * h / 2;
+                    }
                 }
             }
             #endregion
@@ -366,12 +409,15 @@ namespace LibraryEditor
 
             public DateTime ExpireTime;
 
-            public Mir3Image()
+            public Mir3Image(int version)
             {
+                Version = version;
             }
 
-            public Mir3Image(BinaryReader reader)
+            public Mir3Image(BinaryReader reader, int version)
             {
+                Version = version;
+
                 Position = reader.ReadInt32();
 
                 Width = reader.ReadInt16();
@@ -389,13 +435,15 @@ namespace LibraryEditor
                 OverlayHeight = reader.ReadInt16();
             }
 
-            public unsafe Mir3Image(Bitmap image)
+            public unsafe Mir3Image(Bitmap image, int version)
             {
                 if (image == null)
                 {
                     FBytes = new byte[0];
                     return;
                 }
+
+                Version = version;
 
                 Position = -1;
                 Width = (short)image.Width;
@@ -438,23 +486,25 @@ namespace LibraryEditor
                         pixels[i + 3] = 0; //Make Transparent
                 }
 
-                int count = Squish.GetStorageRequirements(image.Width, image.Height, SquishFlags.Dxt1);
+                int count = Squish.GetStorageRequirements(image.Width, image.Height, DxtFlags);
 
                 FBytes = new byte[count];
                 fixed (byte* dest = FBytes)
                 fixed (byte* source = pixels)
                 {
-                    Squish.CompressImage((IntPtr)source, image.Width, image.Height, (IntPtr)dest, SquishFlags.Dxt1);
+                    Squish.CompressImage((IntPtr)source, image.Width, image.Height, (IntPtr)dest, DxtFlags);
                 }
             }
 
-            public unsafe Mir3Image(Bitmap image, Bitmap shadow, Bitmap overlay)
+            public unsafe Mir3Image(Bitmap image, Bitmap shadow, Bitmap overlay, int version)
             {
                 if (image == null)
                 {
                     FBytes = new byte[0];
                     return;
                 }
+
+                Version = version;
 
                 Position = -1;
                 Width = (short)image.Width;
@@ -465,7 +515,7 @@ namespace LibraryEditor
 
                 if (image.Width != w || image.Height != h)
                 {
-                    Bitmap temp = new Bitmap(w, h);
+                    Bitmap temp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
                     using (Graphics g = Graphics.FromImage(temp))
                     {
                         g.Clear(Color.Transparent);
@@ -497,13 +547,13 @@ namespace LibraryEditor
                         pixels[i + 3] = 0; //Make Transparent
                 }
 
-                int count = Squish.GetStorageRequirements(image.Width, image.Height, SquishFlags.Dxt1);
+                int count = Squish.GetStorageRequirements(image.Width, image.Height, DxtFlags);
 
                 FBytes = new byte[count];
                 fixed (byte* dest = FBytes)
                 fixed (byte* source = pixels)
                 {
-                    Squish.CompressImage((IntPtr)source, image.Width, image.Height, (IntPtr)dest, SquishFlags.Dxt1);
+                    Squish.CompressImage((IntPtr)source, image.Width, image.Height, (IntPtr)dest, DxtFlags);
                 }
 
                 //Shadow
@@ -549,13 +599,13 @@ namespace LibraryEditor
                             pixels[i + 3] = 0; //Make Transparent
                     }
 
-                    count = Squish.GetStorageRequirements(shadow.Width, shadow.Height, SquishFlags.Dxt1);
+                    count = Squish.GetStorageRequirements(shadow.Width, shadow.Height, DxtFlags);
 
                     ShadowFBytes = new byte[count];
                     fixed (byte* dest = ShadowFBytes)
                     fixed (byte* source = pixels)
                     {
-                        Squish.CompressImage((IntPtr)source, shadow.Width, shadow.Height, (IntPtr)dest, SquishFlags.Dxt1);
+                        Squish.CompressImage((IntPtr)source, shadow.Width, shadow.Height, (IntPtr)dest, DxtFlags);
                     }
                 }
 
@@ -602,13 +652,13 @@ namespace LibraryEditor
                             pixels[i + 3] = 0; //Make Transparent
                     }
 
-                    count = Squish.GetStorageRequirements(overlay.Width, overlay.Height, SquishFlags.Dxt1);
+                    count = Squish.GetStorageRequirements(overlay.Width, overlay.Height, DxtFlags);
 
                     OverlayFBytes = new byte[count];
                     fixed (byte* dest = OverlayFBytes)
                     fixed (byte* source = pixels)
                     {
-                        Squish.CompressImage((IntPtr)source, overlay.Width, overlay.Height, (IntPtr)dest, SquishFlags.Dxt1);
+                        Squish.CompressImage((IntPtr)source, overlay.Width, overlay.Height, (IntPtr)dest, DxtFlags);
                     }
                 }
             }
@@ -629,7 +679,7 @@ namespace LibraryEditor
                 FBytes = reader.ReadBytes(ImageDataSize);
 
                 fixed (byte* source = FBytes)
-                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, SquishFlags.Dxt1);
+                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, DxtFlags);
 
                 byte* dest = (byte*)data.Scan0;
 
@@ -663,7 +713,7 @@ namespace LibraryEditor
                 ShadowFBytes = reader.ReadBytes(ShadowDataSize);
 
                 fixed (byte* source = ShadowFBytes)
-                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, SquishFlags.Dxt1);
+                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, DxtFlags);
 
                 byte* dest = (byte*)data.Scan0;
 
@@ -697,7 +747,7 @@ namespace LibraryEditor
                 OverlayFBytes = reader.ReadBytes(OverlayDataSize);
 
                 fixed (byte* source = OverlayFBytes)
-                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, SquishFlags.Dxt1);
+                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, DxtFlags);
 
                 byte* dest = (byte*)data.Scan0;
 
@@ -798,6 +848,18 @@ namespace LibraryEditor
                 writer.Write(OverlayHeight);
             }
 
+            private SquishFlags DxtFlags
+            {
+                get
+                {
+                    return Version switch
+                    {
+                        0 => SquishFlags.Dxt1,
+                        _ => SquishFlags.Dxt5,
+                    };
+                }
+            }
+
             #region IDisposable Support
 
             public bool IsDisposed { get; private set; }
@@ -837,7 +899,6 @@ namespace LibraryEditor
             }
 
             #endregion
-
         }
     }
 }

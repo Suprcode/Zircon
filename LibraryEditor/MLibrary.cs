@@ -137,9 +137,12 @@ namespace LibraryEditor
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
-            Mir3Library library = new Mir3Library(fileName);
-            library.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(), Images.Count));
-            //library.Save();
+            Mir3Library library = new Mir3Library(fileName)
+            {
+                Version = Mir3Library.LIBRARY_VERSION
+            };
+
+            library.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(library.Version), Images.Count));
 
             ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
 
@@ -149,9 +152,9 @@ namespace LibraryEditor
                 {
                     MImage image = Images[i];
                     if (image.HasMask)
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                     else
-                    library.Images[i] = new Mir3Library.Mir3Image(image.Image) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                    library.Images[i] = new Mir3Library.Mir3Image(image.Image, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                 });
             }
             catch (System.Exception)
@@ -173,7 +176,7 @@ namespace LibraryEditor
         public void MergeToMLibrary(Mir3Library lib, int newImages)
         {            
             int offset = lib.Images.Count;
-            lib.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(), Images.Count));
+            lib.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(lib.Version), Images.Count));
             //library.Save();
 
             ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
@@ -184,9 +187,9 @@ namespace LibraryEditor
                 {
                     MImage image = Images[i];
                     if (image.HasMask)
-                        lib.Images[i+offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        lib.Images[i+offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                     else
-                        lib.Images[i+ offset] = new Mir3Library.Mir3Image(image.Image) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        lib.Images[i+ offset] = new Mir3Library.Mir3Image(image.Image, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                 });
                 lib.AddBlanks(newImages);
             }

@@ -55,6 +55,12 @@ namespace LibraryEditor
             shadowLibrary = null;
             if (File.Exists(shadowPath))
                 shadowLibrary = new WTLLibrary(shadowPath);
+            else
+            {
+                shadowPath = _fileName.Replace("Mon-", "MonS-");
+                if (File.Exists(shadowPath))
+                    shadowLibrary = new WTLLibrary(shadowPath);
+            }
         }
 
         private void LoadImageInfo()
@@ -114,10 +120,13 @@ namespace LibraryEditor
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
-            Mir3Library library = new Mir3Library(fileName) { Images = new List<Mir3Library.Mir3Image>() };
-            //library.Save();
+            Mir3Library library = new Mir3Library(fileName)
+            {
+                Images = new List<Mir3Library.Mir3Image>(),
+                Version = Mir3Library.LIBRARY_VERSION
+            };
 
-            library.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(), Images.Length));
+            library.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(library.Version), Images.Length));
 
             ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
 
@@ -129,9 +138,9 @@ namespace LibraryEditor
                     WTLImage shadowimage = shadowLibrary != null ? shadowLibrary.Images[i] : null;
 
                     if (shadowimage != null && shadowimage.Length > 0)
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.X, ShadowOffSetY = shadowimage.Y, ShadowType = shadowimage.Shadow };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.X, ShadowOffSetY = shadowimage.Y, ShadowType = shadowimage.Shadow };
                     else
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                 });
             }
             catch (System.Exception)
@@ -166,9 +175,9 @@ namespace LibraryEditor
                     WTLImage shadowimage = shadowLibrary != null ? shadowLibrary.Images[i] : null;
 
                     if (shadowimage != null)
-                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                     else
-                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                 });
                 lib.AddBlanks(newImages);
             }
@@ -228,7 +237,7 @@ namespace LibraryEditor
                 var maskU1 = bReader.ReadByte();
                 MaskTextureType = bReader.ReadByte();
 
-                HasMask = MaskTextureType > 0;
+                HasMask = MaskTextureType > 0 && MaskTextureType != 128;
                 Length = bReader.ReadInt32();
                 if (Length % 4 > 0) Length += 4 - (Length % 4);
                 DataOffset = (int)bReader.BaseStream.Position;
@@ -401,31 +410,49 @@ namespace LibraryEditor
                     throw new NotImplementedException();
             }
 
+            var decompressedBuffer = textureType != 128 ? Ionic.Zlib.DeflateStream.UncompressBuffer(buffer) : buffer;
+            Bitmap bitmap = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            var decompressedBuffer = Ionic.Zlib.DeflateStream.UncompressBuffer(buffer);
-
-            var bitmap = new Bitmap(w, h);
-
-            BitmapData data = bitmap.LockBits(
-                new Rectangle(0, 0, w, h),
-                ImageLockMode.WriteOnly,
-                PixelFormat.Format32bppRgb
-            );
-
-            fixed (byte* source = decompressedBuffer)
-                Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, type);
-
-            byte* dest = (byte*)data.Scan0;
-
-            for (int i = 0; i < w * h * 4; i += 4)
+            if (MaskTextureType == 128)
             {
-                //Reverse Red/Blue
-                byte b = dest[i];
-                dest[i] = dest[i + 2];
-                dest[i + 2] = b;
-            }
+                for (int y = 0; y < h; y++)
+                {
+                    for (int x = 0; x < w; x++)
+                    {
+                        var width = w * 4;
 
-            bitmap.UnlockBits(data);
+                        int b = decompressedBuffer[(y * width) + (x * 4)];
+                        int g = decompressedBuffer[(y * width) + (x * 4) + 1];
+                        int r = decompressedBuffer[(y * width) + (x * 4) + 2];
+                        int al = decompressedBuffer[(y * width) + (x * 4) + 3];
+
+                        bitmap.SetPixel(x, y, Color.FromArgb(al, r, g, b));
+                    }
+                }
+            }
+            else
+            {
+                BitmapData data = bitmap.LockBits(
+                                new Rectangle(0, 0, w, h),
+                                ImageLockMode.WriteOnly,
+                                PixelFormat.Format32bppArgb
+                            );
+
+                fixed (byte* source = decompressedBuffer)
+                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, type);
+
+                byte* dest = (byte*)data.Scan0;
+
+                for (int i = 0; i < w * h * 4; i += 4)
+                {
+                    //Reverse Red/Blue
+                    byte b = dest[i];
+                    dest[i] = dest[i + 2];
+                    dest[i + 2] = b;
+                }
+
+                bitmap.UnlockBits(data);
+            }
 
             Rectangle cloneRect = new Rectangle(0, 0, outputWidth, outputHeight);
             PixelFormat format = bitmap.PixelFormat;

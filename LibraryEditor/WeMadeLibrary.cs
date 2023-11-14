@@ -161,8 +161,11 @@ namespace LibraryEditor
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
-            Mir3Library library = new Mir3Library(fileName) { Images = new List<Mir3Library.Mir3Image>(Images.Length) };
-            //library.Save();
+            Mir3Library library = new Mir3Library(fileName)
+            {
+                Images = new List<Mir3Library.Mir3Image>(Images.Length),
+                Version = Mir3Library.LIBRARY_VERSION
+            };
 
             for (int i = 0; i < Images.Length; i++)
                 library.Images.Add(null);
@@ -174,10 +177,7 @@ namespace LibraryEditor
                 Parallel.For(0, Images.Length, options, i =>
                     {
                         WeMadeImage image = Images[i];
-                        //if (image.HasMask)
-                        //    library.Images[i] = new MLibraryV2.MImage(image.Image, image.MaskImage) { X = image.X, Y = image.Y, ShadowX = image.ShadowX, ShadowY = image.ShadowY, Shadow = image.boHasShadow ? (byte)1 : (byte)0, MaskX = image.X, MaskY = image.Y };
-                        // else
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                     });
             }
             catch (System.Exception)
@@ -212,7 +212,7 @@ namespace LibraryEditor
                     //if (image.HasMask)
                     //    library.Images[i] = new MLibraryV2.MImage(image.Image, image.MaskImage) { X = image.X, Y = image.Y, ShadowX = image.ShadowX, ShadowY = image.ShadowY, Shadow = image.boHasShadow ? (byte)1 : (byte)0, MaskX = image.X, MaskY = image.Y };
                     // else
-                    lib.Images[i+offset] = new Mir3Library.Mir3Image(image.Image) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                    lib.Images[i+offset] = new Mir3Library.Mir3Image(image.Image, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                 });
                 lib.AddBlanks(newImages);
             }

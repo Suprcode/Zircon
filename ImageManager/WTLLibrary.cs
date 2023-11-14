@@ -114,6 +114,12 @@ namespace ImageManager
             WTLLibrary shadowLibrary = null;
             if (File.Exists(shadowPath))
                 shadowLibrary = new WTLLibrary(shadowPath);
+            else
+            {
+                shadowPath = _fileName.Replace("Mon-", "MonS-");
+                if (File.Exists(shadowPath))
+                    shadowLibrary = new WTLLibrary(shadowPath);
+            }
 
             Mir3Library lib = new Mir3Library
             {

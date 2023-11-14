@@ -79,8 +79,7 @@ namespace ImageManager
                 ParallelOptions po = new ParallelOptions { MaxDegreeOfParallelism = 10 };
                 Parallel.For(0, targets.Length, po, i =>
                 {
-
-                    if (!targets[i].FullName.EndsWith("_S.wtl"))
+                    if (!targets[i].FullName.EndsWith("_S.wtl") && !targets[i].FullName.StartsWith("MonS-"))
                     {
                         using (WTLLibrary wtl = new WTLLibrary(targets[i].FullName))
                         {
