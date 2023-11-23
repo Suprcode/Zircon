@@ -83,7 +83,7 @@ namespace Server.Models.Magics
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
-            power += Magic.GetPower() + Player.GetSC();
+            power += Magic.GetPower() + Player.GetSP();
 
             return power;
         }

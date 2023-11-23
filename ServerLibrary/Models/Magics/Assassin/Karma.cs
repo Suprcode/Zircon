@@ -1,11 +1,7 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.PortableExecutable;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
@@ -26,9 +22,6 @@ namespace Server.Models.Magics
             var response = new AttackCast();
 
             if (attackType != Type)
-                return response;
-
-            if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
             if (SEnvir.Now < Magic.Cooldown)
@@ -61,38 +54,28 @@ namespace Server.Models.Magics
             return response;
         }
 
-        public override void Cooldown(int attackDelay)
+        public override void AttackLocationSuccess(int attackDelay)
         {
             Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
 
             Player.UseItemTime = SEnvir.Now.AddSeconds(10);
 
-            if (Player.Magics.TryGetValue(MagicType.Karma, out UserMagic magic))
+            if (Player.GetMagic(MagicType.Karma, out Karma karma))
             {
-                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                karma.Magic.Cooldown = SEnvir.Now.AddMilliseconds(karma.Magic.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = karma.Magic.Info.Index, Delay = karma.Magic.Info.Delay });
             }
 
-            if (Player.Magics.TryGetValue(MagicType.SummonPuppet, out magic))
+            if (Player.GetMagic(MagicType.SummonPuppet, out SummonPuppet summonPuppet))
             {
-                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                summonPuppet.Magic.Cooldown = SEnvir.Now.AddMilliseconds(summonPuppet.Magic.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = summonPuppet.Magic.Info.Index, Delay = summonPuppet.Magic.Info.Delay });
             }
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             power += Player.GetDC();
-
-            var karmaDamage = ob.CurrentHP * Magic.GetPower() / 100;
-
-            if (ob.Race == ObjectType.Monster)
-            {
-                if (((MonsterObject)ob).MonsterInfo.IsBoss)
-                    karmaDamage = Magic.GetPower() * 20;
-                else
-                    karmaDamage /= 4;
-            }
 
             /*   buff = Buffs.FirstOrDefault(x => x.Type == BuffType.TheNewBeginning);
                if (buff != null && Magics.TryGetValue(MagicType.TheNewBeginning, out augMagic) && Level >= augMagic.Info.NeedLevel1)

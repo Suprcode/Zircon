@@ -80,7 +80,7 @@ namespace Server.Models.Magics
                     MapObject ob = cell.Objects[j];
                     if (!Player.CanAttackTarget(ob)) continue;
 
-                    Player.MagicAttack(new List<MagicType> { MagicType.Parasite }, target, true);
+                    Player.MagicAttack(new List<MagicType> { MagicType.Parasite }, ob, true);
                 }
             }
 

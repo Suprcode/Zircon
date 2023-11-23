@@ -22,9 +22,10 @@ namespace Server.Models.Magics
 
         public override Stats GetPassiveStats()
         {
-            var stats = new Stats();
-
-            stats[Stat.MCPercent] += (1 + Magic.Level) * 10;
+            var stats = new Stats
+            {
+                [Stat.MCPercent] = (1 + Magic.Level) * 10
+            };
 
             return stats;
         }

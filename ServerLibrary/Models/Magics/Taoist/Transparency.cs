@@ -52,7 +52,7 @@ namespace Server.Models.Magics
 
             if (Player.Buffs.Any(x => x.Type == BuffType.Transparency)) return;
 
-            Player.Teleport(CurrentMap, location, false);
+            //Player.Teleport(CurrentMap, location, false);
 
             int delay = Magic.Info.Delay;
             if (SEnvir.Now <= Player.PvPTime.AddSeconds(30))

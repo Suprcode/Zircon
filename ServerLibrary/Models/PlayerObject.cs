@@ -110,7 +110,7 @@ namespace Server.Models
         public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime;
         public bool PacketWaiting;
 
-        public bool CanPowerAttack, GameMaster, Observer;
+        public bool GameMaster, Observer;
 
         public override bool Blocking => base.Blocking && !Observer;
 
@@ -161,8 +161,7 @@ namespace Server.Models
         public bool TradeConfirmed;
         public long TradeGold;
 
-        public Dictionary<MagicType, UserMagic> Magics = new Dictionary<MagicType, UserMagic>();
-        public Dictionary<MagicType, MagicObject> MagicObjects = new Dictionary<MagicType, MagicObject>();
+        public MagicList MagicObjects = new MagicList();
 
         public List<AutoPotionLink> AutoPotions = new List<AutoPotionLink>();
         public CellLinkInfo DelayItemUse;
@@ -215,9 +214,6 @@ namespace Server.Models
             ItemReviveTime = info.ItemReviveTime;
             ItemTime = SEnvir.Now;
 
-            foreach (UserMagic magic in Character.Magics)
-                Magics[magic.Info.Magic] = magic;
-
             Buffs.AddRange(Character.Account.Buffs);
             Buffs.AddRange(Character.Buffs);
 
@@ -250,18 +246,20 @@ namespace Server.Models
 
                 if (found != null)
                 {
-                    MagicObjects[addMagic.Info.Magic] = (MagicObject)Activator.CreateInstance(found, this, addMagic);
+                    MagicObjects.Add(addMagic.Info.Magic, (MagicObject)Activator.CreateInstance(found, this, addMagic));
                 }
             }
             else
             {
                 foreach (UserMagic magic in Character.Magics)
                 {
+                    if (magic.Info.School == MagicSchool.None) continue;
+
                     found = SEnvir.MagicTypes.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == magic.Info.Magic);
 
                     if (found != null)
                     {
-                        MagicObjects[magic.Info.Magic] = (MagicObject)Activator.CreateInstance(found, this, magic);
+                        MagicObjects.Add(magic.Info.Magic, (MagicObject)Activator.CreateInstance(found, this, magic));
                     }
                 }
             }
@@ -319,7 +317,6 @@ namespace Server.Models
             foreach (MonsterObject ob in clearList)
                 ob.EXPOwner = null;
 
-
             foreach (MagicType type in MagicObjects.Keys)
                 MagicObjects[type].Process();
 
@@ -376,7 +373,7 @@ namespace Server.Models
                     {
                         type = (MagicType)action.Data[0];
 
-                        if (MagicObjects.TryGetValue(type, out MagicObject magicObject))
+                        if (GetMagic(type, out MagicObject magicObject))
                         {
                             magicObject.MagicComplete(action.Data);
                         }
@@ -432,24 +429,38 @@ namespace Server.Models
                 Success = true,
             });
         }
+
         public void ProcessRegen()
         {
             if (Dead || SEnvir.Now < RegenTime) return;
 
             RegenTime = SEnvir.Now + RegenDelay;
 
+            if ((Poison & PoisonType.Hemorrhage) == PoisonType.Hemorrhage) return;
+
             float rate = 2; //2%
 
             if (Class == MirClass.Wizard) rate += 1;
 
-            UserMagic magic;
-            if (Magics.TryGetValue(MagicType.Rejuvenation, out magic) && Level >= magic.Info.NeedLevel1)
-                rate += 0.5F + magic.Level * 0.5F;
+            if (GetMagic(MagicType.Rejuvenation, out Rejuvenation rejuvenation))
+            {
+                rate += 0.5F + rejuvenation.Magic.Level * 0.5F;
+
+                if (CurrentHP < Stats[Stat.Health] || CurrentMP < Stats[Stat.Mana])
+                    LevelMagic(rejuvenation.Magic);
+            }
+
+            if (GetMagic(MagicType.Vitality, out Vitality vitality))
+            {
+                if (vitality.LowHP)
+                {
+                    rate += 0.5F + vitality.Magic.Level * 0.5F;
+
+                    LevelMagic(vitality.Magic);
+                }
+            }
 
             rate /= 100F;
-
-            if (CurrentHP < Stats[Stat.Health] || CurrentMP < Stats[Stat.Mana])
-                LevelMagic(magic);
 
             if (CurrentHP < Stats[Stat.Health])
             {
@@ -472,6 +483,7 @@ namespace Server.Models
                 ChangeFP(regen);
             }
         }
+
         public void ProcessAutoPotion()
         {
             if (SEnvir.Now < UseItemTime || Buffs.Any(x => x.Type == BuffType.Cloak || x.Type == BuffType.Transparency || x.Type == BuffType.DragonRepulse)) return; //Can't auto Pot
@@ -1390,8 +1402,6 @@ namespace Server.Models
 
             TradeItems?.Clear();
 
-            Magics?.Clear();
-
             AutoPotions?.Clear();
         }
 
@@ -1813,13 +1823,13 @@ namespace Server.Models
         {
             base.CelestialLightActivate();
 
-            UserMagic magic;
-
-            if (!Magics.TryGetValue(MagicType.CelestialLight, out magic)) return;
-
-            magic.Cooldown = SEnvir.Now.AddSeconds(6);
-            Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 6000 });
+            if (GetMagic(MagicType.CelestialLight, out CelestialLight celestialLight))
+            {
+                celestialLight.Magic.Cooldown = SEnvir.Now.AddSeconds(6);
+                Enqueue(new S.MagicCooldown { InfoIndex = celestialLight.Magic.Info.Index, Delay = 6000 });
+            }
         }
+
         public override void ItemRevive()
         {
             base.ItemRevive();
@@ -2131,14 +2141,14 @@ namespace Server.Models
                 }
             }
 
-            if (Buffs.Any(x => x.Type == BuffType.RagingWind) && Magics.TryGetValue(MagicType.RagingWind, out UserMagic magic))
+            if (Buffs.Any(x => x.Type == BuffType.RagingWind) && GetMagic(MagicType.RagingWind, out RagingWind ragingWind))
             {
-                int power = Stats[Stat.MinAC] + Stats[Stat.MaxAC] + 4 + magic.Level * 6;
+                int power = Stats[Stat.MinAC] + Stats[Stat.MaxAC] + 4 + ragingWind.Magic.Level * 6;
 
                 Stats[Stat.MinAC] = power * 3 / 10;
                 Stats[Stat.MaxAC] = power - Stats[Stat.MinAC];
 
-                power = Stats[Stat.MinMR] + Stats[Stat.MaxMR] + 4 + magic.Level * 6;
+                power = Stats[Stat.MinMR] + Stats[Stat.MaxMR] + 4 + ragingWind.Magic.Level * 6;
 
                 Stats[Stat.MinMR] = power * 3 / 10;
                 Stats[Stat.MaxMR] = power - Stats[Stat.MinMR];
@@ -2563,12 +2573,8 @@ namespace Server.Models
         {
             base.Dodged();
 
-            UserMagic magic;
-
-            if (Magics.TryGetValue(MagicType.WillowDance, out magic) && Level >= magic.Info.NeedLevel1)
-                LevelMagic(magic);
-
-            //Todo Poison Cloud
+            if (GetMagic(MagicType.WillowDance, out WillowDance willowDance))
+                LevelMagic(willowDance.Magic);
         }
 
         #region Marriage
@@ -5324,7 +5330,6 @@ namespace Server.Models
 
             int useCount = 1;
 
-            UserMagic magic;
             BuffInfo buff;
             UserItem gainItem = null;
             switch (item.Info.ItemType)
@@ -5344,24 +5349,34 @@ namespace Server.Models
                             int mana = item.Info.Stats[Stat.Mana];
                             int focus = item.Info.Stats[Stat.Focus];
 
-                            if (Magics.TryGetValue(MagicType.PotionMastery, out magic) && Level >= magic.Info.NeedLevel1)
+                            if (GetMagic(MagicType.PotionMastery, out PotionMastery potionMastery))
                             {
-                                health += health * magic.GetPower() / 100;
-                                mana += mana * magic.GetPower() / 100;
-                                focus += focus * magic.GetPower() / 100;
+                                health += health * potionMastery.Magic.GetPower() / 100;
+                                mana += mana * potionMastery.Magic.GetPower() / 100;
+                                focus += focus * potionMastery.Magic.GetPower() / 100;
 
                                 if (CurrentHP < Stats[Stat.Health] || CurrentMP < Stats[Stat.Mana] || CurrentFP < Stats[Stat.Focus])
-                                    LevelMagic(magic);
+                                    LevelMagic(potionMastery.Magic);
                             }
 
-                            if (Magics.TryGetValue(MagicType.AdvancedPotionMastery, out magic) && Level >= magic.Info.NeedLevel1)
+                            if (GetMagic(MagicType.AdvancedPotionMastery, out AdvancedPotionMastery advancedPotionMastery))
                             {
-                                health += health * magic.GetPower() / 100;
-                                mana += mana * magic.GetPower() / 100;
-                                focus += focus * magic.GetPower() / 100;
+                                health += health * advancedPotionMastery.Magic.GetPower() / 100;
+                                mana += mana * advancedPotionMastery.Magic.GetPower() / 100;
+                                focus += focus * advancedPotionMastery.Magic.GetPower() / 100;
 
                                 if (CurrentHP < Stats[Stat.Health] || CurrentMP < Stats[Stat.Mana] || CurrentFP < Stats[Stat.Focus])
-                                    LevelMagic(magic);
+                                    LevelMagic(advancedPotionMastery.Magic);
+                            }
+
+                            if (GetMagic(MagicType.Vitality, out Vitality vitality))
+                            {
+                                if (vitality.LowHP)
+                                {
+                                    health += health * vitality.Magic.GetPower() / 100;
+
+                                    LevelMagic(vitality.Magic);
+                                }
                             }
 
                             ChangeHP(health);
@@ -5530,6 +5545,7 @@ namespace Server.Models
                                     case PoisonType.Silenced:
                                     case PoisonType.Abyss:
                                     case PoisonType.Burn:
+                                    case PoisonType.Containment:
                                         work = true;
                                         PoisonList.Remove(pois);
                                         break;
@@ -6103,10 +6119,10 @@ namespace Server.Models
 
                     MagicInfo info = SEnvir.MagicInfoList.Binding.First(x => x.Index == item.Info.Shape);
 
-                    Magics.TryGetValue(info.Magic, out magic);
-
-                    if (magic != null)
+                    if (GetMagic(info.Magic, out MagicObject magicObject))
                     {
+                        var magic = magicObject.Magic;
+
                         if (magic.Level < 3) return;
 
                         if (magic.Level >= Globals.MagicMaxLevel)
@@ -6130,8 +6146,10 @@ namespace Server.Models
                         break;
                     }
 
-                    if (magic != null)
+                    if (magicObject != null)
                     {
+                        var magic = magicObject.Magic;
+
                         int rate = (magic.Level - 2) * 500;
 
                         magic.Experience += item.CurrentDurability;
@@ -6164,10 +6182,9 @@ namespace Server.Models
                     }
                     else
                     {
-                        magic = SEnvir.UserMagicList.CreateNewObject();
+                        var magic = SEnvir.UserMagicList.CreateNewObject();
                         magic.Character = Character;
                         magic.Info = info;
-                        Magics[info.Magic] = magic;
 
                         SetupMagic(magic);
 
@@ -6200,8 +6217,12 @@ namespace Server.Models
 
             result.Success = true;
 
-            BuffRemove(BuffType.Cloak);
             BuffRemove(BuffType.Transparency);
+
+            if (!GetMagic(MagicType.Stealth, out Stealth stealth) || !stealth.CheckCloak())
+            {
+                BuffRemove(BuffType.Cloak);
+            }
 
             if (item.Count > useCount)
             {
@@ -6353,7 +6374,8 @@ namespace Server.Models
                 case ItemType.Book:
                     MagicInfo magic = SEnvir.MagicInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
                     if (magic == null) return false;
-                    if (Magics.ContainsKey(magic.Magic) && (Magics[magic.Magic].Level < 3 || (item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)) return false;
+                    if (!GetMagic(magic.Magic, out MagicObject magicObject) || magicObject.Magic.Level < 3) return false;
+                    if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     return true;
                 case ItemType.Consumable:
                     switch (item.Info.Shape)
@@ -7508,13 +7530,13 @@ namespace Server.Models
             });
         }
 
-        public bool UsePoison(int count, out int shape)
+        public bool UsePoison(int count, out int shape, int requiredShape = -1)
         {
             shape = 0;
 
             UserItem poison = Equipment[(int)EquipmentSlot.Poison];
 
-            if (poison == null || poison.Info.ItemType != ItemType.Poison || poison.Count < count) return false;
+            if (poison == null || poison.Info.ItemType != ItemType.Poison || poison.Count < count || (requiredShape > -1 && poison.Info.Shape != requiredShape)) return false;
 
             shape = poison.Info.Shape;
 
@@ -7525,7 +7547,6 @@ namespace Server.Models
                 Link = new CellLinkInfo { GridType = GridType.Equipment, Slot = (int)EquipmentSlot.Poison, Count = poison.Count },
                 Success = true
             });
-
 
             if (poison.Count != 0) return true;
 
@@ -8304,7 +8325,10 @@ namespace Server.Models
                 case BuffType.StrengthOfFaith:
                     foreach (MonsterObject pet in Pets)
                     {
-                        pet.Magics.Add(Magics[MagicType.StrengthOfFaith]);
+                        if (GetMagic(MagicType.StrengthOfFaith, out StrengthOfFaith strengthOfFaith))
+                        {
+                            pet.Magics.Add(strengthOfFaith.Magic);
+                        }
                         pet.RefreshStats();
                     }
                     break;
@@ -8338,7 +8362,11 @@ namespace Server.Models
                 case BuffType.StrengthOfFaith:
                     foreach (MonsterObject pet in Pets)
                     {
-                        pet.Magics.Remove(Magics[MagicType.StrengthOfFaith]);
+                        if (GetMagic(MagicType.StrengthOfFaith, out StrengthOfFaith strengthOfFaith))
+                        {
+                            pet.Magics.Remove(strengthOfFaith.Magic);
+                        }
+
                         pet.RefreshStats();
                     }
                     break;
@@ -12476,7 +12504,7 @@ namespace Server.Models
 
             ActionTime = SEnvir.Now + Globals.TurnTime;
 
-            if (PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                 ActionTime += Globals.TurnTime;
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
@@ -12513,7 +12541,7 @@ namespace Server.Models
             Direction = direction;
             ActionTime = SEnvir.Now + Globals.HarvestTime;
 
-            if (PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                 ActionTime += Globals.TurnTime;
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
@@ -13013,7 +13041,11 @@ namespace Server.Models
             {
                 if (Stats[Stat.Comfort] < 12)
                     RegenTime = SEnvir.Now + RegenDelay;
-                BuffRemove(BuffType.Cloak);
+
+                if (!GetMagic(MagicType.Stealth, out Stealth stealth) || !stealth.CheckCloak())
+                {
+                    BuffRemove(BuffType.Cloak);
+                }
             }
 
 
@@ -13081,18 +13113,21 @@ namespace Server.Models
                 ActionTime += slow;
             }
 
-            if (BagWeight > Stats[Stat.BagWeight] || PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                 AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
             MagicType validMagic = MagicType.None;
             List<MagicType> magics = new List<MagicType>();
 
-            foreach (var key in MagicObjects.Keys)
+            foreach (var key in MagicObjects.OrderedKeys)
             {
                 var magicObject = MagicObjects[key];
 
                 if (magicObject.AttackSkill)
                 {
+                    if (Level < magicObject.Magic.Info.NeedLevel1)
+                        continue;
+
                     var response = magicObject.AttackCast(attackMagic);
 
                     if (response.Cast)
@@ -13100,6 +13135,13 @@ namespace Server.Models
 
                     magics.AddRange(response.Magics);
                 }
+            }
+
+            if (attackMagic != validMagic)
+            {
+                SEnvir.Log($"[ERROR] {Name} requested Attack Skill '{attackMagic}' but valid magic was '{validMagic}'.");
+                Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+                return;
             }
 
             Element element = Functions.GetAttackElement(Stats);
@@ -13137,27 +13179,36 @@ namespace Server.Models
 
             if (AttackLocation(Functions.Move(CurrentLocation, Direction), magics, true))
             {
-                if (MagicObjects.TryGetValue(attackMagic, out MagicObject attackMagicObject))
-                    attackMagicObject.Cooldown(attackDelay);
+                if (GetMagic(attackMagic, out MagicObject attackMagicObject))
+                {
+                    attackMagicObject.AttackLocationSuccess(attackDelay);
+                }
             }
 
-            if (MagicObjects.TryGetValue(validMagic, out MagicObject validMagicObject))
-                validMagicObject.AttackLocations(magics);
+            if (GetMagic(validMagic, out MagicObject validMagicObject))
+            {
+                validMagicObject.SecondaryAttackLocation(magics);
+            }
 
             BuffRemove(BuffType.Transparency);
-            BuffRemove(BuffType.Cloak);
+
+            if (!GetMagic(MagicType.Stealth, out Stealth stealth) || !stealth.CheckCloak())
+            {
+                BuffRemove(BuffType.Cloak);
+            }
+
             Broadcast(new S.ObjectAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Slow = slow, AttackMagic = validMagic, AttackElement = element });
         }
 
         public void Magic(C.Magic p)
         {
-            if (!Magics.TryGetValue(p.Type, out UserMagic magic) || Level < magic.Info.NeedLevel1)
+            if (!GetMagic(p.Type, out MagicObject magicObject))
             {
                 Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
                 return;
             }
 
-            if (SEnvir.Now < ActionTime || SEnvir.Now < MagicTime || SEnvir.Now < magic.Cooldown)
+            if (SEnvir.Now < ActionTime || SEnvir.Now < MagicTime || SEnvir.Now < magicObject.Magic.Cooldown)
             {
                 if (!PacketWaiting)
                 {
@@ -13172,13 +13223,6 @@ namespace Server.Models
 
             if (!CanCast)
             {
-                Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
-                return;
-            }
-
-            if (!MagicObjects.TryGetValue(p.Type, out MagicObject magicObject))
-            {
-                Connection.ReceiveChat("Spell Not Implemented", MessageType.System);
                 Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
                 return;
             }
@@ -13225,8 +13269,8 @@ namespace Server.Models
 
             if (cast)
             {
-                Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
-                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
+                Enqueue(new S.MagicCooldown { InfoIndex = magicObject.Magic.Info.Index, Delay = magicObject.Magic.Info.Delay });
+                magicObject.Magic.Cooldown = SEnvir.Now.AddMilliseconds(magicObject.Magic.Info.Delay);
             }
 
             Direction = ob == null || ob == this ? p.Direction : Functions.DirectionFromPoint(CurrentLocation, ob.CurrentLocation);
@@ -13237,7 +13281,7 @@ namespace Server.Models
             ActionTime = SEnvir.Now + Globals.CastTime;
             MagicTime = SEnvir.Now + Globals.MagicDelay;
 
-            if (BagWeight > Stats[Stat.BagWeight] || PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                 MagicTime += Globals.MagicDelay;
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
@@ -13265,16 +13309,16 @@ namespace Server.Models
 
         public void MagicToggle(C.MagicToggle p)
         {
-            if (!Magics.TryGetValue(p.Magic, out UserMagic magic) || Level < magic.Info.NeedLevel1 || Horse != HorseType.None) return;
+            if (Horse != HorseType.None) return;
 
-            if (!MagicObjects.TryGetValue(p.Magic, out MagicObject magicObject))
+            if (!GetMagic(p.Magic, out MagicObject magic))
             {
                 Connection.ReceiveChat("Spell Not Implemented", MessageType.System);
                 Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
                 return;
             }
 
-            magicObject.Toggle(p.CanUse);
+            magic.Toggle(p.CanUse);
         }
 
         public void Mining(MirDirection direction)
@@ -13309,7 +13353,7 @@ namespace Server.Models
             int attackDelay = Globals.AttackDelay - aspeed * Globals.ASpeedRate;
             attackDelay = Math.Max(800, attackDelay);
 
-            if (BagWeight > Stats[Stat.BagWeight] || PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                 AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
@@ -13424,26 +13468,37 @@ namespace Server.Models
                     Pets[i].Target = ob;
 
             int power = GetDC();
-            int karmaDamage = 0;
-            bool ignoreAccuracy = false, hasFlameSplash = false, hasLotus = false;
-            bool hasBladeStorm = false;
+
+            bool ignoreAccuracy = false, ignoreDefense = false, hasFlameSplash = false;
             bool hasMassacre = false;
+
+            int maxLifeSteal = 750;
 
             foreach (MagicType type in types)
             {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
+                if (GetMagic(type, out MagicObject magicObject))
+                {
+                    if (magicObject.IgnoreAccuracy) ignoreAccuracy = true;
+                    if (magicObject.IgnorePhysicalDefense) ignoreDefense = true;
 
-                if (magicObject.IgnoreAccuracy) ignoreAccuracy = true;
-                if (magicObject.HasLotus) hasLotus = true;
-                if (magicObject.HasBladeStorm) hasBladeStorm = true;
-                if (magicObject.HasMassacre) hasMassacre = true;
+                    if (magicObject.MaxLifeSteal > maxLifeSteal) maxLifeSteal = magicObject.MaxLifeSteal;
 
-                if (magicObject.HasFlameSplash(primary)) hasFlameSplash = true;
+                    if (magicObject.HasMassacre) hasMassacre = true;
+                    if (magicObject.HasFlameSplash(primary)) hasFlameSplash = true;
+                }
             }
 
             int accuracy = Stats[Stat.Accuracy];
 
             int res;
+
+            if (types.Contains(MagicType.Karma))
+            {
+                if (GetMagic(MagicType.Resolution, out Resolution resolution))
+                {
+                    accuracy += (accuracy * resolution.Magic.GetPower() / 100);
+                }
+            }
 
             if (!ignoreAccuracy && SEnvir.Random.Next(ob.Stats[Stat.Agility]) > accuracy)
             {
@@ -13455,18 +13510,29 @@ namespace Server.Models
 
             foreach (MagicType type in types)
             {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
-
-                power = magicObject.ModifyPowerAdditionner(primary, power, ob, null, extra);
+                if (!GetMagic(type, out MagicObject magicObject))
+                {
+                    power = magicObject.ModifyPowerAdditionner(primary, power, ob, null, extra);
+                }
             }
 
             Element element = Element.None;
 
             if (!hasMassacre)
             {
-                if (!hasLotus)
+                if (!ignoreDefense)
                 {
-                    power -= ob.GetAC();
+                    var resistance = ob.GetAC();
+
+                    if (types.Contains(MagicType.Karma))
+                    {
+                        if (GetMagic(MagicType.Resolution, out Resolution resolution))
+                        {
+                            resistance -= (resistance * resolution.Magic.GetPower() / 100);
+                        }
+                    }
+
+                    power -= resistance;
 
                     if (ob.Race == ObjectType.Player)
                         res = ob.Stats.GetResistanceValue(hasStone ? Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement() : Element.None);
@@ -13531,14 +13597,28 @@ namespace Server.Models
             }
 
             int damage = 0;
-            if (hasBladeStorm)
+
+            if (types.Contains(MagicType.BladeStorm) && GetMagic(MagicType.BladeStorm, out BladeStorm _))
             {
                 power /= 2;
                 ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(300), ActionType.DelayedAttackDamage, ob, power, element, true, true, ob.Stats[Stat.MagicShield] == 0, true));
             }
 
-            if (karmaDamage > 0)
-                damage += ob.Attacked(this, karmaDamage, Element.None, false, true, false);
+            if (types.Contains(MagicType.Karma) && GetMagic(MagicType.Karma, out Karma karma))
+            {
+                var karmaDamage = ob.CurrentHP * karma.Magic.GetPower() / 100;
+
+                if (ob.Race == ObjectType.Monster)
+                {
+                    if (((MonsterObject)ob).MonsterInfo.IsBoss)
+                        karmaDamage = karma.Magic.GetPower() * 20;
+                    else
+                        karmaDamage /= 4;
+                }
+
+                if (karmaDamage > 0)
+                    damage += ob.Attacked(this, karmaDamage, Element.None, false, true, false);
+            }
 
             damage += ob.Attacked(this, power, element, true, false, !hasMassacre);
 
@@ -13552,9 +13632,10 @@ namespace Server.Models
 
             foreach (MagicType type in types)
             {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
-
-                lifestealAmount = magicObject.LifeSteal(primary, lifestealAmount);
+                if (GetMagic(type, out MagicObject magicObject))
+                {
+                    lifestealAmount = magicObject.LifeSteal(primary, lifestealAmount);
+                }
             }
 
             if (primary || Class == MirClass.Warrior || hasFlameSplash)
@@ -13564,7 +13645,7 @@ namespace Server.Models
             {
                 int heal = (int)Math.Floor(LifeSteal);
                 LifeSteal -= heal;
-                ChangeHP(Math.Min((hasLotus ? 1500 : 750), heal));
+                ChangeHP(Math.Min(maxLifeSteal, heal));
             }
 
             int psnRate = Globals.PhysicalPoisonRate;
@@ -13644,28 +13725,30 @@ namespace Server.Models
 
             foreach (MagicType type in types)
             {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
+                if (GetMagic(type, out MagicObject magicObject))
+                {
+                    power = magicObject.ModifyPowerAdditionner(primary, power, ob, stats, extra);
 
-                power = magicObject.ModifyPowerAdditionner(primary, power, ob, stats, extra);
+                    slow = magicObject.GetSlow(slow, stats);
+                    slowLevel = magicObject.GetSlowLevel(slowLevel, stats);
+                    repel = magicObject.GetRepel(repel, stats);
+                    silence = magicObject.GetSilence(silence, stats);
+                    shock = magicObject.GetShock(shock, stats);
+                    burn = magicObject.GetBurn(burn, stats);
+                    burnLevel = magicObject.GetBurnLevel(burnLevel, stats);
 
-                slow = magicObject.GetSlow(slow, stats);
-                slowLevel = magicObject.GetSlowLevel(slowLevel, stats);
-                repel = magicObject.GetRepel(repel, stats);
-                silence = magicObject.GetSilence(silence, stats);
-                shock = magicObject.GetShock(shock, stats);
-                burn = magicObject.GetBurn(burn, stats);
-                burnLevel = magicObject.GetBurnLevel(burnLevel, stats);
+                    canStruck = magicObject.CanStruck;
 
-                canStruck = magicObject.CanStruck;
-
-                element = magicObject.GetElement(element);
+                    element = magicObject.GetElement(element);
+                }
             }
 
             foreach (MagicType type in types)
             {
-                if (!MagicObjects.TryGetValue(type, out MagicObject magicObject)) continue;
-
-                power = magicObject.ModifyPowerMultiplier(primary, power, stats, extra);
+                if (GetMagic(type, out MagicObject magicObject))
+                {
+                    power = magicObject.ModifyPowerMultiplier(primary, power, stats, extra);
+                }
             }
 
             power -= ob.GetMR();
@@ -13853,21 +13936,20 @@ namespace Server.Models
         {
             if (attacker?.Node == null || power == 0 || Dead || attacker.CurrentMap != CurrentMap || !Functions.InRange(attacker.CurrentLocation, CurrentLocation, Config.MaxViewRange) || Stats[Stat.Invincibility] > 0) return 0;
 
-            UserMagic magic;
             if (element != Element.None)
             {
                 if (SEnvir.Random.Next(attacker.Race == ObjectType.Player ? 200 : 100) <= Stats[Stat.EvasionChance])// 4 + magic.Level * 2)
                 {
-                    if (Buffs.Any(x => x.Type == BuffType.Evasion) && Magics.TryGetValue(MagicType.Evasion, out magic))
-                        LevelMagic(magic);
+                    if (Buffs.Any(x => x.Type == BuffType.Evasion) && GetMagic(MagicType.Evasion, out Evasion evasion))
+                        LevelMagic(evasion.Magic);
 
                     DisplayMiss = true;
                     return 0;
                 }
 
-                if (Magics.TryGetValue(MagicType.MagicImmunity, out magic) && Level >= magic.Info.NeedLevel1)
+                if (GetMagic(MagicType.MagicImmunity, out MagicImmunity magicImmunity))
                 {
-                    power -= power * magic.GetPower() / 100;
+                    power -= power * magicImmunity.Magic.GetPower() / 100;
 
                     if (power <= 0)
                     {
@@ -13884,9 +13966,9 @@ namespace Server.Models
                     return 0;
                 }
 
-                if (Magics.TryGetValue(MagicType.PhysicalImmunity, out magic) && Level >= magic.Info.NeedLevel1)
+                if (GetMagic(MagicType.PhysicalImmunity, out PhysicalImmunity physicalImmunity) && Level >= physicalImmunity.Magic.Info.NeedLevel1)
                 {
-                    power -= power * magic.GetPower() / 100;
+                    power -= power * physicalImmunity.Magic.GetPower() / 100;
 
                     if (power <= 0)
                     {
@@ -14057,8 +14139,8 @@ namespace Server.Models
             {
                 attacker.Attacked(this, power * Stats[Stat.ReflectDamage] / 100, Element.None, false);
 
-                if (Buffs.Any(x => x.Type == BuffType.ReflectDamage) && Magics.TryGetValue(MagicType.ReflectDamage, out magic))
-                    LevelMagic(magic);
+                if (Buffs.Any(x => x.Type == BuffType.ReflectDamage) && GetMagic(MagicType.ReflectDamage, out ReflectDamage reflectDamage))
+                    LevelMagic(reflectDamage.Magic);
             }
 
             if (canReflect && CanAttackTarget(attacker) && SEnvir.Random.Next(100) < Stats[Stat.JudgementOfHeaven] && !(attacker is CastleLord))
@@ -14069,24 +14151,24 @@ namespace Server.Models
                 Broadcast(new S.ObjectEffect { ObjectID = attacker.ObjectID, Effect = Effect.ThunderBolt });
                 ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(300), ActionType.DelayedAttackDamage, attacker, attacker.Race == ObjectType.Player ? damagePvP : damagePvE, Element.Lightning, false, false, true, true));
 
-                if (Buffs.Any(x => x.Type == BuffType.JudgementOfHeaven) && Magics.TryGetValue(MagicType.JudgementOfHeaven, out magic))
-                    LevelMagic(magic);
+                if (Buffs.Any(x => x.Type == BuffType.JudgementOfHeaven) && GetMagic(MagicType.JudgementOfHeaven, out JudgementOfHeaven judgementOfHeaven))
+                    LevelMagic(judgementOfHeaven.Magic);
             }
 
-            if (Buffs.Any(x => x.Type == BuffType.Defiance) && Magics.TryGetValue(MagicType.Defiance, out magic))
-                LevelMagic(magic);
+            if (Buffs.Any(x => x.Type == BuffType.Defiance) && GetMagic(MagicType.Defiance, out Defiance defiance))
+                LevelMagic(defiance.Magic);
 
-            if (Buffs.Any(x => x.Type == BuffType.RagingWind) && Magics.TryGetValue(MagicType.RagingWind, out magic))
-                LevelMagic(magic);
+            if (Buffs.Any(x => x.Type == BuffType.RagingWind) && GetMagic(MagicType.RagingWind, out RagingWind ragingWind))
+                LevelMagic(ragingWind.Magic);
 
-            if (Magics.TryGetValue(MagicType.AdventOfDemon, out magic) && element == Element.None)
-                LevelMagic(magic);
+            if (GetMagic(MagicType.AdventOfDemon, out AdventOfDemon adventOfDemon) && element == Element.None)
+                LevelMagic(adventOfDemon.Magic);
 
-            if (Magics.TryGetValue(MagicType.AdventOfDevil, out magic) && element != Element.None)
-                LevelMagic(magic);
+            if (GetMagic(MagicType.AdventOfDevil, out AdventOfDevil adventOfDevil) && element != Element.None)
+                LevelMagic(adventOfDevil.Magic);
 
-            if (Buffs.Any(x => x.Type == BuffType.Invincibility) && Magics.TryGetValue(MagicType.Invincibility, out magic))
-                LevelMagic(magic);
+            if (Buffs.Any(x => x.Type == BuffType.Invincibility) && GetMagic(MagicType.Invincibility, out Invincibility invincibility))
+                LevelMagic(invincibility.Magic);
 
             return power;
         }
@@ -14226,13 +14308,17 @@ namespace Server.Models
             }
         }
 
-        public bool GetMagic(MagicType type, out MagicObject magic)
+        public bool GetMagic<T>(MagicType type, out T magic) where T : MagicObject
         {
-            var hasMagic = MagicObjects.TryGetValue(type, out magic);
+            var hasMagic = MagicObjects.TryGetValue(type, out var retrievedMagic);
 
-            if (hasMagic && Level >= magic.Magic.Info.NeedLevel1)
+            if (hasMagic && Level >= retrievedMagic.Magic.Info.NeedLevel1)
+            {
+                magic = (T)retrievedMagic;
                 return true;
+            }
 
+            magic = null;
             return false;
         }
 
@@ -14285,8 +14371,8 @@ namespace Server.Models
         {
             if (Buffs.Any(x => x.Type == BuffType.Endurance))
             {
-                if (Magics.TryGetValue(MagicType.Endurance, out UserMagic magic))
-                    LevelMagic(magic);
+                if (GetMagic(MagicType.Endurance, out Endurance endurance))
+                    LevelMagic(endurance.Magic);
 
                 return 0;
             }
@@ -14306,8 +14392,8 @@ namespace Server.Models
 
             if (Buffs.Any(x => x.Type == BuffType.Endurance))
             {
-                if (Magics.TryGetValue(MagicType.Endurance, out UserMagic magic))
-                    LevelMagic(magic);
+                if (GetMagic(MagicType.Endurance, out Endurance endurance))
+                    LevelMagic(endurance.Magic);
 
                 return false;
             }
@@ -14783,7 +14869,6 @@ namespace Server.Models
                 if (info != null)
                     Character.BindPoint = info;
             }
-
 
             BuffAdd(BuffType.PKPoint, TimeSpan.MaxValue, new Stats { [Stat.PKPoint] = count }, false, false, Config.PKPointTickRate);
         }
@@ -15491,24 +15576,16 @@ namespace Server.Models
             uFocus.Info = nextLevel;
             uFocus.Level = nextLevel.Level;
 
-            var mInfo2 = SEnvir.MagicInfoList.Binding.Where(x =>
-                x.School == MagicSchool.Discipline &&
-                x.NeedLevel1 <= nextLevel.RequiredLevel &&
-                x.Class == Class &&
-                !Magics.ContainsKey(x.Magic));
-
             var mInfo = SEnvir.MagicInfoList.Binding.FirstOrDefault(x =>
                 x.School == MagicSchool.Discipline &&
                 x.NeedLevel1 <= nextLevel.RequiredLevel &&
-                x.Class == Class &&
-                !Magics.ContainsKey(x.Magic));
+                x.Class == Class && !GetMagic(x.Magic, out MagicObject _));
 
             if (mInfo != null)
             {
                 UserMagic uMagic = SEnvir.UserMagicList.CreateNewObject();
                 uMagic.Character = Character;
                 uMagic.Info = mInfo;
-                Magics[mInfo.Magic] = uMagic;
 
                 SetupMagic(uMagic);
 

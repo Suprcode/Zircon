@@ -11,6 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool HasMassacre => true;
+        public override bool PassiveSkill => true;
 
         public Massacre(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -19,7 +20,7 @@ namespace Server.Models.Magics
 
         public override void AttackCompletePassive(MapObject target, List<MagicType> types)
         {
-            if (target.Dead && target.Race == ObjectType.Monster && target.CurrentHP < 0)
+            if (target?.Node != null && target.Dead && target.Race == ObjectType.Monster && target.CurrentHP < 0)
             {
                 if (Player.Level >= Magic.Info.NeedLevel1)
                 {
@@ -27,7 +28,7 @@ namespace Server.Models.Magics
 
                     var power = Math.Abs(target.CurrentHP) * Magic.GetPower() / 100;
 
-                    foreach (MapObject t in Player.GetTargets(CurrentMap, target.CurrentLocation, 2))
+                    foreach (MapObject t in Player.GetTargets(CurrentMap, target.CurrentLocation, 1))
                     {
                         if (t.Race != ObjectType.Monster) continue;
 

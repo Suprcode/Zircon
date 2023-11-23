@@ -65,7 +65,7 @@ namespace Server.Models.Magics
                 MapObject ob = cell.Objects[i];
                 if (!Player.CanAttackTarget(ob)) continue;
 
-                Player.MagicAttack(new List<MagicType> { Type}, ob, true);
+                Player.MagicAttack(new List<MagicType> { Type }, ob, true);
             }
         }
 
@@ -74,9 +74,8 @@ namespace Server.Models.Magics
             power += Player.GetDC() * Magic.GetPower() / 100;
 
             BuffInfo buff = Player.Buffs.FirstOrDefault(x => x.Type == BuffType.TheNewBeginning);
-            UserMagic augMagic;
 
-            if (buff != null && Player.Magics.TryGetValue(MagicType.TheNewBeginning, out augMagic) && Player.Level >= augMagic.Info.NeedLevel1)
+            if (buff != null && Player.GetMagic(MagicType.TheNewBeginning, out TheNewBeginning theNewBeginning))
             {
                 for (int i = 0; i <= buff.Stats[Stat.TheNewBeginning]; i++)
                 {
@@ -93,7 +92,7 @@ namespace Server.Models.Magics
                     Player.BuffRemove(buff);
                 }
 
-                Player.LevelMagic(augMagic);
+                Player.LevelMagic(theNewBeginning.Magic);
             }
 
             ob.Broadcast(new S.ObjectEffect { ObjectID = ob.ObjectID, Effect = Effect.FlashOfLight });

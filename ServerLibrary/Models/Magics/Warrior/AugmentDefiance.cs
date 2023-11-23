@@ -12,7 +12,7 @@ namespace Server.Models.Magics
 
         public AugmentDefiance(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //Official anim is red skull, but leaving as default defiance anim otherwise a waste
         }
     }
 }

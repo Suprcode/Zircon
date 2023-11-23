@@ -1,8 +1,10 @@
 ﻿using Library;
+using Library.Network.ClientPackets;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
+using System.Runtime;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Envir.Commands.Command.Admin
@@ -27,16 +29,19 @@ namespace Server.Envir.Commands.Command.Admin
                 if (mInfo.NeedLevel1 > player.Level || mInfo.Class != player.Class || mInfo.School == MagicSchool.None)
                     continue;
 
-                if (!player.Magics.TryGetValue(mInfo.Magic, out uMagic))
+                if (!player.GetMagic(mInfo.Magic, out MagicObject magicObject))
                 {
                     uMagic = SEnvir.UserMagicList.CreateNewObject();
                     uMagic.Character = player.Character;
                     uMagic.Info = mInfo;
-                    player.Magics[mInfo.Magic] = uMagic;
 
                     player.SetupMagic(uMagic);
 
                     player.Enqueue(new S.NewMagic { Magic = uMagic.ToClientInfo() });
+                }
+                else
+                {
+                    uMagic = magicObject.Magic;
                 }
 
                 int level = player.Level >= mInfo.NeedLevel3 ? 3 : player.Level >= mInfo.NeedLevel2 ? 2 : 1;

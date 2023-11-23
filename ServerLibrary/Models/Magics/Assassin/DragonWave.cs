@@ -8,11 +8,18 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
 
+        public override bool AugmentedSkill => true;
+
         public DragonWave(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //Icon - 542, Augments FlameSplash, uses less MP, does more damage
-            //No Anim
+
+        }
+
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        {
+            power += power * Magic.GetPower() / 100;
+
+            return power;
         }
     }
 }

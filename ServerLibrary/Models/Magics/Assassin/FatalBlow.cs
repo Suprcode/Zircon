@@ -1,5 +1,6 @@
 ﻿using Library;
 using Server.DBModels;
+using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
 {
@@ -8,13 +9,38 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
 
+        public override bool AttackSkill => true;
+        public override bool PassiveSkill => true;
+
         public FatalBlow(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //Passive
-            //Icon - 474, 	When the opponent's health is below 30%, damage to the target increases.
-            //Attack power increases depending on the training level. (The activation itself is 100% activated)
-            //MagicEx10 - 600
+
+        }
+
+        public override AttackCast AttackCast(MagicType attackType)
+        {
+            var response = new AttackCast();
+
+            response.Magics.Add(Type);
+
+            return response;
+        }
+
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        {
+            if (ob.CurrentHP < ob.Stats[Stat.Health] * 100 / 30)
+            {
+                power += power * Magic.GetPower() / 100;
+
+                Player.LevelMagic(Magic);
+            }
+
+            return power;
+        }
+
+        public override void AttackComplete(MapObject target)
+        {
+            
         }
     }
 }

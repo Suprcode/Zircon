@@ -65,12 +65,7 @@ namespace Server.Models.Magics
                 Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
             }
 
-            if (!Player.Magics.TryGetValue(MagicType.FireWall, out UserMagic augMagic) || augMagic.Info.NeedLevel1 > Player.Level)
-            {
-                augMagic = null;
-            }
-
-            if (augMagic != null)
+            if (Player.GetMagic(MagicType.FireWall, out FireWall fireWall))
             {
                 foreach (ConquestWar war in SEnvir.ConquestWars)
                 {

@@ -157,6 +157,7 @@ namespace Client.Models
         {
             if (CEnvir.Now < StartTime) return;
             
+            
             if (Target != null)
             {
                 DrawX = Target.DrawX + AdditionalOffSet.X;

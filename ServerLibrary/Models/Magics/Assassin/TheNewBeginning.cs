@@ -24,6 +24,8 @@ namespace Server.Models.Magics
                 Ob = null
             };
 
+            Player.BuffRemove(BuffType.Cloak);
+
             var delay = SEnvir.Now.AddMilliseconds(500);
 
             ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type));

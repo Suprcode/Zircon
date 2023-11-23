@@ -7,12 +7,12 @@ using System.Drawing;
 
 namespace Server.Models.Magics
 {
-    [MagicType(MagicType.Mindfulness)]
-    public class Mindfulness : MagicObject
+    [MagicType(MagicType.SearingLight)]
+    public class SearingLight : MagicObject
     {
         protected override Element Element => Element.Holy;
 
-        public Mindfulness(PlayerObject player, UserMagic magic) : base(player, magic)
+        public SearingLight(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
@@ -46,13 +46,15 @@ namespace Server.Models.Magics
 
             var damage = Player.MagicAttack(new List<MagicType> { Type }, target);
 
-            if (damage > 0 && target.Level < Player.Level && SEnvir.Random.Next(3) == 0)
+            if (damage <= 0 || target.Level > Player.Level + 2) return;
+
+            if (SEnvir.Random.Next(3) == 0)
             {
                 target.ApplyPoison(new Poison
                 {
-                    Type = PoisonType.Silenced,
+                    Type = PoisonType.Fear,
                     TickCount = 1,
-                    TickFrequency = TimeSpan.FromSeconds(5 + Magic.Level),
+                    TickFrequency = TimeSpan.FromSeconds(Magic.Level + 2),
                     Owner = Player,
                 });
             }

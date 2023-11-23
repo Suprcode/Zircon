@@ -7,12 +7,31 @@ namespace Server.Models.Magics
     public class DualWeaponSkills : MagicObject
     {
         protected override Element Element => Element.None;
+        public override bool AttackSkill => true;
+        public override bool PassiveSkill => true;
 
         public DualWeaponSkills(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //Icon - 464, Using dual weapons does extra damage
-            //Passive
+
+        }
+
+        public override AttackCast AttackCast(MagicType attackType)
+        {
+            var response = new AttackCast();
+
+            if (Player.Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect == ItemEffect.DualWield)
+            {
+                response.Magics.Add(Type);
+            }
+
+            return response;
+        }
+
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        {
+            power += power * Magic.GetPower() / 100;
+
+            return power;
         }
     }
 }

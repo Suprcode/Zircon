@@ -405,6 +405,11 @@ namespace Client.Scenes.Views
                     TabButton.HoverIndex = 195;
                     TabButton.PressedIndex = 195;
                     break;
+                case MagicSchool.Horse:
+                    TabButton.Index = 172;
+                    TabButton.HoverIndex = 173;
+                    TabButton.PressedIndex = 173;
+                    break;
                 case MagicSchool.None:
                     TabButton.Index = 170;
                     TabButton.HoverIndex = 171;

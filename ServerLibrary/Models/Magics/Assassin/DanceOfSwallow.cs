@@ -83,7 +83,11 @@ namespace Server.Models.Magics
             Player.Broadcast(new S.ObjectTurn { ObjectID = Player.ObjectID, Direction = Direction, Location = CurrentLocation });
 
             Player.BuffRemove(BuffType.Transparency);
-            Player.BuffRemove(BuffType.Cloak);
+
+            if (!Player.GetMagic(MagicType.Stealth, out Stealth stealth) || !stealth.CheckCloak())
+            {
+                Player.BuffRemove(BuffType.Cloak);
+            }
 
             Player.CombatTime = SEnvir.Now;
 
@@ -177,7 +181,11 @@ namespace Server.Models.Magics
             Player.Broadcast(new S.ObjectTurn { ObjectID = Player.ObjectID, Direction = Direction, Location = CurrentLocation });
 
             Player.BuffRemove(BuffType.Transparency);
-            Player.BuffRemove(BuffType.Cloak);
+
+            if (!Player.GetMagic(MagicType.Stealth, out Stealth stealth) || !stealth.CheckCloak())
+            {
+                Player.BuffRemove(BuffType.Cloak);
+            }
 
             Player.CombatTime = SEnvir.Now;
 

@@ -11,7 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
-        public override bool ToggleSkill => true;
+        public override bool ChargeSkill => true;
 
         public bool CanFlamingSword { get; private set; }
         public DateTime FlamingSwordTime { get; private set; }
@@ -57,17 +57,17 @@ namespace Server.Models.Magics
             }
 
             //Delay DragonRise
-            if (Player.Magics.TryGetValue(MagicType.DragonRise, out UserMagic magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
+            if (Player.GetMagic(MagicType.DragonRise, out DragonRise dragonRise) && SEnvir.Now.AddSeconds(2) > dragonRise.Magic.Cooldown)
             {
-                magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
+                dragonRise.Magic.Cooldown = SEnvir.Now.AddSeconds(2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = dragonRise.Magic.Info.Index, Delay = 2000 });
             }
 
             //Delay BladeStorm
-            if (Player.Magics.TryGetValue(MagicType.BladeStorm, out magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
+            if (Player.GetMagic(MagicType.BladeStorm, out BladeStorm bladeStorm) && SEnvir.Now.AddSeconds(2) > bladeStorm.Magic.Cooldown)
             {
-                magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
+                bladeStorm.Magic.Cooldown = SEnvir.Now.AddSeconds(2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = bladeStorm.Magic.Info.Index, Delay = 2000 });
             }
         }
 
@@ -76,9 +76,6 @@ namespace Server.Models.Magics
             var response = new AttackCast();
 
             if (attackType != Type || !CanFlamingSword)
-                return response;
-
-            if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
             CanFlamingSword = false;

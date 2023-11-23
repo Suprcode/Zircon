@@ -57,6 +57,7 @@ namespace Server.Models.Magics
             var ob = (MapObject)data[1];
 
             if (ob?.Node == null || !Player.CanAttackTarget(ob) || (ob.Poison & PoisonType.Abyss) == PoisonType.Abyss) return;
+
             int power = Player.GetSP();
 
             int duration = (Magic.Level + 3) * 2;

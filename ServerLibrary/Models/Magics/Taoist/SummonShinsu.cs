@@ -69,8 +69,8 @@ namespace Server.Models.Magics
             ob.SummonLevel = Magic.Level * 2;
             ob.TameTime = SEnvir.Now.AddDays(365);
 
-            if (Player.Buffs.Any(x => x.Type == BuffType.StrengthOfFaith))
-                ob.Magics.Add(Player.Magics[MagicType.StrengthOfFaith]);
+            if (Player.Buffs.Any(x => x.Type == BuffType.StrengthOfFaith) && Player.GetMagic(MagicType.StrengthOfFaith, out StrengthOfFaith strengthOfFaith))
+                ob.Magics.Add(strengthOfFaith.Magic);
 
             var demonicRecovery = GetAugmentedSkill(MagicType.DemonicRecovery);
 

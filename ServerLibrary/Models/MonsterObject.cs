@@ -3,6 +3,7 @@ using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
+using Server.Models.Magics;
 using Server.Models.Monsters;
 using System;
 using System.Collections.Generic;
@@ -608,7 +609,7 @@ namespace Server.Models
                 case 128:
                     return new Doll { MonsterInfo = monsterInfo };
                 case 129:
-                    return new Tornado { MonsterInfo = monsterInfo};
+                    return new Monsters.Tornado { MonsterInfo = monsterInfo};
                 case 130:
                     return new UndeadSoul() { MonsterInfo = monsterInfo };
 
@@ -1007,6 +1008,8 @@ namespace Server.Models
 
             if (CurrentHP >= Stats[Stat.Health]) return;
 
+            if ((Poison & PoisonType.Hemorrhage) == PoisonType.Hemorrhage) return;
+
             int regen = (int)Math.Max(1, Stats[Stat.Health] * 0.02F); //2% every 10 seconds aprox
 
             ChangeHP(regen);
@@ -1165,6 +1168,12 @@ namespace Server.Models
         public virtual void ProcessTarget()
         {
             if (Target == null) return;
+
+            if ((Poison & PoisonType.Fear) == PoisonType.Fear)
+            {
+                Walk(Functions.DirectionFromPoint(Target.CurrentLocation, CurrentLocation));
+                return;
+            }
 
             if (!InAttackRange())
             {
@@ -1623,7 +1632,7 @@ namespace Server.Models
 
             int damage;
 
-            if (PoisonList.Any(x => x.Type == PoisonType.Abyss) && SEnvir.Random.Next(2) > 0)
+            if ((Poison & PoisonType.Abyss) == PoisonType.Abyss && SEnvir.Random.Next(2) > 0)
             {
                 ob.Dodged();
                 return 0;
@@ -2280,12 +2289,19 @@ namespace Server.Models
                 ActionTime += TimeSpan.FromMilliseconds(poison.Value * 100);
             }
 
-            if (PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
             {
                 AttackTime += TimeSpan.FromMilliseconds(AttackDelay);
                 ActionTime += TimeSpan.FromMilliseconds(Math.Min(MoveDelay, AttackDelay - 100));
             }
+
+            if ((Poison & PoisonType.Chain) == PoisonType.Chain)
+            {
+                AttackTime += TimeSpan.FromMilliseconds(100);
+                ActionTime += TimeSpan.FromMilliseconds(100);
+            }
         }
+
         public void UpdateMoveTime()
         {
             MoveTime = SEnvir.Now.AddMilliseconds(MoveDelay);
@@ -2299,7 +2315,7 @@ namespace Server.Models
                 ActionTime += TimeSpan.FromMilliseconds(poison.Value * 100);
             }
 
-            if (PoisonList.Any(x => x.Type == PoisonType.Neutralize))
+            if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
             {
                 AttackTime += TimeSpan.FromMilliseconds(MoveDelay);
                 ActionTime += TimeSpan.FromMilliseconds(Math.Min(MoveDelay - 100, AttackDelay));
@@ -2372,8 +2388,15 @@ namespace Server.Models
             else
                 ChangeHP(-power);
 
+            var chainPoison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Chain);
 
-
+            if (chainPoison != null)
+            {
+                if ((chainPoison.Owner is PlayerObject owner) && owner.GetMagic(MagicType.Chain, out Chain chain))
+                {
+                    chain.SiphonDamage(this, power);
+                }
+            }
 
             if (Dead) return power;
 
@@ -2956,6 +2979,7 @@ namespace Server.Models
 
             Broadcast(new S.ObjectTurn { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
         }
+
         public virtual bool Walk(MirDirection direction)
         {
             if (!CanMove) return false;
@@ -2964,6 +2988,16 @@ namespace Server.Models
             if (cell == null) return false;
 
             if (cell.IsBlocking(this, false)) return false;
+
+            if ((Poison & PoisonType.Chain) == PoisonType.Chain)
+            {
+                var newCell = Chain.CheckWalk(this, cell, ref direction);
+                if (newCell == null) return false;
+
+                if (newCell.IsBlocking(this, false)) return false;
+
+                cell = newCell;
+            }
 
             if (AvoidFireWall && cell.Objects != null)
             {
@@ -2994,8 +3028,6 @@ namespace Server.Models
 
             UpdateMoveTime();
 
-
-
             PreventSpellCheck = true;
             CurrentCell = cell; //.GetMovement(this);
             PreventSpellCheck = false;
@@ -3007,6 +3039,7 @@ namespace Server.Models
             CheckSpellObjects();
             return true;
         }
+
         protected virtual void MoveTo(Point target)
         {
             if (CurrentLocation == target) return;

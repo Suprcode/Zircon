@@ -1,5 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
+using Server.Envir;
+using System;
 
 namespace Server.Models.Magics
 {
@@ -8,13 +10,44 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
 
+        private bool Active { get; set; }
+
+        public bool LowHP
+        {
+            get { return (Player.CurrentHP * 100 / Player.Stats[Stat.Health]) < 30; }
+        }
+
         public LastStand(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //Icon - 448, increases strength when reaching low hp, automatic
-            //Passive
-            //BuffIcon - 204
-            //No anim?
+
+        }
+
+        public override void Process()
+        {
+            if (Player.Level < Magic.Info.NeedLevel1) return;
+
+            if (!Active && LowHP)
+            {
+                Active = true;
+
+                if (SEnvir.Random.Next(Globals.MagicMaxLevel + 1) > Magic.Level)
+                {
+                    return;
+                }
+
+                Stats buffStats = new()
+                {
+                    [Stat.PhysicalDefencePercent] = Magic.GetPower()
+                };
+
+                Player.BuffAdd(BuffType.LastStand, TimeSpan.MaxValue, buffStats, false, false, TimeSpan.Zero);
+                Player.LevelMagic(Magic);
+            }
+            else if (Active && !LowHP)
+            {
+                Active = false;
+                Player.BuffRemove(BuffType.LastStand);
+            }
         }
     }
 }

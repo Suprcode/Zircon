@@ -272,7 +272,7 @@ namespace Server.Envir.Translations
         public override string AccessoryRefineFailed { get; set; } = "The refine failed and your {0}'s have been destroyed";
 
         public override string ChargeExpire { get; set; } = "The energy for {0} has left your weapon.";
-        public override string ChargeFail { get; set; } = "Failed to gether the energy to charge {0}.";
+        public override string ChargeFail { get; set; } = "Failed to gather the energy to charge {0}.";
         public override string CloakCombat { get; set; } = "You cannot cast Cloak during Combat";
         public override string DashFailed { get; set; } = "You were not strong enough to move what is infront of you.";
         public override string WraithLevel { get; set; } = "{0} is too high of a level to be effected by your wraith grip.";

@@ -11,7 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
-        public override bool ToggleSkill => true;
+        public override bool ChargeSkill => true;
 
         public bool CanBladeStorm { get; private set; }
         public DateTime BladeStormTime {  get; private set; }
@@ -56,16 +56,16 @@ namespace Server.Models.Magics
                 Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = CanBladeStorm });
             }
 
-            if (Player.Magics.TryGetValue(MagicType.FlamingSword, out UserMagic magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
+            if (Player.GetMagic(MagicType.FlamingSword, out FlamingSword flamingSword) && SEnvir.Now.AddSeconds(2) > flamingSword.Magic.Cooldown)
             {
-                magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
+                flamingSword.Magic.Cooldown = SEnvir.Now.AddSeconds(2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = flamingSword.Magic.Info.Index, Delay = 2000 });
             }
 
-            if (Player.Magics.TryGetValue(MagicType.DragonRise, out magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
+            if (Player.GetMagic(MagicType.DragonRise, out DragonRise dragonRise) && SEnvir.Now.AddSeconds(2) > dragonRise.Magic.Cooldown)
             {
-                magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
+                dragonRise.Magic.Cooldown = SEnvir.Now.AddSeconds(2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = dragonRise.Magic.Info.Index, Delay = 2000 });
             }
         }
 
@@ -74,9 +74,6 @@ namespace Server.Models.Magics
             var response = new AttackCast();
 
             if (attackType != Type || !CanBladeStorm)
-                return response;
-
-            if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
             CanBladeStorm = false;

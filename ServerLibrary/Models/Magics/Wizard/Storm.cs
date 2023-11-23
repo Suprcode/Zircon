@@ -10,6 +10,7 @@ namespace Server.Models.Magics
 
         public Storm(PlayerObject player, UserMagic magic) : base(player, magic)
         {
+            //MagicEx7 - 900?
             //TODO - Green storm covers screen, particle effect
             //Icon - 492
             //https://www.youtube.com/watch?v=XRRkVxSLj1E&t=62s

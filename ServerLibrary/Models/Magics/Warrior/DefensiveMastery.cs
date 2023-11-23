@@ -16,9 +16,10 @@ namespace Server.Models.Magics
 
         public override Stats GetPassiveStats()
         {
-            var stats = new Stats();
-
-            stats[Stat.DefensiveMastery] += 1 + Magic.Level;
+            var stats = new Stats
+            {
+                [Stat.DefensiveMastery] = Magic.GetPower()
+            };
 
             return stats;
         }

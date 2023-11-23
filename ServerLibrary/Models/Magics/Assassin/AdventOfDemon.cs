@@ -16,9 +16,10 @@ namespace Server.Models.Magics
 
         public override Stats GetPassiveStats()
         {
-            var stats = new Stats();
-
-            stats[Stat.MaxAC] += Magic.GetPower();
+            var stats = new Stats
+            {
+                [Stat.MaxAC] = Magic.GetPower()
+            };
 
             return stats;
         }

@@ -1,9 +1,11 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using Server.Models.Magics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Server.Models
 {
@@ -21,7 +23,15 @@ namespace Server.Models
 
         protected abstract Element Element { get; }
         public virtual bool UpdateCombatTime => true;
+
+        /// <summary>
+        /// Indicates a skill which does not need to be manually cast to activate. May be triggered passively in different ways.
+        /// </summary>
         public virtual bool PassiveSkill => false; //TODO
+
+        /// <summary>
+        /// Indicates a skill which provides changes or bonuses to another skill. Cannot be used alone.
+        /// </summary>
         public virtual bool AugmentedSkill => false;
 
         //Magic variables
@@ -37,15 +47,18 @@ namespace Server.Models
 
         //Attack variables
         public virtual bool AttackSkill => false;
-        public virtual bool ToggleSkill => false;
+        public virtual bool ToggleSkill => false; //TODO //Skill is permanently turned on/off by the player
+        public virtual bool ChargeSkill => false; //TODO //Skill is enabled by the player, which either disables after a period of inactivity or through use
         public virtual bool IgnoreAccuracy => false;
+        public virtual bool IgnorePhysicalDefense => false;
+        public virtual int MaxLifeSteal => 750;
         public virtual bool HasFlameSplash(bool primary)
         {
             return false;
         }
-        public virtual bool HasLotus => false;
-        public virtual bool HasBladeStorm => false;
         public virtual bool HasMassacre => false;
+
+        public virtual int Order => 100;
 
         public MagicObject(PlayerObject player, UserMagic magic) 
         {
@@ -86,7 +99,11 @@ namespace Server.Models
 
         public virtual void MagicFinalise()
         {
-            Player.BuffRemove(BuffType.Cloak);
+            if (!Player.GetMagic(MagicType.Stealth, out Stealth stealth) || !stealth.CheckCloak())
+            {
+                Player.BuffRemove(BuffType.Cloak);
+            }
+
             Player.BuffRemove(BuffType.Transparency);
         }
 
@@ -113,17 +130,31 @@ namespace Server.Models
 
         }
 
-        public virtual void Cooldown(int attackDelay)
-        {
-
-        }
-
+        /// <summary>
+        /// Gets called during a physical attack if marked as an <see cref="AttackSkill"/>
+        /// </summary>
+        /// <param name="attackType">The attack magic the player has requested to cast</param>
+        /// <param name="validMagic">The magic which has been selected to be used as main attack</param>
+        /// <returns>AttackCast object</returns>
         public virtual AttackCast AttackCast(MagicType attackType)
         {
             return new AttackCast();
         }
 
-        public virtual void AttackLocations(List<MagicType> magics)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="attackDelay">Millisecond delay until next attack can occur</param>
+        public virtual void AttackLocationSuccess(int attackDelay)
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="magics">List of magics enabled from attack, should be passed through to the actual attack call</param>
+        public virtual void SecondaryAttackLocation(List<MagicType> magics)
         {
 
         }
@@ -269,6 +300,33 @@ namespace Server.Models
         {
 
         }
+
+        public static List<MagicType> GetOrderedMagic(List<MagicType> types)
+        {
+            return null;
+        }
+    }
+
+    public class MagicList : Dictionary<MagicType, MagicObject>
+    {
+        private IEnumerable<MagicType> orderedKeys;
+
+        public IEnumerable<MagicType> OrderedKeys
+        {
+            get
+            {
+                orderedKeys ??= this.Keys.OrderBy(key => this[key].Order).ThenBy(key => this[key].Type).ToList();
+
+                return orderedKeys;
+            }
+        }
+
+        public new void Add(MagicType key, MagicObject value)
+        {
+            orderedKeys = null;
+
+            base.Add(key, value);
+        }
     }
 
     public class MagicCast
@@ -306,7 +364,14 @@ namespace Server.Models
 
     public class AttackCast
     {
+        /// <summary>
+        /// List of all magics to be used in attack. Can only use Magics marked as "AttackSkill"
+        /// </summary>
         public List<MagicType> Magics = new();
+
+        /// <summary>
+        /// Indicates the requested Attack Magic has been successfully activated for use.
+        /// </summary>
         public bool Cast = false;
     }
 

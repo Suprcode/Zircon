@@ -64,11 +64,6 @@ namespace Server.Models.Magics
 
             UserMagic touchOfTheDeparted = GetAugmentedSkill(MagicType.TouchOfTheDeparted);
 
-            if (touchOfTheDeparted != null)
-            {
-                touchOfTheDeparted = null;
-            }
-
             ob.ApplyPoison(new Poison
             {
                 Value = power,

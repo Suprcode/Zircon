@@ -11,7 +11,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
-        public override bool ToggleSkill => true;
+        public override bool ChargeSkill => true;
 
         public bool CanDefensiveBlow { get; private set; }
         public DateTime DefensiveBlowTime {  get; private set; }
@@ -62,9 +62,6 @@ namespace Server.Models.Magics
             var response = new AttackCast();
 
             if (attackType != Type || !CanDefensiveBlow)
-                return response;
-
-            if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
             CanDefensiveBlow = false;

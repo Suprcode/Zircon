@@ -456,7 +456,7 @@ namespace Client.Envir
             float oldRate = DXManager.BlendRate;
 
             DXManager.SetBlend(true, rate);
-            
+
             DXManager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), colour);
             CEnvir.DPSCounter++;
 

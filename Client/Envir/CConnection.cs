@@ -1164,6 +1164,18 @@ namespace Client.Envir
                 return;
             }
         }
+
+        public void Process(S.ObjectSound p)
+        {
+            foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+            {
+                if (ob.ObjectID != p.ObjectID) continue;
+
+                ob.PlaySound(p.Magic);
+                return;
+            }
+        }
+
         public void Process(S.ObjectMining p)
         {
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer)
@@ -1520,6 +1532,19 @@ namespace Client.Envir
 
                         DXSoundManager.Play(SoundIndex.FireStormEnd);
                         break;
+                    case Effect.ChainOfFireExplode:
+                        var effect = new MirEffect(600, 12, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx10, 30, 60, Globals.FireColour)
+                        {
+                            Target = ob,
+                            Blend = true
+                        };
+
+                        effect.FrameIndexAction = () =>
+                        {
+                            if (effect.FrameIndex == 8)
+                                DXSoundManager.Play(SoundIndex.ChainofFireExplode);
+                        };
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -1549,14 +1574,23 @@ namespace Client.Envir
 
                     DXSoundManager.Play(SoundIndex.SummonShinsuEnd);
                     break;
-                case Effect.CursedDoll:
-                    new MirEffect(700, 13, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 30, 60, Globals.NoneColour)
+                case Effect.MirrorImage:
+                    new MirEffect(1280, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 30, 60, Globals.NoneColour)
                     {
                         MapTarget = p.Location,
                         Blend = true,
                     };
 
                     DXSoundManager.Play(SoundIndex.SummonSkeletonEnd);
+                    break;
+                case Effect.CursedDoll:
+                    new MirEffect(700, 13, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 30, 60, Globals.NoneColour)
+                    {
+                        MapTarget = p.Location,
+                        Blend = true,
+                    };
+                    
+                    DXSoundManager.Play(SoundIndex.CursedDollEnd);
                     break;
                 case Effect.UndeadSoul:
                     new MirEffect(3300, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx20, 35, 10, Globals.NoneColour)
@@ -1571,6 +1605,15 @@ namespace Client.Envir
                     };
 
                     DXSoundManager.Play(SoundIndex.SummonDeadEnd);
+                    break;
+                case Effect.BurningFireExplode:
+                    new MirEffect(1100, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx6, 30, 60, Globals.FireColour)
+                    {
+                        MapTarget = p.Location,
+                        Blend = true
+                    };
+
+                    DXSoundManager.Play(SoundIndex.FireStormEnd);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -1728,6 +1771,9 @@ namespace Client.Envir
                 case MagicType.Karma:
                     if (GameScene.Game.User.AttackMagic == p.Magic)
                         GameScene.Game.User.AttackMagic = MagicType.None;
+                    break;
+                case MagicType.DragonBlood:
+                    GameScene.Game.User.CanPoisonAttack = p.CanUse;
                     break;
             }
         }

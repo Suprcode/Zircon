@@ -22,7 +22,7 @@ namespace Server.Models.Magics
 
         public override void RefreshToggle()
         {
-            if (Player.Character.CanDestructiveSurge && Player.Magics.ContainsKey(Type))
+            if (Player.Character.CanDestructiveSurge)
                 Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = true });
         }
 
@@ -37,9 +37,6 @@ namespace Server.Models.Magics
             var response = new AttackCast();
 
             if (attackType != Type)
-                return response;
-
-            if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
             int cost = Magic.Cost;
@@ -66,7 +63,7 @@ namespace Server.Models.Magics
             return response;
         }
 
-        public override void AttackLocations(List<MagicType> magics)
+        public override void SecondaryAttackLocation(List<MagicType> magics)
         {
             for (int i = 1; i < 8; i++)
                 Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, i)), magics, false);

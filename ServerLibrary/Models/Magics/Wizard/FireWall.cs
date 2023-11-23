@@ -1,11 +1,8 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 
 namespace Server.Models.Magics
 {
@@ -73,11 +70,11 @@ namespace Server.Models.Magics
 
             var delay = SEnvir.Now.AddMilliseconds(500);
 
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Up))));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Down))));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(location)));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Left))));
-            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, Player.CurrentMap.GetCell(Functions.Move(location, MirDirection.Right))));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(location, MirDirection.Up))));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(location, MirDirection.Down))));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(location)));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(location, MirDirection.Left))));
+            ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, CurrentMap.GetCell(Functions.Move(location, MirDirection.Right))));
 
             return response;
         }

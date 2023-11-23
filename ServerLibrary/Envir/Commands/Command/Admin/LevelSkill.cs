@@ -27,12 +27,15 @@ namespace Server.Envir.Commands.Command.Admin
 
             if (int.TryParse(vals[3], out int tlevel))
             {
-                player.Magics[tinfo.Magic].Level = tlevel;
-                player.Magics[tinfo.Magic].Experience = 0;
+                if (player.GetMagic(tinfo.Magic, out MagicObject magicObject))
+                {
+                    magicObject.Magic.Level = tlevel;
+                    magicObject.Magic.Experience = 0;
 
-                player.Enqueue(new S.MagicLeveled { InfoIndex = tinfo.Index, Level = tlevel, Experience = 0 });
-                player.RefreshStats();
-                player.Connection.ReceiveChat(string.Format("{0}'s {1} has been leveled to {2}", vals[1], vals[2], vals[3]), MessageType.System);
+                    player.Enqueue(new S.MagicLeveled { InfoIndex = tinfo.Index, Level = tlevel, Experience = 0 });
+                    player.RefreshStats();
+                    player.Connection.ReceiveChat(string.Format("{0}'s {1} has been leveled to {2}", vals[1], vals[2], vals[3]), MessageType.System);
+                }
             }
         }
     }

@@ -3,13 +3,14 @@ using Server.DBModels;
 using Server.Envir;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Server.Models.Magics
 {
     [MagicType(MagicType.Rake)]
     public class Rake : MagicObject
     {
-        protected override Element Element => Element.Ice;
+        protected override Element Element => Element.None;
         protected override int Slow => 1;
         protected override int SlowLevel => 10;
 
@@ -24,6 +25,13 @@ namespace Server.Models.Magics
             {
                 Ob = null
             };
+
+            if (!Player.Buffs.Any(x => x.Type == BuffType.Cloak))
+            {
+                return response;
+            }
+
+            Player.BuffRemove(BuffType.Cloak);
 
             var cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction));
 

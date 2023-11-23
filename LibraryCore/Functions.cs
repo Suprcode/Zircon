@@ -219,7 +219,9 @@ namespace Library
                 case MagicType.Neutralize:
                 case MagicType.CorpseExploder:
                 case MagicType.SoulResonance:
-                case MagicType.Mindfulness:
+                case MagicType.SearingLight:
+
+                case MagicType.Hemorrhage:
                     return MirAnimation.Combat1;
 
                 case MagicType.Interchange:
@@ -276,6 +278,7 @@ namespace Library
 
                 case MagicType.PoisonousCloud:
                 case MagicType.SummonPuppet:
+                case MagicType.Containment:
                     return MirAnimation.Combat14;
 
                 case MagicType.DragonRepulse:
@@ -293,10 +296,15 @@ namespace Library
                 case MagicType.Abyss:
                 case MagicType.Evasion:
                 case MagicType.RagingWind:
+                case MagicType.Concentration:
+                case MagicType.BurningFire:
+                case MagicType.Chain:
                     return MirAnimation.Combat9;
 
                 case MagicType.Rake:
+                case MagicType.MagicCombustion:
                     return MirAnimation.Combat5;
+
                 case MagicType.FlashOfLight:
                     return MirAnimation.Combat10;
 
@@ -306,6 +314,7 @@ namespace Library
                 case MagicType.Fetter:
                 case MagicType.Endurance:
                 case MagicType.Invincibility:
+
                 case MagicType.Spiritualism:
                     return MirAnimation.Combat15;
 

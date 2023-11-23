@@ -19,7 +19,7 @@ namespace Server.Models.Magics
 
         public override void RefreshToggle()
         {
-            if (Player.Character.CanThrusting && Player.Magics.ContainsKey(Type))
+            if (Player.Character.CanThrusting)
                 Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = true });
         }
 
@@ -36,23 +36,21 @@ namespace Server.Models.Magics
             if (attackType != Type)
                 return response;
 
-            if (Player.Level < Magic.Info.NeedLevel1)
-                return response;
-
             int cost = Magic.Cost;
 
             if (cost <= Player.CurrentMP)
             {
                 Player.ChangeMP(-cost);
-
+                response.Cast = true;
                 response.Magics.Add(Type);
+
                 return response;
             }
 
             return response;
         }
 
-        public override void AttackLocations(List<MagicType> magics)
+        public override void SecondaryAttackLocation(List<MagicType> magics)
         {
             Player.AttackLocation(Functions.Move(Player.CurrentLocation, Player.Direction, 2), magics, false);
         }

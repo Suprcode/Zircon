@@ -78,7 +78,6 @@ namespace Server.DBModels
         {
             for (int i = Magics.Count - 1; i >= 0; i--)
             {
-                Character.Player?.Magics.Remove(Magics[i].Info.Magic);
                 Magics[i].Delete();
             }
 

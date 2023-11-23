@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Threading;
-using Library;
+﻿using Library;
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir.Translations;
 using Server.Models;
-using G = Library.Network.GeneralPackets;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Sockets;
 using C = Library.Network.ClientPackets;
+using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Envir
@@ -626,29 +625,29 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
-            foreach (KeyValuePair<MagicType, UserMagic> pair in Player.Magics)
+            foreach (var type in Player.MagicObjects.Keys)
             {
-                if (pair.Value.Set1Key == p.Set1Key)
-                    pair.Value.Set1Key = SpellKey.None;
+                var magicObject = Player.MagicObjects[type];
 
-                if (pair.Value.Set2Key == p.Set2Key)
-                    pair.Value.Set2Key = SpellKey.None;
+                if (magicObject.Magic.Set1Key == p.Set1Key)
+                    magicObject.Magic.Set1Key = SpellKey.None;
 
-                if (pair.Value.Set3Key == p.Set3Key)
-                    pair.Value.Set3Key = SpellKey.None;
+                if (magicObject.Magic.Set2Key == p.Set2Key)
+                    magicObject.Magic.Set2Key = SpellKey.None;
 
-                if (pair.Value.Set4Key == p.Set4Key)
-                    pair.Value.Set4Key = SpellKey.None;
+                if (magicObject.Magic.Set3Key == p.Set3Key)
+                    magicObject.Magic.Set3Key = SpellKey.None;
+
+                if (magicObject.Magic.Set4Key == p.Set4Key)
+                    magicObject.Magic.Set4Key = SpellKey.None;
             }
 
-            UserMagic magic;
+            if (!Player.GetMagic(p.Magic, out MagicObject magic)) return;
 
-            if (!Player.Magics.TryGetValue(p.Magic, out magic)) return;
-
-            magic.Set1Key = p.Set1Key;
-            magic.Set2Key = p.Set2Key;
-            magic.Set3Key = p.Set3Key;
-            magic.Set4Key = p.Set4Key;
+            magic.Magic.Set1Key = p.Set1Key;
+            magic.Magic.Set2Key = p.Set2Key;
+            magic.Magic.Set3Key = p.Set3Key;
+            magic.Magic.Set4Key = p.Set4Key;
         }
 
         public void Process(C.GroupSwitch p)

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using Library;
+﻿using Library;
 using Library.Network;
 using Server.DBModels;
 using Server.Envir;
+using Server.Models.Magics;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 
@@ -134,6 +134,8 @@ namespace Server.Models
 
         public void ProcessSpell(MapObject ob)
         {
+            bool explode = false;
+
             switch (Effect)
             {
                 case SpellEffect.PoisonousCloud:
@@ -209,8 +211,34 @@ namespace Server.Models
                         }
                     }
                     break;
+                case SpellEffect.BurningFire:
+                    {
+                        if (Owner is not PlayerObject player || !player.CanAttackTarget(ob)) return;
+
+                        explode = true;
+                    }
+                    break;
+            }
+
+            if (explode)
+            {
+                switch (Effect)
+                {
+                    case SpellEffect.BurningFire:
+                        {
+                            if ((Owner is PlayerObject owner) && owner.GetMagic(MagicType.BurningFire, out BurningFire burningFire))
+                            {
+                                burningFire.Explode(ob.CurrentMap, ob.CurrentLocation);
+                            }
+                        }
+                        break;
+                }
+
+                TickCount = 0;
+                TickTime = SEnvir.Now;
             }
         }
+
         protected override void OnSpawned()
         {
             base.OnSpawned();

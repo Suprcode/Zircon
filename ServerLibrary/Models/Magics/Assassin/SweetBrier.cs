@@ -3,7 +3,6 @@ using Server.DBModels;
 using Server.Envir;
 using System;
 using System.Linq;
-
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
@@ -14,7 +13,8 @@ namespace Server.Models.Magics
         protected override Element Element => Element.None;
 
         public override bool IgnoreAccuracy => true;
-        public override bool HasLotus => true;
+        public override bool IgnorePhysicalDefense => true;
+        public override int MaxLifeSteal => 1500;
         public override bool AttackSkill => true;
 
         public SweetBrier(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -27,9 +27,6 @@ namespace Server.Models.Magics
             var response = new AttackCast();
 
             if (attackType != Type)
-                return response;
-
-            if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
             if (SEnvir.Now < Magic.Cooldown)
@@ -50,29 +47,29 @@ namespace Server.Models.Magics
             return response;
         }
 
-        public override void Cooldown(int attackDelay)
+        public override void AttackLocationSuccess(int attackDelay)
         {
             Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
 
-            if (Player.Magics.TryGetValue(MagicType.FullBloom, out UserMagic magic))
+            if (Player.GetMagic(MagicType.FullBloom, out FullBloom fullBloom))
             {
-                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                fullBloom.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = fullBloom.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
             }
-            if (Player.Magics.TryGetValue(MagicType.WhiteLotus, out magic))
+            if (Player.GetMagic(MagicType.WhiteLotus, out WhiteLotus whiteLotus))
             {
-                magic.Cooldown = SEnvir.Now.AddMilliseconds(magic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                whiteLotus.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = whiteLotus.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
             }
-            if (Player.Magics.TryGetValue(MagicType.RedLotus, out magic))
+            if (Player.GetMagic(MagicType.RedLotus, out RedLotus redLotus))
             {
-                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                redLotus.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = redLotus.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
             }
-            if (Player.Magics.TryGetValue(MagicType.SweetBrier, out magic))
+            if (Player.GetMagic(MagicType.SweetBrier, out SweetBrier sweetBrier))
             {
-                magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = magic.Info.Delay });
+                sweetBrier.Magic.Cooldown = SEnvir.Now.AddMilliseconds(sweetBrier.Magic.Info.Delay);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = sweetBrier.Magic.Info.Index, Delay = sweetBrier.Magic.Info.Delay });
             }
         }
 

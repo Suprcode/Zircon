@@ -1,7 +1,7 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 using Server.Envir;
+using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
 {
@@ -10,6 +10,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public override int Order => 999;
 
         public CalamityOfFullMoon(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -20,13 +21,16 @@ namespace Server.Models.Magics
         {
             var response = new AttackCast();
 
-            if (Player.Level < Magic.Info.NeedLevel1)
+            if (attackType != MagicType.None)
                 return response;
 
-            if (SEnvir.Random.Next(2) != 0)
+            if (SEnvir.Random.Next(Globals.MagicMaxLevel + 1) > Magic.Level)
                 return response;
 
             response.Magics.Add(Type);
+
+            if (SEnvir.Random.Next(2) == 0)
+                Player.Broadcast(new S.ObjectSound { ObjectID = Player.ObjectID, Magic = Type });
 
             return response;
         }

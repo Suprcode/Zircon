@@ -12,7 +12,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
-        public override bool ToggleSkill => true;
+        public override bool ChargeSkill => true;
 
         public bool CanDragonRise { get; private set; }
         public DateTime DragonRiseTime { get; private set; }
@@ -58,17 +58,17 @@ namespace Server.Models.Magics
             }
 
             //Delay FlamingSword
-            if (Player.Magics.TryGetValue(MagicType.FlamingSword, out UserMagic magic) && SEnvir.Now.AddSeconds(2) > Magic.Cooldown)
+            if (Player.GetMagic(MagicType.FlamingSword, out FlamingSword flamingSword) && SEnvir.Now.AddSeconds(2) > flamingSword.Magic.Cooldown)
             {
-                magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
+                flamingSword.Magic.Cooldown = SEnvir.Now.AddSeconds(2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = flamingSword.Magic.Info.Index, Delay = 2000 });
             }
 
             //Delay BladeStorm
-            if (Player.Magics.TryGetValue(MagicType.BladeStorm, out magic) && SEnvir.Now.AddSeconds(2) > magic.Cooldown)
+            if (Player.GetMagic(MagicType.BladeStorm, out BladeStorm bladeStorm) && SEnvir.Now.AddSeconds(2) > bladeStorm.Magic.Cooldown)
             {
-                magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = magic.Info.Index, Delay = 2000 });
+                bladeStorm.Magic.Cooldown = SEnvir.Now.AddSeconds(2);
+                Player.Enqueue(new S.MagicCooldown { InfoIndex = bladeStorm.Magic.Info.Index, Delay = 2000 });
             }
         }
 
@@ -77,9 +77,6 @@ namespace Server.Models.Magics
             var response = new AttackCast();
 
             if (attackType != Type || !CanDragonRise)
-                return response;
-
-            if (Player.Level < Magic.Info.NeedLevel1)
                 return response;
 
             CanDragonRise = false;
@@ -91,7 +88,7 @@ namespace Server.Models.Magics
             return response;
         }
 
-        public override void AttackLocations(List<MagicType> magics)
+        public override void SecondaryAttackLocation(List<MagicType> magics)
         {
             Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, -1)), magics, false);
             Player.AttackLocation(Functions.Move(CurrentLocation, Functions.ShiftDirection(Direction, 1)), magics, false);

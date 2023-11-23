@@ -70,7 +70,11 @@ namespace Server.Models.Magics
 
             int value = 0;
             if (pledgeofBlood != null)
+            {
                 value = pledgeofBlood.GetPower();
+
+                Player.LevelMagic(pledgeofBlood);
+            }
 
             Stats buffStats = new Stats
             {
@@ -81,7 +85,6 @@ namespace Server.Models.Magics
             ob.BuffAdd(BuffType.Cloak, TimeSpan.MaxValue, buffStats, true, false, TimeSpan.FromSeconds(2));
 
             Player.LevelMagic(Magic);
-            Player.LevelMagic(pledgeofBlood);
 
             if (!forceGhost)
             {

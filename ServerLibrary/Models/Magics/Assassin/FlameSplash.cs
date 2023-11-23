@@ -3,7 +3,6 @@ using Server.DBModels;
 using Server.Envir;
 using System;
 using System.Collections.Generic;
-
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
@@ -29,7 +28,7 @@ namespace Server.Models.Magics
 
         public override void RefreshToggle()
         {
-            if (Player.Character.CanFlameSplash && Player.Magics.ContainsKey(MagicType.FlameSplash))
+            if (Player.Character.CanFlameSplash)
                 Player.Enqueue(new S.MagicToggle { Magic = MagicType.FlameSplash, CanUse = true });
         }
 
@@ -46,10 +45,15 @@ namespace Server.Models.Magics
             if (attackType != Type)
                 return response;
 
-            if (Player.Level < Magic.Info.NeedLevel1)
-                return response;
-
             int cost = Magic.Cost;
+
+            var dragonWave = GetAugmentedSkill(MagicType.DragonWave);
+
+            if (dragonWave != null)
+            {
+                cost -= dragonWave.Cost;
+                response.Magics.Add(MagicType.DragonWave);
+            }
 
             if (cost <= Player.CurrentMP)
             {
@@ -65,7 +69,7 @@ namespace Server.Models.Magics
             return response;
         }
 
-        public override void AttackLocations(List<MagicType> magics)
+        public override void SecondaryAttackLocation(List<MagicType> magics)
         {
             int count = 0;
             List<MirDirection> directions = new List<MirDirection>();
@@ -75,7 +79,16 @@ namespace Server.Models.Magics
 
             directions.Remove(Direction);
 
-            while (count < 4)
+            int targetCount = 4;
+
+            var dragonWave = GetAugmentedSkill(MagicType.DragonWave);
+
+            if (dragonWave != null && dragonWave.Level >= 3)
+            {
+                targetCount = 8;
+            }
+
+            while (count < targetCount)
             {
                 MirDirection dir = directions[SEnvir.Random.Next(directions.Count)];
 

@@ -216,7 +216,7 @@ namespace Client.Models
         public MagicType AttackMagic;
 
         public ObjectAction MagicAction;
-        public bool CanPowerAttack;
+        public bool CanPowerAttack, CanPoisonAttack;
 
         public ClientUserDiscipline Discipline;
 
@@ -470,8 +470,6 @@ namespace Client.Models
                         }
                     }
 
-                    //TODO - Move to magicobject??
-
                     MagicType attackMagic = MagicType.None;
 
                     if (AttackMagic != MagicType.None)
@@ -543,6 +541,19 @@ namespace Client.Models
                         foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in Magics)
                         {
                             if (pair.Key.Magic != MagicType.DestructiveSurge) continue;
+
+                            if (pair.Value.Cost > CurrentMP) break;
+
+                            attackMagic = pair.Key.Magic;
+                            break;
+                        }
+                    }
+
+                    if (CanPoisonAttack && TargetObject != null)
+                    {
+                        foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in Magics)
+                        {
+                            if (pair.Key.Magic != MagicType.DragonBlood) continue;
 
                             if (pair.Value.Cost > CurrentMP) break;
 

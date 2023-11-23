@@ -289,6 +289,8 @@ namespace Library
         DragonRepulse = 408,
         Evasion = 409,
         RagingWind = 410,
+        LastStand = 411,
+        Concentration = 412,
 
         MagicWeakness = 500,
     }
@@ -683,7 +685,7 @@ namespace Library
         Neutralize = 340,
         AugmentNeutralize = 341,
         DarkSoulPrison = 342,
-        Mindfulness = 343,
+        SearingLight = 343,
         AugmentCelestialLight = 344,
         CorpseExploder = 345,
         SummonDead = 346,
@@ -709,7 +711,7 @@ namespace Library
         GhostWalk = 419,
         ElementalPuppet = 420,
         Rejuvenation = 421,
-        Resolution = 422,//NOT CODED
+        Resolution = 422,
         ChangeOfSeasons = 423,//Removed From Official
         Release = 424,
         FlameSplash = 425,
@@ -722,25 +724,25 @@ namespace Library
         AdventOfDevil = 432,
         Abyss = 433,
         FlashOfLight = 434,
-        Stealth = 435,//NOT CODED
+        Stealth = 435,
         Evasion = 436,
         RagingWind = 437,
         Unused = 438,//UNUSED
         Massacre = 439,
         ArtOfShadows = 440,
-        FatalBlow = 441,//TODO
-        LastStand = 442,//TODO
-        Vitality = 443,//TODO
-        Chain = 444,//TODO
-        Concentration = 445,//TODO
-        DualWeaponSkills = 446,//TODO
-        Containment = 447,//TODO
-        Unknown = 448,//TODO
-        ChainOfFire = 449,//TODO
-        DragonBlood = 450,//TODO
-        DragonWave = 451,//TODO
-        MagicCombustion = 452,//TODO
-        BurningFire = 453,//TODO
+        DragonBlood = 441,
+        FatalBlow = 442,
+        LastStand = 443,
+        MagicCombustion = 444,
+        Vitality = 445,
+        Chain = 446,
+        Concentration = 447,
+        DualWeaponSkills = 448,
+        Containment = 449,
+        DragonWave = 450,
+        Hemorrhage = 451,
+        BurningFire = 452,
+        ChainOfFire = 453,
 
         MonsterScortchedEarth = 501,
         MonsterIceStorm = 502,
@@ -1085,6 +1087,8 @@ namespace Library
         SweetBrier,
         Karma,
 
+        MirrorImage,
+
         Puppet,
         PuppetFire,
         PuppetIce,
@@ -1101,9 +1105,11 @@ namespace Library
 
         DanceOfSwallow,
         FlashOfLight,
+        ChainOfFireExplode,
 
         DemonExplosion,
-        ParasiteExplode
+        ParasiteExplode,
+        BurningFireExplode
     }
 
     [Flags]
@@ -1120,7 +1126,11 @@ namespace Library
         Abyss = 1 << 7,         //Reduces monster viewrange, displays blinding effect (player)
         Parasite = 1 << 8,      //Tick damage, explosion, ignores transparency (monster), displays effect
         Neutralize = 1 << 9,    //Stops attackTime, slows actionTime, displays effect (needs code revisiting)
-        Burn = 1 << 10,         //Tick damage, displays effect
+        Fear = 1 << 10,
+        Burn = 1 << 11,         //Tick damage, displays effect
+        Containment = 1 << 12,  //Tick damage, stops movement, displays effect
+        Chain = 1 << 13,        //Tick damage, limits movement, displays effect
+        Hemorrhage = 1 << 14,   //Tick damage, stops recovery, displays effect
     }
 
     public enum SpellEffect
@@ -1133,9 +1143,10 @@ namespace Library
         Tempest,
 
         TrapOctagon,
+        DarkSoulPrison,
 
         PoisonousCloud,
-        DarkSoulPrison,
+        BurningFire,
 
         Rubble,
 
@@ -1145,6 +1156,7 @@ namespace Library
 
     public enum MagicEffect
     {
+        ReflectDamage,
         Assault,
         DefensiveBlow,
 
@@ -1165,8 +1177,12 @@ namespace Library
         LifeSteal,
         Silence,
         Blind,
+        Fear,
         Abyss,
         DragonRepulse,
+        Containment,
+        Chain,
+        Hemorrhage,
 
         Ranking,
         Developer,
@@ -1360,6 +1376,8 @@ namespace Library
         StatExtractor = 90,
         SpiritBlade = 91,
         RefineExtractor = 92,
+
+        DualWield = 100
     }
 
     public enum CurrencyType
@@ -1895,6 +1913,10 @@ namespace Library
 
         DefianceStart,
 
+        ReflectDamageStart,
+
+        InvincibilityStart,
+
         AssaultStart,
 
         SwiftBladeEnd,
@@ -2015,6 +2037,8 @@ namespace Library
         SummonSkeletonStart,
         SummonSkeletonEnd,
 
+        CursedDollEnd,
+
         InvisibilityEnd,
 
         MassInvisibilityTravel,
@@ -2064,11 +2088,16 @@ namespace Library
         SweetBrierMale,
         SweetBrierFemale,
 
+        WaningMoon,
+
+        CalamityOfFullMoon,
+
         RakeStart,
 
         Karma,
 
         TheNewBeginning,
+        Concentration,
 
         SummonPuppet,
 
@@ -2079,6 +2108,7 @@ namespace Library
         EvasionStart,
         RagingWindStart,
 
+        ChainofFireExplode,
         #endregion
 
         #region Monsters

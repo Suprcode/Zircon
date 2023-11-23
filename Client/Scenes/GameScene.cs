@@ -3003,9 +3003,6 @@ namespace Client.Scenes
                     if (CanAttackTarget(MouseObject))
                         target = MouseObject;
 
-                    //    if (target == null) //TODO
-                    //        ;//target = GetCloseesTarget();
-
                     if (target == null) return;
 
                     if (!Functions.InRange(target.CurrentLocation, User.CurrentLocation, Globals.MagicRange))
@@ -3049,11 +3046,9 @@ namespace Client.Scenes
                 case MagicType.ImprovedExplosiveTalisman:
                 case MagicType.Parasite:
                 case MagicType.Neutralize:
-                case MagicType.Mindfulness:
-                    //Has Target
-                    if (CanAttackTarget(MagicObject))
-                        target = MagicObject;
+                case MagicType.SearingLight:
 
+                case MagicType.Hemorrhage:
                     if (CanAttackTarget(MouseObject))
                     {
                         target = MouseObject;
@@ -3076,6 +3071,12 @@ namespace Client.Scenes
                         target = MouseObject;
                     break;
 
+                case MagicType.MagicCombustion:
+                    if (!CanAttackTarget(MouseObject) || MouseObject.Race != ObjectType.Player) return;
+
+                    target = MouseObject;
+                    break;
+
                 case MagicType.Heal:
                 case MagicType.Purification:
                     target = MouseObject ?? User;
@@ -3090,7 +3091,7 @@ namespace Client.Scenes
                     target = MouseObject;
                     break;
                 case MagicType.SoulResonance:
-                    //if (MouseObject == null || MouseObject.Dead || MouseObject.Race != ObjectType.Player || !IsAlly(MouseObject.ObjectID)) return;
+                    if (MouseObject == null || MouseObject.Dead || MouseObject.Race != ObjectType.Player || !IsAlly(MouseObject.ObjectID)) return;
 
                     target = MouseObject;
                     break;
@@ -3108,6 +3109,15 @@ namespace Client.Scenes
                     if (Equipment[(int)EquipmentSlot.Amulet] == null || Equipment[(int)EquipmentSlot.Amulet].Info.Shape != 0 || Equipment[(int)EquipmentSlot.Amulet].Count < 1) return;
 
                     direction = MirDirection.Down;
+                    break;
+
+                case MagicType.Rake:
+                    if (!User.VisibleBuffs.Contains(BuffType.Cloak)) return;
+                    break;
+
+                case MagicType.Chain:
+                    if (CanAttackTarget(MouseObject) && MouseObject.Race == ObjectType.Monster)
+                        target = MouseObject;
                     break;
 
                 case MagicType.Defiance:
@@ -3142,7 +3152,6 @@ namespace Client.Scenes
                     break;
                 case MagicType.JudgementOfHeaven:
                     break;
-
                 case MagicType.SeismicSlam:
                 case MagicType.CrushingWave:
 
@@ -3177,6 +3186,8 @@ namespace Client.Scenes
                 case MagicType.FlashOfLight:
                 case MagicType.Evasion:
                 case MagicType.RagingWind:
+                case MagicType.Concentration:
+                case MagicType.Containment:
                     break;
 
                 case MagicType.SwiftBlade:
@@ -3201,6 +3212,8 @@ namespace Client.Scenes
                 case MagicType.ElementalSuperiority:
                 case MagicType.BloodLust:
                 case MagicType.MassHeal:
+
+                case MagicType.BurningFire:
                     if (!Functions.InRange(MapControl.MapLocation, User.CurrentLocation, Globals.MagicRange))
                     {
                         if (CEnvir.Now < OutputTime) return;

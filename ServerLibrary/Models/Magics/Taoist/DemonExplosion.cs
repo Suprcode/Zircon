@@ -4,7 +4,6 @@ using Server.Envir;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
@@ -16,7 +15,7 @@ namespace Server.Models.Magics
 
         public DemonExplosion(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Leaves firewall on floor
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

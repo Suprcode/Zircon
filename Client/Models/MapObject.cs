@@ -365,6 +365,11 @@ namespace Client.Models
             if ((Poison & PoisonType.Paralysis) == PoisonType.Paralysis)
                 DrawColour = Color.DimGray;
 
+            if (Stats?[Stat.ClearRing] > 0 || VisibleBuffs.Contains(BuffType.Invisibility) || VisibleBuffs.Contains(BuffType.Cloak) || VisibleBuffs.Contains(BuffType.Transparency))
+                Opacity = 0.5f;
+            else
+                Opacity = 1f;
+
             if ((Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip)
             {
                 if (CanShowWraithGrip)
@@ -382,6 +387,15 @@ namespace Client.Models
             else
             {
                 EndMagicEffect(MagicEffect.Silence);
+            }
+
+            if ((Poison & PoisonType.Fear) == PoisonType.Fear)
+            {
+                CreateMagicEffect(MagicEffect.Fear);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.Fear);
             }
 
             if ((Poison & PoisonType.Abyss) == PoisonType.Abyss)
@@ -411,6 +425,33 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.Burn);
             }
 
+            if ((Poison & PoisonType.Containment) == PoisonType.Containment)
+            {
+                CreateMagicEffect(MagicEffect.Containment);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.Containment);
+            }
+
+            if ((Poison & PoisonType.Chain) == PoisonType.Chain)
+            {
+                CreateMagicEffect(MagicEffect.Chain);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.Chain);
+            }
+
+            if ((Poison & PoisonType.Hemorrhage) == PoisonType.Hemorrhage)
+            {
+                CreateMagicEffect(MagicEffect.Hemorrhage);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.Hemorrhage);
+            }
+
             if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
             {
                 CreateMagicEffect(MagicEffect.Neutralize);
@@ -419,11 +460,6 @@ namespace Client.Models
             {
                 EndMagicEffect(MagicEffect.Neutralize);
             }
-
-            if (Stats?[Stat.ClearRing] > 0 || VisibleBuffs.Contains(BuffType.Invisibility) || VisibleBuffs.Contains(BuffType.Cloak) || VisibleBuffs.Contains(BuffType.Transparency))
-                Opacity = 0.5f;
-            else
-                Opacity = 1f;
 
             if (VisibleBuffs.Contains(BuffType.MagicShield))
             {
@@ -461,6 +497,15 @@ namespace Client.Models
                 {
                     EndMagicEffect(MagicEffect.Ranking);
                 }
+            }
+
+            if (VisibleBuffs.Contains(BuffType.ReflectDamage))
+            {
+                CreateMagicEffect(MagicEffect.ReflectDamage);
+            }
+            else
+            {
+                EndMagicEffect(MagicEffect.ReflectDamage);
             }
 
             if (VisibleBuffs.Contains(BuffType.LifeSteal))
@@ -2072,7 +2117,7 @@ namespace Client.Models
 
                         #region Mindfulness
 
-                        case MagicType.Mindfulness:
+                        case MagicType.SearingLight:
                             foreach (Point point in MagicLocations)
                             {
                                 Effects.Add(spell = new MirProjectile(1210, 10, TimeSpan.FromMilliseconds(70), LibraryFile.MagicEx3, 35, 35, Globals.HolyColour, CurrentLocation, null)
@@ -2283,6 +2328,129 @@ namespace Client.Models
                         //Evasion
 
                         //Raging Wind
+
+                        #region Burning Fire
+
+                        case MagicType.BurningFire:
+
+                            foreach (Point point in MagicLocations)
+                            {
+                                spell = new MirEffect(900, 10, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx6, 10, 35, Globals.FireColour)
+                                {
+                                    Blend = true,
+                                    MapTarget = point
+                                };
+                                spell.Process();
+                            }
+                            DXSoundManager.Play(SoundIndex.FireWallStart);
+                            break;
+
+                        #endregion
+
+                        #region Magic Combustion
+
+                        case MagicType.MagicCombustion:
+                            foreach (Point point in MagicLocations)
+                            {
+                                Effects.Add(spell = new MirProjectile(100, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 0, 0, Globals.NoneColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                });
+                                spell.Process();
+                            }
+
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                Effects.Add(spell = new MirProjectile(100, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 0, 0, Globals.NoneColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Explode = true
+                                });
+
+                                spell.CompleteAction = () =>
+                                {
+                                    attackTarget.Effects.Add(spell = new MirEffect(280, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 20, 50, Globals.NoneColour)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget,
+                                    });
+                                    spell.Process();
+
+                                    //DXSoundManager.Play(SoundIndex.ElementalSwordsEnd);
+                                };
+                                spell.Process();
+                            }
+
+                            //if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
+                            //    DXSoundManager.Play(SoundIndex.ElementalSwordsEnd);
+
+                            break;
+
+                        #endregion
+
+                        #region Hemorrhage
+
+                        case MagicType.Hemorrhage:
+                            foreach (Point point in MagicLocations)
+                            {
+                                Effects.Add(spell = new MirProjectile(1100, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 35, 35, Globals.FireColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                });
+                                spell.Process();
+                            }
+
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                Effects.Add(spell = new MirProjectile(1100, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 35, 35, Globals.FireColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                });
+
+                                spell.CompleteAction = () =>
+                                {
+                                    attackTarget.Effects.Add(spell = new MirEffect(1270, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 0, 0, Globals.FireColour)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget,
+                                    });
+                                    spell.Process();
+                                };
+                                spell.Process();
+                            }
+
+                            if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
+                                DXSoundManager.Play(SoundIndex.IceBoltStart);
+
+                            break;
+
+                        #endregion
+
+
+                        #region Chain
+
+                        case MagicType.Chain:
+
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                spell = new MirEffect(20, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 50, 50, Globals.NoneColour)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                };
+                                spell.Process();
+                            }
+
+                            //if (AttackTargets.Count > 0)
+                                //  DXSoundManager.Play(SoundIndex.Chain);
+
+                                break;
+
+                        #endregion
 
                         #endregion
 
@@ -2903,12 +3071,20 @@ namespace Client.Models
 
                         #endregion
 
-                        #region Dance Of Swallow
+                        #region Dragon Blood
 
-                        case MagicType.DanceOfSwallow:
+                        case MagicType.DragonBlood:
+
+                            Effects.Add(new MirEffect(200, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 30, 60, Globals.NoneColour)
+                            {
+                                Target = this,
+                                Direction = action.Direction,
+                                Blend = true
+                            });
                             break;
 
-                            #endregion
+                        #endregion
+
 
                     }
                     break;
@@ -2969,7 +3145,7 @@ namespace Client.Models
                                 Blend = true,
                                 Target = this,
                             });
-                            DXSoundManager.Play(SoundIndex.DefianceStart);
+                            DXSoundManager.Play(SoundIndex.InvincibilityStart);
                             break;
 
                         #endregion
@@ -3050,7 +3226,7 @@ namespace Client.Models
                                 Blend = true,
                                 Target = this
                             });
-                            DXSoundManager.Play(SoundIndex.DefianceStart);
+                            DXSoundManager.Play(SoundIndex.ReflectDamageStart);
                             break;
 
                         #endregion
@@ -3430,8 +3606,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Meteor Strike -> Great Fire Ball
-
                         #region Renounce
 
                         case MagicType.Renounce:
@@ -3477,7 +3651,12 @@ namespace Client.Models
                         #region Mirror Image
 
                         case MagicType.MirrorImage:
-                            DXSoundManager.Play(SoundIndex.ShacklingTalismanStart);
+                            Effects.Add(spell = new MirEffect(1260, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 10, 35, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this
+                            });
+                            //DXSoundManager.Play(SoundIndex.ShacklingTalismanStart);
                             break;
 
                         #endregion
@@ -3521,7 +3700,6 @@ namespace Client.Models
                             break;
 
                         #endregion
-
 
                         #region Ice Rain
 
@@ -3868,6 +4046,7 @@ namespace Client.Models
                                 Blend = true,
                                 Target = this,
                             });
+                            
                             DXSoundManager.Play(SoundIndex.SummonSkeletonStart);
                             break;
 
@@ -3966,7 +4145,7 @@ namespace Client.Models
 
                         #region Mindfulness
 
-                        case MagicType.Mindfulness:
+                        case MagicType.SearingLight:
                             Effects.Add(spell = new MirEffect(1190, 8, TimeSpan.FromMilliseconds(70), LibraryFile.MagicEx3, 10, 35, Globals.HolyColour)
                             {
                                 Blend = true,
@@ -4044,6 +4223,7 @@ namespace Client.Models
                             {
                                 Blend = true,
                                 Target = this,
+                                DrawType = DrawType.Floor
                             });
                             DXSoundManager.Play(SoundIndex.WraithGripStart);
                             break;
@@ -4055,12 +4235,35 @@ namespace Client.Models
                         #region Rake
 
                         case MagicType.Rake:
-                            Effects.Add(spell = new MirEffect(1200, 9, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 60, 60, Globals.IceColour)
+                            int startIndex = 0;
+
+                            //TODO - Directions 7,6,5 need flipping X??
+                            switch (action.Direction)
+                            {
+                                case MirDirection.Up:
+                                    startIndex = 1200;
+                                    break;
+                                case MirDirection.UpLeft:
+                                case MirDirection.UpRight:
+                                    startIndex = 1210;
+                                    break;
+                                case MirDirection.Left:
+                                case MirDirection.Right:
+                                    startIndex = 1220;
+                                    break;
+                                case MirDirection.DownLeft:
+                                case MirDirection.DownRight:
+                                    startIndex = 1230;
+                                    break;
+                                case MirDirection.Down:
+                                    startIndex = 1240;
+                                    break;
+                            }
+
+                            Effects.Add(spell = new MirEffect(startIndex, 9, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 60, 60, Globals.IceColour)
                             {
                                 Blend = true,
-                                Target = this,
-                                Direction = action.Direction,
-                                Skip = 10,
+                                Target = this
                             });
                             DXSoundManager.Play(SoundIndex.RakeStart);
                             break;
@@ -4158,6 +4361,12 @@ namespace Client.Models
                         #region Flash Of Light
 
                         case MagicType.FlashOfLight:
+                            Effects.Add(new MirEffect(2300, 8, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx4, 35, 35, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                MapTarget = CurrentLocation,
+                                Direction = Direction
+                            });
                             break;
 
                         #endregion
@@ -4188,6 +4397,45 @@ namespace Client.Models
                                 DrawType = DrawType.Floor
                             });
                             DXSoundManager.Play(SoundIndex.RagingWindStart);
+                            break;
+
+                        #endregion
+
+                        #region Concentration
+
+                        case MagicType.Concentration:
+                            Effects.Add(new MirEffect(300, 15, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 60, 60, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            DXSoundManager.Play(SoundIndex.Concentration);
+                            break;
+
+                        #endregion
+
+                        #region Containment
+
+                        case MagicType.Containment:
+                            Effects.Add(new MirEffect(590, 9, TimeSpan.FromMilliseconds(60), LibraryFile.MagicEx3, 60, 60, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            //DXSoundManager.Play(SoundIndex.Containment);
+                            break;
+
+                        #endregion
+
+                        #region Chain
+
+                        case MagicType.Chain:
+                            Effects.Add(new MirEffect(0, 7, TimeSpan.FromMilliseconds(140), LibraryFile.MagicEx7, 60, 60, Globals.NoneColour)
+                            {
+                                Blend = true,
+                                Target = this,
+                            });
+                            //DXSoundManager.Play(SoundIndex.Chain);
                             break;
 
                         #endregion
@@ -4407,6 +4655,28 @@ namespace Client.Models
         {
             ;//      GameScene.Game.BigMapBox.Update(this);
             ;//      GameScene.Game.MiniMapBox.Update(this);
+        }
+
+        public virtual void PlaySound(MagicType magic)
+        {
+            switch (magic)
+            {
+                #region Waning Moon
+
+                case MagicType.WaningMoon:
+                    DXSoundManager.Play(SoundIndex.WaningMoon);
+                    break;
+
+                #endregion
+
+                #region Calamity Of Full Moon
+
+                case MagicType.CalamityOfFullMoon:
+                    DXSoundManager.Play(SoundIndex.CalamityOfFullMoon);
+                    break;
+
+                #endregion
+            }
         }
 
         public void Struck(uint attackerID, Element element)
@@ -4925,8 +5195,19 @@ namespace Client.Models
                         });
                     }
                     break;
+                case MagicEffect.ReflectDamage:
+                    {
+                        effects.Add(new MirEffect(1240, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true
+                        });
+                    }
+                    break;
                 case MagicEffect.LifeSteal:
                     {
+                        //TODO - Incorrect image used
                         effects.Add(new MirEffect(1260, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx2, 40, 40, Globals.DarkColour)
                         {
                             Blend = true,
@@ -4975,6 +5256,17 @@ namespace Client.Models
                                 AdditionalOffSet = new Point(0, -64)
                             });
                         }
+                    }
+                    break;
+                case MagicEffect.Fear:
+                    {
+                        //TODO - Incorrect image used
+                        effects.Add(new MirEffect(700, 15, TimeSpan.FromMilliseconds(100), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                        });
                     }
                     break;
                 case MagicEffect.Parasite:
@@ -5048,6 +5340,36 @@ namespace Client.Models
                                 }
                             }
                         };
+                    }
+                    break;
+                case MagicEffect.Containment:
+                    {
+                        effects.Add(new MirEffect(2040, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                        });
+                    }
+                    break;
+                case MagicEffect.Chain:
+                    {
+                        effects.Add(new MirEffect(27, 4, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                        });
+                    }
+                    break;
+                case MagicEffect.Hemorrhage:
+                    {
+                        effects.Add(new MirEffect(1290, 1, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 40, 40, Globals.NoneColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                        });
                     }
                     break;
                 case MagicEffect.ElementalHurricane:

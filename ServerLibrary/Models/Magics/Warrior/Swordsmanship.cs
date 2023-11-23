@@ -18,19 +18,17 @@ namespace Server.Models.Magics
         {
             var response = new AttackCast();
 
-            if (Player.Level < Magic.Info.NeedLevel1)
-                return response;
-
-            response.Cast = true;
+            response.Magics.Add(Type);
 
             return response;
         }
 
         public override Stats GetPassiveStats()
         {
-            var stats = new Stats();
-
-            stats[Stat.Accuracy] = Magic.GetPower();
+            var stats = new Stats
+            {
+                [Stat.Accuracy] = Magic.GetPower()
+            };
 
             return stats;
         }

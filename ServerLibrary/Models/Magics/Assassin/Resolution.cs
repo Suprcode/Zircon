@@ -9,6 +9,7 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AugmentedSkill => true;
+        public override bool PassiveSkill => true;
 
         public Resolution(PlayerObject player, UserMagic magic) : base(player, magic)
         {

@@ -20,9 +20,6 @@ namespace Server.Models.Magics
         {
             var response = new AttackCast();
 
-            if (Player.Level < Magic.Info.NeedLevel1)
-                return response;
-
             response.Magics.Add(Type);
 
             return response;
@@ -30,9 +27,10 @@ namespace Server.Models.Magics
 
         public override Stats GetPassiveStats()
         {
-            var stats = new Stats();
-
-            stats[Stat.LifeSteal] += Magic.GetPower();
+            var stats = new Stats
+            {
+                [Stat.LifeSteal] = Magic.GetPower()
+            };
 
             return stats;
         }
