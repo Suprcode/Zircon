@@ -126,6 +126,8 @@ namespace Client.Scenes.Views
                     GameScene.Game.CharacterBox.Location = new Point(Size.Width, 0);
 
                 GameScene.Game.StorageBox.Location = new Point(Math.Max(0, GameScene.Game.InventoryBox.Location.X - GameScene.Game.StorageBox.Size.Width), GameScene.Game.InventoryBox.Location.Y);
+                
+                BringToFront();
             }
             else if (GameScene.Game.CharacterBox.Location.X == Size.Width)
             {
@@ -2836,7 +2838,13 @@ namespace Client.Scenes.Views
             base.OnIsVisibleChanged(oValue, nValue);
 
             if (GameScene.Game.NPCQuestBox != null && !IsVisible)
+            {
                 GameScene.Game.NPCQuestBox.Visible = false;
+                NPCInfo = null;
+            }
+
+            if (IsVisible)
+                BringToFront();
         }
         #endregion
 
@@ -3250,6 +3258,16 @@ namespace Client.Scenes.Views
             SelectedCellChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        #endregion
+
+        #region IsVisible
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            base.OnIsVisibleChanged(oValue, nValue);
+
+            if (IsVisible)
+                BringToFront();
+        }
         #endregion
 
         public List<QuestInfo> Quests = new List<QuestInfo>();
