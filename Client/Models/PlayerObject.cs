@@ -411,6 +411,15 @@ namespace Client.Models
                                 ArmourShape = 0;
                             }
 
+                            if (CostumeShape >= 0)
+                            {
+                                if (!CostumeList.TryGetValue(CostumeShape / 10 + FemaleOffSet, out file))
+                                {
+                                    file = LibraryFile.WM_Hum;
+                                    ArmourShape = 0;
+                                }
+                            }
+
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);
 
                             CEnvir.LibraryList.TryGetValue(LibraryFile.WM_Hair, out HairLibrary);
