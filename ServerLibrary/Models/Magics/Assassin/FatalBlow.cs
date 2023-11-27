@@ -10,7 +10,6 @@ namespace Server.Models.Magics
         protected override Element Element => Element.None;
 
         public override bool AttackSkill => true;
-        public override bool PassiveSkill => true;
 
         public FatalBlow(PlayerObject player, UserMagic magic) : base(player, magic)
         {

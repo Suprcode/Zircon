@@ -16,7 +16,6 @@ namespace Server.Models.Magics
         public Defiance(PlayerObject player, UserMagic magic) : base(player, magic)
         {
             //TODO - Augment BuffIcon 201
-            //Add as Separate buff??
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

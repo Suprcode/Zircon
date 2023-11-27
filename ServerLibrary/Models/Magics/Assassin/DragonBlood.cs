@@ -11,10 +11,9 @@ namespace Server.Models.Magics
     public class DragonBlood : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool PassiveSkill => true;
         public override bool AttackSkill => true;
 
-        private bool CanPoisonAttack;
+        private bool CanAttack;
         private readonly int MaxStack = 4;
 
         public DragonBlood(PlayerObject player, UserMagic magic) : base(player, magic)
@@ -26,15 +25,15 @@ namespace Server.Models.Magics
         {
             var response = new AttackCast();
 
-            if (CanPoisonAttack && attackType == Type)
+            if (CanAttack && attackType == Type)
             {
-                CanPoisonAttack = false;
+                CanAttack = false;
                 Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
                 response.Cast = true;
                 response.Magics.Add(Type);
             }
 
-            if (!CanPoisonAttack && SEnvir.Random.Next(5) == 0)
+            if (!CanAttack && SEnvir.Random.Next(5) == 0)
             {
                 UserItem poison = Player.Equipment[(int)EquipmentSlot.Poison];
 
@@ -47,7 +46,7 @@ namespace Server.Models.Magics
                         return response;
                 }
 
-                CanPoisonAttack = true;
+                CanAttack = true;
                 Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = true });
             }
 

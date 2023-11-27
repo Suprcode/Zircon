@@ -13,7 +13,6 @@ namespace Server.Models.Magics
     public class WhiteLotus : MagicObject
     {
         protected override Element Element => Element.None;
-
         public override bool IgnoreAccuracy => true;
         public override bool IgnorePhysicalDefense => true;
         public override int MaxLifeSteal => 1500;

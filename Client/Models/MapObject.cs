@@ -3085,6 +3085,21 @@ namespace Client.Models
 
                         #endregion
 
+                        #region WaningMoon
+
+                        case MagicType.WaningMoon:
+                            DXSoundManager.Play(SoundIndex.WaningMoon);
+                            break;
+
+                        #endregion
+
+                        #region Calamity Of Full Moon
+
+                        case MagicType.CalamityOfFullMoon:
+                            DXSoundManager.Play(SoundIndex.CalamityOfFullMoon);
+                            break;
+
+                        #endregion
 
                     }
                     break;
@@ -3308,7 +3323,7 @@ namespace Client.Models
                         #region Gust Blast
 
                         case MagicType.GustBlast:
-                            Effects.Add(spell = new MirEffect(350, 7, TimeSpan.FromMilliseconds(50), LibraryFile.MagicEx, 10, 35, Globals.WindColour)
+                            Effects.Add(spell = new MirEffect(350, 7, TimeSpan.FromMilliseconds(70), LibraryFile.MagicEx, 10, 35, Globals.WindColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -4655,28 +4670,6 @@ namespace Client.Models
         {
             ;//      GameScene.Game.BigMapBox.Update(this);
             ;//      GameScene.Game.MiniMapBox.Update(this);
-        }
-
-        public virtual void PlaySound(MagicType magic)
-        {
-            switch (magic)
-            {
-                #region Waning Moon
-
-                case MagicType.WaningMoon:
-                    DXSoundManager.Play(SoundIndex.WaningMoon);
-                    break;
-
-                #endregion
-
-                #region Calamity Of Full Moon
-
-                case MagicType.CalamityOfFullMoon:
-                    DXSoundManager.Play(SoundIndex.CalamityOfFullMoon);
-                    break;
-
-                #endregion
-            }
         }
 
         public void Struck(uint attackerID, Element element)

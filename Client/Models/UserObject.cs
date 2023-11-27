@@ -216,7 +216,7 @@ namespace Client.Models
         public MagicType AttackMagic;
 
         public ObjectAction MagicAction;
-        public bool CanPowerAttack, CanPoisonAttack;
+        public bool CanPowerAttack, CanPoisonAttack, CanFullMoonAttack, CanWaningMoonAttack;
 
         public ClientUserDiscipline Discipline;
 
@@ -488,7 +488,6 @@ namespace Client.Models
                             else 
                                 if (pair.Value.Cost > CurrentMP) break;
 
-
                             attackMagic = AttackMagic;
                             break;
                         }
@@ -549,7 +548,7 @@ namespace Client.Models
                         }
                     }
 
-                    if (CanPoisonAttack && TargetObject != null)
+                    if (attackMagic == MagicType.None && CanPoisonAttack && TargetObject != null)
                     {
                         foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in Magics)
                         {
@@ -567,6 +566,32 @@ namespace Client.Models
                         foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in Magics)
                         {
                             if (pair.Key.Magic != MagicType.FlameSplash) continue;
+
+                            if (pair.Value.Cost > CurrentMP) break;
+
+                            attackMagic = pair.Key.Magic;
+                            break;
+                        }
+                    }
+
+                    if (attackMagic == MagicType.None && CanWaningMoonAttack && TargetObject != null)
+                    {
+                        foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in Magics)
+                        {
+                            if (pair.Key.Magic != MagicType.WaningMoon) continue;
+
+                            if (pair.Value.Cost > CurrentMP) break;
+
+                            attackMagic = pair.Key.Magic;
+                            break;
+                        }
+                    }
+
+                    if (attackMagic == MagicType.None && CanFullMoonAttack && TargetObject != null)
+                    {
+                        foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in Magics)
+                        {
+                            if (pair.Key.Magic != MagicType.CalamityOfFullMoon) continue;
 
                             if (pair.Value.Cost > CurrentMP) break;
 

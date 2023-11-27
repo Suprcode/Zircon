@@ -205,11 +205,6 @@ namespace Library.Network.ServerPackets
         public List<uint> Targets { get; set; } = new List<uint>();
         public List<Point> Locations { get; set; } = new List<Point>();
     }
-    public sealed class ObjectSound : Packet
-    {
-        public uint ObjectID { get; set; }
-        public MagicType Magic { get; set; }
-    }
 
     public sealed class ObjectMining : Packet
     {

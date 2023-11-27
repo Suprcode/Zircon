@@ -195,8 +195,7 @@ namespace Server.Models
                     break;
                 case SpellEffect.DarkSoulPrison:
                     {
-                        var player = Owner as PlayerObject;
-                        if (player == null || !player.CanAttackTarget(ob)) return;
+                        if (Owner is not PlayerObject player || !player.CanAttackTarget(ob)) return;
 
                         int damage = player.MagicAttack(new List<MagicType> { MagicType.DarkSoulPrison }, ob, true);
 

@@ -7,8 +7,7 @@ namespace Server.Models.Magics
     public class DualWeaponSkills : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool AttackSkill => true;
-        public override bool PassiveSkill => true;
+        public override bool AttackSkill => true;   
 
         public DualWeaponSkills(PlayerObject player, UserMagic magic) : base(player, magic)
         {

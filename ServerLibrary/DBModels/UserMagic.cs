@@ -177,7 +177,7 @@ namespace Server.DBModels
             {
                 Index = Index,
                 InfoIndex = Info.Index,
-
+              
                 Set1Key = Set1Key,
                 Set2Key = Set2Key,
                 Set3Key = Set3Key,

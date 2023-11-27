@@ -24,16 +24,6 @@ namespace Server.Models
         protected abstract Element Element { get; }
         public virtual bool UpdateCombatTime => true;
 
-        /// <summary>
-        /// Indicates a skill which does not need to be manually cast to activate. May be triggered passively in different ways.
-        /// </summary>
-        public virtual bool PassiveSkill => false; //TODO
-
-        /// <summary>
-        /// Indicates a skill which provides changes or bonuses to another skill. Cannot be used alone.
-        /// </summary>
-        public virtual bool AugmentedSkill => false;
-
         //Magic variables
         public virtual bool MagicSkill => false; //TODO
         public virtual bool CanStruck => true;
@@ -47,8 +37,6 @@ namespace Server.Models
 
         //Attack variables
         public virtual bool AttackSkill => false;
-        public virtual bool ToggleSkill => false; //TODO //Skill is permanently turned on/off by the player
-        public virtual bool ChargeSkill => false; //TODO //Skill is enabled by the player, which either disables after a period of inactivity or through use
         public virtual bool IgnoreAccuracy => false;
         public virtual bool IgnorePhysicalDefense => false;
         public virtual int MaxLifeSteal => 750;
@@ -57,8 +45,6 @@ namespace Server.Models
             return false;
         }
         public virtual bool HasMassacre => false;
-
-        public virtual int Order => 100;
 
         public MagicObject(PlayerObject player, UserMagic magic) 
         {
@@ -315,7 +301,7 @@ namespace Server.Models
         {
             get
             {
-                orderedKeys ??= this.Keys.OrderBy(key => this[key].Order).ThenBy(key => this[key].Type).ToList();
+                orderedKeys ??= this.Keys.OrderBy(key => this[key].Type).ToList();
 
                 return orderedKeys;
             }
@@ -325,7 +311,7 @@ namespace Server.Models
         {
             orderedKeys = null;
 
-            base.Add(key, value);
+            base[key] = value;
         }
     }
 

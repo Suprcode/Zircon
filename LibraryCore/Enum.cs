@@ -534,8 +534,8 @@ namespace Library
         None,
 
         Passive = 1,
-        WeaponSkills,
-        Neutral,
+        Active,
+        Toggle,
         Fire,
         Ice,
         Lightning,
@@ -543,8 +543,11 @@ namespace Library
         Holy,
         Dark,
         Phantom,
-        Combat,
+        Physical,
+        Atrocity,
+        Kill,
         Assassination,
+
         Horse,
 
         Discipline = 20
@@ -772,6 +775,19 @@ namespace Library
 
         PinkFireBall = 530,
         GreenSludgeBall = 540,
+    }
+
+    public enum MagicProperty
+    {
+        None = 0,
+
+        Active = 1,
+
+        Passive = 2,
+        Augmentation = 3,
+
+        Toggle = 4,
+        Charge = 5
     }
 
     public enum MonsterImage

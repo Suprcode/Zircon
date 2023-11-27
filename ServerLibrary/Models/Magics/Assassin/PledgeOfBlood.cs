@@ -8,7 +8,6 @@ namespace Server.Models.Magics
     public class PledgeOfBlood : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool AugmentedSkill => true;
 
         public PledgeOfBlood(PlayerObject player, UserMagic magic) : base(player, magic)
         {

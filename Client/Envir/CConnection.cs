@@ -1165,17 +1165,6 @@ namespace Client.Envir
             }
         }
 
-        public void Process(S.ObjectSound p)
-        {
-            foreach (MapObject ob in GameScene.Game.MapControl.Objects)
-            {
-                if (ob.ObjectID != p.ObjectID) continue;
-
-                ob.PlaySound(p.Magic);
-                return;
-            }
-        }
-
         public void Process(S.ObjectMining p)
         {
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer)
@@ -1774,6 +1763,12 @@ namespace Client.Envir
                     break;
                 case MagicType.DragonBlood:
                     GameScene.Game.User.CanPoisonAttack = p.CanUse;
+                    break;
+                case MagicType.CalamityOfFullMoon:
+                    GameScene.Game.User.CanFullMoonAttack = p.CanUse;
+                    break;
+                case MagicType.WaningMoon:
+                    GameScene.Game.User.CanWaningMoonAttack = p.CanUse;
                     break;
             }
         }

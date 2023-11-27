@@ -2495,6 +2495,15 @@ namespace Client.Scenes
             };
             MagicLabel.Size = new Size(label.DisplayArea.Right + 4, label.DisplayArea.Bottom + 4);
 
+            label = new DXLabel
+            {
+                ForeColour = Color.Yellow,
+                Location = new Point(4, MagicLabel.DisplayArea.Bottom),
+                Parent = MagicLabel,
+                Text = $"<{MouseMagic.Property}>"
+            };
+            MagicLabel.Size = new Size(label.DisplayArea.Right + 4, label.DisplayArea.Bottom + 4);
+
             ClientUserMagic magic;
 
             int width;

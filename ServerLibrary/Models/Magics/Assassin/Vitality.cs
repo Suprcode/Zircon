@@ -7,8 +7,6 @@ namespace Server.Models.Magics
     public class Vitality : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool PassiveSkill => true;
-
         public bool LowHP
         {
             get { return (Player.CurrentHP * 100 / Player.Stats[Stat.Health]) < 30; }

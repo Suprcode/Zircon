@@ -48,8 +48,14 @@ namespace Server.Models.Magics
 
             if (cell?.Objects == null) return;
 
-            foreach (MapObject ob in cell.Objects)
+            for (int i = cell.Objects.Count - 1; i >= 0; i--)
+            {
+                if (i >= cell.Objects.Count) continue;
+                MapObject ob = cell.Objects[i];
+                if (!Player.CanAttackTarget(ob)) continue;
+
                 if (Player.MagicAttack(new List<MagicType> { Type }, ob, true) > 0) break;
+            }
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

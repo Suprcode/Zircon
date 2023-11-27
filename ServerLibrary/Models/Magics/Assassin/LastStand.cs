@@ -9,9 +9,7 @@ namespace Server.Models.Magics
     public class LastStand : MagicObject
     {
         protected override Element Element => Element.None;
-
         private bool Active { get; set; }
-
         public bool LowHP
         {
             get { return (Player.CurrentHP * 100 / Player.Stats[Stat.Health]) < 30; }

@@ -10,7 +10,6 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
-
         private bool CanPowerAttack;
 
         public Slaying(PlayerObject player, UserMagic magic) : base(player, magic)

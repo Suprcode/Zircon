@@ -10,7 +10,6 @@ namespace Server.Models.Magics
     public class Stealth : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool PassiveSkill => true;
 
         public Stealth(PlayerObject player, UserMagic magic) : base(player, magic)
         {

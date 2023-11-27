@@ -8,7 +8,6 @@ namespace Server.Models.Magics
     public class Rejuvenation : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool PassiveSkill => true;
 
         public Rejuvenation(PlayerObject player, UserMagic magic) : base(player, magic)
         {

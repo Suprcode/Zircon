@@ -12,8 +12,6 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
-        public override bool ChargeSkill => true;
-
         public bool CanDragonRise { get; private set; }
         public DateTime DragonRiseTime { get; private set; }
 

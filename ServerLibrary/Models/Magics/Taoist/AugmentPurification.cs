@@ -7,7 +7,6 @@ namespace Server.Models.Magics
     public class AugmentPurification : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool AugmentedSkill => true;
 
         public AugmentPurification(PlayerObject player, UserMagic magic) : base(player, magic)
         {

@@ -8,7 +8,6 @@ namespace Server.Models.Magics
     public class AugmentReflectDamage : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool AugmentedSkill => true;
 
         public AugmentReflectDamage(PlayerObject player, UserMagic magic) : base(player, magic)
         {

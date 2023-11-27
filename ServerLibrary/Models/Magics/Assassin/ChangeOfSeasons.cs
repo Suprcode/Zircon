@@ -12,7 +12,6 @@ namespace Server.Models.Magics
 
         public ChangeOfSeasons(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
             //Skill removed from official
         }
     }

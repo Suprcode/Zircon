@@ -15,8 +15,7 @@ namespace Server.Models.Magics
 
         public DarkSoulPrison(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //It encamps the 7*7 ghosts that dominate the darkness and instills pain and fear in the enemy due to delusion. Enemies affected by Dark Ghost receive damage and additional damage from all damage. The duration and minimum damage increase depending on the training level.
+           
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

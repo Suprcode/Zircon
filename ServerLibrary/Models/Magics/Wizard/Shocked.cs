@@ -7,7 +7,6 @@ namespace Server.Models.Magics
     public class Shocked : MagicObject
     {
         protected override Element Element => Element.Lightning;
-        public override bool AugmentedSkill => true;
 
         public Shocked(PlayerObject player, UserMagic magic) : base(player, magic)
         {

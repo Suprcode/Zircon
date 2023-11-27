@@ -12,7 +12,6 @@ namespace Server.Models.Magics
     public class RedLotus : MagicObject
     {
         protected override Element Element => Element.None;
-
         public override bool IgnoreAccuracy => true;
         public override bool IgnorePhysicalDefense => true;
         public override int MaxLifeSteal => 1500;

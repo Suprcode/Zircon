@@ -233,34 +233,40 @@ namespace Server.Models
 
             AddDefaultCurrencies();
 
-            SetupMagic(null);
+            SetupMagic();
         }
 
-        public void SetupMagic(UserMagic addMagic = null)
+        public MagicObject SetupMagic(UserMagic userMagic)
         {
-            Type found;
+            var type = userMagic.Info.Magic;
 
-            if (addMagic != null)
+            var found = SEnvir.MagicTypes.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == type);
+
+            if (found != null)
             {
-                found = SEnvir.MagicTypes.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == addMagic.Info.Magic);
+                var magicObject = (MagicObject)Activator.CreateInstance(found, this, userMagic);
+
+                MagicObjects.Add(type, magicObject);
+
+                return magicObject;
+            }
+
+            return null;
+        }
+
+        public void SetupMagic()
+        {
+            foreach (UserMagic magic in Character.Magics)
+            {
+                if (magic.Info.School == MagicSchool.None) continue;
+
+                var type = magic.Info.Magic;
+
+                var found = SEnvir.MagicTypes.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == type);
 
                 if (found != null)
                 {
-                    MagicObjects.Add(addMagic.Info.Magic, (MagicObject)Activator.CreateInstance(found, this, addMagic));
-                }
-            }
-            else
-            {
-                foreach (UserMagic magic in Character.Magics)
-                {
-                    if (magic.Info.School == MagicSchool.None) continue;
-
-                    found = SEnvir.MagicTypes.FirstOrDefault(x => x.GetCustomAttribute<MagicTypeAttribute>().Type == magic.Info.Magic);
-
-                    if (found != null)
-                    {
-                        MagicObjects.Add(magic.Info.Magic, (MagicObject)Activator.CreateInstance(found, this, magic));
-                    }
+                    MagicObjects.Add(magic.Info.Magic, (MagicObject)Activator.CreateInstance(found, this, magic));
                 }
             }
         }
@@ -1370,6 +1376,8 @@ namespace Server.Models
 
             NPC = null;
             NPCPage = null;
+
+            MagicObjects?.Clear();
 
             Pets?.Clear();
 
@@ -12900,7 +12908,7 @@ namespace Server.Models
 
                             UserItem item = SEnvir.CreateDropItem(check);
                             GainItem(item);
-                            break; //One item gained, to stop rewarding any more
+                            break; //One item gained, so stop rewarding any more
 
                             //TODO - Limit drops by bait type used?
                         }

@@ -10,8 +10,6 @@ namespace Server.Models.Magics
     public class DemonicRecovery : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool AugmentedSkill => true;
-        public override bool ToggleSkill => true;
 
         public DemonicRecovery(PlayerObject player, UserMagic magic) : base(player, magic)
         {

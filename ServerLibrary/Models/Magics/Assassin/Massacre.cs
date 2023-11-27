@@ -11,7 +11,6 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
         public override bool HasMassacre => true;
-        public override bool PassiveSkill => true;
 
         public Massacre(PlayerObject player, UserMagic magic) : base(player, magic)
         {

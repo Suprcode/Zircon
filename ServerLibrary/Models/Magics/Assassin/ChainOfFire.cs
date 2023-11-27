@@ -7,8 +7,6 @@ namespace Server.Models.Magics
     [MagicType(MagicType.ChainOfFire)]
     public class ChainOfFire : MagicObject
     {
-        public override bool AugmentedSkill => true;
-
         protected override Element Element => Element.None;
 
         public ChainOfFire(PlayerObject player, UserMagic magic) : base(player, magic)

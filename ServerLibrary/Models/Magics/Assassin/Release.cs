@@ -8,12 +8,10 @@ namespace Server.Models.Magics
     public class Release : MagicObject
     {
         protected override Element Element => Element.None;
-        public override bool AugmentedSkill => true;
-
+        
         public Release(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO
-            //BuffIcon - 165
+            //TODO - BuffIcon - 165
         }
     }
 }
