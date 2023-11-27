@@ -2066,7 +2066,6 @@ namespace Server.Models
                 }
             }
 
-
             if (GroupMembers != null && GroupMembers.Count >= 8)
             {
                 int warrior = 0, wizard = 0, taoist = 0, assassin = 0;
@@ -2193,17 +2192,17 @@ namespace Server.Models
             Stats[Stat.Health] = Math.Max(10, Stats[Stat.Health]);
             Stats[Stat.Mana] = Math.Max(10, Stats[Stat.Mana]);
 
-            Stats[Stat.MinAC] += (Stats[Stat.MinAC] * Stats[Stat.PhysicalDefencePercent]) / 100;
-            Stats[Stat.MaxAC] += (Stats[Stat.MaxAC] * Stats[Stat.PhysicalDefencePercent]) / 100;
-
-            Stats[Stat.MinMR] += (Stats[Stat.MinMR] * Stats[Stat.MagicDefencePercent]) / 100;
-            Stats[Stat.MaxMR] += (Stats[Stat.MaxMR] * Stats[Stat.MagicDefencePercent]) / 100;
-
             if (Buffs.Any(x => x.Type == BuffType.MagicWeakness))
             {
                 Stats[Stat.MinMR] = 0;
                 Stats[Stat.MaxMR] = 0;
             }
+
+            Stats[Stat.MinAC] += (Stats[Stat.MinAC] * Stats[Stat.PhysicalDefencePercent]) / 100;
+            Stats[Stat.MaxAC] += (Stats[Stat.MaxAC] * Stats[Stat.PhysicalDefencePercent]) / 100;
+
+            Stats[Stat.MinMR] += (Stats[Stat.MinMR] * Stats[Stat.MagicDefencePercent]) / 100;
+            Stats[Stat.MaxMR] += (Stats[Stat.MaxMR] * Stats[Stat.MagicDefencePercent]) / 100;
 
             Stats[Stat.MinAC] = Math.Max(0, Stats[Stat.MinAC]);
             Stats[Stat.MaxAC] = Math.Max(0, Stats[Stat.MaxAC]);

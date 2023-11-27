@@ -722,17 +722,23 @@ namespace Server.Models
 
             Stats[Stat.CriticalChance] = 1;
 
+            foreach (BuffInfo buff in Buffs)
+            {
+                if (buff.Stats == null) continue;
+                Stats.Add(buff.Stats);
+            }
+
             if (Buffs.Any(x => x.Type == BuffType.MagicWeakness))
             {
                 Stats[Stat.MinMR] = 0;
                 Stats[Stat.MaxMR] = 0;
             }
 
-            foreach (BuffInfo buff in Buffs)
-            {
-                if (buff.Stats == null) continue;
-                Stats.Add(buff.Stats);
-            }
+            Stats[Stat.MinAC] += (Stats[Stat.MinAC] * Stats[Stat.PhysicalDefencePercent]) / 100;
+            Stats[Stat.MaxAC] += (Stats[Stat.MaxAC] * Stats[Stat.PhysicalDefencePercent]) / 100;
+
+            Stats[Stat.MinMR] += (Stats[Stat.MinMR] * Stats[Stat.MagicDefencePercent]) / 100;
+            Stats[Stat.MaxMR] += (Stats[Stat.MaxMR] * Stats[Stat.MagicDefencePercent]) / 100;
 
             if (PetOwner != null && PetOwner.Stats[Stat.PetDCPercent] > 0)
             {

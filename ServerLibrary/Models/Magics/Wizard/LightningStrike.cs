@@ -16,6 +16,7 @@ namespace Server.Models.Magics
         public LightningStrike(PlayerObject player, UserMagic magic) : base(player, magic)
         {
             //TODO - Effect should be a particle effect connecting the targets together, not a projectile
+            //https://youtu.be/DDmB8CTco8o?t=52 
         }
 
         public override int GetShock(int shock, Stats stats = null)

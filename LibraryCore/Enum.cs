@@ -715,7 +715,7 @@ namespace Library
         ElementalPuppet = 420,
         Rejuvenation = 421,
         Resolution = 422,
-        ChangeOfSeasons = 423,//Removed From Official
+        ChangeOfSeasons = 423,
         Release = 424,
         FlameSplash = 425,
         BloodyFlower = 426,

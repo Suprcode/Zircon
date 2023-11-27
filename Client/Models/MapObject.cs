@@ -1452,21 +1452,23 @@ namespace Client.Models
                             {
                                 MirProjectile eff;
                                 Point p = new(point.X, point.Y - 10);
-                                Effects.Add(eff = new MirProjectile(700, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 50, 80, Globals.IceColour, p)
+                                Effects.Add(eff = new MirProjectile(700, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 60, 60, Globals.IceColour, p)
                                 {
                                     MapTarget = point,
                                     Skip = 0,
                                     Blend = true,
+                                    Explode = true,
                                     StartTime = CEnvir.Now.AddMilliseconds(delay)
                                 });
 
                                 eff.CompleteAction = () =>
                                 {
-                                    Effects.Add(new MirEffect(720, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 100, 100, Globals.IceColour)
+                                    Effects.Add(spell = new MirEffect(720, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 100, 100, Globals.IceColour)
                                     {
-                                        MapTarget = eff.MapTarget,
+                                        MapTarget = point,
                                         Blend = true,
                                     });
+                                    spell.Process();
 
                                     DXSoundManager.Play(SoundIndex.IceBoltEnd);
                                 };
@@ -3719,7 +3721,7 @@ namespace Client.Models
                         #region Ice Rain
 
                         case MagicType.IceRain:
-                            Effects.Add(spell = new MirEffect(1430, 12, TimeSpan.FromMilliseconds(50), LibraryFile.Magic, 10, 35, Globals.LightningColour)
+                            Effects.Add(spell = new MirEffect(1430, 12, TimeSpan.FromMilliseconds(50), LibraryFile.Magic, 10, 35, Globals.IceColour)
                             {
                                 Blend = true,
                                 Target = this,
