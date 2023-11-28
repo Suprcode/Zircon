@@ -6381,7 +6381,7 @@ namespace Server.Models
                 case ItemType.Book:
                     MagicInfo magic = SEnvir.MagicInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
                     if (magic == null) return false;
-                    if (!GetMagic(magic.Magic, out MagicObject magicObject) || magicObject.Magic.Level < 3) return false;
+                    if (GetMagic(magic.Magic, out MagicObject magicObject) && magicObject.Magic.Level < 3) return false;
                     if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
                     return true;
                 case ItemType.Consumable:
