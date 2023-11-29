@@ -2348,7 +2348,10 @@ namespace Client.Scenes.Views
             int x = 130;
             int y = 270;
 
+            ClientUserItem weapon = Grid[(int)EquipmentSlot.Weapon]?.Item;
             ClientUserItem armour = Grid[(int)EquipmentSlot.Armour]?.Item;
+            ClientUserItem helmet = Grid[(int)EquipmentSlot.Helmet]?.Item;
+            ClientUserItem shield = Grid[(int)EquipmentSlot.Shield]?.Item;
             ClientUserItem costume = Grid[(int)EquipmentSlot.Costume]?.Item;
 
             if (armour != null && costume == null)
@@ -2399,8 +2402,6 @@ namespace Client.Scenes.Views
 
                 if (!HideBody)
                 {
-                    ClientUserItem weapon = Grid[(int)EquipmentSlot.Weapon]?.Item;
-
                     if (weapon != null)
                     {
                         int weaponIndex = weapon.Info.Image;
@@ -2419,23 +2420,23 @@ namespace Client.Scenes.Views
                         }
                     }
 
-                    if (Grid[(int)EquipmentSlot.Shield]?.Item != null)
+                    if (shield != null)
                     {
-                        int shieldIndex = Grid[(int)EquipmentSlot.Shield].Item.Info.Image;
+                        int shieldIndex = shield.Info.Image;
                         library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                        library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Shield].Item.Colour, true, 1F, ImageType.Overlay);
+                        library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, shield.Colour, true, 1F, ImageType.Overlay);
                     }
                 }
             }
 
             if (HideHead) return;
 
-            if (Grid[(int)EquipmentSlot.Helmet]?.Item != null && library != null)
+            if (helmet != null && library != null)
             {
-                int index = Grid[(int)EquipmentSlot.Helmet].Item.Info.Image;
+                int index = helmet.Info.Image;
 
                 library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Grid[(int)EquipmentSlot.Helmet].Item.Colour, true, 1F, ImageType.Overlay);
+                library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, helmet.Colour, true, 1F, ImageType.Overlay);
             }
             else if (HairType > 0)
             {
@@ -2468,10 +2469,8 @@ namespace Client.Scenes.Views
                         }
                         break;
                 }
-
             }
         }
-
 
         #region Methods
 

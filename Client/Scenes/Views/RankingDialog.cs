@@ -1,14 +1,14 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
+using Client.Scenes.Views.Character;
 using Client.UserModels;
 using Library;
-using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
+using System;
+using System.Drawing;
 using System.Linq;
-using Client.Scenes.Views.Character;
+using System.Windows.Forms;
+using C = Library.Network.ClientPackets;
+using S = Library.Network.ServerPackets;
 
 //Add that config refresh time
 
@@ -905,8 +905,13 @@ namespace Client.Scenes.Views
 
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out MirLibrary library)) return;
 
+            ClientUserItem weapon = Grid[(int)EquipmentSlot.Weapon]?.Item;
             ClientUserItem armour = Grid[(int)EquipmentSlot.Armour]?.Item;
-            if (armour != null)
+            ClientUserItem helmet = Grid[(int)EquipmentSlot.Helmet]?.Item;
+            ClientUserItem shield = Grid[(int)EquipmentSlot.Shield]?.Item;
+            ClientUserItem costume = Grid[(int)EquipmentSlot.Costume]?.Item;
+
+            if (armour != null && costume == null)
             {
                 MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
                 if (image != null)
@@ -922,7 +927,7 @@ namespace Client.Scenes.Views
 
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out library)) return;
 
-            if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && Grid[(int)EquipmentSlot.Helmet].Item == null)
+            if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && helmet == null)
                 library.Draw(1160, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
 
             switch (Gender)
@@ -937,20 +942,25 @@ namespace Client.Scenes.Views
 
             if (CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library))
             {
-                if (Grid[(int)EquipmentSlot.Armour]?.Item != null)
+                if (costume != null)
+                {
+                    int costumeIndex = costume.Info.Image;
+                    library.Draw(costumeIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                }
+                else if (armour != null)
                 {
                     int armourIndex = armour.Info.Image;
                     library.Draw(armourIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(armourIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Armour].Item.Colour, true, 1F, ImageType.Overlay);
+                    library.Draw(armourIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, armour.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (Grid[(int)EquipmentSlot.Weapon]?.Item != null)
+                if (weapon != null)
                 {
-                    int weaponIndex = Grid[(int)EquipmentSlot.Weapon].Item.Info.Image;
+                    int weaponIndex = weapon.Info.Image;
                     library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Weapon].Item.Colour, true, 1F, ImageType.Overlay);
+                    library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, weapon.Colour, true, 1F, ImageType.Overlay);
 
-                    MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
+                    MirImage image = EquipEffectDecider.GetEffectImageOrNull(weapon, Gender);
                     if (image != null)
                     {
                         bool oldBlend = DXManager.Blending;
@@ -962,23 +972,23 @@ namespace Client.Scenes.Views
                     }
                 }
 
-                if (Grid[(int)EquipmentSlot.Shield]?.Item != null)
+                if (shield != null)
                 {
-                    int shieldIndex = Grid[(int)EquipmentSlot.Shield].Item.Info.Image;
+                    int shieldIndex = shield.Info.Image;
                     library.Draw(shieldIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    library.Draw(shieldIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Shield].Item.Colour, true, 1F, ImageType.Overlay);
+                    library.Draw(shieldIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, shield.Colour, true, 1F, ImageType.Overlay);
                 }
             }
 
-            var hasFishingRobe = Grid[(int)EquipmentSlot.Armour]?.Item?.Info.ItemEffect == ItemEffect.FishingRobe;
+            var hasFishingRobe = armour?.Info.ItemEffect == ItemEffect.FishingRobe;
             if (hasFishingRobe) return;
 
-            if (Grid[(int)EquipmentSlot.Helmet]?.Item != null && library != null)
+            if (helmet != null && library != null)
             {
-                int index = Grid[(int)EquipmentSlot.Helmet].Item.Info.Image;
+                int index = helmet.Info.Image;
 
                 library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Grid[(int)EquipmentSlot.Helmet].Item.Colour, true, 1F, ImageType.Overlay);
+                library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, helmet.Colour, true, 1F, ImageType.Overlay);
             }
             else if (HairType > 0)
             {
