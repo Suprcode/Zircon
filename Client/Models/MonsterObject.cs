@@ -2184,9 +2184,9 @@ namespace Client.Models
                             break;
                     }
                     break;
-             //   case MirAction.Struck:
-             //       animation = MirAnimation.Struck;
-             //       break;
+                case MirAction.Struck:
+                    animation = MirAnimation.Struck;
+                    break;
                 case MirAction.Die:
                     animation = MirAnimation.Die;
                     break;

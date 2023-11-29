@@ -856,6 +856,8 @@ namespace Server.Models
                 FiltersClass = Character.FiltersClass,
                 FiltersRarity = Character.FiltersRarity,
                 FiltersItemType = Character.FiltersItemType,
+
+                StruckEnabled = Config.EnableStruck
             };
         }
 
@@ -14055,32 +14057,50 @@ namespace Server.Models
                 power -= power * Stats[Stat.MagicShield] / 100;
             }
 
-            //STRUCKDONE
-            if (StruckTime != DateTime.MaxValue && SEnvir.Now > StruckTime.AddMilliseconds(500) && canStruck) //&&!Buffs.Any(x => x.Type == BuffType.DragonRepulse)) 
+            if (StruckTime != DateTime.MaxValue && SEnvir.Now > StruckTime.AddMilliseconds(500) && canStruck)
             {
-                StruckTime = SEnvir.Now;
+                bool ignore = false;
 
-                //if (StruckTime.AddMilliseconds(300) > ActionTime) ActionTime = StruckTime.AddMilliseconds(300);
-                Broadcast(new S.ObjectStruck { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, AttackerID = attacker.ObjectID, Element = element });
-
-                bool update = false;
-                for (int i = 0; i < Equipment.Length; i++)
+                if (Buffs.Any(x => x.Type == BuffType.ElementalHurricane))
                 {
-                    switch ((EquipmentSlot)i)
-                    {
-                        case EquipmentSlot.Amulet:
-                        case EquipmentSlot.Poison:
-                        case EquipmentSlot.Torch:
-                            continue;
-                    }
-
-                    update = DamageItem(GridType.Equipment, i, SEnvir.Random.Next(2) + 1, true) || update;
+                    BuffRemove(BuffType.ElementalHurricane);
                 }
 
-                if (update)
+                if (Buffs.Any(x => x.Type == BuffType.DragonRepulse))
                 {
-                    SendShapeUpdate();
-                    RefreshStats();
+                    ignore = true;
+                }
+
+                if (!ignore)
+                {
+                    StruckTime = SEnvir.Now;
+
+                    if (Config.EnableStruck)
+                    {
+                        if (StruckTime.AddMilliseconds(300) > ActionTime) ActionTime = StruckTime.AddMilliseconds(300);
+                    }
+
+                    Broadcast(new S.ObjectStruck { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, AttackerID = attacker.ObjectID, Element = element });
+
+                    bool update = false;
+                    for (int i = 0; i < Equipment.Length; i++)
+                    {
+                        switch ((EquipmentSlot)i)
+                        {
+                            case EquipmentSlot.Amulet:
+                            case EquipmentSlot.Poison:
+                            case EquipmentSlot.Torch:
+                                continue;
+                        }
+
+                        update = DamageItem(GridType.Equipment, i, SEnvir.Random.Next(2) + 1, true) || update;
+                    }
+
+                    if (update)
+                    {
+                        SendShapeUpdate();
+                        RefreshStats();
+                    }
                 }
             }
 

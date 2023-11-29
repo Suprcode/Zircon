@@ -316,7 +316,9 @@ namespace Client.Scenes
 
         public uint InspectID;
         public DateTime PickUpTime, UseItemTime, NPCTime, ToggleTime, InspectTime, ItemTime = CEnvir.Now, ReincarnationPillTime, ItemReviveTime;
-        
+
+        public bool StruckEnabled;
+
         public float DayTime
         {
             get => _DayTime;

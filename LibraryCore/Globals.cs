@@ -406,6 +406,8 @@ namespace Library
         public string FiltersRarity { get; set; }
         public string FiltersItemType { get; set; }
 
+        public bool StruckEnabled { get; set; }
+
         [CompleteObject]
         public void OnComplete()
         {

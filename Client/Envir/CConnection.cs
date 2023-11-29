@@ -1092,36 +1092,44 @@ namespace Client.Envir
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                if (ob == MapObject.User) //{
+                if (ob == MapObject.User)
                 {
                     if (GameScene.Game.MapControl.FishingState != FishingState.None)
                         GameScene.Game.MapControl.FishingState = FishingState.Cancel;
 
                     GameScene.Game.CanRun = false;
-                    //   MapObject.User.NextRunTime = CEnvir.Now.AddMilliseconds(600);
-                    //MapObject.User.NextActionTime = CEnvir.Now.AddMilliseconds(300);
+                    
+                    if (GameScene.Game.StruckEnabled)
+                    {
+                        MapObject.User.NextRunTime = CEnvir.Now.AddMilliseconds(600);
+                        MapObject.User.NextActionTime = CEnvir.Now.AddMilliseconds(300);
 
-                    /* if (MapObject.User.ServerTime > DateTime.MinValue) //fix desyncing attack timers and being struck
-                     {
-                         switch (MapObject.User.CurrentAction)
-                         {
-                             case MirAction.Attack:
-                             case MirAction.RangeAttack:
-                                 MapObject.User.AttackTime += TimeSpan.FromMilliseconds(300);
-                                 break;
-                             case MirAction.Spell:
-                                 MapObject.User.NextMagicTime += TimeSpan.FromMilliseconds(300);
-                                 break;
-                         }
-                     }*/
+                        if (MapObject.User.ServerTime > DateTime.MinValue) //fix desyncing attack timers and being struck
+                        {
+                            switch (MapObject.User.CurrentAction)
+                            {
+                                case MirAction.Attack:
+                                case MirAction.RangeAttack:
+                                    MapObject.User.AttackTime += TimeSpan.FromMilliseconds(300);
+                                    break;
+                                case MirAction.Spell:
+                                    MapObject.User.NextMagicTime += TimeSpan.FromMilliseconds(300);
+                                    break;
+                            }
+                        }
+                    }
                 }
 
-                //   Point loc = ob.ActionQueue.Count > 0 ? ob.ActionQueue[ob.ActionQueue.Count - 1].Location : ob.CurrentLocation;
+                if (GameScene.Game.StruckEnabled)
+                {
+                    Point loc = ob.ActionQueue.Count > 0 ? ob.ActionQueue[^1].Location : ob.CurrentLocation;
 
-                // ob.ActionQueue.Add(new ObjectAction(MirAction.Struck, p.Direction, loc, p.AttackerID, p.Element));
-
-                ob.Struck(p.AttackerID, p.Element);
-
+                    ob.ActionQueue.Add(new ObjectAction(MirAction.Struck, p.Direction, loc, p.AttackerID, p.Element));
+                }
+                else
+                {
+                    ob.Struck(p.AttackerID, p.Element);
+                }
                 return;
             }
         }

@@ -107,7 +107,7 @@ namespace Server.Envir
         public static int PvPCurseRate { get; set; } = 4;
         public static TimeSpan AutoReviveDelay { get; set; } = TimeSpan.FromMinutes(10);
         public static TimeSpan RankChangeResetDelay { get; set; } = TimeSpan.FromHours(24);
-
+        public static bool EnableStruck { get; set; } = false;
 
         [ConfigSection("Monsters")]
         public static TimeSpan DeadDuration { get; set; } = TimeSpan.FromMinutes(1);

@@ -23,7 +23,7 @@ namespace Client.Models.Player
                 case MirAction.RangeAttack:
                 case MirAction.Spell:
                 case MirAction.Harvest:
-                //case MirAction.Struck:
+                case MirAction.Struck:
                 case MirAction.Die:
                 case MirAction.Dead:
                     break;

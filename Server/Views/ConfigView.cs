@@ -130,6 +130,7 @@ namespace Server.Views
             PvPCurseDurationEdit.EditValue = Config.PvPCurseDuration;
             PvPCurseRateEdit.EditValue = Config.PvPCurseRate;
             AutoReviveDelayEdit.EditValue = Config.AutoReviveDelay;
+            EnableStruckEdit.EditValue = Config.EnableStruck;
 
             //Monsters
             DeadDurationEdit.EditValue = Config.DeadDuration;
@@ -226,7 +227,6 @@ namespace Server.Views
             Config.ProcessGameGold = (bool)ProcessGameGoldEdit.EditValue;
             Config.AllowBuyGameGold = (bool)AllowBuyGameGoldEdit.EditValue;
 
-
             //Players
             Config.MaxViewRange = (int)MaxViewRangeEdit.EditValue;
             Config.ShoutDelay = (TimeSpan)ShoutDelayEdit.EditValue;
@@ -242,6 +242,7 @@ namespace Server.Views
             Config.PvPCurseDuration = (TimeSpan)PvPCurseDurationEdit.EditValue;
             Config.PvPCurseRate = (int)PvPCurseRateEdit.EditValue;
             Config.AutoReviveDelay = (TimeSpan)AutoReviveDelayEdit.EditValue;
+            Config.EnableStruck = (bool)EnableStruckEdit.EditValue;
 
             //Monsters
             Config.DeadDuration = (TimeSpan)DeadDurationEdit.EditValue;

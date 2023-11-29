@@ -2836,79 +2836,83 @@ namespace Client.Models
                         AttackTargets.Add(attackTarget);
                     }
                     break;
-                /*case MirAction.Struck:
-									if (VisibleBuffs.Contains(BuffType.MagicShield))
-										MagicShieldStruck();
+                case MirAction.Struck:
 
-									if (VisibleBuffs.Contains(BuffType.CelestialLight))
-										CelestialLightStruck();
+                    if (GameScene.Game.StruckEnabled)
+                    {
+                        if (VisibleBuffs.Contains(BuffType.MagicShield))
+                            CreateMagicEffect(MagicEffect.MagicShieldStruck);
 
+                        if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+                            CreateMagicEffect(MagicEffect.SuperiorMagicShieldStruck);
 
-									AttackerID = (uint)action.Extra[0];
+                        if (VisibleBuffs.Contains(BuffType.CelestialLight))
+                            CreateMagicEffect(MagicEffect.CelestialLightStruck);
 
-									Element element = (Element)action.Extra[1];
-									switch (element)
-									{
-										case Element.None:
-											Effects.Add(new MirEffect(930, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.NoneColour)
-											{
-												Blend = true,
-												Target = this,
-											});
-											break;
-										case Element.Fire:
-											Effects.Add(new MirEffect(790, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.FireColour)
-											{
-												Blend = true,
-												Target = this,
-											});
-											break;
-										case Element.Ice:
-											Effects.Add(new MirEffect(810, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.IceColour)
-											{
-												Blend = true,
-												Target = this,
-											});
-											break;
-										case Element.Lightning:
-											Effects.Add(new MirEffect(830, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.LightningColour)
-											{
-												Blend = true,
-												Target = this,
-											});
-											break;
-										case Element.Wind:
-											Effects.Add(new MirEffect(850, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.WindColour)
-											{
-												Blend = true,
-												Target = this,
-											});
-											break;
-										case Element.Holy:
-											Effects.Add(new MirEffect(870, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.HolyColour)
-											{
-												Blend = true,
-												Target = this,
-											});
-											break;
-										case Element.Dark:
-											Effects.Add(new MirEffect(890, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.DarkColour)
-											{
-												Blend = true,
-												Target = this,
-											});
-											break;
-										case Element.Phantom:
-											Effects.Add(new MirEffect(910, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.PhantomColour)
-											{
-												Blend = true,
-												Target = this,
-											});
-											break;
-									}
+                        AttackerID = (uint)action.Extra[0];
 
-
-									break;*/
+                        Element element = (Element)action.Extra[1];
+                        switch (element)
+                        {
+                            case Element.None:
+                                Effects.Add(new MirEffect(930, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.NoneColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                });
+                                break;
+                            case Element.Fire:
+                                Effects.Add(new MirEffect(790, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.FireColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                });
+                                break;
+                            case Element.Ice:
+                                Effects.Add(new MirEffect(810, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.IceColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                });
+                                break;
+                            case Element.Lightning:
+                                Effects.Add(new MirEffect(830, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.LightningColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                });
+                                break;
+                            case Element.Wind:
+                                Effects.Add(new MirEffect(850, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.WindColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                });
+                                break;
+                            case Element.Holy:
+                                Effects.Add(new MirEffect(870, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.HolyColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                });
+                                break;
+                            case Element.Dark:
+                                Effects.Add(new MirEffect(890, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.DarkColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                });
+                                break;
+                            case Element.Phantom:
+                                Effects.Add(new MirEffect(910, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.PhantomColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                });
+                                break;
+                        }
+                    }
+                    break;
                 case MirAction.Attack:
                     MagicType = (MagicType)action.Extra[1];
                     AttackElement = (Element)action.Extra[2];
@@ -4638,10 +4642,13 @@ namespace Client.Models
                     CreateProjectile();
                     PlayAttackSound();
                     break;
-                //case MirAction.Struck:
-                //    if (FrameIndex == 0)
-                //        PlayStruckSound();
-                //    break;
+                case MirAction.Struck:
+                    if (GameScene.Game.StruckEnabled)
+                    {
+                        if (FrameIndex == 0)
+                            PlayStruckSound();
+                    }
+                    break;
                 case MirAction.Die:
                     if (FrameIndex == 0)
                         PlayDieSound();
@@ -4689,59 +4696,60 @@ namespace Client.Models
             if (VisibleBuffs.Contains(BuffType.CelestialLight))
                 CreateMagicEffect(MagicEffect.CelestialLightStruck);
 
+            var color = Functions.GetElementColour(element);
             switch (element)
             {
                 case Element.None:
-                    Effects.Add(new MirEffect(930, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.NoneColour)
+                    Effects.Add(new MirEffect(930, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, color)
                     {
                         Blend = true,
                         Target = this,
                     });
                     break;
                 case Element.Fire:
-                    Effects.Add(new MirEffect(790, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.FireColour)
+                    Effects.Add(new MirEffect(790, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, color)
                     {
                         Blend = true,
                         Target = this,
                     });
                     break;
                 case Element.Ice:
-                    Effects.Add(new MirEffect(810, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.IceColour)
+                    Effects.Add(new MirEffect(810, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, color)
                     {
                         Blend = true,
                         Target = this,
                     });
                     break;
                 case Element.Lightning:
-                    Effects.Add(new MirEffect(830, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.LightningColour)
+                    Effects.Add(new MirEffect(830, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, color)
                     {
                         Blend = true,
                         Target = this,
                     });
                     break;
                 case Element.Wind:
-                    Effects.Add(new MirEffect(850, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.WindColour)
+                    Effects.Add(new MirEffect(850, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, color)
                     {
                         Blend = true,
                         Target = this,
                     });
                     break;
                 case Element.Holy:
-                    Effects.Add(new MirEffect(870, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.HolyColour)
+                    Effects.Add(new MirEffect(870, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, color)
                     {
                         Blend = true,
                         Target = this,
                     });
                     break;
                 case Element.Dark:
-                    Effects.Add(new MirEffect(890, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.DarkColour)
+                    Effects.Add(new MirEffect(890, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, color)
                     {
                         Blend = true,
                         Target = this,
                     });
                     break;
                 case Element.Phantom:
-                    Effects.Add(new MirEffect(910, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, Globals.PhantomColour)
+                    Effects.Add(new MirEffect(910, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 30, color)
                     {
                         Blend = true,
                         Target = this,

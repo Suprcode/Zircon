@@ -335,6 +335,8 @@ namespace Client.Models
             GameScene.Game.DayTime = info.DayTime;
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;
 
+            GameScene.Game.StruckEnabled = info.StruckEnabled;
+
             HermitPoints = info.HermitPoints;
 
             foreach (ClientUserMagic magic in info.Magics)

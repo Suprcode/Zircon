@@ -604,11 +604,11 @@ namespace Client.Models
                         animation = MirAnimation.ChannellingEnd;
 
                     break;
-                // case MirAction.Struck:
-                //    animation = MirAnimation.Struck;
-                // if (Horse != HorseType.None)
-                //    animation = MirAnimation.HorseStruck;
-                //break;
+                case MirAction.Struck:
+                    animation = MirAnimation.Struck;
+                    if (Horse != HorseType.None)
+                        animation = MirAnimation.HorseStruck;
+                    break;
                 case MirAction.Die:
                     animation = MirAnimation.Die;
                     break;

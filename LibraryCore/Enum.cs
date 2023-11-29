@@ -1142,7 +1142,7 @@ namespace Library
         Abyss = 1 << 7,         //Reduces monster viewrange, displays blinding effect (player)
         Parasite = 1 << 8,      //Tick damage, explosion, ignores transparency (monster), displays effect
         Neutralize = 1 << 9,    //Stops attackTime, slows actionTime, displays effect (needs code revisiting)
-        Fear = 1 << 10,
+        Fear = 1 << 10,         //Stops attack (monster), forces runaway (monster), displays effect
         Burn = 1 << 11,         //Tick damage, displays effect
         Containment = 1 << 12,  //Tick damage, stops movement, displays effect
         Chain = 1 << 13,        //Tick damage, limits movement, displays effect
