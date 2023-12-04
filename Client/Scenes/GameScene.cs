@@ -299,6 +299,11 @@ namespace Client.Scenes
 
         #endregion
 
+
+        public DateTime SubMoveTime = DateTime.MinValue;
+
+        public bool SubMoveFrame = false;
+
         public ClientPlayerInfo Partner
         {
             get => _Partner;
@@ -905,6 +910,16 @@ namespace Client.Scenes
             }
             else
                 MoveFrame = false;
+
+            if (CEnvir.Now >= SubMoveTime)
+            {
+                SubMoveTime = CEnvir.Now.AddMilliseconds(100 / Config.SmoothRenderingRate);
+                SubMoveFrame = true;
+            }
+            else
+            {
+                SubMoveFrame = false;
+            }
 
             if (MouseControl == MapControl)
                 MapControl.CheckCursor();

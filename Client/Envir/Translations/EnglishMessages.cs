@@ -134,6 +134,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync:";
         public override string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; } = "Limit FPS:";
         public override string CommonControlConfigWindowGraphicsTabClipMouseLabel { get; set; } = "Clip Mouse:";
+        public override string CommonControlConfigWindowGraphicsTabSmoothRendering { get; set; } = "Smooth Render:";
         public override string CommonControlConfigWindowGraphicsTabDebugLabelLabel { get; set; } = "Debug Label:";
         public override string CommonControlConfigWindowGraphicsTabLanguageLabel { get; set; } = "Language:";
         public override string CommonControlConfigWindowSoundTabBackgroundSoundLabel { get; set; } = "Background Sound:";
@@ -435,6 +436,7 @@ namespace Client.Envir.Translations
         public override string FortuneCheckerDialogTitle { get; set; } = "Fortune Checker";
         public override string FortuneCheckerDialogNameLabel { get; set; } = "Name:";
         public override string FortuneCheckerDialogItemLabel { get; set; } = "Item:";
+        public override string FortuneCheckerDialogItemType { get; set; } = "ALL:";
         public override string FortuneCheckerDialogSearchButtonLabel { get; set; } = "Search";
 
         public override string FortuneCheckerRowCountLabel { get; set; } = "Drop Count:";
@@ -443,6 +445,9 @@ namespace Client.Envir.Translations
         public override string FortuneCheckerRowCheckButtonLabel { get; set; } = "Check";
         public override string FortuneCheckerRowCheckButtonConfirmMessage { get; set; } = "Are you sure you want to check your fortune progress?";
         public override string FortuneCheckerRowCheckButtonConfirmCaption { get; set; } = "Fortune Check";
+        public override string FortuneCheckerRowCountLabelNULL { get; set; } = "Not Checked";
+        public override string FortuneCheckerRowProgressLabelNULL { get; set; } = "Not Checked";
+        public override string FortuneCheckerRowDateLabelNULL { get; set; } = "Not Checked";
 
         public override string GroupDialogTitle { get; set; } = "Group";
         public override string GroupDialogAllowGroupButtonAllowingHint { get; set; } = "Group Status: Allowing";

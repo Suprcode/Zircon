@@ -756,6 +756,8 @@ namespace Client.Models
                     break;
             }
         }
+
+        public Point ReverseMovingOffSet = Point.Empty;
         public override void MovingOffSetChanged()
         {
             base.MovingOffSetChanged();
@@ -806,6 +808,326 @@ namespace Client.Models
             }
 
             return Currencies.First(x => x.Info == info);
+        }
+        #region
+
+        public int SubFrame = -1;
+        public int Mir2SubFrame = -1;
+        public int LastFrame = -1;
+        public int Mir2LastFrame = -1;
+        public int FrameCount = -1;
+        public int Mir2FrameCount = -1;
+        #endregion
+
+
+        public override void UpdateFrame()
+        {
+            if (Frames == null || CurrentFrame == null) return;
+            switch (CurrentAction)
+            {
+                case MirAction.Moving:
+                case MirAction.Pushed:
+
+                    if (Config.SmoothRendering)
+                    {
+                        if (!CurrentFrame.Reversed)
+                            if (!GameScene.Game.MoveFrame && !GameScene.Game.SubMoveFrame) return;
+                    }
+                    else
+                    {
+                        if (!GameScene.Game.MoveFrame) return;
+                    }
+                    break;
+            }
+
+            if (Config.SmoothRendering)
+            {
+                if (CurrentAction - 1 > MirAction.Moving || GameScene.Game.MoveFrame)
+                {
+                    FrameCount = CurrentFrame.GetFrame(FrameStart, CEnvir.Now, (this != User || GameScene.Game.Observer) && ActionQueue.Count > 1);
+
+                    if (FrameCount == CurrentFrame.FrameCount || (Interupt && ActionQueue.Count > 0))
+                    {
+                        DoNextAction();
+                        FrameCount = CurrentFrame.GetFrame(FrameStart, CEnvir.Now, (this != User || GameScene.Game.Observer) && ActionQueue.Count > 1);
+
+                        if (FrameCount == CurrentFrame.FrameCount)
+                        {
+                            FrameCount--;
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+
+                FrameCount = CurrentFrame.GetFrame(FrameStart, CEnvir.Now, (this != User || GameScene.Game.Observer) && ActionQueue.Count > 1);
+
+                if (FrameCount == CurrentFrame.FrameCount || (Interupt && ActionQueue.Count > 0))
+                {
+                    DoNextAction();
+                    FrameCount = CurrentFrame.GetFrame(FrameStart, CEnvir.Now, (this != User || GameScene.Game.Observer) && ActionQueue.Count > 1);
+
+                    if (FrameCount == CurrentFrame.FrameCount)
+                        FrameCount -= 1;
+                }
+            }
+
+
+            if (Config.SmoothRendering)
+            {
+                if (LastFrame != FrameCount)
+                {
+                    LastFrame = FrameCount;
+                    SubFrame = FrameCount * Config.SmoothRenderingRate;
+                }
+            }
+
+            int x = 0, y = 0, reversex = 0, reversey = 0;
+            if (Config.SmoothRendering)
+            {
+                switch (CurrentAction)
+                {
+                    case MirAction.Moving:
+                    case MirAction.Pushed:
+                        switch (Direction)
+                        {
+                            case MirDirection.Up:
+                                x = 0;
+                                reversex = 0;
+
+                                y = (int)((float)(CellHeight * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+
+                                if (y < 0)
+                                {
+                                    y = 0;
+                                }
+                                reversey = 6;
+                                break;
+                            case MirDirection.UpRight:
+
+                                x = -(int)((float)(CellWidth * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+                                y = (int)((float)(CellHeight * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+
+                                if (x > 0)
+                                {
+                                    x = 0;
+                                }
+                                if (y < 0)
+                                {
+                                    y = 0;
+                                }
+                                reversex = -8;
+                                reversey = 6;
+                                break;
+                            case MirDirection.Right:
+
+                                x = -(int)((float)(CellWidth * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+
+                                if (x > 0)
+                                {
+                                    x = 0;
+                                }
+                                reversex = -8;
+                                y = 0;
+                                reversey = 0;
+                                break;
+                            case MirDirection.DownRight:
+
+                                x = -(int)((float)(CellWidth * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+                                y = -(int)((float)(CellHeight * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+
+                                if (x > 0)
+                                {
+                                    x = 0;
+                                }
+                                if (y > 0)
+                                {
+                                    y = 0;
+                                }
+                                reversex = -8;
+                                reversey = -6;
+                                break;
+                            case MirDirection.Down:
+                                x = 0;
+                                reversex = 0;
+
+                                y = -(int)((float)(CellHeight * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+
+                                if (y > 0)
+                                {
+                                    y = 0;
+                                }
+                                reversey = -6;
+                                break;
+                            case MirDirection.DownLeft:
+
+                                x = (int)((float)(CellWidth * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+                                y = -(int)((float)(CellHeight * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+
+                                if (x < 0)
+                                {
+                                    x = 0;
+                                }
+                                if (y > 0)
+                                {
+                                    y = 0;
+                                }
+                                reversex = 8;
+                                reversey = -6;
+                                break;
+                            case MirDirection.Left:
+
+                                x = (int)((float)(CellWidth * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+
+                                if (x < 0)
+                                {
+                                    x = 0;
+                                }
+                                reversex = 8;
+                                y = 0;
+                                reversey = 0;
+                                break;
+                            case MirDirection.UpLeft:
+
+                                x = (int)((float)(CellWidth * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+                                y = (int)((float)(CellHeight * MoveDistance) / (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate) * (float)(CurrentFrame.FrameCount * Config.SmoothRenderingRate - (SubFrame + 1)));
+
+                                if (x < 0)
+                                {
+                                    x = 0;
+                                }
+                                if (y < 0)
+                                {
+                                    y = 0;
+                                }
+                                reversex = 8;
+                                reversey = 6;
+                                break;
+                        }
+
+                        SubFrame++;
+                        break;
+                }
+            }
+            else
+            {
+                switch (CurrentAction)
+                {
+                    case MirAction.Moving:
+                    case MirAction.Pushed:
+                        switch (Direction)
+                        {
+                            case MirDirection.Up:
+                                x = 0;
+                                reversex = 0;
+
+                                y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+
+                                reversey = 6;
+                                break;
+                            case MirDirection.UpRight:
+
+                                x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+                                y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+
+                                reversex = -8;
+                                reversey = 6;
+                                break;
+                            case MirDirection.Right:
+
+                                x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+
+                                reversex = -8;
+                                y = 0;
+                                reversey = 0;
+                                break;
+                            case MirDirection.DownRight:
+
+                                x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+                                y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+
+                                reversex = -8;
+                                reversey = -6;
+                                break;
+                            case MirDirection.Down:
+
+                                y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+
+                                x = 0;
+                                reversex = 0;
+                                reversey = -6;
+                                break;
+                            case MirDirection.DownLeft:
+
+                                x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+                                y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+
+                                reversex = 8;
+                                reversey = -6;
+                                break;
+                            case MirDirection.Left:
+
+                                x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+
+                                reversex = 8;
+                                y = 0;
+                                reversey = 0;
+                                break;
+                            case MirDirection.UpLeft:
+
+                                x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+                                y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (FrameCount + 1)));
+
+                                reversex = 8;
+                                reversey = 6;
+                                break;
+                        }
+                        break;
+                }
+
+            }
+
+            x -= x % 2;
+            y -= y % 2;
+            reversex -= reversex % 2;
+            reversey -= reversey % 2;
+
+            if (CurrentFrame.Reversed)
+            {
+                FrameCount = CurrentFrame.FrameCount - FrameCount - 1;
+                x *= -1;
+                y *= -1;
+                reversex *= -1;
+                reversey *= -1;
+            }
+
+
+            if (GameScene.Game.MapControl.BackgroundImage != null)
+                GameScene.Game.MapControl.BackgroundMovingOffset = new Point((int)(x / GameScene.Game.MapControl.BackgroundScaleX), (int)(y / GameScene.Game.MapControl.BackgroundScaleY));
+
+            ReverseMovingOffSet = new Point(reversex, reversey);
+
+
+            MovingOffSet = new Point(x, y);
+
+            if (CurrentAction == MirAction.Pushed)
+            {
+                FrameCount = 0;
+                Mir2FrameCount = 0;
+            }
+
+            FrameIndex = FrameCount;
+
+            if (Config.SmoothRendering)
+            {
+                DrawFrame = FrameIndex % (CurrentFrame.FrameCount / CurrentFrame.RepeatTimes) + CurrentFrame.StartIndex + CurrentFrame.OffSet * (int)Direction;
+            }
+            else
+            {
+                DrawFrame = FrameIndex + CurrentFrame.StartIndex + CurrentFrame.OffSet * (int)Direction;
+            }
         }
     }
 }

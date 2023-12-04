@@ -32,7 +32,7 @@ namespace Client.Scenes.Views
         public FortuneCheckerDialog()
         {
             //HasFooter = true;
-            TitleLabel.Text = "Fortune Checker";
+            TitleLabel.Text = CEnvir.Language.FortuneCheckerDialogTitle;
             SetClientSize(new Size(485, 551));
             
             #region Search
@@ -50,7 +50,7 @@ namespace Client.Scenes.Views
             {
                 Parent = filterPanel,
                 Location = new Point(5, 5),
-                Text = "Name:",
+                Text = CEnvir.Language.FortuneCheckerDialogNameLabel,
             };
 
             ItemNameBox = new DXTextBox
@@ -67,7 +67,7 @@ namespace Client.Scenes.Views
             {
                 Parent = filterPanel,
                 Location = new Point(ItemNameBox.Location.X + ItemNameBox.Size.Width + 10, 5),
-                Text = "Item:",
+                Text = CEnvir.Language.FortuneCheckerDialogItemLabel,
             };
 
 
@@ -84,7 +84,7 @@ namespace Client.Scenes.Views
             new DXListBoxItem
             {
                 Parent = ItemTypeBox.ListBox,
-                Label = { Text = $"All" },
+                Label = { Text = CEnvir.Language.FortuneCheckerDialogItemType },
                 Item = null
             };
 
@@ -112,7 +112,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ItemTypeBox.Location.X + ItemTypeBox.Size.Width + 15, label.Location.Y - 1),
                 Parent = filterPanel,
                 ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Search" }
+                Label = { Text = CEnvir.Language.FortuneCheckerDialogSearchButtonLabel, }
             };
             SearchButton.MouseClick += (o, e) => Search();
         
@@ -282,9 +282,9 @@ namespace Client.Scenes.Views
         {
             if (Fortune == null)
             {
-                CountLabel.Text = "Not Checked";
-                ProgressLabel.Text = "Not Checked";
-                DateLabel.Text = "Not Checked";
+                CountLabel.Text = CEnvir.Language.FortuneCheckerRowCountLabelNULL;
+                ProgressLabel.Text = CEnvir.Language.FortuneCheckerRowProgressLabelNULL;
+                DateLabel.Text = CEnvir.Language.FortuneCheckerRowDateLabelNULL;
                 return;
             }
             

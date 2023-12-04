@@ -766,17 +766,19 @@ namespace Library
         public int StartIndex;
         public int FrameCount;
         public int OffSet;
-
+        public int RepeatTimes = 1;
         public bool Reversed, StaticSpeed;
 
         public TimeSpan[] Delays; //Index = Duration to freeze
-        
 
-        public Frame(int startIndex, int frameCount, int offSet, TimeSpan frameDelay)
+
+        public Frame(int startIndex, int frameCount, int offSet, TimeSpan frameDelay, int repeatTimes = 1)
         {
             StartIndex = startIndex;
-            FrameCount = frameCount;
+            FrameCount = frameCount * RepeatTimes;
             OffSet = offSet;
+
+            RepeatTimes = repeatTimes;
 
             Delays = new TimeSpan[FrameCount];
             for (int i = 0; i < Delays.Length; i++)
@@ -788,6 +790,8 @@ namespace Library
             FrameCount = frame.FrameCount;
             OffSet = frame.OffSet;
 
+            RepeatTimes = frame.RepeatTimes;
+
             Delays = new TimeSpan[FrameCount];
             for (int i = 0; i < Delays.Length; i++)
                 Delays[i] = frame.Delays[i];
@@ -798,7 +802,6 @@ namespace Library
 
             if (doubleSpeed && !StaticSpeed)
                 enlapsed += enlapsed;
-
 
             if (Reversed)
             {
@@ -820,8 +823,6 @@ namespace Library
                     return i;
                 }
             }
-
-
             return FrameCount;
         }
     }

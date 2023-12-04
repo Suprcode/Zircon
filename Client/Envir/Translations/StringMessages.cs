@@ -133,6 +133,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabClipMouseLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabSmoothRendering { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDebugLabelLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLanguageLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabBackgroundSoundLabel { get; set; }
@@ -433,6 +434,7 @@ namespace Client.Envir.Translations
         public abstract string FortuneCheckerDialogTitle { get; set; }
         public abstract string FortuneCheckerDialogNameLabel { get; set; }
         public abstract string FortuneCheckerDialogItemLabel { get; set; }
+        public abstract string FortuneCheckerDialogItemType { get; set; }
         public abstract string FortuneCheckerDialogSearchButtonLabel { get; set; }
 
         public abstract string FortuneCheckerRowCountLabel { get; set; }
@@ -441,6 +443,9 @@ namespace Client.Envir.Translations
         public abstract string FortuneCheckerRowCheckButtonLabel { get; set; }
         public abstract string FortuneCheckerRowCheckButtonConfirmMessage { get; set; }
         public abstract string FortuneCheckerRowCheckButtonConfirmCaption { get; set; }
+        public abstract string FortuneCheckerRowCountLabelNULL { get; set; }
+        public abstract string FortuneCheckerRowProgressLabelNULL { get; set; }
+        public abstract string FortuneCheckerRowDateLabelNULL { get; set; }
 
         public abstract string GroupDialogTitle { get; set; }
         public abstract string GroupDialogAllowGroupButtonAllowingHint { get; set; }

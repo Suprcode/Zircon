@@ -178,6 +178,9 @@ namespace Client.Scenes.Views
         public static int OffSetX;
         public static int OffSetY;
 
+        public MirImage BackgroundImage;
+        public float BackgroundScaleX, BackgroundScaleY;
+        public Point BackgroundMovingOffset = Point.Empty;
 
         #endregion
 
