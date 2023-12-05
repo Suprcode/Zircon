@@ -547,86 +547,94 @@ namespace Client.Models
 
         public virtual void UpdateFrame()
         {
-            if (Frames == null || CurrentFrame == null) return;
-
-            switch (CurrentAction)
+            if (Frames == null || CurrentFrame == null)
             {
-                case MirAction.Moving:
-                case MirAction.Pushed:
-                    if (!GameScene.Game.MoveFrame) return;
-                    break;
+                return;
             }
-
-            int frame = CurrentFrame.GetFrame(FrameStart, CEnvir.Now, (this != User || GameScene.Game.Observer) && ActionQueue.Count > 1);
-
-            if (frame == CurrentFrame.FrameCount || (Interupt && ActionQueue.Count > 0))
+            MirAction currentAction = CurrentAction;
+            if (currentAction - 1 <= MirAction.Moving && !GameScene.Game.MoveFrame)
+            {
+                return;
+            }
+            int num = CurrentFrame.GetFrame(FrameStart, CEnvir.Now, (this != User || GameScene.Game.Observer) && ActionQueue.Count > 1);
+            if (num == CurrentFrame.FrameCount || (Interupt && ActionQueue.Count > 0))
             {
                 DoNextAction();
-                frame = CurrentFrame.GetFrame(FrameStart, CEnvir.Now, (this != User || GameScene.Game.Observer) && ActionQueue.Count > 1);
-                if (frame == CurrentFrame.FrameCount)
-                    frame -= 1;
+                num = CurrentFrame.GetFrame(FrameStart, CEnvir.Now, (this != User || GameScene.Game.Observer) && ActionQueue.Count > 1);
+                if (num == CurrentFrame.FrameCount)
+                {
+                    num--;
+                }
             }
-
-            int x = 0, y = 0;
-            switch (CurrentAction)
+            int num2 = 0;
+            int num3 = 0;
+            int num4 = 0;
+            int num5 = 0;
+            if (Config.SmoothMove)
             {
-                case MirAction.Moving:
-                case MirAction.Pushed:
-                    switch (Direction)
-                    {
-                        case MirDirection.Up:
-                            x = 0;
-                            y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.UpRight:
-                            x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.Right:
-                            x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = 0;
-                            break;
-                        case MirDirection.DownRight:
-                            x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.Down:
-                            x = 0;
-                            y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.DownLeft:
-                            x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.Left:
-                            x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = 0;
-                            break;
-                        case MirDirection.UpLeft:
-                            x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                    }
-                    break;
+                TimeSpan timeSpan = CEnvir.Now - FrameStart;
+                TimeSpan timeSpan2 = ((CurrentFrame.Delays.Length != 0) ? TimeSpan.FromMilliseconds(CurrentFrame.Delays[0].TotalMilliseconds * (double)CurrentFrame.FrameCount) : TimeSpan.FromMilliseconds(1000.0));
+                decimal num6 = 1m - (decimal)timeSpan.Ticks / (decimal)timeSpan2.Ticks;
+                num4 = (int)((decimal)(48 * MoveDistance) * num6);
+                num5 = (int)((decimal)(32 * MoveDistance) * num6);
             }
-            x -= x % 2;
-            y -= y % 2;
-
+            else
+            {
+                num4 = (int)((float)(48 * MoveDistance) / (float)CurrentFrame.FrameCount * (float)(CurrentFrame.FrameCount - (num + 1)));
+                num5 = (int)((float)(32 * MoveDistance) / (float)CurrentFrame.FrameCount * (float)(CurrentFrame.FrameCount - (num + 1)));
+            }
+            currentAction = CurrentAction;
+            if (currentAction - 1 <= MirAction.Moving)
+            {
+                switch (Direction)
+                {
+                    case MirDirection.Up:
+                        num2 = 0;
+                        num3 = num5;
+                        break;
+                    case MirDirection.UpRight:
+                        num2 = -num4;
+                        num3 = num5;
+                        break;
+                    case MirDirection.Right:
+                        num2 = -num4;
+                        num3 = 0;
+                        break;
+                    case MirDirection.DownRight:
+                        num2 = -num4;
+                        num3 = -num5;
+                        break;
+                    case MirDirection.Down:
+                        num2 = 0;
+                        num3 = -num5;
+                        break;
+                    case MirDirection.DownLeft:
+                        num2 = num4;
+                        num3 = -num5;
+                        break;
+                    case MirDirection.Left:
+                        num2 = num4;
+                        num3 = 0;
+                        break;
+                    case MirDirection.UpLeft:
+                        num2 = num4;
+                        num3 = num5;
+                        break;
+                }
+            }
             if (CurrentFrame.Reversed)
             {
-                frame = CurrentFrame.FrameCount - frame - 1;
-                x *= -1;
-                y *= -1;
+                num = CurrentFrame.FrameCount - num - 1;
+                num2 *= -1;
+                num3 *= -1;
             }
-
-            MovingOffSet = new Point(x, y);
-
+            MovingOffSet = new Point(num2, num3);
             if (Race == ObjectType.Player && CurrentAction == MirAction.Pushed)
-                frame = 0;
-
-            FrameIndex = frame;
+            {
+                num = 0;
+            }
+            FrameIndex = num;
             DrawFrame = FrameIndex + CurrentFrame.StartIndex + CurrentFrame.OffSet * (int)Direction;
-
         }
 
         public abstract void SetAnimation(ObjectAction action);

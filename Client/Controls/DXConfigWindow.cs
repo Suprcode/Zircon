@@ -33,7 +33,7 @@ namespace Client.Controls
         public DXTab GameTab;
         private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox, 
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox, 
-            DrawParticlesCheckBox, DrawWeatherCheckBox;
+            DrawParticlesCheckBox, DrawWeatherCheckBox, SmoothMoveBox;
         public DXCheckBox DisplayHelmetCheckBox;
 
         public DXButton KeyBindButton;
@@ -83,6 +83,7 @@ namespace Client.Controls
             UserHealthCheckBox.Checked = Config.ShowUserHealth;
             MonsterHealthCheckBox.Checked = Config.ShowMonsterHealth;
             DamageNumbersCheckBox.Checked = Config.ShowDamageNumbers;
+            SmoothMoveBox.Checked = Config.SmoothMove;
             EscapeCloseAllCheckBox.Checked = Config.EscapeCloseAll;
             ShiftOpenChatCheckBox.Checked = Config.ShiftOpenChat;
             RightClickDeTargetCheckBox.Checked = Config.RightClickDeTarget;
@@ -227,12 +228,19 @@ namespace Client.Controls
             };
             ClipMouseCheckBox.Location = new Point(120 - ClipMouseCheckBox.Size.Width, 100);
 
+            SmoothMoveBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabSmoothMove },
+                Parent = GraphicsTab,
+            };
+            SmoothMoveBox.Location = new Point(120 - SmoothMoveBox.Size.Width, 120);
+
             DebugLabelCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDebugLabelLabel },
                 Parent = GraphicsTab,
             };
-            DebugLabelCheckBox.Location = new Point(120 - DebugLabelCheckBox.Size.Width, 120);
+            DebugLabelCheckBox.Location = new Point(120 - DebugLabelCheckBox.Size.Width, 140);
 
             label = new DXLabel
             {
@@ -240,12 +248,12 @@ namespace Client.Controls
                 Outline = true,
                 Parent = GraphicsTab,
             };
-            label.Location = new Point(104 - label.Size.Width, 140);
+            label.Location = new Point(104 - label.Size.Width, 160);
 
             LanguageComboBox = new DXComboBox
             {
                 Parent = GraphicsTab,
-                Location = new Point(104, 140),
+                Location = new Point(104, 160),
                 Size = new Size(100, DXComboBox.DefaultNormalHeight),
             };
 
@@ -867,6 +875,7 @@ namespace Client.Controls
             Config.ShowUserHealth = UserHealthCheckBox.Checked;
             Config.ShowMonsterHealth = MonsterHealthCheckBox.Checked;
             Config.ShowDamageNumbers = DamageNumbersCheckBox.Checked;
+            Config.SmoothMove = SmoothMoveBox.Checked;
 
             Config.EscapeCloseAll = EscapeCloseAllCheckBox.Checked;
             Config.ShiftOpenChat = ShiftOpenChatCheckBox.Checked;

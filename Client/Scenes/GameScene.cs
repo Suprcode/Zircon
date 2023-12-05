@@ -216,7 +216,7 @@ namespace Client.Scenes
         public Dictionary<CastleInfo, string> CastleOwners = new Dictionary<CastleInfo, string>();
 
         public bool MoveFrame { get; set; }
-        private DateTime MoveTime, OutputTime, ItemRefreshTime;
+        private DateTime MoveTime, SubMoveTime, OutputTime, ItemRefreshTime;
 
         public bool CanRun;
 
@@ -901,11 +901,23 @@ namespace Client.Scenes
             {
                 MoveTime = CEnvir.Now.AddMilliseconds(100);
                 MapControl.Animation++;
+            }
+            if (CEnvir.Now >= SubMoveTime)
+            {
+                if (Config.SmoothMove)
+                {
+                    SubMoveTime = CEnvir.Now.AddMilliseconds(5.0);
+                }
+                else
+                {
+                    SubMoveTime = CEnvir.Now.AddMilliseconds(100.0);
+                }
                 MoveFrame = true;
             }
             else
+            {
                 MoveFrame = false;
-
+            }
             if (MouseControl == MapControl)
                 MapControl.CheckCursor();
 
