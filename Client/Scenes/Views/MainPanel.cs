@@ -16,6 +16,7 @@ namespace Client.Scenes.Views
         public DXControl HealthBar, ManaBar, FocusBar;
         public DXImageControl ExperienceBar, NewMailIcon, CompletedQuestIcon, AvailableQuestIcon;
 
+        public DXImageControl ClassImage, LevelImage, ACImage, MACImage, DCImage, MCImage, SCImage, FPImage, CPImage;
         public DXLabel ClassLabel, LevelLabel, ACLabel, MRLabel, DCLabel, MCLabel, SCLabel, AccuracyLabel, AgilityLabel, HealthLabel, ManaLabel, FocusLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
 
         #endregion
@@ -272,12 +273,79 @@ namespace Client.Scenes.Views
                 }
             };
 
+            #region Image Stat Labels
+            ClassImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 70,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(277, 25),
+                Hint = CEnvir.Language.MainPanelClassHint
+            };
+            LevelImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 71,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(277, 45),
+                Hint = CEnvir.Language.MainPanelLevelHint
+            };
+
+            FPImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 72,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(362, 25)
+            };
+            CPImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 73,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(362, 45)
+            };
+
+            ACImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 66,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(445, 25)
+            };
+            DCImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 65,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(445, 45)
+            };
+
+            MACImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 63,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(531, 25)
+            };
+            MCImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 62,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(531, 45)
+            };
+
+            #endregion
+
+            #region Stat Labels
             DXLabel label = new DXLabel
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 Text = CEnvir.Language.MainPanelClassLabel,
                 Hint = CEnvir.Language.MainPanelClassHint,
+                Visible = false
             };
             label.Location = new Point(300 - label.Size.Width, 20);
 
@@ -287,6 +355,7 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 Text = CEnvir.Language.MainPanelLevelLabel,
                 Hint = CEnvir.Language.MainPanelLevelHint,
+                Visible = false
             };
             label.Location = new Point(300 - label.Size.Width, 40);
 
@@ -295,6 +364,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 Text = CEnvir.Language.MainPanelACLabel,
+                Visible = false
             };
             label.Location = new Point(385 - label.Size.Width, 20);
 
@@ -303,6 +373,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 Text = CEnvir.Language.MainPanelMRLabel,
+                Visible = false
             };
             label.Location = new Point(470 - label.Size.Width, 20);
 
@@ -311,24 +382,27 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 Text = CEnvir.Language.MainPanelDCLabel,
+                Visible = false
             };
             label.Location = new Point(385 - label.Size.Width, 40);
-
-            DXLabel MCLabelLabel = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelMCLabel,
-            };
-            MCLabelLabel.Location = new Point(470 - MCLabelLabel.Size.Width, 40);
 
             DXLabel SCLabelLabel = new DXLabel
             {
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 Text = CEnvir.Language.MainPanelSCLabel,
+                Visible = false
             };
             SCLabelLabel.Location = new Point(470 - SCLabelLabel.Size.Width, 40);
+
+            DXLabel MCLabelLabel = new DXLabel
+            {
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                Text = CEnvir.Language.MainPanelMCLabel,
+                Visible = false
+            };
+            MCLabelLabel.Location = new Point(470 - MCLabelLabel.Size.Width, 40);
 
             label = new DXLabel
             {
@@ -336,6 +410,7 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 Text = CEnvir.Language.MainPanelAccuracyLabel,
                 Hint = CEnvir.Language.MainPanelAccuracyHint,
+                Visible = false
             };
             label.Location = new Point(567 - label.Size.Width, 20);
 
@@ -345,8 +420,11 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 Text = CEnvir.Language.MainPanelAgilityLabel,
                 Hint = CEnvir.Language.MainPanelAgilityHint,
+                Visible = false
             };
             label.Location = new Point(567 - label.Size.Width, 40);
+
+            #endregion
 
             ClassLabel = new DXLabel
             {
