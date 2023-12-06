@@ -98,34 +98,17 @@ namespace Server.Models
             if (!CanPickUpItem(ob))
                 return false;
 
-            long amount = 0;
+            long taxableAmount = Account?.GuildMember?.Guild?.CalculateGuildTax(Item) ?? 0;
 
-            if (Account != null && Item.Info == SEnvir.GoldInfo && Account.GuildMember != null && Account.GuildMember.Guild.GuildTax > 0)
-                amount = (long)Math.Ceiling(Item.Count * Account.GuildMember.Guild.GuildTax);
-
-            ItemCheck check = new ItemCheck(Item, Item.Count - amount, Item.Flags, Item.ExpireTime);
+            ItemCheck check = new ItemCheck(Item, Item.Count - taxableAmount, Item.Flags, Item.ExpireTime);
 
             if (ob.CanGainItems(false, check))
             {
-                if (amount > 0)
+                if (taxableAmount > 0)
                 {
-                    Item.Count -= amount;
+                    Item.Count -= taxableAmount;
 
-                    Account.GuildMember.Guild.GuildFunds += amount;
-                    Account.GuildMember.Guild.DailyGrowth += amount;
-
-                    Account.GuildMember.Guild.DailyContribution += amount;
-                    Account.GuildMember.Guild.TotalContribution += amount;
-
-                    Account.GuildMember.DailyContribution += amount;
-                    Account.GuildMember.TotalContribution += amount;
-
-                    foreach (GuildMemberInfo member in Account.GuildMember.Guild.Members)
-                    {
-                        if (member.Account.Connection?.Player == null) continue;
-
-                        member.Account.Connection.Enqueue(new S.GuildMemberContribution { Index = Account.GuildMember.Index, Contribution = amount, ObserverPacket = false });
-                    }
+                    Account.GuildMember.Contribute(taxableAmount);
                 }
 
                 Item.UserTask?.Objects.Remove(this);
@@ -141,39 +124,23 @@ namespace Server.Models
             //Gain New / partial items
             return false;
         }
+
         public void PickUpItem(Companion ob)
         {
             if (!CanPickUpItem(ob.CompanionOwner))
                 return;
 
-            long amount = 0;
+            long taxableAmount = Account?.GuildMember?.Guild?.CalculateGuildTax(Item) ?? 0;
 
-            if (Account != null && Item.Info == SEnvir.GoldInfo && Account.GuildMember != null && Account.GuildMember.Guild.GuildTax > 0)
-                amount = (long)Math.Ceiling(Item.Count * Account.GuildMember.Guild.GuildTax);
-
-            ItemCheck check = new ItemCheck(Item, Item.Count - amount, Item.Flags, Item.ExpireTime);
+            ItemCheck check = new ItemCheck(Item, Item.Count - taxableAmount, Item.Flags, Item.ExpireTime);
 
             if (ob.CanGainItems(false, check))
             {
-                if (amount > 0)
+                if (taxableAmount > 0)
                 {
-                    Item.Count -= amount;
+                    Item.Count -= taxableAmount;
 
-                    Account.GuildMember.Guild.GuildFunds += amount;
-                    Account.GuildMember.Guild.DailyGrowth += amount;
-
-                    Account.GuildMember.Guild.DailyContribution += amount;
-                    Account.GuildMember.Guild.TotalContribution += amount;
-
-                    Account.GuildMember.DailyContribution += amount;
-                    Account.GuildMember.TotalContribution += amount;
-
-                    foreach (GuildMemberInfo member in Account.GuildMember.Guild.Members)
-                    {
-                        if (member.Account.Connection?.Player == null) continue;
-
-                        member.Account.Connection.Enqueue(new S.GuildMemberContribution { Index = Account.GuildMember.Index, Contribution = amount, ObserverPacket = false });
-                    }
+                    Account.GuildMember.Contribute(taxableAmount);
                 }
 
                 Item.UserTask?.Objects.Remove(this);

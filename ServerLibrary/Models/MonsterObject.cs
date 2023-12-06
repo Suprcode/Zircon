@@ -2738,7 +2738,7 @@ namespace Server.Models
                 if (SEnvir.ItemPartInfo != null)
                 {
                     if (drop.PartOnly ||
-                        ((SEnvir.Random.Next() > chance || (!SEnvir.IsCurrencyItem(drop.Item) && owner.Character.Account.ItemBot)) && ((long)userDrop.Progress <= userDrop.DropCount || SEnvir.IsCurrencyItem(drop.Item))))
+                        ((SEnvir.Random.Next() > chance || (!SEnvir.IsCurrencyItem(drop.Item) && owner.Character.Account.ItemBot)) && ((long)userDrop.Progress <= userDrop.DropCount)))
                     {
                         if (drop.Item.PartCount <= 1) continue;
 
@@ -2836,14 +2836,30 @@ namespace Server.Models
                         continue;
                     }
 
+                    if (SEnvir.IsUndroppableCurrencyItem(drop.Item))
+                    {
+                        //Only gold
+                        long taxableAmount = owner.Character.Account.GuildMember?.Guild?.CalculateGuildTax(item) ?? 0;
+
+                        if (taxableAmount > 0)
+                        {
+                            item.Count -= taxableAmount;
+
+                            owner.Character.Account.GuildMember.Contribute(taxableAmount);
+                        }
+
+                        owner.GainItem(item);
+                        continue;
+                    }
+
                     Cell cell = GetDropLocation(Config.DropDistance, owner) ?? CurrentCell;
+
                     ItemObject ob = new ItemObject
                     {
                         Item = item,
                         Account = owner.Character.Account,
                         MonsterDrop = true,
                     };
-
 
                     ob.Spawn(CurrentMap, cell.Location);
 
@@ -2859,7 +2875,6 @@ namespace Server.Models
                             ob.Item.ExpireTime);
 
                         if (owner.Companion.CanGainItems(true, check)) ob.PickUpItem(owner.Companion);
-
                     }
                 }
             }
@@ -2926,6 +2941,21 @@ namespace Server.Models
                                 continue;
                             }
 
+                            if (SEnvir.IsUndroppableCurrencyItem(task.ItemParameter))
+                            {
+                                //Only gold
+                                long taxableAmount = owner.Character.Account.GuildMember?.Guild?.CalculateGuildTax(item) ?? 0;
+
+                                if (taxableAmount > 0)
+                                {
+                                    item.Count -= taxableAmount;
+
+                                    owner.Character.Account.GuildMember.Contribute(taxableAmount);
+                                }
+
+                                owner.GainItem(item);
+                                continue;
+                            }
 
                             Cell cell = GetDropLocation(Config.DropDistance, owner) ?? CurrentCell;
                             ItemObject ob = new ItemObject
@@ -2934,8 +2964,6 @@ namespace Server.Models
                                 Account = owner.Character.Account,
                                 MonsterDrop = true,
                             };
-
-
 
                             ob.Spawn(CurrentMap, cell.Location);
 

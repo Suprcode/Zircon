@@ -1,53 +1,17 @@
-﻿
+﻿using Client.Controls;
+using Client.Envir;
+using Client.UserModels;
+using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Client.Controls;
-using Client.Envir;
-using Client.Models;
-using Client.UserModels;
-using Library;
-using Library.SystemModels;
-using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
-using Font = System.Drawing.Font;
 
 namespace Client.Scenes.Views
 {
     public sealed class CurrencyDialog : DXWindow
     {
         #region Properties
-
-        #region SelectedCell
-
-        public CurrencyCell SelectedCell
-        {
-            get => _SelectedCell;
-            set
-            {
-                if (_SelectedCell == value) return;
-
-                CurrencyCell oldValue = _SelectedCell;
-                _SelectedCell = value;
-
-                OnSelectedCellChanged(oldValue, value);
-            }
-        }
-        private CurrencyCell _SelectedCell;
-        public event EventHandler<EventArgs> SelectedCellChanged;
-        public void OnSelectedCellChanged(CurrencyCell oValue, CurrencyCell nValue)
-        {
-            if (oValue != null) oValue.Selected = false;
-            if (nValue != null) nValue.Selected = true;
-
-            SelectedCellChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
 
         private DXVScrollBar ScrollBar;
 
@@ -85,7 +49,6 @@ namespace Client.Scenes.Views
 
             HasFooter = false;
             Movable = true;
-
 
             SetClientSize(new Size(227, 7 * 43 + 1));
 
@@ -125,7 +88,7 @@ namespace Client.Scenes.Views
                     Parent = ClientPanel,
                     Currency = currency
                 });
-                cell.MouseClick += (o, e) => SelectedCell = cell;
+                cell.MouseClick += Currency_MouseClick;
                 cell.MouseWheel += ScrollBar.DoMouseWheel;
             }
 
@@ -150,6 +113,26 @@ namespace Client.Scenes.Views
             }
         }
 
+
+        private void Currency_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (GameScene.Game.SelectedCell == null)
+            {
+                var cell = (CurrencyCell)sender;
+
+                if (cell.Currency == null || !cell.Currency.CanPickup) return;
+
+                DXSoundManager.Play(SoundIndex.GoldPickUp);
+
+                if (GameScene.Game.CurrencyPickedUp == null && cell.Currency.Amount > 0)
+                    GameScene.Game.CurrencyPickedUp = cell.Currency;
+                else
+                    GameScene.Game.CurrencyPickedUp = null;
+            }
+        }
+
+
+
         #endregion
 
         #region IDisposable
@@ -160,9 +143,6 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
-                _SelectedCell = null;
-                SelectedCellChanged = null;
-
                 if (ScrollBar != null)
                 {
                     if (!ScrollBar.IsDisposed)
@@ -225,7 +205,14 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> CurrencyChanged;
         public void OnCurrencyChanged(ClientUserCurrency oValue, ClientUserCurrency nValue)
         {
-            DropItemCell.Item = new ClientUserItem(Currency.Info.DropItem ?? Globals.GoldInfo, Currency.Amount);
+            if (Currency.Info.DropItem != null)
+            {
+                DropItemCell.Item = new ClientUserItem(Currency.Info.DropItem, Currency.Amount);
+            }
+            else
+            {
+                DropItemCell.Item = null;
+            }
 
             CurrencyNameLabel.Text = Currency.Info.Name;
 
@@ -273,8 +260,7 @@ namespace Client.Scenes.Views
         {
             DrawTexture = true;
             BackColour = Color.FromArgb(25, 20, 0);
-            //  Border = true;
-            //   ForeColour = Color.White;
+
             BorderColour = Color.FromArgb(198, 166, 99);
             Size = new Size(219, 40);
 

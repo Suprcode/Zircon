@@ -15,7 +15,7 @@ namespace Server.Views
             CurrencyInfoGridControl.DataSource = SMain.Session.GetCollection<CurrencyInfo>().Binding;
 
             CurrencyTypeImageComboBox.Items.AddEnum<CurrencyType>();
-            ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
+            ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding.Where(x => x.ItemType == ItemType.Currency);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -36,9 +36,12 @@ namespace Server.Views
             {
                 var goldItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Gold");
 
+                goldItem.ItemType = ItemType.Currency;
+
                 gold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 gold.Name = "Gold";
                 gold.Type = CurrencyType.Gold;
+                gold.Droppable = true;
                 needSave = true;
 
                 if (goldItem != null)

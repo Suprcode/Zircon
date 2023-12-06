@@ -1,7 +1,4 @@
-﻿using System;
-using Library;
-using Library.Network.ClientPackets;
-using MirDB;
+﻿using MirDB;
 
 namespace Library.SystemModels
 {
@@ -67,6 +64,21 @@ namespace Library.SystemModels
             }
         }
         private ItemInfo _DropItem;
+
+        public bool Droppable
+        {
+            get { return _Droppable; }
+            set
+            {
+                if (_Droppable == value) return;
+
+                var oldValue = _Droppable;
+                _Droppable = value;
+
+                OnChanged(oldValue, value, "Droppable");
+            }
+        }
+        private bool _Droppable;
 
         public decimal ExchangeRate
         {

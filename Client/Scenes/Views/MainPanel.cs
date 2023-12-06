@@ -17,7 +17,7 @@ namespace Client.Scenes.Views
         public DXImageControl ExperienceBar, NewMailIcon, CompletedQuestIcon, AvailableQuestIcon;
 
         public DXImageControl ClassImage, LevelImage, ACImage, MACImage, DCImage, MCImage, SCImage, FPImage, CPImage;
-        public DXLabel ClassLabel, LevelLabel, ACLabel, MRLabel, DCLabel, MCLabel, SCLabel, AccuracyLabel, AgilityLabel, HealthLabel, ManaLabel, FocusLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
+        public DXLabel ClassLabel, LevelLabel, FPLabel, CPLabel, ACLabel, DCLabel, SCLabel, MACLabel, MCLabel, HealthLabel, ManaLabel, FocusLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
 
         #endregion
 
@@ -448,7 +448,8 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White
             };
 
-            ACLabel = new DXLabel
+            //FP
+            FPLabel = new DXLabel
             {
                 AutoSize = false,
                 Parent = this,
@@ -459,7 +460,19 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White
             };
 
-            MRLabel = new DXLabel
+            CPLabel = new DXLabel
+            {
+                AutoSize = false,
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
+                
+                Location = new Point(385, 40),
+                Size = new Size(60, 16),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
+            };
+
+            ACLabel = new DXLabel
             {
                 AutoSize = false,
                 Parent = this,
@@ -475,37 +488,13 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
-                Location = new Point(385, 40),
-                Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                ForeColour = Color.White
-            };
-
-            MCLabel = new DXLabel
-            {
-                AutoSize = false,
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(470, 40),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 ForeColour = Color.White
             };
-            MCLabel.VisibleChanged += (o, e) => MCLabelLabel.Visible = MCLabel.Visible;
 
-            SCLabel = new DXLabel
-            {
-                AutoSize = false,
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
-                Location = new Point(470, 40),
-                Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                ForeColour = Color.White
-            };
-            SCLabel.VisibleChanged += (o, e) => SCLabelLabel.Visible = SCLabel.Visible;
-
-            AccuracyLabel = new DXLabel
+            MACLabel = new DXLabel
             {
                 AutoSize = false,
                 Parent = this,
@@ -516,7 +505,7 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White
             };
 
-            AgilityLabel = new DXLabel
+            MCLabel = new DXLabel
             {
                 AutoSize = false,
                 Parent = this,
@@ -526,6 +515,19 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 ForeColour = Color.White
             };
+            MCLabel.VisibleChanged += (o, e) => MCLabelLabel.Visible = DCLabel.Visible;
+
+            SCLabel = new DXLabel
+            {
+                AutoSize = false,
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
+                Location = new Point(567, 40),
+                Size = new Size(60, 16),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
+            };
+            SCLabel.VisibleChanged += (o, e) => SCLabelLabel.Visible = SCLabel.Visible;
 
             HealthLabel = new DXLabel
             {
@@ -665,20 +667,28 @@ namespace Client.Scenes.Views
                     LevelLabel = null;
                 }
 
+                if (FPLabel != null)
+                {
+                    if (!FPLabel.IsDisposed)
+                        FPLabel.Dispose();
+
+                    FPLabel = null;
+                }
+
+                if (CPLabel != null)
+                {
+                    if (!CPLabel.IsDisposed)
+                        CPLabel.Dispose();
+
+                    CPLabel = null;
+                }
+
                 if (ACLabel != null)
                 {
                     if (!ACLabel.IsDisposed)
                         ACLabel.Dispose();
 
                     ACLabel = null;
-                }
-
-                if (MRLabel != null)
-                {
-                    if (!MRLabel.IsDisposed)
-                        MRLabel.Dispose();
-
-                    MRLabel = null;
                 }
 
                 if (DCLabel != null)
@@ -689,14 +699,6 @@ namespace Client.Scenes.Views
                     DCLabel = null;
                 }
 
-                if (MCLabel != null)
-                {
-                    if (!MCLabel.IsDisposed)
-                        MCLabel.Dispose();
-
-                    MCLabel = null;
-                }
-
                 if (SCLabel != null)
                 {
                     if (!SCLabel.IsDisposed)
@@ -705,20 +707,20 @@ namespace Client.Scenes.Views
                     SCLabel = null;
                 }
 
-                if (AccuracyLabel != null)
+                if (MACLabel != null)
                 {
-                    if (!AccuracyLabel.IsDisposed)
-                        AccuracyLabel.Dispose();
+                    if (!MACLabel.IsDisposed)
+                        MACLabel.Dispose();
 
-                    AccuracyLabel = null;
+                    MACLabel = null;
                 }
 
-                if (AgilityLabel != null)
+                if (MCLabel != null)
                 {
-                    if (!AgilityLabel.IsDisposed)
-                        AgilityLabel.Dispose();
+                    if (!MCLabel.IsDisposed)
+                        MCLabel.Dispose();
 
-                    AgilityLabel = null;
+                    MCLabel = null;
                 }
 
                 if (HealthLabel != null)

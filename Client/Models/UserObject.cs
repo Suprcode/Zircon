@@ -798,6 +798,7 @@ namespace Client.Models
 
             return Currencies.First(x => x.Info == info);
         }
+
         public ClientUserCurrency GetCurrency(CurrencyInfo info)
         {
             if (info == null)
@@ -806,6 +807,11 @@ namespace Client.Models
             }
 
             return Currencies.First(x => x.Info == info);
+        }
+
+        public ClientUserCurrency GetCurrency(CurrencyType type)
+        {
+            return Currencies.FirstOrDefault(x => x.Info.Type == type);
         }
     }
 }

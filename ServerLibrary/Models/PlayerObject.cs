@@ -5112,20 +5112,11 @@ namespace Server.Models
             {
                 if ((check.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
-                long count = check.Count;
-
-                var currency = GetCurrency(check.Info);
-
-                if (currency != null)
-                {
-                    long amount = currency.Amount;
-
-                    amount += count;
-
-                    continue;
-                }
-
                 if (check.Info.ItemEffect == ItemEffect.Experience) continue;
+
+                if (SEnvir.IsCurrencyItem(check.Info)) continue;
+
+                long count = check.Count;
 
                 if (checkWeight)
                 {
@@ -7311,6 +7302,8 @@ namespace Server.Models
         }
         public void CurrencyDrop(C.CurrencyDrop p)
         {
+            if (Dead) return;
+
             var currency = SEnvir.CurrencyInfoList.Binding.First(x => x.Index == p.CurrencyIndex);
 
             if (currency == null) return;
@@ -7319,7 +7312,7 @@ namespace Server.Models
 
             var amount = userCurrency.Amount;
 
-            if (Dead || currency.DropItem == null || p.Amount <= 0 || p.Amount > amount) return;
+            if (currency.DropItem == null || !currency.Droppable || p.Amount <= 0 || p.Amount > amount) return;
 
             Cell cell = GetDropLocation(Config.DropDistance, null);
 

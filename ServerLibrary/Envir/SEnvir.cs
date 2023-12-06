@@ -1745,6 +1745,11 @@ namespace Server.Envir
             return CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info) != null;
         }
 
+        public static bool IsUndroppableCurrencyItem(ItemInfo info)
+        {
+            return CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info && !x.Droppable) != null;
+        }
+
         public static void UpgradeWeapon(UserItem item)
         {
             if (Random.Next(5) == 0)

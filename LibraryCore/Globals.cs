@@ -1117,7 +1117,7 @@ namespace Library
         [IgnorePropertyPacket]
         public bool CanPickup
         {
-            get { return Info != null && Info.DropItem != null; }
+            get { return Info != null && Info.DropItem != null && Info.Droppable; }
         }
     }
 
