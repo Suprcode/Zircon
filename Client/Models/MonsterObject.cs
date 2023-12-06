@@ -2053,6 +2053,66 @@ namespace Client.Models
                     //Fuckjed up Mob
 
                     break;
+                    case MonsterImage.Terracotta1:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_42, out BodyLibrary);
+                    BodyShape = 4;
+                    AttackSound = SoundIndex.Terracotta1Attack;
+                    StruckSound = SoundIndex.Terracotta1Struck;
+                    DieSound = SoundIndex.Terracotta1Die;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Terracotta1)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Terracotta2:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_42, out BodyLibrary);
+                    BodyShape = 5;
+                    AttackSound = SoundIndex.Terracotta2Attack;
+                    StruckSound = SoundIndex.Terracotta2Struck;
+                    DieSound = SoundIndex.Terracotta2Die;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Terracotta2)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Terracotta3:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_42, out BodyLibrary);
+                    BodyShape = 6;
+                    AttackSound = SoundIndex.Terracotta3Attack;
+                    StruckSound = SoundIndex.Terracotta3Struck;
+                    DieSound = SoundIndex.Terracotta3Die;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Terracotta3)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Terracotta4:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_42, out BodyLibrary);
+                    BodyShape = 7;
+                    AttackSound = SoundIndex.Terracotta4Attack;
+                    StruckSound = SoundIndex.Terracotta4Struck;
+                    DieSound = SoundIndex.Terracotta4Die;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Terracotta3)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.TerracottaSub:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_42, out BodyLibrary);
+                    BodyShape = 8;
+                    AttackSound = SoundIndex.TerracottaSubAttack;
+                    StruckSound = SoundIndex.TerracottaSubStruck;
+                    DieSound = SoundIndex.TerracottaSubDie;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.TerracottaSub)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.TerracottaBoss:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_42, out BodyLibrary);
+                    BodyShape = 9;
+                    AttackSound = SoundIndex.TerracottaBossAttack2;
+                    StruckSound = SoundIndex.TerracottaBossStruck;
+                    DieSound = SoundIndex.TerracottaBossDie;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.TerracottaBoss)
+                        Frames[frame.Key] = frame.Value;
+                    break;
                 case MonsterImage.CastleFlag:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.CastleFlag, out BodyLibrary);
 

@@ -42,6 +42,8 @@ namespace Library
             DeadTree, BobbitWorm,
             MonasteryMon1, MonasteryMon3,
 
+            Terracotta1, Terracotta2, Terracotta3, TerracottaSub, TerracottaBoss,
+
             Tornado,
 
             InfernalSoldier,
@@ -718,6 +720,65 @@ namespace Library
                 [MirAnimation.Struck] = new Frame(480, 4, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.Die] = new Frame(560, 9, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.Dead] = new Frame(568, 1, 10, TimeSpan.FromMilliseconds(1000)),
+            };
+
+
+            Terracotta1 = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(160, 4, 10, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Walking] = new Frame(240, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat1] = new Frame(320, 8, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Struck] = new Frame(400, 3, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Show] = new Frame(0, 13, 20, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Die] = new Frame(480, 11, 20, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Dead] = new Frame(490, 1, 20, TimeSpan.FromMilliseconds(1000)),
+                [MirAnimation.Hide] = new Frame(0, 13, 20, TimeSpan.FromMilliseconds(100)) { Reversed = true, },
+            };
+
+            Terracotta2 = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(160, 4, 10, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Walking] = new Frame(240, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat1] = new Frame(320, 8, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Struck] = new Frame(400, 3, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Show] = new Frame(0, 13, 20, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Die] = new Frame(480, 12, 20, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Dead] = new Frame(491, 1, 20, TimeSpan.FromMilliseconds(1000)),
+                [MirAnimation.Hide] = new Frame(0, 13, 20, TimeSpan.FromMilliseconds(100)) { Reversed = true, },
+            };
+
+            Terracotta3 = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(160, 4, 10, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Walking] = new Frame(240, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat1] = new Frame(320, 8, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Struck] = new Frame(400, 3, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Show] = new Frame(0, 13, 20, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Die] = new Frame(480, 10, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Dead] = new Frame(489, 1, 10, TimeSpan.FromMilliseconds(1000)),
+                [MirAnimation.Hide] = new Frame(0, 13, 20, TimeSpan.FromMilliseconds(100)) { Reversed = true, },
+            };
+
+            TerracottaSub = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(160, 4, 10, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Walking] = new Frame(240, 6, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat1] = new Frame(320, 8, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat3] = new Frame(400, 8, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Struck] = new Frame(480, 3, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Show] = new Frame(0, 13, 20, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Die] = new Frame(560, 13, 20, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Dead] = new Frame(572, 1, 20, TimeSpan.FromMilliseconds(1000)),
+                [MirAnimation.Hide] = new Frame(0, 13, 20, TimeSpan.FromMilliseconds(100)) { Reversed = true, },
+            };
+
+            TerracottaBoss = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Combat1] = new Frame(240, 9, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat3] = new Frame(160, 9, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Struck] = new Frame(320, 3, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Die] = new Frame(400, 11, 20, TimeSpan.FromMilliseconds(120)),
+                [MirAnimation.Dead] = new Frame(411, 1, 20, TimeSpan.FromMilliseconds(1000)),
             };
 
             BobbitWorm = new Dictionary<MirAnimation, Frame>

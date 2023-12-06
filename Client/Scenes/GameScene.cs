@@ -201,6 +201,8 @@ namespace Client.Scenes
         public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
 
+        public TerracottaPuzzleDialog TerracottaBox;
+
         public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
         public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
 
@@ -664,6 +666,12 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false,
+            };
+
+            TerracottaBox = new TerracottaPuzzleDialog()
+            {
+                Parent = this,
+                Visible = true,
             };
 
             FishingCatchBox = new FishingCatchDialog
