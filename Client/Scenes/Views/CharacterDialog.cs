@@ -356,11 +356,21 @@ namespace Client.Scenes.Views
 
             MarriageIcon = new DXImageControl
             {
-                Parent = namePanel,
+                Parent = CharacterTab,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1298,
-                Location = new Point(2, namePanel.Size.Height - 14),
-                Visible = false,
+                Location = new Point(96, 60),
+                Visible = false
+            };
+            MarriageLabel = new DXLabel
+            {
+                AutoSize = false,
+                Parent = CharacterTab,
+                Size = new Size(117, 18),
+                ForeColour = Color.Pink,
+                Location = new Point(112, 55),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Visible = false
             };
             MarriageLabel = new DXLabel
             {
