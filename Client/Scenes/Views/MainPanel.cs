@@ -642,6 +642,78 @@ namespace Client.Scenes.Views
                     MCLabel = null;
                 }
 
+                if (ClassImage != null)
+                {
+                    if (!ClassImage.IsDisposed)
+                        ClassImage.Dispose();
+
+                    ClassImage = null;
+                }
+
+                if (LevelImage != null)
+                {
+                    if (!LevelImage.IsDisposed)
+                        LevelImage.Dispose();
+
+                    LevelImage = null;
+                }
+
+                if (FPImage != null)
+                {
+                    if (!FPImage.IsDisposed)
+                        FPImage.Dispose();
+
+                    FPImage = null;
+                }
+
+                if (CPImage != null)
+                {
+                    if (!CPImage.IsDisposed)
+                        CPImage.Dispose();
+
+                    CPImage = null;
+                }
+
+                if (ACImage != null)
+                {
+                    if (!ACImage.IsDisposed)
+                        ACImage.Dispose();
+
+                    ACImage = null;
+                }
+
+                if (DCImage != null)
+                {
+                    if (!DCImage.IsDisposed)
+                        DCImage.Dispose();
+
+                    DCImage = null;
+                }
+
+                if (SCImage != null)
+                {
+                    if (!SCImage.IsDisposed)
+                        SCImage.Dispose();
+
+                    SCImage = null;
+                }
+
+                if (MACImage != null)
+                {
+                    if (!MACImage.IsDisposed)
+                        MACImage.Dispose();
+
+                    MACImage = null;
+                }
+
+                if (MCImage != null)
+                {
+                    if (!MCImage.IsDisposed)
+                        MCImage.Dispose();
+
+                    MCImage = null;
+                }
+
                 if (HealthLabel != null)
                 {
                     if (!HealthLabel.IsDisposed)
