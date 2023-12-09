@@ -869,8 +869,9 @@ namespace Library.SystemModels
         RollResult = 18,
 
         CheckDataList = 19,
-
         CheckDataValue = 20,
+
+        CheckFame = 21,
     }
 
     public enum Operator
@@ -912,7 +913,9 @@ namespace Library.SystemModels
         ClearDataList = 19,
 
         ChangeDataValue = 20,
-        SetDataValue = 21
+        SetDataValue = 21,
+
+        PromoteFame = 22
     }
 
     public enum NPCValueType
@@ -942,6 +945,7 @@ namespace Library.SystemModels
 
         Name = 1,
         GuildName = 2,
-        //??
+        
+        FameCost = 100
     }
 }

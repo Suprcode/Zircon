@@ -268,6 +268,7 @@ namespace Server.Envir
         public static DBCollection<MonsterInfo> MonsterInfoList;
         public static DBCollection<FishingInfo> FishingInfoList;
         public static DBCollection<DisciplineInfo> DisciplineInfoList;
+        public static DBCollection<FameInfo> FameInfoList;
         public static DBCollection<SetInfo> SetInfoList;
         public static DBCollection<AuctionInfo> AuctionInfoList;
         public static DBCollection<MailInfo> MailInfoList;
@@ -425,6 +426,7 @@ namespace Server.Envir
             RespawnInfoList = Session.GetCollection<RespawnInfo>();
             MagicInfoList = Session.GetCollection<MagicInfo>();
             CurrencyInfoList = Session.GetCollection<CurrencyInfo>();
+            FameInfoList = Session.GetCollection<FameInfo>();
 
             AccountInfoList = Session.GetCollection<AccountInfo>();
             CharacterInfoList = Session.GetCollection<CharacterInfo>();
@@ -967,6 +969,7 @@ namespace Server.Envir
             MagicInfoList = null;
             FishingInfoList = null;
             DisciplineInfoList = null;
+            FameInfoList = null;
 
             BeltLinkList = null;
             UserItemList = null;
@@ -1747,7 +1750,7 @@ namespace Server.Envir
 
         public static bool IsUndroppableCurrencyItem(ItemInfo info)
         {
-            return CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info && !x.Droppable) != null;
+            return CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info && !x.DropItem.CanDrop) != null;
         }
 
         public static void UpgradeWeapon(UserItem item)

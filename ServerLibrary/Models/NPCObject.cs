@@ -204,6 +204,9 @@ namespace Server.Models
                         if (ob.Level >= 86 + ob.Character.Rebirth)
                             ob.NPCRebirth();
                         break;
+                    case NPCActionType.PromoteFame:
+                        ob.PromoteFame();
+                        break;
                     case NPCActionType.GiveCurrency:
                         {
                             if (action.StringParameter1 == null) continue;
@@ -378,6 +381,12 @@ namespace Server.Models
                                     break;
                                 case NPCFieldType.GuildName:
                                     value2 = ob.Character.Account.GuildMember?.Guild?.GuildName ?? null;
+                                    break;
+                                case NPCFieldType.FameCost:
+                                    {
+                                        var fame = ob.GetNextFameTitle();
+                                        value2 = fame?.Cost.ToString();
+                                    }
                                     break;
                                 case NPCFieldType.None:
                                     continue;
@@ -594,14 +603,16 @@ namespace Server.Models
                         break;
 
                     case NPCCheckType.Currency:
-                        if (check.StringParameter1 == null) continue;
+                        {
+                            if (check.StringParameter1 == null) continue;
 
-                        var info = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => string.Equals(x.Name, check.StringParameter1, StringComparison.OrdinalIgnoreCase));
-                        if (info == null) continue;
+                            var info = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => string.Equals(x.Name, check.StringParameter1, StringComparison.OrdinalIgnoreCase));
+                            if (info == null) continue;
 
-                        var userCurrency = ob.GetCurrency(info);
+                            var userCurrency = ob.GetCurrency(info);
 
-                        if (!Compare(check.Operator, userCurrency.Amount, check.IntParameter1)) return false;
+                            if (!Compare(check.Operator, userCurrency.Amount, check.IntParameter1)) return false;
+                        }
                         break;
                     case NPCCheckType.RollResult:
                         {
@@ -642,6 +653,19 @@ namespace Server.Models
                             }
 
                             if (!Compare(check.Operator, (int)val, check.IntParameter2)) return false;
+                        }
+                        break;
+                    case NPCCheckType.CheckFame:
+                        {
+                            var nextFame = ob.GetNextFameTitle();
+
+                            var currency = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => x.Type == CurrencyType.FP);
+
+                            if (currency == null) return false;
+
+                            var userCurrency = ob.GetCurrency(currency);
+
+                            if (nextFame == null ||nextFame.Cost > userCurrency.Amount) return false;
                         }
                         break;
                 }

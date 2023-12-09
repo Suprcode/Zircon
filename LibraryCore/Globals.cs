@@ -29,6 +29,7 @@ namespace Library
         public static DBCollection<CompanionLevelInfo> CompanionLevelInfoList;
         public static DBCollection<CurrencyInfo> CurrencyInfoList;
         public static DBCollection<DisciplineInfo> DisciplineInfoList;
+        public static DBCollection<FameInfo> FameInfoList;
 
         public static Random Random = new Random();
 
@@ -1117,7 +1118,7 @@ namespace Library
         [IgnorePropertyPacket]
         public bool CanPickup
         {
-            get { return Info != null && Info.DropItem != null && Info.Droppable; }
+            get { return Info != null && Info.DropItem != null && Info.DropItem.CanDrop; }
         }
     }
 

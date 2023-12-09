@@ -182,7 +182,7 @@ namespace Client.Envir.Translations
         public override string CommonControlDXKeyBindWindowDefaultConfirmMessage { get; set; } = "Are you sure you want to reset ALL keybinds back to the default settings?";
         public override string CommonControlDXKeyBindWindowDefaultConfirmCaption { get; set; } = "Reset Key Binds";
         public override string CommonStatusAC { get; set; } = "AC";
-        public override string CommonStatusMR { get; set; } = "MAC";
+        public override string CommonStatusMR { get; set; } = "MR";
         public override string CommonStatusDC { get; set; } = "DC";
         public override string CommonStatusMC { get; set; } = "MC";
         public override string CommonStatusSC { get; set; } = "SC";
@@ -547,7 +547,7 @@ namespace Client.Envir.Translations
         public override string MainPanelLevelLabel { get; set; } = "Lv";
         public override string MainPanelLevelHint { get; set; } = "Level";
         public override string MainPanelACLabel { get; set; } = "AC";
-        public override string MainPanelMRLabel { get; set; } = "MAC";
+        public override string MainPanelMRLabel { get; set; } = "MR";
         public override string MainPanelDCLabel { get; set; } = "DC";
         public override string MainPanelMCLabel { get; set; } = "MC";
         public override string MainPanelSCLabel { get; set; } = "SC";

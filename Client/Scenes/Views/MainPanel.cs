@@ -333,96 +333,15 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Index = 62,
                 LibraryFile = LibraryFile.GameInter,
-                Location = new Point(531, 45)
+                Location = new Point(541, 45)
             };
-
-            #endregion
-
-            #region Stat Labels
-            DXLabel label = new DXLabel
+            SCImage = new DXImageControl
             {
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelClassLabel,
-                Hint = CEnvir.Language.MainPanelClassHint,
-                Visible = false
+                Index = 64,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(547, 45)
             };
-            label.Location = new Point(300 - label.Size.Width, 20);
-
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelLevelLabel,
-                Hint = CEnvir.Language.MainPanelLevelHint,
-                Visible = false
-            };
-            label.Location = new Point(300 - label.Size.Width, 40);
-
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelACLabel,
-                Visible = false
-            };
-            label.Location = new Point(385 - label.Size.Width, 20);
-
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelMRLabel,
-                Visible = false
-            };
-            label.Location = new Point(470 - label.Size.Width, 20);
-
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelDCLabel,
-                Visible = false
-            };
-            label.Location = new Point(385 - label.Size.Width, 40);
-
-            DXLabel SCLabelLabel = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelSCLabel,
-                Visible = false
-            };
-            SCLabelLabel.Location = new Point(470 - SCLabelLabel.Size.Width, 40);
-
-            DXLabel MCLabelLabel = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelMCLabel,
-                Visible = false
-            };
-            MCLabelLabel.Location = new Point(470 - MCLabelLabel.Size.Width, 40);
-
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelAccuracyLabel,
-                Hint = CEnvir.Language.MainPanelAccuracyHint,
-                Visible = false
-            };
-            label.Location = new Point(567 - label.Size.Width, 20);
-
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelAgilityLabel,
-                Hint = CEnvir.Language.MainPanelAgilityHint,
-                Visible = false
-            };
-            label.Location = new Point(567 - label.Size.Width, 40);
 
             #endregion
 
@@ -515,7 +434,7 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 ForeColour = Color.White
             };
-            MCLabel.VisibleChanged += (o, e) => MCLabelLabel.Visible = DCLabel.Visible;
+            MCLabel.VisibleChanged += (o, e) => MCImage.Visible = MCLabel.Visible;
 
             SCLabel = new DXLabel
             {
@@ -527,7 +446,7 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 ForeColour = Color.White
             };
-            SCLabel.VisibleChanged += (o, e) => SCLabelLabel.Visible = SCLabel.Visible;
+            SCLabel.VisibleChanged += (o, e) => SCImage.Visible = SCLabel.Visible;
 
             HealthLabel = new DXLabel
             {

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Library
 {
@@ -206,12 +202,6 @@ namespace Library
         PartsStorage
     }
 
-    public enum GridSelect
-    {
-        Single,
-        Multi
-    }
-
     public enum InventoryMode
     {
         Normal,
@@ -246,6 +236,8 @@ namespace Library
         Guild = 17,
 
         DeathDrops = 18,
+
+        Fame = 19,
 
         //War
         Defiance = 100,

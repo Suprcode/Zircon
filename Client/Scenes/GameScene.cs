@@ -3595,7 +3595,8 @@ namespace Client.Scenes
                 case ItemType.Book:
                     MagicInfo magic = Globals.MagicInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
                     if (magic == null) return false;
-                    if (User.Magics.ContainsKey(magic) && (User.Magics[magic].Level < 3 || (item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)) return false;
+                    if (magic.School == MagicSchool.None) return false;
+                    if (User.Magics.TryGetValue(magic, out ClientUserMagic value) && (value.Level < 3 || (item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)) return false;
                     break;
                 case ItemType.Consumable:
                     switch (item.Info.Shape)

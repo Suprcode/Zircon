@@ -1,19 +1,17 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Envir;
+using Client.Models;
+using Client.Scenes.Views.Character;
+using Client.UserModels;
+using Library;
+using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Client.Controls;
-using Client.Envir;
-using Client.Models;
-using Client.Properties;
-using Client.Scenes.Views.Character;
-using Client.UserModels;
-using Library;
-using Library.SystemModels;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -119,6 +117,14 @@ namespace Client.Scenes.Views
             }
         }
 
+        public int Fame
+        {
+            get
+            {
+                return Inspect ? _inspectFame : MapObject.User.Stats[Stat.Fame];
+            }
+        }
+
         private bool HideHead
         {
             get
@@ -156,6 +162,7 @@ namespace Client.Scenes.Views
         public int _inspectHairType;
         public Color _inspectHairColour;
         public int _inspectLevel;
+        public int _inspectFame;
 
         #endregion
 
@@ -2354,6 +2361,23 @@ namespace Client.Scenes.Views
             ClientUserItem shield = Grid[(int)EquipmentSlot.Shield]?.Item;
             ClientUserItem costume = Grid[(int)EquipmentSlot.Costume]?.Item;
 
+            if (Fame > 0)
+            {
+                MirImage image = FameEffectDecider.GetFameEffectImageOrNull(Fame, out int offSetX, out int offSetY);
+                if (image != null)
+                {
+                    bool oldBlend = DXManager.Blending;
+                    float oldRate = DXManager.BlendRate;
+
+                    int x1 = 257 + offSetX;
+                    int y1 = 76 + offSetY;
+
+                    DXManager.SetBlend(true, 0.8F);
+                    PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x1 + image.OffSetX, DisplayArea.Y + y1 + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                    DXManager.SetBlend(oldBlend, oldRate);
+                }
+            }
+
             if (armour != null && costume == null)
             {
                 MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
@@ -2425,6 +2449,17 @@ namespace Client.Scenes.Views
                         int shieldIndex = shield.Info.Image;
                         library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                         library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, shield.Colour, true, 1F, ImageType.Overlay);
+
+                        MirImage image = EquipEffectDecider.GetEffectImageOrNull(shield, Gender);
+                        if (image != null)
+                        {
+                            bool oldBlend = DXManager.Blending;
+                            float oldRate = DXManager.BlendRate;
+
+                            DXManager.SetBlend(true, 0.8F);
+                            PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                            DXManager.SetBlend(oldBlend, oldRate);
+                        }
                     }
                 }
             }
@@ -2609,6 +2644,7 @@ namespace Client.Scenes.Views
             _inspectGender = p.Gender;
             _inspectClass = p.Class;
             _inspectLevel = p.Level;
+            _inspectFame = p.Fame;
 
             MarriageIcon.Visible = !string.IsNullOrEmpty(p.Partner);
             MarriageIcon.Hint = p.Partner;

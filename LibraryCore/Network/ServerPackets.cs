@@ -741,6 +741,7 @@ namespace Library.Network.ServerPackets
         public List<ClientUserItem> Items { get; set; }
         public int Hair { get; set; }
         public Color HairColour { get; set; }
+        public int Fame { get; set; }
 
         //public int WearWeight { get; set; }
         //public int HandWeight { get; set; }

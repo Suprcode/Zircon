@@ -506,9 +506,9 @@ namespace Library
         MinAC,
         [StatDescription(Title = "AC", Format = "{0}-{1}", Mode = StatType.Max, MinStat = MinAC, MaxStat = MaxAC)]
         MaxAC,
-        [StatDescription(Title = "MAC", Format = "{0}-0", Mode = StatType.Min, MinStat = MinMR, MaxStat = MaxMR)]
+        [StatDescription(Title = "MR", Format = "{0}-0", Mode = StatType.Min, MinStat = MinMR, MaxStat = MaxMR)]
         MinMR,
-        [StatDescription(Title = "MAC", Format = "{0}-{1}", Mode = StatType.Max, MinStat = MinMR, MaxStat = MaxMR)]
+        [StatDescription(Title = "MR", Format = "{0}-{1}", Mode = StatType.Max, MinStat = MinMR, MaxStat = MaxMR)]
         MaxMR,
         [StatDescription(Title = "DC", Format = "{0}-0", Mode = StatType.Min, MinStat = MinDC, MaxStat = MaxDC)]
         MinDC,
@@ -842,6 +842,9 @@ namespace Library
 
         [StatDescription(Title = "You are soulbound to another player.", Mode = StatType.Text, UsageHint = "Used in Soul Resonance to tie together 2 players HP")]
         SoulResonance,
+
+        [StatDescription(Mode = StatType.None)]
+        Fame,
 
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,

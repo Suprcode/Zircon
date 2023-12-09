@@ -1427,6 +1427,7 @@ namespace Server.Models
                 case BuffType.Castle:
                 case BuffType.Guild:
                 case BuffType.Veteran:
+                case BuffType.Fame:
                     info.IsTemporary = true;
                     break;
                 case BuffType.RagingWind:

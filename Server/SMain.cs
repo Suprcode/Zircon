@@ -585,5 +585,10 @@ namespace Server
         {
             ShowView(typeof(NPCListView));
         }
+
+        private void FameInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(FameInfoView));
+        }
     }
 }
