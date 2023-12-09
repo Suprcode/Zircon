@@ -1062,6 +1062,7 @@ namespace Server.Models
             ApplyCastleBuff();
             ApplyGuildBuff();
             ApplyObserverBuff();
+            ApplyFameBuff();
 
             PauseBuffs();
 
@@ -1795,6 +1796,7 @@ namespace Server.Models
                 //HermitStats = target.HermitStats,
                 //HermitPoints = Math.Max(0, target.Level - 39 - target.SpentPoints),
                 Level = target.Level,
+                Fame = target.Fame,
 
                 Hair = target.HairType,
                 HairColour = target.HairColour,
@@ -2226,6 +2228,8 @@ namespace Server.Models
             Stats[Stat.BagWeight] += Stats[Stat.BagWeight] * Stats[Stat.WeightRate];
 
             Stats[Stat.Rebirth] = Character.Rebirth;
+
+            Stats[Stat.Fame] = Character.Fame;
 
             Stats[Stat.DropRate] += 20 * Stats[Stat.Rebirth];
             Stats[Stat.GoldRate] += 20 * Stats[Stat.Rebirth];
@@ -5112,20 +5116,11 @@ namespace Server.Models
             {
                 if ((check.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
-                long count = check.Count;
-
-                var currency = GetCurrency(check.Info);
-
-                if (currency != null)
-                {
-                    long amount = currency.Amount;
-
-                    amount += count;
-
-                    continue;
-                }
-
                 if (check.Info.ItemEffect == ItemEffect.Experience) continue;
+
+                if (SEnvir.IsCurrencyItem(check.Info)) continue;
+
+                long count = check.Count;
 
                 if (checkWeight)
                 {
@@ -6127,6 +6122,8 @@ namespace Server.Models
                     if (SEnvir.Now < UseItemTime || Horse != HorseType.None) return;
 
                     MagicInfo info = SEnvir.MagicInfoList.Binding.First(x => x.Index == item.Info.Shape);
+
+                    if (info.School == MagicSchool.None) return;
 
                     if (GetMagic(info.Magic, out MagicObject magicObject))
                     {
@@ -7311,6 +7308,8 @@ namespace Server.Models
         }
         public void CurrencyDrop(C.CurrencyDrop p)
         {
+            if (Dead) return;
+
             var currency = SEnvir.CurrencyInfoList.Binding.First(x => x.Index == p.CurrencyIndex);
 
             if (currency == null) return;
@@ -7319,7 +7318,7 @@ namespace Server.Models
 
             var amount = userCurrency.Amount;
 
-            if (Dead || currency.DropItem == null || p.Amount <= 0 || p.Amount > amount) return;
+            if (currency.DropItem == null || !currency.DropItem.CanDrop || p.Amount <= 0 || p.Amount > amount) return;
 
             Cell cell = GetDropLocation(Config.DropDistance, null);
 
@@ -8149,11 +8148,11 @@ namespace Server.Models
             stats[Stat.SkillRate] = Config.SkillRate;
             stats[Stat.CompanionRate] = Config.CompanionRate;
 
-
             if (stats.Count == 0) return;
 
             BuffAdd(BuffType.Server, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
         }
+
         public void ApplyObserverBuff()
         {
             BuffRemove(BuffType.Observable);
@@ -8168,6 +8167,31 @@ namespace Server.Models
 
             BuffAdd(BuffType.Observable, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
         }
+
+        public void ApplyFameBuff()
+        {
+            BuffRemove(BuffType.Fame);
+
+            if (Character.Fame <= 0) return;
+
+            var fame = SEnvir.FameInfoList.Binding.FirstOrDefault(x => x.Index == Character.Fame);
+
+            if (fame == null) return;
+
+            Stats stats = new();
+
+            foreach (var stat in fame.BuffStats)
+            {
+                stats[stat.Stat] = stat.Amount;
+            }
+
+            if (stats.Count == 0) return;
+
+            stats[Stat.Fame] = fame.Index;
+
+            BuffAdd(BuffType.Fame, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
+        }
+
         public void ApplyCastleBuff()
         {
             BuffRemove(BuffType.Castle);
@@ -11332,6 +11356,70 @@ namespace Server.Models
             }
 
             RefreshStats();
+        }
+
+        public void PromoteFame()
+        {
+            var nextFame = GetNextFameTitle();
+
+            if (nextFame == null) return;
+
+            var currency = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => x.Type == CurrencyType.FP);
+
+            if (currency == null) return;
+
+            var userCurrency = GetCurrency(currency);
+
+            if (userCurrency.Amount < nextFame.Cost) return;
+
+            List<ItemCheck> checks = new List<ItemCheck>();
+
+            foreach (var reward in nextFame.ItemRewards)
+            {
+                ItemCheck check = new ItemCheck(reward.Item, reward.Amount, UserItemFlags.None, TimeSpan.Zero);
+
+                checks.Add(check);
+            }
+
+            if (!CanGainItems(false, checks.ToArray()))
+            {
+                Connection.ReceiveChat(Connection.Language.FameNeedSpace, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.FameNeedSpace, MessageType.System);
+                return;
+            }
+
+            userCurrency.Amount -= nextFame.Cost;
+            CurrencyChanged(userCurrency);
+
+            Character.Fame = nextFame.Index;
+
+            foreach (ItemCheck check in checks)
+            {
+                while (check.Count > 0)
+                    GainItem(SEnvir.CreateFreshItem(check));
+            }
+
+            ApplyFameBuff();
+
+            RefreshStats();
+        }
+
+        public FameInfo GetNextFameTitle()
+        {
+            int order = -1;
+
+            var currentFame = SEnvir.FameInfoList.Binding.FirstOrDefault(x => x.Index == Character.Fame);
+
+            if (currentFame != null)
+            {
+                order = currentFame.Order;
+            }
+
+            var nextFame = SEnvir.FameInfoList.Binding.Where(x => x.Order > order).OrderBy(x => x.Order).FirstOrDefault();
+
+            return nextFame;
         }
 
         public void NPCMasterRefine(C.NPCMasterRefine p)

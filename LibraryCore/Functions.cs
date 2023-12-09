@@ -695,5 +695,38 @@ namespace Library
 
             return gridPoints.ToArray();
         }
+
+        public static string BreakStringIntoLines(string input, int maxLineLength)
+        {
+            // Split the input string into an array of words
+            string[] words = input.Split(' ');
+
+            // Initialize variables
+            int currentLineLength = 0;
+            string result = "";
+
+            // Iterate through the words
+            foreach (string word in words)
+            {
+                // Check if adding the current word exceeds the maxLineLength limit
+                if (currentLineLength + word.Length + 1 <= maxLineLength)
+                {
+                    // Add the word and a space to the result
+                    result += word + " ";
+                    currentLineLength += word.Length + 1;
+                }
+                else
+                {
+                    // Start a new line and reset the line length
+                    result += "\n" + word + " ";
+                    currentLineLength = word.Length + 1;
+                }
+            }
+
+            // Trim any leading or trailing whitespace
+            result = result.Trim();
+
+            return result;
+        }
     }
 }

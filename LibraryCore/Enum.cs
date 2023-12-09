@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Library
 {
@@ -206,12 +202,6 @@ namespace Library
         PartsStorage
     }
 
-    public enum GridSelect
-    {
-        Single,
-        Multi
-    }
-
     public enum InventoryMode
     {
         Normal,
@@ -246,6 +236,8 @@ namespace Library
         Guild = 17,
 
         DeathDrops = 18,
+
+        Fame = 19,
 
         //War
         Defiance = 100,
@@ -366,48 +358,50 @@ namespace Library
 
     public enum ItemType : byte
     {
-        Nothing,
-        Consumable,
-        Weapon,
-        Armour,
-        Torch,
-        Helmet,
-        Necklace,
-        Bracelet,
-        Ring,
-        Shoes,
-        Poison,
-        Amulet,
-        Meat,
-        Ore,
-        Book,
-        Scroll,
+        Nothing = 0,
+
+        Consumable = 1,
+        Weapon = 2,
+        Armour = 3,
+        Torch = 4,
+        Helmet = 5,
+        Necklace = 6,
+        Bracelet = 7,
+        Ring = 8,
+        Shoes = 9,
+        Poison = 10,
+        Amulet = 11,
+        Meat = 12,
+        Ore = 13,
+        Book = 14,
+        Scroll = 15,
         [Description("Dark Stone")]
-        DarkStone,
+        DarkStone = 16,
         [Description("Refine Special")]
-        RefineSpecial,
+        RefineSpecial = 17,
         [Description("Horse Armour")]
-        HorseArmour,
-        Flower,
+        HorseArmour = 18,
+        Flower = 19,
         [Description("Companion Food")]
-        CompanionFood,
+        CompanionFood = 20,
         [Description("Companion Bag")]
-        CompanionBag,
+        CompanionBag = 21,
         [Description("Companion Head")]
-        CompanionHead,
+        CompanionHead = 22,
         [Description("Companion Back")]
-        CompanionBack,
-        System,
+        CompanionBack = 23,
+        System = 24,
         [Description("Item Part")]
-        ItemPart,
-        Emblem,
-        Shield,
-        Costume,
-        Hook,
-        Float,
-        Bait,
-        Finder,
-        Reel
+        ItemPart = 25,
+        Emblem = 26,
+        Shield = 27,
+        Costume = 28,
+        Hook = 29,
+        Float = 30,
+        Bait = 31,
+        Finder = 32,
+        Reel = 33,
+        Currency = 34
     }
 
     public enum MirAction : byte
@@ -1401,7 +1395,9 @@ namespace Library
         Gold = 0,
         GameGold = 1,
         HuntGold = 2,
-        Other = 3
+        Other = 3,
+        FP = 4,
+        CP = 5
     }
 
     [Flags]

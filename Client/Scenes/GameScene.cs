@@ -1592,9 +1592,25 @@ namespace Client.Scenes
                     ForeColour = Color.Yellow,
                     Location = new Point(ItemLabel.DisplayArea.Right, 4),
                     Parent = ItemLabel,
-                    Text = $"Amount: {MouseItem.Count}"
+                    Text = $"Amount: {MouseItem.Count:#,##0}"
                 };
                 ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height + 4);
+
+                if (!string.IsNullOrEmpty(displayInfo.Description))
+                {
+                    label = new DXLabel
+                    {
+                        ForeColour = Color.Wheat,
+                        Location = new Point(4, ItemLabel.DisplayArea.Bottom),
+                        Parent = ItemLabel,
+                        Text = displayInfo.Description,
+                    };
+
+                    ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
+                        label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
+                    ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+                }
+
                 return;
             }
 
@@ -3579,7 +3595,8 @@ namespace Client.Scenes
                 case ItemType.Book:
                     MagicInfo magic = Globals.MagicInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
                     if (magic == null) return false;
-                    if (User.Magics.ContainsKey(magic) && (User.Magics[magic].Level < 3 || (item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)) return false;
+                    if (magic.School == MagicSchool.None) return false;
+                    if (User.Magics.TryGetValue(magic, out ClientUserMagic value) && (value.Level < 3 || (item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)) return false;
                     break;
                 case ItemType.Consumable:
                     switch (item.Info.Shape)
@@ -3708,9 +3725,9 @@ namespace Client.Scenes
             foreach (NPCGoodsCell cell in NPCGoodsBox.Cells)
                 cell.UpdateColours();
 
-            MainPanel.MCLabel.Visible = User.Class != MirClass.Taoist;
-            MainPanel.SCLabel.Visible = User.Class == MirClass.Taoist;
-            
+            MainPanel.MCLabel.Visible = User.Class == MirClass.Wizard || User.Class == MirClass.Warrior;
+            MainPanel.SCLabel.Visible = User.Class == MirClass.Taoist || User.Class == MirClass.Assassin;
+
             MagicBox?.CreateTabs();
         }
         public void StatsChanged()
@@ -3718,16 +3735,13 @@ namespace Client.Scenes
             if (User.Stats == null) return;
 
             User.Light = Math.Max(3, User.Stats[Stat.Light]);
-            
+
             MainPanel.ACLabel.Text = User.Stats.GetFormat(Stat.MaxAC);
-            MainPanel.MRLabel.Text = User.Stats.GetFormat(Stat.MaxMR);
+            MainPanel.MACLabel.Text = User.Stats.GetFormat(Stat.MaxMR);
+
             MainPanel.DCLabel.Text = User.Stats.GetFormat(Stat.MaxDC);
-
-            MainPanel.MCLabel.Text = User.Stats.GetFormat(Stat.MaxMC);
             MainPanel.SCLabel.Text = User.Stats.GetFormat(Stat.MaxSC);
-
-            MainPanel.AccuracyLabel.Text = User.Stats[Stat.Accuracy].ToString();
-            MainPanel.AgilityLabel.Text = User.Stats[Stat.Agility].ToString();
+            MainPanel.MCLabel.Text = User.Stats.GetFormat(Stat.MaxMC);
 
             HealthChanged();
             ManaChanged();
@@ -3798,6 +3812,9 @@ namespace Client.Scenes
             if (User == null) return;
 
             InventoryBox.RefreshCurrency();
+
+            MainPanel.FPLabel.Text = User.GetCurrency(CurrencyType.FP)?.Amount.ToString() ?? "0";
+            MainPanel.CPLabel.Text = User.GetCurrency(CurrencyType.CP)?.Amount.ToString() ?? "0";
 
             MarketPlaceBox.GameGoldBox.Value = User.GameGold.Amount;
             MarketPlaceBox.HuntGoldBox.Value = User.HuntGold.Amount;

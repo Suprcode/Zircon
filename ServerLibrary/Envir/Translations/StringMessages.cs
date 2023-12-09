@@ -324,5 +324,8 @@ namespace Server.Envir
         public abstract string DisciplineRequiredLevel { get; set; }
         public abstract string DisciplineRequiredGold { get; set; }
         public abstract string DisciplineRequiredExp { get; set; }
+
+        [ConfigSection("Fame")]
+        public abstract string FameNeedSpace { get; set; }
     }
 }

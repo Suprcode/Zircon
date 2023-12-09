@@ -42,6 +42,11 @@ namespace Client.Scenes.Views.Character
                 ExteriorEffect.A_RedSinWings => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 500 : 520) + (animationIndex % 13), ImageType.Image),
                 ExteriorEffect.A_FireDragonWings => effectLibrary.CreateImage((MirGender.Male.Equals(gender) ? 100 : 120) + (animationIndex % 10), ImageType.Image),
 
+                ExteriorEffect.S_WarThurible => effectLibrary.CreateImage(2800 + (animationIndex % 10), ImageType.Image),
+                ExteriorEffect.S_PenanceThurible => effectLibrary.CreateImage(2810 + (animationIndex % 10), ImageType.Image),
+                ExteriorEffect.S_CensorshipThurible => effectLibrary.CreateImage(2820 + (animationIndex % 10), ImageType.Image),
+                ExteriorEffect.S_PetrichorThurible => effectLibrary.CreateImage(2830 + (animationIndex % 10), ImageType.Image),
+
                 ExteriorEffect.W_ChaoticHeavenBlade => effectLibrary.CreateImage(2000 + (animationIndex % 10), ImageType.Image),
                 ExteriorEffect.W_JanitorsScimitar => effectLibrary.CreateImage(1900 + (animationIndex % 12), ImageType.Image),
                 ExteriorEffect.W_JanitorsDualBlade => effectLibrary.CreateImage(1920 + (animationIndex % 12), ImageType.Image),

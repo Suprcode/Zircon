@@ -28,741 +28,638 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SMain));
-            this.DLookAndFeel = new DevExpress.LookAndFeel.DefaultLookAndFeel(this.components);
-            this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.skinRibbonGalleryBarItem1 = new DevExpress.XtraBars.SkinRibbonGalleryBarItem();
-            this.StartServerButton = new DevExpress.XtraBars.BarButtonItem();
-            this.StopServerButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.ribbonPage3 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.navBarControl1 = new DevExpress.XtraNavBar.NavBarControl();
-            this.navBarGroup1 = new DevExpress.XtraNavBar.NavBarGroup();
-            this.LogNavButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.navBarItem1 = new DevExpress.XtraNavBar.NavBarItem();
-            this.navBarGroup2 = new DevExpress.XtraNavBar.NavBarGroup();
-            this.MapInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.InstanceInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.ItemInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MonsterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MagicInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.NPCInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.QuestInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.StoreInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.SafeZoneInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MovementInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MapRegionButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.ItemInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.DropInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.RespawnInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.ConfigButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.BaseStatButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.SetInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.CurrencyInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.FishingInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.CompanionInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.NPCPageButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.CastleInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.DisciplineInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.EventInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.WeaponCraftInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.navBarGroup3 = new DevExpress.XtraNavBar.NavBarGroup();
-            this.AccountInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.CharacterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.UserDropButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.PaymentButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.StoreSalesButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.DiagnosticButton = new DevExpress.XtraNavBar.NavBarItem();
-            this.navBarItem3 = new DevExpress.XtraNavBar.NavBarItem();
-            this.navBarItem4 = new DevExpress.XtraNavBar.NavBarItem();
-            this.navBarItem5 = new DevExpress.XtraNavBar.NavBarItem();
-            this.DManager = new DevExpress.XtraBars.Docking2010.DocumentManager(this.components);
-            this.tabbedView1 = new DevExpress.XtraBars.Docking2010.Views.Tabbed.TabbedView(this.components);
-            this.BManager = new DevExpress.XtraBars.BarManager(this.components);
-            this.bar3 = new DevExpress.XtraBars.Bar();
-            this.ConnectionLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.ObjectLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.ProcessLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.LoopLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.ConDelay = new DevExpress.XtraBars.BarStaticItem();
-            this.TotalDownloadLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.TotalUploadLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.DownloadSpeedLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.UploadSpeedLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.EMailsSentLabel = new DevExpress.XtraBars.BarStaticItem();
-            this.SaveDelay = new DevExpress.XtraBars.BarStaticItem();
-            this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
-            this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
-            this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
-            this.barDockControlRight = new DevExpress.XtraBars.BarDockControl();
-            this.InterfaceTimer = new System.Windows.Forms.Timer(this.components);
-            this.navBarItem6 = new DevExpress.XtraNavBar.NavBarItem();
-            ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.navBarControl1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.DManager)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tabbedView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BManager)).BeginInit();
-            this.SuspendLayout();
+            DLookAndFeel = new DevExpress.LookAndFeel.DefaultLookAndFeel(components);
+            ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            skinRibbonGalleryBarItem1 = new DevExpress.XtraBars.SkinRibbonGalleryBarItem();
+            StartServerButton = new DevExpress.XtraBars.BarButtonItem();
+            StopServerButton = new DevExpress.XtraBars.BarButtonItem();
+            ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            ribbonPage3 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            navBarControl1 = new DevExpress.XtraNavBar.NavBarControl();
+            navBarGroup1 = new DevExpress.XtraNavBar.NavBarGroup();
+            LogNavButton = new DevExpress.XtraNavBar.NavBarItem();
+            ChatLogButton = new DevExpress.XtraNavBar.NavBarItem();
+            navBarGroup2 = new DevExpress.XtraNavBar.NavBarGroup();
+            MapInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            InstanceInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            ItemInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            MonsterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            MagicInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            MapRegionButton = new DevExpress.XtraNavBar.NavBarItem();
+            MovementInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            SafeZoneInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            RespawnInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            DropInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            FishingInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            BaseStatButton = new DevExpress.XtraNavBar.NavBarItem();
+            DisciplineInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            FameInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            ItemInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
+            MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
+            SetInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            WeaponCraftInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            NPCInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            NPCPageButton = new DevExpress.XtraNavBar.NavBarItem();
+            QuestInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            StoreInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            EventInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            CastleInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            CompanionInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            CurrencyInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            ConfigButton = new DevExpress.XtraNavBar.NavBarItem();
+            navBarGroup3 = new DevExpress.XtraNavBar.NavBarGroup();
+            AccountInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            CharacterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            UserDropButton = new DevExpress.XtraNavBar.NavBarItem();
+            PaymentButton = new DevExpress.XtraNavBar.NavBarItem();
+            StoreSalesButton = new DevExpress.XtraNavBar.NavBarItem();
+            DiagnosticButton = new DevExpress.XtraNavBar.NavBarItem();
+            ConquestStatsButton = new DevExpress.XtraNavBar.NavBarItem();
+            UserMailButton = new DevExpress.XtraNavBar.NavBarItem();
+            NPCDataButton = new DevExpress.XtraNavBar.NavBarItem();
+            DManager = new DevExpress.XtraBars.Docking2010.DocumentManager(components);
+            tabbedView1 = new DevExpress.XtraBars.Docking2010.Views.Tabbed.TabbedView(components);
+            BManager = new DevExpress.XtraBars.BarManager(components);
+            bar3 = new DevExpress.XtraBars.Bar();
+            ConnectionLabel = new DevExpress.XtraBars.BarStaticItem();
+            ObjectLabel = new DevExpress.XtraBars.BarStaticItem();
+            ProcessLabel = new DevExpress.XtraBars.BarStaticItem();
+            LoopLabel = new DevExpress.XtraBars.BarStaticItem();
+            ConDelay = new DevExpress.XtraBars.BarStaticItem();
+            TotalDownloadLabel = new DevExpress.XtraBars.BarStaticItem();
+            TotalUploadLabel = new DevExpress.XtraBars.BarStaticItem();
+            DownloadSpeedLabel = new DevExpress.XtraBars.BarStaticItem();
+            UploadSpeedLabel = new DevExpress.XtraBars.BarStaticItem();
+            EMailsSentLabel = new DevExpress.XtraBars.BarStaticItem();
+            SaveDelay = new DevExpress.XtraBars.BarStaticItem();
+            barDockControlTop = new DevExpress.XtraBars.BarDockControl();
+            barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
+            barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
+            barDockControlRight = new DevExpress.XtraBars.BarDockControl();
+            InterfaceTimer = new System.Windows.Forms.Timer(components);
+            navBarItem6 = new DevExpress.XtraNavBar.NavBarItem();
+            ((System.ComponentModel.ISupportInitialize)ribbonControl1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)navBarControl1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)DManager).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)tabbedView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)BManager).BeginInit();
+            SuspendLayout();
             // 
             // DLookAndFeel
             // 
-            this.DLookAndFeel.LookAndFeel.SkinName = "Office 2010 Blue";
+            DLookAndFeel.LookAndFeel.SkinName = "Office 2010 Blue";
             // 
             // ribbonControl1
             // 
-            this.ribbonControl1.ExpandCollapseItem.Id = 0;
-            this.ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
-            this.ribbonControl1.ExpandCollapseItem,
-            this.ribbonControl1.SearchEditItem,
-            this.skinRibbonGalleryBarItem1,
-            this.StartServerButton,
-            this.StopServerButton});
-            this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 9;
-            this.ribbonControl1.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
-            this.ribbonControl1.Name = "ribbonControl1";
-            this.ribbonControl1.OptionsPageCategories.ShowCaptions = false;
-            this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
-            this.ribbonPage1,
-            this.ribbonPage2,
-            this.ribbonPage3});
-            this.ribbonControl1.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
-            this.ribbonControl1.ShowExpandCollapseButton = DevExpress.Utils.DefaultBoolean.True;
-            this.ribbonControl1.ShowQatLocationSelector = false;
-            this.ribbonControl1.ShowToolbarCustomizeItem = false;
-            this.ribbonControl1.Size = new System.Drawing.Size(1127, 144);
-            this.ribbonControl1.Toolbar.ShowCustomizeItem = false;
+            ribbonControl1.ExpandCollapseItem.Id = 0;
+            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, ribbonControl1.SearchEditItem, skinRibbonGalleryBarItem1, StartServerButton, StopServerButton });
+            ribbonControl1.Location = new System.Drawing.Point(0, 0);
+            ribbonControl1.MaxItemId = 9;
+            ribbonControl1.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
+            ribbonControl1.Name = "ribbonControl1";
+            ribbonControl1.OptionsPageCategories.ShowCaptions = false;
+            ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1, ribbonPage2, ribbonPage3 });
+            ribbonControl1.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
+            ribbonControl1.ShowExpandCollapseButton = DevExpress.Utils.DefaultBoolean.True;
+            ribbonControl1.ShowQatLocationSelector = false;
+            ribbonControl1.ShowToolbarCustomizeItem = false;
+            ribbonControl1.Size = new System.Drawing.Size(1127, 144);
+            ribbonControl1.Toolbar.ShowCustomizeItem = false;
             // 
             // skinRibbonGalleryBarItem1
             // 
-            this.skinRibbonGalleryBarItem1.Caption = "skinRibbonGalleryBarItem1";
-            this.skinRibbonGalleryBarItem1.Id = 1;
-            this.skinRibbonGalleryBarItem1.Name = "skinRibbonGalleryBarItem1";
+            skinRibbonGalleryBarItem1.Caption = "skinRibbonGalleryBarItem1";
+            skinRibbonGalleryBarItem1.Id = 1;
+            skinRibbonGalleryBarItem1.Name = "skinRibbonGalleryBarItem1";
             // 
             // StartServerButton
             // 
-            this.StartServerButton.Caption = "Start Server";
-            this.StartServerButton.Id = 2;
-            this.StartServerButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("StartServerButton.ImageOptions.Image")));
-            this.StartServerButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("StartServerButton.ImageOptions.LargeImage")));
-            this.StartServerButton.LargeWidth = 50;
-            this.StartServerButton.Name = "StartServerButton";
-            this.StartServerButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.StartServerButton_ItemClick);
+            StartServerButton.Caption = "Start Server";
+            StartServerButton.Id = 2;
+            StartServerButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("StartServerButton.ImageOptions.Image");
+            StartServerButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("StartServerButton.ImageOptions.LargeImage");
+            StartServerButton.LargeWidth = 50;
+            StartServerButton.Name = "StartServerButton";
+            StartServerButton.ItemClick += StartServerButton_ItemClick;
             // 
             // StopServerButton
             // 
-            this.StopServerButton.Caption = "Stop Server";
-            this.StopServerButton.Id = 3;
-            this.StopServerButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("StopServerButton.ImageOptions.Image")));
-            this.StopServerButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("StopServerButton.ImageOptions.LargeImage")));
-            this.StopServerButton.LargeWidth = 50;
-            this.StopServerButton.Name = "StopServerButton";
-            this.StopServerButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.StopServerButton_ItemClick);
+            StopServerButton.Caption = "Stop Server";
+            StopServerButton.Id = 3;
+            StopServerButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("StopServerButton.ImageOptions.Image");
+            StopServerButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("StopServerButton.ImageOptions.LargeImage");
+            StopServerButton.LargeWidth = 50;
+            StopServerButton.Name = "StopServerButton";
+            StopServerButton.ItemClick += StopServerButton_ItemClick;
             // 
             // ribbonPage1
             // 
-            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
-            this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "Home";
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1 });
+            ribbonPage1.Name = "ribbonPage1";
+            ribbonPage1.Text = "Home";
             // 
             // ribbonPageGroup1
             // 
-            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
-            this.ribbonPageGroup1.ItemLinks.Add(this.StartServerButton);
-            this.ribbonPageGroup1.ItemLinks.Add(this.StopServerButton);
-            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.Text = "Control";
+            ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
+            ribbonPageGroup1.ItemLinks.Add(StartServerButton);
+            ribbonPageGroup1.ItemLinks.Add(StopServerButton);
+            ribbonPageGroup1.Name = "ribbonPageGroup1";
+            ribbonPageGroup1.Text = "Control";
             // 
             // ribbonPage2
             // 
-            this.ribbonPage2.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup2});
-            this.ribbonPage2.Name = "ribbonPage2";
-            this.ribbonPage2.Text = "View";
+            ribbonPage2.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup2 });
+            ribbonPage2.Name = "ribbonPage2";
+            ribbonPage2.Text = "View";
             // 
             // ribbonPageGroup2
             // 
-            this.ribbonPageGroup2.ItemLinks.Add(this.skinRibbonGalleryBarItem1);
-            this.ribbonPageGroup2.Name = "ribbonPageGroup2";
-            this.ribbonPageGroup2.Text = "Skin";
+            ribbonPageGroup2.ItemLinks.Add(skinRibbonGalleryBarItem1);
+            ribbonPageGroup2.Name = "ribbonPageGroup2";
+            ribbonPageGroup2.Text = "Skin";
             // 
             // ribbonPage3
             // 
-            this.ribbonPage3.Name = "ribbonPage3";
-            this.ribbonPage3.Text = "Plugins";
+            ribbonPage3.Name = "ribbonPage3";
+            ribbonPage3.Text = "Plugins";
             // 
             // navBarControl1
             // 
-            this.navBarControl1.ActiveGroup = this.navBarGroup1;
-            this.navBarControl1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.navBarControl1.Groups.AddRange(new DevExpress.XtraNavBar.NavBarGroup[] {
-            this.navBarGroup1,
-            this.navBarGroup2,
-            this.navBarGroup3});
-            this.navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] {
-            this.LogNavButton,
-            this.navBarItem1,
-            this.ConfigButton,
-            this.MapInfoButton,
-            this.MonsterInfoButton,
-            this.ItemInfoButton,
-            this.InstanceInfoButton,
-            this.NPCInfoButton,
-            this.NPCPageButton,
-            this.MagicInfoButton,
-            this.AccountInfoButton,
-            this.CharacterInfoButton,
-            this.MovementInfoButton,
-            this.ItemInfoStatButton,
-            this.MonsterInfoStatButton,
-            this.SetInfoButton,
-            this.StoreInfoButton,
-            this.BaseStatButton,
-            this.SafeZoneInfoButton,
-            this.RespawnInfoButton,
-            this.MapRegionButton,
-            this.DropInfoButton,
-            this.UserDropButton,
-            this.QuestInfoButton,
-            this.CompanionInfoButton,
-            this.EventInfoButton,
-            this.CastleInfoButton,
-            this.PaymentButton,
-            this.StoreSalesButton,
-            this.DiagnosticButton,
-            this.navBarItem3,
-            this.navBarItem4,
-            this.WeaponCraftInfoButton,
-            this.CurrencyInfoButton,
-            this.FishingInfoButton,
-            this.DisciplineInfoButton,
-            this.navBarItem5});
-            this.navBarControl1.Location = new System.Drawing.Point(0, 144);
-            this.navBarControl1.Name = "navBarControl1";
-            this.navBarControl1.OptionsNavPane.ExpandedWidth = 144;
-            this.navBarControl1.Size = new System.Drawing.Size(144, 433);
-            this.navBarControl1.TabIndex = 1;
-            this.navBarControl1.Text = "navBarControl1";
+            navBarControl1.ActiveGroup = navBarGroup1;
+            navBarControl1.Dock = System.Windows.Forms.DockStyle.Left;
+            navBarControl1.Groups.AddRange(new DevExpress.XtraNavBar.NavBarGroup[] { navBarGroup1, navBarGroup2, navBarGroup3 });
+            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton });
+            navBarControl1.Location = new System.Drawing.Point(0, 144);
+            navBarControl1.Name = "navBarControl1";
+            navBarControl1.OptionsNavPane.ExpandedWidth = 144;
+            navBarControl1.Size = new System.Drawing.Size(144, 433);
+            navBarControl1.TabIndex = 1;
+            navBarControl1.Text = "navBarControl1";
             // 
             // navBarGroup1
             // 
-            this.navBarGroup1.Caption = "Operations";
-            this.navBarGroup1.Expanded = true;
-            this.navBarGroup1.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarGroup1.ImageOptions.SmallImage")));
-            this.navBarGroup1.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] {
-            new DevExpress.XtraNavBar.NavBarItemLink(this.LogNavButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem1)});
-            this.navBarGroup1.Name = "navBarGroup1";
+            navBarGroup1.Caption = "Operations";
+            navBarGroup1.Expanded = true;
+            navBarGroup1.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup1.ImageOptions.SmallImage");
+            navBarGroup1.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(LogNavButton), new DevExpress.XtraNavBar.NavBarItemLink(ChatLogButton) });
+            navBarGroup1.Name = "navBarGroup1";
             // 
             // LogNavButton
             // 
-            this.LogNavButton.Caption = "System Log";
-            this.LogNavButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("LogNavButton.ImageOptions.SmallImage")));
-            this.LogNavButton.Name = "LogNavButton";
-            this.LogNavButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.LogNavButton_LinkClicked);
+            LogNavButton.Caption = "System Log";
+            LogNavButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("LogNavButton.ImageOptions.SmallImage");
+            LogNavButton.Name = "LogNavButton";
+            LogNavButton.LinkClicked += LogNavButton_LinkClicked;
             // 
-            // navBarItem1
+            // ChatLogButton
             // 
-            this.navBarItem1.Caption = "Chat Log";
-            this.navBarItem1.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem1.ImageOptions.SmallImage")));
-            this.navBarItem1.Name = "navBarItem1";
-            this.navBarItem1.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ChatLogNavButton_LinkClicked);
+            ChatLogButton.Caption = "Chat Log";
+            ChatLogButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("ChatLogButton.ImageOptions.SmallImage");
+            ChatLogButton.Name = "ChatLogButton";
+            ChatLogButton.LinkClicked += ChatLogNavButton_LinkClicked;
             // 
             // navBarGroup2
             // 
-            this.navBarGroup2.Caption = "Setup";
-            this.navBarGroup2.Expanded = true;
-            this.navBarGroup2.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarGroup2.ImageOptions.SmallImage")));
-            this.navBarGroup2.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] {
-            new DevExpress.XtraNavBar.NavBarItemLink(this.MapInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.InstanceInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.ItemInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.MagicInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.MapRegionButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.MovementInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.SafeZoneInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.RespawnInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.DropInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.FishingInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.BaseStatButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.DisciplineInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.ItemInfoStatButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.MonsterInfoStatButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.SetInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.WeaponCraftInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.NPCInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.NPCPageButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.QuestInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.StoreInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.EventInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.CastleInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.CompanionInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.CurrencyInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.ConfigButton)});
-            this.navBarGroup2.Name = "navBarGroup2";
+            navBarGroup2.Caption = "Setup";
+            navBarGroup2.Expanded = true;
+            navBarGroup2.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup2.ImageOptions.SmallImage");
+            navBarGroup2.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(MapInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(InstanceInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(ItemInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MonsterInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MagicInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MapRegionButton), new DevExpress.XtraNavBar.NavBarItemLink(MovementInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(SafeZoneInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(RespawnInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(DropInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(FishingInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(BaseStatButton), new DevExpress.XtraNavBar.NavBarItemLink(DisciplineInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(FameInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(ItemInfoStatButton), new DevExpress.XtraNavBar.NavBarItemLink(MonsterInfoStatButton), new DevExpress.XtraNavBar.NavBarItemLink(SetInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(WeaponCraftInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCPageButton), new DevExpress.XtraNavBar.NavBarItemLink(QuestInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(StoreInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(EventInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CastleInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CompanionInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CurrencyInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(ConfigButton) });
+            navBarGroup2.Name = "navBarGroup2";
             // 
             // MapInfoButton
             // 
-            this.MapInfoButton.Caption = "Map Info";
-            this.MapInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MapInfoButton.ImageOptions.SmallImage")));
-            this.MapInfoButton.Name = "MapInfoButton";
-            this.MapInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MapInfoButton_LinkClicked);
+            MapInfoButton.Caption = "Map Info";
+            MapInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MapInfoButton.ImageOptions.SmallImage");
+            MapInfoButton.Name = "MapInfoButton";
+            MapInfoButton.LinkClicked += MapInfoButton_LinkClicked;
             // 
             // InstanceInfoButton
             // 
-            this.InstanceInfoButton.Caption = "Instance Info";
-            this.InstanceInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("InstanceInfoButton.ImageOptions.SmallImage")));
-            this.InstanceInfoButton.Name = "InstanceInfoButton";
-            this.InstanceInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.InstanceInfoButton_LinkClicked);
+            InstanceInfoButton.Caption = "Instance Info";
+            InstanceInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("InstanceInfoButton.ImageOptions.SmallImage");
+            InstanceInfoButton.Name = "InstanceInfoButton";
+            InstanceInfoButton.LinkClicked += InstanceInfoButton_LinkClicked;
             // 
             // ItemInfoButton
             // 
-            this.ItemInfoButton.Caption = "Item Info";
-            this.ItemInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("ItemInfoButton.ImageOptions.SmallImage")));
-            this.ItemInfoButton.Name = "ItemInfoButton";
-            this.ItemInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ItemInfoButton_LinkClicked);
+            ItemInfoButton.Caption = "Item Info";
+            ItemInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("ItemInfoButton.ImageOptions.SmallImage");
+            ItemInfoButton.Name = "ItemInfoButton";
+            ItemInfoButton.LinkClicked += ItemInfoButton_LinkClicked;
             // 
             // MonsterInfoButton
             // 
-            this.MonsterInfoButton.Caption = "Monster Info ";
-            this.MonsterInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MonsterInfoButton.ImageOptions.SmallImage")));
-            this.MonsterInfoButton.Name = "MonsterInfoButton";
-            this.MonsterInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MonsterInfoButton_LinkClicked);
+            MonsterInfoButton.Caption = "Monster Info ";
+            MonsterInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MonsterInfoButton.ImageOptions.SmallImage");
+            MonsterInfoButton.Name = "MonsterInfoButton";
+            MonsterInfoButton.LinkClicked += MonsterInfoButton_LinkClicked;
             // 
             // MagicInfoButton
             // 
-            this.MagicInfoButton.Caption = "Magic Info";
-            this.MagicInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MagicInfoButton.ImageOptions.SmallImage")));
-            this.MagicInfoButton.Name = "MagicInfoButton";
-            this.MagicInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MagicInfoButton_LinkClicked);
-            // 
-            // NPCInfoButton
-            // 
-            this.NPCInfoButton.Caption = "NPC Info";
-            this.NPCInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("NPCInfoButton.ImageOptions.SmallImage")));
-            this.NPCInfoButton.Name = "NPCInfoButton";
-            this.NPCInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.NPCInfoButton_LinkClicked);
-            // 
-            // QuestInfoButton
-            // 
-            this.QuestInfoButton.Caption = "Quest Info";
-            this.QuestInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("QuestInfoButton.ImageOptions.SmallImage")));
-            this.QuestInfoButton.Name = "QuestInfoButton";
-            this.QuestInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.QuestInfoButton_LinkClicked);
-            // 
-            // StoreInfoButton
-            // 
-            this.StoreInfoButton.Caption = "Store Info";
-            this.StoreInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("StoreInfoButton.ImageOptions.SmallImage")));
-            this.StoreInfoButton.Name = "StoreInfoButton";
-            this.StoreInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.StoreInfoButton_LinkClicked);
-            // 
-            // SafeZoneInfoButton
-            // 
-            this.SafeZoneInfoButton.Caption = "Safe Zone Info";
-            this.SafeZoneInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("SafeZoneInfoButton.ImageOptions.SmallImage")));
-            this.SafeZoneInfoButton.Name = "SafeZoneInfoButton";
-            this.SafeZoneInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.SafeZoneInfoButton_LinkClicked);
-            // 
-            // MovementInfoButton
-            // 
-            this.MovementInfoButton.Caption = "Movement Info";
-            this.MovementInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MovementInfoButton.ImageOptions.SmallImage")));
-            this.MovementInfoButton.Name = "MovementInfoButton";
-            this.MovementInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MovementInfoButton_LinkClicked);
+            MagicInfoButton.Caption = "Magic Info";
+            MagicInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MagicInfoButton.ImageOptions.SmallImage");
+            MagicInfoButton.Name = "MagicInfoButton";
+            MagicInfoButton.LinkClicked += MagicInfoButton_LinkClicked;
             // 
             // MapRegionButton
             // 
-            this.MapRegionButton.Caption = "Map Region";
-            this.MapRegionButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MapRegionButton.ImageOptions.SmallImage")));
-            this.MapRegionButton.Name = "MapRegionButton";
-            this.MapRegionButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MapRegionButton_LinkClicked);
+            MapRegionButton.Caption = "Map Region";
+            MapRegionButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MapRegionButton.ImageOptions.SmallImage");
+            MapRegionButton.Name = "MapRegionButton";
+            MapRegionButton.LinkClicked += MapRegionButton_LinkClicked;
             // 
-            // ItemInfoStatButton
+            // MovementInfoButton
             // 
-            this.ItemInfoStatButton.Caption = "Item Info Stat";
-            this.ItemInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("ItemInfoStatButton.ImageOptions.SmallImage")));
-            this.ItemInfoStatButton.Name = "ItemInfoStatButton";
-            this.ItemInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ItemInfoStatButton_LinkClicked);
+            MovementInfoButton.Caption = "Movement Info";
+            MovementInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MovementInfoButton.ImageOptions.SmallImage");
+            MovementInfoButton.Name = "MovementInfoButton";
+            MovementInfoButton.LinkClicked += MovementInfoButton_LinkClicked;
             // 
-            // MonsterInfoStatButton
+            // SafeZoneInfoButton
             // 
-            this.MonsterInfoStatButton.Caption = "Monster Info Stat";
-            this.MonsterInfoStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("MonsterInfoStatButton.ImageOptions.SmallImage")));
-            this.MonsterInfoStatButton.Name = "MonsterInfoStatButton";
-            this.MonsterInfoStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.MonsterInfoStatButton_LinkClicked);
-            // 
-            // DropInfoButton
-            // 
-            this.DropInfoButton.Caption = "Drop Info";
-            this.DropInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("DropInfoButton.ImageOptions.SmallImage")));
-            this.DropInfoButton.Name = "DropInfoButton";
-            this.DropInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DropInfoButton_LinkClicked);
+            SafeZoneInfoButton.Caption = "Safe Zone Info";
+            SafeZoneInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("SafeZoneInfoButton.ImageOptions.SmallImage");
+            SafeZoneInfoButton.Name = "SafeZoneInfoButton";
+            SafeZoneInfoButton.LinkClicked += SafeZoneInfoButton_LinkClicked;
             // 
             // RespawnInfoButton
             // 
-            this.RespawnInfoButton.Caption = "Respawn Info";
-            this.RespawnInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("RespawnInfoButton.ImageOptions.SmallImage")));
-            this.RespawnInfoButton.Name = "RespawnInfoButton";
-            this.RespawnInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.RespawnInfoButton_LinkClicked);
+            RespawnInfoButton.Caption = "Respawn Info";
+            RespawnInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("RespawnInfoButton.ImageOptions.SmallImage");
+            RespawnInfoButton.Name = "RespawnInfoButton";
+            RespawnInfoButton.LinkClicked += RespawnInfoButton_LinkClicked;
             // 
-            // ConfigButton
+            // DropInfoButton
             // 
-            this.ConfigButton.Caption = "Config";
-            this.ConfigButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("ConfigButton.ImageOptions.SmallImage")));
-            this.ConfigButton.Name = "ConfigButton";
-            this.ConfigButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.ConfigButton_LinkClicked);
-            // 
-            // BaseStatButton
-            // 
-            this.BaseStatButton.Caption = "Base Stats";
-            this.BaseStatButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("BaseStatButton.ImageOptions.SmallImage")));
-            this.BaseStatButton.Name = "BaseStatButton";
-            this.BaseStatButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.BaseStatButton_LinkClicked);
-            // 
-            // SetInfoButton
-            // 
-            this.SetInfoButton.Caption = "Set Info";
-            this.SetInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("SetInfoButton.ImageOptions.SmallImage")));
-            this.SetInfoButton.Name = "SetInfoButton";
-            this.SetInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.SetInfoButton_LinkClicked);
-            // 
-            // CurrencyInfoButton
-            // 
-            this.CurrencyInfoButton.Caption = "Currency Info";
-            this.CurrencyInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CurrencyInfoButton.ImageOptions.SmallImage")));
-            this.CurrencyInfoButton.Name = "CurrencyInfoButton";
-            this.CurrencyInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CurrencyInfoButton_LinkClicked);
+            DropInfoButton.Caption = "Drop Info";
+            DropInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("DropInfoButton.ImageOptions.SmallImage");
+            DropInfoButton.Name = "DropInfoButton";
+            DropInfoButton.LinkClicked += DropInfoButton_LinkClicked;
             // 
             // FishingInfoButton
             // 
-            this.FishingInfoButton.Caption = "Fishing Info";
-            this.FishingInfoButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("FishingInfoButton.ImageOptions.LargeImage")));
-            this.FishingInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("FishingInfoButton.ImageOptions.SmallImage")));
-            this.FishingInfoButton.Name = "FishingInfoButton";
-            this.FishingInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.FishingInfoButton_LinkClicked);
+            FishingInfoButton.Caption = "Fishing Info";
+            FishingInfoButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("FishingInfoButton.ImageOptions.LargeImage");
+            FishingInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("FishingInfoButton.ImageOptions.SmallImage");
+            FishingInfoButton.Name = "FishingInfoButton";
+            FishingInfoButton.LinkClicked += FishingInfoButton_LinkClicked;
             // 
-            // CompanionInfoButton
+            // BaseStatButton
             // 
-            this.CompanionInfoButton.Caption = "Companion Info";
-            this.CompanionInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CompanionInfoButton.ImageOptions.SmallImage")));
-            this.CompanionInfoButton.Name = "CompanionInfoButton";
-            this.CompanionInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CompanionInfoButton_LinkClicked);
-            // 
-            // NPCPageButton
-            // 
-            this.NPCPageButton.Caption = "NPC Page";
-            this.NPCPageButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("NPCPageButton.ImageOptions.SmallImage")));
-            this.NPCPageButton.Name = "NPCPageButton";
-            this.NPCPageButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.NPCPageButton_LinkClicked);
-            // 
-            // CastleInfoButton
-            // 
-            this.CastleInfoButton.Caption = "Castle Info";
-            this.CastleInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CastleInfoButton.ImageOptions.SmallImage")));
-            this.CastleInfoButton.Name = "CastleInfoButton";
-            this.CastleInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CastleInfoButton_LinkClicked);
+            BaseStatButton.Caption = "Base Stats";
+            BaseStatButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("BaseStatButton.ImageOptions.SmallImage");
+            BaseStatButton.Name = "BaseStatButton";
+            BaseStatButton.LinkClicked += BaseStatButton_LinkClicked;
             // 
             // DisciplineInfoButton
             // 
-            this.DisciplineInfoButton.Caption = "Discipline Info";
-            this.DisciplineInfoButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("DisciplineInfoButton.ImageOptions.LargeImage")));
-            this.DisciplineInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("DisciplineInfoButton.ImageOptions.SmallImage")));
-            this.DisciplineInfoButton.Name = "DisciplineInfoButton";
-            this.DisciplineInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DisciplineInfoButton_LinkClicked);
+            DisciplineInfoButton.Caption = "Discipline Info";
+            DisciplineInfoButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("DisciplineInfoButton.ImageOptions.LargeImage");
+            DisciplineInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("DisciplineInfoButton.ImageOptions.SmallImage");
+            DisciplineInfoButton.Name = "DisciplineInfoButton";
+            DisciplineInfoButton.LinkClicked += DisciplineInfoButton_LinkClicked;
             // 
-            // EventInfoButton
+            // FameInfoButton
             // 
-            this.EventInfoButton.Caption = "Event Info";
-            this.EventInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("EventInfoButton.ImageOptions.SmallImage")));
-            this.EventInfoButton.Name = "EventInfoButton";
-            this.EventInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.EventInfoButton_LinkClicked);
+            FameInfoButton.Caption = "Fame Info";
+            FameInfoButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("FameInfoButton.ImageOptions.LargeImage");
+            FameInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("FameInfoButton.ImageOptions.SmallImage");
+            FameInfoButton.Name = "FameInfoButton";
+            FameInfoButton.LinkClicked += FameInfoButton_LinkClicked;
+            // 
+            // ItemInfoStatButton
+            // 
+            ItemInfoStatButton.Caption = "Item Info Stat";
+            ItemInfoStatButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("ItemInfoStatButton.ImageOptions.SmallImage");
+            ItemInfoStatButton.Name = "ItemInfoStatButton";
+            ItemInfoStatButton.LinkClicked += ItemInfoStatButton_LinkClicked;
+            // 
+            // MonsterInfoStatButton
+            // 
+            MonsterInfoStatButton.Caption = "Monster Info Stat";
+            MonsterInfoStatButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MonsterInfoStatButton.ImageOptions.SmallImage");
+            MonsterInfoStatButton.Name = "MonsterInfoStatButton";
+            MonsterInfoStatButton.LinkClicked += MonsterInfoStatButton_LinkClicked;
+            // 
+            // SetInfoButton
+            // 
+            SetInfoButton.Caption = "Set Info";
+            SetInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("SetInfoButton.ImageOptions.SmallImage");
+            SetInfoButton.Name = "SetInfoButton";
+            SetInfoButton.LinkClicked += SetInfoButton_LinkClicked;
             // 
             // WeaponCraftInfoButton
             // 
-            this.WeaponCraftInfoButton.Caption = "Weapon Craft Info";
-            this.WeaponCraftInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("WeaponCraftInfoButton.ImageOptions.SmallImage")));
-            this.WeaponCraftInfoButton.Name = "WeaponCraftInfoButton";
-            this.WeaponCraftInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.WeaponCraftInfoButton_LinkClicked);
+            WeaponCraftInfoButton.Caption = "Weapon Craft Info";
+            WeaponCraftInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("WeaponCraftInfoButton.ImageOptions.SmallImage");
+            WeaponCraftInfoButton.Name = "WeaponCraftInfoButton";
+            WeaponCraftInfoButton.LinkClicked += WeaponCraftInfoButton_LinkClicked;
+            // 
+            // NPCInfoButton
+            // 
+            NPCInfoButton.Caption = "NPC Info";
+            NPCInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("NPCInfoButton.ImageOptions.SmallImage");
+            NPCInfoButton.Name = "NPCInfoButton";
+            NPCInfoButton.LinkClicked += NPCInfoButton_LinkClicked;
+            // 
+            // NPCPageButton
+            // 
+            NPCPageButton.Caption = "NPC Page";
+            NPCPageButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("NPCPageButton.ImageOptions.SmallImage");
+            NPCPageButton.Name = "NPCPageButton";
+            NPCPageButton.LinkClicked += NPCPageButton_LinkClicked;
+            // 
+            // QuestInfoButton
+            // 
+            QuestInfoButton.Caption = "Quest Info";
+            QuestInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("QuestInfoButton.ImageOptions.SmallImage");
+            QuestInfoButton.Name = "QuestInfoButton";
+            QuestInfoButton.LinkClicked += QuestInfoButton_LinkClicked;
+            // 
+            // StoreInfoButton
+            // 
+            StoreInfoButton.Caption = "Store Info";
+            StoreInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("StoreInfoButton.ImageOptions.SmallImage");
+            StoreInfoButton.Name = "StoreInfoButton";
+            StoreInfoButton.LinkClicked += StoreInfoButton_LinkClicked;
+            // 
+            // EventInfoButton
+            // 
+            EventInfoButton.Caption = "Event Info";
+            EventInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("EventInfoButton.ImageOptions.SmallImage");
+            EventInfoButton.Name = "EventInfoButton";
+            EventInfoButton.LinkClicked += EventInfoButton_LinkClicked;
+            // 
+            // CastleInfoButton
+            // 
+            CastleInfoButton.Caption = "Castle Info";
+            CastleInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("CastleInfoButton.ImageOptions.SmallImage");
+            CastleInfoButton.Name = "CastleInfoButton";
+            CastleInfoButton.LinkClicked += CastleInfoButton_LinkClicked;
+            // 
+            // CompanionInfoButton
+            // 
+            CompanionInfoButton.Caption = "Companion Info";
+            CompanionInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("CompanionInfoButton.ImageOptions.SmallImage");
+            CompanionInfoButton.Name = "CompanionInfoButton";
+            CompanionInfoButton.LinkClicked += CompanionInfoButton_LinkClicked;
+            // 
+            // CurrencyInfoButton
+            // 
+            CurrencyInfoButton.Caption = "Currency Info";
+            CurrencyInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("CurrencyInfoButton.ImageOptions.SmallImage");
+            CurrencyInfoButton.Name = "CurrencyInfoButton";
+            CurrencyInfoButton.LinkClicked += CurrencyInfoButton_LinkClicked;
+            // 
+            // ConfigButton
+            // 
+            ConfigButton.Caption = "Config";
+            ConfigButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("ConfigButton.ImageOptions.SmallImage");
+            ConfigButton.Name = "ConfigButton";
+            ConfigButton.LinkClicked += ConfigButton_LinkClicked;
             // 
             // navBarGroup3
             // 
-            this.navBarGroup3.Caption = "Management";
-            this.navBarGroup3.Expanded = true;
-            this.navBarGroup3.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarGroup3.ImageOptions.SmallImage")));
-            this.navBarGroup3.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] {
-            new DevExpress.XtraNavBar.NavBarItemLink(this.AccountInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.CharacterInfoButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.UserDropButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.PaymentButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.StoreSalesButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.DiagnosticButton),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem3),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem4),
-            new DevExpress.XtraNavBar.NavBarItemLink(this.navBarItem5)});
-            this.navBarGroup3.Name = "navBarGroup3";
+            navBarGroup3.Caption = "Management";
+            navBarGroup3.Expanded = true;
+            navBarGroup3.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup3.ImageOptions.SmallImage");
+            navBarGroup3.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(AccountInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CharacterInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(UserDropButton), new DevExpress.XtraNavBar.NavBarItemLink(PaymentButton), new DevExpress.XtraNavBar.NavBarItemLink(StoreSalesButton), new DevExpress.XtraNavBar.NavBarItemLink(DiagnosticButton), new DevExpress.XtraNavBar.NavBarItemLink(ConquestStatsButton), new DevExpress.XtraNavBar.NavBarItemLink(UserMailButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCDataButton) });
+            navBarGroup3.Name = "navBarGroup3";
             // 
             // AccountInfoButton
             // 
-            this.AccountInfoButton.Caption = "Account";
-            this.AccountInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("AccountInfoButton.ImageOptions.SmallImage")));
-            this.AccountInfoButton.Name = "AccountInfoButton";
-            this.AccountInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.AccountInfoButton_LinkClicked);
+            AccountInfoButton.Caption = "Account";
+            AccountInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("AccountInfoButton.ImageOptions.SmallImage");
+            AccountInfoButton.Name = "AccountInfoButton";
+            AccountInfoButton.LinkClicked += AccountInfoButton_LinkClicked;
             // 
             // CharacterInfoButton
             // 
-            this.CharacterInfoButton.Caption = "Character Info";
-            this.CharacterInfoButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("CharacterInfoButton.ImageOptions.SmallImage")));
-            this.CharacterInfoButton.Name = "CharacterInfoButton";
-            this.CharacterInfoButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.CharacterInfoButton_LinkClicked);
+            CharacterInfoButton.Caption = "Character Info";
+            CharacterInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("CharacterInfoButton.ImageOptions.SmallImage");
+            CharacterInfoButton.Name = "CharacterInfoButton";
+            CharacterInfoButton.LinkClicked += CharacterInfoButton_LinkClicked;
             // 
             // UserDropButton
             // 
-            this.UserDropButton.Caption = "User Drop";
-            this.UserDropButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("UserDropButton.ImageOptions.SmallImage")));
-            this.UserDropButton.Name = "UserDropButton";
-            this.UserDropButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.UserDropButton_LinkClicked);
+            UserDropButton.Caption = "User Drop";
+            UserDropButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("UserDropButton.ImageOptions.SmallImage");
+            UserDropButton.Name = "UserDropButton";
+            UserDropButton.LinkClicked += UserDropButton_LinkClicked;
             // 
             // PaymentButton
             // 
-            this.PaymentButton.Caption = "Payments";
-            this.PaymentButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("PaymentButton.ImageOptions.SmallImage")));
-            this.PaymentButton.Name = "PaymentButton";
-            this.PaymentButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.PaymentButton_LinkClicked);
+            PaymentButton.Caption = "Payments";
+            PaymentButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("PaymentButton.ImageOptions.SmallImage");
+            PaymentButton.Name = "PaymentButton";
+            PaymentButton.LinkClicked += PaymentButton_LinkClicked;
             // 
             // StoreSalesButton
             // 
-            this.StoreSalesButton.Caption = "Store Sales";
-            this.StoreSalesButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("StoreSalesButton.ImageOptions.SmallImage")));
-            this.StoreSalesButton.Name = "StoreSalesButton";
-            this.StoreSalesButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.StoreSalesButton_LinkClicked);
+            StoreSalesButton.Caption = "Store Sales";
+            StoreSalesButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("StoreSalesButton.ImageOptions.SmallImage");
+            StoreSalesButton.Name = "StoreSalesButton";
+            StoreSalesButton.LinkClicked += StoreSalesButton_LinkClicked;
             // 
             // DiagnosticButton
             // 
-            this.DiagnosticButton.Caption = "Diagnostics";
-            this.DiagnosticButton.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("DiagnosticButton.ImageOptions.SmallImage")));
-            this.DiagnosticButton.Name = "DiagnosticButton";
-            this.DiagnosticButton.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.DiagnosticButton_LinkClicked);
+            DiagnosticButton.Caption = "Diagnostics";
+            DiagnosticButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("DiagnosticButton.ImageOptions.SmallImage");
+            DiagnosticButton.Name = "DiagnosticButton";
+            DiagnosticButton.LinkClicked += DiagnosticButton_LinkClicked;
             // 
-            // navBarItem3
+            // ConquestStatsButton
             // 
-            this.navBarItem3.Caption = "Conquest Stats";
-            this.navBarItem3.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("navBarItem3.ImageOptions.LargeImage")));
-            this.navBarItem3.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem3.ImageOptions.SmallImage")));
-            this.navBarItem3.Name = "navBarItem3";
-            this.navBarItem3.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem3_LinkClicked);
+            ConquestStatsButton.Caption = "Conquest Stats";
+            ConquestStatsButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("ConquestStatsButton.ImageOptions.LargeImage");
+            ConquestStatsButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("ConquestStatsButton.ImageOptions.SmallImage");
+            ConquestStatsButton.Name = "ConquestStatsButton";
+            ConquestStatsButton.LinkClicked += navBarItem3_LinkClicked;
             // 
-            // navBarItem4
+            // UserMailButton
             // 
-            this.navBarItem4.Caption = "User Mail";
-            this.navBarItem4.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("navBarItem4.ImageOptions.LargeImage")));
-            this.navBarItem4.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem4.ImageOptions.SmallImage")));
-            this.navBarItem4.Name = "navBarItem4";
-            this.navBarItem4.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem4_LinkClicked);
+            UserMailButton.Caption = "User Mail";
+            UserMailButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("UserMailButton.ImageOptions.LargeImage");
+            UserMailButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("UserMailButton.ImageOptions.SmallImage");
+            UserMailButton.Name = "UserMailButton";
+            UserMailButton.LinkClicked += navBarItem4_LinkClicked;
             // 
-            // navBarItem5
+            // NPCDataButton
             // 
-            this.navBarItem5.Caption = "NPC Data";
-            this.navBarItem5.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("navBarItem5.ImageOptions.LargeImage")));
-            this.navBarItem5.ImageOptions.SmallImage = ((System.Drawing.Image)(resources.GetObject("navBarItem5.ImageOptions.SmallImage")));
-            this.navBarItem5.Name = "navBarItem5";
-            this.navBarItem5.LinkClicked += new DevExpress.XtraNavBar.NavBarLinkEventHandler(this.navBarItem5_LinkClicked);
+            NPCDataButton.Caption = "NPC Data";
+            NPCDataButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("NPCDataButton.ImageOptions.LargeImage");
+            NPCDataButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("NPCDataButton.ImageOptions.SmallImage");
+            NPCDataButton.Name = "NPCDataButton";
+            NPCDataButton.LinkClicked += navBarItem5_LinkClicked;
             // 
             // DManager
             // 
-            this.DManager.MdiParent = this;
-            this.DManager.MenuManager = this.ribbonControl1;
-            this.DManager.View = this.tabbedView1;
-            this.DManager.ViewCollection.AddRange(new DevExpress.XtraBars.Docking2010.Views.BaseView[] {
-            this.tabbedView1});
+            DManager.MdiParent = this;
+            DManager.MenuManager = ribbonControl1;
+            DManager.View = tabbedView1;
+            DManager.ViewCollection.AddRange(new DevExpress.XtraBars.Docking2010.Views.BaseView[] { tabbedView1 });
             // 
             // BManager
             // 
-            this.BManager.Bars.AddRange(new DevExpress.XtraBars.Bar[] {
-            this.bar3});
-            this.BManager.DockControls.Add(this.barDockControlTop);
-            this.BManager.DockControls.Add(this.barDockControlBottom);
-            this.BManager.DockControls.Add(this.barDockControlLeft);
-            this.BManager.DockControls.Add(this.barDockControlRight);
-            this.BManager.Form = this;
-            this.BManager.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
-            this.ConnectionLabel,
-            this.ObjectLabel,
-            this.ProcessLabel,
-            this.LoopLabel,
-            this.TotalDownloadLabel,
-            this.TotalUploadLabel,
-            this.DownloadSpeedLabel,
-            this.UploadSpeedLabel,
-            this.EMailsSentLabel,
-            this.ConDelay,
-            this.SaveDelay});
-            this.BManager.MaxItemId = 12;
-            this.BManager.StatusBar = this.bar3;
+            BManager.Bars.AddRange(new DevExpress.XtraBars.Bar[] { bar3 });
+            BManager.DockControls.Add(barDockControlTop);
+            BManager.DockControls.Add(barDockControlBottom);
+            BManager.DockControls.Add(barDockControlLeft);
+            BManager.DockControls.Add(barDockControlRight);
+            BManager.Form = this;
+            BManager.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ConnectionLabel, ObjectLabel, ProcessLabel, LoopLabel, TotalDownloadLabel, TotalUploadLabel, DownloadSpeedLabel, UploadSpeedLabel, EMailsSentLabel, ConDelay, SaveDelay });
+            BManager.MaxItemId = 12;
+            BManager.StatusBar = bar3;
             // 
             // bar3
             // 
-            this.bar3.BarName = "Status bar";
-            this.bar3.CanDockStyle = DevExpress.XtraBars.BarCanDockStyle.Bottom;
-            this.bar3.DockCol = 0;
-            this.bar3.DockRow = 0;
-            this.bar3.DockStyle = DevExpress.XtraBars.BarDockStyle.Bottom;
-            this.bar3.LinksPersistInfo.AddRange(new DevExpress.XtraBars.LinkPersistInfo[] {
-            new DevExpress.XtraBars.LinkPersistInfo(this.ConnectionLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.ObjectLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.ProcessLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.LoopLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.ConDelay),
-            new DevExpress.XtraBars.LinkPersistInfo(this.TotalDownloadLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.TotalUploadLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.DownloadSpeedLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.UploadSpeedLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.EMailsSentLabel),
-            new DevExpress.XtraBars.LinkPersistInfo(this.SaveDelay)});
-            this.bar3.OptionsBar.AllowQuickCustomization = false;
-            this.bar3.OptionsBar.DrawDragBorder = false;
-            this.bar3.OptionsBar.UseWholeRow = true;
-            this.bar3.Text = "Status bar";
+            bar3.BarName = "Status bar";
+            bar3.CanDockStyle = DevExpress.XtraBars.BarCanDockStyle.Bottom;
+            bar3.DockCol = 0;
+            bar3.DockRow = 0;
+            bar3.DockStyle = DevExpress.XtraBars.BarDockStyle.Bottom;
+            bar3.LinksPersistInfo.AddRange(new DevExpress.XtraBars.LinkPersistInfo[] { new DevExpress.XtraBars.LinkPersistInfo(ConnectionLabel), new DevExpress.XtraBars.LinkPersistInfo(ObjectLabel), new DevExpress.XtraBars.LinkPersistInfo(ProcessLabel), new DevExpress.XtraBars.LinkPersistInfo(LoopLabel), new DevExpress.XtraBars.LinkPersistInfo(ConDelay), new DevExpress.XtraBars.LinkPersistInfo(TotalDownloadLabel), new DevExpress.XtraBars.LinkPersistInfo(TotalUploadLabel), new DevExpress.XtraBars.LinkPersistInfo(DownloadSpeedLabel), new DevExpress.XtraBars.LinkPersistInfo(UploadSpeedLabel), new DevExpress.XtraBars.LinkPersistInfo(EMailsSentLabel), new DevExpress.XtraBars.LinkPersistInfo(SaveDelay) });
+            bar3.OptionsBar.AllowQuickCustomization = false;
+            bar3.OptionsBar.DrawDragBorder = false;
+            bar3.OptionsBar.UseWholeRow = true;
+            bar3.Text = "Status bar";
             // 
             // ConnectionLabel
             // 
-            this.ConnectionLabel.Caption = "Connections: 0";
-            this.ConnectionLabel.Id = 1;
-            this.ConnectionLabel.Name = "ConnectionLabel";
+            ConnectionLabel.Caption = "Connections: 0";
+            ConnectionLabel.Id = 1;
+            ConnectionLabel.Name = "ConnectionLabel";
             // 
             // ObjectLabel
             // 
-            this.ObjectLabel.Caption = "Object: 0";
-            this.ObjectLabel.Id = 2;
-            this.ObjectLabel.Name = "ObjectLabel";
+            ObjectLabel.Caption = "Object: 0";
+            ObjectLabel.Id = 2;
+            ObjectLabel.Name = "ObjectLabel";
             // 
             // ProcessLabel
             // 
-            this.ProcessLabel.Caption = "Process Count: 0";
-            this.ProcessLabel.Id = 3;
-            this.ProcessLabel.Name = "ProcessLabel";
+            ProcessLabel.Caption = "Process Count: 0";
+            ProcessLabel.Id = 3;
+            ProcessLabel.Name = "ProcessLabel";
             // 
             // LoopLabel
             // 
-            this.LoopLabel.Caption = "Loop Count: 0";
-            this.LoopLabel.Id = 4;
-            this.LoopLabel.Name = "LoopLabel";
+            LoopLabel.Caption = "Loop Count: 0";
+            LoopLabel.Id = 4;
+            LoopLabel.Name = "LoopLabel";
             // 
             // ConDelay
             // 
-            this.ConDelay.Caption = "Con Delay: 0";
-            this.ConDelay.Id = 10;
-            this.ConDelay.Name = "ConDelay";
+            ConDelay.Caption = "Con Delay: 0";
+            ConDelay.Id = 10;
+            ConDelay.Name = "ConDelay";
             // 
             // TotalDownloadLabel
             // 
-            this.TotalDownloadLabel.Caption = "Downloaded: 0B";
-            this.TotalDownloadLabel.Id = 5;
-            this.TotalDownloadLabel.Name = "TotalDownloadLabel";
+            TotalDownloadLabel.Caption = "Downloaded: 0B";
+            TotalDownloadLabel.Id = 5;
+            TotalDownloadLabel.Name = "TotalDownloadLabel";
             // 
             // TotalUploadLabel
             // 
-            this.TotalUploadLabel.Caption = "Uploaded: 0B";
-            this.TotalUploadLabel.Id = 6;
-            this.TotalUploadLabel.Name = "TotalUploadLabel";
+            TotalUploadLabel.Caption = "Uploaded: 0B";
+            TotalUploadLabel.Id = 6;
+            TotalUploadLabel.Name = "TotalUploadLabel";
             // 
             // DownloadSpeedLabel
             // 
-            this.DownloadSpeedLabel.Caption = "D/L Speed: 0Bps";
-            this.DownloadSpeedLabel.Id = 7;
-            this.DownloadSpeedLabel.Name = "DownloadSpeedLabel";
+            DownloadSpeedLabel.Caption = "D/L Speed: 0Bps";
+            DownloadSpeedLabel.Id = 7;
+            DownloadSpeedLabel.Name = "DownloadSpeedLabel";
             // 
             // UploadSpeedLabel
             // 
-            this.UploadSpeedLabel.Caption = "U/L Speed: 0Bps";
-            this.UploadSpeedLabel.Id = 8;
-            this.UploadSpeedLabel.Name = "UploadSpeedLabel";
+            UploadSpeedLabel.Caption = "U/L Speed: 0Bps";
+            UploadSpeedLabel.Id = 8;
+            UploadSpeedLabel.Name = "UploadSpeedLabel";
             // 
             // EMailsSentLabel
             // 
-            this.EMailsSentLabel.Caption = "E-Mails Sent: 0";
-            this.EMailsSentLabel.Id = 9;
-            this.EMailsSentLabel.Name = "EMailsSentLabel";
+            EMailsSentLabel.Caption = "E-Mails Sent: 0";
+            EMailsSentLabel.Id = 9;
+            EMailsSentLabel.Name = "EMailsSentLabel";
             // 
             // SaveDelay
             // 
-            this.SaveDelay.Caption = "Save Delay: 0";
-            this.SaveDelay.Id = 11;
-            this.SaveDelay.Name = "SaveDelay";
+            SaveDelay.Caption = "Save Delay: 0";
+            SaveDelay.Id = 11;
+            SaveDelay.Name = "SaveDelay";
             // 
             // barDockControlTop
             // 
-            this.barDockControlTop.CausesValidation = false;
-            this.barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.barDockControlTop.Location = new System.Drawing.Point(0, 0);
-            this.barDockControlTop.Manager = this.BManager;
-            this.barDockControlTop.Size = new System.Drawing.Size(1127, 0);
+            barDockControlTop.CausesValidation = false;
+            barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            barDockControlTop.Location = new System.Drawing.Point(0, 0);
+            barDockControlTop.Manager = BManager;
+            barDockControlTop.Size = new System.Drawing.Size(1127, 0);
             // 
             // barDockControlBottom
             // 
-            this.barDockControlBottom.CausesValidation = false;
-            this.barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.barDockControlBottom.Location = new System.Drawing.Point(0, 577);
-            this.barDockControlBottom.Manager = this.BManager;
-            this.barDockControlBottom.Size = new System.Drawing.Size(1127, 25);
+            barDockControlBottom.CausesValidation = false;
+            barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            barDockControlBottom.Location = new System.Drawing.Point(0, 577);
+            barDockControlBottom.Manager = BManager;
+            barDockControlBottom.Size = new System.Drawing.Size(1127, 25);
             // 
             // barDockControlLeft
             // 
-            this.barDockControlLeft.CausesValidation = false;
-            this.barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.barDockControlLeft.Location = new System.Drawing.Point(0, 0);
-            this.barDockControlLeft.Manager = this.BManager;
-            this.barDockControlLeft.Size = new System.Drawing.Size(0, 577);
+            barDockControlLeft.CausesValidation = false;
+            barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
+            barDockControlLeft.Location = new System.Drawing.Point(0, 0);
+            barDockControlLeft.Manager = BManager;
+            barDockControlLeft.Size = new System.Drawing.Size(0, 577);
             // 
             // barDockControlRight
             // 
-            this.barDockControlRight.CausesValidation = false;
-            this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.barDockControlRight.Location = new System.Drawing.Point(1127, 0);
-            this.barDockControlRight.Manager = this.BManager;
-            this.barDockControlRight.Size = new System.Drawing.Size(0, 577);
+            barDockControlRight.CausesValidation = false;
+            barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
+            barDockControlRight.Location = new System.Drawing.Point(1127, 0);
+            barDockControlRight.Manager = BManager;
+            barDockControlRight.Size = new System.Drawing.Size(0, 577);
             // 
             // InterfaceTimer
             // 
-            this.InterfaceTimer.Interval = 1000;
-            this.InterfaceTimer.Tick += new System.EventHandler(this.InterfaceTimer_Tick);
+            InterfaceTimer.Interval = 1000;
+            InterfaceTimer.Tick += InterfaceTimer_Tick;
             // 
             // navBarItem6
             // 
-            this.navBarItem6.Name = "navBarItem6";
+            navBarItem6.Name = "navBarItem6";
             // 
             // SMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1127, 602);
-            this.Controls.Add(this.navBarControl1);
-            this.Controls.Add(this.ribbonControl1);
-            this.Controls.Add(this.barDockControlLeft);
-            this.Controls.Add(this.barDockControlRight);
-            this.Controls.Add(this.barDockControlBottom);
-            this.Controls.Add(this.barDockControlTop);
-            this.IsMdiContainer = true;
-            this.Name = "SMain";
-            this.Ribbon = this.ribbonControl1;
-            this.Text = "Zircon Server";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.SMain_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.navBarControl1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.DManager)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tabbedView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BManager)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1127, 602);
+            Controls.Add(navBarControl1);
+            Controls.Add(ribbonControl1);
+            Controls.Add(barDockControlLeft);
+            Controls.Add(barDockControlRight);
+            Controls.Add(barDockControlBottom);
+            Controls.Add(barDockControlTop);
+            IsMdiContainer = true;
+            Name = "SMain";
+            Ribbon = ribbonControl1;
+            Text = "Zircon Server";
+            WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            Load += SMain_Load;
+            ((System.ComponentModel.ISupportInitialize)ribbonControl1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)navBarControl1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DManager).EndInit();
+            ((System.ComponentModel.ISupportInitialize)tabbedView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)BManager).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -781,7 +678,7 @@
         private DevExpress.XtraBars.BarButtonItem StartServerButton;
         private DevExpress.XtraBars.BarButtonItem StopServerButton;
         private DevExpress.XtraNavBar.NavBarItem LogNavButton;
-        private DevExpress.XtraNavBar.NavBarItem navBarItem1;
+        private DevExpress.XtraNavBar.NavBarItem ChatLogButton;
         private DevExpress.XtraBars.BarDockControl barDockControlLeft;
         private DevExpress.XtraBars.BarDockControl barDockControlRight;
         private DevExpress.XtraBars.BarDockControl barDockControlBottom;
@@ -831,14 +728,15 @@
         private DevExpress.XtraBars.BarStaticItem ConDelay;
         private DevExpress.XtraNavBar.NavBarItem DiagnosticButton;
         private DevExpress.XtraBars.BarStaticItem SaveDelay;
-        private DevExpress.XtraNavBar.NavBarItem navBarItem3;
-        private DevExpress.XtraNavBar.NavBarItem navBarItem4;
+        private DevExpress.XtraNavBar.NavBarItem ConquestStatsButton;
+        private DevExpress.XtraNavBar.NavBarItem UserMailButton;
         private DevExpress.XtraNavBar.NavBarItem WeaponCraftInfoButton;
         private DevExpress.XtraNavBar.NavBarItem CurrencyInfoButton;
         private DevExpress.XtraNavBar.NavBarItem navBarItem6;
         private DevExpress.XtraNavBar.NavBarItem FishingInfoButton;
         private DevExpress.XtraNavBar.NavBarItem DisciplineInfoButton;
-        private DevExpress.XtraNavBar.NavBarItem navBarItem5;
+        private DevExpress.XtraNavBar.NavBarItem NPCDataButton;
+        private DevExpress.XtraNavBar.NavBarItem FameInfoButton;
     }
 }
 

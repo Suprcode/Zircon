@@ -977,6 +977,17 @@ namespace Client.Scenes.Views
                     int shieldIndex = shield.Info.Image;
                     library.Draw(shieldIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                     library.Draw(shieldIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, shield.Colour, true, 1F, ImageType.Overlay);
+
+                    MirImage image = EquipEffectDecider.GetEffectImageOrNull(shield, Gender);
+                    if (image != null)
+                    {
+                        bool oldBlend = DXManager.Blending;
+                        float oldRate = DXManager.BlendRate;
+
+                        DXManager.SetBlend(true, 0.8F);
+                        PresentTexture(image.Image, InspectPanel, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                        DXManager.SetBlend(oldBlend, oldRate);
+                    }
                 }
             }
 

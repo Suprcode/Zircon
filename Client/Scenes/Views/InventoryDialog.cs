@@ -383,8 +383,6 @@ namespace Client.Scenes.Views
 
         private void PrimaryCurrencyLabel_MouseClick(object sender, MouseEventArgs e)
         {
-            DXSoundManager.Play(SoundIndex.GoldPickUp);
-
             if (GameScene.Game.SelectedCell == null)
             {
                 var userCurrency = GameScene.Game.User.GetCurrency(PrimaryCurrency);

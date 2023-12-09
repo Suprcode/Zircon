@@ -15,7 +15,7 @@ namespace Server.Views
             CurrencyInfoGridControl.DataSource = SMain.Session.GetCollection<CurrencyInfo>().Binding;
 
             CurrencyTypeImageComboBox.Items.AddEnum<CurrencyType>();
-            ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
+            ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding.Where(x => x.ItemType == ItemType.Currency);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -31,10 +31,11 @@ namespace Server.Views
             bool needSave = false;
 
             var gold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.Gold);
+            var goldItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Gold");
 
             if (gold == null)
             {
-                var goldItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Gold");
+                goldItem.ItemType = ItemType.Currency;
 
                 gold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 gold.Name = "Gold";
@@ -131,13 +132,70 @@ namespace Server.Views
                 needSave = true;
             }
 
+
+            var fp = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.FP);
+            var fpItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Fame Point");
+
+            if (fpItem == null)
+            {
+                fpItem = SMain.Session.GetCollection<ItemInfo>().CreateNewObject();
+                fpItem.ItemName = "Fame Point";
+                fpItem.ItemType = ItemType.Currency;
+                fpItem.StackSize = 25000;
+                fpItem.Image = 4010;
+                fpItem.SellRate = 0;
+                fpItem.CanDrop = false;
+            }
+
+            if (fp == null)
+            {
+                fp = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
+                fp.Name = "Fame Point";
+                fp.Abbreviation = "FP";
+                fp.Type = CurrencyType.FP;
+                fp.DropItem = fpItem;
+                needSave = true;
+            }
+
+            var cp = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.CP);
+            var cpItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Contribution Point");
+
+            if (cpItem == null)
+            {
+                cpItem = SMain.Session.GetCollection<ItemInfo>().CreateNewObject();
+                cpItem.ItemName = "Contribution Point";
+                cpItem.ItemType = ItemType.Currency;
+                cpItem.StackSize = 25000;
+                cpItem.Image = 4012;
+                cpItem.CanDrop = false;
+            }
+
+            if (cp == null)
+            {
+                cp = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
+                cp.Name = "Contribution Point";
+                cp.Abbreviation = "CP";
+                cp.Type = CurrencyType.CP;
+                cp.DropItem = cpItem;
+                needSave = true;
+            }
+
+            //Make sure all the items used are currency items
+            foreach (var currency in SMain.Session.GetCollection<CurrencyInfo>().Binding)
+            {
+                if (currency.DropItem != null)
+                {
+                    currency.DropItem.ItemType = ItemType.Currency;
+                }
+            }
+
             if (needSave)
             {
                 SMain.Session.Save(true);
             }
         }
 
-        private void SavingButton_ItemClick(object sender, ItemClickEventArgs e)
+        private void SaveDatabaseButton_ItemClick(object sender, ItemClickEventArgs e)
         {
             SMain.Session.Save(true);
         }
