@@ -3858,7 +3858,8 @@ namespace Client.Scenes
         public void MarriageChanged()
         {
             CharacterBox.MarriageIcon.Visible = !string.IsNullOrEmpty(Partner?.Name);
-            CharacterBox.MarriageIcon.Hint = Partner?.Name;
+            CharacterBox.MarriageLabel.Visible = !string.IsNullOrEmpty(Partner?.Name);
+            CharacterBox.MarriageLabel.Text = Partner?.Name;
         }
 
         public void ReceiveChat(string message, MessageType type, List<ClientUserItem> linkedItems = null)

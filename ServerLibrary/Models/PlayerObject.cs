@@ -5339,7 +5339,7 @@ namespace Server.Models
             switch (item.Info.ItemType)
             {
                 case ItemType.Consumable:
-                    if ((SEnvir.Now < UseItemTime && item.Info.ItemEffect != ItemEffect.ElixirOfPurification) || Horse != HorseType.None) return;
+                    if ((SEnvir.Now < UseItemTime && item.Info.ItemEffect != ItemEffect.ElixirOfPurification)) return;
 
                     bool work;
                     bool hasSpace;
@@ -5846,6 +5846,7 @@ namespace Server.Models
                             }
                             break;
                         case 19:
+                            if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
                             if (weapon == null)
@@ -5919,6 +5920,7 @@ namespace Server.Models
 
                             break;
                         case 20:
+                            if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
                             if (weapon == null)
@@ -5968,6 +5970,7 @@ namespace Server.Models
                             RefreshStats();
                             break;
                         case 21:
+                            if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
                             if (weapon == null)
@@ -6045,6 +6048,7 @@ namespace Server.Models
 
                             break;
                         case 22:
+                            if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
                             if (weapon == null)
@@ -6100,7 +6104,7 @@ namespace Server.Models
                     break;
                 case ItemType.CompanionFood:
                     if (Companion == null) return;
-                    if (SEnvir.Now < UseItemTime || Horse != HorseType.None) return;
+                    if (SEnvir.Now < UseItemTime) return;
 
                     if (Companion.UserCompanion.Hunger >= Companion.LevelInfo.MaxHunger) return;
 

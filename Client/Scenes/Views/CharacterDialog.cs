@@ -35,6 +35,7 @@ namespace Client.Scenes.Views
         public Dictionary<MagicInfo, DisciplineMagicCell> DisciplineMagics = new Dictionary<MagicInfo, DisciplineMagicCell>();
 
         public DXImageControl MarriageIcon;
+        public DXLabel MarriageLabel;
 
         public DXButton CloseButton;
 
@@ -320,7 +321,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Size = new Size(137, 68),
-                Location = new Point((CharacterTab.Size.Width - 135) / 2, 51)
+                Location = new Point(((CharacterTab.Size.Width - 135) / 2) - 5, 51)
             };
             CharacterNameLabel = new DXLabel
             {
@@ -360,6 +361,16 @@ namespace Client.Scenes.Views
                 Index = 1298,
                 Location = new Point(2, namePanel.Size.Height - 14),
                 Visible = false,
+            };
+            MarriageLabel = new DXLabel
+            {
+                AutoSize = false,
+                Parent = namePanel,
+                Size = new Size(115, 16),
+                ForeColour = Color.Pink,
+                Location = new Point(21, namePanel.Size.Height - 17),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Visible = false
             };
 
             TabControl.SelectedTab = CharacterTab;
@@ -2647,7 +2658,8 @@ namespace Client.Scenes.Views
             _inspectFame = p.Fame;
 
             MarriageIcon.Visible = !string.IsNullOrEmpty(p.Partner);
-            MarriageIcon.Hint = p.Partner;
+            MarriageLabel.Visible = !string.IsNullOrEmpty(p.Partner);
+            MarriageLabel.Text = p.Partner;
 
             _inspectHairColour = p.HairColour;
             _inspectHairType = p.Hair;
@@ -2836,6 +2848,15 @@ namespace Client.Scenes.Views
 
                     MarriageIcon = null;
                 }
+
+                if (MarriageLabel != null)
+                {
+                    if (!MarriageLabel.IsDisposed)
+                        MarriageLabel.Dispose();
+
+                    MarriageLabel = null;
+                }
+
 
                 if (StatsAttackTab != null)
                 {

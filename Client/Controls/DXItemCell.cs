@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using Client.Envir;
+﻿using Client.Envir;
 using Client.Models;
 using Client.Scenes;
 using Client.Scenes.Views;
@@ -10,6 +6,10 @@ using Client.UserModels;
 using Library;
 using Library.SystemModels;
 using SlimDX;
+using System;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Controls
@@ -1538,11 +1538,13 @@ namespace Client.Controls
                 case ItemType.Scroll:
                 case ItemType.CompanionFood:
                 case ItemType.ItemPart:
-                    if (!GameScene.Game.CanUseItem(Item) || 
-                        GridType != GridType.Inventory && GridType != GridType.PartsStorage && GridType != GridType.CompanionEquipment && GridType != GridType.CompanionInventory) return false;
+                    if (!GameScene.Game.CanUseItem(Item)) return false;
 
-                    if ((CEnvir.Now < GameScene.Game.UseItemTime && Item.Info.ItemEffect != ItemEffect.ElixirOfPurification) || MapObject.User.Horse != HorseType.None) return false;
+                    if (GridType != GridType.Inventory && GridType != GridType.PartsStorage && GridType != GridType.CompanionEquipment && GridType != GridType.CompanionInventory) return false;
+                        
+                    if ((Item.Info.Shape == 19 || Item.Info.Shape == 20 || Item.Info.Shape == 21 || Item.Info.Shape == 22) && MapObject.User.Horse != HorseType.None) return false;
 
+                    if ((CEnvir.Now < GameScene.Game.UseItemTime && Item.Info.ItemEffect != ItemEffect.ElixirOfPurification)) return false;
 
                     GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(Math.Max(250, Item.Info.Durability));
                     

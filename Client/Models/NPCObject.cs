@@ -102,7 +102,7 @@ namespace Client.Models
         {
             if (BodyLibrary == null) return;
             
-            DXManager.SetBlend(true, 0.60F, BlendMode.HIGHLIGHT);
+            DXManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
             DrawBody();
             DXManager.SetBlend(false);
         }

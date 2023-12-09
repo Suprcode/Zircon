@@ -2355,10 +2355,10 @@ namespace Client.Models
                 case MonsterImage.ChestnutTree:
                     y -= MapControl.CellHeight;
                     break;
-                    case MonsterImage.JinamStoneGate:
+                case MonsterImage.JinamStoneGate:
                     return;
             }
-            DXManager.SetBlend(true, 0.60F, BlendMode.HIGHLIGHT);
+            DXManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
             DrawBody(DrawX, y);
             DXManager.SetBlend(false);
         }
