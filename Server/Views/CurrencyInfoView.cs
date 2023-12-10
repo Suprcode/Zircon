@@ -33,10 +33,19 @@ namespace Server.Views
             var gold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.Gold);
             var goldItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Gold");
 
+            if (goldItem == null)
+            {
+                goldItem = SMain.Session.GetCollection<ItemInfo>().CreateNewObject();
+                goldItem.ItemName = "Gold";
+                goldItem.ItemType = ItemType.Currency;
+                goldItem.StackSize = 25000;
+                goldItem.Image = 121;
+                goldItem.SellRate = 0;
+                goldItem.CanDrop = true;
+            }
+
             if (gold == null)
             {
-                goldItem.ItemType = ItemType.Currency;
-
                 gold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 gold.Name = "Gold";
                 gold.Type = CurrencyType.Gold;
@@ -46,6 +55,7 @@ namespace Server.Views
                 {
                     gold.DropItem = goldItem;
                     goldItem.ItemEffect = ItemEffect.None;
+                    goldItem.ItemType = ItemType.Currency;
                 }
             }
 

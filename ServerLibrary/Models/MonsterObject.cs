@@ -609,7 +609,7 @@ namespace Server.Models
                 case 128:
                     return new Doll { MonsterInfo = monsterInfo };
                 case 129:
-                    return new Monsters.Tornado { MonsterInfo = monsterInfo};
+                    return new Monsters.Tornado { MonsterInfo = monsterInfo, Passive = true };
                 case 130:
                     return new UndeadSoul() { MonsterInfo = monsterInfo };
 

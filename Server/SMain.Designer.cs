@@ -54,8 +54,8 @@
             CurrencyInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             navBarGroup5 = new DevExpress.XtraNavBar.NavBarGroup();
             MapInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            MapRegionButton = new DevExpress.XtraNavBar.NavBarItem();
             InstanceInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            MapRegionButton = new DevExpress.XtraNavBar.NavBarItem();
             MovementInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             SafeZoneInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             FishingInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -240,7 +240,7 @@
             navBarGroup4.Expanded = true;
             navBarGroup4.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup4.ImageOptions.LargeImage");
             navBarGroup4.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup4.ImageOptions.SmallImage");
-            navBarGroup4.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(BaseStatButton), new DevExpress.XtraNavBar.NavBarItemLink(FameInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(DisciplineInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CompanionInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MagicInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CurrencyInfoButton) });
+            navBarGroup4.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(BaseStatButton), new DevExpress.XtraNavBar.NavBarItemLink(MagicInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(FameInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(DisciplineInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CompanionInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CurrencyInfoButton) });
             navBarGroup4.Name = "navBarGroup4";
             // 
             // BaseStatButton
@@ -303,19 +303,19 @@
             MapInfoButton.Name = "MapInfoButton";
             MapInfoButton.LinkClicked += MapInfoButton_LinkClicked;
             // 
-            // MapRegionButton
-            // 
-            MapRegionButton.Caption = "Map Region";
-            MapRegionButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MapRegionButton.ImageOptions.SmallImage");
-            MapRegionButton.Name = "MapRegionButton";
-            MapRegionButton.LinkClicked += MapRegionButton_LinkClicked;
-            // 
             // InstanceInfoButton
             // 
             InstanceInfoButton.Caption = "Instance Info";
             InstanceInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("InstanceInfoButton.ImageOptions.SmallImage");
             InstanceInfoButton.Name = "InstanceInfoButton";
             InstanceInfoButton.LinkClicked += InstanceInfoButton_LinkClicked;
+            // 
+            // MapRegionButton
+            // 
+            MapRegionButton.Caption = "Map Region";
+            MapRegionButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MapRegionButton.ImageOptions.SmallImage");
+            MapRegionButton.Name = "MapRegionButton";
+            MapRegionButton.LinkClicked += MapRegionButton_LinkClicked;
             // 
             // MovementInfoButton
             // 
