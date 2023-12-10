@@ -372,16 +372,6 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Visible = false
             };
-            MarriageLabel = new DXLabel
-            {
-                AutoSize = false,
-                Parent = namePanel,
-                Size = new Size(115, 16),
-                ForeColour = Color.Pink,
-                Location = new Point(21, namePanel.Size.Height - 17),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                Visible = false
-            };
 
             TabControl.SelectedTab = CharacterTab;
 

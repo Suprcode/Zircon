@@ -54,7 +54,7 @@ namespace Client.Scenes.Views.Character
                     break;
                 case 7:
                     startIndex = 1990;
-                    animationCount = 10;
+                    animationCount = 12;
                     x = -17; y = -15;
                     break;
                 case 8:
