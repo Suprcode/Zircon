@@ -535,6 +535,13 @@ namespace Library.Network.ServerPackets
         public bool Success { get; set; }
     }
 
+    public sealed class ItemSort : Packet
+    {
+        public GridType Grid { get; set; }
+        public List<ClientUserItem> Items { get; set; }
+        public bool Success { get; set; }
+    }
+
     public sealed class ItemSplit : Packet
     {
         public GridType Grid { get; set; }
@@ -542,6 +549,13 @@ namespace Library.Network.ServerPackets
         public long Count { get; set; }
         public int NewSlot { get; set; }
 
+        public bool Success { get; set; }
+    }
+
+    public sealed class ItemDelete : Packet
+    {
+        public GridType Grid { get; set; }
+        public int Slot { get; set; }
         public bool Success { get; set; }
     }
 

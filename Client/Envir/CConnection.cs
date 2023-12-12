@@ -1886,8 +1886,6 @@ namespace Client.Envir
 
         public void Process(S.ItemsGained p)
         {
-
-
             foreach (ClientUserItem item in p.Items)
             {
                 ItemInfo displayInfo = item.Info;
@@ -2185,6 +2183,8 @@ namespace Client.Envir
 
                 fromCell.RefreshItem();
             }
+
+            DXItemCell.SelectedCell = null;
         }
 
         public void Process(S.ItemStatsChanged p)
@@ -2325,8 +2325,6 @@ namespace Client.Envir
         }
         public void Process(S.ItemSplit p)
         {
-
-
             DXItemCell fromCell;
 
             switch (p.Grid)
@@ -2392,9 +2390,8 @@ namespace Client.Envir
                 fromCell.Item.Count -= p.Count;
 
             fromCell.RefreshItem();
-
-
         }
+
         public void Process(S.ItemLock p)
         {
             DXItemCell cell;
@@ -2434,6 +2431,61 @@ namespace Client.Envir
 
             cell.RefreshItem();
         }
+        public void Process(S.ItemSort p)
+        {
+            DXItemCell[] grid;
+
+            switch (p.Grid)
+            {
+                case GridType.Inventory:
+                    grid = GameScene.Game.InventoryBox.Grid.Grid;
+                    break;
+                case GridType.Storage:
+                    grid = GameScene.Game.StorageBox.Grid.Grid;
+                    break;
+                case GridType.PartsStorage:
+                    grid = GameScene.Game.StorageBox.PartGrid.Grid;
+                    break;
+                default:
+                    return;
+            }
+
+            for (int i = 0; i < grid.Length; i++)
+            {
+                grid[i].Locked = false;
+                grid[i].Selected = false;
+                grid[i].Item = null;
+            }
+
+            foreach (var item in p.Items)
+            {
+                grid[item.Slot].Item = item;
+            }
+        }
+
+        public void Process(S.ItemDelete p)
+        {
+            DXItemCell cell;
+
+            switch (p.Grid)
+            {
+                case GridType.Inventory:
+                    cell = GameScene.Game.InventoryBox.Grid.Grid[p.Slot];
+                    break;
+                default:
+                    return;
+            }
+
+            cell.Locked = false;
+            cell.Selected = false;
+            DXItemCell.SelectedCell = null;
+
+            if (!p.Success) return;
+
+            cell.Item = null;
+            cell.RefreshItem();
+        }
+
         public void Process(S.ItemExperience p)
         {
             DXItemCell cell;
@@ -2469,8 +2521,6 @@ namespace Client.Envir
 
             cell.RefreshItem();
         }
-
-
 
         public void Process(S.Chat p)
         {

@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Envir;
+using Client.Models;
+using Client.UserModels;
+using Library;
+using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Library;
-using Library.SystemModels;
-using Client.Controls;
-using Client.Envir;
-using Client.Models;
-using Client.UserModels;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskBand;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -307,9 +308,9 @@ namespace Client.Scenes.Views
                 Index = 364,
                 Parent = this,
                 Location = new Point(180, 384),
-                Hint = CEnvir.Language.InventoryDialogSortButtonHint,
-                Enabled = false
+                Hint = CEnvir.Language.InventoryDialogSortButtonHint
             };
+            SortButton.MouseClick += SortButton_MouseClick;
 
             TrashButton = new DXButton
             {
@@ -317,9 +318,9 @@ namespace Client.Scenes.Views
                 Index = 358,
                 Parent = this,
                 Location = new Point(218, 384),
-                Hint = CEnvir.Language.InventoryDialogTrashButtonHint,
-                Enabled = false
+                Hint = CEnvir.Language.InventoryDialogTrashButtonHint
             };
+            TrashButton.MouseClick += TrashButton_MouseClick;
 
             SellButton = new DXButton
             {
@@ -344,14 +345,48 @@ namespace Client.Scenes.Views
             WalletLabel.MouseClick += WalletLabel_MouseClick;
         }
 
+        private void SortButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (GameScene.Game.Observer) return;
+
+            C.ItemSort packet = new C.ItemSort { Grid = GridType.Inventory };
+
+            CEnvir.Enqueue(packet);
+        }
+
+        private void TrashButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (GameScene.Game.Observer) return;
+
+            var cell = DXItemCell.SelectedCell;
+
+            if (cell == null || cell.Item == null) return;
+            if ((cell.Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
+            if ((cell.Item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
+            if ((cell.Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
+
+            if (cell.GridType != GridType.Inventory) return;
+
+            cell.Locked = true;
+
+            C.ItemDelete packet = new C.ItemDelete { Grid = cell.GridType, Slot = cell.Slot };
+
+            CEnvir.Enqueue(packet);
+        }
+
         private void Cell_SelectedChanged(object sender, EventArgs e)
         {
+            var cell = sender as DXItemCell;
+
             if (InvMode == InventoryMode.Sell)
             {
-                var cell = sender as DXItemCell;
-
                 if (cell.Selected)
-                    SelectedItems.Add(cell);
+                {
+                    if (cell.Item != null && (cell.Item.Flags & UserItemFlags.Locked) != UserItemFlags.Locked)
+                    {
+                        SelectedItems.Add(cell);
+                    }
+                }
                 else
                     SelectedItems.Remove(cell);
 
@@ -373,10 +408,18 @@ namespace Client.Scenes.Views
         {
             if (GameScene.Game.Observer) return;
 
-            List<CellLinkInfo> links = new ();
+            var cell = DXItemCell.SelectedCell;
+
+            if (cell != null && cell.Item != null && (cell.Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
+
+            List<CellLinkInfo> links = new();
 
             foreach (DXItemCell itemCell in SelectedItems)
+            {
+                if ((itemCell.Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) continue;
+
                 links.Add(new CellLinkInfo { Count = itemCell.Item.Count, GridType = GridType.Inventory, Slot = itemCell.Slot });
+            }
 
             CEnvir.Enqueue(new C.NPCSell { Links = links });
         }
