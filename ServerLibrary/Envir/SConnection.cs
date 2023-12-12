@@ -466,6 +466,18 @@ namespace Server.Envir
 
             Player.ItemMove(p);
         }
+        public void Process(C.ItemSort p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.ItemSort(p);
+        }
+        public void Process(C.ItemDelete p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.ItemDelete(p);
+        }
         public void Process(C.ItemDrop p)
         {
             if (Stage != GameStage.Game) return;

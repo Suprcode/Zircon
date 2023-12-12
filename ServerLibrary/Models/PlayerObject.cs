@@ -5238,7 +5238,6 @@ namespace Server.Models
                         if ((oldItem.Flags & UserItemFlags.NonRefinable) != (item.Flags & UserItemFlags.NonRefinable)) continue;
                         if (!oldItem.Stats.Compare(item.Stats)) continue;
 
-
                         if (oldItem.Count + item.Count <= item.Info.StackSize)
                         {
                             oldItem.Count += item.Count;
@@ -6415,7 +6414,6 @@ namespace Server.Models
 
             Enqueue(result);
 
-
             if (Dead || (p.FromGrid == p.ToGrid && p.FromSlot == p.ToSlot)) return;
 
             UserItem[] fromArray, toArray;
@@ -6494,7 +6492,6 @@ namespace Server.Models
 
             if (fromItem == null) return;
             if ((fromItem.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
-
 
             switch (p.ToGrid)
             {
@@ -6621,7 +6618,6 @@ namespace Server.Models
 
                 switch (fromItem.Info.ItemType)
                 {
-
                     case ItemType.Poison:
                     case ItemType.Amulet:
                         if (p.MergeItem) break;
@@ -6656,6 +6652,7 @@ namespace Server.Models
                     return;
                 }
             }
+
             if (p.FromGrid == GridType.CompanionInventory && p.ToGrid != GridType.CompanionInventory && toItem != null && !p.MergeItem)
             {
                 int weight = toItem.Weight;
@@ -6671,8 +6668,6 @@ namespace Server.Models
                     return;
                 }
             }
-
-
 
             Packet guildpacket;
             if (p.MergeItem)
@@ -6695,7 +6690,6 @@ namespace Server.Models
 
                     toCount = toItem.Count;
                     fromCount = 0;
-
                 }
                 else
                 {
@@ -6782,7 +6776,7 @@ namespace Server.Models
 
             if (p.ToGrid == GridType.GuildStorage)
             {
-                if (toItem != null && p.FromGrid != GridType.GuildStorage) //This should force us to me merging stacks OR empty item?
+                if (toItem != null && p.FromGrid != GridType.GuildStorage) //This should force us to merging stacks OR empty item?
                     return;
 
                 if (!fromItem.Info.CanTrade || (fromItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
@@ -6790,12 +6784,9 @@ namespace Server.Models
 
             if (p.FromGrid == GridType.GuildStorage)
             {
-                if (toItem != null && p.ToGrid != GridType.GuildStorage) //This should force us to me merging stacks OR empty item?
+                if (toItem != null && p.ToGrid != GridType.GuildStorage) //This should force us to merging stacks OR empty item?
                     return;
             }
-
-
-
 
             fromArray[p.FromSlot] = toItem;
             toArray[p.ToSlot] = fromItem;
@@ -6889,7 +6880,6 @@ namespace Server.Models
                     break;
             }
 
-
             switch (p.ToGrid)
             {
                 case GridType.Inventory:
@@ -6953,7 +6943,6 @@ namespace Server.Models
                     break;
             }
 
-
             result.Success = true;
 
             RefreshStats();
@@ -6967,7 +6956,165 @@ namespace Server.Models
                 Companion.RefreshStats();
             }
         }
+        public void ItemSort(C.ItemSort p)
+        {
+            if (Dead) return;
 
+            UserItem[] array;
+
+            switch (p.Grid)
+            {
+                case GridType.Inventory:
+                    array = Inventory;
+                    break;
+                case GridType.Storage:
+                    array = Storage;
+                    break;
+                case GridType.PartsStorage:
+                    array = PartsStorage;
+                    break;
+                default:
+                    return;
+            }
+
+            int length = array.Length;
+
+            if (p.Grid == GridType.Storage)
+                length = Math.Min(array.Length, Character.Account.StorageSize);
+
+            List<UserItem> items = new();
+
+            for (int i = 0; i < length; i++)
+            {
+                var item = array[i];
+
+                if (item == null) continue;
+
+                items.Add(item);
+
+                if (item.Info.StackSize <= 1) continue;
+                if (item.Count == item.Info.StackSize) continue; 
+
+                var count = item.Count;
+
+                for (int j = i + 1; j < length; j++)
+                {
+                    var otherItem = array[j];
+
+                    if (otherItem == null) continue;
+
+                    if (item.Info != otherItem.Info) continue;
+                    if (item.ExpireTime != otherItem.ExpireTime) continue;
+
+                    if ((item.Flags & UserItemFlags.Expirable) != (otherItem.Flags & UserItemFlags.Expirable)) continue;
+                    if ((item.Flags & UserItemFlags.Bound) != (otherItem.Flags & UserItemFlags.Bound)) continue;
+                    if ((item.Flags & UserItemFlags.Worthless) != (otherItem.Flags & UserItemFlags.Worthless)) continue;
+                    if ((item.Flags & UserItemFlags.NonRefinable) != (otherItem.Flags & UserItemFlags.NonRefinable)) continue;
+                    if (!item.Stats.Compare(otherItem.Stats)) continue;
+
+                    count += otherItem.Count;
+
+                    array[j] = null;
+                    otherItem.Delete();
+                }
+
+                item.Count = count;
+            }
+
+            var sorted = items
+                .OrderBy(item => item?.Info.ItemType)
+                .ThenBy(item => item?.Info.ItemName)
+                .ThenBy(item => item?.Count)
+                .ToArray();
+
+            for (int i = 0; i < length; i++)
+            {
+                array[i] = null;
+            }
+
+            int slot = 0;
+
+            for (int i = 0; i < sorted.Length; i++)
+            {
+                var item = sorted[i];
+
+                while (item.Count > item.Info.StackSize)
+                {
+                    UserItem newItem = SEnvir.CreateFreshItem(item);
+                    newItem.Count = item.Info.StackSize;
+
+                    item.Count -= item.Info.StackSize;
+
+                    array[slot] = newItem;
+                    newItem.Slot = slot;
+
+                    switch (p.Grid)
+                    {
+                        case GridType.Inventory:
+                            newItem.Character = Character;
+                            break;
+                        case GridType.PartsStorage:
+                            newItem.Account = Character.Account;
+                            break;
+                        case GridType.Storage:
+                            newItem.Account = Character.Account;
+                            break;
+                    }
+
+                    slot++;
+                }
+
+                array[slot] = item;
+                item.Slot = slot;
+
+                slot++;
+            }
+
+            S.ItemSort result = new()
+            {
+                Grid = p.Grid,
+                Items = array.Where(x => x != null).Select(x => x.ToClientInfo()).ToList(),
+                Success = true
+            };
+
+            Enqueue(result);
+        }
+        public void ItemDelete(C.ItemDelete p)
+        {
+            S.ItemDelete result = new S.ItemDelete
+            {
+                Grid = p.Grid,
+                Slot = p.Slot
+            };
+
+            Enqueue(result);
+
+            if (Dead) return;
+
+            UserItem[] array;
+
+            switch (p.Grid)
+            {
+                case GridType.Inventory:
+                    array = Inventory;
+                    break;
+                default:
+                    return;
+            }
+
+            if (p.Slot < 0 || p.Slot >= array.Length) return;
+
+            UserItem item = array[p.Slot];
+
+            if (item == null) return;
+            if ((item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
+            if ((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
+            if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
+
+            RemoveItem(item);
+            array[p.Slot] = null;
+            result.Success = true;
+        }
         public long GetItemCount(ItemInfo info)
         {
             long count = 0;
@@ -7044,7 +7191,6 @@ namespace Server.Models
 
             throw new Exception(string.Format("Unable to Take {0}x{1} from {2}", info.ItemName, count, Name));
         }
-
         public void ItemLock(C.ItemLock p)
         {
             UserItem[] itemArray;
@@ -7154,6 +7300,9 @@ namespace Server.Models
 
             if (p.Grid == GridType.Storage)
                 length = Math.Min(array.Length, Character.Account.StorageSize);
+
+            if (p.Grid == GridType.GuildStorage)
+                length = Math.Min(array.Length, Character.Account.GuildMember.Guild.StorageSize);
 
             for (int i = 0; i < length; i++)
             {
@@ -7374,8 +7523,8 @@ namespace Server.Models
             bLink.Slot = p.Slot;
             bLink.LinkInfoIndex = p.LinkIndex;
             bLink.LinkItemIndex = p.LinkItemIndex;
-
         }
+
         public void AutoPotionLinkChanged(C.AutoPotionLinkChanged p)
         {
             if (p.Slot < 0 || p.Slot >= Globals.MaxAutoPotionCount) return;
@@ -8843,7 +8992,6 @@ namespace Server.Models
                     if ((check.Flags & UserItemFlags.Bound) != (item.Flags & UserItemFlags.Bound)) continue;
                     if ((check.Flags & UserItemFlags.Worthless) != (item.Flags & UserItemFlags.Worthless)) continue;
                     if ((check.Flags & UserItemFlags.NonRefinable) != (item.Flags & UserItemFlags.NonRefinable)) continue;
-
 
                     check.Count += pair.Value.Count;
                     handled = true;

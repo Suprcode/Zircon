@@ -144,6 +144,17 @@ namespace Library.Network.ClientPackets
         public bool MergeItem { get; set; }
     }
 
+    public sealed class ItemSort : Packet
+    {
+        public GridType Grid { get; set; }
+    }
+
+    public sealed class ItemDelete : Packet
+    {
+        public GridType Grid { get; set; }
+        public int Slot { get; set; }
+    }
+
     public sealed class ItemSplit : Packet 
     {
         public GridType Grid { get; set; }
@@ -154,6 +165,7 @@ namespace Library.Network.ClientPackets
     public sealed class ItemDrop : Packet
     {
         public CellLinkInfo Link { get; set; }
+        public int Slot { get; set; }
     }
 
     public sealed class CurrencyDrop : Packet
