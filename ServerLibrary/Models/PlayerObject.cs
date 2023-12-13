@@ -2572,10 +2572,9 @@ namespace Server.Models
 
             Map destMap = SEnvir.GetMap(destInfo, CurrentMap.Instance, CurrentMap.InstanceSequence);
 
-            if (destMap == null)
-            {
-                return;
-            }
+            if (destMap == null) return;
+
+            if (location.X < 0 || location.Y < 0 || location.X > destMap.Width || location.Y > destMap.Height) return;
 
             if (!Teleport(destMap, destMap.GetRandomLocation(location, 10, 25))) return;
 
