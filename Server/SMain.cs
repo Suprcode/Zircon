@@ -82,25 +82,6 @@ namespace Server
                 Assembly.GetAssembly(typeof(AccountInfo)) // returns assembly ServerLibrary
             );
 
-
-            /*
-                        MapInfoList = Session.GetCollection<MapInfo>();
-                        MovementInfoList = Session.GetCollection<MovementInfo>();
-                        GuardInfoList = Session.GetCollection<GuardInfo>();
-                        SafeZoneInfoList = Session.GetCollection<SafeZoneInfo>();
-                        RespawnInfoList = Session.GetCollection<RespawnInfo>();
-                        ItemInfoList = Session.GetCollection<ItemInfo>();
-                        ItemInfoStatList = Session.GetCollection<ItemInfoStat>();
-
-                        MonsterInfoList = Session.GetCollection<MonsterInfo>();
-                        NPCInfoList = Session.GetCollection<NPCInfo>();
-                        NPCPageList = Session.GetCollection<NPCPage>();
-                        MagicInfoList = Session.GetCollection<MagicInfo>();
-                        SetInfoList = Session.GetCollection<SetInfo>();
-                        StoreInfoList = Session.GetCollection<StoreInfo>();
-                        BaseStatList = Session.GetCollection<BaseStat>();
-                        MapRegionList = Session.GetCollection<MapRegion>();*/
-
             CurrencyInfoView.AddDefaultCurrencies();
 
             UpdateInterface();

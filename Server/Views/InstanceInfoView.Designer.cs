@@ -44,6 +44,7 @@
             gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn17 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn18 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -66,7 +67,7 @@
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            gridColumn18 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn19 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)InstanceMapGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapInfoLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InstanceInfoGridControl).BeginInit();
@@ -81,7 +82,7 @@
             // 
             // InstanceMapGridView
             // 
-            InstanceMapGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn2 });
+            InstanceMapGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn2, gridColumn19 });
             InstanceMapGridView.GridControl = InstanceInfoGridControl;
             InstanceMapGridView.Name = "InstanceMapGridView";
             InstanceMapGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -203,6 +204,14 @@
             gridColumn17.Name = "gridColumn17";
             gridColumn17.Visible = true;
             gridColumn17.VisibleIndex = 5;
+            // 
+            // gridColumn18
+            // 
+            gridColumn18.Caption = "Save Place";
+            gridColumn18.FieldName = "SavePlace";
+            gridColumn18.Name = "gridColumn18";
+            gridColumn18.Visible = true;
+            gridColumn18.VisibleIndex = 6;
             // 
             // gridColumn3
             // 
@@ -388,13 +397,12 @@
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
             // 
-            // gridColumn18
+            // gridColumn19
             // 
-            gridColumn18.Caption = "Save Place";
-            gridColumn18.FieldName = "SavePlace";
-            gridColumn18.Name = "gridColumn18";
-            gridColumn18.Visible = true;
-            gridColumn18.VisibleIndex = 6;
+            gridColumn19.FieldName = "RespawnIndex";
+            gridColumn19.Name = "gridColumn19";
+            gridColumn19.Visible = true;
+            gridColumn19.VisibleIndex = 1;
             // 
             // InstanceInfoView
             // 
@@ -458,5 +466,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn16;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn17;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn18;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn19;
     }
 }
