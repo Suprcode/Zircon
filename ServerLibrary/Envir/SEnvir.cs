@@ -3641,7 +3641,7 @@ namespace Server.Envir
 
             for (int i = 0; i < instance.Maps.Count; i++)
             {
-                mapInstance[instanceSequence][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, instanceSequence);
+                mapInstance[instanceSequence][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, instanceSequence, instance.Maps[i].RespawnIndex);
             }
 
             Parallel.ForEach(mapInstance[instanceSequence], x => x.Value.Load());

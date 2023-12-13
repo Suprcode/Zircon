@@ -337,6 +337,21 @@ namespace Library.SystemModels
             }
         }
         private MapInfo _Map;
+
+        public int RespawnIndex
+        {
+            get { return _RespawnIndex; }
+            set
+            {
+                if (_RespawnIndex == value) return;
+
+                var oldValue = _RespawnIndex;
+                _RespawnIndex = value;
+
+                OnChanged(oldValue, value, "RespawnIndex");
+            }
+        }
+        private int _RespawnIndex;
     }
 
     public sealed class InstanceInfoStat : DBObject
