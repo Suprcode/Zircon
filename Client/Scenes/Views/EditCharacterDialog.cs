@@ -604,7 +604,6 @@ namespace Client.Scenes.Views
         }
         private void PreviewPanel_AfterDraw(object sender, EventArgs e)
         {
-            //scaling shit
             DXControl panel = (DXControl)sender;
             MirLibrary lib;
 

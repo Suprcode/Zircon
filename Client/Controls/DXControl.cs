@@ -1644,7 +1644,31 @@ namespace Client.Controls
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
 
-        public static void PresentTexture(Texture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f)
+        public static void PresentTexture(Texture texture, Size imageSize, Point point, Size drawSize, bool lockAspectRatio = false)
+        {
+            float scaleX = (float)drawSize.Width / imageSize.Width;
+            float scaleY = (float)drawSize.Height / imageSize.Height;
+
+            if (lockAspectRatio)
+            {
+                if (scaleY > scaleX)
+                    scaleY = scaleX;
+                else
+                    scaleX = scaleY;
+            }
+
+            Rectangle sourceRect = new Rectangle(0, 0, imageSize.Width, imageSize.Height);
+            Vector3 position = new Vector3((float)point.X / scaleX, (float)point.Y / scaleY, 0.0F);
+
+            Matrix matrix = Matrix.Scaling(scaleX, scaleY, 0);
+            DXManager.Sprite.Transform = matrix;
+
+            DXManager.Sprite.Draw(texture, sourceRect, Vector3.Zero, position, Color.White);
+
+            DXManager.Sprite.Transform = Matrix.Identity;
+        }
+
+        public static void PresentTexture(Texture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0)
         {
             Rectangle bounds = ActiveScene.DisplayArea;
             Rectangle textureArea = Rectangle.Intersect(bounds, displayArea);
@@ -1678,14 +1702,7 @@ namespace Client.Controls
             float fX = displayArea.X + textureArea.Location.X + offX;
             float fY = displayArea.Y + textureArea.Location.Y + offY;
 
-            fX /= scale;
-            fY /= scale;
-
-            DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
-
             DXManager.Sprite.Draw(texture, textureArea, Vector3.Zero, new Vector3(fX, fY, 0), colour);
-
-            DXManager.Sprite.Transform = Matrix.Identity;
         }
 
         #endregion

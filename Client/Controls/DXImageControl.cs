@@ -109,33 +109,6 @@ namespace Client.Controls
 
         #endregion
 
-
-        #region Scale
-
-        public float Scale
-        {
-            get => _Scale;
-            set
-            {
-                if (_Scale == value) return;
-
-                float oldValue = _Scale;
-                _Scale = value;
-
-                OnScaleChanged(oldValue, value);
-            }
-        }
-        private float _Scale = 1.0f;
-        public event EventHandler<EventArgs> ScaleChanged;
-        public virtual void OnScaleChanged(float oValue, float nValue)
-        {
-            TextureValid = false;
-            ScaleChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
-
         #region ImageOpacity
 
         public float ImageOpacity
@@ -310,7 +283,7 @@ namespace Client.Controls
             else
                 DXManager.SetOpacity(ImageOpacity);
 
-            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, Scale);
+            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0);
 
             if (Blend)
                 DXManager.SetBlend(oldBlend, oldRate, BlendMode);
