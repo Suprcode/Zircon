@@ -8,7 +8,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -58,6 +57,11 @@ namespace Client.Scenes.Views
                 foreach (var item in History)
                 {
                     item.Label.Opacity = chatFade;
+                }
+
+                foreach (var label in ItemLabels)
+                {
+                    label.Opacity = chatFade;
                 }
             }
         }
@@ -181,6 +185,11 @@ namespace Client.Scenes.Views
                     item.Label.Opacity = chatFade;
                 }
 
+                foreach (var label in ItemLabels)
+                {
+                    label.Opacity = chatFade;
+                }
+
                 nextFadeCheck = CEnvir.Now.AddMilliseconds(100);
                 return;
             }
@@ -257,36 +266,45 @@ namespace Client.Scenes.Views
             }
         }
 
-        public void UpdateItems()
+        public void UpdateItems(bool updated = true)
         {
             if (Panel == null) return;
 
             if (Panel.ReverseListCheckBox.Checked)
             {
-                int y = Size.Height - 20 + ScrollBar.Value;
-
-                for (int i = 0; i < History.Count; i++)
+                if (updated)
                 {
-                    var label = History[i].Label;
-                    y -= label.Size.Height;
-                    label.Location = new Point(0, y);
+                    int y = Size.Height - 20 + ScrollBar.Value;
+
+                    for (int i = 0; i < History.Count; i++)
+                    {
+                        var label = History[i].Label;
+                        y -= label.Size.Height;
+                        label.Location = new Point(0, y);
+                    }
                 }
 
                 ScrollBar.Value = Math.Max(ScrollBar.MinValue, Math.Min(ScrollBar.MaxValue - ScrollBar.VisibleSize, ScrollBar.MaxValue));
             }
             else
             {
-                int y = -ScrollBar.Value;
-
-                for (int i = 0; i < History.Count; i++)
+                if (updated)
                 {
-                    var label = History[i].Label;
-                    label.Location = new Point(0, y);
-                    y += label.Size.Height;
+                    int y = -ScrollBar.Value;
+
+                    for (int i = 0; i < History.Count; i++)
+                    {
+                        var label = History[i].Label;
+                        label.Location = new Point(0, y);
+                        y += label.Size.Height;
+                    }
                 }
             }
 
-            ProcessLinkedItems();
+            if (updated)
+            {
+                ProcessLinkedItems();
+            }
         }
 
         public void UpdateScrollBar()
@@ -396,7 +414,8 @@ namespace Client.Scenes.Views
             {
                 ScrollBar.Value = ScrollBar.MaxValue - label.Size.Height;
             }
-            else UpdateItems();
+
+            UpdateItems(update);
         }
         public void ReceiveChat(MessageAction action, params object[] args)
         {
@@ -455,7 +474,8 @@ namespace Client.Scenes.Views
             {
                 ScrollBar.Value = ScrollBar.MaxValue - label.Size.Height;
             }
-            else UpdateItems();
+
+            UpdateItems(update);
         }
         public void UpdateColours()
         {
@@ -464,66 +484,73 @@ namespace Client.Scenes.Views
         }
         private void UpdateColours(DXLabel label)
         {
-            Color empty = Panel?.TransparentCheckBox.Checked == true ? Color.FromArgb(100, 0, 0, 0) : Color.Empty;
-
             switch ((MessageType)label.Tag)
             {
                 case MessageType.Normal:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.LocalTextColour;
+                    label.BackColour = GetBackColour(Config.LocalTextBackColour);
+                    label.ForeColour = Config.LocalTextForeColour;
                     break;
                 case MessageType.Shout:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.ShoutTextColour;
+                    label.BackColour = GetBackColour(Config.ShoutTextBackColour);
+                    label.ForeColour = Config.ShoutTextForeColour;
                     break;
                 case MessageType.Group:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.GroupTextColour;
+                    label.BackColour = GetBackColour(Config.GroupTextBackColour);
+                    label.ForeColour = Config.GroupTextForeColour;
                     break;
                 case MessageType.Global:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.GlobalTextColour;
+                    label.BackColour = GetBackColour(Config.GlobalTextBackColour);
+                    label.ForeColour = Config.GlobalTextForeColour;
                     break;
                 case MessageType.Hint:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.HintTextColour;
+                    label.BackColour = GetBackColour(Config.HintTextBackColour);
+                    label.ForeColour = Config.HintTextForeColour;
                     break;
                 case MessageType.System:
-                    label.BackColour = Color.FromArgb(200, 255, 255, 255);
-                    label.ForeColour = Config.SystemTextColour;
+                    label.BackColour = GetBackColour(Config.SystemTextBackColour);
+                    label.ForeColour = Config.SystemTextForeColour;
                     break;
                 case MessageType.Announcement:
-                    label.BackColour = Color.FromArgb(200, 255, 255, 255);
-                    label.ForeColour = Config.AnnouncementTextColour;
+                    label.BackColour = GetBackColour(Config.AnnouncementTextBackColour);
+                    label.ForeColour = Config.AnnouncementTextForeColour;
                     break;
                 case MessageType.WhisperIn:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.WhisperInTextColour;
+                    label.BackColour = GetBackColour(Config.WhisperInTextBackColour);
+                    label.ForeColour = Config.WhisperInTextForeColour;
                     break;
                 case MessageType.GMWhisperIn:
-                    label.BackColour = Color.FromArgb(200, 255, 255, 255);
-                    label.ForeColour = Config.GMWhisperInTextColour;
+                    label.BackColour = GetBackColour(Config.GMWhisperInTextBackColour);
+                    label.ForeColour = Config.GMWhisperInTextForeColour;
                     break;
                 case MessageType.WhisperOut:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.WhisperOutTextColour;
+                    label.BackColour = GetBackColour(Config.WhisperOutTextBackColour);
+                    label.ForeColour = Config.WhisperOutTextForeColour;
                     break;
                 case MessageType.Combat:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.GainsTextColour;
+                    label.BackColour = GetBackColour(Config.GainsTextBackColour);
+                    label.ForeColour = Config.GainsTextForeColour;
                     break;
                 case MessageType.ObserverChat:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.ObserverTextColour;
+                    label.BackColour = GetBackColour(Config.ObserverTextBackColour);
+                    label.ForeColour = Config.ObserverTextForeColour;
                     break;
                 case MessageType.Guild:
-                    label.BackColour = empty;
-                    label.ForeColour = Config.GuildTextColour;
+                    label.BackColour = GetBackColour(Config.GuildTextBackColour);
+                    label.ForeColour = Config.GuildTextForeColour;
                     break;
             }
-
-
         }
+
+        private Color GetBackColour(Color color)
+        {
+            if (Panel?.TransparentCheckBox.Checked == true && color == Color.FromArgb(0, 0, 0, 0))
+            {
+                return Color.FromArgb(100, 0, 0, 0);
+            }
+
+            return color;
+        }
+
         public void TransparencyChanged()
         {
             if (Panel.TransparentCheckBox.Checked)
@@ -625,6 +652,8 @@ namespace Client.Scenes.Views
                 {
                     newlabel.MouseEnter += (o, e) =>
                     {
+                        if (chatFade == 0F) return;
+
                         GameScene.Game.MouseItem = item;
                         foreach (DXLabel l in labels)
                             l.ForeColour = Color.Red;

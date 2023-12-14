@@ -2482,6 +2482,23 @@ namespace Client.Envir
 
             if (!p.Success) return;
 
+            if (!cell.Item.Info.ShouldLinkInfo)
+            {
+                for (int i = 0; i < GameScene.Game.BeltBox.Links.Length; i++)
+                {
+                    ClientBeltLink link = GameScene.Game.BeltBox.Links[i];
+                    if (link.LinkItemIndex != cell.Item.Index) continue;
+
+                    link.LinkItemIndex = -1;
+
+                    if (i < GameScene.Game.BeltBox.Grid.Grid.Length)
+                        GameScene.Game.BeltBox.Grid.Grid[i].QuickItem = null; //set belt to null
+
+                    if (!GameScene.Game.Observer)
+                        CEnvir.Enqueue(new C.BeltLinkChanged { Slot = link.Slot, LinkIndex = link.LinkInfoIndex, LinkItemIndex = link.LinkItemIndex }); //Update server
+                }
+            }
+
             cell.Item = null;
             cell.RefreshItem();
         }

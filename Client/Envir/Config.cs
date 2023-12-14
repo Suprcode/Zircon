@@ -82,18 +82,32 @@ namespace Client.Envir
         public static string HighlightedItems { get; set; } = string.Empty;
 
         [ConfigSection("Colours")]
-        public static Color LocalTextColour { get; set; } = Color.White;
-        public static Color GMWhisperInTextColour { get; set; } = Color.Red;
-        public static Color WhisperInTextColour { get; set; } = Color.Cyan;
-        public static Color WhisperOutTextColour { get; set; } = Color.Aquamarine;
-        public static Color GroupTextColour { get; set; } = Color.Plum;
-        public static Color GuildTextColour { get; set; } = Color.LightPink;
-        public static Color ShoutTextColour { get; set; } = Color.Yellow;
-        public static Color GlobalTextColour { get; set; } = Color.Lime;
-        public static Color ObserverTextColour { get; set; } = Color.Silver;
-        public static Color HintTextColour { get; set; } = Color.AntiqueWhite;
-        public static Color SystemTextColour { get; set; } = Color.Red;
-        public static Color GainsTextColour { get; set; } = Color.GreenYellow;
-        public static Color AnnouncementTextColour { get; set; } = Color.DarkBlue;
+        public static Color LocalTextForeColour { get; set; } = Color.White;
+        public static Color GMWhisperInTextForeColour { get; set; } = Color.Red;
+        public static Color WhisperInTextForeColour { get; set; } = Color.Cyan;
+        public static Color WhisperOutTextForeColour { get; set; } = Color.Aquamarine;
+        public static Color GroupTextForeColour { get; set; } = Color.Plum;
+        public static Color GuildTextForeColour { get; set; } = Color.LightPink;
+        public static Color ShoutTextForeColour { get; set; } = Color.Yellow;
+        public static Color GlobalTextForeColour { get; set; } = Color.Lime;
+        public static Color ObserverTextForeColour { get; set; } = Color.Silver;
+        public static Color HintTextForeColour { get; set; } = Color.AntiqueWhite;
+        public static Color SystemTextForeColour { get; set; } = Color.Red;
+        public static Color GainsTextForeColour { get; set; } = Color.GreenYellow;
+        public static Color AnnouncementTextForeColour { get; set; } = Color.DarkBlue;
+
+        public static Color LocalTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color GMWhisperInTextBackColour { get; set; } = Color.FromArgb(200, 255, 255, 255);
+        public static Color WhisperInTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color WhisperOutTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color GroupTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color GuildTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color ShoutTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color GlobalTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color ObserverTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color HintTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color SystemTextBackColour { get; set; } = Color.FromArgb(200, 255, 255, 255);
+        public static Color GainsTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
+        public static Color AnnouncementTextBackColour { get; set; } = Color.FromArgb(200, 255, 255, 255);
     }
 }

@@ -6737,7 +6737,6 @@ namespace Server.Models
                         }
                     }
 
-
                     if (p.FromGrid == GridType.GuildStorage)
                     {
                         guildpacket = new S.ItemChanged
@@ -7506,7 +7505,7 @@ namespace Server.Models
 
             foreach (CharacterBeltLink link in Character.BeltLinks)
             {
-                if (link.Slot != p.Slot && (link.LinkInfoIndex != -1 || link.LinkItemIndex != -1)) continue;
+                if (link.Slot != p.Slot/* && (link.LinkInfoIndex != -1 || link.LinkItemIndex != -1)*/) continue;
 
                 link.Slot = p.Slot;
                 link.LinkInfoIndex = info?.Index ?? -1;
