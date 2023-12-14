@@ -46,9 +46,9 @@ namespace Client.Controls
 
         //Colours
         public DXTab ColourTab;
-        public DXColourControl LocalColourBox, GMWhisperInColourBox, WhisperInColourBox, WhisperOutColourBox, GroupColourBox, GuildColourBox, ShoutColourBox, GlobalColourBox, ObserverColourBox, HintColourBox, SystemColourBox, GainsColourBox, AnnouncementColourBox;
+        public DXColourControl LocalForeColourBox, GMWhisperInForeColourBox, WhisperInForeColourBox, WhisperOutForeColourBox, GroupForeColourBox, GuildForeColourBox, ShoutForeColourBox, GlobalForeColourBox, ObserverForeColourBox, HintForeColourBox, SystemForeColourBox, GainsForeColourBox, AnnouncementForeColourBox;
+        public DXColourControl LocalBackColourBox, GMWhisperInBackColourBox, WhisperInBackColourBox, WhisperOutBackColourBox, GroupBackColourBox, GuildBackColourBox, ShoutBackColourBox, GlobalBackColourBox, ObserverBackColourBox, HintBackColourBox, SystemBackColourBox, GainsBackColourBox, AnnouncementBackColourBox;
         public DXButton ResetColoursButton;
-
 
         private DXButton SaveButton, CancelButton;
         public DXButton ExitButton;
@@ -92,19 +92,33 @@ namespace Client.Controls
             DrawParticlesCheckBox.Checked = Config.DrawParticles;
             DrawWeatherCheckBox.Checked = Config.DrawWeather;
 
-            LocalColourBox.BackColour = Config.LocalTextColour;
-            GMWhisperInColourBox.BackColour = Config.GMWhisperInTextColour;
-            WhisperInColourBox.BackColour = Config.WhisperInTextColour;
-            WhisperOutColourBox.BackColour = Config.WhisperOutTextColour;
-            GroupColourBox.BackColour = Config.GroupTextColour;
-            GuildColourBox.BackColour = Config.GuildTextColour;
-            ShoutColourBox.BackColour = Config.ShoutTextColour;
-            GlobalColourBox.BackColour = Config.GlobalTextColour;
-            ObserverColourBox.BackColour = Config.ObserverTextColour;
-            HintColourBox.BackColour = Config.HintTextColour;
-            SystemColourBox.BackColour = Config.SystemTextColour;
-            GainsColourBox.BackColour = Config.GainsTextColour;
-            AnnouncementColourBox.BackColour = Config.AnnouncementTextColour;
+            LocalForeColourBox.BackColour = Config.LocalTextForeColour;
+            GMWhisperInForeColourBox.BackColour = Config.GMWhisperInTextForeColour;
+            WhisperInForeColourBox.BackColour = Config.WhisperInTextForeColour;
+            WhisperOutForeColourBox.BackColour = Config.WhisperOutTextForeColour;
+            GroupForeColourBox.BackColour = Config.GroupTextForeColour;
+            GuildForeColourBox.BackColour = Config.GuildTextForeColour;
+            ShoutForeColourBox.BackColour = Config.ShoutTextForeColour;
+            GlobalForeColourBox.BackColour = Config.GlobalTextForeColour;
+            ObserverForeColourBox.BackColour = Config.ObserverTextForeColour;
+            HintForeColourBox.BackColour = Config.HintTextForeColour;
+            SystemForeColourBox.BackColour = Config.SystemTextForeColour;
+            GainsForeColourBox.BackColour = Config.GainsTextForeColour;
+            AnnouncementForeColourBox.BackColour = Config.AnnouncementTextForeColour;
+
+            LocalBackColourBox.BackColour = Config.LocalTextBackColour;
+            GMWhisperInBackColourBox.BackColour = Config.GMWhisperInTextBackColour;
+            WhisperInBackColourBox.BackColour = Config.WhisperInTextBackColour;
+            WhisperOutBackColourBox.BackColour = Config.WhisperOutTextBackColour;
+            GroupBackColourBox.BackColour = Config.GroupTextBackColour;
+            GuildBackColourBox.BackColour = Config.GuildTextBackColour;
+            ShoutBackColourBox.BackColour = Config.ShoutTextBackColour;
+            GlobalBackColourBox.BackColour = Config.GlobalTextBackColour;
+            ObserverBackColourBox.BackColour = Config.ObserverTextBackColour;
+            HintBackColourBox.BackColour = Config.HintTextBackColour;
+            SystemBackColourBox.BackColour = Config.SystemTextBackColour;
+            GainsBackColourBox.BackColour = Config.GainsTextBackColour;
+            AnnouncementBackColourBox.BackColour = Config.AnnouncementTextBackColour;
         }
         public override void OnParentChanged(DXControl oValue, DXControl nValue)
         {
@@ -527,11 +541,19 @@ namespace Client.Controls
             };
             label.Location = new Point(90 - label.Size.Width, 10);
 
-            LocalColourBox = new DXColourControl
+            LocalForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(90, 10),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            LocalBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(110, 10),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -542,11 +564,19 @@ namespace Client.Controls
             };
             label.Location = new Point(220 - label.Size.Width, 10);
 
-            GMWhisperInColourBox = new DXColourControl
+            GMWhisperInForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(220, 10),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            GMWhisperInBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(240, 10),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -557,11 +587,19 @@ namespace Client.Controls
             };
             label.Location = new Point(90 - label.Size.Width, 35);
 
-            WhisperInColourBox = new DXColourControl
+            WhisperInForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(90, 35),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            WhisperInBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(110, 35),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -572,11 +610,19 @@ namespace Client.Controls
             };
             label.Location = new Point(220 - label.Size.Width, 35);
 
-            WhisperOutColourBox = new DXColourControl
+            WhisperOutForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(220, 35),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            WhisperOutBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(240, 35),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -587,11 +633,19 @@ namespace Client.Controls
             };
             label.Location = new Point(90 - label.Size.Width, 60);
 
-            GroupColourBox = new DXColourControl
+            GroupForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(90, 60),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            GroupBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(110, 60),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -602,11 +656,19 @@ namespace Client.Controls
             };
             label.Location = new Point(220 - label.Size.Width, 60);
 
-            GuildColourBox = new DXColourControl
+            GuildForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(220, 60),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            GuildBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(240, 60),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -617,11 +679,19 @@ namespace Client.Controls
             };
             label.Location = new Point(90 - label.Size.Width, 85);
 
-            ShoutColourBox = new DXColourControl
+            ShoutForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(90, 85),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            ShoutBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(110, 85),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -632,13 +702,20 @@ namespace Client.Controls
             };
             label.Location = new Point(220 - label.Size.Width, 85);
 
-            GlobalColourBox = new DXColourControl
+            GlobalForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(220, 85),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
             };
-            
+
+            GlobalBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(240, 85),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
+            };
 
             label = new DXLabel
             {
@@ -648,11 +725,19 @@ namespace Client.Controls
             };
             label.Location = new Point(90 - label.Size.Width, 110);
 
-            ObserverColourBox = new DXColourControl
+            ObserverForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(90, 110),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            ObserverBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(110, 110),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -663,11 +748,19 @@ namespace Client.Controls
             };
             label.Location = new Point(220 - label.Size.Width, 110);
 
-            HintColourBox = new DXColourControl
+            HintForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(220, 110),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            HintBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(240, 110),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -678,11 +771,19 @@ namespace Client.Controls
             };
             label.Location = new Point(90 - label.Size.Width, 135);
 
-            SystemColourBox = new DXColourControl
+            SystemForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(90, 135),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            SystemBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(110, 135),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -693,11 +794,19 @@ namespace Client.Controls
             };
             label.Location = new Point(220 - label.Size.Width, 135);
 
-            GainsColourBox = new DXColourControl
+            GainsForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(220, 135),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            GainsBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(240, 135),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             label = new DXLabel
@@ -708,11 +817,19 @@ namespace Client.Controls
             };
             label.Location = new Point(90 - label.Size.Width, 160);
 
-            AnnouncementColourBox = new DXColourControl
+            AnnouncementForeColourBox = new DXColourControl
             {
                 Parent = ColourTab,
                 Location = new Point(90, 160),
-                Size = new Size(40, label.Size.Height),
+                Size = new Size(20, label.Size.Height),
+            };
+
+            AnnouncementBackColourBox = new DXColourControl
+            {
+                Parent = ColourTab,
+                Location = new Point(110, 160),
+                Size = new Size(20, label.Size.Height),
+                AllowNoColour = true,
             };
 
             ResetColoursButton = new DXButton
@@ -725,19 +842,33 @@ namespace Client.Controls
             };
             ResetColoursButton.MouseClick += (o, e) =>
             {
-                LocalColourBox.BackColour = Color.White;
-                GMWhisperInColourBox.BackColour = Color.Red;
-                WhisperInColourBox.BackColour = Color.Cyan;
-                WhisperOutColourBox.BackColour = Color.Aquamarine;
-                GroupColourBox.BackColour = Color.Plum;
-                GuildColourBox.BackColour = Color.LightPink;
-                ShoutColourBox.BackColour = Color.Yellow;
-                GlobalColourBox.BackColour = Color.Lime;
-                ObserverColourBox.BackColour = Color.Silver;
-                HintColourBox.BackColour = Color.AntiqueWhite;
-                SystemColourBox.BackColour = Color.Red;
-                GainsColourBox.BackColour = Color.GreenYellow;
-                AnnouncementColourBox.BackColour = Color.DarkBlue;
+                LocalForeColourBox.BackColour = Color.White;
+                GMWhisperInForeColourBox.BackColour = Color.Red;
+                WhisperInForeColourBox.BackColour = Color.Cyan;
+                WhisperOutForeColourBox.BackColour = Color.Aquamarine;
+                GroupForeColourBox.BackColour = Color.Plum;
+                GuildForeColourBox.BackColour = Color.LightPink;
+                ShoutForeColourBox.BackColour = Color.Yellow;
+                GlobalForeColourBox.BackColour = Color.Lime;
+                ObserverForeColourBox.BackColour = Color.Silver;
+                HintForeColourBox.BackColour = Color.AntiqueWhite;
+                SystemForeColourBox.BackColour = Color.Red;
+                GainsForeColourBox.BackColour = Color.GreenYellow;
+                AnnouncementForeColourBox.BackColour = Color.DarkBlue;
+
+                LocalBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                GMWhisperInBackColourBox.BackColour = Color.FromArgb(200, 255, 255, 255);
+                WhisperInBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                WhisperOutBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                GroupBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                GuildBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                ShoutBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                GlobalBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                ObserverBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                HintBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                SystemBackColourBox.BackColour = Color.FromArgb(200, 255, 255, 255);
+                GainsBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
+                AnnouncementBackColourBox.BackColour = Color.FromArgb(200, 255, 255, 255);
             };
 
             #endregion
@@ -887,82 +1018,166 @@ namespace Client.Controls
 
             bool coloursChanged = false;
 
-            if (Config.LocalTextColour != LocalColourBox.BackColour)
+            //Fore Colours
+
+            if (Config.LocalTextForeColour != LocalForeColourBox.BackColour)
             {
-                Config.LocalTextColour = LocalColourBox.BackColour;
+                Config.LocalTextForeColour = LocalForeColourBox.BackColour;
                 coloursChanged = true;
             }
 
-            if (Config.GMWhisperInTextColour != GMWhisperInColourBox.BackColour)
+            if (Config.GMWhisperInTextForeColour != GMWhisperInForeColourBox.BackColour)
             {
-                Config.GMWhisperInTextColour = GMWhisperInColourBox.BackColour;
+                Config.GMWhisperInTextForeColour = GMWhisperInForeColourBox.BackColour;
                 coloursChanged = true;
             }
             
-            if (Config.WhisperInTextColour != WhisperInColourBox.BackColour)
+            if (Config.WhisperInTextForeColour != WhisperInForeColourBox.BackColour)
             {
-                Config.WhisperInTextColour = WhisperInColourBox.BackColour;
+                Config.WhisperInTextForeColour = WhisperInForeColourBox.BackColour;
                 coloursChanged = true;
             }
             
-            if (Config.WhisperOutTextColour != WhisperOutColourBox.BackColour)
+            if (Config.WhisperOutTextForeColour != WhisperOutForeColourBox.BackColour)
             {
-                Config.WhisperOutTextColour = WhisperOutColourBox.BackColour;
+                Config.WhisperOutTextForeColour = WhisperOutForeColourBox.BackColour;
                 coloursChanged = true;
             }
             
-            if (Config.GroupTextColour != GroupColourBox.BackColour)
+            if (Config.GroupTextForeColour != GroupForeColourBox.BackColour)
             {
-                Config.GroupTextColour = GroupColourBox.BackColour;
+                Config.GroupTextForeColour = GroupForeColourBox.BackColour;
                 coloursChanged = true;
             }
             
-            if (Config.GuildTextColour != GuildColourBox.BackColour)
+            if (Config.GuildTextForeColour != GuildForeColourBox.BackColour)
             {
-                Config.GuildTextColour = GuildColourBox.BackColour;
+                Config.GuildTextForeColour = GuildForeColourBox.BackColour;
                 coloursChanged = true;
             }
 
-            if (Config.ShoutTextColour != ShoutColourBox.BackColour)
+            if (Config.ShoutTextForeColour != ShoutForeColourBox.BackColour)
             {
-                Config.ShoutTextColour = ShoutColourBox.BackColour;
+                Config.ShoutTextForeColour = ShoutForeColourBox.BackColour;
                 coloursChanged = true;
             }
 
-            if (Config.GlobalTextColour != GlobalColourBox.BackColour)
+            if (Config.GlobalTextForeColour != GlobalForeColourBox.BackColour)
             {
-                Config.GlobalTextColour = GlobalColourBox.BackColour;
+                Config.GlobalTextForeColour = GlobalForeColourBox.BackColour;
                 coloursChanged = true;
             }
 
-            if (Config.ObserverTextColour != ObserverColourBox.BackColour)
+            if (Config.ObserverTextForeColour != ObserverForeColourBox.BackColour)
             {
-                Config.ObserverTextColour = ObserverColourBox.BackColour;
+                Config.ObserverTextForeColour = ObserverForeColourBox.BackColour;
                 coloursChanged = true;
             }
 
-            if (Config.HintTextColour != HintColourBox.BackColour)
+            if (Config.HintTextForeColour != HintForeColourBox.BackColour)
             {
-                Config.HintTextColour = HintColourBox.BackColour;
+                Config.HintTextForeColour = HintForeColourBox.BackColour;
                 coloursChanged = true;
             }
 
-            if (Config.SystemTextColour != SystemColourBox.BackColour)
+            if (Config.SystemTextForeColour != SystemForeColourBox.BackColour)
             {
-                Config.SystemTextColour = SystemColourBox.BackColour;
+                Config.SystemTextForeColour = SystemForeColourBox.BackColour;
                 coloursChanged = true;
             }
 
-            if (Config.GainsTextColour != GainsColourBox.BackColour)
+            if (Config.GainsTextForeColour != GainsForeColourBox.BackColour)
             {
-                Config.GainsTextColour = GainsColourBox.BackColour;
+                Config.GainsTextForeColour = GainsForeColourBox.BackColour;
                 coloursChanged = true;
             }
-            if (Config.AnnouncementTextColour != AnnouncementColourBox.BackColour)
+
+            if (Config.AnnouncementTextForeColour != AnnouncementForeColourBox.BackColour)
             {
-                Config.AnnouncementTextColour = AnnouncementColourBox.BackColour;
+                Config.AnnouncementTextForeColour = AnnouncementForeColourBox.BackColour;
                 coloursChanged = true;
             }
+
+            //Back Colours
+
+            if (Config.LocalTextBackColour != LocalBackColourBox.BackColour)
+            {
+                Config.LocalTextBackColour = LocalBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.GMWhisperInTextBackColour != GMWhisperInBackColourBox.BackColour)
+            {
+                Config.GMWhisperInTextBackColour = GMWhisperInBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.WhisperInTextBackColour != WhisperInBackColourBox.BackColour)
+            {
+                Config.WhisperInTextBackColour = WhisperInBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.WhisperOutTextBackColour != WhisperOutBackColourBox.BackColour)
+            {
+                Config.WhisperOutTextBackColour = WhisperOutBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.GroupTextBackColour != GroupBackColourBox.BackColour)
+            {
+                Config.GroupTextBackColour = GroupBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.GuildTextBackColour != GuildBackColourBox.BackColour)
+            {
+                Config.GuildTextBackColour = GuildBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.ShoutTextBackColour != ShoutBackColourBox.BackColour)
+            {
+                Config.ShoutTextBackColour = ShoutBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.GlobalTextBackColour != GlobalBackColourBox.BackColour)
+            {
+                Config.GlobalTextBackColour = GlobalBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.ObserverTextBackColour != ObserverBackColourBox.BackColour)
+            {
+                Config.ObserverTextBackColour = ObserverBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.HintTextBackColour != HintBackColourBox.BackColour)
+            {
+                Config.HintTextBackColour = HintBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.SystemTextBackColour != SystemBackColourBox.BackColour)
+            {
+                Config.SystemTextBackColour = SystemBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.GainsTextBackColour != GainsBackColourBox.BackColour)
+            {
+                Config.GainsTextBackColour = GainsBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
+            if (Config.AnnouncementTextBackColour != AnnouncementBackColourBox.BackColour)
+            {
+                Config.AnnouncementTextBackColour = AnnouncementBackColourBox.BackColour;
+                coloursChanged = true;
+            }
+
 
             if (coloursChanged && GameScene.Game != null)
             {
@@ -1286,100 +1501,100 @@ namespace Client.Controls
                     ColourTab = null;
                 }
 
-                if (LocalColourBox != null)
+                if (LocalForeColourBox != null)
                 {
-                    if (!LocalColourBox.IsDisposed)
-                        LocalColourBox.Dispose();
+                    if (!LocalForeColourBox.IsDisposed)
+                        LocalForeColourBox.Dispose();
 
-                    LocalColourBox = null;
+                    LocalForeColourBox = null;
                 }
 
-                if (GMWhisperInColourBox != null)
+                if (GMWhisperInForeColourBox != null)
                 {
-                    if (!GMWhisperInColourBox.IsDisposed)
-                        GMWhisperInColourBox.Dispose();
+                    if (!GMWhisperInForeColourBox.IsDisposed)
+                        GMWhisperInForeColourBox.Dispose();
 
-                    GMWhisperInColourBox = null;
+                    GMWhisperInForeColourBox = null;
                 }
 
-                if (WhisperInColourBox != null)
+                if (WhisperInForeColourBox != null)
                 {
-                    if (!WhisperInColourBox.IsDisposed)
-                        WhisperInColourBox.Dispose();
+                    if (!WhisperInForeColourBox.IsDisposed)
+                        WhisperInForeColourBox.Dispose();
 
-                    WhisperInColourBox = null;
+                    WhisperInForeColourBox = null;
                 }
 
-                if (WhisperOutColourBox != null)
+                if (WhisperOutForeColourBox != null)
                 {
-                    if (!WhisperOutColourBox.IsDisposed)
-                        WhisperOutColourBox.Dispose();
+                    if (!WhisperOutForeColourBox.IsDisposed)
+                        WhisperOutForeColourBox.Dispose();
 
-                    WhisperOutColourBox = null;
+                    WhisperOutForeColourBox = null;
                 }
 
-                if (GroupColourBox != null)
+                if (GroupForeColourBox != null)
                 {
-                    if (!GroupColourBox.IsDisposed)
-                        GroupColourBox.Dispose();
+                    if (!GroupForeColourBox.IsDisposed)
+                        GroupForeColourBox.Dispose();
 
-                    GroupColourBox = null;
+                    GroupForeColourBox = null;
                 }
 
-                if (GuildColourBox != null)
+                if (GuildForeColourBox != null)
                 {
-                    if (!GuildColourBox.IsDisposed)
-                        GuildColourBox.Dispose();
+                    if (!GuildForeColourBox.IsDisposed)
+                        GuildForeColourBox.Dispose();
 
-                    GuildColourBox = null;
+                    GuildForeColourBox = null;
                 }
 
-                if (ShoutColourBox != null)
+                if (ShoutForeColourBox != null)
                 {
-                    if (!ShoutColourBox.IsDisposed)
-                        ShoutColourBox.Dispose();
+                    if (!ShoutForeColourBox.IsDisposed)
+                        ShoutForeColourBox.Dispose();
 
-                    ShoutColourBox = null;
+                    ShoutForeColourBox = null;
                 }
 
-                if (GlobalColourBox != null)
+                if (GlobalForeColourBox != null)
                 {
-                    if (!GlobalColourBox.IsDisposed)
-                        GlobalColourBox.Dispose();
+                    if (!GlobalForeColourBox.IsDisposed)
+                        GlobalForeColourBox.Dispose();
 
-                    GlobalColourBox = null;
+                    GlobalForeColourBox = null;
                 }
 
-                if (ObserverColourBox != null)
+                if (ObserverForeColourBox != null)
                 {
-                    if (!ObserverColourBox.IsDisposed)
-                        ObserverColourBox.Dispose();
+                    if (!ObserverForeColourBox.IsDisposed)
+                        ObserverForeColourBox.Dispose();
 
-                    ObserverColourBox = null;
+                    ObserverForeColourBox = null;
                 }
 
-                if (HintColourBox != null)
+                if (HintForeColourBox != null)
                 {
-                    if (!HintColourBox.IsDisposed)
-                        HintColourBox.Dispose();
+                    if (!HintForeColourBox.IsDisposed)
+                        HintForeColourBox.Dispose();
 
-                    HintColourBox = null;
+                    HintForeColourBox = null;
                 }
 
-                if (SystemColourBox != null)
+                if (SystemForeColourBox != null)
                 {
-                    if (!SystemColourBox.IsDisposed)
-                        SystemColourBox.Dispose();
+                    if (!SystemForeColourBox.IsDisposed)
+                        SystemForeColourBox.Dispose();
 
-                    SystemColourBox = null;
+                    SystemForeColourBox = null;
                 }
 
-                if (GainsColourBox != null)
+                if (GainsForeColourBox != null)
                 {
-                    if (!GainsColourBox.IsDisposed)
-                        GainsColourBox.Dispose();
+                    if (!GainsForeColourBox.IsDisposed)
+                        GainsForeColourBox.Dispose();
 
-                    GainsColourBox = null;
+                    GainsForeColourBox = null;
                 }
                 #endregion
 

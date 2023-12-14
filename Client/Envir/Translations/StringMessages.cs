@@ -122,6 +122,8 @@ namespace Client.Envir.Translations
         public abstract string CommonControlColourPickerGreenLabel { get; set; }
         public abstract string CommonControlColourPickerBlueLabel { get; set; }
         public abstract string CommonControlColourPickerColourLabel { get; set; }
+        public abstract string CommonControlColourPickerNoneLabel { get; set; }
+        public abstract string CommonControlColourPickerEmptyLabel { get; set; }
         public abstract string CommonControlConfigWindowTitle { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabLabel { get; set; }

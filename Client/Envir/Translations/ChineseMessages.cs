@@ -123,6 +123,8 @@ namespace Client.Envir.Translations
         public override string CommonControlColourPickerGreenLabel { get; set; } = "Green:";
         public override string CommonControlColourPickerBlueLabel { get; set; } = "Blue:";
         public override string CommonControlColourPickerColourLabel { get; set; } = "Colour:";
+        public override string CommonControlColourPickerNoneLabel { get; set; } = "None";  
+        public override string CommonControlColourPickerEmptyLabel { get; set; } = "No Colour";
         public override string CommonControlConfigWindowTitle { get; set; } = "Configuration";
         public override string CommonControlConfigWindowGraphicsTabLabel { get; set; } = "Graphics";
         public override string CommonControlConfigWindowSoundTabLabel { get; set; } = "Sound";

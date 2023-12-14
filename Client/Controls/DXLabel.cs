@@ -150,7 +150,34 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
+        #region DropShadow
+
+        public bool DropShadow
+        {
+            get => _DropShadow;
+            set
+            {
+                if (_DropShadow == value) return;
+
+                bool oldValue = _DropShadow;
+                _DropShadow = value;
+
+                OnDropShadowChanged(oldValue, value);
+            }
+        }
+        private bool _DropShadow;
+        public event EventHandler<EventArgs> DropShadowChanged;
+        public virtual void OnDropShadowChanged(bool oValue, bool nValue)
+        {
+            TextureValid = false;
+            CreateSize();
+
+            DropShadowChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region OutlineColour
 
         public Color OutlineColour
@@ -243,7 +270,14 @@ namespace Client.Controls
                     TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 1, width, height), ForeColour, DrawFormat);
                 }
                 else
+                {
+                    if (DropShadow)
+                    {
+                        TextRenderer.DrawText(graphics, Text, Font, new Rectangle(2, 1, width, height), Color.Black, DrawFormat);
+                    }
+
                     TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 0, width, height), ForeColour, DrawFormat);
+                }
             }
             ControlTexture.UnlockRectangle(0);
             rect.Data.Dispose();
