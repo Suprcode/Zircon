@@ -78,9 +78,9 @@ namespace Server.Models
             set { Character.OnlineState = value; }
         }
 
-        public UserCurrency Gold => Character.Account.Gold2;
-        public UserCurrency GameGold => Character.Account.GameGold2;
-        public UserCurrency HuntGold => Character.Account.HuntGold2;
+        public UserCurrency Gold => Character.Account.Gold;
+        public UserCurrency GameGold => Character.Account.GameGold;
+        public UserCurrency HuntGold => Character.Account.HuntGold;
 
         public decimal Experience
         {
@@ -282,10 +282,6 @@ namespace Server.Models
                     userCurrency = SEnvir.UserCurrencyList.CreateNewObject();
                     userCurrency.Account = Character.Account;
                     userCurrency.Info = currency;
-
-                    if (currency.Type == CurrencyType.Gold) userCurrency.Amount = Character.Account.Gold;
-                    if (currency.Type == CurrencyType.GameGold) userCurrency.Amount = Character.Account.GameGold;
-                    if (currency.Type == CurrencyType.HuntGold) userCurrency.Amount = Character.Account.HuntGold;
                 }
             }
         }

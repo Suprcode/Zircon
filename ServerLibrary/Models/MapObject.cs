@@ -557,9 +557,9 @@ namespace Server.Models
                         {
                             if (SEnvir.ConquestWars.Any(war => war.Map == CurrentMap))
                             {
-                                player.Character.Account.HuntGold2.Amount += 1;
+                                player.Character.Account.HuntGold.Amount += 1;
 
-                                player.CurrencyChanged(player.Character.Account.HuntGold2);
+                                player.CurrencyChanged(player.Character.Account.HuntGold);
 
                                 continue;
                             }

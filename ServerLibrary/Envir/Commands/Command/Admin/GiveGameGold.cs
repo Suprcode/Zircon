@@ -19,12 +19,12 @@ namespace Server.Envir.Commands.Admin {
             if (!int.TryParse(vals[2], out count))
                 ThrowNewInvalidParametersException();
 
-            character.Account.GameGold2.Amount += count;
+            character.Account.GameGold.Amount += count;
             character.Account.Connection?.ReceiveChat(string.Format(character.Account.Connection.Language.PaymentComplete, count), MessageType.System);
             character.Player?.GameGoldChanged();
 
             if (character.Account.Referral != null) {
-                character.Account.Referral.HuntGold2.Amount += count / 10;
+                character.Account.Referral.HuntGold.Amount += count / 10;
 
                 if (character.Account.Referral.Connection != null) {
                     character.Account.Referral.Connection.ReceiveChat(string.Format(character.Account.Referral.Connection.Language.ReferralPaymentComplete, count / 10), MessageType.System, null, 0);

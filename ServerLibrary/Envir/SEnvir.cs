@@ -1387,7 +1387,7 @@ namespace Server.Envir
                 }
 
                 payment.Account = character.Account;
-                character.Account.GameGold2.Amount += payment.GameGoldAmount;
+                character.Account.GameGold.Amount += payment.GameGoldAmount;
                 character.Account.Connection?.ReceiveChat(string.Format(character.Account.Connection.Language.PaymentComplete, payment.GameGoldAmount), MessageType.System);
                 character.Player?.GameGoldChanged();
 
@@ -1395,7 +1395,7 @@ namespace Server.Envir
 
                 if (referral != null)
                 {
-                    referral.HuntGold2.Amount += payment.GameGoldAmount / 10;
+                    referral.HuntGold.Amount += payment.GameGoldAmount / 10;
 
                     if (referral.Connection != null)
                     {
@@ -2949,11 +2949,11 @@ namespace Server.Envir
             {
                 int maxLevel = refferal.HighestLevel();
 
-                if (maxLevel >= 50) account.HuntGold2.Amount = 500;
-                else if (maxLevel >= 40) account.HuntGold2.Amount = 300;
-                else if (maxLevel >= 30) account.HuntGold2.Amount = 200;
-                else if (maxLevel >= 20) account.HuntGold2.Amount = 100;
-                else if (maxLevel >= 10) account.HuntGold2.Amount = 50;
+                if (maxLevel >= 50) account.HuntGold.Amount = 500;
+                else if (maxLevel >= 40) account.HuntGold.Amount = 300;
+                else if (maxLevel >= 30) account.HuntGold.Amount = 200;
+                else if (maxLevel >= 20) account.HuntGold.Amount = 100;
+                else if (maxLevel >= 10) account.HuntGold.Amount = 50;
             }
 
 
