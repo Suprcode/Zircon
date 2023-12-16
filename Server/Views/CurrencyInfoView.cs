@@ -30,6 +30,7 @@ namespace Server.Views
         {
             bool needSave = false;
 
+            #region Gold
             var gold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.Gold);
             var goldItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Gold");
 
@@ -109,7 +110,9 @@ namespace Server.Views
 
                 needSave = true;
             }
+            #endregion
 
+            #region GameGold
             var gameGold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.GameGold);
 
             if (gameGold == null)
@@ -125,7 +128,9 @@ namespace Server.Views
                 gameGold.Abbreviation = "GG";
                 needSave = true;
             }
+            #endregion
 
+            #region HuntGold
             var huntGold = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.HuntGold);
 
             if (huntGold == null)
@@ -141,8 +146,9 @@ namespace Server.Views
                 huntGold.Abbreviation = "HG";
                 needSave = true;
             }
+            #endregion
 
-
+            #region FamePoint
             var fp = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.FP);
             var fpItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Fame Point");
 
@@ -166,7 +172,9 @@ namespace Server.Views
                 fp.DropItem = fpItem;
                 needSave = true;
             }
+            #endregion
 
+            #region ContributionPoint
             var cp = SMain.Session.GetCollection<CurrencyInfo>().Binding.FirstOrDefault(x => x.Type == CurrencyType.CP);
             var cpItem = SMain.Session.GetCollection<ItemInfo>().Binding.FirstOrDefault(x => x.ItemName == "Contribution Point");
 
@@ -189,6 +197,7 @@ namespace Server.Views
                 cp.DropItem = cpItem;
                 needSave = true;
             }
+            #endregion
 
             //Make sure all the items used are currency items
             foreach (var currency in SMain.Session.GetCollection<CurrencyInfo>().Binding)

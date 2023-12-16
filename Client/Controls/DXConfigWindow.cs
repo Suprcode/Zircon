@@ -857,7 +857,7 @@ namespace Client.Controls
                 AnnouncementForeColourBox.BackColour = Color.DarkBlue;
 
                 LocalBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                GMWhisperInBackColourBox.BackColour = Color.FromArgb(200, 255, 255, 255);
+                GMWhisperInBackColourBox.BackColour = Color.FromArgb(255, 255, 255, 255);
                 WhisperInBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
                 WhisperOutBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
                 GroupBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
@@ -866,9 +866,9 @@ namespace Client.Controls
                 GlobalBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
                 ObserverBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
                 HintBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                SystemBackColourBox.BackColour = Color.FromArgb(200, 255, 255, 255);
+                SystemBackColourBox.BackColour = Color.FromArgb(255, 255, 255, 255);
                 GainsBackColourBox.BackColour = Color.FromArgb(0, 0, 0, 0);
-                AnnouncementBackColourBox.BackColour = Color.FromArgb(200, 255, 255, 255);
+                AnnouncementBackColourBox.BackColour = Color.FromArgb(255, 255, 255, 255);
             };
 
             #endregion
