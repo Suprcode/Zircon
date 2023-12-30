@@ -3076,6 +3076,9 @@ namespace Client.Scenes
                 case MagicType.SearingLight:
 
                 case MagicType.Hemorrhage:
+                    if (CanAttackTarget(MagicObject))
+                        target = MagicObject;
+
                     if (CanAttackTarget(MouseObject))
                     {
                         target = MouseObject;
