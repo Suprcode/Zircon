@@ -2662,7 +2662,6 @@ namespace Client.Scenes
 
         private void SetItemInfo(SetInfo set)
         {
-
             DXLabel label = new DXLabel
             {
                 ForeColour = Color.LimeGreen,

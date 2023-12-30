@@ -85,6 +85,7 @@ namespace Client.Envir.Translations
         public abstract string ExitInCombat { get; set; }
         public abstract string FilterConfigSaved { get; set; }
         public abstract string GroupMemberLimit { get; set; }
+        public abstract string GroupSelf { get; set; }
         public abstract string GroupNotLeader { get; set; }
         public abstract string MarketNoItemSelected { get; set; }
         public abstract string MarketInvalidPrice { get; set; }

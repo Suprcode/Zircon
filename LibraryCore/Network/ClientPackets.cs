@@ -326,12 +326,22 @@ namespace Library.Network.ClientPackets
         public bool CanUse { get; set; }
     }
 
+    public sealed class GroupNotify : Packet
+    {
+        public bool Receive { get; set; }
+    }
+
     public sealed class GroupSwitch : Packet
     {
         public bool Allow { get; set; }
     }
 
     public sealed class GroupInvite : Packet
+    {
+        public string Name { get; set; }
+    }
+
+    public sealed class GroupRequest : Packet
     {
         public string Name { get; set; }
     }
@@ -344,6 +354,14 @@ namespace Library.Network.ClientPackets
     public sealed class GroupResponse : Packet
     {
         public bool Accept { get; set; }
+    }
+
+    public sealed class GroupLFGUpdate : Packet
+    {
+        public bool Enabled { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public int MaxCount { get; set; }
     }
 
     public sealed class Inspect : Packet
@@ -679,6 +697,12 @@ namespace Library.Network.ClientPackets
         public List<CellLinkInfo> Links { get; set; }
         public RefineType RefineType { get; set; }
     }
+
+    public sealed class RequestInstance : Packet
+    {
+        public int Index { get; set; }
+    }
+
     public sealed class JoinInstance : Packet
     {
         public int Index { get; set; }

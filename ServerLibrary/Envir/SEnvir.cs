@@ -1,31 +1,29 @@
-﻿using System;
+﻿using Library;
+using Library.Network;
+using Library.SystemModels;
+using MirDB;
+using Server.DBModels;
+using Server.Envir.Commands;
+using Server.Envir.Commands.Handler;
+using Server.Models;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Library;
-using Library.Network;
-using Library.SystemModels;
-using MirDB;
-using Server.DBModels;
-using Server.Models;
+using C = Library.Network.ClientPackets;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
-using System.Reflection;
-using System.Globalization;
-using Server.Envir.Commands.Handler;
-using Server.Envir.Commands;
-using Server.Models.Magics;
-using System.Numerics;
 
 namespace Server.Envir
 {
@@ -645,6 +643,8 @@ namespace Server.Envir
             LoadDatabase();
             LoadExperienceList();
 
+            //GenerateDummyLFG();
+
             #region Load Files
             for (int i = 0; i < MapInfoList.Count; i++)
             {
@@ -1178,7 +1178,7 @@ namespace Server.Envir
                                     }
                                 }
 
-                                if (expired || instance.Value[instanceSequence].Values.All(x => x.LastPlayer.AddMinutes(Globals.InstanceUnloadTimeInMinutes) < DateTime.UtcNow))
+                                if (expired || instance.Value[instanceSequence].Values.All(x => x.LastPlayer.AddMinutes(Globals.InstanceUnloadTimeInMinutes) < SEnvir.Now))
                                 {
                                     UnloadInstance(instance.Key, instanceSequence);
                                     break;

@@ -17,7 +17,7 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Models
 {
-    public sealed class PlayerObject : MapObject
+    public partial class PlayerObject : MapObject
     {
         public override ObjectType Race => ObjectType.Player;
 
@@ -153,8 +153,7 @@ namespace Server.Models
 
         public MapObject LastHitter;
 
-        public PlayerObject GroupInvitation,
-            GuildInvitation, MarriageInvitation;
+        public PlayerObject GuildInvitation, MarriageInvitation;
 
         public PlayerObject TradePartner, TradePartnerRequest;
         public Dictionary<UserItem, CellLinkInfo> TradeItems = new Dictionary<UserItem, CellLinkInfo>();
@@ -166,8 +165,6 @@ namespace Server.Models
         public List<AutoPotionLink> AutoPotions = new List<AutoPotionLink>();
         public CellLinkInfo DelayItemUse;
         public decimal MaxExperience;
-
-        public decimal SwiftBladeLifeSteal, FlameSplashLifeSteal, DestructiveSurgeLifeSteal;
 
         public string FiltersClass;
         public string FiltersRarity;
@@ -319,8 +316,7 @@ namespace Server.Models
             foreach (MonsterObject ob in clearList)
                 ob.EXPOwner = null;
 
-            foreach (MagicType type in MagicObjects.Keys)
-                MagicObjects[type].Process();
+            MagicObjects.Process();
 
             if (Dead && SEnvir.Now >= RevivalTime)
                 TownRevive();
@@ -332,7 +328,10 @@ namespace Server.Models
             ProcessItemExpire();
 
             ProcessQuests();
+
+            ProcessGroup();
         }
+
         public override void ProcessAction(DelayedAction action)
         {
             MapObject ob;
@@ -1062,6 +1061,7 @@ namespace Server.Models
 
             PauseBuffs();
 
+            SendLFGList();
 
             if (SEnvir.TopRankings.Contains(Character))
                 BuffAdd(BuffType.Ranking, TimeSpan.MaxValue, null, true, false, TimeSpan.Zero);
@@ -1398,6 +1398,8 @@ namespace Server.Models
             LastHitter = null;
 
             GroupInvitation = null;
+            GroupInvitationRequest = null;
+            GroupMembers?.Clear();
 
             GuildInvitation = null;
 
@@ -4815,235 +4817,6 @@ namespace Server.Models
             ApplyGuildBuff();
         }
 
-        #endregion
-
-        #region Group
-        public void GroupSwitch(bool allowGroup)
-        {
-            if (Character.Account.AllowGroup == allowGroup) return;
-
-            if (GroupMembers != null && GroupMembers.Any(x => x.CurrentMap.Instance != null))
-            {
-                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
-                return;
-            }
-
-            Character.Account.AllowGroup = allowGroup;
-
-            Enqueue(new S.GroupSwitch { Allow = Character.Account.AllowGroup });
-
-            if (GroupMembers != null)
-                GroupLeave();
-        }
-
-        public void GroupRemove(string name)
-        {
-            if (GroupMembers == null)
-            {
-                Connection.ReceiveChat(Connection.Language.GroupNoGroup, MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.GroupNoGroup, MessageType.System);
-                return;
-            }
-
-            if (GroupMembers[0] != this)
-            {
-                Connection.ReceiveChat(Connection.Language.GroupNotLeader, MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.GroupNotLeader, MessageType.System);
-                return;
-            }
-
-            if (GroupMembers.Any(x => x.CurrentMap.Instance != null))
-            {
-                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
-                return;
-            }
-
-            foreach (PlayerObject member in GroupMembers)
-            {
-                if (string.Compare(member.Name, name, StringComparison.OrdinalIgnoreCase) != 0) continue;
-
-                member.GroupLeave();
-                return;
-            }
-
-            Connection.ReceiveChat(string.Format(Connection.Language.GroupMemberNotFound, name), MessageType.System);
-
-            foreach (SConnection con in Connection.Observers)
-                con.ReceiveChat(string.Format(con.Language.GroupMemberNotFound, name), MessageType.System);
-
-        }
-        public void GroupInvite(string name)
-        {
-            if (GroupMembers != null && GroupMembers[0] != this)
-            {
-                Connection.ReceiveChat(Connection.Language.GroupNotLeader, MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.GroupNotLeader, MessageType.System);
-                return;
-            }
-
-            PlayerObject player = SEnvir.GetPlayerByCharacter(name);
-
-            if (player == null)
-            {
-                Connection.ReceiveChat(string.Format(Connection.Language.CannotFindPlayer, name), MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.CannotFindPlayer, name), MessageType.System);
-                return;
-            }
-
-            if (player.GroupMembers != null)
-            {
-                Connection.ReceiveChat(string.Format(Connection.Language.GroupAlreadyGrouped, name), MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.GroupAlreadyGrouped, name), MessageType.System);
-                return;
-            }
-
-            if (player.GroupInvitation != null)
-            {
-                Connection.ReceiveChat(string.Format(Connection.Language.GroupAlreadyInvited, name), MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.GroupAlreadyInvited, name), MessageType.System);
-                return;
-            }
-
-            if (!player.Character.Account.AllowGroup || SEnvir.IsBlocking(Character.Account, player.Character.Account))
-            {
-                Connection.ReceiveChat(string.Format(Connection.Language.GroupInviteNotAllowed, name), MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.GroupInviteNotAllowed, name), MessageType.System);
-                return;
-            }
-
-            if (player == this)
-            {
-                Connection.ReceiveChat(Connection.Language.GroupSelf, MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.GroupSelf, MessageType.System);
-                return;
-            }
-
-            if (GroupMembers != null && CurrentMap.Instance != null)
-            {
-                if (!CurrentMap.Instance.UserRecord.TryGetValue(player.Name, out byte instanceSequence) || CurrentMap.InstanceSequence != instanceSequence)
-                {
-                    Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
-
-                    foreach (SConnection con in Connection.Observers)
-                        con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
-
-                    return;
-                }
-            }
-
-            player.GroupInvitation = this;
-            player.Enqueue(new S.GroupInvite { Name = Name, ObserverPacket = false });
-        }
-
-        public void GroupJoin()
-        {
-            if (GroupInvitation != null && GroupInvitation.Node == null) GroupInvitation = null;
-
-            if (GroupInvitation == null || GroupMembers != null) return;
-
-            if (GroupInvitation.GroupMembers == null)
-            {
-                GroupInvitation.GroupSwitch(true);
-                GroupInvitation.GroupMembers = new List<PlayerObject> { GroupInvitation };
-                GroupInvitation.Enqueue(new S.GroupMember { ObjectID = GroupInvitation.ObjectID, Name = GroupInvitation.Name }); //<-- Setting group leader?
-            }
-            else if (GroupInvitation.GroupMembers[0] != GroupInvitation)
-            {
-                Connection.ReceiveChat(string.Format(Connection.Language.GroupAlreadyGrouped, GroupInvitation.Name), MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.GroupAlreadyGrouped, GroupInvitation.Name), MessageType.System);
-                return;
-            }
-            else if (GroupInvitation.GroupMembers.Count >= Globals.GroupLimit)
-            {
-                Connection.ReceiveChat(string.Format(Connection.Language.GroupMemberLimit, GroupInvitation.Name), MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.GroupMemberLimit, GroupInvitation.Name), MessageType.System);
-                return;
-            }
-
-            if (CurrentMap.Instance != null)
-            {
-                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
-
-                foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
-                return;
-            }
-
-            GroupMembers = GroupInvitation.GroupMembers;
-            GroupMembers.Add(this);
-
-            foreach (PlayerObject ob in GroupMembers)
-            {
-                if (ob == this) continue;
-
-                ob.Enqueue(new S.GroupMember { ObjectID = ObjectID, Name = Name });
-                Enqueue(new S.GroupMember { ObjectID = ob.ObjectID, Name = ob.Name });
-
-                ob.AddAllObjects();
-                ob.RefreshStats();
-                ob.ApplyGuildBuff();
-            }
-
-            AddAllObjects();
-            ApplyGuildBuff();
-
-            RefreshStats();
-            Enqueue(new S.GroupMember { ObjectID = ObjectID, Name = Name });
-        }
-        public void GroupLeave()
-        {
-            Packet p = new S.GroupRemove { ObjectID = ObjectID };
-
-            GroupMembers.Remove(this);
-            List<PlayerObject> oldGroup = GroupMembers;
-            GroupMembers = null;
-
-            if (Buffs.Any(x => x.Type == BuffType.SoulResonance))
-                SoulResonance.Remove(this);
-
-            foreach (PlayerObject ob in oldGroup)
-            {
-                ob.Enqueue(p);
-                ob.RemoveAllObjects();
-                ob.RefreshStats();
-                ob.ApplyGuildBuff();
-            }
-
-            if (oldGroup.Count == 1) oldGroup[0].GroupLeave();
-
-            GroupMembers = null;
-
-            Enqueue(p);
-            RemoveAllObjects();
-            RefreshStats();
-            ApplyGuildBuff();
-        }
         #endregion
 
         #region Items
@@ -15312,6 +15085,31 @@ namespace Server.Models
 
         #region Instance / Dungeon Finder
 
+        public void RequestInstance(C.RequestInstance p)
+        {
+            S.RequestInstance requestResult = new S.RequestInstance { Index = p.Index, Success = false };
+
+            Enqueue(requestResult);
+
+            var instance = SEnvir.InstanceInfoList.Binding.FirstOrDefault(x => x.Index == p.Index);
+
+            if (instance == null)
+            {
+                return;
+            }
+
+            if (CurrentMap.Instance != null)
+            {
+                //Cannot move from one instance to another
+                return;
+            }
+
+            var (index, result) = GetInstance(instance, true, true);
+
+            requestResult.Result = result;
+            requestResult.Success = true;
+        }
+
         public void JoinInstance(C.JoinInstance p)
         {
             var instance = SEnvir.InstanceInfoList.Binding.FirstOrDefault(x => x.Index == p.Index);
@@ -15381,8 +15179,19 @@ namespace Server.Models
             if (instance.ConnectRegion == null)
                 return (null, InstanceResult.ConnectRegionNotSet);
 
-            if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
-                return (null, InstanceResult.InsufficientLevel);
+            if (GroupMembers != null && instance.Type == InstanceType.Group)
+            {
+                foreach (var member in GroupMembers)
+                {
+                    if (instance.MinPlayerLevel > 0 && member.Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && member.Level > instance.MaxPlayerLevel)
+                        return (null, InstanceResult.InsufficientLevel);
+                }
+            }
+            else
+            {
+                if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)
+                    return (null, InstanceResult.InsufficientLevel);
+            }
 
             if (dungeonFinder && instance.SafeZoneOnly && !InSafeZone)
                 return (null, InstanceResult.SafeZoneOnly);

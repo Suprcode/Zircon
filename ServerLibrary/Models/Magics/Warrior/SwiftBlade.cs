@@ -36,7 +36,6 @@ namespace Server.Models.Magics
             response.Locations.Add(location);
 
             var cells = CurrentMap.GetCells(location, 0, 3);
-            Player.SwiftBladeLifeSteal = 0;
 
             var delay = SEnvir.Now.AddMilliseconds(900);
 

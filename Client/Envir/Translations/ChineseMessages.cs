@@ -86,6 +86,7 @@ namespace Client.Envir.Translations
         public override string ExitInCombat { get; set; } = "Unable to exit game whilst in combat.";
         public override string FilterConfigSaved { get; set; } = "Drop filters have been saved to your configuration";
         public override string GroupMemberLimit { get; set; } = "Group member limit has been reached";
+        public override string GroupSelf { get; set; } = "You can not group with yourself";
         public override string GroupNotLeader { get; set; } = "You are not the leader of your group.";
         public override string MarketNoItemSelected { get; set; } = "Error: No Item selected.";
         public override string MarketInvalidPrice { get; set; } = "Error: Invalid Price.";

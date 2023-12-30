@@ -1767,6 +1767,8 @@ namespace Library
 
     public enum InstanceResult : byte
     {
+        None = 0,
+
         Invalid,
         InsufficientLevel,
         SafeZoneOnly,

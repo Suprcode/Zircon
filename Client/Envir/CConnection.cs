@@ -3195,7 +3195,6 @@ namespace Client.Envir
         {
             GameScene.Game.GroupBox.Members.Add(new ClientPlayerInfo { ObjectID = p.ObjectID, Name = p.Name });
 
-
             GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GroupJoin, p.Name), MessageType.Group);
 
             GameScene.Game.GroupBox.UpdateMembers();
@@ -3239,10 +3238,9 @@ namespace Client.Envir
                 GameScene.Game.MiniMapBox.Update(data);
             }
         }
+
         public void Process(S.GroupInvite p)
         {
-
-
             DXMessageBox messageBox = new DXMessageBox($"Do you want to group with {p.Name}?", "Group Invitation", DXMessageBoxButtons.YesNo);
 
             messageBox.YesButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = true });
@@ -3250,7 +3248,27 @@ namespace Client.Envir
             messageBox.CloseButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = false });
             messageBox.Modal = false;
             messageBox.CloseButton.Visible = false;
+        }
 
+        public void Process(S.GroupRequest p)
+        {
+            DXMessageBox messageBox = new DXMessageBox($"{p.Name} would like to join your group.", "Group Invitation Request", DXMessageBoxButtons.YesNo);
+
+            messageBox.YesButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupInvite { Name = p.Name });
+            messageBox.NoButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = false });
+            messageBox.CloseButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = false });
+            messageBox.Modal = false;
+            messageBox.CloseButton.Visible = false;
+        }
+
+        public void Process(S.GroupLFG p)
+        {
+            GameScene.Game.GroupBox.UpdateList(p.List);
+        }
+
+        public void Process(S.GroupUpdate p)
+        {
+            GameScene.Game.GroupBox.UpdateItem(p.Group);
         }
 
         public void Process(S.BuffAdd p)
@@ -3259,6 +3277,7 @@ namespace Client.Envir
 
             GameScene.Game.BuffBox.BuffsChanged();
         }
+
         public void Process(S.BuffRemove p)
         {
             foreach (ClientBuffInfo buff in MapObject.User.Buffs)
@@ -4781,6 +4800,11 @@ namespace Client.Envir
 
 
             fromCell.RefreshItem();
+        }
+
+        public void Process(S.RequestInstance p)
+        {
+
         }
 
         public void Process(S.JoinInstance p)

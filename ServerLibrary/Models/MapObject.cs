@@ -1140,8 +1140,6 @@ namespace Server.Models
             DataSeenByPlayers?.Clear();
 
             PoisonList?.Clear();
-
-            GroupMembers?.Clear();
         }
         public virtual void OnDespawned()
         {
@@ -1717,8 +1715,9 @@ namespace Server.Models
 
         public bool InGroup(MapObject ob)
         {
-            //Ob can be Null
-            return ob?.GroupMembers != null && ob.GroupMembers == GroupMembers;
+            if (ob == null || ob.Race != ObjectType.Player || this.Race != ObjectType.Player) return false;
+
+            return ((PlayerObject)ob).GroupMembers != null && ((PlayerObject)ob).GroupMembers == ((PlayerObject)this).GroupMembers;
         }
 
         public int GetDC()

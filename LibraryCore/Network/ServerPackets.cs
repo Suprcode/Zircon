@@ -695,18 +695,36 @@ namespace Library.Network.ServerPackets
     {
         public bool Allow { get; set; }
     }
+
     public sealed class GroupMember : Packet
     {
         public uint ObjectID { get; set; }
         public string Name { get; set; }
     }
+
     public sealed class GroupRemove : Packet
     {
         public uint ObjectID { get; set; }
     }
+
     public sealed class GroupInvite : Packet
     {
         public string Name { get; set; }
+    }
+
+    public sealed class GroupRequest : Packet
+    {
+        public string Name { get; set; }
+    }
+
+    public sealed class GroupLFG : Packet
+    {
+        public List<ClientGroup> List { get; set; } = new List<ClientGroup>();
+    }
+
+    public sealed class GroupUpdate : Packet
+    {
+        public ClientGroup Group { get; set; }
     }
 
     public sealed class BuffAdd : Packet
@@ -1304,6 +1322,13 @@ namespace Library.Network.ServerPackets
         public GridType GridType { get; set; }
         public int Slot { get; set; }
         public Stats NewStats { get; set; }
+    }
+
+    public sealed class RequestInstance : Packet
+    {
+        public int Index { get; set; }
+        public InstanceResult Result { get; set; }
+        public bool Success { get; set; }
     }
 
     public sealed class JoinInstance : Packet

@@ -87,7 +87,7 @@ namespace Library
 
             DuraLossRate = 15,
 
-            GroupLimit = 15,
+            GroupLimit = 12,
 
             MaxGrowthLevel = 3,
 
@@ -1129,6 +1129,17 @@ namespace Library
         public int Level { get; set; }
         public long Experience { get; set; }
         public List<ClientUserMagic> Magics { get; set; }
+    }
+
+    public class ClientGroup
+    {
+        public string LeaderName { get; set; }
+        public string GroupName { get; set; }
+        public string Description { get; set; }
+        public string GroupType { get; set; }
+        public int CurrentCount { get; set; }
+        public int MaxCount { get; set; }
+        public bool Enabled { get; set; }
     }
 }
 

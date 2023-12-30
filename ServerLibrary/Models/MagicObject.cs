@@ -313,6 +313,12 @@ namespace Server.Models
 
             base[key] = value;
         }
+
+        public void Process()
+        {
+            foreach (MagicType type in Keys)
+                this[type].Process();
+        }
     }
 
     public class MagicCast

@@ -12,7 +12,6 @@ namespace Client.Controls
         #region Properties
         public static List<DXComboBox> ComboBoxes = new List<DXComboBox>();
 
-
         #region NormalHeight
 
         public int NormalHeight
@@ -174,8 +173,8 @@ namespace Client.Controls
             {
                 Parent = ActiveScene,
                 BackColour = Color.Black,
-                Sort =true,
-                ScrollBar = {Change = 15}
+                Sort = true,
+                ScrollBar = { Change = 15 }
             };
             ListBox.selectedItemChanged += (o, e) =>
             {

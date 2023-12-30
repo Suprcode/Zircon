@@ -662,6 +662,18 @@ namespace Server.Envir
             magic.Magic.Set4Key = p.Set4Key;
         }
 
+        public void Process(C.GroupNotify p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.LFGReceiveUpdates = p.Receive;
+
+            if (p.Receive)
+            {
+                Player.SendLFGList();
+            }
+        }
+
         public void Process(C.GroupSwitch p)
         {
             if (Stage != GameStage.Game) return;
@@ -673,6 +685,12 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.GroupInvite(p.Name);
+        }
+        public void Process(C.GroupRequest p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GroupRequest(p.Name);
         }
         public void Process(C.GroupRemove p)
         {
@@ -688,6 +706,14 @@ namespace Server.Envir
                 Player.GroupJoin();
 
             Player.GroupInvitation = null;
+            Player.GroupInvitationRequest = null;
+        }
+
+        public void Process(C.GroupLFGUpdate p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.LFGUpdate(p);
         }
 
         public void Process(C.Inspect p)
@@ -1307,6 +1333,13 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.NPCAccessoryRefine(p);
+        }
+
+        public void Process(C.RequestInstance p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.RequestInstance(p);
         }
 
         public void Process(C.JoinInstance p)

@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Client.Envir;
 using Library;
 
 //Cleaned
@@ -31,7 +32,7 @@ namespace Client.Controls
 
         public DXNumberBox()
         {
-            Size = new Size(90, 18);
+            Size = new Size(90, 20);
 
             ValueTextBox = new DXNumberTextBox
             {
@@ -50,7 +51,7 @@ namespace Client.Controls
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1011,
-                Location = new Point(0, 1),
+                Location = new Point(0, 3),
                 Parent = this,
             };
             DownButton.MouseClick += (o, e) => ValueTextBox.TextBox.Text = (Value - Change).ToString();
@@ -59,7 +60,7 @@ namespace Client.Controls
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1010,
-                Location = new Point(73, 1),
+                Location = new Point(73, 3),
                 Parent = this,
             };
             UpButton.MouseClick += (o, e) => ValueTextBox.TextBox.Text = (Value + Change).ToString();

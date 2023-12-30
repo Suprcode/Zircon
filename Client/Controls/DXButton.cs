@@ -288,6 +288,15 @@ namespace Client.Controls
                     case ButtonType.RemoveButton:
                         InterfaceLibrary.Draw(242, 0, 0, Color.White, false, 1F, ImageType.Image);
                         break;
+                    case ButtonType.LFGButton:
+                        InterfaceLibrary.Draw(243, 0, 0, Color.White, false, 1F, ImageType.Image);
+                        break;
+                    case ButtonType.SearchButton:
+                        InterfaceLibrary.Draw(244, 0, 0, Color.White, false, 1F, ImageType.Image);
+                        break;
+                    case ButtonType.OptionsButton:
+                        InterfaceLibrary.Draw(245, 0, 0, Color.White, false, 1F, ImageType.Image);
+                        break;
                 }
 
                 DXManager.SetSurface(oldSurface);
@@ -465,6 +474,9 @@ namespace Client.Controls
         DeselectedTab,
         SmallButton,
         AddButton,
-        RemoveButton
+        RemoveButton,
+        LFGButton,
+        SearchButton,
+        OptionsButton,
     }
 }
