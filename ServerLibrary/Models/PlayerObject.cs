@@ -13752,7 +13752,7 @@ namespace Server.Models
 
             foreach (MagicType type in types)
             {
-                if (!GetMagic(type, out MagicObject magicObject))
+                if (GetMagic(type, out MagicObject magicObject))
                 {
                     power = magicObject.ModifyPowerAdditionner(primary, power, ob, null, extra);
                 }
