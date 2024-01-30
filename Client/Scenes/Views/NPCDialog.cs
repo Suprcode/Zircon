@@ -370,7 +370,7 @@ namespace Client.Scenes.Views
                     break;
                 case NPCDialogType.AccessoryRefineUpgrade:
                     GameScene.Game.NPCAccessoryUpgradeBox.Visible = true;
-                    GameScene.Game.NPCAccessoryUpgradeBox.Location = new Point(Size.Width - GameScene.Game.NPCAccessoryUpgradeBox.Size.Width, Size.Height);
+                    GameScene.Game.NPCAccessoryUpgradeBox.Location = new Point(0, Size.Height);
                     break; 
                 case NPCDialogType.AccessoryRefineLevel:
                     GameScene.Game.NPCAccessoryLevelBox.Visible = true;
