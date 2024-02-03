@@ -108,7 +108,7 @@ namespace Server.Models.Magics
 
         public override decimal LifeSteal(bool primary, decimal lifestealAmount)
         {
-            lifestealAmount = Math.Min(lifestealAmount, 2000 - FlameSplashLifeSteal);
+            lifestealAmount = Math.Min(lifestealAmount, 750 - FlameSplashLifeSteal);
             FlameSplashLifeSteal += lifestealAmount;
 
             return lifestealAmount;

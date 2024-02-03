@@ -62,11 +62,11 @@ namespace Server.Models.Magics
                 whiteLotus.Magic.Cooldown = SEnvir.Now.AddMilliseconds(whiteLotus.Magic.Info.Delay);
                 Player.Enqueue(new S.MagicCooldown { InfoIndex = whiteLotus.Magic.Info.Index, Delay = whiteLotus.Magic.Info.Delay });
             }
-            if (Player.GetMagic(MagicType.RedLotus, out RedLotus redLotus))
-            {
-                redLotus.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = redLotus.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-            }
+            //if (Player.GetMagic(MagicType.RedLotus, out RedLotus redLotus))
+            //{
+            //    redLotus.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+            //    Player.Enqueue(new S.MagicCooldown { InfoIndex = redLotus.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+            //}
             if (Player.GetMagic(MagicType.SweetBrier, out SweetBrier sweetBrier))
             {
                 sweetBrier.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);

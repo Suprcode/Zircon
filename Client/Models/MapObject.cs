@@ -416,7 +416,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.Parasite);
             }
 
-            if ((Poison & PoisonType.Burn) == PoisonType.Burn)
+            if (Poison.HasFlag(PoisonType.Burn) || Poison.HasFlag(PoisonType.HellFire))
             {
                 CreateMagicEffect(MagicEffect.Burn);
             }
@@ -5024,7 +5024,7 @@ namespace Client.Models
                 count++;
             }
 
-            if ((Poison & PoisonType.Burn) == PoisonType.Burn)
+            if (Poison.HasFlag(PoisonType.Burn) || Poison.HasFlag(PoisonType.HellFire))
             {
                 DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.OrangeRed);
             }

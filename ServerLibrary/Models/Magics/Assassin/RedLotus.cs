@@ -66,11 +66,11 @@ namespace Server.Models.Magics
                 redLotus.Magic.Cooldown = SEnvir.Now.AddMilliseconds(redLotus.Magic.Info.Delay);
                 Player.Enqueue(new S.MagicCooldown { InfoIndex = redLotus.Magic.Info.Index, Delay = redLotus.Magic.Info.Delay });
             }
-            if (Player.GetMagic(MagicType.SweetBrier, out SweetBrier sweetBrier))
-            {
-                sweetBrier.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = sweetBrier.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-            }
+            //if (Player.GetMagic(MagicType.SweetBrier, out SweetBrier sweetBrier))
+            //{
+            //    sweetBrier.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+            //    Player.Enqueue(new S.MagicCooldown { InfoIndex = sweetBrier.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+            //}
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
