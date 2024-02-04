@@ -7496,7 +7496,7 @@ namespace Server.Models
 
             if (p.LinkIndex > 0)
                 info = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.Index == p.LinkIndex);
-            else if (p.Slot > 0)
+            else if (p.LinkItemIndex > 0)
                 item = Inventory.FirstOrDefault(x => x?.Index == p.LinkItemIndex);
 
             foreach (CharacterBeltLink link in Character.BeltLinks)
