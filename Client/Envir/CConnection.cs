@@ -767,6 +767,7 @@ namespace Client.Envir
 
                         GameScene.Game.BuffBox.BuffsChanged();
                         GameScene.Game.RankingBox.Observable = p.StartInformation.Observable;
+                        GameScene.Game.RankingBox.AllowObservation = p.StartInformation.AllowObservation;
 
                         GameScene.Game.StorageSize = p.StartInformation.StorageSize;
 

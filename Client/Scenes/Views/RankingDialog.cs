@@ -137,6 +137,33 @@ namespace Client.Scenes.Views
 
         #endregion
 
+
+        #region AllowObservation
+
+        public bool AllowObservation
+        {
+            get => _AllowObservation;
+            set
+            {
+                if (_AllowObservation == value) return;
+
+                bool oldValue = _AllowObservation;
+                _AllowObservation = value;
+
+                OnAllowObservationChanged(oldValue, value);
+            }
+        }
+        private bool _AllowObservation;
+        public event EventHandler<EventArgs> AllowObservationChanged;
+        public void OnAllowObservationChanged(bool oValue, bool nValue)
+        {
+            ObservableBox.Visible = nValue;
+
+            AllowObservationChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region Observable
 
         public bool Observable
@@ -865,6 +892,7 @@ namespace Client.Scenes.Views
             ObservableBox = new DXCheckBox
             {
                 Parent = RankPanel,
+                Visible = false,
                 Label = { Text = CEnvir.Language.RankingDialogObservableLabel }
             };
             ObservableBox.CheckedChanged += (o, e) =>

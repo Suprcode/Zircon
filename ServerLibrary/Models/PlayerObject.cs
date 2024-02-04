@@ -853,7 +853,8 @@ namespace Server.Models
                 FiltersRarity = Character.FiltersRarity,
                 FiltersItemType = Character.FiltersItemType,
 
-                StruckEnabled = Config.EnableStruck
+                StruckEnabled = Config.EnableStruck,
+                AllowObservation = Config.AllowObservation
             };
         }
 
@@ -1213,7 +1214,6 @@ namespace Server.Models
             }
 
             ApplyObserverBuff();
-
         }
 
         private void NewCharacter()
@@ -8305,6 +8305,8 @@ namespace Server.Models
             BuffRemove(BuffType.Observable);
 
             if (!Character.Observable) return;
+
+            if (!Config.AllowObservation) return;
 
             Stats stats = new Stats();
 

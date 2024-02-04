@@ -407,7 +407,9 @@ namespace Library
         public string FiltersRarity { get; set; }
         public string FiltersItemType { get; set; }
 
+        //Server settings
         public bool StruckEnabled { get; set; }
+        public bool AllowObservation { get; set; }
 
         [CompleteObject]
         public void OnComplete()
