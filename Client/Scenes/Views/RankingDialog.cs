@@ -158,6 +158,7 @@ namespace Client.Scenes.Views
         public void OnAllowObservationChanged(bool oValue, bool nValue)
         {
             ObservableBox.Visible = nValue;
+            ObserveButton.Visible = nValue;
 
             AllowObservationChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -758,7 +759,7 @@ namespace Client.Scenes.Views
                 Size = new Size(60, SmallButtonHeight),
                 Parent = RankPanel,
                 Label = { Text = CEnvir.Language.RankingDialogObserveButtonLabel },
-                Visible = true,
+                Visible = false,
                 Enabled = false,
                 Location = new Point(SearchButton.Location.X + SearchButton.Size.Width + 5, 66)
             };
@@ -1090,6 +1091,8 @@ namespace Client.Scenes.Views
 
         public void Update(S.Rankings p)
         {
+            AllowObservation = p.AllowObservation;
+
             if (p.Class != FilterClass || p.OnlineOnly != OnlineOnly) return;
 
             ScrollBar.MaxValue = p.Total;

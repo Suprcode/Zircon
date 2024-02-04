@@ -768,6 +768,7 @@ namespace Library.Network.ServerPackets
         public RequiredClass Class { get; set; }
         public int StartIndex { get; set; }
         public int Total { get; set; }
+        public bool AllowObservation { get; set; }
 
         public List<RankInfo> Ranks { get; set; }
     }

@@ -853,8 +853,7 @@ namespace Server.Models
                 FiltersRarity = Character.FiltersRarity,
                 FiltersItemType = Character.FiltersItemType,
 
-                StruckEnabled = Config.EnableStruck,
-                AllowObservation = Config.AllowObservation
+                StruckEnabled = Config.EnableStruck
             };
         }
 
