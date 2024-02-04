@@ -40,6 +40,7 @@ namespace Client.Envir
         public static float FontSizeMod { get; set; } = 0.0F;
         public static string Language { get; set; } = "English";
         public static bool Borderless { get; set; } = false;
+        public static bool SmoothMove { get; set; } = false;
 
 
         [ConfigSection("Sound")]
