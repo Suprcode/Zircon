@@ -14199,6 +14199,8 @@ namespace Server.Models
                         DisplayMiss = true;
                         return 0;
                     }
+
+                    LevelMagic(magicImmunity.Magic);
                 }
             }
             else
@@ -14209,7 +14211,7 @@ namespace Server.Models
                     return 0;
                 }
 
-                if (GetMagic(MagicType.PhysicalImmunity, out PhysicalImmunity physicalImmunity) && Level >= physicalImmunity.Magic.Info.NeedLevel1)
+                if (GetMagic(MagicType.PhysicalImmunity, out PhysicalImmunity physicalImmunity))
                 {
                     power -= power * physicalImmunity.Magic.GetPower() / 100;
 
@@ -14218,6 +14220,8 @@ namespace Server.Models
                         DisplayMiss = true;
                         return 0;
                     }
+
+                    LevelMagic(physicalImmunity.Magic);
                 }
             }
 
@@ -14418,6 +14422,9 @@ namespace Server.Models
 
             if (Buffs.Any(x => x.Type == BuffType.Defiance) && GetMagic(MagicType.Defiance, out Defiance defiance))
                 LevelMagic(defiance.Magic);
+
+            if (GetMagic(MagicType.DefensiveMastery, out DefensiveMastery defensiveMastery))
+                LevelMagic(defensiveMastery.Magic);
 
             if (Buffs.Any(x => x.Type == BuffType.RagingWind) && GetMagic(MagicType.RagingWind, out RagingWind ragingWind))
                 LevelMagic(ragingWind.Magic);
