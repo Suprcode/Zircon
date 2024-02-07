@@ -65,6 +65,8 @@ namespace Server.Models.Magics
                 Player.DamageDarkStone(10);
 
                 magics.Add(elementalPuppet);
+
+                Player.LevelMagic(elementalPuppet);
             }
 
             int range = 1;
@@ -74,6 +76,8 @@ namespace Server.Models.Magics
                 range = 3;
 
                 magics.Add(artOfShadows);
+
+                Player.LevelMagic(artOfShadows);
             }
 
             for (int i = 0; i < count; i++)
@@ -144,19 +148,6 @@ namespace Server.Models.Magics
             Player.BuffAdd(BuffType.Cloak, TimeSpan.MaxValue, buffStats, true, false, TimeSpan.FromSeconds(2));
 
             Player.LevelMagic(magic);
-
-            var artOfShadows = GetAugmentedSkill(MagicType.ArtOfShadows);
-            var elementalPuppet = GetAugmentedSkill(MagicType.ElementalPuppet);
-
-            if (artOfShadows != null)
-            {
-                Player.LevelMagic(artOfShadows);
-            }
-
-            if (elementalPuppet != null)
-            {
-                Player.LevelMagic(elementalPuppet);
-            }
 
             if (!forceGhost)
             {
