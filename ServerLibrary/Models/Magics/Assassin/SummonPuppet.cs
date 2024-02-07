@@ -145,6 +145,19 @@ namespace Server.Models.Magics
 
             Player.LevelMagic(magic);
 
+            var artOfShadows = GetAugmentedSkill(MagicType.ArtOfShadows);
+            var elementalPuppet = GetAugmentedSkill(MagicType.ElementalPuppet);
+
+            if (artOfShadows != null)
+            {
+                Player.LevelMagic(artOfShadows);
+            }
+
+            if (elementalPuppet != null)
+            {
+                Player.LevelMagic(elementalPuppet);
+            }
+
             if (!forceGhost)
             {
                 var ghostWalk = GetAugmentedSkill(MagicType.GhostWalk);

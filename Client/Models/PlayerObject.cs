@@ -357,6 +357,10 @@ namespace Client.Models
                     CEnvir.LibraryList.TryGetValue(LibraryFile.HorseRoyal, out HorseShapeLibrary);
                     CEnvir.LibraryList.TryGetValue(LibraryFile.HorseRoyalEffect, out HorseShapeLibrary2);
                     break;
+                case 7:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.HorseBlueDragon, out HorseShapeLibrary);
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.HorseBlueDragonEffect, out HorseShapeLibrary2);
+                    break;
             }
 
 
@@ -1097,6 +1101,7 @@ namespace Client.Models
                                 HorseLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.Black, true, 0.5F, ImageType.Shadow);
                                 break;
                             case 6:
+                            case 7:
                                 HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.Black, true, 0.5F, ImageType.Shadow);
                                 break;
                         }
@@ -1118,26 +1123,27 @@ namespace Client.Models
 
                     switch (HorseShape)
                     {
-                        case 0:
+                        case 0://no armour
                             HorseLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
-                        case 1:
-                        case 2:
-                        case 3:
+                        case 1://iron
+                        case 2://silver
+                        case 3://gold
                             HorseShapeLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
-                        case 4:
+                        case 4://blue
                             HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
-                        case 5:
+                        case 5://dark
+                        case 6://royal
                             HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             if (shadow)
                                 HorseShapeLibrary2?.DrawBlend(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
-                        case 6:
+                        case 7://bluedragon
                             HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             //if (shadow)
-                            //    HorseShapeLibrary2?.DrawBlend(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
+                            //    HorseShapeLibrary2?.Draw(DrawFrame % 10, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
                     }
 
