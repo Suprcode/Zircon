@@ -2226,8 +2226,10 @@ namespace Client.Models
 
             DrawShadow(DrawX, y);
 
-
+            DXManager.GrayScale = true;
             DrawBody(DrawX, y);
+
+            DXManager.GrayScale = false;
         }
 
         public void DrawShadow(int x, int y)

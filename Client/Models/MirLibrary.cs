@@ -228,9 +228,6 @@ namespace Client.Envir
         {
             if (!CheckImage(index)) return;
 
-
-            bool oldGray = DXManager.GrayScale;
-
             MirImage image = Images[index];
             
             Texture texture;
@@ -325,7 +322,11 @@ namespace Client.Envir
 
             if (texture == null) return;
 
-            //DXManager.SetGrayscale(true, texture);
+            if (DXManager.GrayScale)
+            {
+                DXManager.OldGrayScale = true;
+                DXManager.SetGrayscale(true, texture);
+            }
 
             scaling = Matrix.Scaling(scale, scale, 0f);
             rotationZ = Matrix.RotationZ(0F);
@@ -343,7 +344,11 @@ namespace Client.Envir
             
             DXManager.SetOpacity(oldOpacity);
 
-            //DXManager.SetGrayscale(oldGray, null);
+            if (!DXManager.GrayScale && DXManager.OldGrayScale)
+            {
+                DXManager.OldGrayScale = false;
+                DXManager.SetGrayscale(false, null);
+            }
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }

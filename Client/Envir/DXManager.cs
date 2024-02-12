@@ -185,7 +185,7 @@ namespace Client.Envir
         public static PixelShader NormalPixelShader;
         public static PixelShader OutlinePixelShader;
 
-        public static bool GrayScale;
+        public static bool GrayScale, OldGrayScale;
 
         private static unsafe void LoadPixelsShaders()
         {
