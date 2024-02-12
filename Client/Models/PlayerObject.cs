@@ -914,11 +914,11 @@ namespace Client.Models
 
         public override void DrawBlend()
         {
-            if (BodyLibrary == null) return;
+            //if (BodyLibrary == null) return;
 
-            DXManager.SetBlend(true, 0.60F, BlendMode.HIGHLIGHT);
-            DrawPlayer(false);
-            DXManager.SetBlend(false);
+            //DXManager.SetBlend(true, 0.60F, BlendMode.HIGHLIGHT);
+            //DrawPlayer(false);
+            //DXManager.SetBlend(false);
         }
 
         public void DrawBody(bool shadow)

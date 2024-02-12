@@ -49,6 +49,7 @@ namespace Library
                             DarkColour = Color.SaddleBrown,
                             PhantomColour = Color.Purple,
 
+                            PlayerLightColour = Color.FromArgb(120, 255, 255, 255),
                             BrownNameColour = Color.Brown,
                             RedNameColour = Color.Red;
 

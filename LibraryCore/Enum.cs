@@ -1640,6 +1640,16 @@ namespace Library
         Cancel
     }
 
+    public enum HintPosition : byte
+    {
+        TopLeft,
+        BottomLeft,
+
+        FixedY,
+
+        Fluid
+    }
+
     #region Packet Enums
 
     public enum NewAccountResult : byte

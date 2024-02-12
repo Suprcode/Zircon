@@ -33,6 +33,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 51,
+                HintPosition = HintPosition.FixedY
             };
             ExperienceBar.Location = new Point((Size.Width - ExperienceBar.Size.Width) / 2 + 1, 2 + 1);
             ExperienceBar.BeforeDraw += (o, e) =>
@@ -137,7 +138,8 @@ namespace Client.Scenes.Views
                 Index = 82,
                 Parent = this,
                 Location = new Point(650, 23),
-                Hint = CEnvir.Language.MainPanelCharacterButtonHint
+                Hint = CEnvir.Language.MainPanelCharacterButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             CharacterButton.MouseClick += (o, e) =>
             {
@@ -150,7 +152,8 @@ namespace Client.Scenes.Views
                 Index = 87,
                 Parent = this,
                 Location = new Point(689, 23),
-                Hint = CEnvir.Language.MainPanelInventoryButtonHint
+                Hint = CEnvir.Language.MainPanelInventoryButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             InventoryButton.MouseClick += (o, e) => GameScene.Game.InventoryBox.Visible = !GameScene.Game.InventoryBox.Visible;
 
@@ -160,7 +163,8 @@ namespace Client.Scenes.Views
                 Index = 92,
                 Parent = this,
                 Location = new Point(728, 23),
-                Hint = CEnvir.Language.MainPanelSpellButtonHint
+                Hint = CEnvir.Language.MainPanelSpellButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             SpellButton.MouseClick += (o, e) => GameScene.Game.MagicBox.Visible = !GameScene.Game.MagicBox.Visible;
 
@@ -170,7 +174,8 @@ namespace Client.Scenes.Views
                 Index = 112,
                 Parent = this,
                 Location = new Point(767, 23),
-                Hint = CEnvir.Language.MainPanelQuestButtonHint
+                Hint = CEnvir.Language.MainPanelQuestButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             QuestButton.MouseClick += (o, e) => GameScene.Game.QuestBox.Visible = !GameScene.Game.QuestBox.Visible;
 
@@ -180,7 +185,8 @@ namespace Client.Scenes.Views
                 Index = 97,
                 Parent = this,
                 Location = new Point(806, 23),
-                Hint = CEnvir.Language.MainPanelMailButtonHint
+                Hint = CEnvir.Language.MainPanelMailButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             MailButton.MouseClick += (o, e) =>
             {
@@ -230,7 +236,8 @@ namespace Client.Scenes.Views
                 Index = 107,
                 Parent = this,
                 Location = new Point(845, 23),
-                Hint = CEnvir.Language.MainPanelBeltButtonHint
+                Hint = CEnvir.Language.MainPanelBeltButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             BeltButton.MouseClick += (o, e) => GameScene.Game.BeltBox.Visible = !GameScene.Game.BeltBox.Visible;
 
@@ -240,7 +247,8 @@ namespace Client.Scenes.Views
                 Index = 102,
                 Parent = this,
                 Location = new Point(884, 23),
-                Hint = CEnvir.Language.MainPanelGroupButtonHint
+                Hint = CEnvir.Language.MainPanelGroupButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             GroupButton.MouseClick += (o,e) => GameScene.Game.GroupBox.Visible = !GameScene.Game.GroupBox.Visible;
 
@@ -250,7 +258,8 @@ namespace Client.Scenes.Views
                 Index = 117,
                 Parent = this,
                 Location = new Point(923, 23),
-                Hint = CEnvir.Language.MainPanelConfigButtonHint
+                Hint = CEnvir.Language.MainPanelConfigButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             ConfigButton.MouseClick += (o, e) => GameScene.Game.ConfigBox.Visible = !GameScene.Game.ConfigBox.Visible;
 
@@ -260,7 +269,8 @@ namespace Client.Scenes.Views
                 Index = 122,
                 Parent = this,
                 Location = new Point(972, 16),
-                Hint = CEnvir.Language.MainPanelCashShopButtonHint
+                Hint = CEnvir.Language.MainPanelCashShopButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             CashShopButton.MouseClick += (o, e) =>
             {
