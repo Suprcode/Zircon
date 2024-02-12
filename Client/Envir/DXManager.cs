@@ -1,4 +1,5 @@
 ﻿using Client.Controls;
+using Client.Properties;
 using SlimDX;
 using SlimDX.Direct3D9;
 using System;
@@ -136,6 +137,7 @@ namespace Client.Envir
             ValidResolutions.Sort((s1, s2) => (s1.Width * s1.Height).CompareTo(s2.Width * s2.Height));
 
             LoadTextures();
+            LoadPixelsShaders();
 
             Device.SetDialogBoxMode(true);
 
@@ -177,6 +179,104 @@ namespace Client.Envir
 
             ScratchTexture = new Texture(Device, Parameters.BackBufferWidth, Parameters.BackBufferHeight, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
             ScratchSurface = ScratchTexture.GetSurfaceLevel(0);
+        }
+
+        public static PixelShader GrayScalePixelShader;
+        public static PixelShader NormalPixelShader;
+        public static PixelShader OutlinePixelShader;
+
+        public static bool GrayScale;
+
+        private static unsafe void LoadPixelsShaders()
+        {
+            var path = @".\Data\Shaders\";
+
+            var shaderNormalPath = path + "normal.ps";
+            var shaderGrayScalePath = path + "grayscale.ps";
+            var shaderOutlinePath = path + "outline.ps";
+
+            if (System.IO.File.Exists(shaderNormalPath))
+            {
+                using (var gs = ShaderBytecode.AssembleFromFile(shaderNormalPath, ShaderFlags.None))
+                    NormalPixelShader = new PixelShader(Device, gs);
+            }
+            if (System.IO.File.Exists(shaderGrayScalePath))
+            {
+                using (var gs = ShaderBytecode.AssembleFromFile(shaderGrayScalePath, ShaderFlags.None))
+                    GrayScalePixelShader = new PixelShader(Device, gs);
+            }
+            if (System.IO.File.Exists(shaderOutlinePath))
+            {
+                using (var gs = ShaderBytecode.AssembleFromFile(shaderOutlinePath, ShaderFlags.None))
+                    OutlinePixelShader = new PixelShader(Device, gs);
+
+                //// Read shader code from the file
+                //string shaderCode = ReadShaderCodeFromFile(shaderOutlinePath);
+
+                //// Compile the shader code
+                //OutlinePixelShader = CompilePixelShader(Device, shaderCode);
+            }
+        }
+
+        // Function to read shader code from a file
+        private static string ReadShaderCodeFromFile(string filePath)
+        {
+            try
+            {
+                // Read the content of the shader file
+                return File.ReadAllText(filePath);
+            }
+            catch (Exception ex)
+            {
+                // Handle file reading errors
+                // Log or display the error messages
+                throw new Exception($"Error reading shader file: {ex.Message}");
+            }
+        }
+
+        private static PixelShader CompilePixelShader(Device device, string shaderCode)
+        {
+            try
+            {
+                // Compile the shader code
+                ShaderBytecode compiledShader = ShaderBytecode.Compile(shaderCode, "PSMain", "ps_2_0", ShaderFlags.None);
+
+                // Create the PixelShader using the compiled bytecode
+                return new PixelShader(device, compiledShader);
+            }
+            catch (CompilationException ex)
+            {
+                // Handle compilation errors
+                // Log or display the error messages
+                throw new Exception($"Shader compilation error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                // Log or display the error messages
+                throw new Exception($"Error compiling shader: {ex.Message}");
+            }
+        }
+
+        public static void SetGrayscale(bool value, BaseTexture imageTexture)
+        {
+            GrayScale = value;
+
+            if (value == true)
+            {
+                if (Device.PixelShader == OutlinePixelShader) return;
+                Sprite.Flush();
+                Device.PixelShader = OutlinePixelShader;
+
+                Device.SetTexture(0, imageTexture);
+            }
+            else
+            {
+                if (Device.PixelShader == null) return;
+                Sprite.Flush();
+                Device.PixelShader = null;
+                Device.SetTexture(0, null);
+            }
         }
 
         private static void CreateLight()

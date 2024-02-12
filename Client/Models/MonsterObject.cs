@@ -2226,6 +2226,7 @@ namespace Client.Models
 
             DrawShadow(DrawX, y);
 
+
             DrawBody(DrawX, y);
         }
 

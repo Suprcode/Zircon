@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Library;
+using Newtonsoft.Json.Linq;
 using Sentry;
 using SlimDX;
 using SlimDX.Direct3D9;
@@ -227,6 +228,9 @@ namespace Client.Envir
         {
             if (!CheckImage(index)) return;
 
+
+            bool oldGray = DXManager.GrayScale;
+
             MirImage image = Images[index];
             
             Texture texture;
@@ -321,6 +325,8 @@ namespace Client.Envir
 
             if (texture == null) return;
 
+            //DXManager.SetGrayscale(true, texture);
+
             scaling = Matrix.Scaling(scale, scale, 0f);
             rotationZ = Matrix.RotationZ(0F);
             translation = Matrix.Translation(x + (image.Width / 2), y + (image.Height / 2), 0);
@@ -336,6 +342,8 @@ namespace Client.Envir
             CEnvir.DPSCounter++;
             
             DXManager.SetOpacity(oldOpacity);
+
+            //DXManager.SetGrayscale(oldGray, null);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
