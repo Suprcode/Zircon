@@ -2226,10 +2226,7 @@ namespace Client.Models
 
             DrawShadow(DrawX, y);
 
-            DXManager.GrayScale = true;
             DrawBody(DrawX, y);
-
-            DXManager.GrayScale = false;
         }
 
         public void DrawShadow(int x, int y)
@@ -2250,7 +2247,7 @@ namespace Client.Models
             }
         }
 
-        public void DrawBody(int x, int y)
+        public void DrawBody(int x, int y, bool highlight = false)
         {
             switch (Image)
             {
@@ -2268,7 +2265,7 @@ namespace Client.Models
                     BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Colour, true, 1F, ImageType.Overlay, Scale);
                     break;
                 default:
-                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
+                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale, highlight);
                     break;
             }
 
@@ -2361,9 +2358,7 @@ namespace Client.Models
                 case MonsterImage.JinamStoneGate:
                     return;
             }
-            DXManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
-            DrawBody(DrawX, y);
-            DXManager.SetBlend(false);
+            DrawBody(DrawX, y, true);
         }
         public override void DrawName()
         {

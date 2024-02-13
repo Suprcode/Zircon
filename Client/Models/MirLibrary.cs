@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Library;
-using Newtonsoft.Json.Linq;
-using Sentry;
+﻿using Library;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Drawing;
+using System.IO;
+using System.Threading;
 
 namespace Client.Envir
 {
@@ -224,7 +217,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
-        public void Draw(int index, float x, float y, Color4 colour, bool useOffSet, float opacity, ImageType type, float scale = 1F)
+        public void Draw(int index, float x, float y, Color4 colour, bool useOffSet, float opacity, ImageType type, float scale = 1F, bool highlight = false)
         {
             if (!CheckImage(index)) return;
 
@@ -322,10 +315,9 @@ namespace Client.Envir
 
             if (texture == null) return;
 
-            if (DXManager.GrayScale)
+            if (highlight && type == ImageType.Image)
             {
-                DXManager.OldGrayScale = true;
-                DXManager.SetGrayscale(true, texture);
+                DXManager.SetOutline(true, texture);
             }
 
             scaling = Matrix.Scaling(scale, scale, 0f);
@@ -341,13 +333,12 @@ namespace Client.Envir
             DXManager.Sprite.Transform = Matrix.Identity;
 
             CEnvir.DPSCounter++;
-            
+
             DXManager.SetOpacity(oldOpacity);
 
-            if (!DXManager.GrayScale && DXManager.OldGrayScale)
+            if (highlight)
             {
-                DXManager.OldGrayScale = false;
-                DXManager.SetGrayscale(false, null);
+                DXManager.SetOutline(false, null);
             }
 
             image.ExpireTime = Time.Now + Config.CacheDuration;

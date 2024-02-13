@@ -1,5 +1,4 @@
 ﻿using Client.Controls;
-using Client.Properties;
 using SlimDX;
 using SlimDX.Direct3D9;
 using System;
@@ -137,7 +136,7 @@ namespace Client.Envir
             ValidResolutions.Sort((s1, s2) => (s1.Width * s1.Height).CompareTo(s2.Width * s2.Height));
 
             LoadTextures();
-            LoadPixelsShaders();
+            LoadPixelShaders();
 
             Device.SetDialogBoxMode(true);
 
@@ -185,9 +184,7 @@ namespace Client.Envir
         public static PixelShader NormalPixelShader;
         public static PixelShader OutlinePixelShader;
 
-        public static bool GrayScale, OldGrayScale;
-
-        private static unsafe void LoadPixelsShaders()
+        private static unsafe void LoadPixelShaders()
         {
             var path = @".\Data\Shaders\";
 
@@ -209,59 +206,11 @@ namespace Client.Envir
             {
                 using (var gs = ShaderBytecode.AssembleFromFile(shaderOutlinePath, ShaderFlags.None))
                     OutlinePixelShader = new PixelShader(Device, gs);
-
-                //// Read shader code from the file
-                //string shaderCode = ReadShaderCodeFromFile(shaderOutlinePath);
-
-                //// Compile the shader code
-                //OutlinePixelShader = CompilePixelShader(Device, shaderCode);
             }
         }
 
-        // Function to read shader code from a file
-        private static string ReadShaderCodeFromFile(string filePath)
+        public static void SetOutline(bool value, BaseTexture imageTexture)
         {
-            try
-            {
-                // Read the content of the shader file
-                return File.ReadAllText(filePath);
-            }
-            catch (Exception ex)
-            {
-                // Handle file reading errors
-                // Log or display the error messages
-                throw new Exception($"Error reading shader file: {ex.Message}");
-            }
-        }
-
-        private static PixelShader CompilePixelShader(Device device, string shaderCode)
-        {
-            try
-            {
-                // Compile the shader code
-                ShaderBytecode compiledShader = ShaderBytecode.Compile(shaderCode, "PSMain", "ps_2_0", ShaderFlags.None);
-
-                // Create the PixelShader using the compiled bytecode
-                return new PixelShader(device, compiledShader);
-            }
-            catch (CompilationException ex)
-            {
-                // Handle compilation errors
-                // Log or display the error messages
-                throw new Exception($"Shader compilation error: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                // Handle other exceptions
-                // Log or display the error messages
-                throw new Exception($"Error compiling shader: {ex.Message}");
-            }
-        }
-
-        public static void SetGrayscale(bool value, BaseTexture imageTexture)
-        {
-            GrayScale = value;
-
             if (value == true)
             {
                 if (Device.PixelShader == OutlinePixelShader) return;
