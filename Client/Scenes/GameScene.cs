@@ -3741,6 +3741,15 @@ namespace Client.Scenes
 
             User.Light = Math.Max(3, User.Stats[Stat.Light]);
 
+            if (User.Stats[Stat.Light] == 0)
+            {
+                User.LightColour = Globals.PlayerLightColour;
+            }
+            else
+            {
+                User.LightColour = Globals.NoneColour;
+            }
+
             MainPanel.ACLabel.Text = User.Stats.GetFormat(Stat.MaxAC);
             MainPanel.MACLabel.Text = User.Stats.GetFormat(Stat.MaxMR);
 

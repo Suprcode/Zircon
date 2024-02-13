@@ -2966,7 +2966,7 @@ namespace Client.Models
                         case MagicType.None:
                             if (Race != ObjectType.Player || CurrentAnimation != MirAnimation.Combat3 || AttackElement == Element.None) break;
 
-                            Effects.Add(new MirEffect(1090, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 25, attackColour)
+                            Effects.Add(new MirEffect(1090, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 50, attackColour)
                             {
                                 Blend = true,
                                 Target = this,
