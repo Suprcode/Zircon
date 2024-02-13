@@ -48,9 +48,10 @@ namespace Library
                             HolyColour = Color.DarkKhaki,
                             DarkColour = Color.SaddleBrown,
                             PhantomColour = Color.Purple,
-
                             BrownNameColour = Color.Brown,
-                            RedNameColour = Color.Red;
+                            RedNameColour = Color.Red,
+
+                            PlayerLightColour = Color.FromArgb(120, 255, 255, 255);
 
         public const string ClientName = "Legend of Mir 3";
 

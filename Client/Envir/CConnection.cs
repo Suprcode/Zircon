@@ -893,7 +893,18 @@ namespace Client.Envir
 
                 player.Light = p.Light;
                 if (player == MapObject.User)
+                {
                     player.Light = Math.Max(p.Light, 3);
+
+                    if (p.Light == 0)
+                    {
+                        player.LightColour = Globals.PlayerLightColour;
+                    }
+                    else 
+                    {
+                        player.LightColour = Globals.NoneColour;
+                    }
+                }
 
                 player.UpdateLibraries();
                 return;
