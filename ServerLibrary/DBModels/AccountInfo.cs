@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Library;
+﻿using Library;
 using Library.SystemModels;
 using MirDB;
 using Server.Envir;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Server.DBModels
 {
@@ -329,68 +328,13 @@ namespace Server.DBModels
         private string _BanReason;
 
         [IgnoreProperty]
-        public UserCurrency Gold2 => Currencies.First(x => x.Info.Type == CurrencyType.Gold);
+        public UserCurrency Gold => Currencies.First(x => x.Info.Type == CurrencyType.Gold);
 
         [IgnoreProperty]
-        public UserCurrency GameGold2 => Currencies.First(x => x.Info.Type == CurrencyType.GameGold);
+        public UserCurrency GameGold => Currencies.First(x => x.Info.Type == CurrencyType.GameGold);
 
         [IgnoreProperty]
-        public UserCurrency HuntGold2 => Currencies.First(x => x.Info.Type == CurrencyType.HuntGold);
-
-
-        /// <summary>
-        /// OLD PROPERTY. DO NOT USE.
-        /// </summary>
-        public long Gold
-        {
-            get { return _Gold; }
-            set
-            {
-                if (_Gold == value) return;
-
-                var oldValue = _Gold;
-                _Gold = value;
-
-                OnChanged(oldValue, value, "Gold");
-            }
-        }
-        private long _Gold;
-
-        /// <summary>
-        /// OLD PROPERTY. DO NOT USE.
-        /// </summary>
-        public int GameGold
-        {
-            get { return _GameGold; }
-            set
-            {
-                if (_GameGold == value) return;
-
-                var oldValue = _GameGold;
-                _GameGold = value;
-
-                OnChanged(oldValue, value, "GameGold");
-            }
-        }
-        private int _GameGold;
-
-        /// <summary>
-        /// OLD PROPERTY. DO NOT USE.
-        /// </summary>
-        public int HuntGold
-        {
-            get { return _HuntGold; }
-            set
-            {
-                if (_HuntGold == value) return;
-
-                var oldValue = _HuntGold;
-                _HuntGold = value;
-
-                OnChanged(oldValue, value, "HuntGold");
-            }
-        }
-        private int _HuntGold;
+        public UserCurrency HuntGold => Currencies.First(x => x.Info.Type == CurrencyType.HuntGold);
 
         public bool AllowGroup
         {
@@ -729,10 +673,6 @@ namespace Server.DBModels
                     userCurrency = Session.GetCollection<UserCurrency>().CreateNewObject();
                     userCurrency.Account = this;
                     userCurrency.Info = currency;
-
-                    if (currency.Type == CurrencyType.Gold) userCurrency.Amount = Gold;
-                    if (currency.Type == CurrencyType.GameGold) userCurrency.Amount = GameGold;
-                    if (currency.Type == CurrencyType.HuntGold) userCurrency.Amount = HuntGold;
                 }
             }
         }

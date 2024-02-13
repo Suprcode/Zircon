@@ -78,9 +78,9 @@ namespace Server.Models
             set { Character.OnlineState = value; }
         }
 
-        public UserCurrency Gold => Character.Account.Gold2;
-        public UserCurrency GameGold => Character.Account.GameGold2;
-        public UserCurrency HuntGold => Character.Account.HuntGold2;
+        public UserCurrency Gold => Character.Account.Gold;
+        public UserCurrency GameGold => Character.Account.GameGold;
+        public UserCurrency HuntGold => Character.Account.HuntGold;
 
         public decimal Experience
         {
@@ -282,10 +282,6 @@ namespace Server.Models
                     userCurrency = SEnvir.UserCurrencyList.CreateNewObject();
                     userCurrency.Account = Character.Account;
                     userCurrency.Info = currency;
-
-                    if (currency.Type == CurrencyType.Gold) userCurrency.Amount = Character.Account.Gold;
-                    if (currency.Type == CurrencyType.GameGold) userCurrency.Amount = Character.Account.GameGold;
-                    if (currency.Type == CurrencyType.HuntGold) userCurrency.Amount = Character.Account.HuntGold;
                 }
             }
         }
@@ -1062,6 +1058,7 @@ namespace Server.Models
             ApplyCastleBuff();
             ApplyGuildBuff();
             ApplyObserverBuff();
+            ApplyFameBuff();
 
             PauseBuffs();
 
@@ -1216,7 +1213,6 @@ namespace Server.Models
             }
 
             ApplyObserverBuff();
-
         }
 
         private void NewCharacter()
@@ -1795,6 +1791,7 @@ namespace Server.Models
                 //HermitStats = target.HermitStats,
                 //HermitPoints = Math.Max(0, target.Level - 39 - target.SpentPoints),
                 Level = target.Level,
+                Fame = target.Fame,
 
                 Hair = target.HairType,
                 HairColour = target.HairColour,
@@ -2227,6 +2224,8 @@ namespace Server.Models
 
             Stats[Stat.Rebirth] = Character.Rebirth;
 
+            Stats[Stat.Fame] = Character.Fame;
+
             Stats[Stat.DropRate] += 20 * Stats[Stat.Rebirth];
             Stats[Stat.GoldRate] += 20 * Stats[Stat.Rebirth];
 
@@ -2568,10 +2567,9 @@ namespace Server.Models
 
             Map destMap = SEnvir.GetMap(destInfo, CurrentMap.Instance, CurrentMap.InstanceSequence);
 
-            if (destMap == null)
-            {
-                return;
-            }
+            if (destMap == null) return;
+
+            if (location.X < 0 || location.Y < 0 || location.X > destMap.Width || location.Y > destMap.Height) return;
 
             if (!Teleport(destMap, destMap.GetRandomLocation(location, 10, 25))) return;
 
@@ -5112,20 +5110,11 @@ namespace Server.Models
             {
                 if ((check.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
 
-                long count = check.Count;
-
-                var currency = GetCurrency(check.Info);
-
-                if (currency != null)
-                {
-                    long amount = currency.Amount;
-
-                    amount += count;
-
-                    continue;
-                }
-
                 if (check.Info.ItemEffect == ItemEffect.Experience) continue;
+
+                if (SEnvir.IsCurrencyItem(check.Info)) continue;
+
+                long count = check.Count;
 
                 if (checkWeight)
                 {
@@ -5243,7 +5232,6 @@ namespace Server.Models
                         if ((oldItem.Flags & UserItemFlags.NonRefinable) != (item.Flags & UserItemFlags.NonRefinable)) continue;
                         if (!oldItem.Stats.Compare(item.Stats)) continue;
 
-
                         if (oldItem.Count + item.Count <= item.Info.StackSize)
                         {
                             oldItem.Count += item.Count;
@@ -5344,7 +5332,7 @@ namespace Server.Models
             switch (item.Info.ItemType)
             {
                 case ItemType.Consumable:
-                    if ((SEnvir.Now < UseItemTime && item.Info.ItemEffect != ItemEffect.ElixirOfPurification) || Horse != HorseType.None) return;
+                    if ((SEnvir.Now < UseItemTime && item.Info.ItemEffect != ItemEffect.ElixirOfPurification)) return;
 
                     bool work;
                     bool hasSpace;
@@ -5851,6 +5839,7 @@ namespace Server.Models
                             }
                             break;
                         case 19:
+                            if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
                             if (weapon == null)
@@ -5924,6 +5913,7 @@ namespace Server.Models
 
                             break;
                         case 20:
+                            if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
                             if (weapon == null)
@@ -5973,6 +5963,7 @@ namespace Server.Models
                             RefreshStats();
                             break;
                         case 21:
+                            if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
                             if (weapon == null)
@@ -6050,6 +6041,7 @@ namespace Server.Models
 
                             break;
                         case 22:
+                            if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
                             if (weapon == null)
@@ -6105,7 +6097,7 @@ namespace Server.Models
                     break;
                 case ItemType.CompanionFood:
                     if (Companion == null) return;
-                    if (SEnvir.Now < UseItemTime || Horse != HorseType.None) return;
+                    if (SEnvir.Now < UseItemTime) return;
 
                     if (Companion.UserCompanion.Hunger >= Companion.LevelInfo.MaxHunger) return;
 
@@ -6127,6 +6119,8 @@ namespace Server.Models
                     if (SEnvir.Now < UseItemTime || Horse != HorseType.None) return;
 
                     MagicInfo info = SEnvir.MagicInfoList.Binding.First(x => x.Index == item.Info.Shape);
+
+                    if (info.School == MagicSchool.None) return;
 
                     if (GetMagic(info.Magic, out MagicObject magicObject))
                     {
@@ -6414,7 +6408,6 @@ namespace Server.Models
 
             Enqueue(result);
 
-
             if (Dead || (p.FromGrid == p.ToGrid && p.FromSlot == p.ToSlot)) return;
 
             UserItem[] fromArray, toArray;
@@ -6493,7 +6486,6 @@ namespace Server.Models
 
             if (fromItem == null) return;
             if ((fromItem.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
-
 
             switch (p.ToGrid)
             {
@@ -6620,7 +6612,6 @@ namespace Server.Models
 
                 switch (fromItem.Info.ItemType)
                 {
-
                     case ItemType.Poison:
                     case ItemType.Amulet:
                         if (p.MergeItem) break;
@@ -6655,6 +6646,7 @@ namespace Server.Models
                     return;
                 }
             }
+
             if (p.FromGrid == GridType.CompanionInventory && p.ToGrid != GridType.CompanionInventory && toItem != null && !p.MergeItem)
             {
                 int weight = toItem.Weight;
@@ -6670,8 +6662,6 @@ namespace Server.Models
                     return;
                 }
             }
-
-
 
             Packet guildpacket;
             if (p.MergeItem)
@@ -6694,7 +6684,6 @@ namespace Server.Models
 
                     toCount = toItem.Count;
                     fromCount = 0;
-
                 }
                 else
                 {
@@ -6743,7 +6732,6 @@ namespace Server.Models
                         }
                     }
 
-
                     if (p.FromGrid == GridType.GuildStorage)
                     {
                         guildpacket = new S.ItemChanged
@@ -6781,7 +6769,7 @@ namespace Server.Models
 
             if (p.ToGrid == GridType.GuildStorage)
             {
-                if (toItem != null && p.FromGrid != GridType.GuildStorage) //This should force us to me merging stacks OR empty item?
+                if (toItem != null && p.FromGrid != GridType.GuildStorage) //This should force us to merging stacks OR empty item?
                     return;
 
                 if (!fromItem.Info.CanTrade || (fromItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
@@ -6789,12 +6777,9 @@ namespace Server.Models
 
             if (p.FromGrid == GridType.GuildStorage)
             {
-                if (toItem != null && p.ToGrid != GridType.GuildStorage) //This should force us to me merging stacks OR empty item?
+                if (toItem != null && p.ToGrid != GridType.GuildStorage) //This should force us to merging stacks OR empty item?
                     return;
             }
-
-
-
 
             fromArray[p.FromSlot] = toItem;
             toArray[p.ToSlot] = fromItem;
@@ -6888,7 +6873,6 @@ namespace Server.Models
                     break;
             }
 
-
             switch (p.ToGrid)
             {
                 case GridType.Inventory:
@@ -6952,7 +6936,6 @@ namespace Server.Models
                     break;
             }
 
-
             result.Success = true;
 
             RefreshStats();
@@ -6966,7 +6949,165 @@ namespace Server.Models
                 Companion.RefreshStats();
             }
         }
+        public void ItemSort(C.ItemSort p)
+        {
+            if (Dead) return;
 
+            UserItem[] array;
+
+            switch (p.Grid)
+            {
+                case GridType.Inventory:
+                    array = Inventory;
+                    break;
+                case GridType.Storage:
+                    array = Storage;
+                    break;
+                case GridType.PartsStorage:
+                    array = PartsStorage;
+                    break;
+                default:
+                    return;
+            }
+
+            int length = array.Length;
+
+            if (p.Grid == GridType.Storage)
+                length = Math.Min(array.Length, Character.Account.StorageSize);
+
+            List<UserItem> items = new();
+
+            for (int i = 0; i < length; i++)
+            {
+                var item = array[i];
+
+                if (item == null) continue;
+
+                items.Add(item);
+
+                if (item.Info.StackSize <= 1) continue;
+                if (item.Count == item.Info.StackSize) continue; 
+
+                var count = item.Count;
+
+                for (int j = i + 1; j < length; j++)
+                {
+                    var otherItem = array[j];
+
+                    if (otherItem == null) continue;
+
+                    if (item.Info != otherItem.Info) continue;
+                    if (item.ExpireTime != otherItem.ExpireTime) continue;
+
+                    if ((item.Flags & UserItemFlags.Expirable) != (otherItem.Flags & UserItemFlags.Expirable)) continue;
+                    if ((item.Flags & UserItemFlags.Bound) != (otherItem.Flags & UserItemFlags.Bound)) continue;
+                    if ((item.Flags & UserItemFlags.Worthless) != (otherItem.Flags & UserItemFlags.Worthless)) continue;
+                    if ((item.Flags & UserItemFlags.NonRefinable) != (otherItem.Flags & UserItemFlags.NonRefinable)) continue;
+                    if (!item.Stats.Compare(otherItem.Stats)) continue;
+
+                    count += otherItem.Count;
+
+                    array[j] = null;
+                    otherItem.Delete();
+                }
+
+                item.Count = count;
+            }
+
+            var sorted = items
+                .OrderBy(item => item?.Info.ItemType)
+                .ThenBy(item => item?.Info.ItemName)
+                .ThenBy(item => item?.Count)
+                .ToArray();
+
+            for (int i = 0; i < length; i++)
+            {
+                array[i] = null;
+            }
+
+            int slot = 0;
+
+            for (int i = 0; i < sorted.Length; i++)
+            {
+                var item = sorted[i];
+
+                while (item.Count > item.Info.StackSize)
+                {
+                    UserItem newItem = SEnvir.CreateFreshItem(item);
+                    newItem.Count = item.Info.StackSize;
+
+                    item.Count -= item.Info.StackSize;
+
+                    array[slot] = newItem;
+                    newItem.Slot = slot;
+
+                    switch (p.Grid)
+                    {
+                        case GridType.Inventory:
+                            newItem.Character = Character;
+                            break;
+                        case GridType.PartsStorage:
+                            newItem.Account = Character.Account;
+                            break;
+                        case GridType.Storage:
+                            newItem.Account = Character.Account;
+                            break;
+                    }
+
+                    slot++;
+                }
+
+                array[slot] = item;
+                item.Slot = slot;
+
+                slot++;
+            }
+
+            S.ItemSort result = new()
+            {
+                Grid = p.Grid,
+                Items = array.Where(x => x != null).Select(x => x.ToClientInfo()).ToList(),
+                Success = true
+            };
+
+            Enqueue(result);
+        }
+        public void ItemDelete(C.ItemDelete p)
+        {
+            S.ItemDelete result = new S.ItemDelete
+            {
+                Grid = p.Grid,
+                Slot = p.Slot
+            };
+
+            Enqueue(result);
+
+            if (Dead) return;
+
+            UserItem[] array;
+
+            switch (p.Grid)
+            {
+                case GridType.Inventory:
+                    array = Inventory;
+                    break;
+                default:
+                    return;
+            }
+
+            if (p.Slot < 0 || p.Slot >= array.Length) return;
+
+            UserItem item = array[p.Slot];
+
+            if (item == null) return;
+            if ((item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
+            if ((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
+            if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
+
+            RemoveItem(item);
+            array[p.Slot] = null;
+            result.Success = true;
+        }
         public long GetItemCount(ItemInfo info)
         {
             long count = 0;
@@ -7043,7 +7184,6 @@ namespace Server.Models
 
             throw new Exception(string.Format("Unable to Take {0}x{1} from {2}", info.ItemName, count, Name));
         }
-
         public void ItemLock(C.ItemLock p)
         {
             UserItem[] itemArray;
@@ -7153,6 +7293,9 @@ namespace Server.Models
 
             if (p.Grid == GridType.Storage)
                 length = Math.Min(array.Length, Character.Account.StorageSize);
+
+            if (p.Grid == GridType.GuildStorage)
+                length = Math.Min(array.Length, Character.Account.GuildMember.Guild.StorageSize);
 
             for (int i = 0; i < length; i++)
             {
@@ -7311,6 +7454,8 @@ namespace Server.Models
         }
         public void CurrencyDrop(C.CurrencyDrop p)
         {
+            if (Dead) return;
+
             var currency = SEnvir.CurrencyInfoList.Binding.First(x => x.Index == p.CurrencyIndex);
 
             if (currency == null) return;
@@ -7319,7 +7464,7 @@ namespace Server.Models
 
             var amount = userCurrency.Amount;
 
-            if (Dead || currency.DropItem == null || p.Amount <= 0 || p.Amount > amount) return;
+            if (currency.DropItem == null || !currency.DropItem.CanDrop || p.Amount <= 0 || p.Amount > amount) return;
 
             Cell cell = GetDropLocation(Config.DropDistance, null);
 
@@ -7350,12 +7495,12 @@ namespace Server.Models
 
             if (p.LinkIndex > 0)
                 info = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.Index == p.LinkIndex);
-            else if (p.Slot > 0)
+            else if (p.LinkItemIndex > 0)
                 item = Inventory.FirstOrDefault(x => x?.Index == p.LinkItemIndex);
 
             foreach (CharacterBeltLink link in Character.BeltLinks)
             {
-                if (link.Slot != p.Slot && (link.LinkInfoIndex != -1 || link.LinkItemIndex != -1)) continue;
+                if (link.Slot != p.Slot/* && (link.LinkInfoIndex != -1 || link.LinkItemIndex != -1)*/) continue;
 
                 link.Slot = p.Slot;
                 link.LinkInfoIndex = info?.Index ?? -1;
@@ -7371,8 +7516,8 @@ namespace Server.Models
             bLink.Slot = p.Slot;
             bLink.LinkInfoIndex = p.LinkIndex;
             bLink.LinkItemIndex = p.LinkItemIndex;
-
         }
+
         public void AutoPotionLinkChanged(C.AutoPotionLinkChanged p)
         {
             if (p.Slot < 0 || p.Slot >= Globals.MaxAutoPotionCount) return;
@@ -8149,16 +8294,18 @@ namespace Server.Models
             stats[Stat.SkillRate] = Config.SkillRate;
             stats[Stat.CompanionRate] = Config.CompanionRate;
 
-
             if (stats.Count == 0) return;
 
             BuffAdd(BuffType.Server, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
         }
+
         public void ApplyObserverBuff()
         {
             BuffRemove(BuffType.Observable);
 
             if (!Character.Observable) return;
+
+            if (!Config.AllowObservation) return;
 
             Stats stats = new Stats();
 
@@ -8168,6 +8315,31 @@ namespace Server.Models
 
             BuffAdd(BuffType.Observable, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
         }
+
+        public void ApplyFameBuff()
+        {
+            BuffRemove(BuffType.Fame);
+
+            if (Character.Fame <= 0) return;
+
+            var fame = SEnvir.FameInfoList.Binding.FirstOrDefault(x => x.Index == Character.Fame);
+
+            if (fame == null) return;
+
+            Stats stats = new();
+
+            foreach (var stat in fame.BuffStats)
+            {
+                stats[stat.Stat] = stat.Amount;
+            }
+
+            if (stats.Count == 0) return;
+
+            stats[Stat.Fame] = fame.Index;
+
+            BuffAdd(BuffType.Fame, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
+        }
+
         public void ApplyCastleBuff()
         {
             BuffRemove(BuffType.Castle);
@@ -8815,7 +8987,6 @@ namespace Server.Models
                     if ((check.Flags & UserItemFlags.Bound) != (item.Flags & UserItemFlags.Bound)) continue;
                     if ((check.Flags & UserItemFlags.Worthless) != (item.Flags & UserItemFlags.Worthless)) continue;
                     if ((check.Flags & UserItemFlags.NonRefinable) != (item.Flags & UserItemFlags.NonRefinable)) continue;
-
 
                     check.Count += pair.Value.Count;
                     handled = true;
@@ -11334,6 +11505,70 @@ namespace Server.Models
             RefreshStats();
         }
 
+        public void PromoteFame()
+        {
+            var nextFame = GetNextFameTitle();
+
+            if (nextFame == null) return;
+
+            var currency = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => x.Type == CurrencyType.FP);
+
+            if (currency == null) return;
+
+            var userCurrency = GetCurrency(currency);
+
+            if (userCurrency.Amount < nextFame.Cost) return;
+
+            List<ItemCheck> checks = new List<ItemCheck>();
+
+            foreach (var reward in nextFame.ItemRewards)
+            {
+                ItemCheck check = new ItemCheck(reward.Item, reward.Amount, UserItemFlags.None, TimeSpan.Zero);
+
+                checks.Add(check);
+            }
+
+            if (!CanGainItems(false, checks.ToArray()))
+            {
+                Connection.ReceiveChat(Connection.Language.FameNeedSpace, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.FameNeedSpace, MessageType.System);
+                return;
+            }
+
+            userCurrency.Amount -= nextFame.Cost;
+            CurrencyChanged(userCurrency);
+
+            Character.Fame = nextFame.Index;
+
+            foreach (ItemCheck check in checks)
+            {
+                while (check.Count > 0)
+                    GainItem(SEnvir.CreateFreshItem(check));
+            }
+
+            ApplyFameBuff();
+
+            RefreshStats();
+        }
+
+        public FameInfo GetNextFameTitle()
+        {
+            int order = -1;
+
+            var currentFame = SEnvir.FameInfoList.Binding.FirstOrDefault(x => x.Index == Character.Fame);
+
+            if (currentFame != null)
+            {
+                order = currentFame.Order;
+            }
+
+            var nextFame = SEnvir.FameInfoList.Binding.Where(x => x.Order > order).OrderBy(x => x.Order).FirstOrDefault();
+
+            return nextFame;
+        }
+
         public void NPCMasterRefine(C.NPCMasterRefine p)
         {
             S.NPCMasterRefine result = new S.NPCMasterRefine
@@ -13518,7 +13753,7 @@ namespace Server.Models
 
             foreach (MagicType type in types)
             {
-                if (!GetMagic(type, out MagicObject magicObject))
+                if (GetMagic(type, out MagicObject magicObject))
                 {
                     power = magicObject.ModifyPowerAdditionner(primary, power, ob, null, extra);
                 }
@@ -13964,6 +14199,8 @@ namespace Server.Models
                         DisplayMiss = true;
                         return 0;
                     }
+
+                    LevelMagic(magicImmunity.Magic);
                 }
             }
             else
@@ -13974,7 +14211,7 @@ namespace Server.Models
                     return 0;
                 }
 
-                if (GetMagic(MagicType.PhysicalImmunity, out PhysicalImmunity physicalImmunity) && Level >= physicalImmunity.Magic.Info.NeedLevel1)
+                if (GetMagic(MagicType.PhysicalImmunity, out PhysicalImmunity physicalImmunity))
                 {
                     power -= power * physicalImmunity.Magic.GetPower() / 100;
 
@@ -13983,6 +14220,8 @@ namespace Server.Models
                         DisplayMiss = true;
                         return 0;
                     }
+
+                    LevelMagic(physicalImmunity.Magic);
                 }
             }
 
@@ -14183,6 +14422,9 @@ namespace Server.Models
 
             if (Buffs.Any(x => x.Type == BuffType.Defiance) && GetMagic(MagicType.Defiance, out Defiance defiance))
                 LevelMagic(defiance.Magic);
+
+            if (GetMagic(MagicType.DefensiveMastery, out DefensiveMastery defensiveMastery))
+                LevelMagic(defensiveMastery.Magic);
 
             if (Buffs.Any(x => x.Type == BuffType.RagingWind) && GetMagic(MagicType.RagingWind, out RagingWind ragingWind))
                 LevelMagic(ragingWind.Magic);

@@ -256,8 +256,8 @@ namespace Server.Models
                                 {
                                     infection.MagicComplete(new object[]
                                     {
-                                    MagicType.Infection,
-                                    this
+                                        MagicType.Infection,
+                                        this
                                     });
                                 }
                             }
@@ -372,9 +372,16 @@ namespace Server.Models
 
                 if (explode)
                 {
-                    mob = (MonsterObject)this;
+                    switch (Race)
+                    {
+                        case ObjectType.Monster:
+                            {
+                                mob = (MonsterObject)this;
 
-                    mob.EXPOwner ??= (PlayerObject)poison.Owner;
+                                mob.EXPOwner ??= (PlayerObject)poison.Owner;
+                            }
+                            break;
+                    }
 
                     switch (poison.Type)
                     {
@@ -557,9 +564,9 @@ namespace Server.Models
                         {
                             if (SEnvir.ConquestWars.Any(war => war.Map == CurrentMap))
                             {
-                                player.Character.Account.HuntGold2.Amount += 1;
+                                player.Character.Account.HuntGold.Amount += 1;
 
-                                player.CurrencyChanged(player.Character.Account.HuntGold2);
+                                player.CurrencyChanged(player.Character.Account.HuntGold);
 
                                 continue;
                             }
@@ -1427,6 +1434,7 @@ namespace Server.Models
                 case BuffType.Castle:
                 case BuffType.Guild:
                 case BuffType.Veteran:
+                case BuffType.Fame:
                     info.IsTemporary = true;
                     break;
                 case BuffType.RagingWind:

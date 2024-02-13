@@ -40,6 +40,13 @@ namespace Server.Models.Magics
                 response.Magics.Add(MagicType.Release);
             }
 
+            var resolution = GetAugmentedSkill(MagicType.Resolution);
+
+            if (resolution != null)
+            {
+                response.Magics.Add(MagicType.Resolution);
+            }
+
             if (cost < Player.CurrentHP)
             {
                 Player.ChangeHP(-cost);

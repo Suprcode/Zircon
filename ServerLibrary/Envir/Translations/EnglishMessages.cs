@@ -305,5 +305,7 @@ namespace Server.Envir.Translations
         public override string DisciplineRequiredLevel { get; set; } = "Required level for next discipline is {0}.";
         public override string DisciplineRequiredGold { get; set; } = "Required gold for next discipline is {0:#,##0}.";
         public override string DisciplineRequiredExp { get; set; } = "Required experience for next discipline is {0}.";
+
+        public override string FameNeedSpace { get; set; } = "Unable to promote fame, Not enough space in your inventory.";
     }
 }

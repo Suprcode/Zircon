@@ -843,6 +843,9 @@ namespace Library
         [StatDescription(Title = "You are soulbound to another player.", Mode = StatType.Text, UsageHint = "Used in Soul Resonance to tie together 2 players HP")]
         SoulResonance,
 
+        [StatDescription(Mode = StatType.None)]
+        Fame,
+
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,
         [StatDescription(Title = "Auto Cast", Mode = StatType.Text)]

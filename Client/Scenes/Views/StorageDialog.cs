@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
@@ -141,10 +142,10 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.GameInter,
                 Index = 364,
                 Parent = this,
-                Hint = CEnvir.Language.StorageDialogSortButtonLabel,
-                Enabled = false
+                Hint = CEnvir.Language.StorageDialogSortButtonLabel
             };
             SortButton.Location = new Point(DisplayArea.Width - 47, 41);
+            SortButton.MouseClick += SortButton_MouseClick;
 
             TabControl = new DXTabControl
             {
@@ -312,6 +313,13 @@ namespace Client.Scenes.Views
 
             foreach (DXItemCell cell in PartGrid.Grid)
                 cell.MouseWheel += PartsScrollBar.DoMouseWheel;
+        }
+
+        private void SortButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            C.ItemSort packet = new C.ItemSort { Grid = StorageTab.Visible ? GridType.Storage : GridType.PartsStorage };
+
+            CEnvir.Enqueue(packet);
         }
 
         public void RefreshStorage()

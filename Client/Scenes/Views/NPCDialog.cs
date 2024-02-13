@@ -280,7 +280,7 @@ namespace Client.Scenes.Views
             text = C.Replace(text, @"${Text}");
             PageText.Text = text;
 
-            int height = DXLabel.GetHeight(PageText, Size.Width).Height;
+            int height = DXLabel.GetHeight(PageText, PageText.Size.Width).Height;
             SetSize(height);
             ProcessText(CurrentPageSay);
 
@@ -370,7 +370,7 @@ namespace Client.Scenes.Views
                     break;
                 case NPCDialogType.AccessoryRefineUpgrade:
                     GameScene.Game.NPCAccessoryUpgradeBox.Visible = true;
-                    GameScene.Game.NPCAccessoryUpgradeBox.Location = new Point(Size.Width - GameScene.Game.NPCAccessoryUpgradeBox.Size.Width, Size.Height);
+                    GameScene.Game.NPCAccessoryUpgradeBox.Location = new Point(0, Size.Height);
                     break; 
                 case NPCDialogType.AccessoryRefineLevel:
                     GameScene.Game.NPCAccessoryLevelBox.Visible = true;
@@ -1174,7 +1174,7 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> CurrencyChanged;
         public void OnCurrencyChanged(CurrencyInfo oValue, CurrencyInfo nValue)
         {
-            if (Currency == null || Currency.DropItem == null || Currency.Type != CurrencyType.Other)
+            if (Currency == null || Currency.DropItem == null)
             {
                 CurrencyIcon.LibraryFile = LibraryFile.Inventory;
                 CurrencyIcon.Index = 121;

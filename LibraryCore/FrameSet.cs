@@ -831,7 +831,16 @@ namespace Library
         public bool Reversed, StaticSpeed;
 
         public TimeSpan[] Delays; //Index = Duration to freeze
-        
+        public double Sum
+        {
+            get
+            {
+                TimeSpan sum = TimeSpan.Zero;
+                foreach (var timeSpan in Delays)
+                    sum = sum.Add(timeSpan);
+                return sum.TotalMilliseconds;
+            }
+        }
 
         public Frame(int startIndex, int frameCount, int offSet, TimeSpan frameDelay)
         {

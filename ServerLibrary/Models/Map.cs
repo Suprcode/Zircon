@@ -19,6 +19,8 @@ namespace Server.Models
         public MapInfo Info { get; }
         public InstanceInfo Instance { get; }
         public byte InstanceSequence { get; }
+        public int RespawnIndex { get; }
+
         public int Width { get; private set; }
         public int Height { get; private set; }
 
@@ -38,9 +40,10 @@ namespace Server.Models
 
         public DateTime HalloweenEventTime, ChristmasEventTime;
 
-        public Map(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0)
+        public Map(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0, int respawnIndex = 0)
         {
             Info = info;
+            RespawnIndex = respawnIndex;
 
             if (instance != null)
             {
@@ -305,10 +308,7 @@ namespace Server.Models
 
         public void DoSpawn(bool eventSpawn)
         {
-            if (CurrentMap.Instance != null)
-            {
-
-            }
+            if (CurrentMap.RespawnIndex != Info.RespawnIndex) return;
 
             if (!eventSpawn)
             {
@@ -353,7 +353,6 @@ namespace Server.Models
                         CurrentMap.ChristmasEventTime = SEnvir.Now.AddMinutes(20);
                     }
                 }
-
 
                 mob.SpawnInfo = this;
 

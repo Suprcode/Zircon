@@ -128,6 +128,21 @@ namespace Library.SystemModels
         }
         private int _EasterEventChance;
 
+        public int RespawnIndex
+        {
+            get { return _RespawnIndex; }
+            set
+            {
+                if (_RespawnIndex == value) return;
+
+                var oldValue = _RespawnIndex;
+                _RespawnIndex = value;
+
+                OnChanged(oldValue, value, "RespawnIndex");
+            }
+        }
+        private int _RespawnIndex;
+
         [JsonIgnore]
         [IgnoreProperty]
         public string RegionName => Region?.ServerDescription ?? string.Empty;

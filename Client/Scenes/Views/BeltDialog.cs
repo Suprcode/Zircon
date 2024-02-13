@@ -82,7 +82,7 @@ namespace Client.Scenes.Views
 
                 if (link.LinkInfoIndex > 0)
                     Grid.Grid[link.Slot].QuickInfo = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == link.LinkInfoIndex);
-                else if (link.LinkItemIndex >= 0)
+                else if (link.LinkItemIndex > 0)
                     Grid.Grid[link.Slot].QuickItem = GameScene.Game.Inventory.FirstOrDefault(x => x?.Index == link.LinkItemIndex);
             }
         }

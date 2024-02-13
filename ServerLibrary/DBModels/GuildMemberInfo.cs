@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Library;
 using MirDB;
 using Server.Envir;
+using S = Library.Network.ServerPackets;
 
 namespace Server.DBModels
 {
@@ -127,6 +128,27 @@ namespace Server.DBModels
             base.OnDeleted();
         }
 
+
+        public void Contribute(long amount)
+        {
+            if (amount <= 0) return;
+
+            Guild.GuildFunds += amount;
+            Guild.DailyGrowth += amount;
+
+            DailyContribution += amount;
+            TotalContribution += amount;
+
+            DailyContribution += amount;
+            TotalContribution += amount;
+
+            foreach (GuildMemberInfo member in Guild.Members)
+            {
+                if (member.Account.Connection?.Player == null) continue;
+
+                member.Account.Connection.Enqueue(new S.GuildMemberContribution { Index = Index, Contribution = amount, ObserverPacket = false });
+            }
+        }
 
         public ClientGuildMemberInfo ToClientInfo()
         {

@@ -268,6 +268,7 @@ namespace Server.Envir
         public static DBCollection<MonsterInfo> MonsterInfoList;
         public static DBCollection<FishingInfo> FishingInfoList;
         public static DBCollection<DisciplineInfo> DisciplineInfoList;
+        public static DBCollection<FameInfo> FameInfoList;
         public static DBCollection<SetInfo> SetInfoList;
         public static DBCollection<AuctionInfo> AuctionInfoList;
         public static DBCollection<MailInfo> MailInfoList;
@@ -425,6 +426,7 @@ namespace Server.Envir
             RespawnInfoList = Session.GetCollection<RespawnInfo>();
             MagicInfoList = Session.GetCollection<MagicInfo>();
             CurrencyInfoList = Session.GetCollection<CurrencyInfo>();
+            FameInfoList = Session.GetCollection<FameInfo>();
 
             AccountInfoList = Session.GetCollection<AccountInfo>();
             CharacterInfoList = Session.GetCollection<CharacterInfo>();
@@ -967,6 +969,7 @@ namespace Server.Envir
             MagicInfoList = null;
             FishingInfoList = null;
             DisciplineInfoList = null;
+            FameInfoList = null;
 
             BeltLinkList = null;
             UserItemList = null;
@@ -1384,7 +1387,7 @@ namespace Server.Envir
                 }
 
                 payment.Account = character.Account;
-                character.Account.GameGold2.Amount += payment.GameGoldAmount;
+                character.Account.GameGold.Amount += payment.GameGoldAmount;
                 character.Account.Connection?.ReceiveChat(string.Format(character.Account.Connection.Language.PaymentComplete, payment.GameGoldAmount), MessageType.System);
                 character.Player?.GameGoldChanged();
 
@@ -1392,7 +1395,7 @@ namespace Server.Envir
 
                 if (referral != null)
                 {
-                    referral.HuntGold2.Amount += payment.GameGoldAmount / 10;
+                    referral.HuntGold.Amount += payment.GameGoldAmount / 10;
 
                     if (referral.Connection != null)
                     {
@@ -1743,6 +1746,11 @@ namespace Server.Envir
         public static bool IsCurrencyItem(ItemInfo info)
         {
             return CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info) != null;
+        }
+
+        public static bool IsUndroppableCurrencyItem(ItemInfo info)
+        {
+            return CurrencyInfoList.Binding.FirstOrDefault(x => x.DropItem == info && !x.DropItem.CanDrop) != null;
         }
 
         public static void UpgradeWeapon(UserItem item)
@@ -2941,11 +2949,11 @@ namespace Server.Envir
             {
                 int maxLevel = refferal.HighestLevel();
 
-                if (maxLevel >= 50) account.HuntGold2.Amount = 500;
-                else if (maxLevel >= 40) account.HuntGold2.Amount = 300;
-                else if (maxLevel >= 30) account.HuntGold2.Amount = 200;
-                else if (maxLevel >= 20) account.HuntGold2.Amount = 100;
-                else if (maxLevel >= 10) account.HuntGold2.Amount = 50;
+                if (maxLevel >= 50) account.HuntGold.Amount = 500;
+                else if (maxLevel >= 40) account.HuntGold.Amount = 300;
+                else if (maxLevel >= 30) account.HuntGold.Amount = 200;
+                else if (maxLevel >= 20) account.HuntGold.Amount = 100;
+                else if (maxLevel >= 10) account.HuntGold.Amount = 50;
             }
 
 
@@ -3531,6 +3539,7 @@ namespace Server.Envir
         {
             S.Rankings result = new S.Rankings
             {
+                AllowObservation = Config.AllowObservation,
                 OnlineOnly = p.OnlineOnly,
                 StartIndex = p.StartIndex,
                 Class = p.Class,
@@ -3633,7 +3642,7 @@ namespace Server.Envir
 
             for (int i = 0; i < instance.Maps.Count; i++)
             {
-                mapInstance[instanceSequence][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, instanceSequence);
+                mapInstance[instanceSequence][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, instanceSequence, instance.Maps[i].RespawnIndex);
             }
 
             Parallel.ForEach(mapInstance[instanceSequence], x => x.Value.Load());

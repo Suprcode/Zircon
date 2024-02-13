@@ -535,6 +535,13 @@ namespace Library.Network.ServerPackets
         public bool Success { get; set; }
     }
 
+    public sealed class ItemSort : Packet
+    {
+        public GridType Grid { get; set; }
+        public List<ClientUserItem> Items { get; set; }
+        public bool Success { get; set; }
+    }
+
     public sealed class ItemSplit : Packet
     {
         public GridType Grid { get; set; }
@@ -542,6 +549,13 @@ namespace Library.Network.ServerPackets
         public long Count { get; set; }
         public int NewSlot { get; set; }
 
+        public bool Success { get; set; }
+    }
+
+    public sealed class ItemDelete : Packet
+    {
+        public GridType Grid { get; set; }
+        public int Slot { get; set; }
         public bool Success { get; set; }
     }
 
@@ -741,6 +755,7 @@ namespace Library.Network.ServerPackets
         public List<ClientUserItem> Items { get; set; }
         public int Hair { get; set; }
         public Color HairColour { get; set; }
+        public int Fame { get; set; }
 
         //public int WearWeight { get; set; }
         //public int HandWeight { get; set; }
@@ -753,6 +768,7 @@ namespace Library.Network.ServerPackets
         public RequiredClass Class { get; set; }
         public int StartIndex { get; set; }
         public int Total { get; set; }
+        public bool AllowObservation { get; set; }
 
         public List<RankInfo> Ranks { get; set; }
     }

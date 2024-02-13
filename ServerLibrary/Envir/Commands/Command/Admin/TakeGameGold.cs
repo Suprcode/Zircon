@@ -24,7 +24,7 @@ namespace Server.Envir.Commands.Admin {
             if (!int.TryParse(vals[2], out count))
                 ThrowNewInvalidParametersException();
 
-            character.Account.GameGold2.Amount -= count;
+            character.Account.GameGold.Amount -= count;
             character.Account.Connection?.ReceiveChat(string.Format(character.Account.Connection.Language.GameGoldLost, count), MessageType.System);
             character.Player?.GameGoldChanged();
 

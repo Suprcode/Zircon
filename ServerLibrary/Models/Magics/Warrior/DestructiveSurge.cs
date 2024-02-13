@@ -88,7 +88,7 @@ namespace Server.Models.Magics
         {
             if (!primary)
             {
-                lifestealAmount = Math.Min(lifestealAmount, 2000 - DestructiveSurgeLifeSteal);
+                lifestealAmount = Math.Min(lifestealAmount, 750 - DestructiveSurgeLifeSteal);
                 DestructiveSurgeLifeSteal += lifestealAmount;
             }
 

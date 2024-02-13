@@ -2,9 +2,11 @@
 using Library.SystemModels;
 using MirDB;
 using Server.Envir;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Security.Principal;
 using S = Library.Network.ServerPackets;
 
 namespace Server.DBModels
@@ -343,6 +345,16 @@ namespace Server.DBModels
             base.OnDeleted();
         }
 
+        public long CalculateGuildTax(UserItem item)
+        {
+            if (GuildTax <= 0) return 0;
+
+            if (item == null || item.Info != SEnvir.GoldInfo) return 0;
+
+            long amount = (long)Math.Ceiling(item.Count * GuildTax);
+
+            return amount;
+        }
 
         public S.GuildUpdate GetUpdatePacket()
         {

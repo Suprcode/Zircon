@@ -416,7 +416,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.Parasite);
             }
 
-            if ((Poison & PoisonType.Burn) == PoisonType.Burn)
+            if (Poison.HasFlag(PoisonType.Burn) || Poison.HasFlag(PoisonType.HellFire))
             {
                 CreateMagicEffect(MagicEffect.Burn);
             }
@@ -572,40 +572,82 @@ namespace Client.Models
             {
                 case MirAction.Moving:
                 case MirAction.Pushed:
-                    switch (Direction)
+                    if (!Config.SmoothMove)
                     {
-                        case MirDirection.Up:
-                            x = 0;
-                            y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.UpRight:
-                            x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.Right:
-                            x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = 0;
-                            break;
-                        case MirDirection.DownRight:
-                            x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.Down:
-                            x = 0;
-                            y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.DownLeft:
-                            x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
-                        case MirDirection.Left:
-                            x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = 0;
-                            break;
-                        case MirDirection.UpLeft:
-                            x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
-                            break;
+                        switch (Direction)
+                        {
+                            case MirDirection.Up:
+                                x = 0;
+                                y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                break;
+                            case MirDirection.UpRight:
+                                x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                break;
+                            case MirDirection.Right:
+                                x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                y = 0;
+                                break;
+                            case MirDirection.DownRight:
+                                x = -(int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                break;
+                            case MirDirection.Down:
+                                x = 0;
+                                y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                break;
+                            case MirDirection.DownLeft:
+                                x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                y = -(int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                break;
+                            case MirDirection.Left:
+                                x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                y = 0;
+                                break;
+                            case MirDirection.UpLeft:
+                                x = (int)(CellWidth * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                y = (int)(CellHeight * MoveDistance / (float)CurrentFrame.FrameCount * (CurrentFrame.FrameCount - (frame + 1)));
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        double sum = CurrentFrame.Sum;
+                        switch (Direction)
+                        {
+                            case MirDirection.Up:
+                                x = 0;
+                                y = (int)(((CellHeight * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                break;
+                            case MirDirection.UpRight:
+                                x = -(int)(((CellWidth * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                y = (int)(((CellHeight * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                break;
+                            case MirDirection.Right:
+                                x = -(int)(((CellWidth * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                y = 0;
+                                break;
+                            case MirDirection.DownRight:
+                                x = -(int)(((CellWidth * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                y = -(int)(((CellHeight * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                break;
+                            case MirDirection.Down:
+                                x = 0;
+                                y = -(int)(((CellHeight * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                break;
+                            case MirDirection.DownLeft:
+                                x = (int)(((CellWidth * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                y = -(int)(((CellHeight * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                break;
+                            case MirDirection.Left:
+                                x = (int)(((CellWidth * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                y = 0;
+                                break;
+                            case MirDirection.UpLeft:
+                                x = (int)(((CellWidth * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                y = (int)(((CellHeight * MoveDistance) / sum) * (sum - Math.Min((CEnvir.Now - FrameStart).TotalMilliseconds, sum)));
+                                break;
+                        }
                     }
                     break;
             }
@@ -2924,7 +2966,7 @@ namespace Client.Models
                         case MagicType.None:
                             if (Race != ObjectType.Player || CurrentAnimation != MirAnimation.Combat3 || AttackElement == Element.None) break;
 
-                            Effects.Add(new MirEffect(1090, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 25, attackColour)
+                            Effects.Add(new MirEffect(1090, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 10, 50, attackColour)
                             {
                                 Blend = true,
                                 Target = this,
@@ -5024,7 +5066,7 @@ namespace Client.Models
                 count++;
             }
 
-            if ((Poison & PoisonType.Burn) == PoisonType.Burn)
+            if (Poison.HasFlag(PoisonType.Burn) || Poison.HasFlag(PoisonType.HellFire))
             {
                 DXManager.Sprite.Draw(DXManager.PoisonTexture, Vector3.Zero, new Vector3(DrawX + count * 5, DrawY - 50, 0), Color.OrangeRed);
             }

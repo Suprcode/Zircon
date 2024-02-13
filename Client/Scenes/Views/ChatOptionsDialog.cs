@@ -1,12 +1,8 @@
-﻿using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
-using Client.Properties;
 using Client.UserModels;
 using Library;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Drawing;
 
 //Cleaned
 namespace Client.Scenes.Views
@@ -203,8 +199,7 @@ namespace Client.Scenes.Views
             };
 
             panel.ReverseListCheckBox.CheckedChanged += (o, e1) =>
-            {
-                
+            {      
                 tab.UpdateItems();
             };
 

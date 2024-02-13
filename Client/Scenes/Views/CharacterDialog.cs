@@ -1,19 +1,17 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Envir;
+using Client.Models;
+using Client.Scenes.Views.Character;
+using Client.UserModels;
+using Library;
+using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Client.Controls;
-using Client.Envir;
-using Client.Models;
-using Client.Properties;
-using Client.Scenes.Views.Character;
-using Client.UserModels;
-using Library;
-using Library.SystemModels;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -37,6 +35,7 @@ namespace Client.Scenes.Views
         public Dictionary<MagicInfo, DisciplineMagicCell> DisciplineMagics = new Dictionary<MagicInfo, DisciplineMagicCell>();
 
         public DXImageControl MarriageIcon;
+        public DXLabel MarriageLabel;
 
         public DXButton CloseButton;
 
@@ -119,6 +118,14 @@ namespace Client.Scenes.Views
             }
         }
 
+        public int Fame
+        {
+            get
+            {
+                return Inspect ? _inspectFame : MapObject.User.Stats[Stat.Fame];
+            }
+        }
+
         private bool HideHead
         {
             get
@@ -156,6 +163,7 @@ namespace Client.Scenes.Views
         public int _inspectHairType;
         public Color _inspectHairColour;
         public int _inspectLevel;
+        public int _inspectFame;
 
         #endregion
 
@@ -313,7 +321,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Size = new Size(137, 68),
-                Location = new Point((CharacterTab.Size.Width - 135) / 2, 51)
+                Location = new Point(((CharacterTab.Size.Width - 135) / 2) - 5, 51)
             };
             CharacterNameLabel = new DXLabel
             {
@@ -348,11 +356,21 @@ namespace Client.Scenes.Views
 
             MarriageIcon = new DXImageControl
             {
-                Parent = namePanel,
+                Parent = CharacterTab,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1298,
-                Location = new Point(2, namePanel.Size.Height - 14),
-                Visible = false,
+                Location = new Point(96, 60),
+                Visible = false
+            };
+            MarriageLabel = new DXLabel
+            {
+                AutoSize = false,
+                Parent = CharacterTab,
+                Size = new Size(117, 18),
+                ForeColour = Color.Pink,
+                Location = new Point(112, 55),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                Visible = false
             };
 
             TabControl.SelectedTab = CharacterTab;
@@ -683,7 +701,8 @@ namespace Client.Scenes.Views
             DXLabel label = new DXLabel
             {
                 Parent = StatsAttackTab,
-                Text = CEnvir.Language.CommonStatusDC + ":"
+                Text = CEnvir.Language.CommonStatusDC + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y);
 
@@ -702,7 +721,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsAttackTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabMCLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabMCLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -721,7 +741,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsAttackTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabSCLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabSCLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -740,7 +761,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsAttackTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabCritDamageLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabCritDamageLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -761,7 +783,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsAttackTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabAccuracyLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabAccuracyLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y);
 
@@ -780,7 +803,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsAttackTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabASpeedLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabASpeedLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -799,7 +823,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsAttackTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabLuckLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabLuckLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -818,7 +843,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsAttackTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabCritChanceLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabCritChanceLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -843,7 +869,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsDefenseTab,
-                Text = CEnvir.Language.CommonStatusAC + ":"
+                Text = CEnvir.Language.CommonStatusAC + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y);
 
@@ -862,7 +889,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsDefenseTab,
-                Text = CEnvir.Language.CommonStatusMR + ":"
+                Text = CEnvir.Language.CommonStatusMR + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -883,7 +911,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsDefenseTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsDefenseTabAgilityLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsDefenseTabAgilityLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y);
 
@@ -902,7 +931,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsDefenseTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsDefenseTabLifeStealLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsDefenseTabLifeStealLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -927,7 +957,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsWeightTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsWeightTabBodyWLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsWeightTabBodyWLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y);
 
@@ -946,7 +977,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsWeightTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsWeightTabHandWLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsWeightTabHandWLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -971,7 +1003,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsOtherTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabComfortLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabComfortLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y);
 
@@ -990,7 +1023,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsOtherTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabPickupRadiusLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabPickupRadiusLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1011,7 +1045,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsOtherTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabGoldRateLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabGoldRateLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y);
 
@@ -1030,7 +1065,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsOtherTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabDropRateLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabDropRateLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1049,7 +1085,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsOtherTab,
-                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabExpRateLabel
+                Text = CEnvir.Language.CharacterCharacterTabStatsAdditionalTabExpRateLabel,
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1074,7 +1111,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAttackTab,
-                Text = CEnvir.Language.CommonStatusFire + ":"
+                Text = CEnvir.Language.CommonStatusFire + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y);
 
@@ -1085,6 +1123,7 @@ namespace Client.Scenes.Views
                 Index = 600,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusFire,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1100,7 +1139,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAttackTab,
-                Text = CEnvir.Language.CommonStatusIce + ":"
+                Text = CEnvir.Language.CommonStatusIce + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1111,6 +1151,7 @@ namespace Client.Scenes.Views
                 Index = 601,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusIce,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1126,7 +1167,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAttackTab,
-                Text = CEnvir.Language.CommonStatusLightning + ":"
+                Text = CEnvir.Language.CommonStatusLightning + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1137,6 +1179,7 @@ namespace Client.Scenes.Views
                 Index = 602,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusLightning,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1152,7 +1195,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAttackTab,
-                Text = CEnvir.Language.CommonStatusWind + ":"
+                Text = CEnvir.Language.CommonStatusWind + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1163,6 +1207,7 @@ namespace Client.Scenes.Views
                 Index = 603,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusWind,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1180,7 +1225,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAttackTab,
-                Text = CEnvir.Language.CommonStatusHoly + ":"
+                Text = CEnvir.Language.CommonStatusHoly + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y);
 
@@ -1191,6 +1237,7 @@ namespace Client.Scenes.Views
                 Index = 604,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusHoly,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1206,7 +1253,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAttackTab,
-                Text = CEnvir.Language.CommonStatusDark + ":"
+                Text = CEnvir.Language.CommonStatusDark + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1217,6 +1265,7 @@ namespace Client.Scenes.Views
                 Index = 605,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusDark,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1232,7 +1281,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAttackTab,
-                Text = CEnvir.Language.CommonStatusPhantom + ":"
+                Text = CEnvir.Language.CommonStatusPhantom + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1243,6 +1293,7 @@ namespace Client.Scenes.Views
                 Index = 606,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusPhantom,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1264,7 +1315,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAdvantageTab,
-                Text = CEnvir.Language.CommonStatusFire + ":"
+                Text = CEnvir.Language.CommonStatusFire + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y);
 
@@ -1275,6 +1327,7 @@ namespace Client.Scenes.Views
                 Index = 600,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusFire,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1290,7 +1343,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAdvantageTab,
-                Text = CEnvir.Language.CommonStatusIce + ":"
+                Text = CEnvir.Language.CommonStatusIce + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1301,6 +1355,7 @@ namespace Client.Scenes.Views
                 Index = 601,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusIce,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1316,7 +1371,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAdvantageTab,
-                Text = CEnvir.Language.CommonStatusLightning + ":"
+                Text = CEnvir.Language.CommonStatusLightning + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1327,6 +1383,7 @@ namespace Client.Scenes.Views
                 Index = 602,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusLightning,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1342,7 +1399,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAdvantageTab,
-                Text = CEnvir.Language.CommonStatusWind + ":"
+                Text = CEnvir.Language.CommonStatusWind + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1353,6 +1411,7 @@ namespace Client.Scenes.Views
                 Index = 603,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusWind,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1370,7 +1429,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAdvantageTab,
-                Text = CEnvir.Language.CommonStatusHoly + ":"
+                Text = CEnvir.Language.CommonStatusHoly + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y);
 
@@ -1381,6 +1441,7 @@ namespace Client.Scenes.Views
                 Index = 604,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusHoly,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1396,7 +1457,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAdvantageTab,
-                Text = CEnvir.Language.CommonStatusDark + ":"
+                Text = CEnvir.Language.CommonStatusDark + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1407,6 +1469,7 @@ namespace Client.Scenes.Views
                 Index = 605,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusDark,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1422,7 +1485,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAdvantageTab,
-                Text = CEnvir.Language.CommonStatusPhantom + ":"
+                Text = CEnvir.Language.CommonStatusPhantom + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1433,6 +1497,7 @@ namespace Client.Scenes.Views
                 Index = 606,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusPhantom,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1448,7 +1513,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementAdvantageTab,
-                Text = CEnvir.Language.CommonStatusPhysical + ":"
+                Text = CEnvir.Language.CommonStatusPhysical + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1459,6 +1525,7 @@ namespace Client.Scenes.Views
                 Index = 1517,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusPhysical,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1480,7 +1547,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementDisadvantageTab,
-                Text = CEnvir.Language.CommonStatusFire + ":"
+                Text = CEnvir.Language.CommonStatusFire + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y);
 
@@ -1490,7 +1558,8 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 600,
                 ForeColour = Color.FromArgb(60, 60, 60),
-                Hint = CEnvir.Language.CommonStatusFire
+                Hint = CEnvir.Language.CommonStatusFire,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1506,7 +1575,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementDisadvantageTab,
-                Text = CEnvir.Language.CommonStatusIce + ":"
+                Text = CEnvir.Language.CommonStatusIce + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1517,6 +1587,7 @@ namespace Client.Scenes.Views
                 Index = 601,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusIce,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1532,7 +1603,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementDisadvantageTab,
-                Text = CEnvir.Language.CommonStatusLightning + ":"
+                Text = CEnvir.Language.CommonStatusLightning + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1543,6 +1615,7 @@ namespace Client.Scenes.Views
                 Index = 602,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusLightning,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1558,7 +1631,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementDisadvantageTab,
-                Text = CEnvir.Language.CommonStatusWind + ":"
+                Text = CEnvir.Language.CommonStatusWind + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(left, y += rowSpacing);
 
@@ -1569,6 +1643,7 @@ namespace Client.Scenes.Views
                 Index = 603,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusWind,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1586,7 +1661,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementDisadvantageTab,
-                Text = CEnvir.Language.CommonStatusHoly + ":"
+                Text = CEnvir.Language.CommonStatusHoly + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y);
 
@@ -1597,6 +1673,7 @@ namespace Client.Scenes.Views
                 Index = 604,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusHoly,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1612,7 +1689,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementDisadvantageTab,
-                Text = CEnvir.Language.CommonStatusDark + ":"
+                Text = CEnvir.Language.CommonStatusDark + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1623,6 +1701,7 @@ namespace Client.Scenes.Views
                 Index = 605,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusDark,
+                Visible = false
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1638,7 +1717,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementDisadvantageTab,
-                Text = CEnvir.Language.CommonStatusPhantom + ":"
+                Text = CEnvir.Language.CommonStatusPhantom + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1649,6 +1729,7 @@ namespace Client.Scenes.Views
                 Index = 606,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusPhantom,
+                Visible = false,
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -1664,7 +1745,8 @@ namespace Client.Scenes.Views
             label = new DXLabel
             {
                 Parent = StatsElementDisadvantageTab,
-                Text = CEnvir.Language.CommonStatusPhysical + ":"
+                Text = CEnvir.Language.CommonStatusPhysical + ":",
+                ForeColour = Color.White
             };
             label.Location = new Point(right, y += rowSpacing);
 
@@ -1675,6 +1757,7 @@ namespace Client.Scenes.Views
                 Index = 1517,
                 ForeColour = Color.FromArgb(60, 60, 60),
                 Hint = CEnvir.Language.CommonStatusPhysical,
+                Visible = false,
             };
             icon.Location = new Point(label.Location.X + 75, y - 3);
 
@@ -2354,6 +2437,23 @@ namespace Client.Scenes.Views
             ClientUserItem shield = Grid[(int)EquipmentSlot.Shield]?.Item;
             ClientUserItem costume = Grid[(int)EquipmentSlot.Costume]?.Item;
 
+            if (Fame > 0)
+            {
+                MirImage image = FameEffectDecider.GetFameEffectImageOrNull(Fame, out int offSetX, out int offSetY);
+                if (image != null)
+                {
+                    bool oldBlend = DXManager.Blending;
+                    float oldRate = DXManager.BlendRate;
+
+                    int x1 = 257 + offSetX;
+                    int y1 = 76 + offSetY;
+
+                    DXManager.SetBlend(true, 0.8F);
+                    PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x1 + image.OffSetX, DisplayArea.Y + y1 + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                    DXManager.SetBlend(oldBlend, oldRate);
+                }
+            }
+
             if (armour != null && costume == null)
             {
                 MirImage image = EquipEffectDecider.GetEffectImageOrNull(armour, Gender);
@@ -2425,6 +2525,17 @@ namespace Client.Scenes.Views
                         int shieldIndex = shield.Info.Image;
                         library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                         library.Draw(shieldIndex, DisplayArea.X + x, DisplayArea.Y + y, shield.Colour, true, 1F, ImageType.Overlay);
+
+                        MirImage image = EquipEffectDecider.GetEffectImageOrNull(shield, Gender);
+                        if (image != null)
+                        {
+                            bool oldBlend = DXManager.Blending;
+                            float oldRate = DXManager.BlendRate;
+
+                            DXManager.SetBlend(true, 0.8F);
+                            PresentTexture(image.Image, CharacterTab, new Rectangle(DisplayArea.X + x + image.OffSetX, DisplayArea.Y + y + image.OffSetY, image.Width, image.Height), ForeColour, this);
+                            DXManager.SetBlend(oldBlend, oldRate);
+                        }
                     }
                 }
             }
@@ -2609,9 +2720,11 @@ namespace Client.Scenes.Views
             _inspectGender = p.Gender;
             _inspectClass = p.Class;
             _inspectLevel = p.Level;
+            _inspectFame = p.Fame;
 
             MarriageIcon.Visible = !string.IsNullOrEmpty(p.Partner);
-            MarriageIcon.Hint = p.Partner;
+            MarriageLabel.Visible = !string.IsNullOrEmpty(p.Partner);
+            MarriageLabel.Text = p.Partner;
 
             _inspectHairColour = p.HairColour;
             _inspectHairType = p.Hair;
@@ -2800,6 +2913,15 @@ namespace Client.Scenes.Views
 
                     MarriageIcon = null;
                 }
+
+                if (MarriageLabel != null)
+                {
+                    if (!MarriageLabel.IsDisposed)
+                        MarriageLabel.Dispose();
+
+                    MarriageLabel = null;
+                }
+
 
                 if (StatsAttackTab != null)
                 {

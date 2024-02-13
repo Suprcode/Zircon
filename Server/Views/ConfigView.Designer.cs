@@ -980,9 +980,9 @@ namespace Server.Views
             // 
             labelControl70.Location = new System.Drawing.Point(31, 252);
             labelControl70.Name = "labelControl70";
-            labelControl70.Size = new System.Drawing.Size(66, 13);
+            labelControl70.Size = new System.Drawing.Size(68, 13);
             labelControl70.TabIndex = 73;
-            labelControl70.Text = "Releast Date:";
+            labelControl70.Text = "Release Date:";
             // 
             // ClientPathEdit
             // 

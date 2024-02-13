@@ -29,6 +29,7 @@ namespace Library
         public static DBCollection<CompanionLevelInfo> CompanionLevelInfoList;
         public static DBCollection<CurrencyInfo> CurrencyInfoList;
         public static DBCollection<DisciplineInfo> DisciplineInfoList;
+        public static DBCollection<FameInfo> FameInfoList;
 
         public static Random Random = new Random();
 
@@ -47,9 +48,10 @@ namespace Library
                             HolyColour = Color.DarkKhaki,
                             DarkColour = Color.SaddleBrown,
                             PhantomColour = Color.Purple,
-
                             BrownNameColour = Color.Brown,
-                            RedNameColour = Color.Red;
+                            RedNameColour = Color.Red,
+
+                            PlayerLightColour = Color.FromArgb(120, 255, 255, 255);
 
         public const string ClientName = "Legend of Mir 3";
 
@@ -406,6 +408,7 @@ namespace Library
         public string FiltersRarity { get; set; }
         public string FiltersItemType { get; set; }
 
+        //Server settings
         public bool StruckEnabled { get; set; }
 
         [CompleteObject]
@@ -1117,7 +1120,7 @@ namespace Library
         [IgnorePropertyPacket]
         public bool CanPickup
         {
-            get { return Info != null && Info.DropItem != null; }
+            get { return Info != null && Info.DropItem != null && Info.DropItem.CanDrop; }
         }
     }
 

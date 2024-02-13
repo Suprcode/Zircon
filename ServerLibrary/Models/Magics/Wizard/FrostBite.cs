@@ -72,7 +72,7 @@ namespace Server.Models.Magics
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
-            power += Math.Min(stats[Stat.FrostBiteDamage], Player.Stats[Stat.MaxMC] * 50);
+            power += Math.Min(stats[Stat.FrostBiteDamage], Player.Stats[Stat.MaxMC] * 50 + Player.Stats[Stat.IceAttack] * 70);
 
             return power;
         }

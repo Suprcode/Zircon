@@ -123,6 +123,8 @@ namespace Client.Envir.Translations
         public override string CommonControlColourPickerGreenLabel { get; set; } = "Green:";
         public override string CommonControlColourPickerBlueLabel { get; set; } = "Blue:";
         public override string CommonControlColourPickerColourLabel { get; set; } = "Colour:";
+        public override string CommonControlColourPickerNoneLabel { get; set; } = "None";
+        public override string CommonControlColourPickerEmptyLabel { get; set; } = "No Colour";
         public override string CommonControlConfigWindowTitle { get; set; } = "Configuration";
         public override string CommonControlConfigWindowGraphicsTabLabel { get; set; } = "Graphics";
         public override string CommonControlConfigWindowSoundTabLabel { get; set; } = "Sound";
@@ -133,6 +135,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "Game Size:";
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync:";
         public override string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; } = "Limit FPS:";
+        public override string CommonControlConfigWindowGraphicsTabSmoothMoveLabel { get; set; } = "Smooth Move:";
         public override string CommonControlConfigWindowGraphicsTabClipMouseLabel { get; set; } = "Clip Mouse:";
         public override string CommonControlConfigWindowGraphicsTabDebugLabelLabel { get; set; } = "Debug Label:";
         public override string CommonControlConfigWindowGraphicsTabLanguageLabel { get; set; } = "Language:";

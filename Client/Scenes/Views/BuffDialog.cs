@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using Client.Controls;
-using Client.Envir;
+﻿using Client.Controls;
 using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 //Cleaned
 namespace Client.Scenes.Views
@@ -78,10 +77,54 @@ namespace Client.Scenes.Views
                 {
                     Parent = this,
                     LibraryFile = LibraryFile.CBIcon,
+                    HintPosition = HintPosition.BottomLeft
                 };
 
                 switch (buff.Type)
                 {
+                    case BuffType.Castle:
+                        icon.Index = 242;
+                        break;
+                    case BuffType.Observable:
+                        icon.Index = 172;
+                        break;
+                    case BuffType.Veteran:
+                        icon.Index = 171;
+                        break;
+                    case BuffType.Brown:
+                        icon.Index = 229;
+                        break;
+                    case BuffType.PKPoint:
+                        icon.Index = 266;
+                        break;
+                    case BuffType.ItemBuff:
+                        icon.Index = Globals.ItemInfoList.Binding.First(x => x.Index == buff.ItemIndex).BuffIcon;
+                        break;
+                    case BuffType.PvPCurse:
+                        icon.Index = 241;
+                        break;
+                    case BuffType.ItemBuffPermanent:
+                        icon.Index = 81;
+                        break;
+                    case BuffType.HuntGold:
+                        icon.Index = 264;
+                        break;
+                    case BuffType.Companion:
+                        icon.Index = 137;
+                        break;
+                    case BuffType.MapEffect:
+                        icon.Index = 76;
+                        break;
+                    case BuffType.InstanceEffect:
+                        icon.Index = 76;
+                        break;
+                    case BuffType.Guild:
+                        icon.Index = 140;
+                        break;
+                    case BuffType.Fame:
+                        icon.Index = 80;
+                        break;
+
                     case BuffType.Heal:
                         icon.Index = 78;
                         break;
@@ -96,9 +139,6 @@ namespace Client.Scenes.Views
                         break;
                     case BuffType.PoisonousCloud:
                         icon.Index = 98;
-                        break;
-                    case BuffType.Castle:
-                        icon.Index = 242;
                         break;
                     case BuffType.FullBloom:
                         icon.Index = 162;
@@ -127,20 +167,8 @@ namespace Client.Scenes.Views
                     case BuffType.GhostWalk:
                         icon.Index = 160;
                         break;
-                    case BuffType.Observable:
-                        icon.Index = 172;
-                        break;
                     case BuffType.TheNewBeginning:
                         icon.Index = 166;
-                        break;
-                    case BuffType.Veteran:
-                        icon.Index = 171;
-                        break;
-                    case BuffType.Brown:
-                        icon.Index = 229;
-                        break;
-                    case BuffType.PKPoint:
-                        icon.Index = 266;
                         break;
                     case BuffType.Redemption:
                         icon.Index = 258;
@@ -204,31 +232,6 @@ namespace Client.Scenes.Views
                         break;
                     case BuffType.LastStand:
                         icon.Index = 204;
-                        break;
-                    case BuffType.ItemBuff:
-                        icon.Index = Globals.ItemInfoList.Binding.First(x => x.Index == buff.ItemIndex).BuffIcon;
-                        break;
-                    case BuffType.PvPCurse:
-                        icon.Index = 241;
-                        break;
-
-                    case BuffType.ItemBuffPermanent:
-                        icon.Index = 81;
-                        break;
-                    case BuffType.HuntGold:
-                        icon.Index = 264;
-                        break;
-                    case BuffType.Companion:
-                        icon.Index = 137;
-                        break;
-                    case BuffType.MapEffect:
-                        icon.Index = 76;
-                        break;
-                    case BuffType.InstanceEffect:
-                        icon.Index = 76;
-                        break;
-                    case BuffType.Guild:
-                        icon.Index = 140;
                         break;
                     case BuffType.Invincibility:
                         icon.Index = 203;
@@ -300,13 +303,30 @@ namespace Client.Scenes.Views
                     text = $"Instance Effect\n";
                     break;
                 case BuffType.ItemBuff:
-                    ItemInfo info = Globals.ItemInfoList.Binding.First(x => x.Index == buff.ItemIndex);
-                    text = info.ItemName + "\n";
-                    stats = info.Stats;
+                    {
+                        ItemInfo info = Globals.ItemInfoList.Binding.First(x => x.Index == buff.ItemIndex);
+                        text = info.ItemName + "\n";
+                        stats = info.Stats;
+                    }
                     break;
                 case BuffType.ItemBuffPermanent:
                     text = "Permanent Item Buffs\n";
                     break;
+                case BuffType.Companion:
+                    text = $"Companion\n";
+                    break;
+                case BuffType.Fame:
+                    {
+                        FameInfo info = Globals.FameInfoList.Binding.First(x => x.Index == buff.Stats[Stat.Fame]);
+                        text = $"{info.Name}\n";
+
+                        if (!string.IsNullOrEmpty(info.Description))
+                        {
+                            text += "\n" + Functions.BreakStringIntoLines(info.Description, 45) + "\n";
+                        }
+                    }
+                    break;
+
                 case BuffType.Defiance:
                     text = $"Defiance\n";
                     break;
@@ -336,7 +356,6 @@ namespace Client.Scenes.Views
                     break;
                 case BuffType.Invisibility:
                     text = $"Invisibility\n";
-
                     text += $"Hide in plain sight.\n";
                     break;
                 case BuffType.MagicResistance:
@@ -424,9 +443,6 @@ namespace Client.Scenes.Views
                 case BuffType.MagicWeakness:
                     text = $"Magic Weakness\n\n" +
                            $"Your Magic Resistance has been greatly reduced.\n";
-                    break;
-                case BuffType.Companion:
-                    text = $"Companion\n";
                     break;
             }
             

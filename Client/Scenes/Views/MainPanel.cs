@@ -16,7 +16,8 @@ namespace Client.Scenes.Views
         public DXControl HealthBar, ManaBar, FocusBar;
         public DXImageControl ExperienceBar, NewMailIcon, CompletedQuestIcon, AvailableQuestIcon;
 
-        public DXLabel ClassLabel, LevelLabel, ACLabel, MRLabel, DCLabel, MCLabel, SCLabel, AccuracyLabel, AgilityLabel, HealthLabel, ManaLabel, FocusLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
+        public DXImageControl ClassImage, LevelImage, ACImage, MACImage, DCImage, MCImage, SCImage, FPImage, CPImage;
+        public DXLabel ClassLabel, LevelLabel, FPLabel, CPLabel, ACLabel, DCLabel, SCLabel, MACLabel, MCLabel, HealthLabel, ManaLabel, FocusLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
 
         #endregion
 
@@ -32,6 +33,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 51,
+                HintPosition = HintPosition.FixedY
             };
             ExperienceBar.Location = new Point((Size.Width - ExperienceBar.Size.Width) / 2 + 1, 2 + 1);
             ExperienceBar.BeforeDraw += (o, e) =>
@@ -136,7 +138,8 @@ namespace Client.Scenes.Views
                 Index = 82,
                 Parent = this,
                 Location = new Point(650, 23),
-                Hint = CEnvir.Language.MainPanelCharacterButtonHint
+                Hint = CEnvir.Language.MainPanelCharacterButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             CharacterButton.MouseClick += (o, e) =>
             {
@@ -149,7 +152,8 @@ namespace Client.Scenes.Views
                 Index = 87,
                 Parent = this,
                 Location = new Point(689, 23),
-                Hint = CEnvir.Language.MainPanelInventoryButtonHint
+                Hint = CEnvir.Language.MainPanelInventoryButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             InventoryButton.MouseClick += (o, e) => GameScene.Game.InventoryBox.Visible = !GameScene.Game.InventoryBox.Visible;
 
@@ -159,7 +163,8 @@ namespace Client.Scenes.Views
                 Index = 92,
                 Parent = this,
                 Location = new Point(728, 23),
-                Hint = CEnvir.Language.MainPanelSpellButtonHint
+                Hint = CEnvir.Language.MainPanelSpellButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             SpellButton.MouseClick += (o, e) => GameScene.Game.MagicBox.Visible = !GameScene.Game.MagicBox.Visible;
 
@@ -169,7 +174,8 @@ namespace Client.Scenes.Views
                 Index = 112,
                 Parent = this,
                 Location = new Point(767, 23),
-                Hint = CEnvir.Language.MainPanelQuestButtonHint
+                Hint = CEnvir.Language.MainPanelQuestButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             QuestButton.MouseClick += (o, e) => GameScene.Game.QuestBox.Visible = !GameScene.Game.QuestBox.Visible;
 
@@ -179,7 +185,8 @@ namespace Client.Scenes.Views
                 Index = 97,
                 Parent = this,
                 Location = new Point(806, 23),
-                Hint = CEnvir.Language.MainPanelMailButtonHint
+                Hint = CEnvir.Language.MainPanelMailButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             MailButton.MouseClick += (o, e) =>
             {
@@ -229,7 +236,8 @@ namespace Client.Scenes.Views
                 Index = 107,
                 Parent = this,
                 Location = new Point(845, 23),
-                Hint = CEnvir.Language.MainPanelBeltButtonHint
+                Hint = CEnvir.Language.MainPanelBeltButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             BeltButton.MouseClick += (o, e) => GameScene.Game.BeltBox.Visible = !GameScene.Game.BeltBox.Visible;
 
@@ -239,7 +247,8 @@ namespace Client.Scenes.Views
                 Index = 102,
                 Parent = this,
                 Location = new Point(884, 23),
-                Hint = CEnvir.Language.MainPanelGroupButtonHint
+                Hint = CEnvir.Language.MainPanelGroupButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             GroupButton.MouseClick += (o,e) => GameScene.Game.GroupBox.Visible = !GameScene.Game.GroupBox.Visible;
 
@@ -249,7 +258,8 @@ namespace Client.Scenes.Views
                 Index = 117,
                 Parent = this,
                 Location = new Point(923, 23),
-                Hint = CEnvir.Language.MainPanelConfigButtonHint
+                Hint = CEnvir.Language.MainPanelConfigButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             ConfigButton.MouseClick += (o, e) => GameScene.Game.ConfigBox.Visible = !GameScene.Game.ConfigBox.Visible;
 
@@ -259,7 +269,8 @@ namespace Client.Scenes.Views
                 Index = 122,
                 Parent = this,
                 Location = new Point(972, 16),
-                Hint = CEnvir.Language.MainPanelCashShopButtonHint
+                Hint = CEnvir.Language.MainPanelCashShopButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             CashShopButton.MouseClick += (o, e) =>
             {
@@ -272,81 +283,77 @@ namespace Client.Scenes.Views
                 }
             };
 
-            DXLabel label = new DXLabel
+            #region Image Stat Labels
+            ClassImage = new DXImageControl
             {
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelClassLabel,
-                Hint = CEnvir.Language.MainPanelClassHint,
+                Index = 70,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(277, 25),
+                Hint = CEnvir.Language.MainPanelClassHint
             };
-            label.Location = new Point(300 - label.Size.Width, 20);
+            LevelImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 71,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(277, 45),
+                Hint = CEnvir.Language.MainPanelLevelHint
+            };
 
-            label = new DXLabel
+            FPImage = new DXImageControl
             {
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelLevelLabel,
-                Hint = CEnvir.Language.MainPanelLevelHint,
+                Index = 72,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(362, 25)
             };
-            label.Location = new Point(300 - label.Size.Width, 40);
+            CPImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 73,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(362, 45)
+            };
 
-            label = new DXLabel
+            ACImage = new DXImageControl
             {
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelACLabel,
+                Index = 66,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(445, 25)
             };
-            label.Location = new Point(385 - label.Size.Width, 20);
+            DCImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 65,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(445, 45)
+            };
 
-            label = new DXLabel
+            MACImage = new DXImageControl
             {
                 Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelMRLabel,
+                Index = 63,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(531, 25)
             };
-            label.Location = new Point(470 - label.Size.Width, 20);
+            MCImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 62,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(541, 45)
+            };
+            SCImage = new DXImageControl
+            {
+                Parent = this,
+                Index = 64,
+                LibraryFile = LibraryFile.GameInter,
+                Location = new Point(547, 45)
+            };
 
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelDCLabel,
-            };
-            label.Location = new Point(385 - label.Size.Width, 40);
-
-            DXLabel MCLabelLabel = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelMCLabel,
-            };
-            MCLabelLabel.Location = new Point(470 - MCLabelLabel.Size.Width, 40);
-
-            DXLabel SCLabelLabel = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelSCLabel,
-            };
-            SCLabelLabel.Location = new Point(470 - SCLabelLabel.Size.Width, 40);
-
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelAccuracyLabel,
-                Hint = CEnvir.Language.MainPanelAccuracyHint,
-            };
-            label.Location = new Point(567 - label.Size.Width, 20);
-
-            label = new DXLabel
-            {
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
-                Text = CEnvir.Language.MainPanelAgilityLabel,
-                Hint = CEnvir.Language.MainPanelAgilityHint,
-            };
-            label.Location = new Point(567 - label.Size.Width, 40);
+            #endregion
 
             ClassLabel = new DXLabel
             {
@@ -370,7 +377,8 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White
             };
 
-            ACLabel = new DXLabel
+            //FP
+            FPLabel = new DXLabel
             {
                 AutoSize = false,
                 Parent = this,
@@ -381,7 +389,19 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White
             };
 
-            MRLabel = new DXLabel
+            CPLabel = new DXLabel
+            {
+                AutoSize = false,
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
+                
+                Location = new Point(385, 40),
+                Size = new Size(60, 16),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
+            };
+
+            ACLabel = new DXLabel
             {
                 AutoSize = false,
                 Parent = this,
@@ -397,37 +417,13 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
-                Location = new Point(385, 40),
-                Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                ForeColour = Color.White
-            };
-
-            MCLabel = new DXLabel
-            {
-                AutoSize = false,
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
                 Location = new Point(470, 40),
                 Size = new Size(60, 16),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 ForeColour = Color.White
             };
-            MCLabel.VisibleChanged += (o, e) => MCLabelLabel.Visible = MCLabel.Visible;
 
-            SCLabel = new DXLabel
-            {
-                AutoSize = false,
-                Parent = this,
-                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
-                Location = new Point(470, 40),
-                Size = new Size(60, 16),
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                ForeColour = Color.White
-            };
-            SCLabel.VisibleChanged += (o, e) => SCLabelLabel.Visible = SCLabel.Visible;
-
-            AccuracyLabel = new DXLabel
+            MACLabel = new DXLabel
             {
                 AutoSize = false,
                 Parent = this,
@@ -438,7 +434,7 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White
             };
 
-            AgilityLabel = new DXLabel
+            MCLabel = new DXLabel
             {
                 AutoSize = false,
                 Parent = this,
@@ -448,6 +444,19 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 ForeColour = Color.White
             };
+            MCLabel.VisibleChanged += (o, e) => MCImage.Visible = MCLabel.Visible;
+
+            SCLabel = new DXLabel
+            {
+                AutoSize = false,
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
+                Location = new Point(567, 40),
+                Size = new Size(60, 16),
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
+            };
+            SCLabel.VisibleChanged += (o, e) => SCImage.Visible = SCLabel.Visible;
 
             HealthLabel = new DXLabel
             {
@@ -587,20 +596,28 @@ namespace Client.Scenes.Views
                     LevelLabel = null;
                 }
 
+                if (FPLabel != null)
+                {
+                    if (!FPLabel.IsDisposed)
+                        FPLabel.Dispose();
+
+                    FPLabel = null;
+                }
+
+                if (CPLabel != null)
+                {
+                    if (!CPLabel.IsDisposed)
+                        CPLabel.Dispose();
+
+                    CPLabel = null;
+                }
+
                 if (ACLabel != null)
                 {
                     if (!ACLabel.IsDisposed)
                         ACLabel.Dispose();
 
                     ACLabel = null;
-                }
-
-                if (MRLabel != null)
-                {
-                    if (!MRLabel.IsDisposed)
-                        MRLabel.Dispose();
-
-                    MRLabel = null;
                 }
 
                 if (DCLabel != null)
@@ -611,14 +628,6 @@ namespace Client.Scenes.Views
                     DCLabel = null;
                 }
 
-                if (MCLabel != null)
-                {
-                    if (!MCLabel.IsDisposed)
-                        MCLabel.Dispose();
-
-                    MCLabel = null;
-                }
-
                 if (SCLabel != null)
                 {
                     if (!SCLabel.IsDisposed)
@@ -627,20 +636,92 @@ namespace Client.Scenes.Views
                     SCLabel = null;
                 }
 
-                if (AccuracyLabel != null)
+                if (MACLabel != null)
                 {
-                    if (!AccuracyLabel.IsDisposed)
-                        AccuracyLabel.Dispose();
+                    if (!MACLabel.IsDisposed)
+                        MACLabel.Dispose();
 
-                    AccuracyLabel = null;
+                    MACLabel = null;
                 }
 
-                if (AgilityLabel != null)
+                if (MCLabel != null)
                 {
-                    if (!AgilityLabel.IsDisposed)
-                        AgilityLabel.Dispose();
+                    if (!MCLabel.IsDisposed)
+                        MCLabel.Dispose();
 
-                    AgilityLabel = null;
+                    MCLabel = null;
+                }
+
+                if (ClassImage != null)
+                {
+                    if (!ClassImage.IsDisposed)
+                        ClassImage.Dispose();
+
+                    ClassImage = null;
+                }
+
+                if (LevelImage != null)
+                {
+                    if (!LevelImage.IsDisposed)
+                        LevelImage.Dispose();
+
+                    LevelImage = null;
+                }
+
+                if (FPImage != null)
+                {
+                    if (!FPImage.IsDisposed)
+                        FPImage.Dispose();
+
+                    FPImage = null;
+                }
+
+                if (CPImage != null)
+                {
+                    if (!CPImage.IsDisposed)
+                        CPImage.Dispose();
+
+                    CPImage = null;
+                }
+
+                if (ACImage != null)
+                {
+                    if (!ACImage.IsDisposed)
+                        ACImage.Dispose();
+
+                    ACImage = null;
+                }
+
+                if (DCImage != null)
+                {
+                    if (!DCImage.IsDisposed)
+                        DCImage.Dispose();
+
+                    DCImage = null;
+                }
+
+                if (SCImage != null)
+                {
+                    if (!SCImage.IsDisposed)
+                        SCImage.Dispose();
+
+                    SCImage = null;
+                }
+
+                if (MACImage != null)
+                {
+                    if (!MACImage.IsDisposed)
+                        MACImage.Dispose();
+
+                    MACImage = null;
+                }
+
+                if (MCImage != null)
+                {
+                    if (!MCImage.IsDisposed)
+                        MCImage.Dispose();
+
+                    MCImage = null;
                 }
 
                 if (HealthLabel != null)
