@@ -783,6 +783,7 @@ namespace Library
         Charge = 5
     }
 
+    //NF = No Frame
     public enum MonsterImage
     {
         None,
