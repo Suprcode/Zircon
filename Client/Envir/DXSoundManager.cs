@@ -960,6 +960,33 @@ namespace Client.Envir
             [SoundIndex.BlueDragonStruck] = new DXSound(SoundPath + @"403-4.wav", SoundType.Monster),
             [SoundIndex.BlueDragonDie] = new DXSound(SoundPath + @"403-5.wav", SoundType.Monster),
 
+
+            [SoundIndex.Terracotta1Attack] = new DXSound(SoundPath + @"m414-2.wav", SoundType.Monster),
+            [SoundIndex.Terracotta1Struck] = new DXSound(SoundPath + @"m414-4.wav", SoundType.Monster),
+            [SoundIndex.Terracotta1Die] = new DXSound(SoundPath + @"m414-5.wav", SoundType.Monster),
+
+            [SoundIndex.Terracotta2Attack] = new DXSound(SoundPath + @"m415-2.wav", SoundType.Monster),
+            [SoundIndex.Terracotta2Struck] = new DXSound(SoundPath + @"m415-4.wav", SoundType.Monster),
+            [SoundIndex.Terracotta2Die] = new DXSound(SoundPath + @"m415-5.wav", SoundType.Monster),
+
+            [SoundIndex.Terracotta3Attack] = new DXSound(SoundPath + @"m416-2.wav", SoundType.Monster),
+            [SoundIndex.Terracotta3Struck] = new DXSound(SoundPath + @"m416-4.wav", SoundType.Monster),
+            [SoundIndex.Terracotta3Die] = new DXSound(SoundPath + @"m416-5.wav", SoundType.Monster),
+
+            [SoundIndex.Terracotta4Attack] = new DXSound(SoundPath + @"m417-2.wav", SoundType.Monster),
+            [SoundIndex.Terracotta4Struck] = new DXSound(SoundPath + @"m417-4.wav", SoundType.Monster),
+            [SoundIndex.Terracotta4Die] = new DXSound(SoundPath + @"m417-5.wav", SoundType.Monster),
+
+            [SoundIndex.TerracottaSubAttack] = new DXSound(SoundPath + @"m418-2.wav", SoundType.Monster),
+            [SoundIndex.TerracottaSubAttack2] = new DXSound(SoundPath + @"m418-7.wav", SoundType.Monster),
+            [SoundIndex.TerracottaSubStruck] = new DXSound(SoundPath + @"m418-4.wav", SoundType.Monster),
+            [SoundIndex.TerracottaSubDie] = new DXSound(SoundPath + @"m414-5.wav", SoundType.Monster),
+
+            [SoundIndex.TerracottaBossAttack] = new DXSound(SoundPath + @"m419-2.wav", SoundType.Monster),
+            [SoundIndex.TerracottaBossAttack2] = new DXSound(SoundPath + @"m419-7.wav", SoundType.Monster),
+            [SoundIndex.TerracottaBossStruck] = new DXSound(SoundPath + @"m419-4.wav", SoundType.Monster),
+            [SoundIndex.TerracottaBossDie] = new DXSound(SoundPath + @"m419-5.wav", SoundType.Monster),
+
             #endregion
         };
 

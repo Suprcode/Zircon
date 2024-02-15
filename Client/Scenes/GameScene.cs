@@ -426,6 +426,7 @@ namespace Client.Scenes
             ChatTextBox = new ChatTextBox
             {
                 Parent = this,
+                Visible = false
             };
             ChatOptionsBox = new ChatOptionsDialog
             {
@@ -1018,6 +1019,18 @@ namespace Client.Scenes
                 mob = FocusObject as MonsterObject;
                 if (mob != null && mob.CompanionObject == null && !FocusObject.Dead)
                     MonsterBox.Monster = mob;
+            }
+        }
+
+        public override void OnKeyPress(KeyPressEventArgs e)
+        {
+            base.OnKeyPress(e);
+
+            switch ((Keys)e.KeyChar)
+            {
+                case Keys.Enter:
+                    ChatTextBox.ToggleVisibility(e, false);
+                    break;
             }
         }
 

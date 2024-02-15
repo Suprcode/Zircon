@@ -520,7 +520,6 @@ namespace Server.Models
                     return new SamaLightningGuardian { MonsterInfo = monsterInfo };
                 case 110:
                     return new SamaWindGuardian { MonsterInfo = monsterInfo };
-
                 case 111:
                     return new SamaPhoenix { MonsterInfo = monsterInfo };
                 case 112:
@@ -529,7 +528,6 @@ namespace Server.Models
                     return new SamaBlue { MonsterInfo = monsterInfo };
                 case 114:
                     return new SamaWhite { MonsterInfo = monsterInfo };
-
                 case 115:
                     return new SamaProphet
                     {
@@ -611,7 +609,29 @@ namespace Server.Models
                 case 129:
                     return new Monsters.Tornado { MonsterInfo = monsterInfo, Passive = true };
                 case 130:
-                    return new UndeadSoul() { MonsterInfo = monsterInfo };
+                    return new UndeadSoul { MonsterInfo = monsterInfo };
+                case 131:
+                    return new Terracotta { MonsterInfo = monsterInfo };
+                case 132:
+                    return new Terracotta { MonsterInfo = monsterInfo, CanPhase = true };
+                case 133:
+                    return new TerracottaSub
+                    {
+                        MonsterInfo = monsterInfo,
+                        PoisonType = PoisonType.Paralysis,
+                        PoisonTicks = 1,
+                        PoisonFrequency = 5,
+                        PoisonRate = 15,
+                    };
+                case 134:
+                    return new TerracottaBoss
+                    {
+                        MonsterInfo = monsterInfo,
+                        PoisonType = PoisonType.Paralysis,
+                        PoisonTicks = 1,
+                        PoisonFrequency = 5,
+                        PoisonRate = 15,
+                    };
 
                 case 1001:
                     return new CastleFlag { MonsterInfo = monsterInfo };
@@ -2308,7 +2328,7 @@ namespace Server.Models
             }
         }
 
-        public void UpdateMoveTime()
+        public virtual void UpdateMoveTime()
         {
             MoveTime = SEnvir.Now.AddMilliseconds(MoveDelay);
             ActionTime = SEnvir.Now.AddMilliseconds(Math.Min(MoveDelay - 100, AttackDelay));
