@@ -201,8 +201,6 @@ namespace Client.Scenes
         public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
 
-        public TerracottaPuzzleDialog TerracottaBox;
-
         public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
         public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
 
@@ -428,6 +426,7 @@ namespace Client.Scenes
             ChatTextBox = new ChatTextBox
             {
                 Parent = this,
+                Visible = false
             };
             ChatOptionsBox = new ChatOptionsDialog
             {
@@ -666,12 +665,6 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false,
-            };
-
-            TerracottaBox = new TerracottaPuzzleDialog()
-            {
-                Parent = this,
-                Visible = true,
             };
 
             FishingCatchBox = new FishingCatchDialog
@@ -1026,6 +1019,18 @@ namespace Client.Scenes
                 mob = FocusObject as MonsterObject;
                 if (mob != null && mob.CompanionObject == null && !FocusObject.Dead)
                     MonsterBox.Monster = mob;
+            }
+        }
+
+        public override void OnKeyPress(KeyPressEventArgs e)
+        {
+            base.OnKeyPress(e);
+
+            switch ((Keys)e.KeyChar)
+            {
+                case Keys.Enter:
+                    ChatTextBox.ToggleVisibility(e, false);
+                    break;
             }
         }
 

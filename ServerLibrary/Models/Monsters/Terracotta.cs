@@ -12,6 +12,7 @@ namespace Server.Models.Monsters
 
         public override bool CanAttack => Visible && base.CanAttack;
         public override bool Blocking => Visible && base.Blocking;
+        private DateTime PhaseTime;
 
         public Terracotta()
         {
@@ -54,7 +55,6 @@ namespace Server.Models.Monsters
 
         public override void ProcessAction(DelayedAction action)
         {
-
             switch (action.Type)
             {
                 case ActionType.Function:
@@ -77,6 +77,13 @@ namespace Server.Models.Monsters
 
         public void PhaseOut()
         {
+            if (PhaseTime > SEnvir.Now)
+            {
+                return;
+            }
+
+            PhaseTime = SEnvir.Now.AddSeconds(5);
+
             Broadcast(new S.ObjectHide { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
             ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(900), ActionType.Function));
 

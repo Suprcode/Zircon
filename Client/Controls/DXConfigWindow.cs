@@ -34,7 +34,7 @@ namespace Client.Controls
         private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox, 
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox, 
             DrawParticlesCheckBox, DrawWeatherCheckBox;
-        public DXCheckBox DisplayHelmetCheckBox;
+        public DXCheckBox DisplayHelmetCheckBox, HideChatBarCheckBox;
 
         public DXButton KeyBindButton;
 
@@ -92,6 +92,7 @@ namespace Client.Controls
             DrawEffectsCheckBox.Checked = Config.DrawEffects;
             DrawParticlesCheckBox.Checked = Config.DrawParticles;
             DrawWeatherCheckBox.Checked = Config.DrawWeather;
+            HideChatBarCheckBox.Checked = Config.HideChatBar;
 
             LocalForeColourBox.BackColour = Config.LocalTextForeColour;
             GMWhisperInForeColourBox.BackColour = Config.GMWhisperInTextForeColour;
@@ -137,7 +138,7 @@ namespace Client.Controls
         {
             ActiveConfig = this;
 
-            Size = new Size(300, 330);
+            Size = new Size(300, 355);
             TitleLabel.Text = CEnvir.Language.CommonControlConfigWindowTitle;
             HasFooter = true;
 
@@ -432,6 +433,21 @@ namespace Client.Controls
             DisplayHelmetCheckBox.MouseClick += (o, e) =>
             {
                 CEnvir.Enqueue(new C.HelmetToggle { HideHelmet = DisplayHelmetCheckBox.Checked });
+            };
+
+            HideChatBarCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabHideChatBarLabel },
+                Parent = GameTab,
+                Hint = "Hide chat bar when not active"
+            };
+            HideChatBarCheckBox.Location = new Point(120 - HideChatBarCheckBox.Size.Width, 210);
+            HideChatBarCheckBox.MouseClick += (o, e) =>
+            {
+                if (HideChatBarCheckBox.Checked)
+                {
+                    GameScene.Game.ChatTextBox.Visible = true;
+                }
             };
 
             EscapeCloseAllCheckBox = new DXCheckBox
@@ -1016,6 +1032,7 @@ namespace Client.Controls
             Config.DrawEffects = DrawEffectsCheckBox.Checked;
             Config.DrawParticles = DrawParticlesCheckBox.Checked;
             Config.DrawWeather = DrawWeatherCheckBox.Checked;
+            Config.HideChatBar = HideChatBarCheckBox.Checked;
 
             if (volumeChanged)
                 DXSoundManager.AdjustVolume();
@@ -1423,6 +1440,33 @@ namespace Client.Controls
                     DamageNumbersCheckBox = null;
                 }
 
+
+                if (DrawParticlesCheckBox != null)
+                {
+                    if (!DrawParticlesCheckBox.IsDisposed)
+                        DrawParticlesCheckBox.Dispose();
+
+                    DrawParticlesCheckBox = null;
+                }
+
+
+                if (DisplayHelmetCheckBox != null)
+                {
+                    if (!DisplayHelmetCheckBox.IsDisposed)
+                        DisplayHelmetCheckBox.Dispose();
+
+                    DisplayHelmetCheckBox = null;
+                }
+
+
+                if (HideChatBarCheckBox != null)
+                {
+                    if (!HideChatBarCheckBox.IsDisposed)
+                        HideChatBarCheckBox.Dispose();
+
+                    HideChatBarCheckBox = null;
+                }
+
                 if (EscapeCloseAllCheckBox != null)
                 {
                     if (!EscapeCloseAllCheckBox.IsDisposed)
@@ -1463,7 +1507,6 @@ namespace Client.Controls
                     LogChatCheckBox = null;
                 }
                 
-
                 if (KeyBindButton != null)
                 {
                     if (!KeyBindButton.IsDisposed)

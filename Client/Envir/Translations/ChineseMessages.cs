@@ -153,6 +153,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; } = "Dmg Numbers:";
         public override string CommonControlConfigWindowGameTabDrawParticlesLabel { get; set; } = "Draw Particles:";
         public override string CommonControlConfigWindowGameTabDisplayHelmetLabel { get; set; } = "Display Helmet:";
+        public override string CommonControlConfigWindowGameTabHideChatBarLabel { get; set; } = "Hide Chat Bar:";
         public override string CommonControlConfigWindowGameTabEscapeCloseAllLabel { get; set; } = "Escape Close All:";
         public override string CommonControlConfigWindowGameTabShiftOpenChatLabel { get; set; } = "Shift + 1  Open Chat:";
         public override string CommonControlConfigWindowGameTabShiftOpenChatHint { get; set; } = "If turned on, Pressing Shift + 1 will open chat, if this is off you will use Quick Slot 1";

@@ -152,6 +152,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDrawParticlesLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDisplayHelmetLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameTabHideChatBarLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabEscapeCloseAllLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabShiftOpenChatLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabShiftOpenChatHint { get; set; }
