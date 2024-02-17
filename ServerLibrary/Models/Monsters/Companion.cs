@@ -462,19 +462,18 @@ namespace Server.Models.Monsters
 
         public bool FilterCompanionPicks(ItemCheck check)
         {
-            if (check.Info.ItemName == "Gold") return true;
+            if (SEnvir.IsCurrencyItem(check.Info)) return true;
 
             ItemType itemType;
             Rarity itemRarity;
             RequiredClass itemClass;
-            List<string> listClass = CompanionOwner.FiltersClass.Split(',').ToList();
-            List<string> listRarity = CompanionOwner.FiltersRarity.Split(',').ToList();
-            List<string> listType = CompanionOwner.FiltersItemType.Split(',').ToList();
-            bool hasFilterType, hasRarity, hasClass;
+            List<string> listClass = CompanionOwner.FiltersClass.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> listRarity = CompanionOwner.FiltersRarity.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> listType = CompanionOwner.FiltersItemType.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            hasFilterType = true;
-            hasClass = true;
-            hasRarity = true;
+            bool hasFilterType = true;
+            bool hasClass = true;
+            bool hasRarity = true;
 
             if (check.Info.ItemEffect == ItemEffect.ItemPart && check.Item.Stats[Stat.ItemIndex] > 0)
             {
