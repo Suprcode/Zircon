@@ -520,7 +520,7 @@ namespace Client.Envir.Translations
         public abstract string GuildMemberDialogMerchantLabel { get; set; }
         public abstract string GuildMemberDialogMarketLabel { get; set; }
         public abstract string GuildMemberDialogKickButtonLabel { get; set; }
-        public abstract string GuildMemberDialogKickButtonConfirmMessage { get; set; }
+        public abstract string GuildMemberDialogKickButtonConfirmMsg { get; set; }
         public abstract string GuildMemberDialogKickButtonConfirmCaption { get; set; }
         public abstract string GuildCastlePanelOwnerLabel { get; set; }
         public abstract string GuildCastlePanelScheduleLabel { get; set; }

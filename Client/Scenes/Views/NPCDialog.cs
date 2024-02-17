@@ -323,7 +323,7 @@ namespace Client.Scenes.Views
 
                     if (Page.Types.Count > 0)
                     {
-                        GameScene.Game.InventoryBox.SellMode(Page.Currency);
+                        GameScene.Game.InventoryBox.SellMode(Page.Currency, Page.Types.Select(x => x.ItemType).ToList());
                         GameScene.Game.InventoryBox.Visible = true;
                     }
 
@@ -3128,6 +3128,8 @@ namespace Client.Scenes.Views
                 cell.Tag = null;
             }
 
+            SelectedCell = null;
+
             if (SelectedQuest?.QuestInfo == null)
             {
                 QuestLabel.Text = string.Empty;
@@ -3436,6 +3438,10 @@ namespace Client.Scenes.Views
                 ItemGrid = ChoiceArray,
                 ReadOnly = true,
             };
+            for (int i = 0; i < 3; i++)
+            {
+                ChoiceGrid.Grid[i].MouseClick += (o, e) => SelectedCell = HasChoice ? (DXItemCell)o : null;
+            }
 
             label = new DXLabel
             {

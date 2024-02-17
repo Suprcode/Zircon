@@ -498,6 +498,7 @@ namespace Library
         Combat,
         ObserverChat,
         Guild,
+        Debug
     }
 
     public enum NPCDialogType

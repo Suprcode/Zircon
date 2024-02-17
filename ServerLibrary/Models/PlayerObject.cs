@@ -9390,7 +9390,7 @@ namespace Server.Models
             S.ItemsChanged p = new S.ItemsChanged { Links = links };
             Enqueue(p);
 
-            if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.BuySell) return;
+            if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.BuySell || NPCPage.Types.Count == 0) return;
 
             var currency = NPCPage.Currency ?? SEnvir.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold);
 
@@ -9421,6 +9421,8 @@ namespace Server.Models
 
                 if (link.Slot < 0 || link.Slot >= fromArray.Length) return;
                 UserItem item = fromArray[link.Slot];
+
+                if (!NPCPage.Types.Any(x => x.ItemType == item.Info.ItemType)) return;
 
                 if (item == null || link.Count > item.Count || !item.Info.CanSell || (item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
                 if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;

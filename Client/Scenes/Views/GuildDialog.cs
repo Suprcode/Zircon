@@ -2691,7 +2691,7 @@ namespace Client.Scenes.Views
             };
             KickButton.MouseClick += (o, e) =>
             {
-                DXMessageBox box = new DXMessageBox(string.Format(CEnvir.Language.GuildMemberDialogKickButtonConfirmMessage, MemberNameLabel.Text), CEnvir.Language.GuildMemberDialogKickButtonConfirmCaption, DXMessageBoxButtons.YesNo);
+                DXMessageBox box = new DXMessageBox(string.Format(CEnvir.Language.GuildMemberDialogKickButtonConfirmMsg, MemberNameLabel.Text), CEnvir.Language.GuildMemberDialogKickButtonConfirmCaption, DXMessageBoxButtons.YesNo);
                 
                 box.YesButton.MouseClick += (o1, e1) =>
                 {

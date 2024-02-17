@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskBand;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -26,6 +25,8 @@ namespace Client.Scenes.Views
         public DXButton SellButton;
 
         public List<DXItemCell> SelectedItems = new();
+
+        public List<ItemType> SellableItemTypes = new();
 
         #region PrimaryCurrency
 
@@ -384,6 +385,13 @@ namespace Client.Scenes.Views
                 {
                     if (cell.Item != null && (cell.Item.Flags & UserItemFlags.Locked) != UserItemFlags.Locked)
                     {
+                        if (!SellableItemTypes.Contains(cell.Item.Info.ItemType))
+                        {
+                            GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.UnableToSellHere, cell.Item.Info.ItemName), MessageType.System);
+                            cell.Selected = false;
+                            return;
+                        }
+
                         SelectedItems.Add(cell);
                     }
                 }
@@ -502,9 +510,11 @@ namespace Client.Scenes.Views
             SecondaryCurrencyLabel.Text = userCurrency.Amount.ToString("#,##0");
         }
 
-        public void SellMode(CurrencyInfo currency)
+        public void SellMode(CurrencyInfo currency, List<ItemType> sellableItemTypes)
         {
             SetPrimaryCurrency(currency);
+
+            SellableItemTypes = sellableItemTypes;
 
             InvMode = InventoryMode.Sell;
         }
@@ -512,6 +522,8 @@ namespace Client.Scenes.Views
         public void NormalMode()
         {
             SetPrimaryCurrency(null);
+
+            SellableItemTypes.Clear();
 
             InvMode = InventoryMode.Normal;
         }

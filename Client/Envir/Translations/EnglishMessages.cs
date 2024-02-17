@@ -519,7 +519,7 @@ namespace Client.Envir.Translations
         public override string GuildMemberDialogMerchantLabel { get; set; } = "Merchant Fund:";
         public override string GuildMemberDialogMarketLabel { get; set; } = "Market Fund:";
         public override string GuildMemberDialogKickButtonLabel { get; set; } = "Kick";
-        public override string GuildMemberDialogKickButtonConfirmMessage { get; set; } = "Are you sure you want to remove {MemberNameLabel.Text} from the guild";
+        public override string GuildMemberDialogKickButtonConfirmMsg { get; set; } = "Are you sure you want to remove {0} from the guild";
         public override string GuildMemberDialogKickButtonConfirmCaption { get; set; } = "Kick Member";
         public override string GuildCastlePanelOwnerLabel { get; set; } = "Current Owner:";
         public override string GuildCastlePanelScheduleLabel { get; set; } = "Schedule:";

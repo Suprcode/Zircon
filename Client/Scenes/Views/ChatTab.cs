@@ -358,6 +358,8 @@ namespace Client.Scenes.Views
                 case MessageType.Guild:
                     if (!Panel.GuildCheckBox.Checked) return;
                     break;
+                case MessageType.Debug:
+                    break;
             }
 
             DXLabel label = new DXLabel
@@ -537,6 +539,10 @@ namespace Client.Scenes.Views
                 case MessageType.Guild:
                     label.BackColour = GetBackColour(Config.GuildTextBackColour);
                     label.ForeColour = Config.GuildTextForeColour;
+                    break;
+                case MessageType.Debug:
+                    label.BackColour = Color.SkyBlue;
+                    label.ForeColour = Color.White;
                     break;
             }
         }
