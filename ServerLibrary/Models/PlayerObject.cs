@@ -3293,6 +3293,17 @@ namespace Server.Models
             quest.Track = p.Track;
         }
 
+        public void QuestAbandon(C.QuestAbandon p)
+        {
+            UserQuest quest = Quests.FirstOrDefault(x => x.Index == p.Index);
+
+            if (quest == null || quest.Completed) return;
+
+            Character.Quests.Remove(quest);
+
+            Enqueue(new S.QuestCancelled { Index = quest.Index });
+        }
+
         #endregion
 
         #region Mail

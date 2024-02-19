@@ -650,6 +650,9 @@ namespace Client.Envir.Translations
         public override string QuestTabChoiceLabel { get; set; } = "Choice";
         public override string QuestTabStartLabel { get; set; } = "Start:";
         public override string QuestTabEndLabel { get; set; } = "End:";
+        public override string QuestAbandonButtonLabel { get; set; } = "Abandon";
+        public override string QuestAbandonConfirmationCaption { get; set; } = "Abandon Quest";
+        public override string QuestAbandonConfirmationMessage { get; set; } = "Are you sure you want to abandon this quest?";
 
         public override string RankingDialogTitle { get; set; } = "Ranking";
         public override string RankingDialogGlobalTabLabel { get; set; } = "Global";

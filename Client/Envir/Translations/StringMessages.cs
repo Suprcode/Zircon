@@ -651,6 +651,9 @@ namespace Client.Envir.Translations
         public abstract string QuestTabChoiceLabel { get; set; }
         public abstract string QuestTabStartLabel { get; set; }
         public abstract string QuestTabEndLabel { get; set; }
+        public abstract string QuestAbandonButtonLabel { get; set; }
+        public abstract string QuestAbandonConfirmationCaption { get; set; }
+        public abstract string QuestAbandonConfirmationMessage { get; set; }
 
         public abstract string RankingDialogTitle { get; set; }
         public abstract string RankingDialogGlobalTabLabel { get; set; }
