@@ -8192,8 +8192,7 @@ namespace Server.Models
         }
         public void FortuneCheck(int index)
         {
-            if (SEnvir.FortuneCheckerInfo == null) return;
-
+            if (!Config.EnableFortune || SEnvir.FortuneCheckerInfo == null) return;
 
             long count = GetItemCount(SEnvir.FortuneCheckerInfo);
 

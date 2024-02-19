@@ -3934,7 +3934,6 @@ namespace Client.Scenes
                         {
                             case MirClass.Warrior:
                                 if ((requirement.Class & RequiredClass.Warrior) != RequiredClass.Warrior) return false;
-
                                 break;
                             case MirClass.Wizard:
                                 if ((requirement.Class & RequiredClass.Wizard) != RequiredClass.Wizard) return false;

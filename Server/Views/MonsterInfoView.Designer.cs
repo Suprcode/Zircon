@@ -72,11 +72,11 @@
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
             ExportButton = new DevExpress.XtraBars.BarButtonItem();
+            UpdateMonsterImageButton = new DevExpress.XtraBars.BarButtonItem();
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            UpdateMonsterImageButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)MonsterInfoStatsGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)StatComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MonsterInfoGridControl).BeginInit();
@@ -218,7 +218,7 @@
             ItemLookUpEdit.AutoHeight = false;
             ItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
             ItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            ItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size") });
+            ItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("PartCount", "Part Count") });
             ItemLookUpEdit.DisplayMember = "ItemName";
             ItemLookUpEdit.Name = "ItemLookUpEdit";
             ItemLookUpEdit.NullText = "[Item is null]";
@@ -421,6 +421,15 @@
             ExportButton.Name = "ExportButton";
             ExportButton.ItemClick += ExportButton_ItemClick;
             // 
+            // UpdateMonsterImageButton
+            // 
+            UpdateMonsterImageButton.Caption = "Convert Old to New";
+            UpdateMonsterImageButton.Id = 4;
+            UpdateMonsterImageButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("UpdateMonsterImageButton.ImageOptions.Image");
+            UpdateMonsterImageButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("UpdateMonsterImageButton.ImageOptions.LargeImage");
+            UpdateMonsterImageButton.Name = "UpdateMonsterImageButton";
+            UpdateMonsterImageButton.ItemClick += UpdateMonsterImageButton_ItemClick;
+            // 
             // ribbonPage1
             // 
             ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport, ribbonPageGroup2 });
@@ -447,15 +456,6 @@
             ribbonPageGroup2.ItemLinks.Add(UpdateMonsterImageButton);
             ribbonPageGroup2.Name = "ribbonPageGroup2";
             ribbonPageGroup2.Text = "Monster Image";
-            // 
-            // UpdateMonsterImageButton
-            // 
-            UpdateMonsterImageButton.Caption = "Convert Old to New";
-            UpdateMonsterImageButton.Id = 4;
-            UpdateMonsterImageButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("barButtonItem1.ImageOptions.Image");
-            UpdateMonsterImageButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("barButtonItem1.ImageOptions.LargeImage");
-            UpdateMonsterImageButton.Name = "UpdateMonsterImageButton";
-            UpdateMonsterImageButton.ItemClick += UpdateMonsterImageButton_ItemClick;
             // 
             // MonsterInfoView
             // 
