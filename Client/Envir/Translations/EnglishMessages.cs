@@ -537,6 +537,21 @@ namespace Client.Envir.Translations
 
         public override string MagicDialogTitle { get; set; } = "Magic";
 
+        public override string MenuDialogTitle { get; set; } = "Menu";
+        public override string MenuDialogSettingsButtonLabel { get; set; } = "Settings";
+        public override string MenuDialogGuildButtonLabel { get; set; } = "Guild";
+        public override string MenuDialogStorageButtonLabel { get; set; } = "Storage";
+        public override string MenuDialogRankingButtonLabel { get; set; } = "Ranking";
+        public override string MenuDialogCompanionButtonLabel { get; set; } = "Companion";
+        public override string MenuDialogLeaveButtonLabel { get; set; } = "Exit Game";
+
+        public override string MenuDialogSettingsButtonHint { get; set; } = "Settings [O]";
+        public override string MenuDialogGuildButtonHint { get; set; } = "Guild [G]";
+        public override string MenuDialogStorageButtonHint { get; set; } = "Storage [S]";
+        public override string MenuDialogRankingButtonHint { get; set; } = "Ranking [R]";
+        public override string MenuDialogCompanionButtonHint { get; set; } = "Companion [U]";
+        public override string MenuDialogLeaveButtonHint { get; set; } = "Exit Game [Alt + Q]";
+
         public override string MainPanelCharacterButtonHint { get; set; } = "Character [Q]";
         public override string MainPanelInventoryButtonHint { get; set; } = "Inventory [W]\nCompanion [U]";
         public override string MainPanelSpellButtonHint { get; set; } = "Spells [E]";
@@ -544,7 +559,7 @@ namespace Client.Envir.Translations
         public override string MainPanelMailButtonHint { get; set; } = "Communication [,]";
         public override string MainPanelBeltButtonHint { get; set; } = "Belt [Z]";
         public override string MainPanelGroupButtonHint { get; set; } = "Group [P]";
-        public override string MainPanelConfigButtonHint { get; set; } = "Settings [O]";
+        public override string MainPanelMenuButtonHint { get; set; } = "Menu [N]";
         public override string MainPanelCashShopButtonHint { get; set; } = "Cash Shop [Y]";
         public override string MainPanelClassLabel { get; set; } = "Cl";
         public override string MainPanelClassHint { get; set; } = "Class";

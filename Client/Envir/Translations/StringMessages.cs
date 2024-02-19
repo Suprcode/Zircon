@@ -538,6 +538,21 @@ namespace Client.Envir.Translations
 
         public abstract string MagicDialogTitle { get; set; }
 
+        public abstract string MenuDialogTitle { get; set; }
+        public abstract string MenuDialogSettingsButtonLabel { get; set; }
+        public abstract string MenuDialogGuildButtonLabel { get; set; }
+        public abstract string MenuDialogStorageButtonLabel { get; set; }
+        public abstract string MenuDialogRankingButtonLabel { get; set; }
+        public abstract string MenuDialogCompanionButtonLabel { get; set; }
+        public abstract string MenuDialogLeaveButtonLabel { get; set; }
+
+        public abstract string MenuDialogSettingsButtonHint { get; set; }
+        public abstract string MenuDialogGuildButtonHint { get; set; }
+        public abstract string MenuDialogStorageButtonHint { get; set; }
+        public abstract string MenuDialogRankingButtonHint { get; set; }
+        public abstract string MenuDialogCompanionButtonHint { get; set; }
+        public abstract string MenuDialogLeaveButtonHint { get; set; }
+
         public abstract string MainPanelCharacterButtonHint { get; set; }
         public abstract string MainPanelInventoryButtonHint { get; set; }
         public abstract string MainPanelSpellButtonHint { get; set; }
@@ -545,7 +560,7 @@ namespace Client.Envir.Translations
         public abstract string MainPanelMailButtonHint { get; set; }
         public abstract string MainPanelBeltButtonHint { get; set; }
         public abstract string MainPanelGroupButtonHint { get; set; }
-        public abstract string MainPanelConfigButtonHint { get; set; }
+        public abstract string MainPanelMenuButtonHint { get; set; }
         public abstract string MainPanelCashShopButtonHint { get; set; }
         public abstract string MainPanelClassLabel { get; set; }
         public abstract string MainPanelClassHint { get; set; }

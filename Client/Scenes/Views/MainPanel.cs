@@ -252,16 +252,16 @@ namespace Client.Scenes.Views
             };
             GroupButton.MouseClick += (o,e) => GameScene.Game.GroupBox.Visible = !GameScene.Game.GroupBox.Visible;
 
-            DXButton ConfigButton = new DXButton
+            DXButton MenuButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 117,
                 Parent = this,
                 Location = new Point(923, 23),
-                Hint = CEnvir.Language.MainPanelConfigButtonHint,
+                Hint = CEnvir.Language.MainPanelMenuButtonHint,
                 HintPosition = HintPosition.TopLeft
             };
-            ConfigButton.MouseClick += (o, e) => GameScene.Game.ConfigBox.Visible = !GameScene.Game.ConfigBox.Visible;
+            MenuButton.MouseClick += (o, e) => GameScene.Game.MenuBox.Visible = !GameScene.Game.MenuBox.Visible;
 
             DXButton CashShopButton = new DXButton
             {

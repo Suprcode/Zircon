@@ -51,7 +51,6 @@ namespace Client.Controls
         public DXButton ResetColoursButton;
 
         private DXButton SaveButton, CancelButton;
-        public DXButton ExitButton;
 
         public override void OnVisibleChanged(bool oValue, bool nValue)
         {
@@ -914,16 +913,6 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlCancel }
             };
             CancelButton.MouseClick += CancelSettings;
-
-            ExitButton = new DXButton
-            {
-                Location = new Point(Size.Width - 280, Size.Height - 43),
-                Size = new Size(60, DefaultHeight),
-                Parent = this,
-                Label = { Text = CEnvir.Language.CommonControlExit },
-                Visible = false,
-            };
-            ExitButton.MouseClick += CancelSettings;
         }
 
         #region Methods
@@ -1670,14 +1659,6 @@ namespace Client.Controls
                         CancelButton.Dispose();
 
                     CancelButton = null;
-                }
-                
-                if (ExitButton != null)
-                {
-                    if (!ExitButton.IsDisposed)
-                        ExitButton.Dispose();
-
-                    ExitButton = null;
                 }
             }
         }

@@ -145,6 +145,7 @@ namespace Client.Scenes
         public MapControl MapControl;
         public MainPanel MainPanel;
 
+        public MenuDialog MenuBox;
         public DXConfigWindow ConfigBox;
         public CaptionDialog CaptionBox;
         public InventoryDialog InventoryBox;
@@ -383,15 +384,19 @@ namespace Client.Scenes
 
             MainPanel = new MainPanel { Parent = this };
 
+            MenuBox = new MenuDialog
+            {
+                Parent = this,
+                Visible = false
+            };
+
             ConfigBox = new DXConfigWindow
             {
                 Parent = this,
                 Visible = false,
                 NetworkTab = { Enabled = false, TabButton = { Visible = false } },
                 ColourTab = { TabButton = { Visible = true } },
-                ExitButton = { Visible = true },
             };
-            ConfigBox.ExitButton.MouseClick += (o, e) => ExitBox.Visible = true;
 
             ExitBox = new ExitDialog
             {
@@ -697,6 +702,8 @@ namespace Client.Scenes
         private void SetDefaultLocations()
         {
             if (ConfigBox == null) return;
+
+            MenuBox.Location = new Point(Size.Width - MenuBox.Size.Width, Size.Height - MenuBox.Size.Height - MainPanel.Size.Height);
 
             ConfigBox.Location = new Point((Size.Width - ConfigBox.Size.Width)/2, (Size.Height - ConfigBox.Size.Height)/2);
 
@@ -1052,6 +1059,9 @@ namespace Client.Scenes
             {
                 switch (action)
                 {
+                    case KeyBindAction.MenuWindow:
+                        MenuBox.Visible = !MenuBox.Visible;
+                        break;
                     case KeyBindAction.ConfigWindow:
                         ConfigBox.Visible = !ConfigBox.Visible;
                         break;
@@ -4296,6 +4306,14 @@ namespace Client.Scenes
                         MainPanel.Dispose();
 
                     MainPanel = null;
+                }
+
+                if (MenuBox != null)
+                {
+                    if (!MenuBox.IsDisposed)
+                        MenuBox.Dispose();
+
+                    MenuBox = null;
                 }
 
                 if (ConfigBox != null)
