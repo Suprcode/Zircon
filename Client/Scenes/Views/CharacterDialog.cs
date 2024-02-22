@@ -178,6 +178,8 @@ namespace Client.Scenes.Views
             if (!Inspect)
             {
                 GameScene.Game.FishingBox.Visible = HasFishingRod && IsVisible;
+
+                HermitTab.TabButton.Visible = GameScene.Game.HermitEnabled;
             }
 
             base.OnIsVisibleChanged(oValue, nValue);
@@ -289,20 +291,6 @@ namespace Client.Scenes.Views
                 Index = Inspect ? 115 : 110;
             };
 
-            HermitTab = new DXTab
-            {
-                Parent = TabControl,
-                TabButton = { Label = { Text = CEnvir.Language.CharacterHermitTabLabel } },
-                BackColour = Color.Empty,
-                Location = new Point(0, 26),
-            };
-
-            HermitTab.TabButton.Visible = !Inspect;
-            HermitTab.TabButton.MouseClick += (o, e) =>
-            {
-                Index = 111;
-            };
-
             DisciplineTab = new DXTab
             {
                 Parent = TabControl,
@@ -315,6 +303,20 @@ namespace Client.Scenes.Views
             DisciplineTab.TabButton.MouseClick += (o, e) =>
             {
                 Index = 112;
+            };
+
+            HermitTab = new DXTab
+            {
+                Parent = TabControl,
+                TabButton = { Label = { Text = CEnvir.Language.CharacterHermitTabLabel } },
+                BackColour = Color.Empty,
+                Location = new Point(0, 26),
+            };
+
+            HermitTab.TabButton.Visible = !Inspect;
+            HermitTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 111;
             };
 
             DXControl namePanel = new DXControl

@@ -20,6 +20,13 @@ namespace Client.Scenes.Views
 
         public bool Exiting { get; set; }
 
+        public override void OnVisibleChanged(bool oValue, bool nValue)
+        {
+            base.OnVisibleChanged(oValue, nValue);
+
+            BringToFront();
+        }
+
         #endregion
 
         public ExitDialog()

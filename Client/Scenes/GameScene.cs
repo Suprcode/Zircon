@@ -318,7 +318,7 @@ namespace Client.Scenes
         public uint InspectID;
         public DateTime PickUpTime, UseItemTime, NPCTime, ToggleTime, InspectTime, ItemTime = CEnvir.Now, ReincarnationPillTime, ItemReviveTime;
 
-        public bool StruckEnabled;
+        public bool StruckEnabled, HermitEnabled;
 
         public float DayTime
         {
@@ -4162,6 +4162,7 @@ namespace Client.Scenes
         {
             int icon = 0;
             Color colour = Color.White;
+            string iconString = "";
 
             if (NPC.CurrentQuest != null)
             {
@@ -4197,18 +4198,34 @@ namespace Client.Scenes
                 {
                     case QuestIcon.New:
                         icon += 0;
+                        iconString = "!";
                         break;
                     case QuestIcon.Incomplete:
                         icon = 2;
                         colour = Color.White;
+                        iconString = "?";
                         break;
                     case QuestIcon.Complete:
                         icon += 2;
+                        iconString = "?";
                         break;
                 }
             }
 
-            if (icon > 0)
+            if (!string.IsNullOrEmpty(iconString))
+            {
+                DXLabel label = new DXLabel
+                {
+                    Text = iconString,
+                    ForeColour = colour,
+                    Hint = NPC.NPCName,
+                    Tag = NPC.CurrentQuest,
+                    Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold)
+                };
+
+                return label;
+            }
+            else if (icon > 0)
             {
                 DXImageControl image = new DXImageControl
                 {

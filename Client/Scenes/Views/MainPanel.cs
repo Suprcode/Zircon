@@ -19,6 +19,7 @@ namespace Client.Scenes.Views
         public DXImageControl ClassImage, LevelImage, ACImage, MACImage, DCImage, MCImage, SCImage, FPImage, CPImage;
         public DXLabel ClassLabel, LevelLabel, FPLabel, CPLabel, ACLabel, DCLabel, SCLabel, MACLabel, MCLabel, HealthLabel, ManaLabel, FocusLabel, AttackModeLabel, PetModeLabel;
 
+        DXButton CharacterButton, InventoryButton, SpellButton, QuestButton, MailButton, BeltButton, GroupButton, MenuButton, CashShopButton;
         #endregion
 
         public MainPanel()
@@ -132,7 +133,7 @@ namespace Client.Scenes.Views
                 PresentTexture(image.Image, this, new Rectangle(FocusBar.DisplayArea.X, FocusBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, FocusBar);
             };
 
-            DXButton CharacterButton = new DXButton
+            CharacterButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 82,
@@ -146,7 +147,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.CharacterBox.Visible = !GameScene.Game.CharacterBox.Visible;
             };
 
-            DXButton InventoryButton = new DXButton
+            InventoryButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 87,
@@ -157,7 +158,7 @@ namespace Client.Scenes.Views
             };
             InventoryButton.MouseClick += (o, e) => GameScene.Game.InventoryBox.Visible = !GameScene.Game.InventoryBox.Visible;
 
-            DXButton SpellButton = new DXButton
+            SpellButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 92,
@@ -168,7 +169,7 @@ namespace Client.Scenes.Views
             };
             SpellButton.MouseClick += (o, e) => GameScene.Game.MagicBox.Visible = !GameScene.Game.MagicBox.Visible;
 
-            DXButton QuestButton = new DXButton
+            QuestButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 112,
@@ -179,7 +180,7 @@ namespace Client.Scenes.Views
             };
             QuestButton.MouseClick += (o, e) => GameScene.Game.QuestBox.Visible = !GameScene.Game.QuestBox.Visible;
 
-            DXButton MailButton = new DXButton
+            MailButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 97,
@@ -230,7 +231,7 @@ namespace Client.Scenes.Views
                 Visible = false,
             };
 
-            DXButton BeltButton = new DXButton
+            BeltButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 107,
@@ -241,7 +242,7 @@ namespace Client.Scenes.Views
             };
             BeltButton.MouseClick += (o, e) => GameScene.Game.BeltBox.Visible = !GameScene.Game.BeltBox.Visible;
 
-            DXButton GroupButton = new DXButton
+            GroupButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 102,
@@ -252,7 +253,7 @@ namespace Client.Scenes.Views
             };
             GroupButton.MouseClick += (o,e) => GameScene.Game.GroupBox.Visible = !GameScene.Game.GroupBox.Visible;
 
-            DXButton MenuButton = new DXButton
+            MenuButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 117,
@@ -535,6 +536,78 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
+                if (CharacterButton != null)
+                {
+                    if (!CharacterButton.IsDisposed)
+                        CharacterButton.Dispose();
+
+                    CharacterButton = null;
+                }
+
+                if (InventoryButton != null)
+                {
+                    if (!InventoryButton.IsDisposed)
+                        InventoryButton.Dispose();
+
+                    InventoryButton = null;
+                }
+
+                if (SpellButton != null)
+                {
+                    if (!SpellButton.IsDisposed)
+                        SpellButton.Dispose();
+
+                    SpellButton = null;
+                }
+
+                if (QuestButton != null)
+                {
+                    if (!QuestButton.IsDisposed)
+                        QuestButton.Dispose();
+
+                    QuestButton = null;
+                }
+
+                if (MailButton != null)
+                {
+                    if (!MailButton.IsDisposed)
+                        MailButton.Dispose();
+
+                    MailButton = null;
+                }
+
+                if (BeltButton != null)
+                {
+                    if (!BeltButton.IsDisposed)
+                        BeltButton.Dispose();
+
+                    BeltButton = null;
+                }
+
+                if (GroupButton != null)
+                {
+                    if (!GroupButton.IsDisposed)
+                        GroupButton.Dispose();
+
+                    GroupButton = null;
+                }
+
+                if (MenuButton != null)
+                {
+                    if (!MenuButton.IsDisposed)
+                        MenuButton.Dispose();
+
+                    MenuButton = null;
+                }
+
+                if (CashShopButton != null)
+                {
+                    if (!CashShopButton.IsDisposed)
+                        CashShopButton.Dispose();
+
+                    CashShopButton = null;
+                }
+
                 if (HealthBar != null)
                 {
                     if (!HealthBar.IsDisposed)

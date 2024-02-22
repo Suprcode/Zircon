@@ -336,6 +336,7 @@ namespace Client.Models
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;
 
             GameScene.Game.StruckEnabled = info.StruckEnabled;
+            GameScene.Game.HermitEnabled = info.HermitEnabled;
 
             HermitPoints = info.HermitPoints;
 

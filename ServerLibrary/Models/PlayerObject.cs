@@ -853,7 +853,8 @@ namespace Server.Models
                 FiltersRarity = Character.FiltersRarity,
                 FiltersItemType = Character.FiltersItemType,
 
-                StruckEnabled = Config.EnableStruck
+                StruckEnabled = Config.EnableStruck,
+                HermitEnabled = Config.EnableHermit
             };
         }
 
@@ -1115,7 +1116,7 @@ namespace Server.Models
                 con.Enqueue(new S.RefineList { List = refines });
 
 
-            con.Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Character.HermitStats, HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
+            con.Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Config.EnableHermit ? Character.HermitStats : new Stats(), HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
 
             con.Enqueue(new S.WeightUpdate { BagWeight = BagWeight, WearWeight = WearWeight, HandWeight = HandWeight });
 
@@ -2229,7 +2230,7 @@ namespace Server.Models
             Stats[Stat.DropRate] += 20 * Stats[Stat.Rebirth];
             Stats[Stat.GoldRate] += 20 * Stats[Stat.Rebirth];
 
-            Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Character.HermitStats, HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
+            Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Config.EnableHermit ? Character.HermitStats : new Stats(), HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
 
             S.DataObjectMaxHealthMana p = new S.DataObjectMaxHealthMana { ObjectID = ObjectID, MaxHealth = Stats[Stat.Health], MaxMana = Stats[Stat.Mana] };
 
@@ -2299,13 +2300,19 @@ namespace Server.Models
             Stats[Stat.SkillRate] = 1;
             Stats[Stat.CriticalChance] = 1;
 
-            Stats.Add(Character.HermitStats);
+            if (Config.EnableHermit)
+            {
+                Stats.Add(Character.HermitStats);
+            }
 
             Stats[Stat.BaseHealth] = Stats[Stat.Health];
             Stats[Stat.BaseMana] = Stats[Stat.Mana];
         }
+
         public void AssignHermit(Stat stat)
         {
+            if (!Config.EnableHermit) return;
+
             if (Level - 39 - Character.SpentPoints <= 0) return;
 
             switch (stat)
