@@ -2116,6 +2116,9 @@ namespace Library
         MaleDie,
         FemaleDie,
 
+        QuestTake,
+        QuestComplete,
+
         #region Magics
 
         SlayingMale,

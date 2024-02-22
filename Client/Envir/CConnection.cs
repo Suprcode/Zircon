@@ -3974,7 +3974,6 @@ namespace Client.Envir
             GameScene.Game.ReincarnationPillTime = CEnvir.Now + p.ReincarnationPillTime;
         }
 
-
         public void Process(S.QuestChanged p)
         {
             foreach (ClientUserQuest quest in GameScene.Game.QuestLog)
@@ -3987,6 +3986,11 @@ namespace Client.Envir
                 quest.SelectedReward = p.Quest.SelectedReward;
                 quest.Tasks.Clear();
                 quest.Tasks.AddRange(p.Quest.Tasks);
+
+                if (quest.Completed)
+                {
+                    DXSoundManager.Play(SoundIndex.QuestComplete);
+                }
             
                 GameScene.Game.QuestChanged(p.Quest);
                 return;
@@ -3994,6 +3998,8 @@ namespace Client.Envir
 
             GameScene.Game.QuestLog.Add(p.Quest);
             GameScene.Game.QuestChanged(p.Quest);
+
+            DXSoundManager.Play(SoundIndex.QuestTake);
         }
 
         public void Process(S.QuestCancelled p)

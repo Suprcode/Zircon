@@ -305,8 +305,16 @@ namespace Client.Envir.Translations
         public override string CharacterCharacterTabStatsDefenseTabLabel { get; set; } = "Def";
         public override string CharacterCharacterTabStatsWeightTabLabel { get; set; } = "Wt";
         public override string CharacterCharacterTabStatsOtherTabLabel { get; set; } = "Oth";
+        public override string CharacterCharacterTabStatsElementAttackTabLabel { get; set; } = "E.Att";
         public override string CharacterCharacterTabStatsElementAdvantageTabLabel { get; set; } = "E.Adv";
         public override string CharacterCharacterTabStatsElementDisadvantageTabLabel { get; set; } = "E.Dis";
+        public override string CharacterCharacterTabStatsAttackTabHint { get; set; } = "Attack";
+        public override string CharacterCharacterTabStatsDefenseTabHint { get; set; } = "Defence";
+        public override string CharacterCharacterTabStatsWeightTabHint { get; set; } = "Weight";
+        public override string CharacterCharacterTabStatsOtherTabHint { get; set; } = "Other";
+        public override string CharacterCharacterTabStatsElementAttackTabHint { get; set; } = "Element Attack";
+        public override string CharacterCharacterTabStatsElementAdvantageTabHint { get; set; } = "Element Advantage";
+        public override string CharacterCharacterTabStatsElementDisadvantageTabHint { get; set; } = "Element Disadvantage";
 
         public override string CharacterCharacterTabStatsAttackTabMCLabel { get; set; } = "MC:";
         public override string CharacterCharacterTabStatsAttackTabSCLabel { get; set; } = "SC:";

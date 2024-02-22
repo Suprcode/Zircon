@@ -13381,7 +13381,9 @@ namespace Server.Models
                 if (magicObject.AttackSkill)
                 {
                     if (Level < magicObject.Magic.Info.NeedLevel1)
+                    {
                         continue;
+                    }
 
                     var response = magicObject.AttackCast(attackMagic);
 

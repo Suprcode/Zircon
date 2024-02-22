@@ -632,7 +632,14 @@ namespace Client.Scenes.Views
             StatsAttackTab = new DXTab
             {
                 Parent = StatsTabControl,
-                TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabLabel } },
+                TabButton =
+                { 
+                    Label =
+                    {
+                        Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabLabel
+                    },
+                    Hint = CEnvir.Language.CharacterCharacterTabStatsAttackTabHint
+                },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
                 Location = new Point(0, 22),
@@ -641,7 +648,14 @@ namespace Client.Scenes.Views
             StatsDefenseTab = new DXTab
             {
                 Parent = StatsTabControl,
-                TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsDefenseTabLabel } },
+                TabButton =
+                { 
+                    Label =
+                    {
+                        Text = CEnvir.Language.CharacterCharacterTabStatsDefenseTabLabel
+                    },
+                    Hint = CEnvir.Language.CharacterCharacterTabStatsDefenseTabHint
+                },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
                 Location = new Point(0, 22),
@@ -649,7 +663,14 @@ namespace Client.Scenes.Views
             StatsWeightTab = new DXTab
             {
                 Parent = StatsTabControl,
-                TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsWeightTabLabel } },
+                TabButton =
+                { 
+                    Label =
+                    {
+                        Text = CEnvir.Language.CharacterCharacterTabStatsWeightTabLabel
+                    },
+                    Hint = CEnvir.Language.CharacterCharacterTabStatsWeightTabHint
+                },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
                 Location = new Point(0, 22),
@@ -657,7 +678,14 @@ namespace Client.Scenes.Views
             StatsOtherTab = new DXTab
             {
                 Parent = StatsTabControl,
-                TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsOtherTabLabel } },
+                TabButton =
+                { 
+                    Label =
+                    {
+                        Text = CEnvir.Language.CharacterCharacterTabStatsOtherTabLabel            
+                    },
+                    Hint = CEnvir.Language.CharacterCharacterTabStatsOtherTabHint
+                },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
                 Location = new Point(0, 22),
@@ -665,7 +693,14 @@ namespace Client.Scenes.Views
             StatsElementAttackTab = new DXTab
             {
                 Parent = StatsTabControl,
-                TabButton = { Label = { Text = CEnvir.Language.CommonStatusElementAttack } },
+                TabButton =
+                { 
+                    Label =
+                    {
+                        Text = CEnvir.Language.CharacterCharacterTabStatsElementAttackTabLabel    
+                    },
+                    Hint = CEnvir.Language.CharacterCharacterTabStatsElementAttackTabHint
+                },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
                 Location = new Point(0, 22),
@@ -673,7 +708,14 @@ namespace Client.Scenes.Views
             StatsElementAdvantageTab = new DXTab
             {
                 Parent = StatsTabControl,
-                TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsElementAdvantageTabLabel } },
+                TabButton =
+                { 
+                    Label =
+                    {
+                        Text = CEnvir.Language.CharacterCharacterTabStatsElementAdvantageTabLabel    
+                    },
+                    Hint = CEnvir.Language.CharacterCharacterTabStatsElementAdvantageTabHint
+                },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
                 Location = new Point(0, 22),
@@ -681,7 +723,14 @@ namespace Client.Scenes.Views
             StatsElementDisadvantageTab = new DXTab
             {
                 Parent = StatsTabControl,
-                TabButton = { Label = { Text = CEnvir.Language.CharacterCharacterTabStatsElementDisadvantageTabLabel } },
+                TabButton = 
+                { 
+                    Label = 
+                    { 
+                        Text = CEnvir.Language.CharacterCharacterTabStatsElementDisadvantageTabLabel                
+                    },
+                    Hint = CEnvir.Language.CharacterCharacterTabStatsElementDisadvantageTabHint
+                },
                 BackColour = Color.Empty,
                 MinimumTabWidth = 40,
                 Location = new Point(0, 22),

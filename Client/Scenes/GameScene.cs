@@ -3795,9 +3795,7 @@ namespace Client.Scenes
         {
             if (User == null) return;
 
-            MainPanel.ExperienceLabel.Text = User.MaxExperience > 0 ? $"{User.Experience/User.MaxExperience: #,##0.00%}" : $"{User.Experience: #,##0#}";
-
-            MainPanel.ExperienceBar.Hint = $"{User.Experience:#,##0.#}/{User.MaxExperience: #,##0.#}";
+            MainPanel.ExperienceBar.Hint = User.MaxExperience > 0 ? $"(Experience) {User.Experience / User.MaxExperience:#,##0.00%}" : "(Experience) Max";
         }
         public void HealthChanged()
         {

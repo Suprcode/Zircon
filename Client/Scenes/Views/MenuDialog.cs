@@ -1,11 +1,6 @@
 ﻿using Client.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
 using Client.Envir;
+using Library;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -35,10 +30,19 @@ namespace Client.Scenes.Views
             }
         }
 
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            if (IsVisible)
+                BringToFront();
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
         public MenuDialog()
         {
             LibraryFile = LibraryFile.Interface;
             Index = 280;
+            Sort = true;
 
             CloseButton = new DXButton
             {
@@ -67,8 +71,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogSettingsButtonLabel },
-                Hint = CEnvir.Language.MenuDialogSettingsButtonHint,
-                HintPosition = HintPosition.TopLeft
+                //Hint = CEnvir.Language.MenuDialogSettingsButtonHint
             };
             SettingsButton.MouseClick += (o, e) => GameScene.Game.ConfigBox.Visible = !GameScene.Game.ConfigBox.Visible;
 
@@ -78,8 +81,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogGuildButtonLabel },
-                Hint = CEnvir.Language.MenuDialogGuildButtonHint,
-                HintPosition = HintPosition.TopLeft
+                //Hint = CEnvir.Language.MenuDialogGuildButtonHint
             };
             GuildButton.MouseClick += (o, e) => GameScene.Game.GuildBox.Visible = !GameScene.Game.GuildBox.Visible;
 
@@ -89,8 +91,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogStorageButtonLabel },
-                Hint = CEnvir.Language.MenuDialogStorageButtonHint,
-                HintPosition = HintPosition.TopLeft
+                //Hint = CEnvir.Language.MenuDialogStorageButtonHint
             };
             StorageButton.MouseClick += (o, e) => GameScene.Game.StorageBox.Visible = !GameScene.Game.StorageBox.Visible;
 
@@ -100,8 +101,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogRankingButtonLabel },
-                Hint = CEnvir.Language.MenuDialogRankingButtonHint,
-                HintPosition = HintPosition.TopLeft
+                //Hint = CEnvir.Language.MenuDialogRankingButtonHint
             };
             RankingButton.MouseClick += (o, e) => GameScene.Game.RankingBox.Visible = !GameScene.Game.RankingBox.Visible;
 
@@ -111,8 +111,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogCompanionButtonLabel },
-                Hint = CEnvir.Language.MenuDialogCompanionButtonHint,
-                HintPosition = HintPosition.TopLeft
+                //Hint = CEnvir.Language.MenuDialogCompanionButtonHint
             };
             CompanionButton.MouseClick += (o, e) => GameScene.Game.CompanionBox.Visible = !GameScene.Game.CompanionBox.Visible;
 
@@ -122,8 +121,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogLeaveButtonLabel },
-                Hint = CEnvir.Language.MenuDialogLeaveButtonHint,
-                HintPosition = HintPosition.TopLeft
+                //Hint = CEnvir.Language.MenuDialogLeaveButtonHint
             };
             LeaveButton.MouseClick += (o, e) => GameScene.Game.ExitBox.Visible = true;
         }

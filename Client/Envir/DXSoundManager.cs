@@ -107,6 +107,9 @@ namespace Client.Envir
             [SoundIndex.RollDice] = new DXSound(SoundPath + @"dice_roll.wav", SoundType.System),
             [SoundIndex.RollYut] = new DXSound(SoundPath + @"yut_sticks.wav", SoundType.System),
 
+            [SoundIndex.QuestTake] = new DXSound(SoundPath + @"Qtake.wav", SoundType.System),
+            [SoundIndex.QuestComplete] = new DXSound(SoundPath + @"Qcomp.wav", SoundType.System),
+
             #endregion
 
             #region Magic

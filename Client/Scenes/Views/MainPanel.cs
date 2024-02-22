@@ -17,7 +17,7 @@ namespace Client.Scenes.Views
         public DXImageControl ExperienceBar, NewMailIcon, CompletedQuestIcon, AvailableQuestIcon;
 
         public DXImageControl ClassImage, LevelImage, ACImage, MACImage, DCImage, MCImage, SCImage, FPImage, CPImage;
-        public DXLabel ClassLabel, LevelLabel, FPLabel, CPLabel, ACLabel, DCLabel, SCLabel, MACLabel, MCLabel, HealthLabel, ManaLabel, FocusLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
+        public DXLabel ClassLabel, LevelLabel, FPLabel, CPLabel, ACLabel, DCLabel, SCLabel, MACLabel, MCLabel, HealthLabel, ManaLabel, FocusLabel, AttackModeLabel, PetModeLabel;
 
         #endregion
 
@@ -498,19 +498,6 @@ namespace Client.Scenes.Views
                 FocusLabel.Location = new Point(FocusBar.Location.X + (FocusBar.Size.Width - FocusLabel.Size.Width) / 2, FocusBar.Location.Y + (FocusBar.Size.Height - FocusLabel.Size.Height) / 2);
             };
 
-            ExperienceLabel = new DXLabel
-            {
-                Parent = this,
-                ForeColour = Color.White,
-                Outline = true,
-                OutlineColour = Color.Black,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
-            };
-            ExperienceLabel.SizeChanged += (o, e) =>
-            {
-                ExperienceLabel.Location = new Point(ExperienceBar.Location.X + (ExperienceBar.Size.Width - ExperienceLabel.Size.Width) / 2, ExperienceBar.Location.Y + (ExperienceBar.Size.Height - ExperienceLabel.Size.Height) / 2);
-            };
-
             AttackModeLabel = new DXLabel
             {
                 Parent = this,
@@ -746,14 +733,6 @@ namespace Client.Scenes.Views
                         FocusLabel.Dispose();
 
                     FocusLabel = null;
-                }
-
-                if (ExperienceLabel != null)
-                {
-                    if (!ExperienceLabel.IsDisposed)
-                        ExperienceLabel.Dispose();
-
-                    ExperienceLabel = null;
                 }
 
                 if (AttackModeLabel != null)

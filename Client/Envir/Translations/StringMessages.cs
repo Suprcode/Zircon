@@ -304,8 +304,16 @@ namespace Client.Envir.Translations
         public abstract string CharacterCharacterTabStatsDefenseTabLabel { get; set; }
         public abstract string CharacterCharacterTabStatsWeightTabLabel { get; set; }
         public abstract string CharacterCharacterTabStatsOtherTabLabel { get; set; }
+        public abstract string CharacterCharacterTabStatsElementAttackTabLabel { get; set; }
         public abstract string CharacterCharacterTabStatsElementAdvantageTabLabel { get; set; }
         public abstract string CharacterCharacterTabStatsElementDisadvantageTabLabel { get; set; }
+        public abstract string CharacterCharacterTabStatsAttackTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsDefenseTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsWeightTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsOtherTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsElementAttackTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsElementAdvantageTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsElementDisadvantageTabHint { get; set; }
 
         public abstract string CharacterCharacterTabStatsAttackTabMCLabel { get; set; }
         public abstract string CharacterCharacterTabStatsAttackTabSCLabel { get; set; }
