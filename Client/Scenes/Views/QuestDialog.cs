@@ -685,7 +685,7 @@ namespace Client.Scenes.Views
                 Location = new Point(RewardGrid.Location.X + 13 + RewardGrid.Size.Width, TasksLabel.Location.Y + TasksLabel.Size.Height + 9),
             };
 
-            ChoiceArray = new ClientUserItem[3];
+            ChoiceArray = new ClientUserItem[4];
             ChoiceGrid = new DXItemGrid
             {
                 Parent = this,

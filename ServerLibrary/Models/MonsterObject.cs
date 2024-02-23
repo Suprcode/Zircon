@@ -866,7 +866,7 @@ namespace Server.Models
         {
             if (Activated) return;
 
-            if (NearByPlayers.Count == 0 && MonsterInfo.ViewRange <= Config.MaxViewRange && !MonsterInfo.IsBoss && PetOwner == null) return;
+            if (NearByPlayers.Count == 0 && (MonsterInfo.ViewRange <= Config.MaxViewRange || CurrentMap.Players.Count == 0) && !MonsterInfo.IsBoss && PetOwner == null) return;
 
             Activated = true;
             SEnvir.ActiveObjects.Add(this);
@@ -875,7 +875,7 @@ namespace Server.Models
         {
             if (!Activated) return;
 
-            if (NearByPlayers.Count > 0 || MonsterInfo.ViewRange > Config.MaxViewRange || Target != null || MonsterInfo.IsBoss || PetOwner != null || ActionList.Count > 0 || CurrentHP < Stats[Stat.Health]) return;
+            if (NearByPlayers.Count > 0 || Target != null || (MonsterInfo.ViewRange > Config.MaxViewRange && CurrentMap.Players.Count > 0) || MonsterInfo.IsBoss || PetOwner != null || ActionList.Count > 0 || CurrentHP < Stats[Stat.Health]) return;
 
             Activated = false;
             SEnvir.ActiveObjects.Remove(this);

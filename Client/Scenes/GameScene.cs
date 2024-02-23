@@ -176,6 +176,7 @@ namespace Client.Scenes
         public BigMapDialog BigMapBox;
         public MagicDialog MagicBox;
         public GroupDialog GroupBox;
+        public GroupHealthDialog GroupHealthBox;
         public BuffDialog BuffBox;
         public StorageDialog StorageBox;
         public AutoPotionDialog AutoPotionBox;
@@ -497,6 +498,11 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false,
+            };
+            GroupHealthBox = new GroupHealthDialog()
+            {
+                Parent = this,
+                Visible = true,
             };
 
             BigMapBox = new BigMapDialog
@@ -4552,6 +4558,14 @@ namespace Client.Scenes
                         GroupBox.Dispose();
 
                     GroupBox = null;
+                }
+
+                if (GroupHealthBox != null)
+                {
+                    if (!GroupHealthBox.IsDisposed)
+                        GroupHealthBox.Dispose();
+
+                    GroupHealthBox = null;
                 }
 
                 if (BuffBox != null)

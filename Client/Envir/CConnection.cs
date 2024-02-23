@@ -3206,7 +3206,6 @@ namespace Client.Envir
         {
             GameScene.Game.GroupBox.Members.Add(new ClientPlayerInfo { ObjectID = p.ObjectID, Name = p.Name });
 
-
             GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GroupJoin, p.Name), MessageType.Group);
 
             GameScene.Game.GroupBox.UpdateMembers();
@@ -3216,7 +3215,6 @@ namespace Client.Envir
 
             GameScene.Game.BigMapBox.Update(data);
             GameScene.Game.MiniMapBox.Update(data);
-
         }
         public void Process(S.GroupRemove p)
         {
