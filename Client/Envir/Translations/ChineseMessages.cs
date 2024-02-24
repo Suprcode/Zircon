@@ -462,6 +462,8 @@ namespace Client.Envir.Translations
         public override string GroupDialogMemberTabLabel { get; set; } = "Members";
         public override string GroupDialogAddButtonConfirmMessage { get; set; } = "Please enter the name of the person you wish to group.";
         public override string GroupDialogAddButtonConfirmCaption { get; set; } = "Invite Group Member";
+        public override string GroupDialogAddButtonHint { get; set; } = "Add Member";
+        public override string GroupDialogRemoveButtonHint { get; set; } = "Remove Member";
 
         public override string GuildDialogTitle { get; set; } = "Guild";
         public override string GuildDialogCreateTabLabel { get; set; } = "Create";

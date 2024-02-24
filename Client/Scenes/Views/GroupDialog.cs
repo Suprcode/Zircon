@@ -244,6 +244,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.AddButton,
                 Location = new Point(30, 217),
                 Parent = this,
+                Hint = CEnvir.Language.GroupDialogAddButtonHint
             };
             AddButton.MouseClick += (o, e) =>
             {
@@ -283,6 +284,7 @@ namespace Client.Scenes.Views
                 Location = new Point(174, 217),
                 Parent = this,
                 Enabled = false,
+                Hint = CEnvir.Language.GroupDialogRemoveButtonHint
             };
             RemoveButton.MouseClick += (o, e) =>
             {
@@ -318,6 +320,7 @@ namespace Client.Scenes.Views
                     Parent = MemberTab,
                     Location = new Point(10 + 100*(i%2), 5 + 20*(i/2)),
                     Text = member.Name,
+                    ForeColour = Color.White
                 };
                 label.MouseClick += (o, e) =>
                 {
