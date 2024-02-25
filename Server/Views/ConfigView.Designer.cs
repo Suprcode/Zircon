@@ -2758,7 +2758,6 @@ namespace Server.Views
         private DevExpress.XtraEditors.LabelControl labelControl88;
         private DevExpress.XtraEditors.CheckEdit EnableStruckEdit;
         private DevExpress.XtraEditors.LabelControl labelControl90;
-        private DevExpress.XtraEditors.CheckEdit checkEdit1;
         private DevExpress.XtraEditors.CheckEdit EnableHermitEdit;
         private DevExpress.XtraEditors.LabelControl labelControl91;
         private DevExpress.XtraEditors.CheckEdit EnableFortuneEdit;

@@ -9439,11 +9439,11 @@ namespace Server.Models
                 if (link.Slot < 0 || link.Slot >= fromArray.Length) return;
                 UserItem item = fromArray[link.Slot];
 
-                if (!NPCPage.Types.Any(x => x.ItemType == item.Info.ItemType)) return;
-
                 if (item == null || link.Count > item.Count || !item.Info.CanSell || (item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
                 if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
                 if ((item.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless) return;
+
+                if (!NPCPage.Types.Any(x => x.ItemType == item.Info.ItemType)) return;
 
                 var price = (long)(item.Price(link.Count) * currency.ExchangeRate);
 
