@@ -51,11 +51,11 @@ namespace Server.Models.Magics
         {
             Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
 
-            if (Player.GetMagic(MagicType.FullBloom, out FullBloom fullBloom))
-            {
-                fullBloom.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = fullBloom.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
-            }
+            //if (Player.GetMagic(MagicType.FullBloom, out FullBloom fullBloom))
+            //{
+            //    fullBloom.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
+            //    Player.Enqueue(new S.MagicCooldown { InfoIndex = fullBloom.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+            //}
             if (Player.GetMagic(MagicType.WhiteLotus, out WhiteLotus whiteLotus))
             {
                 whiteLotus.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
