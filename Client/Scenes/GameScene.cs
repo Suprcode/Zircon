@@ -354,6 +354,8 @@ namespace Client.Scenes
             QuestBox?.LoadSettings();
             FishingBox?.LoadSettings();
             GroupBox?.LoadSettings();
+            GuildBox?.LoadSettings();
+            MenuBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -702,6 +704,8 @@ namespace Client.Scenes
             QuestBox.LoadSettings();
             FishingBox.LoadSettings();
             GroupBox.LoadSettings();
+            GuildBox.LoadSettings();
+            MenuBox.LoadSettings();
         }
 
         #region Methods

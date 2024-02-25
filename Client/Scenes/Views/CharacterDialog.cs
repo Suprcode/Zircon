@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -126,6 +127,22 @@ namespace Client.Scenes.Views
             }
         }
 
+        public int GuildFlag
+        {
+            get
+            {
+                return Inspect ? _inspectGuildFlag : GameScene.Game.GuildBox.GuildInfo?.Flag ?? -1;
+            }
+        }
+
+        public Color GuildColour
+        {
+            get
+            {
+                return Inspect ? _inspectGuildColour : GameScene.Game.GuildBox.GuildInfo?.Colour ?? Color.Empty;
+            }
+        }
+
         private bool HideHead
         {
             get
@@ -164,6 +181,8 @@ namespace Client.Scenes.Views
         public Color _inspectHairColour;
         public int _inspectLevel;
         public int _inspectFame;
+        public int _inspectGuildFlag;
+        public Color _inspectGuildColour;
 
         #endregion
 
@@ -2590,13 +2609,34 @@ namespace Client.Scenes.Views
                     }
                 }
             }
+            if (Inspect && GuildFlag > -1)
+            {
+                if (CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary gameLibrary))
+                {
+                    var guildFlag = 1690 + GuildFlag;
+
+                    var flagImage = gameLibrary.CreateImage(guildFlag, ImageType.Image);
+                    var flagOverlay = gameLibrary.CreateImage(guildFlag, ImageType.Overlay);
+
+                    var flagX = x - 100;
+                    var flagY = 105;
+
+                    if (flagImage != null)
+                    {
+                        PresentTexture(flagImage.Image, CharacterTab, new Rectangle(DisplayArea.X + flagX + flagImage.OffSetX, DisplayArea.Y + flagY + flagImage.OffSetY, flagImage.Width, flagImage.Height), ForeColour, this);
+                    }
+
+                    if (flagOverlay != null)
+                    {
+                        PresentTexture(flagOverlay.Overlay, CharacterTab, new Rectangle(DisplayArea.X + flagX + flagOverlay.OffSetX, DisplayArea.Y + flagY + flagOverlay.OffSetY, flagOverlay.Width, flagOverlay.Height), GuildColour, this);
+                    }
+                }
+            }
 
             if (HideHead) return;
-
             if (helmet != null && library != null)
             {
                 int index = helmet.Info.Image;
-
                 library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                 library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, helmet.Colour, true, 1F, ImageType.Overlay);
             }
@@ -2760,6 +2800,9 @@ namespace Client.Scenes.Views
             CharacterNameLabel.Text = p.Name;
             GuildNameLabel.Text = p.GuildName;
             GuildRankLabel.Text = p.GuildRank;
+
+            _inspectGuildFlag = p.GuildFlag;
+            _inspectGuildColour = p.GuildColour;
 
             //_inspectStats.Clear();
             //_inspectStats.Add(p.Stats);

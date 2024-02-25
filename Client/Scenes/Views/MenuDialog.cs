@@ -1,7 +1,9 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.UserModels;
 using Library;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Client.Scenes.Views
@@ -12,6 +14,45 @@ namespace Client.Scenes.Views
 
         public DXButton CloseButton;
         public DXButton SettingsButton, GuildButton, StorageButton, RankingButton, CompanionButton, LeaveButton;
+
+        public WindowSetting Settings;
+        public WindowType Type => WindowType.MenuBox;
+
+        public void LoadSettings()
+        {
+            if (Type == WindowType.None || !CEnvir.Loaded) return;
+
+            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
+
+            if (Settings != null)
+            {
+                ApplySettings();
+                return;
+            }
+
+            Settings = CEnvir.WindowSettings.CreateNewObject();
+            Settings.Resolution = Config.GameSize;
+            Settings.Window = Type;
+            Settings.Size = Size;
+            Settings.Location = Location;
+        }
+
+        public void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            Location = Settings.Location;
+
+            Visible = Settings.Visible;
+        }
+
+        public override void OnLocationChanged(Point oValue, Point nValue)
+        {
+            base.OnLocationChanged(oValue, nValue);
+
+            if (Settings != null && IsMoving)
+                Settings.Location = nValue;
+        }
 
         public override void OnKeyDown(KeyEventArgs e)
         {
@@ -43,6 +84,7 @@ namespace Client.Scenes.Views
             LibraryFile = LibraryFile.Interface;
             Index = 280;
             Sort = true;
+            Movable = true;
 
             CloseButton = new DXButton
             {

@@ -1805,6 +1805,8 @@ namespace Server.Models
             {
                 packet.GuildName = target.Account.GuildMember.Guild.GuildName;
                 packet.GuildRank = target.Account.GuildMember.Rank;
+                packet.GuildFlag = target.Account.GuildMember.Guild.Flag;
+                packet.GuildColour = target.Account.GuildMember.Guild.Colour;
             }
 
             //if (target.Player != null)

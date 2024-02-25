@@ -745,6 +745,8 @@ namespace Library.Network.ServerPackets
         public string Name { get; set; }
         public string GuildName { get; set; }
         public string GuildRank { get; set; }
+        public int GuildFlag { get; set; } = -1;
+        public Color GuildColour { get; set; }
         public string Partner { get; set; }
         public MirClass Class { get; set; }
         public int Level { get; set; }
