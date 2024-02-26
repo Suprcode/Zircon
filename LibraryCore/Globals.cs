@@ -410,6 +410,7 @@ namespace Library
 
         //Server settings
         public bool StruckEnabled { get; set; }
+        public bool HermitEnabled { get; set; }
 
         [CompleteObject]
         public void OnComplete()

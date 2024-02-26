@@ -139,6 +139,7 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 Border = false,
                 ChoiceGrid = { ReadOnly = true },
+                AbandonButton = { Visible = true },
                 BackColour = Color.Empty,
                 Location = new Point(0, 22)
             };
@@ -289,6 +290,7 @@ namespace Client.Scenes.Views
                 CompletedTab.UpdateQuestDisplay();
             }
         }
+
         #endregion
 
         #region IDisposable
@@ -518,6 +520,8 @@ namespace Client.Scenes.Views
         public DXControl DescriptionContainer;
         public DXLabel QuestLabel, TasksLabel, DescriptionLabel, EndLabel, StartLabel;
 
+        public DXButton AbandonButton;
+
         public DXItemGrid RewardGrid, ChoiceGrid;
         
         public ClientUserItem[] RewardArray, ChoiceArray;
@@ -681,7 +685,7 @@ namespace Client.Scenes.Views
                 Location = new Point(RewardGrid.Location.X + 13 + RewardGrid.Size.Width, TasksLabel.Location.Y + TasksLabel.Size.Height + 9),
             };
 
-            ChoiceArray = new ClientUserItem[3];
+            ChoiceArray = new ClientUserItem[4];
             ChoiceGrid = new DXItemGrid
             {
                 Parent = this,
@@ -746,6 +750,25 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.FinishNPC.Region.Map;
             };
 
+            AbandonButton = new DXButton
+            {
+                Parent = this,
+                Visible = false,
+                Label = { Text = CEnvir.Language.QuestAbandonButtonLabel },
+                Location = new Point(640, 398),
+                Size = new Size(80, DefaultHeight)
+            };
+            AbandonButton.MouseClick += (o, e) =>
+            {
+                if (SelectedQuest == null) return;
+
+                DXMessageBox box = new DXMessageBox(CEnvir.Language.QuestAbandonConfirmationMessage, CEnvir.Language.QuestAbandonConfirmationCaption, DXMessageBoxButtons.YesNo);
+
+                box.YesButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.QuestAbandon { Index = SelectedQuest.UserQuest.Index });
+                };
+            };
         }
 
         #region Methods
@@ -840,6 +863,14 @@ namespace Client.Scenes.Views
                     DescriptionScrollBar = null;
                 }
 
+                if (QuestLabel != null)
+                {
+                    if (!QuestLabel.IsDisposed)
+                        QuestLabel.Dispose();
+
+                    QuestLabel = null;
+                }
+
                 if (TasksLabel != null)
                 {
                     if (!TasksLabel.IsDisposed)
@@ -879,7 +910,15 @@ namespace Client.Scenes.Views
 
                     StartLabel = null;
                 }
-                
+
+                if (AbandonButton != null)
+                {
+                    if (!AbandonButton.IsDisposed)
+                        AbandonButton.Dispose();
+
+                    AbandonButton = null;
+                }
+
                 if (RewardGrid != null)
                 {
                     if (!RewardGrid.IsDisposed)
@@ -895,7 +934,6 @@ namespace Client.Scenes.Views
 
                     ChoiceGrid = null;
                 }
-
 
                 if (ShowTrackerBox != null)
                 {
@@ -918,7 +956,6 @@ namespace Client.Scenes.Views
 
         #endregion
     }
-
 
     public class QuestTree : DXControl
     {

@@ -153,6 +153,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; } = "Dmg Numbers:";
         public override string CommonControlConfigWindowGameTabDrawParticlesLabel { get; set; } = "Draw Particles:";
         public override string CommonControlConfigWindowGameTabDisplayHelmetLabel { get; set; } = "Display Helmet:";
+        public override string CommonControlConfigWindowGameTabHideChatBarLabel { get; set; } = "Hide Chat Bar:";
         public override string CommonControlConfigWindowGameTabEscapeCloseAllLabel { get; set; } = "Escape Close All:";
         public override string CommonControlConfigWindowGameTabShiftOpenChatLabel { get; set; } = "Shift + 1  Open Chat:";
         public override string CommonControlConfigWindowGameTabShiftOpenChatHint { get; set; } = "If turned on, Pressing Shift + 1 will open chat, if this is off you will use Quick Slot 1";
@@ -304,8 +305,16 @@ namespace Client.Envir.Translations
         public override string CharacterCharacterTabStatsDefenseTabLabel { get; set; } = "Def";
         public override string CharacterCharacterTabStatsWeightTabLabel { get; set; } = "Wt";
         public override string CharacterCharacterTabStatsOtherTabLabel { get; set; } = "Oth";
+        public override string CharacterCharacterTabStatsElementAttackTabLabel { get; set; } = "E.Att";
         public override string CharacterCharacterTabStatsElementAdvantageTabLabel { get; set; } = "E.Adv";
         public override string CharacterCharacterTabStatsElementDisadvantageTabLabel { get; set; } = "E.Dis";
+        public override string CharacterCharacterTabStatsAttackTabHint { get; set; } = "Attack";
+        public override string CharacterCharacterTabStatsDefenseTabHint { get; set; } = "Defence";
+        public override string CharacterCharacterTabStatsWeightTabHint { get; set; } = "Weight";
+        public override string CharacterCharacterTabStatsOtherTabHint { get; set; } = "Other";
+        public override string CharacterCharacterTabStatsElementAttackTabHint { get; set; } = "Element Attack";
+        public override string CharacterCharacterTabStatsElementAdvantageTabHint { get; set; } = "Element Advantage";
+        public override string CharacterCharacterTabStatsElementDisadvantageTabHint { get; set; } = "Element Disadvantage";
 
         public override string CharacterCharacterTabStatsAttackTabMCLabel { get; set; } = "MC:";
         public override string CharacterCharacterTabStatsAttackTabSCLabel { get; set; } = "SC:";
@@ -453,6 +462,8 @@ namespace Client.Envir.Translations
         public override string GroupDialogMemberTabLabel { get; set; } = "Members";
         public override string GroupDialogAddButtonConfirmMessage { get; set; } = "Please enter the name of the person you wish to group.";
         public override string GroupDialogAddButtonConfirmCaption { get; set; } = "Invite Group Member";
+        public override string GroupDialogAddButtonHint { get; set; } = "Add Member";
+        public override string GroupDialogRemoveButtonHint { get; set; } = "Remove Member";
 
         public override string GuildDialogTitle { get; set; } = "Guild";
         public override string GuildDialogCreateTabLabel { get; set; } = "Create";
@@ -518,7 +529,7 @@ namespace Client.Envir.Translations
         public override string GuildMemberDialogMerchantLabel { get; set; } = "Merchant Fund:";
         public override string GuildMemberDialogMarketLabel { get; set; } = "Market Fund:";
         public override string GuildMemberDialogKickButtonLabel { get; set; } = "Kick";
-        public override string GuildMemberDialogKickButtonConfirmMessage { get; set; } = "Are you sure you want to remove {MemberNameLabel.Text} from the guild";
+        public override string GuildMemberDialogKickButtonConfirmMsg { get; set; } = "Are you sure you want to remove {0} from the guild";
         public override string GuildMemberDialogKickButtonConfirmCaption { get; set; } = "Kick Member";
         public override string GuildCastlePanelOwnerLabel { get; set; } = "Current Owner:";
         public override string GuildCastlePanelScheduleLabel { get; set; } = "Schedule:";
@@ -536,6 +547,21 @@ namespace Client.Envir.Translations
 
         public override string MagicDialogTitle { get; set; } = "Magic";
 
+        public override string MenuDialogTitle { get; set; } = "Menu";
+        public override string MenuDialogSettingsButtonLabel { get; set; } = "Settings";
+        public override string MenuDialogGuildButtonLabel { get; set; } = "Guild";
+        public override string MenuDialogStorageButtonLabel { get; set; } = "Storage";
+        public override string MenuDialogRankingButtonLabel { get; set; } = "Ranking";
+        public override string MenuDialogCompanionButtonLabel { get; set; } = "Companion";
+        public override string MenuDialogLeaveButtonLabel { get; set; } = "Exit Game";
+
+        public override string MenuDialogSettingsButtonHint { get; set; } = "Settings [O]";
+        public override string MenuDialogGuildButtonHint { get; set; } = "Guild [G]";
+        public override string MenuDialogStorageButtonHint { get; set; } = "Storage [S]";
+        public override string MenuDialogRankingButtonHint { get; set; } = "Ranking [R]";
+        public override string MenuDialogCompanionButtonHint { get; set; } = "Companion [U]";
+        public override string MenuDialogLeaveButtonHint { get; set; } = "Exit Game [Alt + Q]";
+
         public override string MainPanelCharacterButtonHint { get; set; } = "Character [Q]";
         public override string MainPanelInventoryButtonHint { get; set; } = "Inventory [W]\nCompanion [U]";
         public override string MainPanelSpellButtonHint { get; set; } = "Spells [E]";
@@ -543,7 +569,7 @@ namespace Client.Envir.Translations
         public override string MainPanelMailButtonHint { get; set; } = "Communication [,]";
         public override string MainPanelBeltButtonHint { get; set; } = "Belt [Z]";
         public override string MainPanelGroupButtonHint { get; set; } = "Group [P]";
-        public override string MainPanelConfigButtonHint { get; set; } = "Settings [O]";
+        public override string MainPanelMenuButtonHint { get; set; } = "Menu [N]";
         public override string MainPanelCashShopButtonHint { get; set; } = "Cash Shop [Y]";
         public override string MainPanelClassLabel { get; set; } = "Cl";
         public override string MainPanelClassHint { get; set; } = "Class";
@@ -649,6 +675,9 @@ namespace Client.Envir.Translations
         public override string QuestTabChoiceLabel { get; set; } = "Choice";
         public override string QuestTabStartLabel { get; set; } = "Start:";
         public override string QuestTabEndLabel { get; set; } = "End:";
+        public override string QuestAbandonButtonLabel { get; set; } = "Abandon";
+        public override string QuestAbandonConfirmationCaption { get; set; } = "Abandon Quest";
+        public override string QuestAbandonConfirmationMessage { get; set; } = "Are you sure you want to abandon this quest?";
 
         public override string RankingDialogTitle { get; set; } = "Ranking";
         public override string RankingDialogGlobalTabLabel { get; set; } = "Global";

@@ -493,6 +493,10 @@ namespace Client.Envir
 
             switch (action)
             {
+                case KeyBindAction.MenuWindow:
+                    bind.Category = "Windows";
+                    bind.Key1 = Keys.N;
+                    break;
                 case KeyBindAction.ConfigWindow:
                     bind.Category = "Windows";
                     bind.Key1 = Keys.O;

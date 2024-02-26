@@ -336,6 +336,7 @@ namespace Client.Models
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;
 
             GameScene.Game.StruckEnabled = info.StruckEnabled;
+            GameScene.Game.HermitEnabled = info.HermitEnabled;
 
             HermitPoints = info.HermitPoints;
 
@@ -610,7 +611,7 @@ namespace Client.Models
                         attackMagic = MagicType.DragonRise;
                     else if (CanFlamingSword)
                         attackMagic = MagicType.FlamingSword;
-                    
+
                     action.Extra[1] = attackMagic;
                     break;
                 case MirAction.Mount:

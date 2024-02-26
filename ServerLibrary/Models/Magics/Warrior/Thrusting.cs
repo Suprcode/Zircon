@@ -32,7 +32,7 @@ namespace Server.Models.Magics
         {
             var response = new AttackCast();
 
-            if (attackType != Type)
+            if (attackType != Type || !Player.Character.CanThrusting)
                 return response;
 
             int cost = Magic.Cost;

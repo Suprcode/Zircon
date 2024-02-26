@@ -923,8 +923,9 @@ namespace Client.Scenes.Views
             foreach (ItemType itemType in itemTypes)
             {
                 string item = itemType.ToString();
-                if (item == "Nothing" || item == "Consumable" || item == "Torch" || item == "Poison" || item == "Amulet" || item == "Meat" || item == "Ore"
-                || item == "DarkStone" || item == "RefineSpecial" || item == "HorseArmour" || item == "CompanionFood" || item == "System" || item == "ItemPart" || item.Contains("Companion"))
+                if (item == "Nothing" || item == "Consumable" || item == "Torch" || item == "Poison" || item == "Amulet" || item == "Meat" || item == "Ore" || item == "Currency"
+                || item == "DarkStone" || item == "RefineSpecial" || item == "HorseArmour" || item == "CompanionFood" || item == "System" || item == "ItemPart" || item.Contains("Companion")
+                || item == "Hook" || item == "Float" || item == "Bait" || item == "Finder" || item == "Reel")
                 {
                     continue;
                 }

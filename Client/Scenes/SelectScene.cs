@@ -1315,11 +1315,11 @@ namespace Client.Scenes
                         switch (SelectedGender)
                         {
                             case MirGender.Male:
-                                armour = 940;
+                                armour = 941;
                                 hair = 60;
                                 break;
                             case MirGender.Female:
-                                armour = 950;
+                                armour = 951;
                                 hair = 80;
                                 break;
                             default:
@@ -1348,7 +1348,6 @@ namespace Client.Scenes
 
                 if (SelectedClass == MirClass.Assassin && SelectedGender == MirGender.Female && HairNumberBox.Value == 1)
                 {
-
                     if (CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out lib))
                         lib.Draw(1160, x + 70, y + 160, HairColour.BackColour, true, 1F, ImageType.Image);
                 }

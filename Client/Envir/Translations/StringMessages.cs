@@ -152,6 +152,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDrawParticlesLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDisplayHelmetLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameTabHideChatBarLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabEscapeCloseAllLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabShiftOpenChatLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabShiftOpenChatHint { get; set; }
@@ -303,8 +304,16 @@ namespace Client.Envir.Translations
         public abstract string CharacterCharacterTabStatsDefenseTabLabel { get; set; }
         public abstract string CharacterCharacterTabStatsWeightTabLabel { get; set; }
         public abstract string CharacterCharacterTabStatsOtherTabLabel { get; set; }
+        public abstract string CharacterCharacterTabStatsElementAttackTabLabel { get; set; }
         public abstract string CharacterCharacterTabStatsElementAdvantageTabLabel { get; set; }
         public abstract string CharacterCharacterTabStatsElementDisadvantageTabLabel { get; set; }
+        public abstract string CharacterCharacterTabStatsAttackTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsDefenseTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsWeightTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsOtherTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsElementAttackTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsElementAdvantageTabHint { get; set; }
+        public abstract string CharacterCharacterTabStatsElementDisadvantageTabHint { get; set; }
 
         public abstract string CharacterCharacterTabStatsAttackTabMCLabel { get; set; }
         public abstract string CharacterCharacterTabStatsAttackTabSCLabel { get; set; }
@@ -451,6 +460,8 @@ namespace Client.Envir.Translations
         public abstract string GroupDialogMemberTabLabel { get; set; }
         public abstract string GroupDialogAddButtonConfirmMessage { get; set; }
         public abstract string GroupDialogAddButtonConfirmCaption { get; set; }
+        public abstract string GroupDialogAddButtonHint { get; set; }
+        public abstract string GroupDialogRemoveButtonHint { get; set; }
 
         public abstract string GuildDialogTitle { get; set; }
         public abstract string GuildDialogCreateTabLabel { get; set; }
@@ -519,7 +530,7 @@ namespace Client.Envir.Translations
         public abstract string GuildMemberDialogMerchantLabel { get; set; }
         public abstract string GuildMemberDialogMarketLabel { get; set; }
         public abstract string GuildMemberDialogKickButtonLabel { get; set; }
-        public abstract string GuildMemberDialogKickButtonConfirmMessage { get; set; }
+        public abstract string GuildMemberDialogKickButtonConfirmMsg { get; set; }
         public abstract string GuildMemberDialogKickButtonConfirmCaption { get; set; }
         public abstract string GuildCastlePanelOwnerLabel { get; set; }
         public abstract string GuildCastlePanelScheduleLabel { get; set; }
@@ -537,6 +548,21 @@ namespace Client.Envir.Translations
 
         public abstract string MagicDialogTitle { get; set; }
 
+        public abstract string MenuDialogTitle { get; set; }
+        public abstract string MenuDialogSettingsButtonLabel { get; set; }
+        public abstract string MenuDialogGuildButtonLabel { get; set; }
+        public abstract string MenuDialogStorageButtonLabel { get; set; }
+        public abstract string MenuDialogRankingButtonLabel { get; set; }
+        public abstract string MenuDialogCompanionButtonLabel { get; set; }
+        public abstract string MenuDialogLeaveButtonLabel { get; set; }
+
+        public abstract string MenuDialogSettingsButtonHint { get; set; }
+        public abstract string MenuDialogGuildButtonHint { get; set; }
+        public abstract string MenuDialogStorageButtonHint { get; set; }
+        public abstract string MenuDialogRankingButtonHint { get; set; }
+        public abstract string MenuDialogCompanionButtonHint { get; set; }
+        public abstract string MenuDialogLeaveButtonHint { get; set; }
+
         public abstract string MainPanelCharacterButtonHint { get; set; }
         public abstract string MainPanelInventoryButtonHint { get; set; }
         public abstract string MainPanelSpellButtonHint { get; set; }
@@ -544,7 +570,7 @@ namespace Client.Envir.Translations
         public abstract string MainPanelMailButtonHint { get; set; }
         public abstract string MainPanelBeltButtonHint { get; set; }
         public abstract string MainPanelGroupButtonHint { get; set; }
-        public abstract string MainPanelConfigButtonHint { get; set; }
+        public abstract string MainPanelMenuButtonHint { get; set; }
         public abstract string MainPanelCashShopButtonHint { get; set; }
         public abstract string MainPanelClassLabel { get; set; }
         public abstract string MainPanelClassHint { get; set; }
@@ -650,6 +676,9 @@ namespace Client.Envir.Translations
         public abstract string QuestTabChoiceLabel { get; set; }
         public abstract string QuestTabStartLabel { get; set; }
         public abstract string QuestTabEndLabel { get; set; }
+        public abstract string QuestAbandonButtonLabel { get; set; }
+        public abstract string QuestAbandonConfirmationCaption { get; set; }
+        public abstract string QuestAbandonConfirmationMessage { get; set; }
 
         public abstract string RankingDialogTitle { get; set; }
         public abstract string RankingDialogGlobalTabLabel { get; set; }

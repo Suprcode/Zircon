@@ -155,6 +155,8 @@ namespace Server.Views
             WebPrefixEdit = new DevExpress.XtraEditors.TextEdit();
             labelControl42 = new DevExpress.XtraEditors.LabelControl();
             xtraTabPage6 = new DevExpress.XtraTab.XtraTabPage();
+            labelControl90 = new DevExpress.XtraEditors.LabelControl();
+            EnableHermitEdit = new DevExpress.XtraEditors.CheckEdit();
             labelControl88 = new DevExpress.XtraEditors.LabelControl();
             EnableStruckEdit = new DevExpress.XtraEditors.CheckEdit();
             labelControl69 = new DevExpress.XtraEditors.LabelControl();
@@ -232,6 +234,8 @@ namespace Server.Views
             labelControl55 = new DevExpress.XtraEditors.LabelControl();
             OpenDialog = new DevExpress.XtraEditors.XtraOpenFileDialog(components);
             FolderDialog = new DevExpress.XtraEditors.XtraFolderBrowserDialog(components);
+            EnableFortuneEdit = new DevExpress.XtraEditors.CheckEdit();
+            labelControl91 = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)xtraTabControl1).BeginInit();
             xtraTabControl1.SuspendLayout();
@@ -295,6 +299,7 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)WebCommandLinkEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)WebPrefixEdit.Properties).BeginInit();
             xtraTabPage6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)EnableHermitEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EnableStruckEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AutoReviveDelayEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PvPCurseRateEdit.Properties).BeginInit();
@@ -334,6 +339,7 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)GoldRateEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DropRateEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ExperienceRateEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EnableFortuneEdit.Properties).BeginInit();
             SuspendLayout();
             // 
             // ribbon
@@ -1541,6 +1547,10 @@ namespace Server.Views
             // 
             // xtraTabPage6
             // 
+            xtraTabPage6.Controls.Add(labelControl91);
+            xtraTabPage6.Controls.Add(EnableFortuneEdit);
+            xtraTabPage6.Controls.Add(labelControl90);
+            xtraTabPage6.Controls.Add(EnableHermitEdit);
             xtraTabPage6.Controls.Add(labelControl88);
             xtraTabPage6.Controls.Add(EnableStruckEdit);
             xtraTabPage6.Controls.Add(labelControl69);
@@ -1574,6 +1584,23 @@ namespace Server.Views
             xtraTabPage6.Name = "xtraTabPage6";
             xtraTabPage6.Size = new System.Drawing.Size(763, 392);
             xtraTabPage6.Text = "Players";
+            // 
+            // labelControl90
+            // 
+            labelControl90.Location = new System.Drawing.Point(353, 199);
+            labelControl90.Name = "labelControl90";
+            labelControl90.Size = new System.Drawing.Size(70, 13);
+            labelControl90.TabIndex = 130;
+            labelControl90.Text = "Enable Hermit:";
+            // 
+            // EnableHermitEdit
+            // 
+            EnableHermitEdit.Location = new System.Drawing.Point(429, 196);
+            EnableHermitEdit.MenuManager = ribbon;
+            EnableHermitEdit.Name = "EnableHermitEdit";
+            EnableHermitEdit.Properties.Caption = "";
+            EnableHermitEdit.Size = new System.Drawing.Size(100, 19);
+            EnableHermitEdit.TabIndex = 129;
             // 
             // labelControl88
             // 
@@ -2384,6 +2411,23 @@ namespace Server.Views
             // 
             FolderDialog.SelectedPath = ".\\";
             // 
+            // EnableFortuneEdit
+            // 
+            EnableFortuneEdit.Location = new System.Drawing.Point(429, 218);
+            EnableFortuneEdit.MenuManager = ribbon;
+            EnableFortuneEdit.Name = "EnableFortuneEdit";
+            EnableFortuneEdit.Properties.Caption = "";
+            EnableFortuneEdit.Size = new System.Drawing.Size(100, 19);
+            EnableFortuneEdit.TabIndex = 131;
+            // 
+            // labelControl91
+            // 
+            labelControl91.Location = new System.Drawing.Point(346, 221);
+            labelControl91.Name = "labelControl91";
+            labelControl91.Size = new System.Drawing.Size(77, 13);
+            labelControl91.TabIndex = 132;
+            labelControl91.Text = "Enable Fortune:";
+            // 
             // ConfigView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2463,6 +2507,7 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)WebPrefixEdit.Properties).EndInit();
             xtraTabPage6.ResumeLayout(false);
             xtraTabPage6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)EnableHermitEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)EnableStruckEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)AutoReviveDelayEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)PvPCurseRateEdit.Properties).EndInit();
@@ -2505,6 +2550,7 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)GoldRateEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)DropRateEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)ExperienceRateEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EnableFortuneEdit.Properties).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -2711,5 +2757,9 @@ namespace Server.Views
         private DevExpress.XtraEditors.TextEdit MaxPacketEdit;
         private DevExpress.XtraEditors.LabelControl labelControl88;
         private DevExpress.XtraEditors.CheckEdit EnableStruckEdit;
+        private DevExpress.XtraEditors.LabelControl labelControl90;
+        private DevExpress.XtraEditors.CheckEdit EnableHermitEdit;
+        private DevExpress.XtraEditors.LabelControl labelControl91;
+        private DevExpress.XtraEditors.CheckEdit EnableFortuneEdit;
     }
 }

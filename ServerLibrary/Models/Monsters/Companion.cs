@@ -462,19 +462,18 @@ namespace Server.Models.Monsters
 
         public bool FilterCompanionPicks(ItemCheck check)
         {
-            if (check.Info.ItemName == "Gold") return true;
+            if (SEnvir.IsCurrencyItem(check.Info)) return true;
 
             ItemType itemType;
             Rarity itemRarity;
             RequiredClass itemClass;
-            List<string> listClass = CompanionOwner.FiltersClass.Split(',').ToList();
-            List<string> listRarity = CompanionOwner.FiltersRarity.Split(',').ToList();
-            List<string> listType = CompanionOwner.FiltersItemType.Split(',').ToList();
-            bool hasFilterType, hasRarity, hasClass;
+            List<string> listClass = CompanionOwner.FiltersClass.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> listRarity = CompanionOwner.FiltersRarity.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> listType = CompanionOwner.FiltersItemType.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            hasFilterType = true;
-            hasClass = true;
-            hasRarity = true;
+            bool hasFilterType = true;
+            bool hasClass = true;
+            bool hasRarity = true;
 
             if (check.Info.ItemEffect == ItemEffect.ItemPart && check.Item.Stats[Stat.ItemIndex] > 0)
             {
@@ -497,8 +496,29 @@ namespace Server.Models.Monsters
             }
             if (listClass.Count > 0)
             {
-                hasClass = itemClass == RequiredClass.All || listClass.Contains(itemClass.ToString());
+                if (itemClass != RequiredClass.All)
+                {
+                    foreach (var item in listClass)
+                    {
+                        switch (item)
+                        {
+                            case "Warrior":
+                                if ((itemClass & RequiredClass.Warrior) != RequiredClass.Warrior) return false;
+                                break;
+                            case "Wizard":
+                                if ((itemClass & RequiredClass.Wizard) != RequiredClass.Wizard) return false;
+                                break;
+                            case "Taoist":
+                                if ((itemClass & RequiredClass.Taoist) != RequiredClass.Taoist) return false;
+                                break;
+                            case "Assassin":
+                                if ((itemClass & RequiredClass.Assassin) != RequiredClass.Assassin) return false;
+                                break;
+                        }
+                    }
+                }
             }
+
             return hasFilterType && hasRarity && hasClass;
         }
 
