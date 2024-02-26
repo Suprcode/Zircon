@@ -954,7 +954,7 @@ namespace Server.Models
             Connection.Player = null;
             Character.Player = null;
 
-            UpdateOnlineState(true);
+            UpdateOnlineState(true); 
 
             Connection = null;
             Character = null;

@@ -225,6 +225,9 @@ namespace Server.Envir
         public abstract string GroupRecallMemberNotAllowed { get; set; }
         public abstract string GroupRecallFromMap { get; set; }
         public abstract string GroupRecallMemberFromMap { get; set; }
+        public abstract string GroupLFGEnabled { get; set; }
+        public abstract string GroupLFGExpired { get; set; }
+        public abstract string GroupRequestDeclined { get; set; }
 
         [ConfigSection("Trade")]
         public abstract string TradeAlreadyTrading { get; set; }

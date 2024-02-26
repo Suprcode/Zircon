@@ -207,11 +207,14 @@ namespace Server.Envir.Translations
         public override string GroupSelf { get; set; } = "You can not group with yourself.";
         public override string GroupMemberLimit { get; set; } = "{0}'s group has already reached the maximum size.";
         public override string GroupRecallDelay { get; set; } = "You cannot group recall for another {0}";
-        public override string GroupRecallMap { get; set; } = "You cannot group recall on this map";
-        public override string GroupRecallNotAllowed { get; set; } = "You are not allowing group recall";
-        public override string GroupRecallMemberNotAllowed { get; set; } = "{0} is now allowing group recall";
+        public override string GroupRecallMap { get; set; } = "You cannot group recall on this map.";
+        public override string GroupRecallNotAllowed { get; set; } = "You are not allowing group recall.";
+        public override string GroupRecallMemberNotAllowed { get; set; } = "{0} is now allowing group recall.";
         public override string GroupRecallFromMap { get; set; } = "You cannot be recalled from this map.";
         public override string GroupRecallMemberFromMap { get; set; } = "{0} cannot be recalled from this map.";
+        public override string GroupLFGEnabled { get; set; } = "LFG has been enabled for {0} minutes.";
+        public override string GroupLFGExpired { get; set; } = "LFG has now expired.";
+        public override string GroupRequestDeclined { get; set; } = "Request to join group has been declined.";
 
         public override string TradeAlreadyTrading { get; set; } = "You are already Trading with Someone.";
         public override string TradeAlreadyHaveRequest { get; set; } = "You already have a request to trade with Someone.";

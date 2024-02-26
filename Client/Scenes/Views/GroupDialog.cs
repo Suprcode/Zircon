@@ -21,6 +21,7 @@ namespace Client.Scenes.Views
 
         public DXLabel LFGNameLabel, LFGStatusLabel;
         public DXVScrollBar LFGScrollBar;
+        private DateTime LFGRequestDelay;
 
         public GroupLFGRow[] LFGRows;
 
@@ -63,7 +64,7 @@ namespace Client.Scenes.Views
         public DXTab MemberTab;
 
         public List<ClientPlayerInfo> Members = new List<ClientPlayerInfo>();
-        
+
         public List<DXLabel> Labels = new List<DXLabel>();
 
         #region SelectedLabel
@@ -87,14 +88,14 @@ namespace Client.Scenes.Views
         {
             if (oValue != null)
             {
-                oValue.ForeColour = Color.FromArgb(198, 166, 99);
-                oValue.BackColour = Color.Empty;
+                oValue.ForeColour = Color.White;
+                oValue.BackColour = Color.FromArgb(24, 16, 16);
             }
 
             if (nValue != null)
             {
-                nValue.ForeColour = Color.White;
-                nValue.BackColour = Color.FromArgb(24, 16, 16);
+                nValue.ForeColour = Color.LimeGreen;
+                nValue.BackColour = Color.Empty;
             }
 
             RemoveButton.Enabled = nValue != null && Members[0].ObjectID == GameScene.Game.User.ObjectID;
@@ -341,7 +342,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.LFGButton,
                 Location = new Point(127, 217),
                 Parent = this,
-                Hint = "Create LFG"
+                Hint = CEnvir.Language.GroupDialogCreateLFGButtonHint
             };
             LFGButton.MouseClick += (o, e) =>
             {
@@ -479,7 +480,16 @@ namespace Client.Scenes.Views
                 return;
             }
 
+            if (LFGRequestDelay > CEnvir.Now)
+            {
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GroupLFGRequestDelay, (LFGRequestDelay - CEnvir.Now).Seconds), MessageType.System);
+                return;  
+            }
+
+            LFGRequestDelay = CEnvir.Now.AddSeconds(30);
+
             CEnvir.Enqueue(new C.GroupRequest { Name = row.Info.LeaderName });
+            GameScene.Game.ReceiveChat(CEnvir.Language.GroupLFGRequestSent, MessageType.System);
         }
 
         private void RefreshList()
@@ -566,7 +576,7 @@ namespace Client.Scenes.Views
                 DXLabel label = new DXLabel
                 {
                     Parent = MemberTab,
-                    Location = new Point(10 + 100*(i%2), 5 + 20*(i/2)),
+                    Location = new Point(10 + 100 * (i % 2), 5 + 20 * (i / 2)),
                     Text = member.Name,
                     ForeColour = Color.White
                 };
@@ -628,7 +638,7 @@ namespace Client.Scenes.Views
 
                     AllowGroupBox = null;
                 }
-                
+
                 if (AddButton != null)
                 {
                     if (!AddButton.IsDisposed)
@@ -683,6 +693,112 @@ namespace Client.Scenes.Views
         }
 
         #endregion
+    }
+
+    public sealed class GroupHealthDialog : DXWindow
+    {
+        public List<DXLabel> Labels = new();
+        public List<DXControl> HealthBars = new();
+
+        public GroupHealthDialog()
+        {
+            HasTitle = false;
+            HasFooter = false;
+            HasTopBorder = false;
+            TitleLabel.Visible = false;
+            CloseButton.Visible = false;
+            Opacity = 0.0F;
+            AllowResize = false;
+            Movable = false;
+            Border = true;
+            IsControl = false;
+
+            Size = new Size(150, 500);
+        }
+
+        public override WindowType Type => WindowType.None;
+
+        public override bool CustomSize => false;
+
+        public override bool AutomaticVisibility => true;
+
+        public void UpdateMembers()
+        {
+            foreach (DXLabel label in Labels)
+                label.Dispose();
+
+            foreach (DXControl healthBar in HealthBars)
+                healthBar.Dispose();
+
+            Labels.Clear();
+
+            HealthBars.Clear();
+
+            CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary barLibrary);
+
+            int index = 0;
+
+            for (int i = 0; i < GameScene.Game.GroupBox.Members.Count; i++)
+            {
+                ClientPlayerInfo member = GameScene.Game.GroupBox.Members[i];
+
+                if (member.Name == GameScene.Game.User.Name) continue;
+
+                DXLabel label = new DXLabel
+                {
+                    Parent = this,
+                    Location = new Point(15, 10 + 30 * index),
+                    Text = member.Name,
+                    ForeColour = Color.White,
+                    Tag = member.ObjectID
+                };
+
+                Labels.Add(label);
+
+                var healthBar = new DXControl
+                {
+                    Parent = this,
+                    Location = new Point(15, 30 + 30 * index),
+                    Size = barLibrary.GetSize(52),
+                    Tag = label
+                };
+                healthBar.BeforeDraw += (o, e) =>
+                {
+                    if (barLibrary == null) return;
+
+                    var nameLabel = (DXLabel)((DXControl)o).Tag;
+                    var objectID = (uint)nameLabel.Tag;
+
+                    if (!GameScene.Game.DataDictionary.TryGetValue(objectID, out ClientObjectData data)) return;
+
+                    MirImage backImage = barLibrary.CreateImage(316, ImageType.Image);
+
+                    PresentTexture(backImage.Image, this, new Rectangle(healthBar.DisplayArea.X, healthBar.DisplayArea.Y, (int)backImage.Width, backImage.Height), Color.White, healthBar);
+
+                    if (data.Health <= 0)
+                    {
+                        nameLabel.ForeColour = Color.IndianRed;
+                        return;
+                    }
+
+                    nameLabel.ForeColour = Color.White;
+
+                    float percent = Math.Min(1, Math.Max(0, data.Health / (float)data.MaxHealth));
+
+                    if (percent == 0) return;
+
+                    MirImage image = barLibrary.CreateImage(315, ImageType.Image);
+
+                    if (image == null) return;
+
+                    PresentTexture(image.Image, this, new Rectangle(healthBar.DisplayArea.X, healthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, healthBar);
+                };
+
+                HealthBars.Add(healthBar);
+
+                index++;
+            }
+        }
     }
 
     public sealed class GroupLFGRow : DXControl
@@ -956,7 +1072,6 @@ namespace Client.Scenes.Views
             Location = new Point((ActiveScene.DisplayArea.Width - DisplayArea.Width) / 2, (ActiveScene.DisplayArea.Height - DisplayArea.Height) / 2);
         }
 
-
         #region Methods
         public override void OnKeyDown(KeyEventArgs e)
         {
@@ -1018,110 +1133,9 @@ namespace Client.Scenes.Views
                         Label.Dispose();
                     Label = null;
                 }
-
-    public sealed class GroupHealthDialog : DXWindow
-    {
-        public List<DXLabel> Labels = new();
-        public List<DXControl> HealthBars = new();
-
-        public GroupHealthDialog()
-        {
-            HasTitle = false;
-            HasFooter = false;
-            HasTopBorder = false;
-            TitleLabel.Visible = false;
-            CloseButton.Visible = false;
-            Opacity = 0.0F;
-            AllowResize = false;
-            Movable = false;
-            Border = true;
-            IsControl = false;
-
-            Size = new Size(150, 500);
-        }
-
-        public override WindowType Type => WindowType.None;
-
-        public override bool CustomSize => false;
-
-        public override bool AutomaticVisibility => true;
-
-        public void UpdateMembers()
-        {
-            foreach (DXLabel label in Labels)
-                label.Dispose();
-
-            foreach (DXControl healthBar in HealthBars)
-                healthBar.Dispose();
-
-            Labels.Clear();
-
-            HealthBars.Clear();
-
-            CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary barLibrary);
-
-            int index = 0;
-
-            for (int i = 0; i < GameScene.Game.GroupBox.Members.Count; i++)
-            {
-                ClientPlayerInfo member = GameScene.Game.GroupBox.Members[i];
-
-                if (member.Name == GameScene.Game.User.Name) continue;
-
-                DXLabel label = new DXLabel
-                {
-                    Parent = this,
-                    Location = new Point(15, 10 + 30 * index),
-                    Text = member.Name,
-                    ForeColour = Color.White,
-                    Tag = member.ObjectID
-                };
-
-                Labels.Add(label);
-
-                var healthBar = new DXControl
-                {
-                    Parent = this,
-                    Location = new Point(15, 30 + 30 * index),
-                    Size = barLibrary.GetSize(52),
-                    Tag = label
-                };
-                healthBar.BeforeDraw += (o, e) =>
-                {
-                    if (barLibrary == null) return;
-
-                    var nameLabel = (DXLabel)((DXControl)o).Tag;
-                    var objectID = (uint)nameLabel.Tag;
-
-                    if (!GameScene.Game.DataDictionary.TryGetValue(objectID, out ClientObjectData data)) return;
-
-                    MirImage backImage = barLibrary.CreateImage(316, ImageType.Image);
-
-                    PresentTexture(backImage.Image, this, new Rectangle(healthBar.DisplayArea.X, healthBar.DisplayArea.Y, (int)backImage.Width, backImage.Height), Color.White, healthBar);
-
-                    if (data.Health <= 0)
-                    {
-                        nameLabel.ForeColour = Color.IndianRed;
-                        return;
-                    }
-
-                    nameLabel.ForeColour = Color.White;
-
-                    float percent = Math.Min(1, Math.Max(0, data.Health / (float)data.MaxHealth));
-
-                    if (percent == 0) return;
-
-                    MirImage image = barLibrary.CreateImage(315, ImageType.Image);
-
-                    if (image == null) return;
-
-                    PresentTexture(image.Image, this, new Rectangle(healthBar.DisplayArea.X, healthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, healthBar);
-                };
-
-                HealthBars.Add(healthBar);
-
-                index++;
             }
         }
+
+        #endregion
     }
 }

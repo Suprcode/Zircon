@@ -704,6 +704,11 @@ namespace Server.Envir
 
             if (p.Accept)
                 Player.GroupJoin();
+            else
+            {
+                var requestCon = Player.GroupInvitationRequest?.Connection;
+                requestCon?.ReceiveChat(requestCon.Language.GroupRequestDeclined, MessageType.System);
+            }
 
             Player.GroupInvitation = null;
             Player.GroupInvitationRequest = null;

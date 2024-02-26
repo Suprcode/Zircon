@@ -88,6 +88,8 @@ namespace Client.Envir.Translations
         public override string GroupMemberLimit { get; set; } = "Group member limit has been reached";
         public override string GroupSelf { get; set; } = "You can not group with yourself";
         public override string GroupNotLeader { get; set; } = "You are not the leader of your group.";
+        public override string GroupLFGRequestSent { get; set; } = "Request to join group has been sent.";
+        public override string GroupLFGRequestDelay { get; set; } = "Cannot request to join group for another {0} seconds.";
         public override string MarketNoItemSelected { get; set; } = "Error: No Item selected.";
         public override string MarketInvalidPrice { get; set; } = "Error: Invalid Price.";
         public override string BuySellOverweight { get; set; } = "You do not have enough weight to buy any '{0}'.";
@@ -465,6 +467,7 @@ namespace Client.Envir.Translations
         public override string GroupDialogAddButtonConfirmCaption { get; set; } = "Invite Group Member";
         public override string GroupDialogAddButtonHint { get; set; } = "Add Member";
         public override string GroupDialogRemoveButtonHint { get; set; } = "Remove Member";
+        public override string GroupDialogCreateLFGButtonHint { get; set; } = "Create LFG";
 
         public override string GuildDialogTitle { get; set; } = "Guild";
         public override string GuildDialogCreateTabLabel { get; set; } = "Create";

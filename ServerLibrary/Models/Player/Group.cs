@@ -10,8 +10,6 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Models
 {
-    //TODO - If leader leaves group, it passes the leader to the next person. Make sure to handle LFG in this situation
-    //TODO - Bug - update group when allow group changed to false
     //TODO - Rename methods and tidy variables
 
     public partial class PlayerObject
@@ -37,14 +35,15 @@ namespace Server.Models
 
         public void ProcessGroup()
         {
-            //disable after 1 hour, broadcast update
-
             if (LFGEnabled && SEnvir.Now > LFGEnabledDateTime)
             {
                 LFGEnabled = false;
                 LFGNeedUpdate = true;
 
-                //Send expired message
+                Connection.ReceiveChat(Connection.Language.GroupLFGExpired, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(Connection.Language.GroupLFGExpired, MessageType.System);
             }
 
             if (LFGNeedUpdate)
@@ -100,7 +99,7 @@ namespace Server.Models
             LFGNeedUpdate = true;
         }
 
-        public void UpdateLFGStatus(bool enabled)
+        public void UpdateLFGStatus(bool enabled, bool immediate = false)
         {
             bool old = LFGEnabled;
 
@@ -108,14 +107,24 @@ namespace Server.Models
 
             if (LFGEnabled)
             {
-                LFGEnabledDateTime = SEnvir.Now.AddHours(1);
+                int enabledMinutes = 60;
 
-                //Send 1 hour message
+                LFGEnabledDateTime = SEnvir.Now.AddMinutes(enabledMinutes);
+
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupLFGEnabled, enabledMinutes), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupLFGEnabled, enabledMinutes), MessageType.System);
             }
 
             if (old != LFGEnabled)
             {
                 LFGNeedUpdate = true;
+            }
+
+            if (immediate)
+            {
+                ProcessGroup();
             }
         }
 
@@ -140,6 +149,8 @@ namespace Server.Models
 
             if (GroupMembers != null)
                 GroupLeave();
+
+            UpdateLFGStatus(false);
         }
 
         public void GroupRemove(string name)
@@ -273,7 +284,7 @@ namespace Server.Models
         {
             if (GroupMembers != null)
             {
-                //You are already group
+                //You are already grouped
                 return;
             }
 
@@ -387,8 +398,6 @@ namespace Server.Models
             GroupMembers = GroupInvitation.GroupMembers;
             GroupMembers.Add(this);
 
-            UpdateLFGStatus(false);
-
             foreach (PlayerObject ob in GroupMembers)
             {
                 if (ob == this) continue;
@@ -404,7 +413,10 @@ namespace Server.Models
             AddAllObjects();
             ApplyGuildBuff();
 
-            LFGNeedUpdate = true;
+            GroupInvitation.LFGNeedUpdate = true;
+
+            //Disable own LFG as joined another group
+            UpdateLFGStatus(false);
 
             RefreshStats();
             Enqueue(new S.GroupMember { ObjectID = ObjectID, Name = Name });
@@ -434,6 +446,9 @@ namespace Server.Models
             if (oldGroup.Count == 1) oldGroup[0].GroupLeave();
 
             GroupMembers = null;
+
+            //Disable your own LFG if you leave group. Mainly for if group leader has left.
+            UpdateLFGStatus(false, true);
 
             Enqueue(p);
             RemoveAllObjects();

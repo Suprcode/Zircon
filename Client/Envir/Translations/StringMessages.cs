@@ -87,6 +87,8 @@ namespace Client.Envir.Translations
         public abstract string GroupMemberLimit { get; set; }
         public abstract string GroupSelf { get; set; }
         public abstract string GroupNotLeader { get; set; }
+        public abstract string GroupLFGRequestSent { get; set; }
+        public abstract string GroupLFGRequestDelay { get; set; }
         public abstract string MarketNoItemSelected { get; set; }
         public abstract string MarketInvalidPrice { get; set; }
         public abstract string BuySellOverweight { get; set; }
@@ -463,6 +465,7 @@ namespace Client.Envir.Translations
         public abstract string GroupDialogAddButtonConfirmCaption { get; set; }
         public abstract string GroupDialogAddButtonHint { get; set; }
         public abstract string GroupDialogRemoveButtonHint { get; set; }
+        public abstract string GroupDialogCreateLFGButtonHint { get; set; }
 
         public abstract string GuildDialogTitle { get; set; }
         public abstract string GuildDialogCreateTabLabel { get; set; }
