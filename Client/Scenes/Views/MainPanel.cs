@@ -17,8 +17,9 @@ namespace Client.Scenes.Views
         public DXImageControl ExperienceBar, NewMailIcon, CompletedQuestIcon, AvailableQuestIcon;
 
         public DXImageControl ClassImage, LevelImage, ACImage, MACImage, DCImage, MCImage, SCImage, FPImage, CPImage;
-        public DXLabel ClassLabel, LevelLabel, FPLabel, CPLabel, ACLabel, DCLabel, SCLabel, MACLabel, MCLabel, HealthLabel, ManaLabel, FocusLabel, ExperienceLabel, AttackModeLabel, PetModeLabel;
+        public DXLabel ClassLabel, LevelLabel, FPLabel, CPLabel, ACLabel, DCLabel, SCLabel, MACLabel, MCLabel, HealthLabel, ManaLabel, FocusLabel, AttackModeLabel, PetModeLabel;
 
+        DXButton CharacterButton, InventoryButton, SpellButton, QuestButton, MailButton, BeltButton, GroupButton, MenuButton, CashShopButton;
         #endregion
 
         public MainPanel()
@@ -33,6 +34,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 51,
+                HintPosition = HintPosition.FixedY
             };
             ExperienceBar.Location = new Point((Size.Width - ExperienceBar.Size.Width) / 2 + 1, 2 + 1);
             ExperienceBar.BeforeDraw += (o, e) =>
@@ -131,56 +133,61 @@ namespace Client.Scenes.Views
                 PresentTexture(image.Image, this, new Rectangle(FocusBar.DisplayArea.X, FocusBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, FocusBar);
             };
 
-            DXButton CharacterButton = new DXButton
+            CharacterButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 82,
                 Parent = this,
                 Location = new Point(650, 23),
-                Hint = CEnvir.Language.MainPanelCharacterButtonHint
+                Hint = CEnvir.Language.MainPanelCharacterButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             CharacterButton.MouseClick += (o, e) =>
             {
                 GameScene.Game.CharacterBox.Visible = !GameScene.Game.CharacterBox.Visible;
             };
 
-            DXButton InventoryButton = new DXButton
+            InventoryButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 87,
                 Parent = this,
                 Location = new Point(689, 23),
-                Hint = CEnvir.Language.MainPanelInventoryButtonHint
+                Hint = CEnvir.Language.MainPanelInventoryButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             InventoryButton.MouseClick += (o, e) => GameScene.Game.InventoryBox.Visible = !GameScene.Game.InventoryBox.Visible;
 
-            DXButton SpellButton = new DXButton
+            SpellButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 92,
                 Parent = this,
                 Location = new Point(728, 23),
-                Hint = CEnvir.Language.MainPanelSpellButtonHint
+                Hint = CEnvir.Language.MainPanelSpellButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             SpellButton.MouseClick += (o, e) => GameScene.Game.MagicBox.Visible = !GameScene.Game.MagicBox.Visible;
 
-            DXButton QuestButton = new DXButton
+            QuestButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 112,
                 Parent = this,
                 Location = new Point(767, 23),
-                Hint = CEnvir.Language.MainPanelQuestButtonHint
+                Hint = CEnvir.Language.MainPanelQuestButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             QuestButton.MouseClick += (o, e) => GameScene.Game.QuestBox.Visible = !GameScene.Game.QuestBox.Visible;
 
-            DXButton MailButton = new DXButton
+            MailButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 97,
                 Parent = this,
                 Location = new Point(806, 23),
-                Hint = CEnvir.Language.MainPanelMailButtonHint
+                Hint = CEnvir.Language.MainPanelMailButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             MailButton.MouseClick += (o, e) =>
             {
@@ -224,35 +231,38 @@ namespace Client.Scenes.Views
                 Visible = false,
             };
 
-            DXButton BeltButton = new DXButton
+            BeltButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 107,
                 Parent = this,
                 Location = new Point(845, 23),
-                Hint = CEnvir.Language.MainPanelBeltButtonHint
+                Hint = CEnvir.Language.MainPanelBeltButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             BeltButton.MouseClick += (o, e) => GameScene.Game.BeltBox.Visible = !GameScene.Game.BeltBox.Visible;
 
-            DXButton GroupButton = new DXButton
+            GroupButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 102,
                 Parent = this,
                 Location = new Point(884, 23),
-                Hint = CEnvir.Language.MainPanelGroupButtonHint
+                Hint = CEnvir.Language.MainPanelGroupButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             GroupButton.MouseClick += (o,e) => GameScene.Game.GroupBox.Visible = !GameScene.Game.GroupBox.Visible;
 
-            DXButton ConfigButton = new DXButton
+            MenuButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
                 Index = 117,
                 Parent = this,
                 Location = new Point(923, 23),
-                Hint = CEnvir.Language.MainPanelConfigButtonHint
+                Hint = CEnvir.Language.MainPanelMenuButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
-            ConfigButton.MouseClick += (o, e) => GameScene.Game.ConfigBox.Visible = !GameScene.Game.ConfigBox.Visible;
+            MenuButton.MouseClick += (o, e) => GameScene.Game.MenuBox.Visible = !GameScene.Game.MenuBox.Visible;
 
             DXButton CashShopButton = new DXButton
             {
@@ -260,7 +270,8 @@ namespace Client.Scenes.Views
                 Index = 122,
                 Parent = this,
                 Location = new Point(972, 16),
-                Hint = CEnvir.Language.MainPanelCashShopButtonHint
+                Hint = CEnvir.Language.MainPanelCashShopButtonHint,
+                HintPosition = HintPosition.TopLeft
             };
             CashShopButton.MouseClick += (o, e) =>
             {
@@ -488,19 +499,6 @@ namespace Client.Scenes.Views
                 FocusLabel.Location = new Point(FocusBar.Location.X + (FocusBar.Size.Width - FocusLabel.Size.Width) / 2, FocusBar.Location.Y + (FocusBar.Size.Height - FocusLabel.Size.Height) / 2);
             };
 
-            ExperienceLabel = new DXLabel
-            {
-                Parent = this,
-                ForeColour = Color.White,
-                Outline = true,
-                OutlineColour = Color.Black,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
-            };
-            ExperienceLabel.SizeChanged += (o, e) =>
-            {
-                ExperienceLabel.Location = new Point(ExperienceBar.Location.X + (ExperienceBar.Size.Width - ExperienceLabel.Size.Width) / 2, ExperienceBar.Location.Y + (ExperienceBar.Size.Height - ExperienceLabel.Size.Height) / 2);
-            };
-
             AttackModeLabel = new DXLabel
             {
                 Parent = this,
@@ -538,6 +536,78 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
+                if (CharacterButton != null)
+                {
+                    if (!CharacterButton.IsDisposed)
+                        CharacterButton.Dispose();
+
+                    CharacterButton = null;
+                }
+
+                if (InventoryButton != null)
+                {
+                    if (!InventoryButton.IsDisposed)
+                        InventoryButton.Dispose();
+
+                    InventoryButton = null;
+                }
+
+                if (SpellButton != null)
+                {
+                    if (!SpellButton.IsDisposed)
+                        SpellButton.Dispose();
+
+                    SpellButton = null;
+                }
+
+                if (QuestButton != null)
+                {
+                    if (!QuestButton.IsDisposed)
+                        QuestButton.Dispose();
+
+                    QuestButton = null;
+                }
+
+                if (MailButton != null)
+                {
+                    if (!MailButton.IsDisposed)
+                        MailButton.Dispose();
+
+                    MailButton = null;
+                }
+
+                if (BeltButton != null)
+                {
+                    if (!BeltButton.IsDisposed)
+                        BeltButton.Dispose();
+
+                    BeltButton = null;
+                }
+
+                if (GroupButton != null)
+                {
+                    if (!GroupButton.IsDisposed)
+                        GroupButton.Dispose();
+
+                    GroupButton = null;
+                }
+
+                if (MenuButton != null)
+                {
+                    if (!MenuButton.IsDisposed)
+                        MenuButton.Dispose();
+
+                    MenuButton = null;
+                }
+
+                if (CashShopButton != null)
+                {
+                    if (!CashShopButton.IsDisposed)
+                        CashShopButton.Dispose();
+
+                    CashShopButton = null;
+                }
+
                 if (HealthBar != null)
                 {
                     if (!HealthBar.IsDisposed)
@@ -736,14 +806,6 @@ namespace Client.Scenes.Views
                         FocusLabel.Dispose();
 
                     FocusLabel = null;
-                }
-
-                if (ExperienceLabel != null)
-                {
-                    if (!ExperienceLabel.IsDisposed)
-                        ExperienceLabel.Dispose();
-
-                    ExperienceLabel = null;
                 }
 
                 if (AttackModeLabel != null)

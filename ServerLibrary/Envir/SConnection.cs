@@ -1161,6 +1161,12 @@ namespace Server.Envir
 
             Player.QuestTrack(p);
         }
+        public void Process(C.QuestAbandon p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.QuestAbandon(p);
+        }
 
         public void Process(C.CompanionUnlock p)
         {

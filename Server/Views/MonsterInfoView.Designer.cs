@@ -32,495 +32,453 @@
             DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MonsterInfoView));
-            this.MonsterInfoStatsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.colStat = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.StatComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            this.colAmount = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.MonsterInfoGridControl = new DevExpress.XtraGrid.GridControl();
-            this.RespawnsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.colRegion = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            this.colDelay = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colCount = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colSpread = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.DropsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.ColItem = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            this.colChance = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colDAmount = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.MonsterInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.colMonsterName = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colImage = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.MonsterImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            this.colAI = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colLevel = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colExperience = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colViewRange = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colCoolEye = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colAttackDelay = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colMoveDelay = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colIsBoss = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colUndead = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colFaceImage = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            this.ImportButton = new DevExpress.XtraBars.BarButtonItem();
-            this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoStatsGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.StatComboBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoGridControl)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RespawnsGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RegionLookUpEdit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.DropsGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterImageComboBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
-            this.SuspendLayout();
+            MonsterInfoStatsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            colStat = new DevExpress.XtraGrid.Columns.GridColumn();
+            StatComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            colAmount = new DevExpress.XtraGrid.Columns.GridColumn();
+            MonsterInfoGridControl = new DevExpress.XtraGrid.GridControl();
+            RespawnsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            colRegion = new DevExpress.XtraGrid.Columns.GridColumn();
+            RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            colDelay = new DevExpress.XtraGrid.Columns.GridColumn();
+            colCount = new DevExpress.XtraGrid.Columns.GridColumn();
+            colSpread = new DevExpress.XtraGrid.Columns.GridColumn();
+            DropsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            ColItem = new DevExpress.XtraGrid.Columns.GridColumn();
+            ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            colChance = new DevExpress.XtraGrid.Columns.GridColumn();
+            colDAmount = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
+            MonsterInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            colMonsterName = new DevExpress.XtraGrid.Columns.GridColumn();
+            colImage = new DevExpress.XtraGrid.Columns.GridColumn();
+            MonsterImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            colAI = new DevExpress.XtraGrid.Columns.GridColumn();
+            colLevel = new DevExpress.XtraGrid.Columns.GridColumn();
+            colExperience = new DevExpress.XtraGrid.Columns.GridColumn();
+            colViewRange = new DevExpress.XtraGrid.Columns.GridColumn();
+            colCoolEye = new DevExpress.XtraGrid.Columns.GridColumn();
+            colAttackDelay = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMoveDelay = new DevExpress.XtraGrid.Columns.GridColumn();
+            colIsBoss = new DevExpress.XtraGrid.Columns.GridColumn();
+            colUndead = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colFaceImage = new DevExpress.XtraGrid.Columns.GridColumn();
+            ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            SaveButton = new DevExpress.XtraBars.BarButtonItem();
+            ImportButton = new DevExpress.XtraBars.BarButtonItem();
+            ExportButton = new DevExpress.XtraBars.BarButtonItem();
+            UpdateMonsterImageButton = new DevExpress.XtraBars.BarButtonItem();
+            ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            ((System.ComponentModel.ISupportInitialize)MonsterInfoStatsGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)StatComboBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterInfoGridControl).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)RespawnsGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)RegionLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)DropsGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterInfoGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterImageComboBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
+            SuspendLayout();
             // 
             // MonsterInfoStatsGridView
             // 
-            this.MonsterInfoStatsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colStat,
-            this.colAmount});
-            this.MonsterInfoStatsGridView.GridControl = this.MonsterInfoGridControl;
-            this.MonsterInfoStatsGridView.Name = "MonsterInfoStatsGridView";
-            this.MonsterInfoStatsGridView.OptionsView.EnableAppearanceEvenRow = true;
-            this.MonsterInfoStatsGridView.OptionsView.EnableAppearanceOddRow = true;
-            this.MonsterInfoStatsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            this.MonsterInfoStatsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            this.MonsterInfoStatsGridView.OptionsView.ShowGroupPanel = false;
+            MonsterInfoStatsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colStat, colAmount });
+            MonsterInfoStatsGridView.GridControl = MonsterInfoGridControl;
+            MonsterInfoStatsGridView.Name = "MonsterInfoStatsGridView";
+            MonsterInfoStatsGridView.OptionsView.EnableAppearanceEvenRow = true;
+            MonsterInfoStatsGridView.OptionsView.EnableAppearanceOddRow = true;
+            MonsterInfoStatsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            MonsterInfoStatsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            MonsterInfoStatsGridView.OptionsView.ShowGroupPanel = false;
             // 
             // colStat
             // 
-            this.colStat.ColumnEdit = this.StatComboBox;
-            this.colStat.FieldName = "Stat";
-            this.colStat.Name = "colStat";
-            this.colStat.Visible = true;
-            this.colStat.VisibleIndex = 0;
+            colStat.ColumnEdit = StatComboBox;
+            colStat.FieldName = "Stat";
+            colStat.Name = "colStat";
+            colStat.Visible = true;
+            colStat.VisibleIndex = 0;
             // 
             // StatComboBox
             // 
-            this.StatComboBox.AutoHeight = false;
-            this.StatComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.StatComboBox.Name = "StatComboBox";
+            StatComboBox.AutoHeight = false;
+            StatComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            StatComboBox.Name = "StatComboBox";
             // 
             // colAmount
             // 
-            this.colAmount.FieldName = "Amount";
-            this.colAmount.Name = "colAmount";
-            this.colAmount.Visible = true;
-            this.colAmount.VisibleIndex = 1;
+            colAmount.FieldName = "Amount";
+            colAmount.Name = "colAmount";
+            colAmount.Visible = true;
+            colAmount.VisibleIndex = 1;
             // 
             // MonsterInfoGridControl
             // 
-            this.MonsterInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            gridLevelNode1.LevelTemplate = this.MonsterInfoStatsGridView;
+            MonsterInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            gridLevelNode1.LevelTemplate = MonsterInfoStatsGridView;
             gridLevelNode1.RelationName = "MonsterInfoStats";
-            gridLevelNode2.LevelTemplate = this.RespawnsGridView;
+            gridLevelNode2.LevelTemplate = RespawnsGridView;
             gridLevelNode2.RelationName = "Respawns";
-            gridLevelNode3.LevelTemplate = this.DropsGridView;
+            gridLevelNode3.LevelTemplate = DropsGridView;
             gridLevelNode3.RelationName = "Drops";
-            this.MonsterInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode1,
-            gridLevelNode2,
-            gridLevelNode3});
-            this.MonsterInfoGridControl.Location = new System.Drawing.Point(0, 144);
-            this.MonsterInfoGridControl.MainView = this.MonsterInfoGridView;
-            this.MonsterInfoGridControl.MenuManager = this.ribbon;
-            this.MonsterInfoGridControl.Name = "MonsterInfoGridControl";
-            this.MonsterInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
-            this.MonsterImageComboBox,
-            this.StatComboBox,
-            this.ItemLookUpEdit,
-            this.RegionLookUpEdit});
-            this.MonsterInfoGridControl.ShowOnlyPredefinedDetails = true;
-            this.MonsterInfoGridControl.Size = new System.Drawing.Size(775, 373);
-            this.MonsterInfoGridControl.TabIndex = 2;
-            this.MonsterInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.RespawnsGridView,
-            this.DropsGridView,
-            this.MonsterInfoGridView,
-            this.MonsterInfoStatsGridView});
+            MonsterInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1, gridLevelNode2, gridLevelNode3 });
+            MonsterInfoGridControl.Location = new System.Drawing.Point(0, 144);
+            MonsterInfoGridControl.MainView = MonsterInfoGridView;
+            MonsterInfoGridControl.MenuManager = ribbon;
+            MonsterInfoGridControl.Name = "MonsterInfoGridControl";
+            MonsterInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MonsterImageComboBox, StatComboBox, ItemLookUpEdit, RegionLookUpEdit });
+            MonsterInfoGridControl.ShowOnlyPredefinedDetails = true;
+            MonsterInfoGridControl.Size = new System.Drawing.Size(775, 373);
+            MonsterInfoGridControl.TabIndex = 2;
+            MonsterInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { RespawnsGridView, DropsGridView, MonsterInfoGridView, MonsterInfoStatsGridView });
             // 
             // RespawnsGridView
             // 
-            this.RespawnsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colRegion,
-            this.colDelay,
-            this.colCount,
-            this.colSpread});
-            this.RespawnsGridView.GridControl = this.MonsterInfoGridControl;
-            this.RespawnsGridView.Name = "RespawnsGridView";
-            this.RespawnsGridView.OptionsView.EnableAppearanceEvenRow = true;
-            this.RespawnsGridView.OptionsView.EnableAppearanceOddRow = true;
-            this.RespawnsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            this.RespawnsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            this.RespawnsGridView.OptionsView.ShowGroupPanel = false;
+            RespawnsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colRegion, colDelay, colCount, colSpread });
+            RespawnsGridView.GridControl = MonsterInfoGridControl;
+            RespawnsGridView.Name = "RespawnsGridView";
+            RespawnsGridView.OptionsView.EnableAppearanceEvenRow = true;
+            RespawnsGridView.OptionsView.EnableAppearanceOddRow = true;
+            RespawnsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            RespawnsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            RespawnsGridView.OptionsView.ShowGroupPanel = false;
             // 
             // colRegion
             // 
-            this.colRegion.ColumnEdit = this.RegionLookUpEdit;
-            this.colRegion.FieldName = "Region";
-            this.colRegion.Name = "colRegion";
-            this.colRegion.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
-            this.colRegion.Visible = true;
-            this.colRegion.VisibleIndex = 0;
+            colRegion.ColumnEdit = RegionLookUpEdit;
+            colRegion.FieldName = "Region";
+            colRegion.Name = "colRegion";
+            colRegion.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
+            colRegion.Visible = true;
+            colRegion.VisibleIndex = 0;
             // 
             // RegionLookUpEdit
             // 
-            this.RegionLookUpEdit.AutoHeight = false;
-            this.RegionLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.RegionLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.RegionLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("FileName", "File Name"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Description", "Description")});
-            this.RegionLookUpEdit.DisplayMember = "ServerDescription";
-            this.RegionLookUpEdit.Name = "RegionLookUpEdit";
-            this.RegionLookUpEdit.NullText = "[Region is null]";
+            RegionLookUpEdit.AutoHeight = false;
+            RegionLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            RegionLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            RegionLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("FileName", "File Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Description", "Description") });
+            RegionLookUpEdit.DisplayMember = "ServerDescription";
+            RegionLookUpEdit.Name = "RegionLookUpEdit";
+            RegionLookUpEdit.NullText = "[Region is null]";
             // 
             // colDelay
             // 
-            this.colDelay.FieldName = "Delay";
-            this.colDelay.Name = "colDelay";
-            this.colDelay.Visible = true;
-            this.colDelay.VisibleIndex = 1;
+            colDelay.FieldName = "Delay";
+            colDelay.Name = "colDelay";
+            colDelay.Visible = true;
+            colDelay.VisibleIndex = 1;
             // 
             // colCount
             // 
-            this.colCount.FieldName = "Count";
-            this.colCount.Name = "colCount";
-            this.colCount.Visible = true;
-            this.colCount.VisibleIndex = 3;
+            colCount.FieldName = "Count";
+            colCount.Name = "colCount";
+            colCount.Visible = true;
+            colCount.VisibleIndex = 3;
             // 
             // colSpread
             // 
-            this.colSpread.FieldName = "Spread";
-            this.colSpread.Name = "colSpread";
-            this.colSpread.Visible = true;
-            this.colSpread.VisibleIndex = 2;
+            colSpread.FieldName = "Spread";
+            colSpread.Name = "colSpread";
+            colSpread.Visible = true;
+            colSpread.VisibleIndex = 2;
             // 
             // DropsGridView
             // 
-            this.DropsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.ColItem,
-            this.colChance,
-            this.colDAmount,
-            this.gridColumn1,
-            this.gridColumn6,
-            this.gridColumn7});
-            this.DropsGridView.GridControl = this.MonsterInfoGridControl;
-            this.DropsGridView.Name = "DropsGridView";
-            this.DropsGridView.OptionsView.EnableAppearanceEvenRow = true;
-            this.DropsGridView.OptionsView.EnableAppearanceOddRow = true;
-            this.DropsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            this.DropsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            this.DropsGridView.OptionsView.ShowGroupPanel = false;
+            DropsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { ColItem, colChance, colDAmount, gridColumn1, gridColumn6, gridColumn7 });
+            DropsGridView.GridControl = MonsterInfoGridControl;
+            DropsGridView.Name = "DropsGridView";
+            DropsGridView.OptionsView.EnableAppearanceEvenRow = true;
+            DropsGridView.OptionsView.EnableAppearanceOddRow = true;
+            DropsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            DropsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            DropsGridView.OptionsView.ShowGroupPanel = false;
             // 
             // ColItem
             // 
-            this.ColItem.ColumnEdit = this.ItemLookUpEdit;
-            this.ColItem.FieldName = "Item";
-            this.ColItem.Name = "ColItem";
-            this.ColItem.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
-            this.ColItem.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
-            this.ColItem.Visible = true;
-            this.ColItem.VisibleIndex = 0;
+            ColItem.ColumnEdit = ItemLookUpEdit;
+            ColItem.FieldName = "Item";
+            ColItem.Name = "ColItem";
+            ColItem.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
+            ColItem.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
+            ColItem.Visible = true;
+            ColItem.VisibleIndex = 0;
             // 
             // ItemLookUpEdit
             // 
-            this.ItemLookUpEdit.AutoHeight = false;
-            this.ItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            this.ItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.ItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] {
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"),
-            new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size")});
-            this.ItemLookUpEdit.DisplayMember = "ItemName";
-            this.ItemLookUpEdit.Name = "ItemLookUpEdit";
-            this.ItemLookUpEdit.NullText = "[Item is null]";
+            ItemLookUpEdit.AutoHeight = false;
+            ItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            ItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            ItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("PartCount", "Part Count") });
+            ItemLookUpEdit.DisplayMember = "ItemName";
+            ItemLookUpEdit.Name = "ItemLookUpEdit";
+            ItemLookUpEdit.NullText = "[Item is null]";
             // 
             // colChance
             // 
-            this.colChance.FieldName = "Chance";
-            this.colChance.Name = "colChance";
-            this.colChance.Visible = true;
-            this.colChance.VisibleIndex = 1;
+            colChance.FieldName = "Chance";
+            colChance.Name = "colChance";
+            colChance.Visible = true;
+            colChance.VisibleIndex = 1;
             // 
             // colDAmount
             // 
-            this.colDAmount.FieldName = "Amount";
-            this.colDAmount.Name = "colDAmount";
-            this.colDAmount.Visible = true;
-            this.colDAmount.VisibleIndex = 2;
+            colDAmount.FieldName = "Amount";
+            colDAmount.Name = "colDAmount";
+            colDAmount.Visible = true;
+            colDAmount.VisibleIndex = 2;
             // 
             // gridColumn1
             // 
-            this.gridColumn1.FieldName = "DropSet";
-            this.gridColumn1.Name = "gridColumn1";
-            this.gridColumn1.Visible = true;
-            this.gridColumn1.VisibleIndex = 3;
+            gridColumn1.FieldName = "DropSet";
+            gridColumn1.Name = "gridColumn1";
+            gridColumn1.Visible = true;
+            gridColumn1.VisibleIndex = 3;
             // 
             // gridColumn6
             // 
-            this.gridColumn6.FieldName = "PartOnly";
-            this.gridColumn6.Name = "gridColumn6";
-            this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 4;
+            gridColumn6.FieldName = "PartOnly";
+            gridColumn6.Name = "gridColumn6";
+            gridColumn6.Visible = true;
+            gridColumn6.VisibleIndex = 4;
             // 
             // gridColumn7
             // 
-            this.gridColumn7.FieldName = "EasterEvent";
-            this.gridColumn7.Name = "gridColumn7";
-            this.gridColumn7.Visible = true;
-            this.gridColumn7.VisibleIndex = 5;
+            gridColumn7.FieldName = "EasterEvent";
+            gridColumn7.Name = "gridColumn7";
+            gridColumn7.Visible = true;
+            gridColumn7.VisibleIndex = 5;
             // 
             // MonsterInfoGridView
             // 
-            this.MonsterInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colMonsterName,
-            this.colImage,
-            this.colAI,
-            this.colLevel,
-            this.colExperience,
-            this.colViewRange,
-            this.colCoolEye,
-            this.colAttackDelay,
-            this.colMoveDelay,
-            this.colIsBoss,
-            this.colUndead,
-            this.gridColumn3,
-            this.gridColumn4,
-            this.gridColumn5,
-            this.colFaceImage});
-            this.MonsterInfoGridView.GridControl = this.MonsterInfoGridControl;
-            this.MonsterInfoGridView.Name = "MonsterInfoGridView";
-            this.MonsterInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
-            this.MonsterInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
-            this.MonsterInfoGridView.OptionsView.EnableAppearanceOddRow = true;
-            this.MonsterInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            this.MonsterInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            this.MonsterInfoGridView.OptionsView.ShowGroupPanel = false;
+            MonsterInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colMonsterName, colImage, colAI, colLevel, colExperience, colViewRange, colCoolEye, colAttackDelay, colMoveDelay, colIsBoss, colUndead, gridColumn3, gridColumn4, gridColumn5, colFaceImage });
+            MonsterInfoGridView.GridControl = MonsterInfoGridControl;
+            MonsterInfoGridView.Name = "MonsterInfoGridView";
+            MonsterInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
+            MonsterInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            MonsterInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            MonsterInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            MonsterInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            MonsterInfoGridView.OptionsView.ShowGroupPanel = false;
             // 
             // colMonsterName
             // 
-            this.colMonsterName.FieldName = "MonsterName";
-            this.colMonsterName.Name = "colMonsterName";
-            this.colMonsterName.Visible = true;
-            this.colMonsterName.VisibleIndex = 0;
+            colMonsterName.FieldName = "MonsterName";
+            colMonsterName.Name = "colMonsterName";
+            colMonsterName.Visible = true;
+            colMonsterName.VisibleIndex = 0;
             // 
             // colImage
             // 
-            this.colImage.ColumnEdit = this.MonsterImageComboBox;
-            this.colImage.FieldName = "Image";
-            this.colImage.Name = "colImage";
-            this.colImage.Visible = true;
-            this.colImage.VisibleIndex = 1;
+            colImage.ColumnEdit = MonsterImageComboBox;
+            colImage.FieldName = "Image";
+            colImage.Name = "colImage";
+            colImage.Visible = true;
+            colImage.VisibleIndex = 1;
             // 
             // MonsterImageComboBox
             // 
-            this.MonsterImageComboBox.AutoHeight = false;
-            this.MonsterImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.MonsterImageComboBox.Name = "MonsterImageComboBox";
+            MonsterImageComboBox.AutoHeight = false;
+            MonsterImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            MonsterImageComboBox.Name = "MonsterImageComboBox";
             // 
             // colAI
             // 
-            this.colAI.FieldName = "AI";
-            this.colAI.Name = "colAI";
-            this.colAI.Visible = true;
-            this.colAI.VisibleIndex = 2;
+            colAI.FieldName = "AI";
+            colAI.Name = "colAI";
+            colAI.Visible = true;
+            colAI.VisibleIndex = 2;
             // 
             // colLevel
             // 
-            this.colLevel.FieldName = "Level";
-            this.colLevel.Name = "colLevel";
-            this.colLevel.Visible = true;
-            this.colLevel.VisibleIndex = 3;
+            colLevel.FieldName = "Level";
+            colLevel.Name = "colLevel";
+            colLevel.Visible = true;
+            colLevel.VisibleIndex = 3;
             // 
             // colExperience
             // 
-            this.colExperience.FieldName = "Experience";
-            this.colExperience.Name = "colExperience";
-            this.colExperience.Visible = true;
-            this.colExperience.VisibleIndex = 4;
+            colExperience.FieldName = "Experience";
+            colExperience.Name = "colExperience";
+            colExperience.Visible = true;
+            colExperience.VisibleIndex = 4;
             // 
             // colViewRange
             // 
-            this.colViewRange.FieldName = "ViewRange";
-            this.colViewRange.Name = "colViewRange";
-            this.colViewRange.Visible = true;
-            this.colViewRange.VisibleIndex = 5;
+            colViewRange.FieldName = "ViewRange";
+            colViewRange.Name = "colViewRange";
+            colViewRange.Visible = true;
+            colViewRange.VisibleIndex = 5;
             // 
             // colCoolEye
             // 
-            this.colCoolEye.FieldName = "CoolEye";
-            this.colCoolEye.Name = "colCoolEye";
-            this.colCoolEye.Visible = true;
-            this.colCoolEye.VisibleIndex = 6;
+            colCoolEye.FieldName = "CoolEye";
+            colCoolEye.Name = "colCoolEye";
+            colCoolEye.Visible = true;
+            colCoolEye.VisibleIndex = 6;
             // 
             // colAttackDelay
             // 
-            this.colAttackDelay.FieldName = "AttackDelay";
-            this.colAttackDelay.Name = "colAttackDelay";
-            this.colAttackDelay.Visible = true;
-            this.colAttackDelay.VisibleIndex = 7;
+            colAttackDelay.FieldName = "AttackDelay";
+            colAttackDelay.Name = "colAttackDelay";
+            colAttackDelay.Visible = true;
+            colAttackDelay.VisibleIndex = 7;
             // 
             // colMoveDelay
             // 
-            this.colMoveDelay.FieldName = "MoveDelay";
-            this.colMoveDelay.Name = "colMoveDelay";
-            this.colMoveDelay.Visible = true;
-            this.colMoveDelay.VisibleIndex = 8;
+            colMoveDelay.FieldName = "MoveDelay";
+            colMoveDelay.Name = "colMoveDelay";
+            colMoveDelay.Visible = true;
+            colMoveDelay.VisibleIndex = 8;
             // 
             // colIsBoss
             // 
-            this.colIsBoss.FieldName = "IsBoss";
-            this.colIsBoss.Name = "colIsBoss";
-            this.colIsBoss.Visible = true;
-            this.colIsBoss.VisibleIndex = 9;
+            colIsBoss.FieldName = "IsBoss";
+            colIsBoss.Name = "colIsBoss";
+            colIsBoss.Visible = true;
+            colIsBoss.VisibleIndex = 9;
             // 
             // colUndead
             // 
-            this.colUndead.FieldName = "Undead";
-            this.colUndead.Name = "colUndead";
-            this.colUndead.Visible = true;
-            this.colUndead.VisibleIndex = 10;
+            colUndead.FieldName = "Undead";
+            colUndead.Name = "colUndead";
+            colUndead.Visible = true;
+            colUndead.VisibleIndex = 10;
             // 
             // gridColumn3
             // 
-            this.gridColumn3.FieldName = "CanPush";
-            this.gridColumn3.Name = "gridColumn3";
-            this.gridColumn3.Visible = true;
-            this.gridColumn3.VisibleIndex = 11;
+            gridColumn3.FieldName = "CanPush";
+            gridColumn3.Name = "gridColumn3";
+            gridColumn3.Visible = true;
+            gridColumn3.VisibleIndex = 11;
             // 
             // gridColumn4
             // 
-            this.gridColumn4.FieldName = "CanTame";
-            this.gridColumn4.Name = "gridColumn4";
-            this.gridColumn4.Visible = true;
-            this.gridColumn4.VisibleIndex = 12;
+            gridColumn4.FieldName = "CanTame";
+            gridColumn4.Name = "gridColumn4";
+            gridColumn4.Visible = true;
+            gridColumn4.VisibleIndex = 12;
             // 
             // gridColumn5
             // 
-            this.gridColumn5.FieldName = "Flag";
-            this.gridColumn5.Name = "gridColumn5";
-            this.gridColumn5.Visible = true;
-            this.gridColumn5.VisibleIndex = 13;
+            gridColumn5.FieldName = "Flag";
+            gridColumn5.Name = "gridColumn5";
+            gridColumn5.Visible = true;
+            gridColumn5.VisibleIndex = 13;
             // 
             // colFaceImage
             // 
-            this.colFaceImage.Caption = "Face Image";
-            this.colFaceImage.FieldName = "FaceImage";
-            this.colFaceImage.Name = "colFaceImage";
-            this.colFaceImage.Visible = true;
-            this.colFaceImage.VisibleIndex = 14;
+            colFaceImage.Caption = "Face Image";
+            colFaceImage.FieldName = "FaceImage";
+            colFaceImage.Name = "colFaceImage";
+            colFaceImage.Visible = true;
+            colFaceImage.VisibleIndex = 14;
             // 
             // ribbon
             // 
-            this.ribbon.ExpandCollapseItem.Id = 0;
-            this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
-            this.ribbon.ExpandCollapseItem,
-            this.ribbon.SearchEditItem,
-            this.SaveButton,
-            this.ImportButton,
-            this.ExportButton});
-            this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 4;
-            this.ribbon.Name = "ribbon";
-            this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
-            this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(775, 144);
+            ribbon.ExpandCollapseItem.Id = 0;
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ImportButton, ExportButton, UpdateMonsterImageButton });
+            ribbon.Location = new System.Drawing.Point(0, 0);
+            ribbon.MaxItemId = 5;
+            ribbon.Name = "ribbon";
+            ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
+            ribbon.Size = new System.Drawing.Size(775, 144);
             // 
             // SaveButton
             // 
-            this.SaveButton.Caption = "Save Database";
-            this.SaveButton.Id = 1;
-            this.SaveButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.Image")));
-            this.SaveButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SaveButton.ImageOptions.LargeImage")));
-            this.SaveButton.LargeWidth = 60;
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SaveButton_ItemClick);
-            // 
-            // ribbonPage1
-            // 
-            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1,
-            this.JsonImportExport});
-            this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "Home";
-            // 
-            // ribbonPageGroup1
-            // 
-            this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
-            this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
-            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.Text = "Saving";
-            // 
-            // JsonImportExport
-            // 
-            this.JsonImportExport.ItemLinks.Add(this.ImportButton);
-            this.JsonImportExport.ItemLinks.Add(this.ExportButton);
-            this.JsonImportExport.Name = "JsonImportExport";
-            this.JsonImportExport.Text = "Json";
+            SaveButton.Caption = "Save Database";
+            SaveButton.Id = 1;
+            SaveButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("SaveButton.ImageOptions.Image");
+            SaveButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("SaveButton.ImageOptions.LargeImage");
+            SaveButton.LargeWidth = 60;
+            SaveButton.Name = "SaveButton";
+            SaveButton.ItemClick += SaveButton_ItemClick;
             // 
             // ImportButton
             // 
-            this.ImportButton.Caption = "Import";
-            this.ImportButton.Id = 2;
-            this.ImportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.Image")));
-            this.ImportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportButton.ImageOptions.LargeImage")));
-            this.ImportButton.Name = "ImportButton";
-            this.ImportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportButton_ItemClick);
+            ImportButton.Caption = "Import";
+            ImportButton.Id = 2;
+            ImportButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("ImportButton.ImageOptions.Image");
+            ImportButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("ImportButton.ImageOptions.LargeImage");
+            ImportButton.Name = "ImportButton";
+            ImportButton.ItemClick += ImportButton_ItemClick;
             // 
             // ExportButton
             // 
-            this.ExportButton.Caption = "Export";
-            this.ExportButton.Id = 3;
-            this.ExportButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.Image")));
-            this.ExportButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportButton.ImageOptions.LargeImage")));
-            this.ExportButton.Name = "ExportButton";
-            this.ExportButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportButton_ItemClick);
+            ExportButton.Caption = "Export";
+            ExportButton.Id = 3;
+            ExportButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("ExportButton.ImageOptions.Image");
+            ExportButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("ExportButton.ImageOptions.LargeImage");
+            ExportButton.Name = "ExportButton";
+            ExportButton.ItemClick += ExportButton_ItemClick;
+            // 
+            // UpdateMonsterImageButton
+            // 
+            UpdateMonsterImageButton.Caption = "Convert Old to New";
+            UpdateMonsterImageButton.Id = 4;
+            UpdateMonsterImageButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("UpdateMonsterImageButton.ImageOptions.Image");
+            UpdateMonsterImageButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("UpdateMonsterImageButton.ImageOptions.LargeImage");
+            UpdateMonsterImageButton.Name = "UpdateMonsterImageButton";
+            UpdateMonsterImageButton.ItemClick += UpdateMonsterImageButton_ItemClick;
+            // 
+            // ribbonPage1
+            // 
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport, ribbonPageGroup2 });
+            ribbonPage1.Name = "ribbonPage1";
+            ribbonPage1.Text = "Home";
+            // 
+            // ribbonPageGroup1
+            // 
+            ribbonPageGroup1.AllowTextClipping = false;
+            ribbonPageGroup1.CaptionButtonVisible = DevExpress.Utils.DefaultBoolean.False;
+            ribbonPageGroup1.ItemLinks.Add(SaveButton);
+            ribbonPageGroup1.Name = "ribbonPageGroup1";
+            ribbonPageGroup1.Text = "Saving";
+            // 
+            // JsonImportExport
+            // 
+            JsonImportExport.ItemLinks.Add(ImportButton);
+            JsonImportExport.ItemLinks.Add(ExportButton);
+            JsonImportExport.Name = "JsonImportExport";
+            JsonImportExport.Text = "Json";
+            // 
+            // ribbonPageGroup2
+            // 
+            ribbonPageGroup2.ItemLinks.Add(UpdateMonsterImageButton);
+            ribbonPageGroup2.Name = "ribbonPageGroup2";
+            ribbonPageGroup2.Text = "Monster Image";
             // 
             // MonsterInfoView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(775, 517);
-            this.Controls.Add(this.MonsterInfoGridControl);
-            this.Controls.Add(this.ribbon);
-            this.Name = "MonsterInfoView";
-            this.Ribbon = this.ribbon;
-            this.Text = "Monster Info";
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoStatsGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.StatComboBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoGridControl)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RespawnsGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RegionLookUpEdit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.DropsGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ItemLookUpEdit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MonsterImageComboBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(775, 517);
+            Controls.Add(MonsterInfoGridControl);
+            Controls.Add(ribbon);
+            Name = "MonsterInfoView";
+            Ribbon = ribbon;
+            Text = "Monster Info";
+            ((System.ComponentModel.ISupportInitialize)MonsterInfoStatsGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)StatComboBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterInfoGridControl).EndInit();
+            ((System.ComponentModel.ISupportInitialize)RespawnsGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)RegionLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DropsGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterInfoGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterImageComboBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -568,5 +526,7 @@
         private DevExpress.XtraBars.BarButtonItem ImportButton;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
+        private DevExpress.XtraBars.BarButtonItem UpdateMonsterImageButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
     }
 }

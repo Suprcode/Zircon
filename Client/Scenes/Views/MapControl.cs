@@ -217,6 +217,26 @@ namespace Client.Scenes.Views
             if (MapObject.MouseObject != null) // && MapObject.MouseObject != MapObject.TargetObject)
                 MapObject.MouseObject.DrawBlend();
 
+            if (Config.DrawEffects)
+            {
+                foreach (MirEffect ob in Effects)
+                {
+                    if (ob.DrawType != DrawType.Final) continue;
+
+                     ob.Draw();
+                }
+            }
+
+            DXManager.Sprite.Flush();
+
+            DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.Zero);
+            DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.SourceColor);
+
+            DXManager.Sprite.Draw(LLayer.ControlTexture, Color.White);
+
+            DXManager.Sprite.End();
+            DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
+
             foreach (MapObject ob in Objects)
             {
                 if (ob.Dead) continue;
@@ -225,7 +245,6 @@ namespace Client.Scenes.Views
                 {
                     case ObjectType.Player:
                         if (!Config.ShowPlayerNames) continue;
-
                         break;
                     case ObjectType.Item:
                         if (!Config.ShowItemNames || ob.CurrentLocation == MapLocation) continue;
@@ -242,20 +261,8 @@ namespace Client.Scenes.Views
                 ob.DrawName();
             }
 
-            if (Config.DrawEffects)
-            {
-                foreach (MirEffect ob in Effects)
-                {
-                    if (ob.DrawType != DrawType.Final) continue;
-
-                     ob.Draw();
-                }
-            }
-
             if (MapObject.MouseObject != null && MapObject.MouseObject.Race != ObjectType.Item)
                 MapObject.MouseObject.DrawName();
-
-
 
             foreach (MapObject ob in Objects)
             {
@@ -280,18 +287,8 @@ namespace Client.Scenes.Views
                         ob?.DrawFocus(layer++);
                     }
             }
-
-            DXManager.Sprite.Flush();
-
-            DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.Zero);
-            DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.SourceColor);
-
-            DXManager.Sprite.Draw(LLayer.ControlTexture, Color.White);
-
-            DXManager.Sprite.End();
-            DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
-            
         }
+
         public override void Draw()
         {
             if (!IsVisible || Size.Width == 0 || Size.Height == 0) return;
@@ -1441,7 +1438,7 @@ namespace Client.Scenes.Views
                 {
                     DXManager.Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
 
-                    float scale = baseSize + 4  * lightScale;
+                    float scale = baseSize + 4 * lightScale;
 
                     fX = (OffSetX + MapObject.User.CurrentLocation.X - User.CurrentLocation.X) * CellWidth  + CellWidth / 2;
                     fY = (OffSetY + MapObject.User.CurrentLocation.Y - User.CurrentLocation.Y) * CellHeight;
@@ -1557,7 +1554,6 @@ namespace Client.Scenes.Views
                     }
                 }
 
-
                 DXManager.SetBlend(false);
             }
 
@@ -1579,7 +1575,7 @@ namespace Client.Scenes.Views
                         Visible = true;
                         break;
                     case LightSetting.Light:
-                        BackColour = Color.FromArgb(200, 200, 200);
+                        BackColour = Color.FromArgb(255, 255, 255);
                         Visible = true;
                         break;
                 }

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Library;
 using SlimDX.DirectSound;
-using Library;
+using System;
+using System.Collections.Generic;
 
 
 namespace Client.Envir
@@ -109,6 +106,9 @@ namespace Client.Envir
 
             [SoundIndex.RollDice] = new DXSound(SoundPath + @"dice_roll.wav", SoundType.System),
             [SoundIndex.RollYut] = new DXSound(SoundPath + @"yut_sticks.wav", SoundType.System),
+
+            [SoundIndex.QuestTake] = new DXSound(SoundPath + @"Qtake.wav", SoundType.System),
+            [SoundIndex.QuestComplete] = new DXSound(SoundPath + @"Qcomp.wav", SoundType.System),
 
             #endregion
 
@@ -959,6 +959,33 @@ namespace Client.Envir
             [SoundIndex.BlueDragonAttack] = new DXSound(SoundPath + @"403-2.wav", SoundType.Monster),
             [SoundIndex.BlueDragonStruck] = new DXSound(SoundPath + @"403-4.wav", SoundType.Monster),
             [SoundIndex.BlueDragonDie] = new DXSound(SoundPath + @"403-5.wav", SoundType.Monster),
+
+
+            [SoundIndex.Terracotta1Attack] = new DXSound(SoundPath + @"m414-2.wav", SoundType.Monster),
+            [SoundIndex.Terracotta1Struck] = new DXSound(SoundPath + @"m414-4.wav", SoundType.Monster),
+            [SoundIndex.Terracotta1Die] = new DXSound(SoundPath + @"m414-5.wav", SoundType.Monster),
+
+            [SoundIndex.Terracotta2Attack] = new DXSound(SoundPath + @"m415-2.wav", SoundType.Monster),
+            [SoundIndex.Terracotta2Struck] = new DXSound(SoundPath + @"m415-4.wav", SoundType.Monster),
+            [SoundIndex.Terracotta2Die] = new DXSound(SoundPath + @"m415-5.wav", SoundType.Monster),
+
+            [SoundIndex.Terracotta3Attack] = new DXSound(SoundPath + @"m416-2.wav", SoundType.Monster),
+            [SoundIndex.Terracotta3Struck] = new DXSound(SoundPath + @"m416-4.wav", SoundType.Monster),
+            [SoundIndex.Terracotta3Die] = new DXSound(SoundPath + @"m416-5.wav", SoundType.Monster),
+
+            [SoundIndex.Terracotta4Attack] = new DXSound(SoundPath + @"m417-2.wav", SoundType.Monster),
+            [SoundIndex.Terracotta4Struck] = new DXSound(SoundPath + @"m417-4.wav", SoundType.Monster),
+            [SoundIndex.Terracotta4Die] = new DXSound(SoundPath + @"m417-5.wav", SoundType.Monster),
+
+            [SoundIndex.TerracottaSubAttack] = new DXSound(SoundPath + @"m418-2.wav", SoundType.Monster),
+            [SoundIndex.TerracottaSubAttack2] = new DXSound(SoundPath + @"m418-7.wav", SoundType.Monster),
+            [SoundIndex.TerracottaSubStruck] = new DXSound(SoundPath + @"m418-4.wav", SoundType.Monster),
+            [SoundIndex.TerracottaSubDie] = new DXSound(SoundPath + @"m414-5.wav", SoundType.Monster),
+
+            [SoundIndex.TerracottaBossAttack] = new DXSound(SoundPath + @"m419-2.wav", SoundType.Monster),
+            [SoundIndex.TerracottaBossAttack2] = new DXSound(SoundPath + @"m419-7.wav", SoundType.Monster),
+            [SoundIndex.TerracottaBossStruck] = new DXSound(SoundPath + @"m419-4.wav", SoundType.Monster),
+            [SoundIndex.TerracottaBossDie] = new DXSound(SoundPath + @"m419-5.wav", SoundType.Monster),
 
             #endregion
         };

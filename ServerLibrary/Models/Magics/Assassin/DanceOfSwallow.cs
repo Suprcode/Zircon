@@ -22,7 +22,8 @@ namespace Server.Models.Magics
         {
             var response = new MagicCast
             {
-                Ob = null
+                Ob = null,
+                Return = true
             };
 
             if (!Player.CanAttackTarget(target))

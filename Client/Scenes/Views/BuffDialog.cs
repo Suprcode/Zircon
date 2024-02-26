@@ -77,6 +77,7 @@ namespace Client.Scenes.Views
                 {
                     Parent = this,
                     LibraryFile = LibraryFile.CBIcon,
+                    HintPosition = HintPosition.BottomLeft
                 };
 
                 switch (buff.Type)

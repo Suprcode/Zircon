@@ -852,7 +852,8 @@ namespace Server.Models
                 FiltersRarity = Character.FiltersRarity,
                 FiltersItemType = Character.FiltersItemType,
 
-                StruckEnabled = Config.EnableStruck
+                StruckEnabled = Config.EnableStruck,
+                HermitEnabled = Config.EnableHermit
             };
         }
 
@@ -1115,7 +1116,7 @@ namespace Server.Models
                 con.Enqueue(new S.RefineList { List = refines });
 
 
-            con.Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Character.HermitStats, HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
+            con.Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Config.EnableHermit ? Character.HermitStats : new Stats(), HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
 
             con.Enqueue(new S.WeightUpdate { BagWeight = BagWeight, WearWeight = WearWeight, HandWeight = HandWeight });
 
@@ -1213,7 +1214,6 @@ namespace Server.Models
             }
 
             ApplyObserverBuff();
-
         }
 
         private void NewCharacter()
@@ -1807,6 +1807,8 @@ namespace Server.Models
             {
                 packet.GuildName = target.Account.GuildMember.Guild.GuildName;
                 packet.GuildRank = target.Account.GuildMember.Rank;
+                packet.GuildFlag = target.Account.GuildMember.Guild.Flag;
+                packet.GuildColour = target.Account.GuildMember.Guild.Colour;
             }
 
             //if (target.Player != null)
@@ -2232,7 +2234,7 @@ namespace Server.Models
             Stats[Stat.DropRate] += 20 * Stats[Stat.Rebirth];
             Stats[Stat.GoldRate] += 20 * Stats[Stat.Rebirth];
 
-            Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Character.HermitStats, HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
+            Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Config.EnableHermit ? Character.HermitStats : new Stats(), HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
 
             S.DataObjectMaxHealthMana p = new S.DataObjectMaxHealthMana { ObjectID = ObjectID, MaxHealth = Stats[Stat.Health], MaxMana = Stats[Stat.Mana] };
 
@@ -2302,13 +2304,19 @@ namespace Server.Models
             Stats[Stat.SkillRate] = 1;
             Stats[Stat.CriticalChance] = 1;
 
-            Stats.Add(Character.HermitStats);
+            if (Config.EnableHermit)
+            {
+                Stats.Add(Character.HermitStats);
+            }
 
             Stats[Stat.BaseHealth] = Stats[Stat.Health];
             Stats[Stat.BaseMana] = Stats[Stat.Mana];
         }
+
         public void AssignHermit(Stat stat)
         {
+            if (!Config.EnableHermit) return;
+
             if (Level - 39 - Character.SpentPoints <= 0) return;
 
             switch (stat)
@@ -3294,6 +3302,17 @@ namespace Server.Models
             if (quest == null || quest.Completed) return;
 
             quest.Track = p.Track;
+        }
+
+        public void QuestAbandon(C.QuestAbandon p)
+        {
+            UserQuest quest = Quests.FirstOrDefault(x => x.Index == p.Index);
+
+            if (quest == null || quest.Completed) return;
+
+            Character.Quests.Remove(quest);
+
+            Enqueue(new S.QuestCancelled { Index = quest.Index });
         }
 
         #endregion
@@ -7269,7 +7288,7 @@ namespace Server.Models
 
             if (p.LinkIndex > 0)
                 info = SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.Index == p.LinkIndex);
-            else if (p.Slot > 0)
+            else if (p.LinkItemIndex > 0)
                 item = Inventory.FirstOrDefault(x => x?.Index == p.LinkItemIndex);
 
             foreach (CharacterBeltLink link in Character.BeltLinks)
@@ -7966,8 +7985,7 @@ namespace Server.Models
         }
         public void FortuneCheck(int index)
         {
-            if (SEnvir.FortuneCheckerInfo == null) return;
-
+            if (!Config.EnableFortune || SEnvir.FortuneCheckerInfo == null) return;
 
             long count = GetItemCount(SEnvir.FortuneCheckerInfo);
 
@@ -8078,6 +8096,8 @@ namespace Server.Models
             BuffRemove(BuffType.Observable);
 
             if (!Character.Observable) return;
+
+            if (!Config.AllowObservation) return;
 
             Stats stats = new Stats();
 
@@ -9162,7 +9182,7 @@ namespace Server.Models
             S.ItemsChanged p = new S.ItemsChanged { Links = links };
             Enqueue(p);
 
-            if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.BuySell) return;
+            if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.BuySell || NPCPage.Types.Count == 0) return;
 
             var currency = NPCPage.Currency ?? SEnvir.CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold);
 
@@ -9197,6 +9217,8 @@ namespace Server.Models
                 if (item == null || link.Count > item.Count || !item.Info.CanSell || (item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
                 if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
                 if ((item.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless) return;
+
+                if (!NPCPage.Types.Any(x => x.ItemType == item.Info.ItemType)) return;
 
                 var price = (long)(item.Price(link.Count) * currency.ExchangeRate);
 
@@ -13141,7 +13163,9 @@ namespace Server.Models
                 if (magicObject.AttackSkill)
                 {
                     if (Level < magicObject.Magic.Info.NeedLevel1)
+                    {
                         continue;
+                    }
 
                     var response = magicObject.AttackCast(attackMagic);
 
@@ -13525,7 +13549,7 @@ namespace Server.Models
 
             foreach (MagicType type in types)
             {
-                if (!GetMagic(type, out MagicObject magicObject))
+                if (GetMagic(type, out MagicObject magicObject))
                 {
                     power = magicObject.ModifyPowerAdditionner(primary, power, ob, null, extra);
                 }
@@ -13971,6 +13995,8 @@ namespace Server.Models
                         DisplayMiss = true;
                         return 0;
                     }
+
+                    LevelMagic(magicImmunity.Magic);
                 }
             }
             else
@@ -13981,7 +14007,7 @@ namespace Server.Models
                     return 0;
                 }
 
-                if (GetMagic(MagicType.PhysicalImmunity, out PhysicalImmunity physicalImmunity) && Level >= physicalImmunity.Magic.Info.NeedLevel1)
+                if (GetMagic(MagicType.PhysicalImmunity, out PhysicalImmunity physicalImmunity))
                 {
                     power -= power * physicalImmunity.Magic.GetPower() / 100;
 
@@ -13990,6 +14016,8 @@ namespace Server.Models
                         DisplayMiss = true;
                         return 0;
                     }
+
+                    LevelMagic(physicalImmunity.Magic);
                 }
             }
 
@@ -14190,6 +14218,9 @@ namespace Server.Models
 
             if (Buffs.Any(x => x.Type == BuffType.Defiance) && GetMagic(MagicType.Defiance, out Defiance defiance))
                 LevelMagic(defiance.Magic);
+
+            if (GetMagic(MagicType.DefensiveMastery, out DefensiveMastery defensiveMastery))
+                LevelMagic(defensiveMastery.Magic);
 
             if (Buffs.Any(x => x.Type == BuffType.RagingWind) && GetMagic(MagicType.RagingWind, out RagingWind ragingWind))
                 LevelMagic(ragingWind.Magic);

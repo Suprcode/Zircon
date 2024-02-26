@@ -65,6 +65,8 @@ namespace Server.Models.Magics
                 Player.DamageDarkStone(10);
 
                 magics.Add(elementalPuppet);
+
+                Player.LevelMagic(elementalPuppet);
             }
 
             int range = 1;
@@ -74,6 +76,8 @@ namespace Server.Models.Magics
                 range = 3;
 
                 magics.Add(artOfShadows);
+
+                Player.LevelMagic(artOfShadows);
             }
 
             for (int i = 0; i < count; i++)

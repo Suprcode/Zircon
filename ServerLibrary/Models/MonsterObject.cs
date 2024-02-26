@@ -520,7 +520,6 @@ namespace Server.Models
                     return new SamaLightningGuardian { MonsterInfo = monsterInfo };
                 case 110:
                     return new SamaWindGuardian { MonsterInfo = monsterInfo };
-
                 case 111:
                     return new SamaPhoenix { MonsterInfo = monsterInfo };
                 case 112:
@@ -529,7 +528,6 @@ namespace Server.Models
                     return new SamaBlue { MonsterInfo = monsterInfo };
                 case 114:
                     return new SamaWhite { MonsterInfo = monsterInfo };
-
                 case 115:
                     return new SamaProphet
                     {
@@ -611,7 +609,29 @@ namespace Server.Models
                 case 129:
                     return new Monsters.Tornado { MonsterInfo = monsterInfo, Passive = true };
                 case 130:
-                    return new UndeadSoul() { MonsterInfo = monsterInfo };
+                    return new UndeadSoul { MonsterInfo = monsterInfo };
+                case 131:
+                    return new Terracotta { MonsterInfo = monsterInfo };
+                case 132:
+                    return new Terracotta { MonsterInfo = monsterInfo, CanPhase = true };
+                case 133:
+                    return new TerracottaSub
+                    {
+                        MonsterInfo = monsterInfo,
+                        PoisonType = PoisonType.Paralysis,
+                        PoisonTicks = 1,
+                        PoisonFrequency = 5,
+                        PoisonRate = 15,
+                    };
+                case 134:
+                    return new TerracottaBoss
+                    {
+                        MonsterInfo = monsterInfo,
+                        PoisonType = PoisonType.Paralysis,
+                        PoisonTicks = 1,
+                        PoisonFrequency = 5,
+                        PoisonRate = 15,
+                    };
 
                 case 1001:
                     return new CastleFlag { MonsterInfo = monsterInfo };
@@ -846,7 +866,7 @@ namespace Server.Models
         {
             if (Activated) return;
 
-            if (NearByPlayers.Count == 0 && MonsterInfo.ViewRange <= Config.MaxViewRange && !MonsterInfo.IsBoss && PetOwner == null) return;
+            if (NearByPlayers.Count == 0 && (MonsterInfo.ViewRange <= Config.MaxViewRange || CurrentMap.Players.Count == 0) && !MonsterInfo.IsBoss && PetOwner == null) return;
 
             Activated = true;
             SEnvir.ActiveObjects.Add(this);
@@ -855,7 +875,7 @@ namespace Server.Models
         {
             if (!Activated) return;
 
-            if (NearByPlayers.Count > 0 || MonsterInfo.ViewRange > Config.MaxViewRange || Target != null || MonsterInfo.IsBoss || PetOwner != null || ActionList.Count > 0 || CurrentHP < Stats[Stat.Health]) return;
+            if (NearByPlayers.Count > 0 || Target != null || (MonsterInfo.ViewRange > Config.MaxViewRange && CurrentMap.Players.Count > 0) || MonsterInfo.IsBoss || PetOwner != null || ActionList.Count > 0 || CurrentHP < Stats[Stat.Health]) return;
 
             Activated = false;
             SEnvir.ActiveObjects.Remove(this);
@@ -2308,7 +2328,7 @@ namespace Server.Models
             }
         }
 
-        public void UpdateMoveTime()
+        public virtual void UpdateMoveTime()
         {
             MoveTime = SEnvir.Now.AddMilliseconds(MoveDelay);
             ActionTime = SEnvir.Now.AddMilliseconds(Math.Min(MoveDelay - 100, AttackDelay));
@@ -2735,78 +2755,83 @@ namespace Server.Models
                         userDrop.Progress += progress;
                 }
 
-                if (SEnvir.ItemPartInfo != null)
+                var roll = SEnvir.Random.Next();
+
+                //(drop is partOnly) OR
+                //(roll has failed OR ItemBot) AND (fortune progress not reached)
+                if (drop.PartOnly || ((roll > chance || owner.Character.Account.ItemBot) && ((long)userDrop.Progress <= userDrop.DropCount)))
                 {
-                    if (drop.PartOnly ||
-                        ((SEnvir.Random.Next() > chance || (!SEnvir.IsCurrencyItem(drop.Item) && owner.Character.Account.ItemBot)) && ((long)userDrop.Progress <= userDrop.DropCount)))
+                    if (SEnvir.ItemPartInfo == null || drop.Item.PartCount <= 1 || SEnvir.IsCurrencyItem(drop.Item)) continue;
+
+                    var partRoll = SEnvir.Random.Next();
+
+                    if (drop.PartOnly)
                     {
-                        if (drop.Item.PartCount <= 1) continue;
+                        //part roll failed
+                        if (partRoll > chance) continue;
+                    }
+                    else
+                    {
+                        //part roll for non partOnly drop failed
+                        if (partRoll > chance * drop.Item.PartCount) continue;
+                    }
 
-                        if (SEnvir.Random.Next() > ((owner.Character.Account.ItemBot || drop.PartOnly)
-                                ? chance
-                                : (chance * drop.Item.PartCount))) continue;
+                    result = true;
 
-                        result = true;
+                    UserItem item = SEnvir.CreateDropItem(SEnvir.ItemPartInfo);
 
-                        UserItem item = SEnvir.CreateDropItem(SEnvir.ItemPartInfo);
+                    item.AddStat(Stat.ItemIndex, drop.Item.Index, StatSource.Added);
+                    item.StatsChanged();
 
-                        item.AddStat(Stat.ItemIndex, drop.Item.Index, StatSource.Added);
-                        item.StatsChanged();
+                    item.IsTemporary = true;
 
-                        item.IsTemporary = true;
+                    if (NeedHarvest)
+                    {
+                        if (drops == null)
+                            drops = new List<UserItem>();
 
-                        if (NeedHarvest)
+                        if (drop.Item.Rarity != Rarity.Common)
                         {
-                            if (drops == null)
-                                drops = new List<UserItem>();
+                            owner.Connection.ReceiveChat(
+                                string.Format(owner.Connection.Language.HarvestRare, MonsterInfo.MonsterName),
+                                MessageType.System);
 
-                            if (drop.Item.Rarity != Rarity.Common)
-                            {
-                                owner.Connection.ReceiveChat(
-                                    string.Format(owner.Connection.Language.HarvestRare, MonsterInfo.MonsterName),
+                            foreach (SConnection con in owner.Connection.Observers)
+                                con.ReceiveChat(string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName),
                                     MessageType.System);
-
-                                foreach (SConnection con in owner.Connection.Observers)
-                                    con.ReceiveChat(string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName),
-                                        MessageType.System);
-                            }
-
-                            drops.Add(item);
-                            continue;
                         }
 
-                        Cell cell = GetDropLocation(Config.DropDistance, owner) ?? CurrentCell;
-
-                        ItemObject ob = new ItemObject
-                        {
-                            Item = item,
-                            Account = owner.Character.Account,
-                            MonsterDrop = true,
-                        };
-
-                        ob.Spawn(CurrentMap, cell.Location);
-
-                        if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
-                        {
-                            long goldAmount = 0;
-
-                            if (ob.Item.Info == SEnvir.GoldInfo && ob.Account.GuildMember != null &&
-                                ob.Account.GuildMember.Guild.GuildTax > 0)
-                                goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
-
-                            ItemCheck check = new ItemCheck(ob.Item, ob.Item.Count - goldAmount, ob.Item.Flags,
-                                ob.Item.ExpireTime);
-
-                            if (owner.Companion.CanGainItems(true, check)) ob.PickUpItem(owner.Companion);
-
-                        }
-
+                        drops.Add(item);
                         continue;
                     }
+
+                    Cell cell = GetDropLocation(Config.DropDistance, owner) ?? CurrentCell;
+
+                    ItemObject ob = new ItemObject
+                    {
+                        Item = item,
+                        Account = owner.Character.Account,
+                        MonsterDrop = true,
+                    };
+
+                    ob.Spawn(CurrentMap, cell.Location);
+
+                    if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
+                    {
+                        ItemCheck check = new ItemCheck(ob.Item, ob.Item.Count, ob.Item.Flags,
+                            ob.Item.ExpireTime);
+
+                        if (owner.Companion.CanGainItems(true, check)) ob.PickUpItem(owner.Companion);
+                    }
+
+                    continue;
                 }
 
-                if (!SEnvir.IsCurrencyItem(drop.Item) && (Math.Floor(userDrop.Progress) > userDrop.DropCount + amount) && Config.EnableFortune)
-                    amount = (long)(userDrop.Progress - userDrop.DropCount);
+                if (Config.EnableFortune)
+                {
+                    if (!SEnvir.IsCurrencyItem(drop.Item) && (Math.Floor(userDrop.Progress) > userDrop.DropCount + amount))
+                        amount = (long)(userDrop.Progress - userDrop.DropCount);
+                }
 
                 userDrop.DropCount += amount;
 
@@ -2867,9 +2892,10 @@ namespace Server.Models
                     {
                         long goldAmount = 0;
 
-                        if (ob.Item.Info == SEnvir.GoldInfo && ob.Account.GuildMember != null &&
-                            ob.Account.GuildMember.Guild.GuildTax > 0)
-                            goldAmount = (long)Math.Ceiling(ob.Item.Count * ob.Account.GuildMember.Guild.GuildTax);
+                        if (ob.Item.Info == SEnvir.GoldInfo && ob.Account.GuildMember != null && ob.Account.GuildMember.Guild.GuildTax > 0)
+                        {
+                            goldAmount = ob.Account?.GuildMember?.Guild?.CalculateGuildTax(ob.Item) ?? 0;
+                        }
 
                         ItemCheck check = new ItemCheck(ob.Item, ob.Item.Count - goldAmount, ob.Item.Flags,
                             ob.Item.ExpireTime);

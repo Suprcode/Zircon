@@ -93,12 +93,12 @@ namespace Client.Controls
             };
             HintLabel = new DXLabel
             {
-                BackColour = Color.FromArgb(120, 0, 0, 0),
+                BackColour = Color.FromArgb(255, 255, 255, 150),//Color.FromArgb(120, 0, 0, 0)
                 Border = true,
-                BorderColour = Color.Yellow,
+                BorderColour = Color.Black,//Color.Yellow,
                 IsVisible = true,
                 Outline = false,
-                ForeColour = Color.Yellow
+                ForeColour = Color.Black//Color.Yellow
             };
             PingLabel = new DXLabel
             {
@@ -481,7 +481,31 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
+        #region HintPosition
+
+        public HintPosition HintPosition
+        {
+            get => _HintPosition;
+            set
+            {
+                if (_HintPosition == value) return;
+
+                HintPosition oldValue = _HintPosition;
+                _HintPosition = value;
+
+                OnHintPositionChanged(oldValue, value);
+            }
+        }
+        private HintPosition _HintPosition;
+        public event EventHandler<EventArgs> HintPositionChanged;
+        public virtual void OnHintPositionChanged(HintPosition oValue, HintPosition nValue)
+        {
+            HintPositionChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region IsControl
 
         public bool IsControl

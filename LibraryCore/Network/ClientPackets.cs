@@ -583,6 +583,10 @@ namespace Library.Network.ClientPackets
 
         public bool Track { get; set; }
     }
+    public sealed class QuestAbandon : Packet
+    {
+        public int Index { get; set; }
+    }
 
     public sealed class CompanionUnlock : Packet
     {

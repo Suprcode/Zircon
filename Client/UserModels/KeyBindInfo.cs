@@ -336,5 +336,8 @@ namespace Client.UserModels
 
         [Description("Filter Drop Window")]
         FilterDropWindow,
+
+        [Description("Menu Window")]
+        MenuWindow,
     }
 }

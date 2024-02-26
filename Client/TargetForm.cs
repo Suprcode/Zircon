@@ -191,6 +191,19 @@ namespace Client
             }
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            try
+            {
+                if (GameScene.Game != null && !GameScene.Game.ExitBox.Exiting)
+                {
+                    GameScene.Game.ExitBox.Visible = true;
+                    e.Cancel = true;
+                }
+            }
+            catch { }
+        }
+
         public void Center()
         {
             CenterToScreen();

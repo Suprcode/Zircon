@@ -131,6 +131,8 @@ namespace Server.Views
             PvPCurseRateEdit.EditValue = Config.PvPCurseRate;
             AutoReviveDelayEdit.EditValue = Config.AutoReviveDelay;
             EnableStruckEdit.EditValue = Config.EnableStruck;
+            EnableHermitEdit.EditValue = Config.EnableHermit;
+            EnableFortuneEdit.EditValue = Config.EnableFortune;
 
             //Monsters
             DeadDurationEdit.EditValue = Config.DeadDuration;
@@ -243,6 +245,8 @@ namespace Server.Views
             Config.PvPCurseRate = (int)PvPCurseRateEdit.EditValue;
             Config.AutoReviveDelay = (TimeSpan)AutoReviveDelayEdit.EditValue;
             Config.EnableStruck = (bool)EnableStruckEdit.EditValue;
+            Config.EnableHermit = (bool)EnableHermitEdit.EditValue;
+            Config.EnableFortune = (bool)EnableFortuneEdit.EditValue;
 
             //Monsters
             Config.DeadDuration = (TimeSpan)DeadDurationEdit.EditValue;

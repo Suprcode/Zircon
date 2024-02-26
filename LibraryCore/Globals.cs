@@ -48,9 +48,10 @@ namespace Library
                             HolyColour = Color.DarkKhaki,
                             DarkColour = Color.SaddleBrown,
                             PhantomColour = Color.Purple,
-
                             BrownNameColour = Color.Brown,
-                            RedNameColour = Color.Red;
+                            RedNameColour = Color.Red,
+
+                            PlayerLightColour = Color.FromArgb(120, 255, 255, 255);
 
         public const string ClientName = "Legend of Mir 3";
 
@@ -407,7 +408,9 @@ namespace Library
         public string FiltersRarity { get; set; }
         public string FiltersItemType { get; set; }
 
+        //Server settings
         public bool StruckEnabled { get; set; }
+        public bool HermitEnabled { get; set; }
 
         [CompleteObject]
         public void OnComplete()

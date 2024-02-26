@@ -3539,6 +3539,7 @@ namespace Server.Envir
         {
             S.Rankings result = new S.Rankings
             {
+                AllowObservation = Config.AllowObservation,
                 OnlineOnly = p.OnlineOnly,
                 StartIndex = p.StartIndex,
                 Class = p.Class,

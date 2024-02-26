@@ -72,7 +72,6 @@ namespace Server.DBModels
         }
         private long _DropCount;
 
-
         protected override void OnDeleted()
         {
             Account = null;

@@ -55,8 +55,6 @@ namespace Client.Scenes.Views
             UpdateMapPosition();
         }
 
-
-
         public override WindowType Type => WindowType.MiniMapBox;
         public override bool CustomSize => true;
         public override bool AutomaticVisibility => true;
@@ -300,7 +298,6 @@ namespace Client.Scenes.Views
 
             if (ob.MonsterInfo != null)
             {
-
                 name = $"{ob.MonsterInfo.MonsterName}";
 
                 if (ob.MonsterInfo.AI < 0)

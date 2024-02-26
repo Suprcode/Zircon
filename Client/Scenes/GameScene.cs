@@ -145,6 +145,7 @@ namespace Client.Scenes
         public MapControl MapControl;
         public MainPanel MainPanel;
 
+        public MenuDialog MenuBox;
         public DXConfigWindow ConfigBox;
         public CaptionDialog CaptionBox;
         public InventoryDialog InventoryBox;
@@ -175,6 +176,7 @@ namespace Client.Scenes
         public BigMapDialog BigMapBox;
         public MagicDialog MagicBox;
         public GroupDialog GroupBox;
+        public GroupHealthDialog GroupHealthBox;
         public BuffDialog BuffBox;
         public StorageDialog StorageBox;
         public AutoPotionDialog AutoPotionBox;
@@ -317,7 +319,7 @@ namespace Client.Scenes
         public uint InspectID;
         public DateTime PickUpTime, UseItemTime, NPCTime, ToggleTime, InspectTime, ItemTime = CEnvir.Now, ReincarnationPillTime, ItemReviveTime;
 
-        public bool StruckEnabled;
+        public bool StruckEnabled, HermitEnabled;
 
         public float DayTime
         {
@@ -352,6 +354,8 @@ namespace Client.Scenes
             QuestBox?.LoadSettings();
             FishingBox?.LoadSettings();
             GroupBox?.LoadSettings();
+            GuildBox?.LoadSettings();
+            MenuBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -383,15 +387,19 @@ namespace Client.Scenes
 
             MainPanel = new MainPanel { Parent = this };
 
+            MenuBox = new MenuDialog
+            {
+                Parent = this,
+                Visible = false
+            };
+
             ConfigBox = new DXConfigWindow
             {
                 Parent = this,
                 Visible = false,
                 NetworkTab = { Enabled = false, TabButton = { Visible = false } },
                 ColourTab = { TabButton = { Visible = true } },
-                ExitButton = { Visible = true },
             };
-            ConfigBox.ExitButton.MouseClick += (o, e) => ExitBox.Visible = true;
 
             ExitBox = new ExitDialog
             {
@@ -426,6 +434,7 @@ namespace Client.Scenes
             ChatTextBox = new ChatTextBox
             {
                 Parent = this,
+                Visible = false
             };
             ChatOptionsBox = new ChatOptionsDialog
             {
@@ -491,6 +500,11 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false,
+            };
+            GroupHealthBox = new GroupHealthDialog()
+            {
+                Parent = this,
+                Visible = true,
             };
 
             BigMapBox = new BigMapDialog
@@ -690,12 +704,16 @@ namespace Client.Scenes
             QuestBox.LoadSettings();
             FishingBox.LoadSettings();
             GroupBox.LoadSettings();
+            GuildBox.LoadSettings();
+            MenuBox.LoadSettings();
         }
 
         #region Methods
         private void SetDefaultLocations()
         {
             if (ConfigBox == null) return;
+
+            MenuBox.Location = new Point(Size.Width - MenuBox.Size.Width, Size.Height - MenuBox.Size.Height - MainPanel.Size.Height);
 
             ConfigBox.Location = new Point((Size.Width - ConfigBox.Size.Width)/2, (Size.Height - ConfigBox.Size.Height)/2);
 
@@ -903,8 +921,10 @@ namespace Client.Scenes
                 MapControl.Animation++;
                 MoveFrame = true;
             }
-            else
+            else if (!Config.SmoothMove)
+            {
                 MoveFrame = false;
+            }
 
             if (MouseControl == MapControl)
                 MapControl.CheckCursor();
@@ -1019,6 +1039,18 @@ namespace Client.Scenes
             }
         }
 
+        public override void OnKeyPress(KeyPressEventArgs e)
+        {
+            base.OnKeyPress(e);
+
+            switch ((Keys)e.KeyChar)
+            {
+                case Keys.Enter:
+                    ChatTextBox.ToggleVisibility(e, false);
+                    break;
+            }
+        }
+
         public override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -1037,6 +1069,9 @@ namespace Client.Scenes
             {
                 switch (action)
                 {
+                    case KeyBindAction.MenuWindow:
+                        MenuBox.Visible = !MenuBox.Visible;
+                        break;
                     case KeyBindAction.ConfigWindow:
                         ConfigBox.Visible = !ConfigBox.Visible;
                         break;
@@ -3738,6 +3773,15 @@ namespace Client.Scenes
 
             User.Light = Math.Max(3, User.Stats[Stat.Light]);
 
+            if (User.Stats[Stat.Light] == 0)
+            {
+                User.LightColour = Globals.PlayerLightColour;
+            }
+            else
+            {
+                User.LightColour = Globals.NoneColour;
+            }
+
             MainPanel.ACLabel.Text = User.Stats.GetFormat(Stat.MaxAC);
             MainPanel.MACLabel.Text = User.Stats.GetFormat(Stat.MaxMR);
 
@@ -3760,9 +3804,7 @@ namespace Client.Scenes
         {
             if (User == null) return;
 
-            MainPanel.ExperienceLabel.Text = User.MaxExperience > 0 ? $"{User.Experience/User.MaxExperience: #,##0.00%}" : $"{User.Experience: #,##0#}";
-
-            MainPanel.ExperienceBar.Hint = $"{User.Experience:#,##0.#}/{User.MaxExperience: #,##0.#}";
+            MainPanel.ExperienceBar.Hint = User.MaxExperience > 0 ? $"(Experience) {User.Experience / User.MaxExperience:#,##0.00%}" : "(Experience) Max";
         }
         public void HealthChanged()
         {
@@ -3909,7 +3951,6 @@ namespace Client.Scenes
                         {
                             case MirClass.Warrior:
                                 if ((requirement.Class & RequiredClass.Warrior) != RequiredClass.Warrior) return false;
-
                                 break;
                             case MirClass.Wizard:
                                 if ((requirement.Class & RequiredClass.Wizard) != RequiredClass.Wizard) return false;
@@ -4130,6 +4171,7 @@ namespace Client.Scenes
         {
             int icon = 0;
             Color colour = Color.White;
+            string iconString = "";
 
             if (NPC.CurrentQuest != null)
             {
@@ -4165,18 +4207,34 @@ namespace Client.Scenes
                 {
                     case QuestIcon.New:
                         icon += 0;
+                        iconString = "!";
                         break;
                     case QuestIcon.Incomplete:
                         icon = 2;
                         colour = Color.White;
+                        iconString = "?";
                         break;
                     case QuestIcon.Complete:
                         icon += 2;
+                        iconString = "?";
                         break;
                 }
             }
 
-            if (icon > 0)
+            if (!string.IsNullOrEmpty(iconString))
+            {
+                DXLabel label = new DXLabel
+                {
+                    Text = iconString,
+                    ForeColour = colour,
+                    Hint = NPC.NPCName,
+                    Tag = NPC.CurrentQuest,
+                    Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold)
+                };
+
+                return label;
+            }
+            else if (icon > 0)
             {
                 DXImageControl image = new DXImageControl
                 {
@@ -4272,6 +4330,14 @@ namespace Client.Scenes
                         MainPanel.Dispose();
 
                     MainPanel = null;
+                }
+
+                if (MenuBox != null)
+                {
+                    if (!MenuBox.IsDisposed)
+                        MenuBox.Dispose();
+
+                    MenuBox = null;
                 }
 
                 if (ConfigBox != null)
@@ -4495,6 +4561,14 @@ namespace Client.Scenes
                         GroupBox.Dispose();
 
                     GroupBox = null;
+                }
+
+                if (GroupHealthBox != null)
+                {
+                    if (!GroupHealthBox.IsDisposed)
+                        GroupHealthBox.Dispose();
+
+                    GroupHealthBox = null;
                 }
 
                 if (BuffBox != null)

@@ -246,7 +246,33 @@ namespace Client.Envir
             {
                 DXControl.HintLabel.Text = DXControl.MouseControl.Hint;
 
-                Point location = new Point(MouseLocation.X, MouseLocation.Y + 17);
+                var c = DXControl.MouseControl;
+
+                int x;
+                int y;
+
+                switch (DXControl.MouseControl.HintPosition)
+                {
+                    default:
+                    case HintPosition.TopLeft:
+                        x = c.DisplayArea.Left;
+                        y = c.DisplayArea.Top - DXControl.HintLabel.Size.Height;
+                        break;
+                    case HintPosition.BottomLeft:
+                        x = c.DisplayArea.Left;
+                        y = c.DisplayArea.Bottom;
+                        break;
+                    case HintPosition.FixedY:
+                        x = MouseLocation.X;
+                        y = c.DisplayArea.Top - DXControl.HintLabel.Size.Height;
+                        break;
+                    case HintPosition.Fluid:
+                        x = MouseLocation.X;
+                        y = MouseLocation.Y + 17;
+                        break;
+                }
+
+                Point location = new(x, y);
 
                 if (location.X + DXControl.HintLabel.Size.Width > DXControl.ActiveScene.Size.Width)
                     location.X = DXControl.ActiveScene.Size.Width - DXControl.HintLabel.Size.Width - 1;
@@ -467,6 +493,10 @@ namespace Client.Envir
 
             switch (action)
             {
+                case KeyBindAction.MenuWindow:
+                    bind.Category = "Windows";
+                    bind.Key1 = Keys.N;
+                    break;
                 case KeyBindAction.ConfigWindow:
                     bind.Category = "Windows";
                     bind.Key1 = Keys.O;

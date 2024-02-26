@@ -256,8 +256,8 @@ namespace Server.Models
                                 {
                                     infection.MagicComplete(new object[]
                                     {
-                                    MagicType.Infection,
-                                    this
+                                        MagicType.Infection,
+                                        this
                                     });
                                 }
                             }
@@ -372,9 +372,16 @@ namespace Server.Models
 
                 if (explode)
                 {
-                    mob = (MonsterObject)this;
+                    switch (Race)
+                    {
+                        case ObjectType.Monster:
+                            {
+                                mob = (MonsterObject)this;
 
-                    mob.EXPOwner ??= (PlayerObject)poison.Owner;
+                                mob.EXPOwner ??= (PlayerObject)poison.Owner;
+                            }
+                            break;
+                    }
 
                     switch (poison.Type)
                     {

@@ -34,7 +34,7 @@ namespace Server.Models.Magics
         {
             var response = new AttackCast();
 
-            if (attackType != Type)
+            if (attackType != Type || !Player.Character.CanDestructiveSurge)
                 return response;
 
             int cost = Magic.Cost;
@@ -87,7 +87,7 @@ namespace Server.Models.Magics
         {
             if (!primary)
             {
-                lifestealAmount = Math.Min(lifestealAmount, 2000 - DestructiveSurgeLifeSteal);
+                lifestealAmount = Math.Min(lifestealAmount, 750 - DestructiveSurgeLifeSteal);
                 DestructiveSurgeLifeSteal += lifestealAmount;
             }
 

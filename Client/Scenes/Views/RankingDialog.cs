@@ -137,6 +137,34 @@ namespace Client.Scenes.Views
 
         #endregion
 
+
+        #region AllowObservation
+
+        public bool AllowObservation
+        {
+            get => _AllowObservation;
+            set
+            {
+                if (_AllowObservation == value) return;
+
+                bool oldValue = _AllowObservation;
+                _AllowObservation = value;
+
+                OnAllowObservationChanged(oldValue, value);
+            }
+        }
+        private bool _AllowObservation;
+        public event EventHandler<EventArgs> AllowObservationChanged;
+        public void OnAllowObservationChanged(bool oValue, bool nValue)
+        {
+            ObservableBox.Visible = nValue;
+            ObserveButton.Visible = nValue;
+
+            AllowObservationChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region Observable
 
         public bool Observable
@@ -731,7 +759,7 @@ namespace Client.Scenes.Views
                 Size = new Size(60, SmallButtonHeight),
                 Parent = RankPanel,
                 Label = { Text = CEnvir.Language.RankingDialogObserveButtonLabel },
-                Visible = true,
+                Visible = false,
                 Enabled = false,
                 Location = new Point(SearchButton.Location.X + SearchButton.Size.Width + 5, 66)
             };
@@ -865,6 +893,7 @@ namespace Client.Scenes.Views
             ObservableBox = new DXCheckBox
             {
                 Parent = RankPanel,
+                Visible = false,
                 Label = { Text = CEnvir.Language.RankingDialogObservableLabel }
             };
             ObservableBox.CheckedChanged += (o, e) =>
@@ -1062,6 +1091,8 @@ namespace Client.Scenes.Views
 
         public void Update(S.Rankings p)
         {
+            AllowObservation = p.AllowObservation;
+
             if (p.Class != FilterClass || p.OnlineOnly != OnlineOnly) return;
 
             ScrollBar.MaxValue = p.Total;
