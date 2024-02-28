@@ -468,6 +468,7 @@ namespace Client.Envir.Translations
         public override string GroupDialogAddButtonHint { get; set; } = "Add Member";
         public override string GroupDialogRemoveButtonHint { get; set; } = "Remove Member";
         public override string GroupDialogCreateLFGButtonHint { get; set; } = "Create LFG";
+        public override string GroupDialogNotAllowingGroupMessage { get; set; } = "You are not currently allowing group.";
 
         public override string GuildDialogTitle { get; set; } = "Guild";
         public override string GuildDialogCreateTabLabel { get; set; } = "Create";

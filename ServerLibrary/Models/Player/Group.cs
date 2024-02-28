@@ -282,9 +282,8 @@ namespace Server.Models
         }
         public void GroupRequest(string groupLeader)
         {
-            if (GroupMembers != null)
+            if (GroupMembers != null || !Character.Account.AllowGroup)
             {
-                //You are already grouped
                 return;
             }
 

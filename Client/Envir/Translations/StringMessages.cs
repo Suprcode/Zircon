@@ -466,6 +466,7 @@ namespace Client.Envir.Translations
         public abstract string GroupDialogAddButtonHint { get; set; }
         public abstract string GroupDialogRemoveButtonHint { get; set; }
         public abstract string GroupDialogCreateLFGButtonHint { get; set; }
+        public abstract string GroupDialogNotAllowingGroupMessage { get; set; }
 
         public abstract string GuildDialogTitle { get; set; }
         public abstract string GuildDialogCreateTabLabel { get; set; }

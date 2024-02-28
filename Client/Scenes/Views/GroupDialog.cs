@@ -462,6 +462,12 @@ namespace Client.Scenes.Views
 
             if (!row.Info.Enabled) return;
 
+            if (!AllowGroup)
+            {
+                GameScene.Game.ReceiveChat(CEnvir.Language.GroupDialogNotAllowingGroupMessage, MessageType.System);
+                return;
+            }
+
             if (row.Info.MaxCount == row.Info.CurrentCount)
             {
                 GameScene.Game.ReceiveChat(CEnvir.Language.GroupMemberLimit, MessageType.System);
