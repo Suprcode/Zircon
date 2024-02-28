@@ -1199,8 +1199,6 @@ namespace Client.Controls
                 foreach (ChatTab tab in ChatTab.Tabs)
                     tab.UpdateColours();
             }
-
-
         }
 
         public override void OnKeyDown(KeyEventArgs e)
