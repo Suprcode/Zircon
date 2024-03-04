@@ -2,6 +2,7 @@
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
+using System;
 using System.Drawing;
 using System.Linq;
 
@@ -54,6 +55,25 @@ namespace Server.Models.Magics
             if (MonsterObject.GetMonster(info) is not Monsters.Tornado ob) return;
 
             ob.VisibleTime = SEnvir.Now.AddSeconds(10);
+
+            int bonusScalingFactor = 10;
+
+            Stats buffStatsRegen = new Stats
+            {
+                [Stat.MinDC] = Magic.Level + (Player.Stats[Stat.MinMC] / bonusScalingFactor) * Math.Max(1, Magic.Level) + Player.Stats[Stat.WindAttack],
+                [Stat.MaxDC] = Magic.Level + (Player.Stats[Stat.MaxMC] / bonusScalingFactor) * Math.Max(1, Magic.Level) + Player.Stats[Stat.WindAttack],
+
+                [Stat.Health] = (Magic.Level * 10) + (Player.Stats[Stat.Health] / bonusScalingFactor) * Math.Max(1, Magic.Level),
+                [Stat.MinAC] = Magic.Level + (Player.Stats[Stat.MinAC] / bonusScalingFactor) * Math.Max(1, Magic.Level),
+                [Stat.MaxAC] = Magic.Level + (Player.Stats[Stat.MaxAC] / bonusScalingFactor) * Math.Max(1, Magic.Level),
+                [Stat.MinMR] = Magic.Level + (Player.Stats[Stat.MinMR] / bonusScalingFactor) * Math.Max(1, Magic.Level),
+                [Stat.MaxMR] = Magic.Level + (Player.Stats[Stat.MaxMR] / bonusScalingFactor) * Math.Max(1, Magic.Level),
+                [Stat.MaxMR] = Magic.Level + (Player.Stats[Stat.MaxMR] / bonusScalingFactor) * Math.Max(1, Magic.Level),
+                [Stat.Agility] = 100,
+                [Stat.Accuracy] = 100
+            };
+
+            ob.BuffAdd(BuffType.Tornado, TimeSpan.FromSeconds(10), buffStatsRegen, true, false, TimeSpan.Zero);
 
             ob.Spawn(Player.CurrentMap, location);
 

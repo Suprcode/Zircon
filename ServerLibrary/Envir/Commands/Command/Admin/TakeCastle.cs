@@ -19,7 +19,7 @@ namespace Server.Envir.Commands.Command.Admin
             if (vals.Length < PARAMS_LENGTH)
                 ThrowNewInvalidParametersException();
 
-            CastleInfo castle = SEnvir.CastleInfoList.Binding.FirstOrDefault(x => string.Compare(x.Name, vals[1], StringComparison.OrdinalIgnoreCase) == 0);
+            CastleInfo castle = SEnvir.CastleInfoList.Binding.FirstOrDefault(x => string.Compare(x.Name.Replace(" ", ""), vals[1], StringComparison.OrdinalIgnoreCase) == 0);
             if (castle == null)
                 throw new UserCommandException(string.Format("Could not find castle {0}.", vals[1]));
 

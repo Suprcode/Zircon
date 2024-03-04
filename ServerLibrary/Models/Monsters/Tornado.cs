@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.Envir;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using S = Library.Network.ServerPackets;
 
@@ -69,16 +70,16 @@ namespace Server.Models.Monsters
 
         protected override void Attack()
         {
-            foreach (MapObject ob in CurrentCell.Objects)
-            {
-                if (ob == this || !ob.Blocking) continue;
+            List<MapObject> targets = GetTargets(CurrentMap, CurrentLocation, 1);
 
-                if (!CanAttackTarget(ob)) continue;
+            foreach (MapObject target in targets)
+            {
+                if (target == this || !CanAttackTarget(target)) continue;
 
                 ActionList.Add(new DelayedAction(
                                    SEnvir.Now.AddMilliseconds(100),
                                    ActionType.DelayAttack,
-                                   ob,
+                                   target,
                                    GetDC(),
                                    AttackElement));
             }

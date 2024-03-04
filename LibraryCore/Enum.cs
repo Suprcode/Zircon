@@ -254,6 +254,7 @@ namespace Library
         ElementalHurricane = 203,
         SuperiorMagicShield = 204,
         FrostBite = 205,
+        Tornado = 206,
 
         //Tao
         Heal = 300,

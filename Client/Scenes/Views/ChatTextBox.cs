@@ -223,7 +223,10 @@ namespace Client.Scenes.Views
                 {
                     if (hide)
                     {
-                        Visible = false;
+                        if (ChatTab.Tabs.Count > 0 && ChatTab.Tabs[0].Panel.TransparentCheckBox.Checked == true)
+                        {
+                            Visible = false;
+                        }
                     }
                 }
                 else

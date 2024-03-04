@@ -107,7 +107,7 @@ namespace Server.Models
             set { Character.Direction = value; }
         }
 
-        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime;
+        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime, MailTime;
         public bool PacketWaiting;
 
         public bool GameMaster, Observer;
@@ -3378,11 +3378,20 @@ namespace Server.Models
         {
             Enqueue(new S.MailSend { ObserverPacket = false });
 
+            if (MailTime > SEnvir.Now) return;
+
+            MailTime = SEnvir.Now.AddSeconds(10);
+
             S.ItemsChanged result = new S.ItemsChanged { Links = p.Links };
 
             Enqueue(result);
 
             if (!ParseLinks(p.Links, 0, 5)) return;
+
+            if (p.Recipient == null || p.Recipient.Length > Globals.MaxCharacterNameLength)
+            {
+                return;
+            }
 
             AccountInfo account = SEnvir.GetCharacter(p.Recipient)?.Account;
 
@@ -3407,6 +3416,16 @@ namespace Server.Models
             if (p.Gold < 0 || p.Gold > Gold.Amount)
             {
                 Connection.ReceiveChat(Connection.Language.MailMailCost, MessageType.System);
+                return;
+            }
+
+            if (p.Subject == null || p.Subject.Length > 30)
+            {
+                return;
+            }
+
+            if (p.Message == null || p.Message.Length > 300)
+            {
                 return;
             }
 
