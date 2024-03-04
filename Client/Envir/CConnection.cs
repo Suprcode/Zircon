@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Models;
+using Client.Scenes;
+using Client.Scenes.Views;
+using Library;
+using Library.Network;
+using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -6,16 +13,9 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Windows.Forms;
-using Client.Controls;
-using Client.Models;
-using Client.Scenes;
-using Client.Scenes.Views;
-using Library.Network;
-using Library;
-using Library.SystemModels;
+using C = Library.Network.ClientPackets;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
 
 namespace Client.Envir
 {
@@ -3295,8 +3295,6 @@ namespace Client.Envir
         }
         public void Process(S.BuffPaused p)
         {
-
-
             MapObject.User.Buffs.First(x => x.Index == p.Index).Pause = p.Paused;
 
             GameScene.Game.BuffBox.BuffsChanged();
