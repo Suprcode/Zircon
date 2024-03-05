@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Windows.Forms;
+using System.Xml;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -703,8 +705,7 @@ namespace Client.Scenes.Views
 
     public sealed class GroupHealthDialog : DXWindow
     {
-        public List<DXLabel> Labels = new();
-        public List<DXControl> HealthBars = new();
+        public List<GroupHealthMember> Members = new();
 
         public GroupHealthDialog()
         {
@@ -730,15 +731,10 @@ namespace Client.Scenes.Views
 
         public void UpdateMembers()
         {
-            foreach (DXLabel label in Labels)
-                label.Dispose();
+            foreach (var member in Members)
+                member.Dispose();
 
-            foreach (DXControl healthBar in HealthBars)
-                healthBar.Dispose();
-
-            Labels.Clear();
-
-            HealthBars.Clear();
+            Members.Clear();
 
             CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary barLibrary);
 
@@ -746,67 +742,162 @@ namespace Client.Scenes.Views
 
             for (int i = 0; i < GameScene.Game.GroupBox.Members.Count; i++)
             {
-                ClientPlayerInfo member = GameScene.Game.GroupBox.Members[i];
+                ClientPlayerInfo m = GameScene.Game.GroupBox.Members[i];
 
-                if (member.Name == GameScene.Game.User.Name) continue;
+                if (m.Name == GameScene.Game.User.Name) continue;
 
-                DXLabel label = new DXLabel
+                var member = new GroupHealthMember
                 {
                     Parent = this,
-                    Location = new Point(15, 10 + 30 * index),
-                    Text = member.Name,
-                    ForeColour = Color.White,
-                    Tag = member.ObjectID
+                    Visible = true,
+                    Location = new Point(0, index * 75)
                 };
 
-                Labels.Add(label);
+                member.UpdateMember(m);
 
-                var healthBar = new DXControl
-                {
-                    Parent = this,
-                    Location = new Point(15, 30 + 30 * index),
-                    Size = barLibrary.GetSize(52),
-                    Tag = label
-                };
-                healthBar.BeforeDraw += (o, e) =>
-                {
-                    if (barLibrary == null) return;
-
-                    var nameLabel = (DXLabel)((DXControl)o).Tag;
-                    var objectID = (uint)nameLabel.Tag;
-
-                    if (!GameScene.Game.DataDictionary.TryGetValue(objectID, out ClientObjectData data)) return;
-
-                    MirImage backImage = barLibrary.CreateImage(316, ImageType.Image);
-
-                    PresentTexture(backImage.Image, this, new Rectangle(healthBar.DisplayArea.X, healthBar.DisplayArea.Y, (int)backImage.Width, backImage.Height), Color.White, healthBar);
-
-                    if (data.Health <= 0)
-                    {
-                        nameLabel.ForeColour = Color.IndianRed;
-                        return;
-                    }
-
-                    nameLabel.ForeColour = Color.White;
-
-                    float percent = Math.Min(1, Math.Max(0, data.Health / (float)data.MaxHealth));
-
-                    if (percent == 0) return;
-
-                    MirImage image = barLibrary.CreateImage(315, ImageType.Image);
-
-                    if (image == null) return;
-
-                    PresentTexture(image.Image, this, new Rectangle(healthBar.DisplayArea.X, healthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, healthBar);
-                };
-
-                HealthBars.Add(healthBar);
+                Members.Add(member);
 
                 index++;
             }
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                foreach (var member in Members)
+                {
+                    if (member != null)
+                    {
+                        if (!member.IsDisposed)
+                            member.Dispose();
+                    }
+                }
+
+                Members.Clear();
+                Members = null;
+            }
+        }
+
+        #endregion
     }
 
+    public sealed class GroupHealthMember : DXControl
+    {
+        public DXLabel NameLabel { get; set; }
+        public DXControl HealthBar { get; set; }
+        public BuffDialog BuffBox { get; set; }
+
+        public GroupHealthMember()
+        {
+            DrawTexture = true;
+            Size = new Size(150, 75);
+
+            CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary barLibrary);
+
+            NameLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(15, 10),
+                //Text = member.Name,
+                ForeColour = Color.White,
+                //Tag = member.ObjectID
+            };
+
+            HealthBar = new DXControl
+            {
+                Parent = this,
+                Location = new Point(15, 30),
+                Size = barLibrary.GetSize(52),
+                Tag = NameLabel
+            };
+
+            HealthBar.BeforeDraw += (o, e) =>
+            {
+                CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary barLibrary);
+
+                if (barLibrary == null) return;
+
+                if (((DXControl)o).Tag == null) return;
+
+                var nameLabel = (DXLabel)((DXControl)o).Tag;
+                var objectID = (uint)nameLabel.Tag;
+
+                if (!GameScene.Game.DataDictionary.TryGetValue(objectID, out ClientObjectData data)) return;
+
+                MirImage backImage = barLibrary.CreateImage(316, ImageType.Image);
+
+                PresentTexture(backImage.Image, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)backImage.Width, backImage.Height), Color.White, HealthBar);
+
+                if (data.Health <= 0)
+                {
+                    nameLabel.ForeColour = Color.IndianRed;
+                    return;
+                }
+
+                nameLabel.ForeColour = Color.White;
+
+                float percent = Math.Min(1, Math.Max(0, data.Health / (float)data.MaxHealth));
+
+                if (percent == 0) return;
+
+                MirImage image = barLibrary.CreateImage(315, ImageType.Image);
+
+                if (image == null) return;
+
+                PresentTexture(image.Image, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HealthBar);
+            };
+
+            BuffBox = new BuffDialog
+            {
+                Parent = this,
+                Location = new Point(15, 40),
+                Size = new Size(150, 30),
+                Scale = 0.8F
+            };
+        }
+
+        public void UpdateMember(ClientPlayerInfo member)
+        {
+            NameLabel.Text = member.Name;
+            NameLabel.Tag = member.ObjectID;
+
+            BuffBox.BuffsChanged();
+        }
+
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (NameLabel != null)
+                {
+                    if (!NameLabel.IsDisposed)
+                        NameLabel.Dispose();
+                    NameLabel = null;
+                }
+
+                if (HealthBar != null)
+                {
+                    if (!HealthBar.IsDisposed)
+                        HealthBar.Dispose();
+                    HealthBar = null;
+                }
+            }
+        }
+
+        #endregion
+    }
+
+    //TODO - Dispose
     public sealed class GroupLFGRow : DXControl
     {
         public DXLabel NameLabel;
@@ -956,6 +1047,7 @@ namespace Client.Scenes.Views
         }
     }
 
+    //TODO - Dispose
     public sealed class GroupLFGInputWindow : DXWindow
     {
         #region Properites

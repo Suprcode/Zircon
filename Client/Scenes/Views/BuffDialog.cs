@@ -1,4 +1,5 @@
 ﻿using Client.Controls;
+using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
@@ -19,6 +20,32 @@ namespace Client.Scenes.Views
         public override WindowType Type => WindowType.BuffBox;
         public override bool CustomSize => false;
         public override bool AutomaticVisibility => true;
+
+        #region Scale
+
+        public float Scale
+        {
+            get => _Scale;
+            set
+            {
+                if (_Scale == value) return;
+
+                float oldValue = _Scale;
+                _Scale = value;
+
+                OnScaleChanged(oldValue, value);
+            }
+        }
+        private float _Scale = 1F;
+        public event EventHandler<EventArgs> ScaleChanged;
+        public void OnScaleChanged(float oValue, float nValue)
+        {
+            ScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+
         #endregion
 
         public BuffDialog()
@@ -77,6 +104,7 @@ namespace Client.Scenes.Views
                 {
                     Parent = this,
                     LibraryFile = LibraryFile.CBIcon,
+                    Scale = this.Scale,
                     HintPosition = HintPosition.BottomLeft
                 };
 
@@ -254,10 +282,16 @@ namespace Client.Scenes.Views
                 };
             }
 
-            for (int i = 0; i < buffs.Count; i++)
-                Icons[buffs[i]].Location = new Point(3 + (i%6)*27, 3 + (i/6)*27);
+            var x = 27;
+            var y = 27;
 
-            Size = new Size(3 + Math.Min(6, Math.Max(1, Icons.Count))*27, 3 + Math.Max(1, 1 +  (Icons.Count - 1)/6) * 27);    
+            x = (int)(x * this.Scale);
+            y = (int)(y * this.Scale);
+
+            for (int i = 0; i < buffs.Count; i++)
+                Icons[buffs[i]].Location = new Point(3 + (i % 6) * x, 3 + (i / 6) * y);
+
+            Size = new Size(3 + Math.Min(6, Math.Max(1, Icons.Count)) * x, 3 + Math.Max(1, 1 +  (Icons.Count - 1) / 6) * y);    
         }
 
         private string GetBuffHint(ClientBuffInfo buff)
