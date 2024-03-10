@@ -1,166 +1,79 @@
-﻿using Library;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace PluginCore
 {
     public class PluginLoader
     {
-        public static PluginLoader Loader;
-
         public event EventHandler<LogEventArgs> Log;
+        public event EventHandler<ShowViewEventArgs> View;
+        public event EventHandler<ShowMapViewerEventArgs> MapViewer;
 
-        public List<IPluginStart> Plugins = new List<IPluginStart>();
+        public List<IPluginStart> Plugins { get; } = new List<IPluginStart>();
 
-        /// <summary>
-        /// Main entry
-        /// </summary>
         private PluginLoader() { }
 
-        public static void Init()
+        private static PluginLoader instance;
+        public static PluginLoader Instance
         {
-            if (Loader == null)
+            get
             {
-                Loader = new PluginLoader();
+                instance ??= new PluginLoader();
+                return instance;
             }
         }
 
-        public static IPluginStart LoadStandalone(string file)
+        public static IPluginStart LoadPlugin(string file)
         {
             try
             {
-                Assembly dll = Assembly.LoadFrom(file);
-                var filename = Path.GetFileNameWithoutExtension(file);
+                Assembly assembly = Assembly.LoadFrom(file);
+                string filename = Path.GetFileNameWithoutExtension(file);
 
-                Type classType = dll.GetType(String.Format("{0}.Start", filename));
-                if (classType != null && typeof(IPluginStart).IsAssignableFrom(classType))
+                Type pluginType = assembly.GetType($"{filename}.Start");
+                if (pluginType != null && typeof(IPluginStart).IsAssignableFrom(pluginType))
                 {
-                    var pluginStart = (IPluginStart)Activator.CreateInstance(classType);
+                    var pluginInstance = (IPluginStart)Activator.CreateInstance(pluginType);
 
-                    pluginStart.Log += (o, e) =>
-                    {
-                        Loader.Log?.Invoke(o, e);
-                    };
+                    AttachEventHandlers(pluginInstance);
+                    Instance.Plugins.Add(pluginInstance);
 
-                    Loader.Plugins.Add(pluginStart);
-
-                    return pluginStart;
+                    return pluginInstance;
                 }
             }
             catch (Exception ex)
             {
-                Loader.LogMessage(ex.ToString());
+                Instance.LogMessage(ex.ToString());
             }
 
             return null;
         }
 
-        /// <summary>
-        /// Load all plugins in root folder
-        /// </summary>
-        /// <param name="ribbonPage">Reference to the plugin ribbon tab</param>
-        public static void LoadIntegrated(IComponent ribbonPage)
+        public static void LoadPlugins(IComponent ribbonPage, MirDB.Session session)
         {
-            if (Loader == null) return;
+            if (Instance == null) return;
 
             var files = Directory.GetFiles("./", "Plugin.*.dll", SearchOption.TopDirectoryOnly);
 
             foreach (var file in files)
             {
-                try
+                var pluginInstance = LoadPlugin(file);
+                if (pluginInstance != null)
                 {
-                    Assembly dll = Assembly.LoadFrom(file);
-                    var filename = Path.GetFileNameWithoutExtension(file);
-
-                    Type classType = dll.GetType(String.Format("{0}.Start", filename));
-                    if (classType != null && typeof(IPluginStart).IsAssignableFrom(classType))
-                    {
-                        var pluginStart = (IPluginStart)Activator.CreateInstance(classType);
-
-                        pluginStart.Log += (o, e) =>
-                        {
-                            Loader.Log?.Invoke(o, e);
-                        };
-
-                        pluginStart.Type.SetupMenu(ribbonPage);
-
-                        Loader.Plugins.Add(pluginStart);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Loader.LogMessage(ex.ToString());
+                    pluginInstance.Session = session;
+                    pluginInstance.Type.SetupMenu(ribbonPage);
                 }
             }
         }
 
-        /// <summary>
-        /// Send data to all plugins
-        /// </summary>
-        /// <param name="value"></param>
-        public void SendMessage(object value)
+        private static void AttachEventHandlers(IPluginStart pluginInstance)
         {
-            var names = Plugins.Select(x => x.Name).ToArray();
-
-            Send(names, value);
-        }
-
-        /// <summary>
-        /// Send data to multiple plugins
-        /// </summary>
-        /// <param name="names"></param>
-        /// <param name="value"></param>
-        public void Send(string[] names, object value)
-        {
-            if (names == null || names.Length == 0) return;
-
-            foreach (var name in names)
-            {
-                Send(name, value);
-            }
-        }
-
-        /// <summary>
-        /// Send data to specific plugin
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        public void Send(string name, object value)
-        {
-            foreach (var plugin in Loader.Plugins)
-            {
-                try
-                {
-                    if (!(plugin.Type is IPluginMessage message)) continue;
-
-                    if (string.IsNullOrEmpty(name)) continue;
-
-                    if (string.Compare(name, plugin.Name, StringComparison.OrdinalIgnoreCase) != 0) continue;
-
-                    message.ReceiveMessage(value);
-                }
-                catch (NotImplementedException)
-                {
-
-                }
-                catch (NotSupportedException)
-                {
-
-                }
-                catch (Exception ex)
-                {
-                    LogMessage(ex.Message);
-                }
-            }
-        }
-
-        public IPluginStart FindPlugin(string pluginNamespace)
-        {
-            return Plugins.FirstOrDefault(x => x.Namespace == pluginNamespace);
+            pluginInstance.Log += (o, e) => Instance.Log?.Invoke(o, e);
+            pluginInstance.View += (o, e) => Instance.View?.Invoke(o, e);
+            pluginInstance.MapViewer += (o, e) => Instance.MapViewer?.Invoke(o, e);
         }
 
         private void LogMessage(string message)

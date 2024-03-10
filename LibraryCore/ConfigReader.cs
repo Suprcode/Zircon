@@ -33,7 +33,7 @@ namespace Library
                 if (!type.IsAbstract || !type.IsSealed)
                     ConfigObjects[type] = ob = Activator.CreateInstance(type);
 
-                ReadConfig(type, config.Path, ob);
+                ReadConfig(type, AdjustPath(config.Path, assembly), ob);
             }
         }
         public static void Save(Assembly assembly)
@@ -51,8 +51,32 @@ namespace Library
                 if (!type.IsAbstract || !type.IsSealed)
                     ob = ConfigObjects[type];
 
-                SaveConfig(type, config.Path, ob);
+                SaveConfig(type, AdjustPath(config.Path, assembly), ob);
             }
+        }
+
+        public static string AdjustPath(string originalPath, Assembly assembly)
+        {
+            var subFolder = GetSubFolder(assembly);
+
+            if (!string.IsNullOrEmpty(subFolder))
+            {
+                return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, subFolder, $"{originalPath}"));
+            }
+
+            return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{originalPath}"));
+        }
+
+        private static string GetSubFolder(Assembly assembly)
+        {
+            string assemblyName = assembly.GetName().Name;
+
+            if (assemblyName.StartsWith("Plugin.", StringComparison.OrdinalIgnoreCase))
+            {
+                return Globals.PluginPath(assemblyName);
+            }
+
+            return null;
         }
 
         private static void ReadConfig(Type type, string path, object ob)

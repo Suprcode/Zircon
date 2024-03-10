@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Library;
+using Library.SystemModels;
+using Server.Envir;
+using Server.Views.DirectX;
+using SlimDX;
+using SlimDX.Direct3D9;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,15 +15,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Library;
-using Library.SystemModels;
-using Server.Envir;
-using Server.Views.DirectX;
-using SlimDX;
-using SlimDX.Direct3D9;
 using Blend = SlimDX.Direct3D9.Blend;
 using Matrix = SlimDX.Matrix;
-
 
 namespace Server.Views
 {
@@ -65,14 +64,55 @@ namespace Server.Views
 
             Map.Selection = MapRegion.GetPoints(Map.Width);
 
+            AttributesButton.Enabled = true;
+            BlockedOnlyButton.Enabled = true;
+            SelectionButton.Enabled = true;
+            SaveButton.Enabled = true;
+            CancelButton1.Enabled = true;
+
             MapRegionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
 
-        
-        
+        #region Map Path
 
+        public string MapPath
+        {
+            get { return _MapPath; }
+            set
+            {
+                if (_MapPath == value) return;
+
+                string oldValue = _MapPath;
+                _MapPath = value;
+
+                OnMapPathChanged(oldValue, value);
+            }
+        }
+        private string _MapPath;
+        public event EventHandler<EventArgs> MapPathChanged;
+        public virtual void OnMapPathChanged(string oValue, string nValue)
+        {
+            Map.Selection.Clear();
+            Map.TextureValid = false;
+            MapRegion = null;
+
+            if (oValue != nValue)
+                Map.Load(nValue);
+
+            Map.Selection = new HashSet<Point>();
+
+            AttributesButton.Enabled = false;
+            BlockedOnlyButton.Enabled = false;
+            SelectionButton.Enabled = false;
+            SaveButton.Enabled = false;
+            CancelButton1.Enabled = false;
+
+            MapPathChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
 
         public MapViewer()
         {
@@ -320,7 +360,7 @@ namespace Server.Views
 
 
 namespace Server.Views.DirectX
-{ 
+{
     public class DXManager : IDisposable
     {
         public Graphics Graphics;
@@ -2007,9 +2047,20 @@ namespace Server.Views.DirectX
         {
             try
             {
-                if (!File.Exists(Config.MapPath + fileName + ".map")) return;
+                string path = null;
 
-                using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(Config.MapPath + fileName + ".map")))
+                if (Path.IsPathRooted(fileName))
+                {
+                    path = fileName;
+                }
+                else
+                {
+                    path = Config.MapPath + fileName + ".map";
+                }
+
+                if (!File.Exists(path)) return;
+
+                using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(path)))
                 using (BinaryReader reader = new BinaryReader(mStream))
                 {
                     mStream.Seek(22, SeekOrigin.Begin);

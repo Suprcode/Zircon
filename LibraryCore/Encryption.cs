@@ -31,6 +31,9 @@ namespace Library
 
             var stringToCompare = Encoding.UTF8.GetString(buffer, 5, 16);
 
+            if (stringToCompare.StartsWith("Plugin.")) 
+                return false;
+
             return !new string[] { "Server.DBModels.", "Library.SystemMo", "Client.UserModel" }.Contains(stringToCompare);
         }
 

@@ -303,6 +303,11 @@ namespace Library
             [RefineQuality.Careful] = TimeSpan.FromHours(6),
             [RefineQuality.Precise] = TimeSpan.FromDays(1),
         };
+
+        public static string PluginPath(string assemblyName)
+        {
+            return "Plugins" + "\\" + assemblyName + "\\";
+        }
     }
 
     public sealed class SelectInfo
