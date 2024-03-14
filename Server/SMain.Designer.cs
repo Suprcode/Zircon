@@ -47,10 +47,10 @@
             ConfigButton = new DevExpress.XtraNavBar.NavBarItem();
             navBarGroup4 = new DevExpress.XtraNavBar.NavBarGroup();
             BaseStatButton = new DevExpress.XtraNavBar.NavBarItem();
+            MagicInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             FameInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             DisciplineInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             CompanionInfoButton = new DevExpress.XtraNavBar.NavBarItem();
-            MagicInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             CurrencyInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             navBarGroup5 = new DevExpress.XtraNavBar.NavBarGroup();
             MapInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -126,10 +126,10 @@
             ribbonControl1.MaxItemId = 9;
             ribbonControl1.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
             ribbonControl1.Name = "ribbonControl1";
-            ribbonControl1.OptionsPageCategories.ShowCaptions = false;
             ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1, ribbonPage2, ribbonPage3 });
             ribbonControl1.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
             ribbonControl1.ShowExpandCollapseButton = DevExpress.Utils.DefaultBoolean.True;
+            ribbonControl1.ShowItemCaptionsInCaptionBar = true;
             ribbonControl1.ShowQatLocationSelector = false;
             ribbonControl1.ShowToolbarCustomizeItem = false;
             ribbonControl1.Size = new System.Drawing.Size(1127, 144);
@@ -250,6 +250,13 @@
             BaseStatButton.Name = "BaseStatButton";
             BaseStatButton.LinkClicked += BaseStatButton_LinkClicked;
             // 
+            // MagicInfoButton
+            // 
+            MagicInfoButton.Caption = "Magic Info";
+            MagicInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MagicInfoButton.ImageOptions.SmallImage");
+            MagicInfoButton.Name = "MagicInfoButton";
+            MagicInfoButton.LinkClicked += MagicInfoButton_LinkClicked;
+            // 
             // FameInfoButton
             // 
             FameInfoButton.Caption = "Fame Info";
@@ -272,13 +279,6 @@
             CompanionInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("CompanionInfoButton.ImageOptions.SmallImage");
             CompanionInfoButton.Name = "CompanionInfoButton";
             CompanionInfoButton.LinkClicked += CompanionInfoButton_LinkClicked;
-            // 
-            // MagicInfoButton
-            // 
-            MagicInfoButton.Caption = "Magic Info";
-            MagicInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MagicInfoButton.ImageOptions.SmallImage");
-            MagicInfoButton.Name = "MagicInfoButton";
-            MagicInfoButton.LinkClicked += MagicInfoButton_LinkClicked;
             // 
             // CurrencyInfoButton
             // 

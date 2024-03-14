@@ -6,6 +6,6 @@ namespace PluginCore
     {
         public IPluginStart Start { get; set; }
 
-        public abstract void SetupMenu(IComponent page);
+        public abstract void SetupMenu(IComponent pluginPage);
     }
 }

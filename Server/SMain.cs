@@ -314,7 +314,7 @@ namespace Server
             foreach (DBObject ob in objects)
                 ob?.Delete();
         }
-        public static void PasteData_KeyPress(object sender, KeyPressEventArgs e)
+        private static void PasteData_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 0x16)
             {
