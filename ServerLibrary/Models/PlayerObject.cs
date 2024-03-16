@@ -107,7 +107,7 @@ namespace Server.Models
             set { Character.Direction = value; }
         }
 
-        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime, MailTime;
+        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime, MailTime, ExperienceTime;
         public bool PacketWaiting;
 
         public bool GameMaster, Observer;
@@ -165,9 +165,7 @@ namespace Server.Models
 
         public List<AutoPotionLink> AutoPotions = new List<AutoPotionLink>();
         public CellLinkInfo DelayItemUse;
-        public decimal MaxExperience;
-
-        public decimal SwiftBladeLifeSteal, FlameSplashLifeSteal, DestructiveSurgeLifeSteal;
+        public decimal MaxExperience, ExperienceAccumulated;
 
         public string FiltersClass;
         public string FiltersRarity;
@@ -307,6 +305,8 @@ namespace Server.Models
             }
 
             ProcessRegen();
+
+            ProcessExperience();
 
             HashSet<MonsterObject> clearList = new HashSet<MonsterObject>();
 
@@ -726,6 +726,16 @@ namespace Server.Models
                 {
                     Enqueue(new S.QuestCancelled { Index = quest.Index });
                 }
+            }
+        }
+
+        public void ProcessExperience()
+        {
+            if (ExperienceAccumulated > 0 && ExperienceTime < SEnvir.Now)
+            {
+                Enqueue(new S.GainedExperience { Amount = ExperienceAccumulated });
+                ExperienceTime = SEnvir.Now.AddSeconds(1);
+                ExperienceAccumulated = 0;
             }
         }
 
@@ -1858,7 +1868,6 @@ namespace Server.Models
             });
         }
 
-
         public void GainExperience(decimal amount, bool huntGold, int gainLevel = Int32.MaxValue, bool rateEffected = true)
         {
             if (rateEffected)
@@ -1888,7 +1897,8 @@ namespace Server.Models
             if (amount == 0) return;
 
             Experience += amount;
-            Enqueue(new S.GainedExperience { Amount = amount });
+            ExperienceAccumulated += amount;
+            //Enqueue(new S.GainedExperience { Amount = amount });
 
             UserItem weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -1928,10 +1938,10 @@ namespace Server.Models
 
             Experience -= MaxExperience;
 
-
             Level++;
             LevelUp();
         }
+
         public void LevelUp()
         {
             RefreshStats();

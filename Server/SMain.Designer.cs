@@ -237,7 +237,6 @@
             // navBarGroup4
             // 
             navBarGroup4.Caption = "Player";
-            navBarGroup4.Expanded = true;
             navBarGroup4.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup4.ImageOptions.LargeImage");
             navBarGroup4.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup4.ImageOptions.SmallImage");
             navBarGroup4.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(BaseStatButton), new DevExpress.XtraNavBar.NavBarItemLink(MagicInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(FameInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(DisciplineInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CompanionInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CurrencyInfoButton) });
@@ -290,7 +289,6 @@
             // navBarGroup5
             // 
             navBarGroup5.Caption = "Map";
-            navBarGroup5.Expanded = true;
             navBarGroup5.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup5.ImageOptions.LargeImage");
             navBarGroup5.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup5.ImageOptions.SmallImage");
             navBarGroup5.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(MapInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(InstanceInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MapRegionButton), new DevExpress.XtraNavBar.NavBarItemLink(MovementInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(SafeZoneInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(FishingInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CastleInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(EventInfoButton) });
@@ -356,7 +354,6 @@
             // navBarGroup8
             // 
             navBarGroup8.Caption = "NPC";
-            navBarGroup8.Expanded = true;
             navBarGroup8.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup8.ImageOptions.LargeImage");
             navBarGroup8.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup8.ImageOptions.SmallImage");
             navBarGroup8.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(NPCInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCPageButton), new DevExpress.XtraNavBar.NavBarItemLink(QuestInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(StoreInfoButton) });
@@ -393,7 +390,6 @@
             // navBarGroup7
             // 
             navBarGroup7.Caption = "Item";
-            navBarGroup7.Expanded = true;
             navBarGroup7.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup7.ImageOptions.LargeImage");
             navBarGroup7.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup7.ImageOptions.SmallImage");
             navBarGroup7.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(ItemInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(ItemInfoStatButton), new DevExpress.XtraNavBar.NavBarItemLink(SetInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(WeaponCraftInfoButton) });
@@ -430,7 +426,6 @@
             // navBarGroup6
             // 
             navBarGroup6.Caption = "Monster";
-            navBarGroup6.Expanded = true;
             navBarGroup6.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup6.ImageOptions.LargeImage");
             navBarGroup6.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup6.ImageOptions.SmallImage");
             navBarGroup6.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(MonsterInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MonsterInfoStatButton), new DevExpress.XtraNavBar.NavBarItemLink(DropInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(RespawnInfoButton) });
@@ -467,7 +462,6 @@
             // navBarGroup3
             // 
             navBarGroup3.Caption = "Management";
-            navBarGroup3.Expanded = true;
             navBarGroup3.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup3.ImageOptions.SmallImage");
             navBarGroup3.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(AccountInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CharacterInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(UserDropButton), new DevExpress.XtraNavBar.NavBarItemLink(PaymentButton), new DevExpress.XtraNavBar.NavBarItemLink(StoreSalesButton), new DevExpress.XtraNavBar.NavBarItemLink(DiagnosticButton), new DevExpress.XtraNavBar.NavBarItemLink(ConquestStatsButton), new DevExpress.XtraNavBar.NavBarItemLink(UserMailButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCDataButton) });
             navBarGroup3.Name = "navBarGroup3";

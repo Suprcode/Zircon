@@ -1448,6 +1448,9 @@ namespace Server.Envir
         }
         private static void WriteLogs()
         {
+            var logPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Logs.txt"));
+            var chatLogPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Chat Logs.txt"));
+
             List<string> lines = new List<string>();
             while (!Logs.IsEmpty)
             {
@@ -1455,7 +1458,7 @@ namespace Server.Envir
                 lines.Add(line);
             }
 
-            File.AppendAllLines(@".\Logs.txt", lines);
+            File.AppendAllLines(logPath, lines);
 
             lines.Clear();
 
@@ -1465,19 +1468,7 @@ namespace Server.Envir
                 lines.Add(line);
             }
 
-            File.AppendAllLines(@".\Chat Logs.txt", lines);
-
-            lines.Clear();
-
-            /*
-            while (!GamePlayLogs.IsEmpty)
-            {
-                if (!GamePlayLogs.TryDequeue(out string line)) continue;
-                lines.Add(line);
-            }
-
-            File.AppendAllLines(@".\Game Play.txt", lines);
-            */
+            File.AppendAllLines(chatLogPath, lines);
 
             lines.Clear();
         }

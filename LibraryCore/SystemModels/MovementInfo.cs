@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using MirDB;
+﻿using MirDB;
 
 namespace Library.SystemModels
 {
@@ -136,5 +134,4 @@ namespace Library.SystemModels
             RequiredClass = RequiredClass.All;
         }
     }
-
 }

@@ -62,7 +62,7 @@ namespace Server.Models.Magics
 
             if (cost <= Player.CurrentMP)
             {
-                Player.FlameSplashLifeSteal = 0;
+                FlameSplashLifeSteal = 0;
                 Player.ChangeMP(-cost);
 
                 response.Cast = true;

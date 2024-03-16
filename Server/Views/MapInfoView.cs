@@ -1,8 +1,8 @@
-﻿using System;
-using DevExpress.XtraBars;
+﻿using DevExpress.XtraBars;
 using DevExpress.XtraGrid.Views.Grid;
 using Library;
 using Library.SystemModels;
+using System;
 
 namespace Server.Views
 {
