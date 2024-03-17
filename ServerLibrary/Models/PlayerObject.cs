@@ -729,9 +729,9 @@ namespace Server.Models
             }
         }
 
-        public void ProcessExperience()
+        public void ProcessExperience(bool force = false)
         {
-            if (ExperienceAccumulated > 0 && ExperienceTime < SEnvir.Now)
+            if (ExperienceAccumulated > 0 && (ExperienceTime < SEnvir.Now || force))
             {
                 Enqueue(new S.GainedExperience { Amount = ExperienceAccumulated });
                 ExperienceTime = SEnvir.Now.AddSeconds(1);
@@ -1898,7 +1898,6 @@ namespace Server.Models
 
             Experience += amount;
             ExperienceAccumulated += amount;
-            //Enqueue(new S.GainedExperience { Amount = amount });
 
             UserItem weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -1915,7 +1914,6 @@ namespace Server.Models
                         weapon.Flags |= UserItemFlags.Refinable;
                 }
             }
-
 
             if (huntGold)
             {
@@ -1935,6 +1933,8 @@ namespace Server.Models
                 //SEnvir.RankingSort(Character);
                 return;
             }
+
+            ProcessExperience(true);
 
             Experience -= MaxExperience;
 

@@ -1166,7 +1166,6 @@ namespace Server.Models
         {
             if (CurrentMap == null || CurrentCell == null) return null;
 
-
             Cell bestCell = null;
             int layers = 0;
 
@@ -1218,8 +1217,8 @@ namespace Server.Models
                 }
             }
 
-
-            if (bestCell == null || layers >= Config.DropLayers) return null;
+            if (bestCell == null || layers >= Config.DropLayers) 
+                return null;
 
             return bestCell;
         }
