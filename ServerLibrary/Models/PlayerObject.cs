@@ -110,7 +110,7 @@ namespace Server.Models
         public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime, MailTime, ExperienceTime;
         public bool PacketWaiting;
 
-        public bool GameMaster, Observer;
+        public bool GameMaster, Observer, Superman;
 
         public override bool Blocking => base.Blocking && !Observer;
 
@@ -15368,6 +15368,46 @@ namespace Server.Models
             };
 
             Broadcast(p);
+        }
+
+        public override void SetHP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentHP = Stats[Stat.Health];
+                return;
+            }
+            base.SetHP(amount);
+        }
+
+        public override void ChangeHP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentHP = Stats[Stat.Health];
+                return;
+            }
+            base.ChangeHP(amount);
+        }
+
+        public override void SetMP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentMP = Stats[Stat.Mana];
+                return;
+            }
+            base.SetMP(amount);
+        }
+
+        public override void ChangeMP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentMP = Stats[Stat.Mana];
+                return;
+            }
+            base.ChangeMP(amount);
         }
 
         #region Instance / Dungeon Finder
