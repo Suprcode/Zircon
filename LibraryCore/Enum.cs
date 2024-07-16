@@ -598,6 +598,7 @@ namespace Library
         MagicImmunity = 129,
         DefensiveBlow = 130,
         ElementalSwords = 131,
+        Shuriken = 132,
 
         FireBall = 201,
         LightningBall = 202,

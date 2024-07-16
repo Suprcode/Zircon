@@ -121,6 +121,14 @@ namespace Library.Network.ClientPackets
         public MirAction Action { get; set; }
         public MagicType AttackMagic { get; set; }
     }
+
+    public sealed class RangeAttack : Packet
+    {
+        public MirDirection Direction { get; set; }
+        public uint Target { get; set; }
+        public int DelayedTime { get; set; }
+
+    }
     public sealed class Mining : Packet
     {
         public MirDirection Direction { get; set; }

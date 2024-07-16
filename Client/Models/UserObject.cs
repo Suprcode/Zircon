@@ -651,6 +651,17 @@ namespace Client.Models
                     CEnvir.Enqueue(new C.Attack { Direction = action.Direction, Action = action.Action, AttackMagic = MagicType });
                     GameScene.Game.CanRun = false;
                     break;
+                case MirAction.RangeAttack:
+                    attackDelay = Globals.AttackDelay - Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
+                    attackDelay = Math.Max(800, attackDelay);
+                    AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(attackDelay);
+
+                    if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
+                        AttackTime += TimeSpan.FromMilliseconds(attackDelay);
+
+                    CEnvir.Enqueue(new C.RangeAttack { Direction = action.Direction, Target = (uint)action.Extra[0], DelayedTime = (int)action.Extra[2] });
+                    GameScene.Game.CanRun = false;
+                    break;
                 case MirAction.Spell:
                     NextMagicTime = CEnvir.Now + Globals.MagicDelay;
 

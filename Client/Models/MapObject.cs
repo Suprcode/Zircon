@@ -2869,7 +2869,39 @@ namespace Client.Models
                     break;
                 case MirAction.RangeAttack:
 
-                    targets = (List<uint>)action.Extra[0];
+                    targets = new List<uint>();
+                    if (action.Extra[0] is uint @tar)
+                    {
+                        targets.Add(tar);
+                    }
+                    else
+                    {
+                        targets = (List<uint>)action.Extra[0];
+                    }
+
+                    if (targets.Count < 1) return;
+
+                    if (action.Extra[1] is MagicType magicType && magicType == MagicType.Shuriken)
+                    {
+
+                        foreach (uint target in targets)
+                        {
+                            MapObject attackTarget = GameScene.Game.MapControl.Objects.FirstOrDefault(x => x.ObjectID == target);
+
+                            Effects.Add(spell = new MirProjectile(1270, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 1, 5, Globals.NoneColour, CurrentLocation)
+                            {
+                                Blend = false,
+                                Reversed = false,
+                                Explode = true,
+                                Delay = 2,
+                                Has16Directions = true,
+                                MapTarget = attackTarget.CurrentLocation,
+                                Direction = attackTarget.Direction
+                            });
+                            spell.Process();
+                        }
+
+                    }
                     AttackTargets = new List<MapObject>();
                     foreach (uint target in targets)
                     {

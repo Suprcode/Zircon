@@ -67,6 +67,8 @@ namespace Client.Envir.Translations
         public abstract string GameSceneCastNoEnoughHealth { get; set; }
         public abstract string GameSceneCastNoEnoughMana { get; set; }
         public abstract string GameSceneCastTooFar { get; set; }
+
+        public abstract string GameSceneThrowTooFar { get; set; }
         public abstract string GameSceneHoldTooHeavy { get; set; }
         public abstract string GameSceneNeedFishingRod { get; set; }
         public abstract string GameSceneWearTooHeavy { get; set; }
