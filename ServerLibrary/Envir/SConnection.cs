@@ -437,6 +437,15 @@ namespace Server.Envir
 
             Player.Attack(p.Direction, p.AttackMagic);
         }
+
+        public void Process(C.RangeAttack p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            if (p.Direction < MirDirection.Up || p.Direction > MirDirection.UpLeft) return;
+
+            Player.RangeAttack(p.Direction, p.DelayedTime, p.Target);
+        }
         public void Process(C.Magic p)
         {
             if (Stage != GameStage.Game) return;

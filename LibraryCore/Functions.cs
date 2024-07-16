@@ -318,6 +318,7 @@ namespace Library
                 case MagicType.Spiritualism:
                     return MirAnimation.Combat15;
 
+                case MagicType.Shuriken:
                 case MagicType.SwiftBlade:
                 case MagicType.SeismicSlam:
                 case MagicType.CrushingWave:

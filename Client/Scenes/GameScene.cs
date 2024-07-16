@@ -218,7 +218,7 @@ namespace Client.Scenes
         public Dictionary<CastleInfo, string> CastleOwners = new Dictionary<CastleInfo, string>();
 
         public bool MoveFrame { get; set; }
-        private DateTime MoveTime, OutputTime, ItemRefreshTime;
+        public DateTime MoveTime, OutputTime, ItemRefreshTime;
 
         public bool CanRun;
 
