@@ -112,6 +112,13 @@ namespace Server.Models.Magics
             ob.Spawn(cell.Map, cell.Location);
 
             Player.LevelMagic(Magic);
+
+            var burning = GetAugmentedSkill(MagicType.Burning);
+
+            if (burning != null)
+            {
+                Player.LevelMagic(burning);
+            }
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

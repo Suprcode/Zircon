@@ -78,7 +78,17 @@ namespace Server.Models.Magics
         {
             MapObject target = (MapObject)data[1];
 
-            Player.MagicAttack(new List<MagicType> { Type }, target);
+            var damage = Player.MagicAttack(new List<MagicType> { Type }, target);
+
+            if (damage > 0)
+            {
+                var burning = GetAugmentedSkill(MagicType.Burning);
+
+                if (burning != null)
+                {
+                    Player.LevelMagic(burning);
+                }
+            }
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)

@@ -2814,7 +2814,7 @@ namespace Server.Models
                 return;
             }
 
-            if (Character.Partner.Player == null)
+            if (Character.Partner.Player?.Node == null)
             {
                 Connection.ReceiveChat(Connection.Language.MarryTeleportOffline, MessageType.System);
                 foreach (SConnection con in Connection.Observers)
@@ -2845,7 +2845,6 @@ namespace Server.Models
                     con.ReceiveChat(con.Language.MarryTeleportMapEscape, MessageType.System);
                 return;
             }
-
 
             if (Teleport(Character.Partner.Player.CurrentMap, Character.Partner.Player.CurrentMap.GetRandomLocation(Character.Partner.Player.CurrentLocation, 10)))
                 Character.MarriageTeleportTime = SEnvir.Now.AddSeconds(120);

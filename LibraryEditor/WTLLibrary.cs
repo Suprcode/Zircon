@@ -29,9 +29,12 @@ namespace LibraryEditor
         WTLLibrary shadowLibrary;
 
         public bool IsNewVersion { get; private set; }
+        public bool ShadowFile { get; private set; }
 
-        public WTLLibrary(string filename)
+        public WTLLibrary(string filename, bool shadowFile = false)
         {
+            ShadowFile = shadowFile;
+
             _fileName = Path.ChangeExtension(filename, null);
             Initialize();
         }
@@ -49,17 +52,20 @@ namespace LibraryEditor
                 CheckMImage(i);
             }
 
-            string fname = _fileName + ".wtl";
-            string shadowPath = fname.Replace(".wtl", "_S.wtl");
-
-            shadowLibrary = null;
-            if (File.Exists(shadowPath))
-                shadowLibrary = new WTLLibrary(shadowPath);
-            else
+            if (!ShadowFile)
             {
-                shadowPath = _fileName.Replace("Mon-", "MonS-");
+                string fname = _fileName + ".wtl";
+                string shadowPath = fname.Replace(".wtl", "_S.wtl");
+
+                shadowLibrary = null;
                 if (File.Exists(shadowPath))
-                    shadowLibrary = new WTLLibrary(shadowPath);
+                    shadowLibrary = new WTLLibrary(shadowPath, true);
+                else
+                {
+                    shadowPath = fname.Replace("Mon-", "MonS-");
+                    if (File.Exists(shadowPath))
+                        shadowLibrary = new WTLLibrary(shadowPath, true);
+                }
             }
         }
 

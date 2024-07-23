@@ -68,6 +68,13 @@ namespace Server.Models.Magics
             if (Player.MagicAttack(new List<MagicType> { Type }, target, true, null, bounce) < 1)
                 return;
 
+            var burning = GetAugmentedSkill(MagicType.Burning);
+
+            if (burning != null)
+            {
+                Player.LevelMagic(burning);
+            }
+
             var targets = new List<MapObject>();
 
             foreach (var ob in Player.GetTargets(Player.CurrentMap, target.CurrentLocation, 3))
