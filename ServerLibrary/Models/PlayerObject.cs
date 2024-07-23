@@ -225,9 +225,9 @@ namespace Server.Models
                 Observer = true;
             }
 
-            FiltersClass = Character.FiltersClass;
-            FiltersItemType = Character.FiltersItemType;
-            FiltersRarity = Character.FiltersRarity;
+            FiltersClass = Character.FiltersClass ?? "";
+            FiltersItemType = Character.FiltersItemType ?? "";
+            FiltersRarity = Character.FiltersRarity ?? "";
 
             AddDefaultCurrencies();
 
