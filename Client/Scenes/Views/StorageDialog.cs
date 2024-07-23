@@ -317,9 +317,16 @@ namespace Client.Scenes.Views
 
         private void SortButton_MouseClick(object sender, MouseEventArgs e)
         {
-            C.ItemSort packet = new C.ItemSort { Grid = StorageTab.Visible ? GridType.Storage : GridType.PartsStorage };
+            if (GameScene.Game.Observer) return;
 
-            CEnvir.Enqueue(packet);
+            DXMessageBox box = new DXMessageBox("Are you sure you want to sort your storage?", "Confirm Sort", DXMessageBoxButtons.YesNo);
+
+            box.YesButton.MouseClick += (o1, e1) =>
+            {
+                C.ItemSort packet = new C.ItemSort { Grid = StorageTab.Visible ? GridType.Storage : GridType.PartsStorage };
+
+                CEnvir.Enqueue(packet);
+            };
         }
 
         public void RefreshStorage()

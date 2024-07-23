@@ -350,9 +350,13 @@ namespace Client.Scenes.Views
         {
             if (GameScene.Game.Observer) return;
 
-            C.ItemSort packet = new C.ItemSort { Grid = GridType.Inventory };
+            DXMessageBox box = new DXMessageBox("Are you sure you want to sort your inventory?", "Confirm Sort", DXMessageBoxButtons.YesNo);
 
-            CEnvir.Enqueue(packet);
+            box.YesButton.MouseClick += (o1, e1) =>
+            {
+                C.ItemSort packet = new C.ItemSort { Grid = GridType.Inventory };
+                CEnvir.Enqueue(packet);
+            };
         }
 
         private void TrashButton_MouseClick(object sender, MouseEventArgs e)
