@@ -6,3 +6,4 @@ Build/
 [Bb]in/
 packages/
 licenses.licx
+/NuGet.Config

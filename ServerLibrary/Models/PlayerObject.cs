@@ -110,7 +110,7 @@ namespace Server.Models
         public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime, MailTime, ExperienceTime;
         public bool PacketWaiting;
 
-        public bool GameMaster, Observer;
+        public bool GameMaster, Observer, Superman;
 
         public override bool Blocking => base.Blocking && !Observer;
 
@@ -367,6 +367,10 @@ namespace Server.Models
                 case ActionType.Attack:
                     PacketWaiting = false;
                     Attack((MirDirection)action.Data[0], (MagicType)action.Data[1]);
+                    return;
+                case ActionType.RangeAttack:
+                    PacketWaiting = false;
+                    RangeAttack((MirDirection)action.Data[0], (int)action.Data[1], (uint)action.Data[2]);
                     return;
                 case ActionType.DelayAttack:
                     Attack((MapObject)action.Data[0], (List<MagicType>)action.Data[1], (bool)action.Data[2], (int)action.Data[3]);
@@ -13753,6 +13757,122 @@ namespace Server.Models
             return result;
         }
 
+        // only serves shukiran as for now!
+        public void RangeAttack(MirDirection direction, int delayTime, uint target)
+        {
+            UserItem weapon = Equipment[(int)EquipmentSlot.Weapon];
+
+            // shukiran
+            if (weapon is null || weapon.Info.Shape != Globals.ShurikenLibraryWeaponShape)
+                return;
+
+
+            MapObject ob = VisibleObjects.FirstOrDefault(x => x.ObjectID == target);
+
+            if (ob is null) return;
+
+
+            if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
+            {
+                if (!PacketWaiting)
+                {
+                    ActionList.Add(new DelayedAction(ActionTime, ActionType.RangeAttack, direction, delayTime, target));
+                    PacketWaiting = true;
+                }
+                else
+                    Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+
+                return;
+            }
+
+            if (!CanAttack)
+            {
+                Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+                return;
+            }
+
+            if (!CanAttackTarget(ob))
+            {
+                ob = null;
+                Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+                return;
+            }
+
+            CombatTime = SEnvir.Now;
+
+            if (Stats[Stat.Comfort] < 15)
+                RegenTime = SEnvir.Now + RegenDelay;
+            Direction = direction;
+            ActionTime = SEnvir.Now + Globals.AttackTime;
+
+            int aspeed = Stats[Stat.AttackSpeed];
+            int attackDelay = Globals.AttackDelay - aspeed * Globals.ASpeedRate;
+            attackDelay = Math.Max(800, attackDelay);
+            AttackTime = SEnvir.Now.AddMilliseconds(attackDelay);
+
+            Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
+            TimeSpan slow = TimeSpan.Zero;
+            if (poison != null)
+            {
+                slow = TimeSpan.FromMilliseconds(poison.Value * 100);
+                ActionTime += slow;
+            }
+
+            if (BagWeight > Stats[Stat.BagWeight])
+                AttackTime += TimeSpan.FromMilliseconds(attackDelay);
+
+            Direction = ob == null || ob == this ? direction : Functions.DirectionFromPoint(CurrentLocation, ob.CurrentLocation);
+
+            Element element = Functions.GetAttackElement(Stats);
+
+            if (Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
+            {
+                foreach (KeyValuePair<Stat, int> stats in Equipment[(int)EquipmentSlot.Amulet].Info.Stats.Values)
+                {
+                    switch (stats.Key)
+                    {
+                        case Stat.FireAffinity:
+                            element = Element.Fire;
+                            break;
+                        case Stat.IceAffinity:
+                            element = Element.Ice;
+                            break;
+                        case Stat.LightningAffinity:
+                            element = Element.Lightning;
+                            break;
+                        case Stat.WindAffinity:
+                            element = Element.Wind;
+                            break;
+                        case Stat.HolyAffinity:
+                            element = Element.Holy;
+                            break;
+                        case Stat.DarkAffinity:
+                            element = Element.Dark;
+                            break;
+                        case Stat.PhantomAffinity:
+                            element = Element.Phantom;
+                            break;
+                    }
+                }
+            }
+
+
+            Broadcast(new S.ObjectRangeAttack
+            {
+                ObjectID = ObjectID,
+                Direction = Direction,
+                Location = CurrentLocation,
+                AttackMagic = MagicType.Shuriken,
+                AttackElement = element,
+                Targets = new List<uint> { ob.ObjectID },
+            });
+
+            ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(delayTime), ActionType.DelayAttack, ob, new List<MagicType>() { MagicType.Shuriken }, true, 50));
+
+
+            DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon);
+
+        }
         public void Attack(MapObject ob, List<MagicType> types, bool primary, int extra)
         {
             if (ob?.Node == null || ob.Dead) return;
@@ -15367,6 +15487,46 @@ namespace Server.Models
             };
 
             Broadcast(p);
+        }
+
+        public override void SetHP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentHP = Stats[Stat.Health];
+                return;
+            }
+            base.SetHP(amount);
+        }
+
+        public override void ChangeHP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentHP = Stats[Stat.Health];
+                return;
+            }
+            base.ChangeHP(amount);
+        }
+
+        public override void SetMP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentMP = Stats[Stat.Mana];
+                return;
+            }
+            base.SetMP(amount);
+        }
+
+        public override void ChangeMP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentMP = Stats[Stat.Mana];
+                return;
+            }
+            base.ChangeMP(amount);
         }
 
         #region Instance / Dungeon Finder

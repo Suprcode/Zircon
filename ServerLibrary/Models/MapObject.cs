@@ -1223,7 +1223,7 @@ namespace Server.Models
             return bestCell;
         }
 
-        public void SetHP(int amount)
+        public virtual void SetHP(int amount)
         {
             if (Dead) return;
 
@@ -1245,7 +1245,7 @@ namespace Server.Models
                 Die();
             }
         }
-        public void ChangeHP(int amount)
+        public virtual void ChangeHP(int amount)
         {
             if (Dead) return;
 
@@ -1286,7 +1286,7 @@ namespace Server.Models
             }
         }
 
-        public void SetMP(int amount)
+        public virtual void SetMP(int amount)
         {
             CurrentMP = Math.Min(amount, Stats[Stat.Mana]);
         }
@@ -1296,7 +1296,7 @@ namespace Server.Models
             CurrentFP = Math.Min(amount, Stats[Stat.Focus]);
         }
 
-        public void ChangeMP(int amount)
+        public virtual void ChangeMP(int amount)
         {
             if (CurrentMP + amount > Stats[Stat.Mana])
                 amount = Stats[Stat.Mana] - CurrentMP;
