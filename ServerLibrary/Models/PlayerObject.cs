@@ -1448,12 +1448,16 @@ namespace Server.Models
             foreach (Match match in matches)
             {
                 if (!int.TryParse(match.Groups["ID"].Value, out int itemIndex)) continue;
+
                 UserItem item = Inventory.FirstOrDefault(e => e != null && e.Index == itemIndex);
+
                 if (item == null)
                     item = Storage.FirstOrDefault(e => e != null && e.Index == itemIndex);
-                if (item == null)
+                else if (item == null)
+                    item = Equipment.FirstOrDefault(e => e != null && e.Index == itemIndex);
+                else if (item == null && Companion != null)
                     item = Companion.Inventory.FirstOrDefault(e => e != null && e.Index == itemIndex);
-                if (item == null)
+                else if (item == null)
                     continue;
 
                 text = text.Replace(match.Groups["Text"].Value, item.Info.ItemName);
