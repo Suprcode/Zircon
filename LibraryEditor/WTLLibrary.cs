@@ -63,7 +63,7 @@ namespace LibraryEditor
                 else
                 {
                     shadowPath = fname.Replace("Mon-", "MonS-");
-                    if (File.Exists(shadowPath))
+                    if (shadowPath != fname && File.Exists(shadowPath))
                         shadowLibrary = new WTLLibrary(shadowPath, true);
                 }
             }
