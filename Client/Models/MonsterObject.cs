@@ -2113,6 +2113,82 @@ namespace Client.Models
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.TerracottaBoss)
                         Frames[frame.Key] = frame.Value;
                     break;
+                case MonsterImage.SeaHorseCavalry:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 0;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SeaHorseCavalry)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Seamancer:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 1;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Seamancer)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.CoralStoneDuin:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 2;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.CoralStoneDuin)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Brachiopod:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 3;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Brachiopod)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.GiantClam:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 4;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.GiantClam)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.BlueMassif:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 5;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.BlueMassif)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Mollusk:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 6;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Mollusk)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Kraken:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 7;
+                    //??
+                    break;
+                case MonsterImage.KrakenLeg:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 8;
+                    //??
+                    break;
+                case MonsterImage.GiantClam1:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
+                    BodyShape = 9;
+
+                    //Shares some frames with GiantClam?
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.GiantClam1)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+
+                case MonsterImage.Tornado:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_56, out BodyLibrary);
+                    BodyShape = 6;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Tornado)
+                        Frames[frame.Key] = frame.Value;
+
+                    break;
                 case MonsterImage.CastleFlag:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.CastleFlag, out BodyLibrary);
 
@@ -2122,15 +2198,6 @@ namespace Client.Models
                         Frames[frame.Key] = frame.Value;
 
                     BodyShape = Extra1;
-
-                    break;
-
-                case MonsterImage.Tornado:
-                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_56, out BodyLibrary);
-                    BodyShape = 6;
-
-                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Tornado)
-                        Frames[frame.Key] = frame.Value;
 
                     break;
                 default:

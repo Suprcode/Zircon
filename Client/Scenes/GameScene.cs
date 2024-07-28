@@ -319,7 +319,20 @@ namespace Client.Scenes
         public uint InspectID;
         public DateTime PickUpTime, UseItemTime, NPCTime, ToggleTime, InspectTime, ItemTime = CEnvir.Now, ReincarnationPillTime, ItemReviveTime;
 
-        public bool StruckEnabled, HermitEnabled;
+        public bool StruckEnabled;
+
+        public bool HermitEnabled
+        {
+            get => _HermitEnabled;
+            set
+            {
+                if (_HermitEnabled == value) return;
+
+                _HermitEnabled = value;
+                CharacterBox.OnHermitChanged(_HermitEnabled);
+            }
+        }
+        private bool _HermitEnabled;
 
         public float DayTime
         {
@@ -3871,10 +3884,10 @@ namespace Client.Scenes
                 cell.UpdateColours();
             }
 
-            foreach (CurrencyCell cell in CurrencyBox.Cells)
-            {
-                cell.UpdateAmount();
-            }
+            //foreach (CurrencyCell cell in CurrencyBox.Cells)
+            //{
+            //    cell.UpdateAmount();
+            //}
         }
         public void SafeZoneChanged()
         {

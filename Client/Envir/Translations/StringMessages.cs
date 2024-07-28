@@ -567,6 +567,7 @@ namespace Client.Envir.Translations
 
         public abstract string MainPanelCharacterButtonHint { get; set; }
         public abstract string MainPanelInventoryButtonHint { get; set; }
+        public abstract string MainPanelCompanionButtonHint { get; set; }
         public abstract string MainPanelSpellButtonHint { get; set; }
         public abstract string MainPanelQuestButtonHint { get; set; }
         public abstract string MainPanelMailButtonHint { get; set; }

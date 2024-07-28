@@ -339,7 +339,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Location = new Point(8, 380),
-                Hint = CEnvir.Language.InventoryDialogWalletLabelHint,
+                Hint = string.Format(CEnvir.Language.InventoryDialogWalletLabelHint, CEnvir.GetKeyBindLabel(KeyBindAction.CurrencyWindow)),
                 Size = new Size(45, 40),
                 Sound = SoundIndex.GoldPickUp
             };
@@ -350,13 +350,8 @@ namespace Client.Scenes.Views
         {
             if (GameScene.Game.Observer) return;
 
-            DXMessageBox box = new DXMessageBox("Are you sure you want to sort your inventory?", "Confirm Sort", DXMessageBoxButtons.YesNo);
-
-            box.YesButton.MouseClick += (o1, e1) =>
-            {
-                C.ItemSort packet = new C.ItemSort { Grid = GridType.Inventory };
-                CEnvir.Enqueue(packet);
-            };
+            C.ItemSort packet = new C.ItemSort { Grid = GridType.Inventory };
+            CEnvir.Enqueue(packet);
         }
 
         private void TrashButton_MouseClick(object sender, MouseEventArgs e)

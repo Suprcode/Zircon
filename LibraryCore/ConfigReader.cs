@@ -107,7 +107,7 @@ namespace Library
 
                 if (!match.Success) continue;
 
-                section[match.Groups["Key"].Value] = match.Groups["Value"].Value;
+                section[match.Groups["Key"].Value] = UnescapeSpecialCharacters(match.Groups["Value"].Value);
             }
 
             string lastSection = null;
@@ -129,6 +129,7 @@ namespace Library
                 property.SetValue(ob, method.Invoke(null, new[] { type, lastSection, property.Name, property.GetValue(ob) }));
             }
         }
+
         private static void SaveConfig(Type type, string path, object ob)
         {
             PropertyInfo[] properties = type.GetProperties();
@@ -160,7 +161,11 @@ namespace Library
                 lines.Add($"[{header.Key}]");
 
                 foreach (KeyValuePair<string, string> entries in header.Value)
-                    lines.Add($"{entries.Key}={entries.Value}");
+                {
+                    string escapedValue = EscapeSpecialCharacters(entries.Value);
+
+                    lines.Add($"{entries.Key}={escapedValue}");
+                }
 
                 lines.Add(string.Empty);
             }
@@ -169,6 +174,15 @@ namespace Library
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
 
             File.WriteAllLines(path, lines, Encoding.Unicode);
+        }
+
+        private static string EscapeSpecialCharacters(string value)
+        {
+            return value.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t");
+        }
+        private static string UnescapeSpecialCharacters(string value)
+        {
+            return value.Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t");
         }
 
         private static bool TryGetEntry(Type type, string section, string key, out string value)

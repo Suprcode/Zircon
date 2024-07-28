@@ -1263,13 +1263,31 @@ namespace Library
 
         //Mon52
 
-        //Mon53
+        //MonMagicEx25
+        SeaHorseCavalry = 530,
+        Seamancer = 531,
+        CoralStoneDuin = 532,
+        Brachiopod = 533,
+        GiantClam = 534,
+        BlueMassif = 535,
+        Mollusk = 536,
+        Kraken = 537,
+        KrakenLeg = 538,
+        GiantClam1 = 539,
 
         //Mon54
 
         //Mon55
 
+        //Mon56
         Tornado = 566,
+
+        //Mon57
+
+        //Mon58
+
+        //Mon59
+
 
         //Flag
         CastleFlag = 1000
@@ -1602,6 +1620,15 @@ namespace Library
         Other = 3,
         FP = 4,
         CP = 5
+    }
+
+    public enum CurrencyCategory
+    {
+        Basic = 0,
+        Player = 1,
+        Event = 2,
+        Map = 3,
+        Other = 4
     }
 
     [Flags]

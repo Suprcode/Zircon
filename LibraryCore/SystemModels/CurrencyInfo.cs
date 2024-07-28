@@ -50,6 +50,21 @@ namespace Library.SystemModels
         }
         private CurrencyType _Type;
 
+        public CurrencyCategory Category
+        {
+            get { return _Category; }
+            set
+            {
+                if (_Category == value) return;
+
+                var oldValue = _Category;
+                _Category = value;
+
+                OnChanged(oldValue, value, "Category");
+            }
+        }
+        private CurrencyCategory _Category;
+
         public ItemInfo DropItem
         {
             get { return _DropItem; }

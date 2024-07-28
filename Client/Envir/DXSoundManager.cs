@@ -37,6 +37,8 @@ namespace Client.Envir
             [SoundIndex.BD60] = new DXSound(SoundPath + @"BD60.wav", SoundType.Music) { Loop = true },
             [SoundIndex.BD70] = new DXSound(SoundPath + @"BD70.wav", SoundType.Music) { Loop = true },
             [SoundIndex.BD99] = new DXSound(SoundPath + @"BD99.wav", SoundType.Music) { Loop = true },
+            [SoundIndex.BDUnderseaCave] = new DXSound(SoundPath + @"BDUnderseaCave.wav", SoundType.Music) { Loop = true },
+            [SoundIndex.BDUnderseaCaveBoss] = new DXSound(SoundPath + @"BDUnderseaCaveBoss.wav", SoundType.Music) { Loop = true },
 
             #endregion
 

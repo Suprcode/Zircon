@@ -98,7 +98,8 @@ namespace Client.Controls
                 BorderColour = Color.Black,//Color.Yellow,
                 IsVisible = true,
                 Outline = false,
-                ForeColour = Color.Black//Color.Yellow
+                ForeColour = Color.Black,//Color.Yellow
+                PaddingBottom = 2
             };
             PingLabel = new DXLabel
             {

@@ -4,18 +4,15 @@ using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
-using Font = System.Drawing.Font;
 using C = Library.Network.ClientPackets;
+using Font = System.Drawing.Font;
 using S = Library.Network.ServerPackets;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Client.Scenes.Views
 {
@@ -3502,7 +3499,7 @@ namespace Client.Scenes.Views
             {
                 Label = { Text = "Accept" },
                 Parent = this,
-                Location = new Point(0 + (250), label.Location.Y + label.Size.Height + 40),
+                Location = new Point(250, label.Location.Y + label.Size.Height + 40),
                 Size = new Size(100, DefaultHeight),
                 ButtonType = ButtonType.Default,
                 Visible = false,
@@ -3518,7 +3515,7 @@ namespace Client.Scenes.Views
             {
                 Label = { Text = "Complete" },
                 Parent = this,
-                Location = new Point(0 + (250), label.Location.Y + label.Size.Height + 40),
+                Location = new Point(250, label.Location.Y + label.Size.Height + 40),
                 Size = new Size(100, DefaultHeight),
                 ButtonType = ButtonType.Default,
                 Visible = false,

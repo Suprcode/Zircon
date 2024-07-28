@@ -197,8 +197,6 @@ namespace Client.Scenes.Views
             if (!Inspect)
             {
                 GameScene.Game.FishingBox.Visible = HasFishingRod && IsVisible;
-
-                HermitTab.TabButton.Visible = GameScene.Game.HermitEnabled;
             }
 
             base.OnIsVisibleChanged(oValue, nValue);
@@ -227,6 +225,11 @@ namespace Client.Scenes.Views
                     }
                     break;
             }
+        }
+
+        public void OnHermitChanged(bool hermitEnabled)
+        {
+            HermitTab.TabButton.Visible = !Inspect && hermitEnabled;
         }
 
         #endregion
@@ -332,7 +335,7 @@ namespace Client.Scenes.Views
                 Location = new Point(0, 26),
             };
 
-            HermitTab.TabButton.Visible = !Inspect;
+            HermitTab.TabButton.Visible = !Inspect && GameScene.Game.HermitEnabled;
             HermitTab.TabButton.MouseClick += (o, e) =>
             {
                 Index = 111;
@@ -2856,7 +2859,7 @@ namespace Client.Scenes.Views
 
             var nextLevel = GetNextDisciplineLevel();
 
-            DisciplineButton.Enabled = nextLevel != null;
+            DisciplineButton.Enabled = nextLevel != null && nextLevel.RequiredLevel <= GameScene.Game.User.Level;
 
             var userDiscipline = GameScene.Game.User.Discipline;
 

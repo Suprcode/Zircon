@@ -544,7 +544,7 @@ namespace Client.Envir.Translations
         public override string InventoryDialogSecondaryCurrencyTitle { get; set; } = "GG";
         public override string InventoryDialogSortButtonHint { get; set; } = "Sort";
         public override string InventoryDialogTrashButtonHint { get; set; } = "Trash";
-        public override string InventoryDialogWalletLabelHint { get; set; } = "Wallet [Ctrl + C]";
+        public override string InventoryDialogWalletLabelHint { get; set; } = "Wallet [{0}]";
 
         public override string MagicDialogTitle { get; set; } = "Magic";
 
@@ -556,22 +556,23 @@ namespace Client.Envir.Translations
         public override string MenuDialogCompanionButtonLabel { get; set; } = "Companion";
         public override string MenuDialogLeaveButtonLabel { get; set; } = "Exit Game";
 
-        public override string MenuDialogSettingsButtonHint { get; set; } = "Settings [O]";
-        public override string MenuDialogGuildButtonHint { get; set; } = "Guild [G]";
-        public override string MenuDialogStorageButtonHint { get; set; } = "Storage [S]";
-        public override string MenuDialogRankingButtonHint { get; set; } = "Ranking [R]";
-        public override string MenuDialogCompanionButtonHint { get; set; } = "Companion [U]";
-        public override string MenuDialogLeaveButtonHint { get; set; } = "Exit Game [Alt + Q]";
+        public override string MenuDialogSettingsButtonHint { get; set; } = "Settings [{0}]";
+        public override string MenuDialogGuildButtonHint { get; set; } = "Guild [{0}]";
+        public override string MenuDialogStorageButtonHint { get; set; } = "Storage [{0}]";
+        public override string MenuDialogRankingButtonHint { get; set; } = "Ranking [{0}]";
+        public override string MenuDialogCompanionButtonHint { get; set; } = "Companion [{0}]";
+        public override string MenuDialogLeaveButtonHint { get; set; } = "Exit Game [{0}]";
 
-        public override string MainPanelCharacterButtonHint { get; set; } = "Character [Q]";
-        public override string MainPanelInventoryButtonHint { get; set; } = "Inventory [W]\nCompanion [U]";
-        public override string MainPanelSpellButtonHint { get; set; } = "Spells [E]";
-        public override string MainPanelQuestButtonHint { get; set; } = "Quests [J]";
-        public override string MainPanelMailButtonHint { get; set; } = "Communication [,]";
-        public override string MainPanelBeltButtonHint { get; set; } = "Belt [Z]";
-        public override string MainPanelGroupButtonHint { get; set; } = "Group [P]";
-        public override string MainPanelMenuButtonHint { get; set; } = "Menu [N]";
-        public override string MainPanelCashShopButtonHint { get; set; } = "Cash Shop [Y]";
+        public override string MainPanelCharacterButtonHint { get; set; } = "Character [{0}]";
+        public override string MainPanelInventoryButtonHint { get; set; } = "Inventory [{0}]";
+        public override string MainPanelCompanionButtonHint { get; set; } = "Companion [{0}]";
+        public override string MainPanelSpellButtonHint { get; set; } = "Spells [{0}]";
+        public override string MainPanelQuestButtonHint { get; set; } = "Quests [{0}]";
+        public override string MainPanelMailButtonHint { get; set; } = "Communication [{0}]";
+        public override string MainPanelBeltButtonHint { get; set; } = "Belt [{0}]";
+        public override string MainPanelGroupButtonHint { get; set; } = "Group [{0}]";
+        public override string MainPanelMenuButtonHint { get; set; } = "Menu [{0}]";
+        public override string MainPanelCashShopButtonHint { get; set; } = "Cash Shop [{0}]";
         public override string MainPanelClassLabel { get; set; } = "Cl";
         public override string MainPanelClassHint { get; set; } = "Class";
         public override string MainPanelLevelLabel { get; set; } = "Lv";
