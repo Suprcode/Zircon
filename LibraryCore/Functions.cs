@@ -328,6 +328,7 @@ namespace Library
                     throw new NotImplementedException();
             }
         }
+
         public static Color GetElementColour(Element element)
         {
             Color colour = Globals.NoneColour;

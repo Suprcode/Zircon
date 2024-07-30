@@ -444,33 +444,7 @@ namespace Client.Models
                     
                     if (GameScene.Game.Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
                     {
-                        foreach (KeyValuePair<Stat, int> stats in GameScene.Game.Equipment[(int)EquipmentSlot.Amulet].Info.Stats.Values)
-                        {
-                            switch (stats.Key)
-                            {
-                                case Stat.FireAffinity:
-                                    action.Extra[2] = Element.Fire;
-                                    break;
-                                case Stat.IceAffinity:
-                                    action.Extra[2] = Element.Ice;
-                                    break;
-                                case Stat.LightningAffinity:
-                                    action.Extra[2] = Element.Lightning;
-                                    break;
-                                case Stat.WindAffinity:
-                                    action.Extra[2] = Element.Wind;
-                                    break;
-                                case Stat.HolyAffinity:
-                                    action.Extra[2] = Element.Holy;
-                                    break;
-                                case Stat.DarkAffinity:
-                                    action.Extra[2] = Element.Dark;
-                                    break;
-                                case Stat.PhantomAffinity:
-                                    action.Extra[2] = Element.Phantom;
-                                    break;
-                            }
-                        }
+                        action.Extra[2] = GameScene.Game.Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();
                     }
 
                     MagicType attackMagic = MagicType.None;

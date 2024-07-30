@@ -13450,33 +13450,7 @@ namespace Server.Models
 
             if (Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
             {
-                foreach (KeyValuePair<Stat, int> stats in Equipment[(int)EquipmentSlot.Amulet].Info.Stats.Values)
-                {
-                    switch (stats.Key)
-                    {
-                        case Stat.FireAffinity:
-                            element = Element.Fire;
-                            break;
-                        case Stat.IceAffinity:
-                            element = Element.Ice;
-                            break;
-                        case Stat.LightningAffinity:
-                            element = Element.Lightning;
-                            break;
-                        case Stat.WindAffinity:
-                            element = Element.Wind;
-                            break;
-                        case Stat.HolyAffinity:
-                            element = Element.Holy;
-                            break;
-                        case Stat.DarkAffinity:
-                            element = Element.Dark;
-                            break;
-                        case Stat.PhantomAffinity:
-                            element = Element.Phantom;
-                            break;
-                    }
-                }
+                element = Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();             
             }
 
             if (AttackLocation(Functions.Move(CurrentLocation, Direction), magics, true))
@@ -13761,7 +13735,6 @@ namespace Server.Models
             return result;
         }
 
-        // only serves shukiran as for now!
         public void RangeAttack(MirDirection direction, int delayTime, uint target)
         {
             UserItem weapon = Equipment[(int)EquipmentSlot.Weapon];
@@ -13831,35 +13804,8 @@ namespace Server.Models
 
             if (Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
             {
-                foreach (KeyValuePair<Stat, int> stats in Equipment[(int)EquipmentSlot.Amulet].Info.Stats.Values)
-                {
-                    switch (stats.Key)
-                    {
-                        case Stat.FireAffinity:
-                            element = Element.Fire;
-                            break;
-                        case Stat.IceAffinity:
-                            element = Element.Ice;
-                            break;
-                        case Stat.LightningAffinity:
-                            element = Element.Lightning;
-                            break;
-                        case Stat.WindAffinity:
-                            element = Element.Wind;
-                            break;
-                        case Stat.HolyAffinity:
-                            element = Element.Holy;
-                            break;
-                        case Stat.DarkAffinity:
-                            element = Element.Dark;
-                            break;
-                        case Stat.PhantomAffinity:
-                            element = Element.Phantom;
-                            break;
-                    }
-                }
+                element = Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();      
             }
-
 
             Broadcast(new S.ObjectRangeAttack
             {
