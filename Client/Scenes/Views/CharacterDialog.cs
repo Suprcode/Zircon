@@ -605,6 +605,7 @@ namespace Client.Scenes.Views
                 Size = new Size(36, 75)
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 39);
+            cell.AfterDraw += (o, e) => DrawAfter((DXItemCell)o);
             cell.MouseEnter += Cell_MouseEnter;
             cell.MouseLeave += Cell_MouseLeave;
 
@@ -2702,6 +2703,23 @@ namespace Client.Scenes.Views
             y = (cell.Size.Height - s.Height) / 2 + cell.DisplayArea.Y;
 
             InterfaceLibrary.Draw(index, x, y, Color.White, false, 0.2F, ImageType.Image);
+        }
+
+        public void DrawAfter(DXItemCell cell)
+        {
+            if (cell.Item == null) return;
+
+            var image = ItemEffectDecider.GetItemEffectImageOrNull(cell.Item.Info.ItemType, cell.Item.Info.Shape, out int x, out int y);
+
+            if (image != null)
+            {
+                bool oldBlend = DXManager.Blending;
+                float oldRate = DXManager.BlendRate;
+
+                DXManager.SetBlend(true, 0.8F);
+                PresentTexture(image.Image, CharacterTab, new Rectangle(cell.DisplayArea.X + image.OffSetX + x, cell.DisplayArea.Y + image.OffSetY + y, image.Width, image.Height), ForeColour, this);
+                DXManager.SetBlend(oldBlend, oldRate);
+            }
         }
 
         public void UpdateStats()
