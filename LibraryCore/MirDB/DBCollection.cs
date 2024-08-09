@@ -235,10 +235,5 @@ namespace MirDB
             foreach (T ob in Binding)
                 ob.OnLoaded();
         }
-
-        public object Where(Func<object, bool> value)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

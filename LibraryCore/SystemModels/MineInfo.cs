@@ -73,8 +73,6 @@ namespace Library.SystemModels
         }
         private MapRegion _Region;
 
-        //public int Quantity;
-        //public int RestockTimeInMinutes;
         public int Quantity
         {
             get { return _Quantity; }
