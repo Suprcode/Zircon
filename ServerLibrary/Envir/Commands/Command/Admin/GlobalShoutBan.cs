@@ -22,7 +22,7 @@ namespace Server.Envir.Commands.Command.Admin
             if (vals.Length < 3 || !int.TryParse(vals[2], out count))
                 count = 1440 * 365; // 365days
 
-            character.Account.GlobalTime = SEnvir.Now.AddMinutes(count);
+            character.Account.GlobalShoutExpiry = SEnvir.Now.AddMinutes(count);
         }
     }
 }

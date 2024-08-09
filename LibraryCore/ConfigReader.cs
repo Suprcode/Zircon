@@ -178,10 +178,14 @@ namespace Library
 
         private static string EscapeSpecialCharacters(string value)
         {
+            if (string.IsNullOrEmpty(value)) return value;
+
             return value.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t");
         }
         private static string UnescapeSpecialCharacters(string value)
         {
+            if (string.IsNullOrEmpty(value)) return value;
+
             return value.Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t");
         }
 

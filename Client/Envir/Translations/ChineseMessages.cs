@@ -353,7 +353,7 @@ namespace Client.Envir.Translations
         public override string CharacterDisciplineTabUnusedLabel { get; set; } = "Label Unused";
         public override string CharacterDisciplineTabExpLabel { get; set; } = "Discipline Exp:";
         public override string CharacterDisciplineTabButtonGainLabel { get; set; } = "Gain Discipline";
-        public override string CharacterDisciplineTabConfirmationMessage { get; set; } = "Are you sure you want to discipline your character?\nDisciplining will cost {nextLevel.RequiredGold:n0} Gold";
+        public override string CharacterDisciplineTabConfirmationMessage { get; set; } = "Are you sure you want to discipline your character?\nDisciplining will cost {0:n0} Gold";
         public override string CharacterDisciplineTabConfirmationCaption { get; set; } = "Discipline Character";
 
         public override string ChatOptionsDialogTitle { get; set; } = "Chat Options";

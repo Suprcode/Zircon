@@ -654,16 +654,27 @@ namespace Server.Models
 
             int offset = 1000000;
 
-            MapHealthRate = SEnvir.Random.Next(CurrentMap.Info.MonsterHealth + offset, CurrentMap.Info.MaxMonsterHealth + offset);
-            MapDamageRate = SEnvir.Random.Next(CurrentMap.Info.MonsterDamage + offset, CurrentMap.Info.MaxMonsterDamage + offset);
+            var monsterHealth = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterHealth)?.Amount ?? 0;
+            var maxMonsterHealth = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterHealth)?.Amount ?? 0;
+            var monsterDamage = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterDamage)?.Amount ?? 0;
+            var maxMonsterDamage = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterDamage)?.Amount ?? 0;
+            var monsterExperience = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterExperience)?.Amount ?? 0;
+            var maxMonsterExperience = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterExperience)?.Amount ?? 0;
+            var monsterDrop = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterDrop)?.Amount ?? 0;
+            var maxMonsterDrop = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterDrop)?.Amount ?? 0;
+            var monsterGold = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterGold)?.Amount ?? 0;
+            var maxMonsterGold = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterGold)?.Amount ?? 0;
 
-            if (MapHealthRate >= CurrentMap.Info.ExperienceRate && MapHealthRate <= CurrentMap.Info.MaxExperienceRate)
+            MapHealthRate = SEnvir.Random.Next(monsterHealth + offset, Math.Max(monsterHealth, maxMonsterHealth) + offset);
+            MapDamageRate = SEnvir.Random.Next(monsterDamage + offset, Math.Max(monsterDamage, maxMonsterDamage) + offset);
+
+            if (MapHealthRate >= monsterExperience && MapHealthRate <= maxMonsterExperience)
                 MapExperienceRate = MapHealthRate;
             else
-                MapExperienceRate = SEnvir.Random.Next(CurrentMap.Info.ExperienceRate + offset, CurrentMap.Info.MaxExperienceRate + offset);
+                MapExperienceRate = SEnvir.Random.Next(monsterExperience + offset, Math.Max(monsterExperience, maxMonsterExperience) + offset);
 
-            MapDropRate = SEnvir.Random.Next(CurrentMap.Info.DropRate + offset, CurrentMap.Info.MaxDropRate + offset);
-            MapGoldRate = SEnvir.Random.Next(CurrentMap.Info.GoldRate + offset, CurrentMap.Info.MaxGoldRate + offset);
+            MapDropRate = SEnvir.Random.Next(monsterDrop + offset, Math.Max(monsterDrop, maxMonsterDrop) + offset);
+            MapGoldRate = SEnvir.Random.Next(monsterGold + offset, Math.Max(monsterGold, maxMonsterGold) + offset);
 
             MapHealthRate -= offset;
             MapDamageRate -= offset;

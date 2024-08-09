@@ -55,16 +55,15 @@ namespace Server.Models
 
         public void Load()
         {
-            string fileName = $"{Config.MapPath}{Info.FileName}.map";
+            var path = Path.Combine(Config.MapPath, Info.FileName + ".map");
 
-            if (!File.Exists(fileName))
+            if (!File.Exists(path))
             {
-                SEnvir.Log($"Map: {fileName} not found.");
+                SEnvir.Log($"Map: {path} not found.");
                 return;
             }
 
-
-            byte[] fileBytes = File.ReadAllBytes(fileName);
+            byte[] fileBytes = File.ReadAllBytes(path);
 
             Width = fileBytes[23] << 8 | fileBytes[22];
             Height = fileBytes[25] << 8 | fileBytes[24];

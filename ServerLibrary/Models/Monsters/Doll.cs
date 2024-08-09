@@ -108,6 +108,11 @@ namespace Server.Models.Monsters
         {        
             if (DollTarget != null)
             {
+                if (attacker.CurrentMap != DollTarget.CurrentMap || !Functions.InRange(attacker.CurrentLocation, DollTarget.CurrentLocation, Globals.MagicRange))
+                {
+                    return 0;
+                }
+
                 DollTarget.Attacked(attacker, power, element, canReflect, ignoreShield, canCrit, canStruck);
             }
 

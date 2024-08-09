@@ -658,6 +658,7 @@ namespace Client.Models
                 case MirAction.Mining:
                     attackDelay = Globals.AttackDelay - Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
                     attackDelay = Math.Max(800, attackDelay);
+                    AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(attackDelay);
 
                     if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                         AttackTime += TimeSpan.FromMilliseconds(attackDelay);

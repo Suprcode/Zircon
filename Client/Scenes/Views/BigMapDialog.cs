@@ -70,9 +70,11 @@ namespace Client.Scenes.Views
         }
         private Size GetMapSize(string fileName)
         {
-            if (!File.Exists(Config.MapPath + fileName + ".map")) return Size.Empty;
+            var path = Path.Combine(Config.MapPath, fileName + ".map");
 
-            using (FileStream stream = File.OpenRead(Config.MapPath + fileName + ".map"))
+            if (!File.Exists(path)) return Size.Empty;
+
+            using (FileStream stream = File.OpenRead(path))
             using (BinaryReader reader = new BinaryReader(stream))
             {
                 stream.Seek(22, SeekOrigin.Begin);

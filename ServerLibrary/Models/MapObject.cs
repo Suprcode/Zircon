@@ -441,8 +441,6 @@ namespace Server.Models
 
                             player.Companion.UserCompanion.Experience += highest + Stats[Stat.CompanionRate];
 
-
-
                             if (player.Companion.UserCompanion.Experience >= player.Companion.LevelInfo.MaxExperience)
                             {
                                 player.Companion.UserCompanion.Experience = 0;
@@ -450,7 +448,6 @@ namespace Server.Models
                                 player.Companion.CheckSkills();
                                 player.Companion.RefreshStats();
                             }
-
                         }
 
                         player.Companion.AutoFeed();

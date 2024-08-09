@@ -426,9 +426,11 @@ namespace Client.Scenes.Views
         {
             try
             {
-                if (!File.Exists(Config.MapPath + MapInfo.FileName + ".map")) return;
+                var path = Path.Combine(Config.MapPath, MapInfo.FileName + ".map");
 
-                using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(Config.MapPath + MapInfo.FileName + ".map")))
+                if (!File.Exists(path)) return;
+
+                using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(path)))
                 using (BinaryReader reader = new BinaryReader(mStream))
                 {
                     mStream.Seek(22, SeekOrigin.Begin);

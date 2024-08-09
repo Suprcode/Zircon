@@ -2726,15 +2726,15 @@ namespace Server.Envir
 
             if (!admin && account.Banned)
             {
-                if (account.ExpiryDate > Now)
+                if (account.BanExpiry > Now)
                 {
-                    con.Enqueue(new S.Login { Result = LoginResult.Banned, Message = account.BanReason, Duration = account.ExpiryDate - Now });
+                    con.Enqueue(new S.Login { Result = LoginResult.Banned, Message = account.BanReason, Duration = account.BanExpiry - Now });
                     return;
                 }
 
                 account.Banned = false;
                 account.BanReason = string.Empty;
-                account.ExpiryDate = DateTime.MinValue;
+                account.BanExpiry = DateTime.MinValue;
             }
 
             if (!admin && !PasswordMatch(p.Password, account.Password))
@@ -2745,9 +2745,9 @@ namespace Server.Envir
                 {
                     account.Banned = true;
                     account.BanReason = con.Language.BannedWrongPassword;
-                    account.ExpiryDate = Now.AddMinutes(1);
+                    account.BanExpiry = Now.AddMinutes(1);
 
-                    con.Enqueue(new S.Login { Result = LoginResult.Banned, Message = account.BanReason, Duration = account.ExpiryDate - Now });
+                    con.Enqueue(new S.Login { Result = LoginResult.Banned, Message = account.BanReason, Duration = account.BanExpiry - Now });
                     return;
                 }
 
@@ -3003,15 +3003,15 @@ namespace Server.Envir
 
             if (account.Banned)
             {
-                if (account.ExpiryDate > Now)
+                if (account.BanExpiry > Now)
                 {
-                    con.Enqueue(new S.ChangePassword { Result = ChangePasswordResult.Banned, Message = account.BanReason, Duration = account.ExpiryDate - Now });
+                    con.Enqueue(new S.ChangePassword { Result = ChangePasswordResult.Banned, Message = account.BanReason, Duration = account.BanExpiry - Now });
                     return;
                 }
 
                 account.Banned = false;
                 account.BanReason = string.Empty;
-                account.ExpiryDate = DateTime.MinValue;
+                account.BanExpiry = DateTime.MinValue;
             }
 
             if (!PasswordMatch(p.CurrentPassword, account.Password))
@@ -3022,9 +3022,9 @@ namespace Server.Envir
                 {
                     account.Banned = true;
                     account.BanReason = con.Language.BannedWrongPassword;
-                    account.ExpiryDate = Now.AddMinutes(1);
+                    account.BanExpiry = Now.AddMinutes(1);
 
-                    con.Enqueue(new S.ChangePassword { Result = ChangePasswordResult.Banned, Message = account.BanReason, Duration = account.ExpiryDate - Now });
+                    con.Enqueue(new S.ChangePassword { Result = ChangePasswordResult.Banned, Message = account.BanReason, Duration = account.BanExpiry - Now });
                     return;
                 }
 

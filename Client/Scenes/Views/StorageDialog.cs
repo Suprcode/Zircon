@@ -208,7 +208,7 @@ namespace Client.Scenes.Views
 
             Type itemType = typeof(ItemType);
 
-            for (ItemType i = ItemType.Nothing; i <= ItemType.ItemPart; i++)
+            for (ItemType i = ItemType.Nothing; i <= ItemType.Reel; i++)
             {
                 MemberInfo[] infos = itemType.GetMember(i.ToString());
 

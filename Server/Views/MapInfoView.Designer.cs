@@ -1,4 +1,6 @@
-﻿namespace Server.Views
+﻿using DevExpress.XtraGrid.Columns;
+
+namespace Server.Views
 {
     partial class MapInfoView
     {
@@ -31,6 +33,7 @@
             DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapInfoView));
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
@@ -38,52 +41,50 @@
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject3 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject4 = new DevExpress.Utils.SerializableAppearanceObject();
             GuardsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn1 = new GridColumn();
             MonsterLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn2 = new GridColumn();
+            gridColumn3 = new GridColumn();
+            gridColumn4 = new GridColumn();
             DirectionImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             MapInfoGridControl = new DevExpress.XtraGrid.GridControl();
             RegionGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            gridColumn18 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn19 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn18 = new GridColumn();
+            gridColumn19 = new GridColumn();
+            gridColumn20 = new GridColumn();
             EditButtonEdit = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             MiningGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn7 = new GridColumn();
             ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn8 = new GridColumn();
+            gridColumn21 = new GridColumn();
+            RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            gridColumn22 = new GridColumn();
+            gridColumn23 = new GridColumn();
+            MapInfoStatsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            gridColumn11 = new GridColumn();
+            StatImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            gridColumn14 = new GridColumn();
             MapInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
-            colFileName = new DevExpress.XtraGrid.Columns.GridColumn();
-            colDescription = new DevExpress.XtraGrid.Columns.GridColumn();
-            colMiniMap = new DevExpress.XtraGrid.Columns.GridColumn();
-            colLight = new DevExpress.XtraGrid.Columns.GridColumn();
+            colFileName = new GridColumn();
+            colDescription = new GridColumn();
+            colMiniMap = new GridColumn();
+            colLight = new GridColumn();
             LightComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            gridColumn12 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colRequiredClass = new DevExpress.XtraGrid.Columns.GridColumn();
-            colAllowRT = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn15 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn16 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn17 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn12 = new GridColumn();
+            colRequiredClass = new GridColumn();
+            colAllowRT = new GridColumn();
+            gridColumn13 = new GridColumn();
+            gridColumn15 = new GridColumn();
+            gridColumn16 = new GridColumn();
+            gridColumn17 = new GridColumn();
             MapInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn24 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn22 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn25 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn23 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn26 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn27 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn14 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn28 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn21 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn29 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colWeather = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn5 = new GridColumn();
+            gridColumn24 = new GridColumn();
+            gridColumn6 = new GridColumn();
+            gridColumn9 = new GridColumn();
+            gridColumn10 = new GridColumn();
+            colWeather = new GridColumn();
             WeatherComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
@@ -103,6 +104,9 @@
             ((System.ComponentModel.ISupportInitialize)EditButtonEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MiningGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)RegionLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MapInfoStatsGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)StatImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)LightComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapInfoLookUpEdit).BeginInit();
@@ -115,7 +119,7 @@
             // 
             // GuardsGridView
             // 
-            GuardsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn2, gridColumn3, gridColumn4 });
+            GuardsGridView.Columns.AddRange(new GridColumn[] { gridColumn1, gridColumn2, gridColumn3, gridColumn4 });
             GuardsGridView.GridControl = MapInfoGridControl;
             GuardsGridView.Name = "GuardsGridView";
             GuardsGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -179,20 +183,22 @@
             gridLevelNode2.RelationName = "Regions";
             gridLevelNode3.LevelTemplate = MiningGridView;
             gridLevelNode3.RelationName = "Mining";
-            MapInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1, gridLevelNode2, gridLevelNode3 });
+            gridLevelNode4.LevelTemplate = MapInfoStatsGridView;
+            gridLevelNode4.RelationName = "BuffStats";
+            MapInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1, gridLevelNode2, gridLevelNode3, gridLevelNode4 });
             MapInfoGridControl.Location = new System.Drawing.Point(0, 144);
             MapInfoGridControl.MainView = MapInfoGridView;
             MapInfoGridControl.MenuManager = ribbon;
             MapInfoGridControl.Name = "MapInfoGridControl";
-            MapInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { LightComboBox, MonsterLookUpEdit, DirectionImageComboBox, MapInfoLookUpEdit, MapIconImageComboBox, StartClassImageComboBox, RequiredClassImageComboBox, EditButtonEdit, ItemLookUpEdit, WeatherComboBox });
+            MapInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { LightComboBox, MonsterLookUpEdit, DirectionImageComboBox, MapInfoLookUpEdit, MapIconImageComboBox, StartClassImageComboBox, RequiredClassImageComboBox, EditButtonEdit, ItemLookUpEdit, WeatherComboBox, StatImageComboBox, RegionLookUpEdit });
             MapInfoGridControl.ShowOnlyPredefinedDetails = true;
             MapInfoGridControl.Size = new System.Drawing.Size(830, 395);
             MapInfoGridControl.TabIndex = 2;
-            MapInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { RegionGridView, MiningGridView, MapInfoGridView, GuardsGridView });
+            MapInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { RegionGridView, MiningGridView, MapInfoStatsGridView, MapInfoGridView, GuardsGridView });
             // 
             // RegionGridView
             // 
-            RegionGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn18, gridColumn19, gridColumn20 });
+            RegionGridView.Columns.AddRange(new GridColumn[] { gridColumn18, gridColumn19, gridColumn20 });
             RegionGridView.GridControl = MapInfoGridControl;
             RegionGridView.Name = "RegionGridView";
             RegionGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -233,7 +239,7 @@
             // 
             // MiningGridView
             // 
-            MiningGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn7, gridColumn8 });
+            MiningGridView.Columns.AddRange(new GridColumn[] { gridColumn7, gridColumn8, gridColumn21, gridColumn22, gridColumn23 });
             MiningGridView.GridControl = MapInfoGridControl;
             MiningGridView.Name = "MiningGridView";
             MiningGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -267,9 +273,73 @@
             gridColumn8.Visible = true;
             gridColumn8.VisibleIndex = 1;
             // 
+            // gridColumn21
+            // 
+            gridColumn21.ColumnEdit = RegionLookUpEdit;
+            gridColumn21.FieldName = "Region";
+            gridColumn21.Name = "gridColumn21";
+            gridColumn21.Visible = true;
+            gridColumn21.VisibleIndex = 4;
+            // 
+            // RegionLookUpEdit
+            // 
+            RegionLookUpEdit.AutoHeight = false;
+            RegionLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            RegionLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Description", "Description"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Size", "Size") });
+            RegionLookUpEdit.DisplayMember = "Description";
+            RegionLookUpEdit.Name = "RegionLookUpEdit";
+            RegionLookUpEdit.NullText = "[Region is null]";
+            // 
+            // gridColumn22
+            // 
+            gridColumn22.FieldName = "Quantity";
+            gridColumn22.Name = "gridColumn22";
+            gridColumn22.Visible = true;
+            gridColumn22.VisibleIndex = 2;
+            // 
+            // gridColumn23
+            // 
+            gridColumn23.Caption = "Restock Time (In Minutes)";
+            gridColumn23.FieldName = "RestockTimeInMinutes";
+            gridColumn23.Name = "gridColumn23";
+            gridColumn23.Visible = true;
+            gridColumn23.VisibleIndex = 3;
+            // 
+            // MapInfoStatsGridView
+            // 
+            MapInfoStatsGridView.Columns.AddRange(new GridColumn[] { gridColumn11, gridColumn14 });
+            MapInfoStatsGridView.GridControl = MapInfoGridControl;
+            MapInfoStatsGridView.Name = "MapInfoStatsGridView";
+            MapInfoStatsGridView.OptionsView.EnableAppearanceEvenRow = true;
+            MapInfoStatsGridView.OptionsView.EnableAppearanceOddRow = true;
+            MapInfoStatsGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            MapInfoStatsGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            MapInfoStatsGridView.OptionsView.ShowGroupPanel = false;
+            // 
+            // gridColumn11
+            // 
+            gridColumn11.ColumnEdit = StatImageComboBox;
+            gridColumn11.FieldName = "Stat";
+            gridColumn11.Name = "gridColumn11";
+            gridColumn11.Visible = true;
+            gridColumn11.VisibleIndex = 0;
+            // 
+            // StatImageComboBox
+            // 
+            StatImageComboBox.AutoHeight = false;
+            StatImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            StatImageComboBox.Name = "StatImageComboBox";
+            // 
+            // gridColumn14
+            // 
+            gridColumn14.FieldName = "Amount";
+            gridColumn14.Name = "gridColumn14";
+            gridColumn14.Visible = true;
+            gridColumn14.VisibleIndex = 1;
+            // 
             // MapInfoGridView
             // 
-            MapInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colFileName, colDescription, colMiniMap, colLight, gridColumn12, colRequiredClass, colAllowRT, gridColumn13, gridColumn15, gridColumn16, gridColumn17, gridColumn5, gridColumn24, gridColumn6, gridColumn9, gridColumn10, gridColumn22, gridColumn25, gridColumn23, gridColumn26, gridColumn11, gridColumn27, gridColumn14, gridColumn28, gridColumn21, gridColumn29, colWeather });
+            MapInfoGridView.Columns.AddRange(new GridColumn[] { colFileName, colDescription, colMiniMap, colLight, gridColumn12, colRequiredClass, colAllowRT, gridColumn13, gridColumn15, gridColumn16, gridColumn17, gridColumn5, gridColumn24, gridColumn6, gridColumn9, gridColumn10, colWeather });
             MapInfoGridView.GridControl = MapInfoGridControl;
             MapInfoGridView.Name = "MapInfoGridView";
             MapInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -427,96 +497,6 @@
             gridColumn10.VisibleIndex = 16;
             gridColumn10.Width = 27;
             // 
-            // gridColumn22
-            // 
-            gridColumn22.Caption = "Min Health";
-            gridColumn22.FieldName = "MonsterHealth";
-            gridColumn22.Name = "gridColumn22";
-            gridColumn22.Visible = true;
-            gridColumn22.VisibleIndex = 17;
-            gridColumn22.Width = 27;
-            // 
-            // gridColumn25
-            // 
-            gridColumn25.Caption = "Max Health";
-            gridColumn25.FieldName = "MaxMonsterHealth";
-            gridColumn25.Name = "gridColumn25";
-            gridColumn25.Visible = true;
-            gridColumn25.VisibleIndex = 18;
-            gridColumn25.Width = 27;
-            // 
-            // gridColumn23
-            // 
-            gridColumn23.Caption = "Min Damage";
-            gridColumn23.FieldName = "MonsterDamage";
-            gridColumn23.Name = "gridColumn23";
-            gridColumn23.Visible = true;
-            gridColumn23.VisibleIndex = 19;
-            gridColumn23.Width = 27;
-            // 
-            // gridColumn26
-            // 
-            gridColumn26.Caption = "Max Damage";
-            gridColumn26.FieldName = "MaxMonsterDamage";
-            gridColumn26.Name = "gridColumn26";
-            gridColumn26.Visible = true;
-            gridColumn26.VisibleIndex = 20;
-            gridColumn26.Width = 27;
-            // 
-            // gridColumn11
-            // 
-            gridColumn11.Caption = "Min Exp";
-            gridColumn11.FieldName = "ExperienceRate";
-            gridColumn11.Name = "gridColumn11";
-            gridColumn11.Visible = true;
-            gridColumn11.VisibleIndex = 21;
-            gridColumn11.Width = 27;
-            // 
-            // gridColumn27
-            // 
-            gridColumn27.Caption = "Max Exp";
-            gridColumn27.FieldName = "MaxExperienceRate";
-            gridColumn27.Name = "gridColumn27";
-            gridColumn27.Visible = true;
-            gridColumn27.VisibleIndex = 22;
-            gridColumn27.Width = 27;
-            // 
-            // gridColumn14
-            // 
-            gridColumn14.Caption = "Min Drop";
-            gridColumn14.FieldName = "DropRate";
-            gridColumn14.Name = "gridColumn14";
-            gridColumn14.Visible = true;
-            gridColumn14.VisibleIndex = 23;
-            gridColumn14.Width = 27;
-            // 
-            // gridColumn28
-            // 
-            gridColumn28.Caption = "Max Drop";
-            gridColumn28.FieldName = "MaxDropRate";
-            gridColumn28.Name = "gridColumn28";
-            gridColumn28.Visible = true;
-            gridColumn28.VisibleIndex = 24;
-            gridColumn28.Width = 33;
-            // 
-            // gridColumn21
-            // 
-            gridColumn21.Caption = "Min Gold";
-            gridColumn21.FieldName = "GoldRate";
-            gridColumn21.Name = "gridColumn21";
-            gridColumn21.Visible = true;
-            gridColumn21.VisibleIndex = 25;
-            gridColumn21.Width = 27;
-            // 
-            // gridColumn29
-            // 
-            gridColumn29.Caption = "Max Gold";
-            gridColumn29.FieldName = "MaxGoldRate";
-            gridColumn29.Name = "gridColumn29";
-            gridColumn29.Visible = true;
-            gridColumn29.VisibleIndex = 26;
-            gridColumn29.Width = 85;
-            // 
             // colWeather
             // 
             colWeather.Caption = "Weather";
@@ -632,6 +612,9 @@
             ((System.ComponentModel.ISupportInitialize)EditButtonEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)MiningGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)RegionLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MapInfoStatsGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)StatImageComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)MapInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)LightComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)MapInfoLookUpEdit).EndInit();
@@ -688,21 +671,19 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn8;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn10;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn11;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn14;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn21;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn22;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn23;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn24;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn25;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn26;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn27;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn28;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn29;
         private DevExpress.XtraGrid.Columns.GridColumn colWeather;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox WeatherComboBox;
         private DevExpress.XtraBars.BarButtonItem ImportButton;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
+        private DevExpress.XtraGrid.Views.Grid.GridView MapInfoStatsGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn11;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn14;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox StatImageComboBox;
+        private GridColumn gridColumn21;
+        private GridColumn gridColumn22;
+        private GridColumn gridColumn23;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit RegionLookUpEdit;
     }
 }

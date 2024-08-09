@@ -704,7 +704,7 @@ namespace Client.Models
                 case MirAction.Mining:
                     if (!MiningEffect) break;
 
-                    Effects.Add(new MirEffect(3470, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 20, 70, Globals.NoneColour) //Element style?
+                    Effects.Add(new MirEffect(3470, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 0, 0, Globals.NoneColour) //Element style? 20, 70
                     {
                         Blend = true,
                         MapTarget = CurrentLocation,

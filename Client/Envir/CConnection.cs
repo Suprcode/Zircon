@@ -110,6 +110,9 @@ namespace Client.Envir
                 case DisconnectReason.Banned:
                     DXMessageBox.Show("Disconnected from server\nReason: You have been banned.", "Disconnected", DialogAction.ReturnToLogin);
                     break;
+                case DisconnectReason.Kicked:
+                    DXMessageBox.Show("Disconnected from server\nReason: You have been kicked.", "Disconnected", DialogAction.ReturnToLogin);
+                    break;
                 case DisconnectReason.Crashed:
                     DXMessageBox.Show("Disconnected from server\nReason: Server Crashed.", "Disconnected", DialogAction.ReturnToLogin);
                     break;

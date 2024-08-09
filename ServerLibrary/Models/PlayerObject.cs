@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -107,7 +108,7 @@ namespace Server.Models
             set { Character.Direction = value; }
         }
 
-        public DateTime ShoutTime, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime, MailTime, ExperienceTime;
+        public DateTime ShoutExpiry, UseItemTime, TorchTime, CombatTime, PvPTime, SentCombatTime, AutoPotionTime, AutoPotionCheckTime, ItemTime, RevivalTime, TeleportTime, DailyQuestTime, FishingCastTime, MailTime, ExperienceTime;
         public bool PacketWaiting;
 
         public bool GameMaster, Observer, Superman;
@@ -989,7 +990,7 @@ namespace Server.Models
             Connection.Player = this;
             Connection.Stage = GameStage.Game;
 
-            ShoutTime = SEnvir.Now.AddSeconds(10);
+            ShoutExpiry = SEnvir.Now.AddSeconds(10);
 
             //Broadcast Appearance(?)
 
@@ -1467,6 +1468,8 @@ namespace Server.Models
 
             if (text.StartsWith("/"))
             {
+                if (SEnvir.Now < Character.Account.ChatBanExpiry) return;
+
                 //Private Message
                 text = text.Remove(0, 1);
                 parts = text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -1497,8 +1500,6 @@ namespace Server.Models
                 }
 
                 Connection.ReceiveChat($"/{text}", MessageType.WhisperOut, linkedItems);
-
-                if (SEnvir.Now < Character.Account.ChatBanExpiry) return;
 
                 con.ReceiveChat($"{Name}=> {text.Remove(0, parts[0].Length)}", Character.Account.TempAdmin ? MessageType.GMWhisperIn : MessageType.WhisperIn, linkedItems);
             }
@@ -1536,9 +1537,9 @@ namespace Server.Models
             {
                 if (!Character.Account.TempAdmin)
                 {
-                    if (SEnvir.Now < Character.Account.GlobalTime)
+                    if (SEnvir.Now < Character.Account.GlobalShoutExpiry)
                     {
-                        Connection.ReceiveChat(string.Format(Connection.Language.GlobalDelay, Math.Ceiling((Character.Account.GlobalTime - SEnvir.Now).TotalSeconds)), MessageType.System, linkedItems);
+                        Connection.ReceiveChat(string.Format(Connection.Language.GlobalDelay, Math.Ceiling((Character.Account.GlobalShoutExpiry - SEnvir.Now).TotalSeconds)), MessageType.System, linkedItems);
                         return;
                     }
                     if (Level < 33 && Stats[Stat.GlobalShout] == 0)
@@ -1547,7 +1548,7 @@ namespace Server.Models
                         return;
                     }
 
-                    Character.Account.GlobalTime = SEnvir.Now.AddSeconds(30);
+                    Character.Account.GlobalShoutExpiry = SEnvir.Now.AddSeconds(30);
                 }
 
                 text = string.Format("(!@){0}: {1}", Name, text.Remove(0, 2));
@@ -1571,9 +1572,9 @@ namespace Server.Models
                 //Shout
                 if (!Character.Account.TempAdmin)
                 {
-                    if (SEnvir.Now < ShoutTime)
+                    if (SEnvir.Now < ShoutExpiry)
                     {
-                        Connection.ReceiveChat(string.Format(Connection.Language.ShoutDelay, Math.Ceiling((ShoutTime - SEnvir.Now).TotalSeconds)), MessageType.System, linkedItems);
+                        Connection.ReceiveChat(string.Format(Connection.Language.ShoutDelay, Math.Ceiling((ShoutExpiry - SEnvir.Now).TotalSeconds)), MessageType.System, linkedItems);
                         return;
                     }
                     if (Level < 2)
@@ -1584,7 +1585,7 @@ namespace Server.Models
                 }
 
                 text = string.Format("(!){0}: {1}", Name, text.Remove(0, 1));
-                ShoutTime = SEnvir.Now + Config.ShoutDelay;
+                ShoutExpiry = SEnvir.Now + Config.ShoutDelay;
 
                 foreach (PlayerObject player in CurrentMap.Players)
                 {
@@ -1726,9 +1727,9 @@ namespace Server.Models
             {
                 if (!con.Account.LastCharacter.Account.TempAdmin)
                 {
-                    if (SEnvir.Now < con.Account.LastCharacter.Account.GlobalTime)
+                    if (SEnvir.Now < con.Account.LastCharacter.Account.GlobalShoutExpiry)
                     {
-                        con.ReceiveChat(string.Format(con.Language.GlobalDelay, Math.Ceiling((con.Account.GlobalTime - SEnvir.Now).TotalSeconds)), MessageType.System);
+                        con.ReceiveChat(string.Format(con.Language.GlobalDelay, Math.Ceiling((con.Account.GlobalShoutExpiry - SEnvir.Now).TotalSeconds)), MessageType.System);
                         return;
                     }
 
@@ -1738,7 +1739,7 @@ namespace Server.Models
                         return;
                     }
 
-                    con.Account.LastCharacter.Account.GlobalTime = SEnvir.Now.AddSeconds(30);
+                    con.Account.LastCharacter.Account.GlobalShoutExpiry = SEnvir.Now.AddSeconds(30);
                 }
 
                 text = string.Format("(!@){0}: {1}", con.Account.LastCharacter.CharacterName, text.Remove(0, 2));
@@ -2390,7 +2391,7 @@ namespace Server.Models
                 default:
                     Character.Account.Banned = true;
                     Character.Account.BanReason = "Attempted to Exploit hermit.";
-                    Character.Account.ExpiryDate = SEnvir.Now.AddYears(10);
+                    Character.Account.BanExpiry = SEnvir.Now.AddYears(10);
                     return;
             }
 
@@ -3127,7 +3128,6 @@ namespace Server.Models
 
             if (Companion.UserCompanion.Level >= 15)
                 buffStats.Add(Companion.UserCompanion.Level15);
-
 
             buff.Stats = buffStats;
             RefreshStats();
@@ -6511,7 +6511,7 @@ namespace Server.Models
                         return;
                     }
 
-                    if (!InSafeZone && (p.ToGrid != GridType.Storage || p.ToGrid != GridType.PartsStorage))
+                    if (!InSafeZone && !(p.ToGrid == GridType.Storage || p.ToGrid == GridType.PartsStorage))
                     {
                         Connection.ReceiveChat(Connection.Language.GuildStorageSafeZone, MessageType.System);
                         return;
@@ -6552,7 +6552,6 @@ namespace Server.Models
                     toArray = Equipment;
                     break;
                 case GridType.PartsStorage:
-
                     if (!InSafeZone && !Character.Account.TempAdmin)
                     {
                         Connection.ReceiveChat(Connection.Language.StorageSafeZone, MessageType.System);
@@ -6561,12 +6560,13 @@ namespace Server.Models
                             con.ReceiveChat(con.Language.StorageSafeZone, MessageType.System);
                         return;
                     }
+                    
+                    if (fromItem.Info.ItemEffect != ItemEffect.ItemPart) return;
 
                     toArray = PartsStorage;
 
                     break;
                 case GridType.Storage:
-
                     if (!InSafeZone && !Character.Account.TempAdmin)
                     {
                         Connection.ReceiveChat(Connection.Language.StorageSafeZone, MessageType.System);
@@ -6575,6 +6575,8 @@ namespace Server.Models
                             con.ReceiveChat(con.Language.StorageSafeZone, MessageType.System);
                         return;
                     }
+
+                    if (fromItem.Info.ItemEffect == ItemEffect.ItemPart) return;
 
                     toArray = Storage;
 
@@ -6589,7 +6591,7 @@ namespace Server.Models
                         return;
                     }
 
-                    if (!InSafeZone && p.FromGrid != GridType.Storage)
+                    if (!InSafeZone && !(p.ToGrid == GridType.Storage || p.ToGrid == GridType.PartsStorage))
                     {
                         Connection.ReceiveChat(Connection.Language.GuildStorageSafeZone, MessageType.System);
                         return;
@@ -8312,23 +8314,9 @@ namespace Server.Models
 
             if (CurrentMap == null) return;
 
-            Stats stats = new Stats();
-
-            stats[Stat.MonsterHealth] = CurrentMap.Info.MonsterHealth;
-            stats[Stat.MonsterDamage] = CurrentMap.Info.MonsterDamage;
-            stats[Stat.MonsterExperience] = CurrentMap.Info.ExperienceRate;
-            stats[Stat.MonsterDrop] = CurrentMap.Info.DropRate;
-            stats[Stat.MonsterGold] = CurrentMap.Info.GoldRate;
-
-            stats[Stat.MaxMonsterHealth] = CurrentMap.Info.MaxMonsterHealth;
-            stats[Stat.MaxMonsterDamage] = CurrentMap.Info.MaxMonsterDamage;
-            stats[Stat.MaxMonsterExperience] = CurrentMap.Info.MaxExperienceRate;
-            stats[Stat.MaxMonsterDrop] = CurrentMap.Info.MaxDropRate;
-            stats[Stat.MaxMonsterGold] = CurrentMap.Info.MaxGoldRate;
-
-            if (stats.Count != 0)
+            if (CurrentMap.Info.Stats.Count != 0)
             {
-                BuffAdd(BuffType.MapEffect, TimeSpan.MaxValue, stats, false, false, TimeSpan.Zero);
+                BuffAdd(BuffType.MapEffect, TimeSpan.MaxValue, CurrentMap.Info.Stats, false, false, TimeSpan.Zero);
             }
 
             if (CurrentMap.Instance != null && CurrentMap.Instance.Stats.Count != 0)
@@ -10006,7 +9994,7 @@ namespace Server.Models
                 default:
                     Character.Account.Banned = true;
                     Character.Account.BanReason = "Attempted to Exploit refine, Accessory Refine Type.";
-                    Character.Account.ExpiryDate = SEnvir.Now.AddYears(10);
+                    Character.Account.BanExpiry = SEnvir.Now.AddYears(10);
                     return;
             }
 
@@ -10427,7 +10415,7 @@ namespace Server.Models
                     default:
                         Character.Account.Banned = true;
                         Character.Account.BanReason = "Attempted to Exploit refine, Accessory Refine Type.";
-                        Character.Account.ExpiryDate = SEnvir.Now.AddYears(10);
+                        Character.Account.BanExpiry = SEnvir.Now.AddYears(10);
                         return;
                 }
                 targetItem.StatsChanged();
@@ -11036,7 +11024,7 @@ namespace Server.Models
                 default:
                     Character.Account.Banned = true;
                     Character.Account.BanReason = "Attempted to Exploit refine, Weapon Refine Quality.";
-                    Character.Account.ExpiryDate = SEnvir.Now.AddYears(10);
+                    Character.Account.BanExpiry = SEnvir.Now.AddYears(10);
                     return;
             }
 
@@ -11056,7 +11044,7 @@ namespace Server.Models
                 default:
                     Character.Account.Banned = true;
                     Character.Account.BanReason = "Attempted to Exploit refine, Weapon Refine Type.";
-                    Character.Account.ExpiryDate = SEnvir.Now.AddYears(10);
+                    Character.Account.BanExpiry = SEnvir.Now.AddYears(10);
                     return;
             }
 
@@ -11654,7 +11642,7 @@ namespace Server.Models
                 default:
                     Character.Account.Banned = true;
                     Character.Account.BanReason = "Attempted to Exploit Master refine, Weapon Refine Type.";
-                    Character.Account.ExpiryDate = SEnvir.Now.AddYears(10);
+                    Character.Account.BanExpiry = SEnvir.Now.AddYears(10);
                     return;
             }
 
@@ -13405,6 +13393,9 @@ namespace Server.Models
             attackDelay = Math.Max(800, attackDelay);
             AttackTime = SEnvir.Now.AddMilliseconds(attackDelay);
 
+            if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
+                AttackTime += TimeSpan.FromMilliseconds(attackDelay);
+
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
             TimeSpan slow = TimeSpan.Zero;
             if (poison != null)
@@ -13412,9 +13403,6 @@ namespace Server.Models
                 slow = TimeSpan.FromMilliseconds(poison.Value * 100);
                 ActionTime += slow;
             }
-
-            if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
-                AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
             MagicType validMagic = MagicType.None;
             List<MagicType> magics = new List<MagicType>();
@@ -13628,6 +13616,7 @@ namespace Server.Models
             int aspeed = Stats[Stat.AttackSpeed];
             int attackDelay = Globals.AttackDelay - aspeed * Globals.ASpeedRate;
             attackDelay = Math.Max(800, attackDelay);
+            AttackTime = SEnvir.Now.AddMilliseconds(attackDelay);
 
             if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                 AttackTime += TimeSpan.FromMilliseconds(attackDelay);
@@ -13643,8 +13632,10 @@ namespace Server.Models
             if (BagWeight > Stats[Stat.BagWeight])
                 AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
+            var front = Functions.Move(CurrentLocation, Direction);
+
             bool result = false;
-            if (CurrentMap.Info.CanMine && CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction)) == null)
+            if (CurrentMap.Info.CanMine && CurrentMap.GetCell(front) == null)
             {
                 UserItem weap = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -13656,12 +13647,37 @@ namespace Server.Models
                     {
                         if (SEnvir.Random.Next(info.Chance) > 0) continue;
 
+                        if (info.Region != null)
+                        {
+                            if (!info.Region.PointList.Contains(front)) continue;
+                        }
+
+                        if (info.Quantity == 0) continue;
+
+                        if (info.Quantity > 0 && info.RemainingQuantity == 0)
+                        {
+                            if (info.NextRestock > SEnvir.Now) continue;
+
+                            info.RemainingQuantity = info.Quantity;
+                        }
+
                         ItemCheck check = new ItemCheck(info.Item, 1, UserItemFlags.Bound, TimeSpan.Zero);
 
                         if (!CanGainItems(false, check)) continue;
 
                         UserItem item = SEnvir.CreateDropItem(check);
                         GainItem(item);
+
+                        if (info.Quantity > 0)
+                        {
+                            info.RemainingQuantity--;
+
+                            // sets restock time when quantity reaches zero. Unless restock time is less than zero, then never restock
+                            if (info.RemainingQuantity == 0 && info.RestockTimeInMinutes >= 0)
+                            {
+                                info.NextRestock = SEnvir.Now.AddMinutes(info.RestockTimeInMinutes);
+                            }
+                        }
                     }
 
                     bool hasRubble = false;
@@ -13787,6 +13803,9 @@ namespace Server.Models
             attackDelay = Math.Max(800, attackDelay);
             AttackTime = SEnvir.Now.AddMilliseconds(attackDelay);
 
+            if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
+                AttackTime += TimeSpan.FromMilliseconds(attackDelay);
+
             Poison poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Slow);
             TimeSpan slow = TimeSpan.Zero;
             if (poison != null)
@@ -13794,9 +13813,6 @@ namespace Server.Models
                 slow = TimeSpan.FromMilliseconds(poison.Value * 100);
                 ActionTime += slow;
             }
-
-            if (BagWeight > Stats[Stat.BagWeight])
-                AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
             Direction = ob == null || ob == this ? direction : Functions.DirectionFromPoint(CurrentLocation, ob.CurrentLocation);
 

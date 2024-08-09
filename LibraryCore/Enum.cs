@@ -2003,6 +2003,7 @@ namespace Library
         AnotherUserPassword,
         AnotherUserAdmin,
         Banned,
+        Kicked,
         Crashed
     }
 
