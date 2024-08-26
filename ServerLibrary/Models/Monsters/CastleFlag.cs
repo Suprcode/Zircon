@@ -169,9 +169,9 @@ namespace Server.Models.Monsters
                 else
                 {
                     var difference = (ContesterTime - SEnvir.Now).Seconds;
+
                     foreach (SConnection con in SEnvir.Connections)
                         con.ReceiveChat(string.Format(con.Language.ConquestTakingFlag, Contester.GuildName, War.Castle.Name, difference), MessageType.System);
-
                 }
             }
 

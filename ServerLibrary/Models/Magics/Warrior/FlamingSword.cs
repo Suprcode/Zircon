@@ -26,9 +26,7 @@ namespace Server.Models.Magics
                 CanFlamingSword = false;
                 Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = CanFlamingSword });
 
-                Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
-                foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
+                Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
             }
         }
 
@@ -42,10 +40,7 @@ namespace Server.Models.Magics
 
             if (CanFlamingSword)
             {
-                Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.ChargeFail, Magic.Info.Name), MessageType.System);
-
-                foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.ChargeFail, Magic.Info.Name), MessageType.System);
+                Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.ChargeFail, Magic.Info.Name), MessageType.System);
             }
             else
             {

@@ -24,10 +24,7 @@ namespace Server.Models.Magics
 
             if (SEnvir.Now < Player.CombatTime.AddSeconds(10))
             {
-                Player.Connection.ReceiveChat(Player.Connection.Language.CloakCombat, MessageType.System);
-
-                foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(con.Language.CloakCombat, MessageType.System);
+                Player.Connection.ReceiveChatWithObservers(con => con.Language.CloakCombat, MessageType.System);
 
                 return true;
             }

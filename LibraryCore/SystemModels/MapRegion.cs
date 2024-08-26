@@ -80,6 +80,21 @@ namespace Library.SystemModels
         [IgnoreProperty]
         public string ServerDescription => $"{Map?.Description} - {Description}";
 
+        public RegionType RegionType
+        {
+            get { return _RegionType; }
+            set
+            {
+                if (_RegionType == value) return;
+
+                var oldValue = _Size;
+                _RegionType = value;
+
+                OnChanged(oldValue, value, "RegionType");
+            }
+        }
+        private RegionType _RegionType;
+
         public int Size
         {
             get { return _Size; }

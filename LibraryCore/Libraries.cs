@@ -27,9 +27,11 @@ namespace Library
             [LibraryFile.NPC] = @"Data\NPC.Zl",
             [LibraryFile.GameInter2] = @"Data\GameInter2.Zl",
             [LibraryFile.MiniMap] = @"Data\MiniMap.Zl",
-            [LibraryFile.Fmmap] = @"Data\Fmmap.Zl",
+            [LibraryFile.MiniMap2] = @"Data\MiniMap2.Zl",
 
             [LibraryFile.CastleFlag] = @"Data\Flag.Zl",
+
+            [LibraryFile.MiniMapIcon] = @"Data\MiniMapIcon.Zl",
 
             [LibraryFile.MagicIcon] = @"Data\MIcon.Zl",
             [LibraryFile.CBIcon] = @"Data\CBIcons.Zl",
@@ -461,12 +463,13 @@ namespace Library
         Ground,
         NPC,
         MiniMap,
-        Fmmap,
+        MiniMap2,
         MagicIcon,
         CBIcon,
         QuestIcon,
         MiniGames,
         CastleFlag,
+        MiniMapIcon,
 
         NPCImage,
         MonImage,

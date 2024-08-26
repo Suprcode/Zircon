@@ -68,6 +68,21 @@ namespace Library.SystemModels
         }
         private int _FaceImage;
 
+        public MapIcon MapIcon
+        {
+            get { return _MapIcon; }
+            set
+            {
+                if (_MapIcon == value) return;
+
+                var oldValue = _MapIcon;
+                _MapIcon = value;
+
+                OnChanged(oldValue, value, "MapIcon");
+            }
+        }
+        private MapIcon _MapIcon;
+
         public NPCPage EntryPage
         {
             get { return _EntryPage; }
@@ -82,7 +97,8 @@ namespace Library.SystemModels
             }
         }
         private NPCPage _EntryPage;
-      
+
+        [JsonIgnore]
         [IgnoreProperty]
         public string RegionName => Region?.ServerDescription ?? string.Empty;
 
@@ -115,6 +131,7 @@ namespace Library.SystemModels
 
     public sealed class NPCPage : DBObject
     {
+        [IsIdentity]
         public string Description
         {
             get { return _Description; }
@@ -281,7 +298,7 @@ namespace Library.SystemModels
             Rate = 1M;
         }
 
-
+        [JsonIgnore]
         [IgnoreProperty]
         public int Cost => (int)Math.Round(Item.Price * Rate);
     }

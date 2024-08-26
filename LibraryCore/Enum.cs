@@ -317,6 +317,7 @@ namespace Library
     public enum LightSetting : byte
     {
         Default,
+
         Light,
         Night,
         Twilight,
@@ -344,6 +345,16 @@ namespace Library
         Solo,
         Group,
         Guild
+    }
+
+    public enum RegionType : byte
+    {
+        None = 0,
+
+        Area = 1,
+        Connection = 2,
+        Spawn = 3,
+        Npc= 4
     }
 
     public enum ObjectType : byte
@@ -915,9 +926,9 @@ namespace Library
         //NF_RedMoonGrayProtector = 120,
         VenomousArachnid = 121,
         DarkArachnid = 122,
-        //NF_WoomyonGuard = 123,
-        //NF_GinkoGuard = 124,
-        //NF_ZarcaniumGuard = 125,
+        ForestGuard = 123,
+        TownGuard = 124,
+        SandGuard = 125,
         //NF_Blank126 = 126,
         //NF_Blank127 = 127,
         //NF_Blank128 = 128,
@@ -1081,9 +1092,9 @@ namespace Library
         SandGolem = 281,
         //NF_NumaLoneGuard = 282,
         //NF_SmallSpider = 283,
-        //NF_OmaInfant = 284,
-        //NF_Yob = 285,
-        //NF_RakingCat = 286,
+        OmaInfant = 284,
+        Yob = 285,
+        RakingCat = 286,
         //NF_UmaTrident = 287,
         GangSpider = 288,
         VenomSpider = 289,
@@ -1298,12 +1309,42 @@ namespace Library
     {
         None,
 
-        Cave,
-        Exit,
-        Down,
-        Up,
-        Province,
-        Building
+        Cave = 1,
+        Exit = 2,
+        Down = 3,
+        Up = 4,
+        Province = 5,
+        Building = 6,
+
+        BichonCity = 100,
+        Castle,
+        BugCaves,
+        CaveUpDown,
+        SmallManInTriangle,
+        Dunes,
+        MineUpDown,
+        GinkoTree,
+        Forest,
+        InsectCaveBubble,
+        AntCave,
+        JinchonTemple,
+        MiningCave,
+        Mudwall,
+        BorderTown,
+        Oasis,
+        UnkownPalace,
+        Pointer,
+        Serpent,
+        Shrine,
+        SkullCave,
+        SkullBonesCave,
+        StairDown,
+        StairUp,
+        UnknownTemple,
+        Walkway,
+        StoneTemple,
+        WoomaTemple,
+        ZumaTemple
     }
 
     public enum Effect
@@ -1485,7 +1526,7 @@ namespace Library
 
     public enum ExteriorEffect : byte
     {
-        None,
+        None = 0,
 
         //EquipEffect_Part [1~99] 
         A_WhiteAura = 1,
@@ -2405,6 +2446,10 @@ namespace Library
         CarnivorousPlantAttack,
         CarnivorousPlantStruck,
         CarnivorousPlantDie,
+
+        YobAttack,
+        YobStruck,
+        YobDie,
 
         OmaAttack,
         OmaStruck,

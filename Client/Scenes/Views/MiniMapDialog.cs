@@ -93,23 +93,7 @@ namespace Client.Scenes.Views
 
         private void Image_Moving(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            int x = Image.Location.X;
-
-            if (x + Image.Size.Width < Panel.Size.Width)
-                x = Panel.Size.Width - Image.Size.Width;
-
-            if (x > 0)
-                x = 0;
-
-            int y = Image.Location.Y;
-
-            if (y + Image.Size.Height < Panel.Size.Height)
-                y = Panel.Size.Height - Image.Size.Height;
-
-            if (y > 0)
-                y = 0;
-
-            Image.Location = new Point(x, y);
+            ClipMap();
         }
 
         private void MapControl_MapInfoChanged(object sender, EventArgs e)
@@ -151,8 +135,6 @@ namespace Client.Scenes.Views
                 control = GameScene.Game.GetNPCControl(ob);
                 control.Parent = Image;
                 control.Opacity = Opacity;
-
-                MapInfoObjects[ob] = control;
             }
             else if ((CurrentQuest)control.Tag == ob.CurrentQuest) return;
 
@@ -225,7 +207,7 @@ namespace Client.Scenes.Views
             DXImageControl control;
             MapInfoObjects[ob] = control = new DXImageControl
             {
-                LibraryFile = LibraryFile.Interface,
+                LibraryFile = LibraryFile.MiniMapIcon,
                 Parent = Image,
                 Opacity = Opacity,
                 ImageOpacity = Opacity,
@@ -233,36 +215,12 @@ namespace Client.Scenes.Views
             };
             control.OpacityChanged += (o, e) => control.ImageOpacity = control.Opacity;
 
-            switch (ob.Icon)
-            {
-                case MapIcon.Cave:
-                    control.Index = 70;
-                    control.ForeColour = Color.Red;
-                    break;
-                case MapIcon.Exit:
-                    control.Index = 70;
-                    control.ForeColour = Color.Green;
-                    break;
-                case MapIcon.Down:
-                    control.Index = 70;
-                    control.ForeColour = Color.MediumVioletRed;
-                    break;
-                case MapIcon.Up:
-                    control.Index = 70;
-                    control.ForeColour = Color.DeepSkyBlue;
-                    break;
-                case MapIcon.Province:
-                    control.Index = 6125;
-                    control.LibraryFile = LibraryFile.GameInter;
-                    break;
-                case MapIcon.Building:
-                    control.Index = 6124;
-                    control.LibraryFile = LibraryFile.GameInter;
-                    break;
-            }
+            GameScene.Game.UpdateMapIcon(control, ob.Icon);
+
             //control.MouseClick += (o, e) => SelectedInfo = ob.DestinationRegion.Map;
             control.Location = new Point((int)(ScaleX * x) - control.Size.Width / 2, (int)(ScaleY * y) - control.Size.Height / 2);
         }
+
         public void Update(ClientObjectData ob)
         {
             if (GameScene.Game.MapControl.MapInfo == null) return;
@@ -290,7 +248,6 @@ namespace Client.Scenes.Views
                 MapInfoObjects.Remove(ob);
                 return;
             }
-
 
             Size size = new Size(3, 3);
             Color colour = Color.White;
@@ -381,8 +338,10 @@ namespace Client.Scenes.Views
             if (MapObject.User.ObjectID != ob.ObjectID) return;
 
             Image.Location = new Point(-control.Location.X + Area.Width / 2, -control.Location.Y + Area.Height / 2);
+
+            ClipMap();
         }
-        
+
         public void UpdateMapPosition()
         {
             if (MapObject.User == null) return;
@@ -394,8 +353,30 @@ namespace Client.Scenes.Views
             DXControl control;
             if (!MapInfoObjects.TryGetValue(data, out control)) return;
 
-            Point location = control.Location;
-            Image.Location = new Point(-location.X + Area.Width / 2, -location.Y + Area.Height / 2);
+            Image.Location = new Point(-control.Location.X + Area.Width / 2, -control.Location.Y + Area.Height / 2);
+
+            ClipMap();
+        }
+
+        private void ClipMap()
+        {
+            int x = Image.Location.X;
+
+            if (x + Image.Size.Width < Panel.Size.Width)
+                x = Panel.Size.Width - Image.Size.Width;
+
+            if (x > 0)
+                x = 0;
+
+            int y = Image.Location.Y;
+
+            if (y + Image.Size.Height < Panel.Size.Height)
+                y = Panel.Size.Height - Image.Size.Height;
+
+            if (y > 0)
+                y = 0;
+
+            Image.Location = new Point(x, y);
         }
 
         public void Remove(object ob)

@@ -27,7 +27,6 @@ namespace Server.Models.Monsters
         {
             base.OnSpawned();
 
-
             DespawnTime = SEnvir.Now.AddMinutes(20);
 
             foreach (SConnection con in SEnvir.Connections)

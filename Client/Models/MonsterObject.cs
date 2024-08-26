@@ -185,6 +185,13 @@ namespace Client.Models
                     StruckSound = SoundIndex.ClawCatStruck;
                     DieSound = SoundIndex.ClawCatDie;
                     break;
+                case MonsterImage.RakingCat:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_28, out BodyLibrary);
+                    BodyShape = 6;
+                    AttackSound = SoundIndex.ClawCatAttack;
+                    StruckSound = SoundIndex.ClawCatStruck;
+                    DieSound = SoundIndex.ClawCatDie;
+                    break;
                 case MonsterImage.Wolf:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_7, out BodyLibrary);
                     BodyShape = 5;
@@ -227,9 +234,30 @@ namespace Client.Models
                     StruckSound = SoundIndex.OmaStruck;
                     DieSound = SoundIndex.OmaDie;
                     break;
+                case MonsterImage.OmaInfant:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_28, out BodyLibrary);
+                    BodyShape = 4;
+                    AttackSound = SoundIndex.OmaAttack;
+                    StruckSound = SoundIndex.OmaStruck;
+                    DieSound = SoundIndex.OmaDie;
+                    break;
+                case MonsterImage.Yob:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_28, out BodyLibrary);
+                    BodyShape = 5;
+                    AttackSound = SoundIndex.YobAttack;
+                    StruckSound = SoundIndex.YobStruck;
+                    DieSound = SoundIndex.YobDie;
+                    break;
                 case MonsterImage.TigerSnake:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_6, out BodyLibrary);
                     BodyShape = 7;
+                    AttackSound = SoundIndex.TigerSnakeAttack;
+                    StruckSound = SoundIndex.TigerSnakeStruck;
+                    DieSound = SoundIndex.TigerSnakeDie;
+                    break;
+                case MonsterImage.RedSnake:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_6, out BodyLibrary);
+                    BodyShape = 4;
                     AttackSound = SoundIndex.TigerSnakeAttack;
                     StruckSound = SoundIndex.TigerSnakeStruck;
                     DieSound = SoundIndex.TigerSnakeDie;
@@ -259,6 +287,18 @@ namespace Client.Models
                 case MonsterImage.Guard:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_3, out BodyLibrary);
                     BodyShape = 6;
+                    break;
+                case MonsterImage.ForestGuard:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_12, out BodyLibrary);
+                    BodyShape = 3;
+                    break;
+                case MonsterImage.TownGuard:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_12, out BodyLibrary);
+                    BodyShape = 4;
+                    break;
+                case MonsterImage.SandGuard:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_12, out BodyLibrary);
+                    BodyShape = 5;
                     break;
                 case MonsterImage.CaveBat:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_3, out BodyLibrary);

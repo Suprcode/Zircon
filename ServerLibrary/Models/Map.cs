@@ -517,20 +517,12 @@ namespace Server.Models
 
                     if (movement.DestinationRegion.Map.MinimumLevel > ob.Level && !player.Character.Account.TempAdmin)
                     {
-                        player.Connection.ReceiveChat(string.Format(player.Connection.Language.NeedLevel, movement.DestinationRegion.Map.MinimumLevel), MessageType.System);
-
-                        foreach (SConnection con in player.Connection.Observers)
-                            con.ReceiveChat(string.Format(con.Language.NeedLevel, movement.DestinationRegion.Map.MinimumLevel), MessageType.System);
-
+                        player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NeedLevel, movement.DestinationRegion.Map.MinimumLevel), MessageType.System);
                         break;
                     }
                     if (movement.DestinationRegion.Map.MaximumLevel > 0 && movement.DestinationRegion.Map.MaximumLevel < ob.Level && !player.Character.Account.TempAdmin)
                     {
-                        player.Connection.ReceiveChat(string.Format(player.Connection.Language.NeedMaxLevel, movement.DestinationRegion.Map.MaximumLevel), MessageType.System);
-
-                        foreach (SConnection con in player.Connection.Observers)
-                            con.ReceiveChat(string.Format(con.Language.NeedMaxLevel, movement.DestinationRegion.Map.MaximumLevel), MessageType.System);
-
+                        player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NeedMaxLevel, movement.DestinationRegion.Map.MaximumLevel), MessageType.System);
                         break;
                     }
 
@@ -558,11 +550,7 @@ namespace Server.Models
 
                         if (!allowed)
                         {
-                            var message = string.Format(player.Connection.Language.NeedClass, movement.DestinationRegion.Map.RequiredClass.ToString());
-                            player.Connection.ReceiveChat(message, MessageType.System);
-
-                            foreach (SConnection con in player.Connection.Observers)
-                                con.ReceiveChat(message, MessageType.System);
+                            player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NeedClass, movement.DestinationRegion.Map.RequiredClass.ToString()), MessageType.System);
 
                             break;
                         }
@@ -577,10 +565,7 @@ namespace Server.Models
 
                         if (spawn.AliveCount == 0)
                         {
-                            player.Connection.ReceiveChat(player.Connection.Language.NeedMonster, MessageType.System);
-
-                            foreach (SConnection con in player.Connection.Observers)
-                                con.ReceiveChat(con.Language.NeedMonster, MessageType.System);
+                            player.Connection.ReceiveChatWithObservers(con => con.Language.NeedMonster, MessageType.System);
 
                             break;
                         }
@@ -590,10 +575,7 @@ namespace Server.Models
                     {
                         if (player.GetItemCount(movement.NeedItem) == 0)
                         {
-                            player.Connection.ReceiveChat(string.Format(player.Connection.Language.NeedItem, movement.NeedItem.ItemName), MessageType.System);
-
-                            foreach (SConnection con in player.Connection.Observers)
-                                con.ReceiveChat(string.Format(con.Language.NeedItem, movement.NeedItem.ItemName), MessageType.System);
+                            player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NeedItem, movement.NeedItem.ItemName), MessageType.System);
                             break;
                         }
 

@@ -38,10 +38,7 @@ namespace Server.Models.Magics
 
             if (count == 0)
             {
-                Player.Connection.ReceiveChat(Player.Connection.Language.DashFailed, MessageType.System);
-
-                foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(con.Language.DashFailed, MessageType.System);
+                Player.Connection.ReceiveChatWithObservers(con => con.Language.DashFailed, MessageType.System);
             }
 
             Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = Magic.Info.Delay });

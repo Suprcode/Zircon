@@ -364,6 +364,10 @@ namespace Client.Envir
             [SoundIndex.CarnivorousPlantStruck] = new DXSound(SoundPath + @"231-4.wav", SoundType.Monster),
             [SoundIndex.CarnivorousPlantDie] = new DXSound(SoundPath + @"231-5.wav", SoundType.Monster),
 
+            [SoundIndex.YobAttack] = new DXSound(SoundPath + @"211-2.wav", SoundType.Monster),
+            [SoundIndex.YobStruck] = new DXSound(SoundPath + @"211-4.wav", SoundType.Monster),
+            [SoundIndex.YobDie] = new DXSound(SoundPath + @"211-5.wav", SoundType.Monster),
+
             [SoundIndex.OmaAttack] = new DXSound(SoundPath + @"223-2.wav", SoundType.Monster),
             [SoundIndex.OmaStruck] = new DXSound(SoundPath + @"223-4.wav", SoundType.Monster),
             [SoundIndex.OmaDie] = new DXSound(SoundPath + @"223-5.wav", SoundType.Monster),

@@ -4872,8 +4872,6 @@ namespace Client.Models
 
         public virtual void NameChanged()
         {
-
-
             if (Race is ObjectType.Player && Caption is not null)
             {
                 CaptionLabel = new DXLabel
@@ -4885,10 +4883,10 @@ namespace Client.Models
                     Text = Caption,
                     IsControl = false,
                     IsVisible = true,
-
                 };
             }
-                if (string.IsNullOrEmpty(Name))
+
+            if (string.IsNullOrEmpty(Name))
             {
                 NameLabel = null;
             }
@@ -4904,7 +4902,6 @@ namespace Client.Models
                     NameLabel = new DXLabel
                     {
                         BackColour = Color.Empty,
-                        ForeColour = NameColour,
                         Outline = true,
                         OutlineColour = Color.Black,
                         Text = Name,
@@ -4915,6 +4912,8 @@ namespace Client.Models
                     NameLabel.Disposing += (o, e) => names.Remove(NameLabel);
                     names.Add(NameLabel);
                 }
+
+                NameLabel.ForeColour = NameColour;
             }
 
             if (string.IsNullOrEmpty(Title))
@@ -4940,23 +4939,26 @@ namespace Client.Models
 
                 TitleNameLabel = titles.FirstOrDefault(x => x.ForeColour == NameColour && x.BackColour == Color.Empty);
 
-                if (TitleNameLabel != null) return;
-
-                TitleNameLabel = new DXLabel
+                if (TitleNameLabel == null)
                 {
-                    BackColour = Color.Empty,
-                    ForeColour = Race != ObjectType.Player ? Color.Orange : NameColour,
-                    Outline = true,
-                    OutlineColour = Color.Black,
-                    Text = title,
-                    IsControl = false,
-                    IsVisible = true,
-                };
+                    TitleNameLabel = new DXLabel
+                    {
+                        BackColour = Color.Empty,
+                        Outline = true,
+                        OutlineColour = Color.Black,
+                        Text = title,
+                        IsControl = false,
+                        IsVisible = true,
+                    };
 
-                TitleNameLabel.Disposing += (o, e) => titles.Remove(TitleNameLabel);
-                titles.Add(TitleNameLabel);
+                    TitleNameLabel.Disposing += (o, e) => titles.Remove(TitleNameLabel);
+                    titles.Add(TitleNameLabel);
+                }
+
+                TitleNameLabel.ForeColour = Race != ObjectType.Player ? Color.Orange : NameColour;
             }
         }
+
         public virtual void DrawName()
         {
             if (NameLabel != null)
@@ -4973,7 +4975,6 @@ namespace Client.Models
                     y -= 13;
 
                 NameLabel.Location = new Point(x, y);
-                NameLabel.ForeColour = NameColour;
                 if (Config.HighlightedItems != string.Empty)
                 {
                     string[] items = Config.HighlightedItems.Split(',');
@@ -4989,8 +4990,6 @@ namespace Client.Models
                 NameLabel.Draw();
             }
 
-         
-
             if (TitleNameLabel != null)
             {
                 int x = DrawX + (48 - TitleNameLabel.Size.Width) / 2;
@@ -5005,9 +5004,8 @@ namespace Client.Models
                 TitleNameLabel.Draw();
             }
 
-            if (CaptionLabel is not null)
+            if (CaptionLabel != null)
             {
-
                 int x = DrawX + (48 - CaptionLabel.Size.Width) / 2;
                 int y = (DrawY - (32 - CaptionLabel.Size.Height) / 2) - 13;
 
@@ -5025,12 +5023,13 @@ namespace Client.Models
                 CaptionLabel.Draw();
             }
         }
+
         public virtual void DrawDamage()
         {
-
             foreach (DamageInfo damageInfo in DamageList)
                 damageInfo.Draw(DrawX, DrawY);
         }
+
         public void DrawChat()
         {
             if (ChatLabel == null || ChatLabel.IsDisposed) return;

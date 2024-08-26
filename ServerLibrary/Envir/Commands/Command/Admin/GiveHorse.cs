@@ -13,6 +13,9 @@ namespace Server.Envir.Commands.Command.Admin
 
         public override void Action(PlayerObject player, string[] vals)
         {
+            if (vals.Length < PARAMS_LENGTH)
+                ThrowNewInvalidParametersException();
+
             CharacterInfo character = SEnvir.GetCharacter(vals[1]);
             if (character == null)
                 throw new UserCommandException(string.Format("Could not find player: {0}.", vals[1]));

@@ -236,6 +236,14 @@ namespace Server.Envir
             }
         }
 
+        public void ReceiveChatWithObservers(Func<SConnection, string> messageFunc, MessageType messageType, List<ClientUserItem> linkedItems = null, uint objectID = 0)
+        {
+            ReceiveChat(messageFunc(this), messageType, linkedItems, objectID);
+
+            foreach (SConnection observer in Observers)
+                observer.ReceiveChat(messageFunc(observer), messageType, linkedItems, objectID);
+        }
+
         public void Process(C.SelectLanguage p)
         {
             switch (p.Language.ToUpper())

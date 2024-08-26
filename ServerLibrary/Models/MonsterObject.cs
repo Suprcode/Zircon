@@ -2803,13 +2803,7 @@ namespace Server.Models
 
                         if (drop.Item.Rarity != Rarity.Common)
                         {
-                            owner.Connection.ReceiveChat(
-                                string.Format(owner.Connection.Language.HarvestRare, MonsterInfo.MonsterName),
-                                MessageType.System);
-
-                            foreach (SConnection con in owner.Connection.Observers)
-                                con.ReceiveChat(string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName),
-                                    MessageType.System);
+                            owner.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName), MessageType.System);
                         }
 
                         drops.Add(item);
@@ -2862,10 +2856,7 @@ namespace Server.Models
 
                         if (item.Info.Rarity != Rarity.Common)
                         {
-                            owner.Connection.ReceiveChat(string.Format(owner.Connection.Language.HarvestRare, MonsterInfo.MonsterName), MessageType.System);
-
-                            foreach (SConnection con in owner.Connection.Observers)
-                                con.ReceiveChat(string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName), MessageType.System);
+                            owner.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName), MessageType.System);
                         }
 
                         drops.Add(item);

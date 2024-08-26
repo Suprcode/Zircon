@@ -4181,15 +4181,15 @@ namespace Client.Scenes
             }
 
         }
-        public DXControl GetNPCControl(NPCInfo NPC)
+        public DXControl GetNPCControl(NPCInfo npc)
         {
             int icon = 0;
             Color colour = Color.White;
             string iconString = "";
 
-            if (NPC.CurrentQuest != null)
+            if (npc.CurrentQuest != null)
             {
-                switch (NPC.CurrentQuest.Type)
+                switch (npc.CurrentQuest.Type)
                 {
                     case QuestType.General:
                         icon = 16;
@@ -4217,7 +4217,7 @@ namespace Client.Scenes
                         break;
                 }
 
-                switch (NPC.CurrentQuest.Icon)
+                switch (npc.CurrentQuest.Icon)
                 {
                     case QuestIcon.New:
                         icon += 0;
@@ -4241,8 +4241,8 @@ namespace Client.Scenes
                 {
                     Text = iconString,
                     ForeColour = colour,
-                    Hint = NPC.NPCName,
-                    Tag = NPC.CurrentQuest,
+                    Hint = npc.NPCName,
+                    Tag = npc.CurrentQuest,
                     Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold)
                 };
 
@@ -4255,10 +4255,25 @@ namespace Client.Scenes
                     LibraryFile = LibraryFile.QuestIcon,
                     Index = icon,
                     ForeColour = colour,
-                    Hint = NPC.NPCName,
-                    Tag = NPC.CurrentQuest,
+                    Hint = npc.NPCName,
+                    Tag = npc.CurrentQuest,
                 };
                 image.OpacityChanged += (o, e) => image.ImageOpacity = image.Opacity;
+
+                return image;
+            }
+            else if (npc.MapIcon != MapIcon.None)
+            {
+                DXImageControl image = new DXImageControl
+                {
+                    LibraryFile = LibraryFile.MiniMapIcon,
+                    Opacity = Opacity,
+                    Hint = npc.NPCName,
+                    ImageOpacity = Opacity,
+                };
+                image.OpacityChanged += (o, e) => image.ImageOpacity = image.Opacity;
+
+                GameScene.Game.UpdateMapIcon(image, npc.MapIcon);
 
                 return image;
             }
@@ -4267,10 +4282,126 @@ namespace Client.Scenes
             {
                 Size = new Size(3, 3),
                 DrawTexture = true,
-                Hint = NPC.NPCName,
-                BackColour = Color.Lime,
-                Tag = NPC.CurrentQuest,
+                Hint = npc.NPCName,
+                BackColour = Color.Lime
             };
+        }
+
+        public void UpdateMapIcon(DXImageControl control, MapIcon icon)
+        {
+            switch (icon)
+            {
+                case MapIcon.Cave:
+                    control.Index = 1;
+                    control.ForeColour = Color.Red;
+                    break;
+                case MapIcon.Exit:
+                    control.Index = 1;
+                    control.ForeColour = Color.Green;
+                    break;
+                case MapIcon.Down:
+                    control.Index = 1;
+                    control.ForeColour = Color.MediumVioletRed;
+                    break;
+                case MapIcon.Up:
+                    control.Index = 1;
+                    control.ForeColour = Color.DeepSkyBlue;
+                    break;
+                case MapIcon.Province:
+                    control.Index = 7;
+                    break;
+                case MapIcon.Building:
+                    control.Index = 6;
+                    break;
+
+                case MapIcon.BichonCity:
+                    control.Index = 20;
+                    break;
+                case MapIcon.Castle:
+                    control.Index = 21;
+                    break;
+                case MapIcon.BugCaves:
+                    control.Index = 22;
+                    break;
+                case MapIcon.CaveUpDown:
+                    control.Index = 23;
+                    break;
+                case MapIcon.SmallManInTriangle:
+                    control.Index = 24;
+                    break;
+                case MapIcon.Dunes:
+                    control.Index = 25;
+                    break;
+                case MapIcon.MineUpDown:
+                    control.Index = 26;
+                    break;
+                case MapIcon.GinkoTree:
+                    control.Index = 27;
+                    break;
+                case MapIcon.Forest:
+                    control.Index = 28;
+                    break;
+                case MapIcon.InsectCaveBubble:
+                    control.Index = 29;
+                    break;
+                case MapIcon.AntCave:
+                    control.Index = 30;
+                    break;
+                case MapIcon.JinchonTemple:
+                    control.Index = 31;
+                    break;
+                case MapIcon.MiningCave:
+                    control.Index = 32;
+                    break;
+                case MapIcon.Mudwall:
+                    control.Index = 33;
+                    break;
+                case MapIcon.BorderTown:
+                    control.Index = 34;
+                    break;
+                case MapIcon.Oasis:
+                    control.Index = 35;
+                    break;
+                case MapIcon.UnkownPalace:
+                    control.Index = 36;
+                    break;
+                case MapIcon.Pointer:
+                    control.Index = 37;
+                    break;
+                case MapIcon.Serpent:
+                    control.Index = 38;
+                    break;
+                case MapIcon.Shrine:
+                    control.Index = 39;
+                    break;
+                case MapIcon.SkullCave:
+                    control.Index = 40;
+                    break;
+                case MapIcon.SkullBonesCave:
+                    control.Index = 41;
+                    break;
+                case MapIcon.StairDown:
+                    control.Index = 42;
+                    break;
+                case MapIcon.StairUp:
+                    control.Index = 43;
+                    break;
+                case MapIcon.UnknownTempl:
+                    control.Index = 44;
+                    break;
+                case MapIcon.Walkway:
+                    control.Index = 45;
+                    break;
+                case MapIcon.StoneTemple:
+                    control.Index = 46;
+                    break;
+                case MapIcon.WoomaTemple:
+                    control.Index = 47;
+                    break;
+                case MapIcon.ZumaTemple:
+                    control.Index = 48;
+                    break;
+            }
         }
 
         public bool IsAlly(uint objectID)

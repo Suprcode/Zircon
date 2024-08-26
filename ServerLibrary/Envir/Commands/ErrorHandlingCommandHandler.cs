@@ -33,10 +33,7 @@ namespace Server.Envir.Commands
                 }
                 else
                 {
-                    player.Connection.ReceiveChat(
-                        string.Format("Command @{0} does not exist.", commandIdentifier),
-                        MessageType.System
-                    );
+                    player.Connection.ReceiveChat(string.Format("Command @{0} does not exist.", commandIdentifier), MessageType.System);
                 }
             }
             catch (UserCommandException exception)

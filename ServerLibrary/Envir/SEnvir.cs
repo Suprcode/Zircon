@@ -713,6 +713,12 @@ namespace Server.Envir
                     continue;
                 }
 
+                if (movement.DestinationRegion.PointList.Count == 0)
+                {
+                    Log($"[Movement] Bad Destination, Dest: {movement.DestinationRegion.ServerDescription}, No Points");
+                    continue;
+                }
+
                 Map destMap = GetMap(movement.DestinationRegion.Map, instance, instanceSequence);
 
                 if (destMap == null)

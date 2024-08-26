@@ -456,6 +456,15 @@ namespace Client.Models
                                 ArmourShape = 0;
                             }
 
+                            if (CostumeShape >= 0)
+                            {
+                                if (!CostumeList.TryGetValue(CostumeShape / 10 + AssassinOffSet, out file))
+                                {
+                                    file = LibraryFile.M_HumA;
+                                    ArmourShape = 0;
+                                }
+                            }
+
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);
                             CEnvir.LibraryList.TryGetValue(LibraryFile.M_HairA, out HairLibrary);
 
@@ -490,6 +499,15 @@ namespace Client.Models
                             {
                                 file = LibraryFile.WM_HumA;
                                 ArmourShape = 0;
+                            }
+
+                            if (CostumeShape >= 0)
+                            {
+                                if (!CostumeList.TryGetValue(CostumeShape / 10 + AssassinOffSet + FemaleOffSet, out file))
+                                {
+                                    file = LibraryFile.WM_HumA;
+                                    ArmourShape = 0;
+                                }
                             }
 
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);

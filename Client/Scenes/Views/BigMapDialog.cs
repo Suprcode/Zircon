@@ -270,7 +270,7 @@ namespace Client.Scenes.Views
             DXImageControl control;
             MapInfoObjects[ob] = control = new DXImageControl
             {
-                LibraryFile = LibraryFile.Interface,
+                LibraryFile = LibraryFile.MiniMapIcon,
                 Parent = Image,
                 Opacity =  Opacity,
                 ImageOpacity =  Opacity,
@@ -278,33 +278,8 @@ namespace Client.Scenes.Views
             };
             control.OpacityChanged += (o, e) => control.ImageOpacity = control.Opacity;
 
-            switch (ob.Icon)
-            {
-                case MapIcon.Cave:
-                    control.Index = 70;
-                    control.ForeColour = Color.Red;
-                    break;
-                case MapIcon.Exit:
-                    control.Index = 70;
-                    control.ForeColour = Color.Green;
-                    break;
-                case MapIcon.Down:
-                    control.Index = 70;
-                    control.ForeColour = Color.MediumVioletRed;
-                    break;
-                case MapIcon.Up:
-                    control.Index = 70;
-                    control.ForeColour = Color.DeepSkyBlue;
-                    break;
-                case MapIcon.Province:
-                    control.Index = 6125;
-                    control.LibraryFile = LibraryFile.GameInter;
-                    break;
-                case MapIcon.Building:
-                    control.Index = 6124;
-                    control.LibraryFile = LibraryFile.GameInter;
-                    break;
-            }
+            GameScene.Game.UpdateMapIcon(control, ob.Icon);
+
             control.MouseClick += (o, e) => SelectedInfo = ob.DestinationRegion.Map;
             control.Location = new Point((int) (ScaleX*x) - control.Size.Width/2, (int) (ScaleY*y) - control.Size.Height/2);
         }
