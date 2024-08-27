@@ -4386,7 +4386,7 @@ namespace Client.Scenes
                 case MapIcon.StairUp:
                     control.Index = 43;
                     break;
-                case MapIcon.UnknownTempl:
+                case MapIcon.UnknownTemple:
                     control.Index = 44;
                     break;
                 case MapIcon.Walkway:
