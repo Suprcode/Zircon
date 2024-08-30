@@ -747,6 +747,13 @@ namespace Client.Models
                     StruckSound = SoundIndex.NumaGruntStruck;
                     DieSound = SoundIndex.NumaGruntDie;
                     break;
+                case MonsterImage.NumaWarrior:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_13, out BodyLibrary);
+                    BodyShape = 9;
+                    AttackSound = SoundIndex.NumaGruntAttack;
+                    StruckSound = SoundIndex.NumaGruntStruck;
+                    DieSound = SoundIndex.NumaGruntDie;
+                    break;
                 case MonsterImage.NumaMage:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_2, out BodyLibrary);
                     BodyShape = 3;

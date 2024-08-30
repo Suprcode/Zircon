@@ -6938,7 +6938,13 @@ namespace Server.Models
                 array[i] = null;
             }
 
+            int index = 0;
             int slot = 0;
+
+            if (p.Grid == GridType.PartsStorage)
+            {
+                slot = Globals.PartsStorageOffset;
+            }
 
             for (int i = 0; i < sorted.Length; i++)
             {
@@ -6951,7 +6957,7 @@ namespace Server.Models
 
                     item.Count -= item.Info.StackSize;
 
-                    array[slot] = newItem;
+                    array[index] = newItem;
                     newItem.Slot = slot;
 
                     switch (p.Grid)
@@ -6967,12 +6973,14 @@ namespace Server.Models
                             break;
                     }
 
+                    index++;
                     slot++;
                 }
 
-                array[slot] = item;
+                array[index] = item;
                 item.Slot = slot;
 
+                index++;
                 slot++;
             }
 

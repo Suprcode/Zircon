@@ -943,7 +943,7 @@ namespace Library
         //NF_WhiteSnake = 136,
         ChestnutTree = 137,
         NumaGrunt = 138,
-        //NF_NumaWarrior = 139,
+        NumaWarrior = 139,
 
         BanyaRightGuard = 140,
         BanyaLeftGuard = 141,

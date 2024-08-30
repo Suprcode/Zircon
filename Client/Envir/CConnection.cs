@@ -2473,7 +2473,18 @@ namespace Client.Envir
 
             foreach (var item in p.Items)
             {
-                grid[item.Slot].Item = item;
+                switch (p.Grid)
+                {
+                    case GridType.Inventory:
+                        grid[item.Slot].Item = item;
+                        break;
+                    case GridType.Storage:
+                        grid[item.Slot].Item = item;
+                        break;
+                    case GridType.PartsStorage:
+                        grid[item.Slot - Globals.PartsStorageOffset].Item = item;
+                        break;
+                }
             }
         }
 
