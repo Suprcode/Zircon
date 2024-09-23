@@ -1445,11 +1445,11 @@ namespace Server.Models
 
                 if (item == null)
                     item = Storage.FirstOrDefault(e => e != null && e.Index == itemIndex);
-                else if (item == null)
+                if (item == null)
                     item = Equipment.FirstOrDefault(e => e != null && e.Index == itemIndex);
-                else if (item == null && Companion != null)
+                if (item == null && Companion != null)
                     item = Companion.Inventory.FirstOrDefault(e => e != null && e.Index == itemIndex);
-                else if (item == null)
+                if (item == null)
                     continue;
 
                 text = text.Replace(match.Groups["Text"].Value, item.Info.ItemName);
