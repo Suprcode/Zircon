@@ -10,13 +10,10 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public class CastleObjective : MonsterObject
+    public class CastleFlag : CastleObject
     {
-        public ConquestWar War;
-    }
+        public CastleFlagInfo FlagInfo { get; set; }
 
-    public class CastleFlag : CastleObjective
-    {
         public override bool CanMove => false;
 
         private static int _takeDuration = 30;
@@ -24,8 +21,6 @@ namespace Server.Models.Monsters
 
         private GuildInfo Contester = null;
         private DateTime ContesterTime = DateTime.MaxValue;
-
-        public GuildInfo CurrentGuild = null;
 
         private int _flag = 0;
         private Color _colour = Color.White;
@@ -37,38 +32,39 @@ namespace Server.Models.Monsters
             Direction = MirDirection.Up;
         }
 
+        public bool Spawn(CastleInfo castle, CastleFlagInfo flagInfo)
+        {
+            Castle = castle;
+            FlagInfo = flagInfo;
+
+            if (castle == null || flagInfo == null)
+            {
+                return false;
+            }
+
+            var map = SEnvir.Maps.First(x => x.Key == castle.Map).Value;
+
+            if (!base.Spawn(map, new Point(flagInfo.X, flagInfo.Y)))
+            {
+                return false;
+            }
+
+            map.CastleFlags.Add(this);
+
+            return true;
+        }
+
+
+        protected override void OnSpawned()
+        {
+            base.OnSpawned();
+
+            Refresh();
+        }
+
         public override void Process()
         {
             base.Process();
-
-            CastleInfo castle;
-
-            if (War == null)
-            {
-                //find castle based on map
-                castle = SEnvir.CastleInfoList.Binding.FirstOrDefault(x => x.CastleRegion != null && x.CastleRegion.Map == CurrentMap.Info);
-            }
-            else
-            {
-                //find castle from war
-                castle = War.Castle;
-            }
-
-            GuildInfo ownerGuild = SEnvir.GuildInfoList.Binding.FirstOrDefault(x => x.Castle == castle);
-
-            if (CurrentGuild != ownerGuild)
-            {
-                _flag = ownerGuild?.Flag ?? 0;
-                _colour = Color.FromArgb(ownerGuild?.Colour.R ?? 0, ownerGuild?.Colour.G ?? 0, ownerGuild?.Colour.B ?? 0);
-
-                Visible = false;
-                RemoveAllObjects();
-
-                Visible = true;
-                AddAllObjects();
-
-                CurrentGuild = ownerGuild;
-            }
 
             if (Target != null && !InAttackRange())
                 Target = null;
@@ -81,6 +77,20 @@ namespace Server.Models.Monsters
                 Contester = null;
                 ContesterTime = DateTime.MaxValue;
             }
+        }
+
+        public override void Refresh()
+        {
+            base.Refresh();
+
+            _flag = Guild?.Flag ?? 0;
+            _colour = Color.FromArgb(Guild?.Colour.R ?? 255, Guild?.Colour.G ?? 255, Guild?.Colour.B ?? 255);
+
+            Visible = false;
+            RemoveAllObjects();
+
+            Visible = true;
+            AddAllObjects();
         }
 
         protected override bool InAttackRange()
@@ -203,6 +213,7 @@ namespace Server.Models.Monsters
         {
             base.ProcessSearch();
         }
+
         public override void ProcessTarget()
         {
             base.ProcessTarget();
@@ -268,11 +279,6 @@ namespace Server.Models.Monsters
         public override bool CanBeSeenBy(PlayerObject ob)
         {
             return Visible && base.CanBeSeenBy(ob);
-        }
-
-        public override void Die()
-        {
-            base.Die();
         }
 
         public override Packet GetInfoPacket(PlayerObject ob)

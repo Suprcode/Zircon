@@ -557,6 +557,21 @@ namespace Library.Network.ClientPackets
         public int Flag { get; set; }
     }
 
+    public sealed class GuildToggleCastleGates : Packet
+    {
+
+    }
+
+    public sealed class GuildRepairCastleGates : Packet
+    {
+
+    }
+
+    public sealed class GuildRepairCastleGuards : Packet
+    {
+
+    }
+
     public sealed class QuestAccept : Packet
     {
         public int Index { get; set; }

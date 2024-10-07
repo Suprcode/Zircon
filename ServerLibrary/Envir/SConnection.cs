@@ -1133,6 +1133,24 @@ namespace Server.Envir
 
             Player.GuildFlag(p.Flag);
         }
+        public void Process(C.GuildToggleCastleGates p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GuildToggleCastleGates();
+        }
+        public void Process(C.GuildRepairCastleGates p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GuildRepairCastleGates();
+        }
+        public void Process(C.GuildRepairCastleGuards p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GuildRepairCastleGuards();
+        }
 
         public void Process(C.QuestAccept p)
         {

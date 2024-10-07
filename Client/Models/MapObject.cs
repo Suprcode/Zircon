@@ -672,13 +672,13 @@ namespace Client.Models
         }
 
         public abstract void SetAnimation(ObjectAction action);
-        public virtual void SetFrame(ObjectAction action)
+        public virtual void SetFrame(ObjectAction action, int frameStartDelay = 0)
         {
             SetAnimation(action);
 
             FrameIndex = -1;
             CurrentAction = action.Action;
-            FrameStart = CEnvir.Now;
+            FrameStart = CEnvir.Now.AddMilliseconds(frameStartDelay);
 
             switch (action.Action)
             {

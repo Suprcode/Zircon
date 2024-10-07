@@ -1613,10 +1613,12 @@ namespace Server.Models
 
             return obs;
         }
+
         public virtual bool CanHelpTarget(MapObject ob)
         {
             return false;
         }
+
         public virtual bool CanAttackTarget(MapObject ob)
         {
             return false;

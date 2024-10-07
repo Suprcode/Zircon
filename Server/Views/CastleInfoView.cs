@@ -13,7 +13,7 @@ namespace Server.Views
 
             CastleInfoGridControl.DataSource = SMain.Session.GetCollection<CastleInfo>().Binding;
 
-            MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding.Where(x => x.Flag == Library.MonsterFlag.CastleObjective);
+            MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding.Where(x => x.Flag == Library.MonsterFlag.CastleObjective || x.Flag == Library.MonsterFlag.CastleDefense);
             RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapInfo>().Binding;
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;

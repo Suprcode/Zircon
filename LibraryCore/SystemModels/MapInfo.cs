@@ -1,4 +1,5 @@
 ﻿using MirDB;
+using System;
 using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
@@ -265,7 +266,23 @@ namespace Library.SystemModels
         }
         private SoundIndex _Music;
 
+        public int Background
+        {
+            get { return _Background; }
+            set
+            {
+                if (_Background == value) return;
+
+                var oldValue = _Background;
+                _Background = value;
+
+                OnChanged(oldValue, value, "Background");
+            }
+        }
+        private int _Background;
+
         //DO NOT USE
+
         public int MonsterHealth
         {
             get { return _MonsterHealth; }

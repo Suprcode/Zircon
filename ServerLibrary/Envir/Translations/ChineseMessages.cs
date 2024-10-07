@@ -162,6 +162,7 @@ namespace Server.Envir.Translations
         public override string GuildMemberKicked { get; set; } = "{0} has been kicked from the guild by {1}.";
         public override string GuildKicked { get; set; } = "You have been kicked form the guild by {0}.";
         public override string GuildManagePermission { get; set; } = "You do not have permission to Manage the guild.";
+        public override string GuildCastleRepairPermission { get; set; } = "You do not have permission to Repair Castle Defenses.";
         public override string GuildMemberLimit { get; set; } = "Guild has already reached the Maxmimum Member Limit.";
         public override string GuildMemberCost { get; set; } = "Guild does not have enough funds to increase member limit.";
         public override string GuildStorageLimit { get; set; } = "Guild has already reached the Maxmimum Storage Size.";
@@ -197,6 +198,8 @@ namespace Server.Envir.Translations
         public override string GuildLeave { get; set; } = "You have left the guild.";
         public override string GuildMemberLeave { get; set; } = "{0} has left the guild.";
         public override string GuildWarDeath { get; set; } = "{0} from {1} was killed by {2} from the guild {3}.";
+        public override string GuildRepairCastleGatesCost { get; set; } = "Unable to repair gates, Your Guild needs another {0:#,##0} Gold.";
+        public override string GuildRepairCastleGuardsCost { get; set; } = "Unable to repair guards, Your Guild needs another {0:#,##0} Gold.";
 
         public override string GroupNoGroup { get; set; } = "You are not in a group.";
         public override string GroupNotLeader { get; set; } = "You are not the leader of your group";
@@ -290,6 +293,7 @@ namespace Server.Envir.Translations
         public override string InstanceSafeZoneOnly { get; set; } = "You must be in a safe zone to join instance.";
         public override string InstanceNotInGroup { get; set; } = "You must be in a group to join instance.";
         public override string InstanceNotInGuild { get; set; } = "You must be in a guild to join instance.";
+        public override string InstanceNotInCastle { get; set; } = "Your guild must own a castle to join instance.";
         public override string InstanceTooFewInGroup { get; set; } = "Minimum {0} people required to join instance.";
         public override string InstanceTooManyInGroup { get; set; } = "Maximum {0} people required to join instance.";
         public override string InstanceConnectRegionNotSet { get; set; } = "Connect region has not been setup for instance.";

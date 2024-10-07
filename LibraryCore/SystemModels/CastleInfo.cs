@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
+﻿using MirDB;
+using System;
 
 namespace Library.SystemModels
 {
@@ -147,7 +143,13 @@ namespace Library.SystemModels
         private decimal _Discount;
 
         [Association("Flags", true)]
-        public DBBindingList<FlagInfo> Flags { get; set; }
+        public DBBindingList<CastleFlagInfo> Flags { get; set; }
+
+        [Association("Gates", true)]
+        public DBBindingList<CastleGateInfo> Gates { get; set; }
+
+        [Association("Guards", true)]
+        public DBBindingList<CastleGuardInfo> Guards { get; set; }
 
         public DateTime WarDate;
     }

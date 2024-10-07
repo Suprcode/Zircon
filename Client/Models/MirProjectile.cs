@@ -56,8 +56,7 @@ namespace Client.Models
                 duration *= Delay;
 
             if (!Has16Directions)
-                Direction16 = 0;
-            Direction16 /= 2;
+                Direction16 /= 2;
 
             if (duration == 0)
             {

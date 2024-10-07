@@ -199,6 +199,8 @@ namespace Client.Scenes.Views
 
             if (!Visible) return;
 
+            DrawBackground();
+
             if (FLayer.TextureValid)
                 DXManager.Sprite.Draw(FLayer.ControlTexture, Color.White);
 
@@ -303,6 +305,19 @@ namespace Client.Scenes.Views
             
             DrawBorder();
             OnAfterDraw();
+        }
+
+        private void DrawBackground()
+        {
+            if (MapInfo.Background <= 0) return;
+
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Background, out MirLibrary library)) return;
+
+            MirImage image = library.CreateImage(MapInfo.Background, ImageType.Image);
+
+            if (image?.Image == null) return;
+
+            PresentTexture(image.Image, Parent,DisplayArea, Color.White, this, 0, 0, 1F);
         }
 
         private void DrawObjects()

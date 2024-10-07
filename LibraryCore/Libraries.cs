@@ -33,6 +33,8 @@ namespace Library
 
             [LibraryFile.MiniMapIcon] = @"Data\MiniMapIcon.Zl",
 
+            [LibraryFile.Background] = @"Data\Background.Zl",
+
             [LibraryFile.MagicIcon] = @"Data\MIcon.Zl",
             [LibraryFile.CBIcon] = @"Data\CBIcons.Zl",
             [LibraryFile.QuestIcon] = @"Data\QuestIcons.Zl",
@@ -470,6 +472,7 @@ namespace Library
         MiniGames,
         CastleFlag,
         MiniMapIcon,
+        Background,
 
         NPCImage,
         MonImage,

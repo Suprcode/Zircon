@@ -50,7 +50,7 @@ namespace Library
 
             InfernalSoldier,
 
-            CastleFlag;
+            CastleFlag, SabukGate;
 
 
         static FrameSet()
@@ -912,8 +912,18 @@ namespace Library
 
             CastleFlag = new Dictionary<MirAnimation, Frame>
             {
-                [MirAnimation.Standing] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(500)),
+                [MirAnimation.Standing] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.Struck] = new Frame(0, 10, 0, TimeSpan.FromMilliseconds(100)),
+            };
+
+            SabukGate = new Dictionary<MirAnimation, Frame>
+            {
+                [MirAnimation.Standing] = new Frame(0, 1, 10, TimeSpan.FromMilliseconds(1000)),
+                [MirAnimation.Struck] = new Frame(240, 2, 10, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat1] = new Frame(640, 7, 0, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Combat2] = new Frame(640, 7, 0, TimeSpan.FromMilliseconds(100)) { Reversed = true },
+                [MirAnimation.Die] = new Frame(320, 8, 0, TimeSpan.FromMilliseconds(100)),
+                [MirAnimation.Dead] = new Frame(327, 1, 0, TimeSpan.FromMilliseconds(1000))
             };
         }
     }

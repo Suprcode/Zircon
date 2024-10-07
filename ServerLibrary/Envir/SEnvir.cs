@@ -840,37 +840,37 @@ namespace Server.Envir
                     continue;
                 }
 
-                HashSet<Point> edges = new HashSet<Point>();
-
-                foreach (Point point in info.Region.PointList)
-                {
-                    Cell cell = map.GetCell(point);
-
-                    if (cell == null)
-                    {
-                        Log($"[Safe Zone] Bad Location, Region: {info.Region.ServerDescription}, X: {point.X}, Y: {point.Y}.");
-
-                        continue;
-                    }
-
-                    cell.SafeZone = info;
-
-                    for (int i = 0; i < 8; i++)
-                    {
-                        Point test = Functions.Move(point, (MirDirection)i);
-
-                        if (info.Region.PointList.Contains(test)) continue;
-
-                        if (map.GetCell(test) == null) continue;
-
-                        edges.Add(test);
-                    }
-                }
-
                 map.HasSafeZone = true;
 
                 if (info.Border)
                 {
+                    HashSet<Point> edges = new HashSet<Point>();
+
+                    foreach (Point point in info.Region.PointList)
+                    {
+                        Cell cell = map.GetCell(point);
+
+                        if (cell == null)
+                        {
+                            Log($"[Safe Zone] Bad Location, Region: {info.Region.ServerDescription}, X: {point.X}, Y: {point.Y}.");
+
+                            continue;
+                        }
+
+                        cell.SafeZone = info;
+
+                        for (int i = 0; i < 8; i++)
+                        {
+                            Point test = Functions.Move(point, (MirDirection)i);
+
+                            if (info.Region.PointList.Contains(test)) continue;
+
+                            if (map.GetCell(test) == null) continue;
+
+                            edges.Add(test);
+                        }
+                    }
+
                     foreach (Point point in edges)
                     {
                         SpellObject ob = new SpellObject
@@ -909,7 +909,6 @@ namespace Server.Envir
 
                     info.ValidBindPoints.Add(point);
                 }
-
             }
         }
 

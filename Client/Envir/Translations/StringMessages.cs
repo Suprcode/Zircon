@@ -82,6 +82,7 @@ namespace Client.Envir.Translations
         public abstract string DungeonNotEnoughPeople { get; set; }
         public abstract string DungeonTooManyPeople { get; set; }
         public abstract string DungeonInGuild { get; set; }
+        public abstract string DungeonInCastle { get; set; }
         public abstract string CharacterSameGender { get; set; }
         public abstract string LogoutInCombat { get; set; }
         public abstract string ExitInCombat { get; set; }
@@ -498,6 +499,7 @@ namespace Client.Envir.Translations
         public abstract string GuildDialogStorageTabItemLabel { get; set; }
         public abstract string GuildDialogStorageTabClearButtonLabel { get; set; }
         public abstract string GuildDialogWarTabLabel { get; set; }
+        public abstract string GuildDialogCastleTabLabel { get; set; }
         public abstract string GuildDialogManageTabMembershipLabel { get; set; }
         public abstract string GuildDialogManageTabMembershipMemberConfirmMessage { get; set; }
         public abstract string GuildDialogManageTabMembershipIncreaseMemberConfirmMessage { get; set; }
@@ -540,6 +542,10 @@ namespace Client.Envir.Translations
         public abstract string GuildCastlePanelCostLabel { get; set; }
         public abstract string GuildCastlePanelNoneText { get; set; }
         public abstract string GuildCastlePanelInProgressText { get; set; }
+        public abstract string GuildRepairGatesConfirmMsg { get; set; }
+        public abstract string GuildRepairGatesConfirmCaption { get; set; }
+        public abstract string GuildRepairGuardsConfirmMsg { get; set; }
+        public abstract string GuildRepairGuardsConfirmCaption { get; set; }
 
         public abstract string InventoryDialogTitle { get; set; }
         public abstract string InventoryDialogPrimaryCurrencyTitle { get; set; }

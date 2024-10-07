@@ -649,9 +649,9 @@ namespace Client.Models
                 CurrentFrame = Frame.EmptyFrame;
         }
 
-        public sealed override void SetFrame(ObjectAction action)
+        public sealed override void SetFrame(ObjectAction action, int frameStartDelay = 0)
         {
-            base.SetFrame(action);
+            base.SetFrame(action, frameStartDelay);
 
             switch (action.Action)
             {
@@ -768,7 +768,6 @@ namespace Client.Models
                     }
                     break;
             }
-
         }
 
         public override void SetAction(ObjectAction action)
@@ -948,7 +947,59 @@ namespace Client.Models
 
             int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;
 
-            MirImage image;
+            MirImage image = null;
+
+            switch (CurrentAnimation)
+            {
+                case MirAnimation.HorseStanding:
+                case MirAnimation.HorseWalking:
+                case MirAnimation.HorseRunning:
+                case MirAnimation.HorseStruck:
+
+                    switch (HorseShape)
+                    {
+                        case 0://no armour
+                            image = HorseLibrary?.GetImage(HorseFrame);
+                            if (image == null) break;
+                            HorseLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                            break;
+                        case 1://iron
+                        case 2://silver
+                        case 3://gold
+                            image = HorseShapeLibrary?.GetImage(HorseFrame);
+                            if (image == null) break;
+                            HorseShapeLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                            break;
+                        case 4://blue
+                            image = HorseShapeLibrary?.GetImage(DrawFrame);
+                            if (image == null) break;
+                            HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                            break;
+                        case 5://dark
+                        case 6://royal
+                            image = HorseShapeLibrary?.GetImage(DrawFrame);
+                            if (image == null) break;
+                            HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                            break;
+                        case 7://bluedragon
+                            image = HorseShapeLibrary?.GetImage(DrawFrame);
+                            if (image == null) break;
+                            HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
+                            //if (shadow)
+                            //    HorseShapeLibrary2?.Draw(DrawFrame % 10, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
+                            break;
+                    }
+
+                    if (image != null)
+                    {
+                        l = Math.Min(l, DrawX + image.OffSetX);
+                        t = Math.Min(t, DrawY + image.OffSetY);
+                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
+                    }
+
+                    break;
+            }
 
             bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
 
@@ -965,11 +1016,6 @@ namespace Client.Models
                         if (image == null) break;
 
                         WeaponLibrary1.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                        l = Math.Min(l, DrawX + image.OffSetX);
-                        t = Math.Min(t, DrawY + image.OffSetY);
-                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
                         break;
                     default:
                         if (!DrawWeapon) break;
@@ -977,12 +1023,15 @@ namespace Client.Models
                         if (image == null) break;
 
                         WeaponLibrary2.Draw(WeaponFrame, DrawX, DrawY, Color.White, true, 1F, ImageType.Image);
-
-                        l = Math.Min(l, DrawX + image.OffSetX);
-                        t = Math.Min(t, DrawY + image.OffSetY);
-                        r = Math.Max(r, image.Width + DrawX + image.OffSetX);
-                        b = Math.Max(b, image.Height + DrawY + image.OffSetY);
                         break;
+                }
+
+                if (image != null)
+                {
+                    l = Math.Min(l, DrawX + image.OffSetX);
+                    t = Math.Min(t, DrawY + image.OffSetY);
+                    r = Math.Max(r, image.Width + DrawX + image.OffSetX);
+                    b = Math.Max(b, image.Height + DrawY + image.OffSetY);
                 }
 
                 switch (Direction)
@@ -1141,25 +1190,12 @@ namespace Client.Models
 
                     switch (HorseShape)
                     {
-                        case 0://no armour
-                            HorseLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
-                            break;
-                        case 1://iron
-                        case 2://silver
-                        case 3://gold
-                            HorseShapeLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
-                            break;
-                        case 4://blue
-                            HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
-                            break;
                         case 5://dark
                         case 6://royal
-                            HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             if (shadow)
                                 HorseShapeLibrary2?.DrawBlend(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;
                         case 7://bluedragon
-                            HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             //if (shadow)
                             //    HorseShapeLibrary2?.Draw(DrawFrame % 10, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
                             break;

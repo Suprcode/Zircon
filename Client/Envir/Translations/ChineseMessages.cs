@@ -83,6 +83,7 @@ namespace Client.Envir.Translations
         public override string DungeonNotEnoughPeople { get; set; } = "There are not enough people in your group.";
         public override string DungeonTooManyPeople { get; set; } = "There are too many people in your group.";
         public override string DungeonInGuild { get; set; } = "You must be in a guild.";
+        public override string DungeonInCastle { get; set; } = "Your guild must own a castle.";
         public override string CharacterSameGender { get; set; } = "You are already a {0}.";
         public override string LogoutInCombat { get; set; } = "Unable to logout whilst in combat.";
         public override string ExitInCombat { get; set; } = "Unable to exit game whilst in combat.";
@@ -500,6 +501,7 @@ namespace Client.Envir.Translations
         public override string GuildDialogStorageTabItemLabel { get; set; } = "Item:";
         public override string GuildDialogStorageTabClearButtonLabel { get; set; } = "Clear";
         public override string GuildDialogWarTabLabel { get; set; } = "War";
+        public override string GuildDialogCastleTabLabel { get; set; } = "Castle";
         public override string GuildDialogManageTabMembershipLabel { get; set; } = "Membership";
         public override string GuildDialogManageTabMembershipMemberConfirmMessage { get; set; } = "Please enter the name of the person you wish to Invite.";
         public override string GuildDialogManageTabMembershipIncreaseMemberConfirmMessage { get; set; } = "Would you like to increase member limit for {0:#,##0}?.";
@@ -539,6 +541,10 @@ namespace Client.Envir.Translations
         public override string GuildCastlePanelCostLabel { get; set; } = "Cost:";
         public override string GuildCastlePanelNoneText { get; set; } = "None";
         public override string GuildCastlePanelInProgressText { get; set; } = "In Progress";
+        public override string GuildRepairGatesConfirmMsg { get; set; } = "Estimated cost to repair gates will be {0:#,##0}. Are you sure?";
+        public override string GuildRepairGatesConfirmCaption { get; set; } = "Repair Gates";
+        public override string GuildRepairGuardsConfirmMsg { get; set; } = "Estimated cost to repair guards will be {0:#,##0}. Are you sure?";
+        public override string GuildRepairGuardsConfirmCaption { get; set; } = "Repair Guards";
 
         public override string InventoryDialogTitle { get; set; } = "Inventory";
         public override string InventoryDialogPrimaryCurrencyTitle { get; set; } = "Gold";

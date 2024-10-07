@@ -635,6 +635,10 @@ namespace Server.Models
 
                 case 1001:
                     return new CastleFlag { MonsterInfo = monsterInfo };
+                case 1002:
+                    return new CastleGate { MonsterInfo = monsterInfo };
+                case 1003:
+                    return new CastleGuard { MonsterInfo = monsterInfo };
                 default:
                     return new MonsterObject { MonsterInfo = monsterInfo };
             }
@@ -872,7 +876,6 @@ namespace Server.Models
             Magics?.Clear();
         }
 
-
         public override void Activate()
         {
             if (Activated) return;
@@ -891,8 +894,6 @@ namespace Server.Models
             Activated = false;
             SEnvir.ActiveObjects.Remove(this);
         }
-
-
 
         public override void ProcessAction(DelayedAction action)
         {

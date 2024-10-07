@@ -348,6 +348,10 @@ namespace Client.Envir
             [SoundIndex.SheepStruck] = new DXSound(SoundPath + @"258-4.wav", SoundType.Monster),
             [SoundIndex.SheepDie] = new DXSound(SoundPath + @"258-5.wav", SoundType.Monster),
 
+            [SoundIndex.SkyStingerAttack] = new DXSound(SoundPath + @"69-2.wav", SoundType.Monster),
+            [SoundIndex.SkyStingerStruck] = new DXSound(SoundPath + @"69-4.wav", SoundType.Monster),
+            [SoundIndex.SkyStingerDie] = new DXSound(SoundPath + @"69-5.wav", SoundType.Monster),
+
             [SoundIndex.ClawCatAttack] = new DXSound(SoundPath + @"238-2.wav", SoundType.Monster),
             [SoundIndex.ClawCatStruck] = new DXSound(SoundPath + @"238-4.wav", SoundType.Monster),
             [SoundIndex.ClawCatDie] = new DXSound(SoundPath + @"238-5.wav", SoundType.Monster),

@@ -416,7 +416,16 @@ namespace Client.Scenes.Views
 
                 CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
             }
+            else if (instance.Type == InstanceType.Castle)
+            {
+                if (GameScene.Game.GuildBox.GuildInfo == null || !GameScene.Game.CastleOwners.Any(x => x.Value == GameScene.Game.GuildBox.GuildInfo.GuildName))
+                {
+                    GameScene.Game.ReceiveChat(CEnvir.Language.DungeonInGuild, MessageType.System);
+                    return;
+                }
 
+                CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
+            }
         }
 
 

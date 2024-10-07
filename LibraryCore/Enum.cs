@@ -145,6 +145,8 @@ namespace Library
         Fog = 4,
         Lightning = 8,
 
+        [Description("Snow, Fog")]
+        SnowFog = 6,
         [Description("Rain, Lightning")]
         RainLightning = 9,
         [Description("Fog, Lightning")]
@@ -342,9 +344,10 @@ namespace Library
 
     public enum InstanceType : byte
     {
-        Solo,
-        Group,
-        Guild
+        Solo = 0,
+        Group = 1,
+        Guild = 2,
+        Castle = 3
     }
 
     public enum RegionType : byte
@@ -866,11 +869,11 @@ namespace Library
         WhiteBone = 66,
         TigerSnake = 67,
         Sheep = 68,
-        //NF_SkyStinger = 69,
+        SkyStinger = 69,
 
         ShellNipper = 70,
         VisceralWorm = 71,
-        //NF_RedVisceralWorm = 72,
+        //NF_KingScorpion = 72,
         Beetle = 73,
         SpikedBeetle = 74,
         Wolf = 75,
@@ -1287,6 +1290,16 @@ namespace Library
         GiantClam1 = 539,
 
         //Mon54
+        SabukGateSouth = 540,
+        SabukGateNorth = 541,
+        SabukGateEast = 542,
+        SabukGateWest = 543,
+        //NF_NorthBarrier = 544,
+        //NF_SouthBarrier = 545,
+        //NF_EastBarrier = 546,
+        //NF_WestBarrier = 547,
+        //NF_TaoSungDoor = 548,
+        //NF_Blank_549 = 549,
 
         //Mon55
 
@@ -1332,7 +1345,7 @@ namespace Library
         Mudwall,
         BorderTown,
         Oasis,
-        UnkownPalace,
+        UnknownPalace,
         Pointer,
         Serpent,
         Shrine,
@@ -1344,7 +1357,15 @@ namespace Library
         Walkway,
         StoneTemple,
         WoomaTemple,
-        ZumaTemple
+        ZumaTemple,
+        IslandShores,
+        DuneWalkway,
+        DuneWalkway2,
+        ForestWalkway,
+        ForestWalkway2,
+        ForestWalkway3,
+        Star,
+        Lock
     }
 
     public enum Effect
@@ -1852,6 +1873,9 @@ namespace Library
         UndeadSoul = 9,
 
         CastleObjective = 10,
+        CastleDefense = 11,
+
+        Blocker = 20,
 
         Larva = 100,
 
@@ -2055,6 +2079,7 @@ namespace Library
         SafeZoneOnly,
         NotInGroup,
         NotInGuild,
+        NotInCastle,
         TooFewInGroup,
         TooManyInGroup,
         ConnectRegionNotSet,
@@ -2430,6 +2455,10 @@ namespace Library
         SheepAttack,
         SheepStruck,
         SheepDie,
+
+        SkyStingerAttack,
+        SkyStingerStruck,
+        SkyStingerDie,
 
         ClawCatAttack,
         ClawCatStruck,

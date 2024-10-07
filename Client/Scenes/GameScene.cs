@@ -3348,7 +3348,7 @@ namespace Client.Scenes
 
         private bool CanAttackTarget(MapObject ob)
         {
-            if (ob == null || ob.Dead) return false;
+            if (ob == null || ob.Dead || !ob.Visible) return false;
 
             switch (ob.Race)
             {
@@ -4313,93 +4313,8 @@ namespace Client.Scenes
                 case MapIcon.Building:
                     control.Index = 6;
                     break;
-
-                case MapIcon.BichonCity:
-                    control.Index = 20;
-                    break;
-                case MapIcon.Castle:
-                    control.Index = 21;
-                    break;
-                case MapIcon.BugCaves:
-                    control.Index = 22;
-                    break;
-                case MapIcon.CaveUpDown:
-                    control.Index = 23;
-                    break;
-                case MapIcon.SmallManInTriangle:
-                    control.Index = 24;
-                    break;
-                case MapIcon.Dunes:
-                    control.Index = 25;
-                    break;
-                case MapIcon.MineUpDown:
-                    control.Index = 26;
-                    break;
-                case MapIcon.GinkoTree:
-                    control.Index = 27;
-                    break;
-                case MapIcon.Forest:
-                    control.Index = 28;
-                    break;
-                case MapIcon.InsectCaveBubble:
-                    control.Index = 29;
-                    break;
-                case MapIcon.AntCave:
-                    control.Index = 30;
-                    break;
-                case MapIcon.JinchonTemple:
-                    control.Index = 31;
-                    break;
-                case MapIcon.MiningCave:
-                    control.Index = 32;
-                    break;
-                case MapIcon.Mudwall:
-                    control.Index = 33;
-                    break;
-                case MapIcon.BorderTown:
-                    control.Index = 34;
-                    break;
-                case MapIcon.Oasis:
-                    control.Index = 35;
-                    break;
-                case MapIcon.UnkownPalace:
-                    control.Index = 36;
-                    break;
-                case MapIcon.Pointer:
-                    control.Index = 37;
-                    break;
-                case MapIcon.Serpent:
-                    control.Index = 38;
-                    break;
-                case MapIcon.Shrine:
-                    control.Index = 39;
-                    break;
-                case MapIcon.SkullCave:
-                    control.Index = 40;
-                    break;
-                case MapIcon.SkullBonesCave:
-                    control.Index = 41;
-                    break;
-                case MapIcon.StairDown:
-                    control.Index = 42;
-                    break;
-                case MapIcon.StairUp:
-                    control.Index = 43;
-                    break;
-                case MapIcon.UnknownTemple:
-                    control.Index = 44;
-                    break;
-                case MapIcon.Walkway:
-                    control.Index = 45;
-                    break;
-                case MapIcon.StoneTemple:
-                    control.Index = 46;
-                    break;
-                case MapIcon.WoomaTemple:
-                    control.Index = 47;
-                    break;
-                case MapIcon.ZumaTemple:
-                    control.Index = 48;
+                default:
+                    control.Index = (int)icon;
                     break;
             }
         }

@@ -3,10 +3,10 @@ using MirDB;
 
 namespace Library.SystemModels
 {
-    public sealed class FlagInfo : DBObject
+    public sealed class CastleGateInfo : DBObject
     {
         [IsIdentity]
-        [Association("Flags")]
+        [Association("Gates")]
         public CastleInfo Castle
         {
             get { return _Castle; }
@@ -69,5 +69,20 @@ namespace Library.SystemModels
             }
         }
         private int _Y;
+
+        public int RepairCost
+        {
+            get { return _RepairCost; }
+            set
+            {
+                if (_RepairCost == value) return;
+
+                var oldValue = _RepairCost;
+                _RepairCost = value;
+
+                OnChanged(oldValue, value, "RepairCost");
+            }
+        }
+        private int _RepairCost;
     }
 }

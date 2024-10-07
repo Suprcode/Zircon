@@ -18,7 +18,7 @@ namespace Server.Models
         public List<GuildInfo> Participants;
         public Map Map;
 
-        public CastleObjective CastleTarget;
+        public CastleObject CastleTarget;
         public bool Ended;
 
         public Dictionary<CharacterInfo, UserConquestStats> Stats = new Dictionary<CharacterInfo, UserConquestStats>();
@@ -68,14 +68,14 @@ namespace Server.Models
             Ended = true;
             
 
-            for (int i = Map.NPCs.Count - 1; i >= 0; i--)
-            {
-                NPCObject npc = Map.NPCs[i];
-           //     if (!Castle.CastleRegion.PointList.Contains(npc.CurrentLocation)) continue;
+            //for (int i = Map.NPCs.Count - 1; i >= 0; i--)
+            //{
+            //    NPCObject npc = Map.NPCs[i];
+            //    if (!Castle.CastleRegion.PointList.Contains(npc.CurrentLocation)) continue;
 
-                npc.Visible = true;
-                npc.AddAllObjects();
-            }
+            //    npc.Visible = true;
+            //    npc.AddAllObjects();
+            //}
 
             PingPlayers();
 

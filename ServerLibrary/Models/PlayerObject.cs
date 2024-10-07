@@ -4635,6 +4635,188 @@ namespace Server.Models
             foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
                 member.Account.Connection?.Player?.Enqueue(update);
         }
+        
+        public void GuildToggleCastleGates()
+        {
+            if (Character.Account.GuildMember == null) return;
+
+            if (Character.Account.GuildMember.Guild.Castle == null)
+            {
+                return;
+            }
+
+            var castle = Character.Account.GuildMember.Guild.Castle;
+
+            var castleRegion = castle.CastleRegion;
+            var map = SEnvir.Maps[castleRegion.Map];
+
+            foreach (var gate in map.CastleGates)
+            {
+                var closeDoor = false;
+
+                if (gate.Node == null || gate.Dead) continue;
+
+                if (gate.Closed)
+                    closeDoor = false;
+                else
+                    closeDoor = true;
+
+                if (closeDoor)
+                {
+                    gate.CloseDoor();
+
+                    foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
+                        member.Account.Connection?.ReceiveChat($"{castle.Name} {gate.MonsterInfo.MonsterName} has been closed", MessageType.System);
+                }
+                else
+                {
+                    gate.OpenDoor();
+
+                    foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
+                        member.Account.Connection?.ReceiveChat($"{castle.Name} {gate.MonsterInfo.MonsterName} has been opened", MessageType.System);
+                }
+            }
+        }
+
+        public void GuildRepairCastleGates()
+        {
+            if (Character.Account.GuildMember == null) return;
+
+            if (Character.Account.GuildMember.Guild.Castle == null)
+            {
+                return;
+            }
+
+            if ((Character.Account.GuildMember.Permission & GuildPermission.Leader) != GuildPermission.Leader)
+            {
+                Connection.ReceiveChatWithObservers(con => con.Language.GuildCastleRepairPermission, MessageType.System);
+                return;
+            }
+
+            var castle = Character.Account.GuildMember.Guild.Castle;
+            var castleRegion = castle.CastleRegion;
+            var map = SEnvir.Maps[castleRegion.Map];
+
+            int cost = 0;
+
+            foreach (var gate in castle.Gates)
+            {
+                if (gate.RepairCost <= 0) continue;
+
+                var mob = map.CastleGates.FirstOrDefault(x => x.GateInfo == gate);
+
+                if (mob == null || mob.Dead)
+                {
+                    cost += gate.RepairCost;
+                }
+                else
+                {
+                    var percent = Math.Abs(mob.CurrentHP) * 100 / mob.Stats[Stat.Health];
+
+                    cost += (gate.RepairCost * percent / 100);
+                }
+            }
+
+            if (cost > Character.Account.GuildMember.Guild.GuildFunds)
+            {
+                Connection.ReceiveChat(string.Format(Connection.Language.GuildRepairCastleGatesCost, cost - Character.Account.GuildMember.Guild.GuildFunds), MessageType.System);
+                return;
+            }
+
+            Character.Account.GuildMember.Guild.GuildFunds -= cost;
+            Character.Account.GuildMember.Guild.DailyGrowth -= cost;
+
+            foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
+            {
+                member.Account.Connection?.Player?.Enqueue(new S.GuildFundsChanged { Change = -cost, ObserverPacket = false });
+            }
+
+            foreach (var gate in castle.Gates)
+            {
+                var mob = map.CastleGates.FirstOrDefault(x => x.GateInfo == gate);
+
+                if (mob == null)
+                {
+                    mob = MonsterObject.GetMonster(gate.Monster) as CastleGate;
+
+                    mob.Spawn(castle, gate);
+                }
+                else
+                {
+                    mob.RepairGate();
+                }
+            }
+        }
+
+        public void GuildRepairCastleGuards()
+        {
+            if (Character.Account.GuildMember == null) return;
+
+            if (Character.Account.GuildMember.Guild.Castle == null)
+            {
+                return;
+            }
+
+            if ((Character.Account.GuildMember.Permission & GuildPermission.Leader) != GuildPermission.Leader)
+            {
+                Connection.ReceiveChatWithObservers(con => con.Language.GuildCastleRepairPermission, MessageType.System);
+                return;
+            }
+
+            var castle = Character.Account.GuildMember.Guild.Castle;
+            var castleRegion = castle.CastleRegion;
+            var map = SEnvir.Maps[castleRegion.Map];
+
+            int cost = 0;
+
+            foreach (var guard in castle.Guards)
+            {
+                if (guard.RepairCost <= 0) continue;
+
+                var mob = map.CastleGuards.FirstOrDefault(x => x.GuardInfo == guard);
+
+                if (mob == null || mob.Dead)
+                {
+                    cost += guard.RepairCost;
+                }
+                else
+                {
+                    var percent = Math.Abs(mob.CurrentHP) * 100 / mob.Stats[Stat.Health];
+
+                    cost += (guard.RepairCost * percent / 100);
+                }
+            }
+
+            if (cost > Character.Account.GuildMember.Guild.GuildFunds)
+            {
+                Connection.ReceiveChat(string.Format(Connection.Language.GuildRepairCastleGuardsCost, cost - Character.Account.GuildMember.Guild.GuildFunds), MessageType.System);
+                return;
+            }
+
+            Character.Account.GuildMember.Guild.GuildFunds -= cost;
+            Character.Account.GuildMember.Guild.DailyGrowth -= cost;
+
+            foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
+            {
+                member.Account.Connection?.Player?.Enqueue(new S.GuildFundsChanged { Change = -cost, ObserverPacket = false });
+            }
+
+            foreach (var guard in castle.Guards)
+            {
+                var mob = map.CastleGuards.FirstOrDefault(x => x.GuardInfo == guard);
+
+                if (mob == null)
+                {
+                    mob = MonsterObject.GetMonster(guard.Monster) as CastleGuard;
+
+                    mob.Spawn(castle, guard);
+                }
+                else
+                {
+                    mob.RepairGuard();
+                }
+            }
+        }
 
         public void GuildJoin()
         {
@@ -9127,7 +9309,7 @@ namespace Server.Models
 
                     if (cost > Character.Account.GuildMember.Guild.GuildFunds)
                     {
-                        Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NPCFundsCost, Character.Account.GuildMember.Guild.GuildFunds - cost), MessageType.System);
+                        Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NPCFundsCost, cost - Character.Account.GuildMember.Guild.GuildFunds), MessageType.System);
                         return;
                     }
                 }
@@ -10269,7 +10451,6 @@ namespace Server.Models
                 cost += array[link.Slot].RepairCost(p.Special);
             }
 
-
             if (p.GuildFunds)
             {
                 if (Character.Account.GuildMember == null)
@@ -10285,7 +10466,7 @@ namespace Server.Models
 
                 if (cost > Character.Account.GuildMember.Guild.GuildFunds)
                 {
-                    Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NPCRepairGuildCost, Character.Account.GuildMember.Guild.GuildFunds - cost), MessageType.System);
+                    Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NPCRepairGuildCost, cost - Character.Account.GuildMember.Guild.GuildFunds), MessageType.System);
                     return;
                 }
             }
@@ -15313,6 +15494,45 @@ namespace Server.Models
                         }
                     }
                     break;
+                case InstanceType.Castle:
+                    {
+                        if (Character.Account.GuildMember == null)
+                            return (null, InstanceResult.NotInGuild);
+
+                        var castle = Character.Account.GuildMember.Guild.Castle;
+
+                        if (Character.Account.GuildMember.Guild.Castle == null)
+                            return (null, InstanceResult.NotInGuild);
+
+                        if (instance.GuildCooldown.TryGetValue(Character.Account.GuildMember.Guild.GuildName, out DateTime cooldown))
+                        {
+                            if (cooldown > SEnvir.Now)
+                                return (null, InstanceResult.GuildCooldown);
+
+                            if (!checkOnly)
+                                instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
+                        }
+
+                        foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
+                        {
+                            if (member.Account.Connection?.Player?.CurrentMap.Instance == instance)
+                            {
+                                var sequence = member.Account.Connection.Player.CurrentMap.InstanceSequence;
+
+                                if (CheckInstanceFreeSpace(instance, sequence))
+                                    return (sequence, InstanceResult.Success);
+
+                                return (sequence, InstanceResult.Invalid);
+                            }
+                        }
+
+                        if (instance.UserRecord.ContainsKey(Name))
+                        {
+                            if (CheckInstanceFreeSpace(instance, instance.UserRecord[Name]))
+                                return (instance.UserRecord[Name], InstanceResult.Success);
+                        }
+                    }
+                    break;
             }
 
             byte? instanceSequence = null;
@@ -15430,6 +15650,11 @@ namespace Server.Models
                 case InstanceResult.NotInGuild:
                     {
                         Connection.ReceiveChatWithObservers(con => con.Language.InstanceNotInGuild, MessageType.System);
+                    }
+                    break;
+                case InstanceResult.NotInCastle:
+                    {
+                        Connection.ReceiveChatWithObservers(con => con.Language.InstanceNotInCastle, MessageType.System);
                     }
                     break;
                 case InstanceResult.TooFewInGroup:

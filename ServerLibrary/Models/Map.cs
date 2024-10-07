@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using Library;
+﻿using Library;
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using Server.Models.Monsters;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -32,7 +31,9 @@ namespace Server.Models
         public List<MapObject> Objects { get; } = new List<MapObject>();
         public List<PlayerObject> Players { get; } = new List<PlayerObject>();
         public List<MonsterObject> Bosses { get; } = new List<MonsterObject>();
-        public List<MonsterObject> Flags { get; } = new List<MonsterObject>();
+        public List<CastleFlag> CastleFlags { get; } = new List<CastleFlag>();
+        public List<CastleGate> CastleGates { get; } = new List<CastleGate>();
+        public List<CastleGuard> CastleGuards { get; } = new List<CastleGuard>();
         public List<NPCObject> NPCs { get; } = new List<NPCObject>();
         public HashSet<MapObject>[] OrderedObjects;
 
@@ -89,7 +90,10 @@ namespace Server.Models
         public void Setup()
         {
             CreateGuards();
-            CreateFlags();
+
+            CreateCastleFlags();
+            CreateCastleGates();
+            CreateCastleGuards();
 
             LastPlayer = DateTime.UtcNow;
         }
@@ -109,33 +113,72 @@ namespace Server.Models
             }
         }
 
-        private void CreateFlags()
+        private void CreateCastleFlags()
         {
             foreach (var castle in Info.Castles)
             {
                 foreach (var info in castle.Flags)
                 {
-                    MonsterObject mob = MonsterObject.GetMonster(info.Monster);
+                    CastleFlag mob = MonsterObject.GetMonster(info.Monster) as CastleFlag;
 
-                    if (!mob.Spawn(this, new Point(info.X, info.Y)))
+                    mob.Castle = castle;
+
+                    if (!mob.Spawn(castle, info))
                     {
                         SEnvir.Log($"Failed to spawn Flag Map:{Info.Description}, Location: {info.X}, {info.Y}");
                         continue;
                     }
+                }
+            }
+        }
+        private void CreateCastleGates()
+        {
+            foreach (var castle in Info.Castles)
+            {
+                foreach (var gate in castle.Gates)
+                {
+                    var mob = CastleGates.FirstOrDefault(x => x.GateInfo == gate);
 
-                    Flags.Add(mob);
+                    if (mob == null)
+                    {
+                        mob = MonsterObject.GetMonster(gate.Monster) as CastleGate;
+
+                        mob.Spawn(castle, gate);
+                    }
+                    else
+                    {
+                        mob.RepairGate();
+                    }
+                }
+            }
+        }
+        private void CreateCastleGuards()
+        {
+            foreach (var castle in Info.Castles)
+            {
+                foreach (var guard in castle.Guards)
+                {
+                    var mob = CastleGuards.FirstOrDefault(x => x.GuardInfo == guard);
+
+                    if (mob == null)
+                    {
+                        mob = MonsterObject.GetMonster(guard.Monster) as CastleGuard;
+
+                        mob.Spawn(castle, guard);
+                    }
+                    else
+                    {
+                        mob.RepairGuard();
+                    }
                 }
             }
         }
 
         public void RefreshFlags()
         {
-            foreach (var ob in Flags)
+            foreach (var ob in CastleFlags)
             {
-                if (ob is CastleFlag flag)
-                {
-                    flag.CurrentGuild = null;
-                }
+                ob.Refresh();
             }
         }
 

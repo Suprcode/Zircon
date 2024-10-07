@@ -86,6 +86,7 @@ namespace Server.Views
             gridColumn10 = new GridColumn();
             colWeather = new GridColumn();
             WeatherComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            colBackground = new GridColumn();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
@@ -340,7 +341,7 @@ namespace Server.Views
             // 
             // MapInfoGridView
             // 
-            MapInfoGridView.Columns.AddRange(new GridColumn[] { colFileName, colDescription, colMiniMap, colLight, gridColumn12, colRequiredClass, colAllowRT, gridColumn13, gridColumn15, gridColumn16, gridColumn17, gridColumn5, gridColumn24, gridColumn6, gridColumn9, gridColumn10, colWeather });
+            MapInfoGridView.Columns.AddRange(new GridColumn[] { colFileName, colDescription, colMiniMap, colLight, gridColumn12, colRequiredClass, colAllowRT, gridColumn13, gridColumn15, gridColumn16, gridColumn17, gridColumn5, gridColumn24, gridColumn6, gridColumn9, gridColumn10, colWeather, colBackground });
             MapInfoGridView.GridControl = MapInfoGridControl;
             MapInfoGridView.Name = "MapInfoGridView";
             MapInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -356,7 +357,7 @@ namespace Server.Views
             colFileName.Name = "colFileName";
             colFileName.Visible = true;
             colFileName.VisibleIndex = 0;
-            colFileName.Width = 28;
+            colFileName.Width = 45;
             // 
             // colDescription
             // 
@@ -364,7 +365,7 @@ namespace Server.Views
             colDescription.Name = "colDescription";
             colDescription.Visible = true;
             colDescription.VisibleIndex = 1;
-            colDescription.Width = 28;
+            colDescription.Width = 45;
             // 
             // colMiniMap
             // 
@@ -372,7 +373,7 @@ namespace Server.Views
             colMiniMap.Name = "colMiniMap";
             colMiniMap.Visible = true;
             colMiniMap.VisibleIndex = 2;
-            colMiniMap.Width = 28;
+            colMiniMap.Width = 45;
             // 
             // colLight
             // 
@@ -381,7 +382,7 @@ namespace Server.Views
             colLight.Name = "colLight";
             colLight.Visible = true;
             colLight.VisibleIndex = 3;
-            colLight.Width = 32;
+            colLight.Width = 51;
             // 
             // LightComboBox
             // 
@@ -396,7 +397,7 @@ namespace Server.Views
             gridColumn12.Name = "gridColumn12";
             gridColumn12.Visible = true;
             gridColumn12.VisibleIndex = 5;
-            gridColumn12.Width = 27;
+            gridColumn12.Width = 43;
             // 
             // colRequiredClass
             // 
@@ -405,7 +406,7 @@ namespace Server.Views
             colRequiredClass.Name = "colRequiredClass";
             colRequiredClass.Visible = true;
             colRequiredClass.VisibleIndex = 6;
-            colRequiredClass.Width = 27;
+            colRequiredClass.Width = 43;
             // 
             // colAllowRT
             // 
@@ -413,7 +414,7 @@ namespace Server.Views
             colAllowRT.Name = "colAllowRT";
             colAllowRT.Visible = true;
             colAllowRT.VisibleIndex = 7;
-            colAllowRT.Width = 27;
+            colAllowRT.Width = 43;
             // 
             // gridColumn13
             // 
@@ -421,7 +422,7 @@ namespace Server.Views
             gridColumn13.Name = "gridColumn13";
             gridColumn13.Visible = true;
             gridColumn13.VisibleIndex = 8;
-            gridColumn13.Width = 27;
+            gridColumn13.Width = 43;
             // 
             // gridColumn15
             // 
@@ -429,7 +430,7 @@ namespace Server.Views
             gridColumn15.Name = "gridColumn15";
             gridColumn15.Visible = true;
             gridColumn15.VisibleIndex = 9;
-            gridColumn15.Width = 27;
+            gridColumn15.Width = 43;
             // 
             // gridColumn16
             // 
@@ -437,7 +438,7 @@ namespace Server.Views
             gridColumn16.Name = "gridColumn16";
             gridColumn16.Visible = true;
             gridColumn16.VisibleIndex = 10;
-            gridColumn16.Width = 27;
+            gridColumn16.Width = 43;
             // 
             // gridColumn17
             // 
@@ -446,7 +447,7 @@ namespace Server.Views
             gridColumn17.Name = "gridColumn17";
             gridColumn17.Visible = true;
             gridColumn17.VisibleIndex = 11;
-            gridColumn17.Width = 27;
+            gridColumn17.Width = 43;
             // 
             // MapInfoLookUpEdit
             // 
@@ -464,7 +465,7 @@ namespace Server.Views
             gridColumn5.Name = "gridColumn5";
             gridColumn5.Visible = true;
             gridColumn5.VisibleIndex = 12;
-            gridColumn5.Width = 27;
+            gridColumn5.Width = 43;
             // 
             // gridColumn24
             // 
@@ -472,7 +473,7 @@ namespace Server.Views
             gridColumn24.Name = "gridColumn24";
             gridColumn24.Visible = true;
             gridColumn24.VisibleIndex = 13;
-            gridColumn24.Width = 27;
+            gridColumn24.Width = 43;
             // 
             // gridColumn6
             // 
@@ -480,15 +481,15 @@ namespace Server.Views
             gridColumn6.Name = "gridColumn6";
             gridColumn6.Visible = true;
             gridColumn6.VisibleIndex = 14;
-            gridColumn6.Width = 27;
+            gridColumn6.Width = 43;
             // 
             // gridColumn9
             // 
             gridColumn9.FieldName = "Music";
             gridColumn9.Name = "gridColumn9";
             gridColumn9.Visible = true;
-            gridColumn9.VisibleIndex = 16;
-            gridColumn9.Width = 27;
+            gridColumn9.VisibleIndex = 17;
+            gridColumn9.Width = 52;
             // 
             // gridColumn10
             // 
@@ -496,7 +497,7 @@ namespace Server.Views
             gridColumn10.Name = "gridColumn10";
             gridColumn10.Visible = true;
             gridColumn10.VisibleIndex = 15;
-            gridColumn10.Width = 27;
+            gridColumn10.Width = 43;
             // 
             // colWeather
             // 
@@ -506,13 +507,21 @@ namespace Server.Views
             colWeather.Name = "colWeather";
             colWeather.Visible = true;
             colWeather.VisibleIndex = 4;
-            colWeather.Width = 38;
+            colWeather.Width = 61;
             // 
             // WeatherComboBox
             // 
             WeatherComboBox.AutoHeight = false;
             WeatherComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             WeatherComboBox.Name = "WeatherComboBox";
+            // 
+            // colBackground
+            // 
+            colBackground.FieldName = "Background";
+            colBackground.Name = "colBackground";
+            colBackground.Visible = true;
+            colBackground.VisibleIndex = 16;
+            colBackground.Width = 40;
             // 
             // ribbon
             // 
@@ -686,5 +695,6 @@ namespace Server.Views
         private GridColumn gridColumn22;
         private GridColumn gridColumn23;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit RegionLookUpEdit;
+        private GridColumn colBackground;
     }
 }

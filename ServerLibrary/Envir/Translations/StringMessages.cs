@@ -174,6 +174,7 @@ namespace Server.Envir
         public abstract string GuildMemberKicked { get; set; }
         public abstract string GuildKicked { get; set; }
         public abstract string GuildManagePermission { get; set; }
+        public abstract string GuildCastleRepairPermission { get; set; }
         public abstract string GuildMemberLimit { get; set; }
         public abstract string GuildMemberCost { get; set; }
         public abstract string GuildStorageLimit { get; set; }
@@ -209,6 +210,8 @@ namespace Server.Envir
         public abstract string GuildLeave { get; set; }
         public abstract string GuildMemberLeave { get; set; }
         public abstract string GuildWarDeath { get; set; }
+        public abstract string GuildRepairCastleGatesCost { get; set; }
+        public abstract string GuildRepairCastleGuardsCost { get; set; }
 
         [ConfigSection("Group")]
         public abstract string GroupNoGroup { get; set; }
@@ -308,6 +311,7 @@ namespace Server.Envir
         public abstract string InstanceSafeZoneOnly { get; set; }
         public abstract string InstanceNotInGroup { get; set; }
         public abstract string InstanceNotInGuild { get; set; }
+        public abstract string InstanceNotInCastle { get; set; }
         public abstract string InstanceTooFewInGroup { get; set; }
         public abstract string InstanceTooManyInGroup { get; set; }
         public abstract string InstanceConnectRegionNotSet { get; set; }

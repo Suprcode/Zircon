@@ -46,6 +46,9 @@ namespace Client.Scenes.Views
                 };
             }
 
+            Grid.BringToFront();
+            Grid.Visible = true;
+
             UpdateLinks();
         }
 
@@ -70,6 +73,19 @@ namespace Client.Scenes.Views
                 Links[i] = new ClientBeltLink { Slot = i };
 
             Size = GetAcceptableResize(Size.Empty);
+
+            Grid = new DXItemGrid
+            {
+                Parent = this,
+                Location = new Point(0, 0),
+                GridSize = new Size(1, 1),
+                GridType = GridType.Belt,
+                AllowLink = false,
+            };
+
+            Grid.BringToFront();
+            Grid.Visible = true;
+
         }
 
         #region Methods

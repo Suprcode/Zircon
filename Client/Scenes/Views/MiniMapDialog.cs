@@ -230,7 +230,7 @@ namespace Client.Scenes.Views
             {
                 if (ob.MapIndex != GameScene.Game.MapControl.MapInfo.Index) return;
                 if (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common) return;
-                if (ob.MonsterInfo != null && ob.Dead) return;
+                if (ob.MonsterInfo != null && (ob.Dead || ob.MonsterInfo.Image == MonsterImage.None)) return;
 
                 MapInfoObjects[ob] = control = new DXControl
                 {
@@ -269,7 +269,7 @@ namespace Client.Scenes.Views
                         colour = Color.Orange; 
                 }
 
-                if (ob.MonsterInfo.Flag == MonsterFlag.CastleObjective)
+                if (ob.MonsterInfo.Flag == MonsterFlag.CastleObjective || ob.MonsterInfo.Flag == MonsterFlag.CastleDefense)
                 {
                     control.Visible = false;
                 }
