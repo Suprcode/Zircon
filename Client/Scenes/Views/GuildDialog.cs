@@ -549,6 +549,8 @@ namespace Client.Scenes.Views
 
         public void RefreshCastleControls()
         {
+            if (GuildInfo == null) return;
+
             ToggleGates.Enabled = false;
             RepairGates.Enabled = false;
             RepairGuards.Enabled = false;

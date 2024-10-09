@@ -3969,9 +3969,9 @@ namespace Client.Envir
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
                 ob.NameChanged();
 
-            GameScene.Game.GuildBox.RefreshCastleControls();
-
             GameScene.Game.GuildBox.CastlePanels[castle].Update();
+
+            GameScene.Game.GuildBox.RefreshCastleControls();
         }
         public void Process(S.GuildConquestDate p)
         {
