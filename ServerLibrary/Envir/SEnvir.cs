@@ -3648,7 +3648,7 @@ namespace Server.Envir
                 map.Setup();
             }
 
-            CreateSafeZones();
+            CreateSafeZones(instance, instanceSequence);
 
             CreateMovements(instance, instanceSequence);
 
