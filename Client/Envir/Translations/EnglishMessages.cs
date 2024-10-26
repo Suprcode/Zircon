@@ -2,7 +2,7 @@
 
 namespace Client.Envir.Translations
 {
-    [ConfigPath(@".\Translations\EnglishMessages.ini")]
+    [ConfigPath(@".\Translations\EnglishMessages.ini", Disabled = true)]
     public class EnglishMessages : StringMessages
     {
         [ConfigSection("Message")]
