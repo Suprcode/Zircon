@@ -16,20 +16,28 @@ namespace Client.Scenes.Views
         public ClientBeltLink[] Links;
 
         public DXItemGrid Grid;
-
         public override void OnClientAreaChanged(Rectangle oValue, Rectangle nValue)
         {
             base.OnClientAreaChanged(oValue, nValue);
 
-            if (Links == null) return;
+            if (Links == null || Grid == null) return;
 
+            AdjustGrid();
+            UpdateLinks();
+        }
+
+        private void AdjustGrid()
+        {
             Grid?.Dispose();
+
+            int cols = Math.Max(1, (ClientArea.Width) / (DXItemCell.CellWidth - 1));
+            int rows = Math.Max(1, (ClientArea.Height) / (DXItemCell.CellHeight - 1));
 
             Grid = new DXItemGrid
             {
                 Parent = this,
                 Location = ClientArea.Location,
-                GridSize = new Size(Math.Max(1, (ClientArea.Size.Width) / (DXItemCell.CellWidth - 1)), Math.Max(1, ClientArea.Size.Height / (DXItemCell.CellHeight - 1))),
+                GridSize = new Size(cols, rows),
                 GridType = GridType.Belt,
                 AllowLink = false,
             };
@@ -48,8 +56,6 @@ namespace Client.Scenes.Views
 
             Grid.BringToFront();
             Grid.Visible = true;
-
-            UpdateLinks();
         }
 
         public override WindowType Type => WindowType.BeltBox;
@@ -74,24 +80,13 @@ namespace Client.Scenes.Views
 
             Size = GetAcceptableResize(Size.Empty);
 
-            Grid = new DXItemGrid
-            {
-                Parent = this,
-                Location = new Point(0, 0),
-                GridSize = new Size(1, 1),
-                GridType = GridType.Belt,
-                AllowLink = false,
-            };
-
-            Grid.BringToFront();
-            Grid.Visible = true;
-
+            AdjustGrid();
         }
 
         #region Methods
+
         public void UpdateLinks()
         {
-
             foreach (ClientBeltLink link in Links)
             {
                 if (link.Slot < 0 || link.Slot >= Grid.Grid.Length) continue;
@@ -102,6 +97,7 @@ namespace Client.Scenes.Views
                     Grid.Grid[link.Slot].QuickItem = GameScene.Game.Inventory.FirstOrDefault(x => x?.Index == link.LinkItemIndex);
             }
         }
+
         public override Size GetAcceptableResize(Size size)
         {
             Rectangle area = GetClientArea(size);
@@ -124,6 +120,7 @@ namespace Client.Scenes.Views
 
             return GetSize(new Size(x, y));
         }
+
         #endregion
 
         #region IDisposable
