@@ -33,7 +33,8 @@ namespace Library
                 if (!type.IsAbstract || !type.IsSealed)
                     ConfigObjects[type] = ob = Activator.CreateInstance(type);
 
-                ReadConfig(type, AdjustPath(config.Path, assembly), ob);
+                if (!config.Disabled)
+                    ReadConfig(type, AdjustPath(config.Path, assembly), ob);
             }
         }
         public static void Save(Assembly assembly)
@@ -51,7 +52,8 @@ namespace Library
                 if (!type.IsAbstract || !type.IsSealed)
                     ob = ConfigObjects[type];
 
-                SaveConfig(type, AdjustPath(config.Path, assembly), ob);
+                if (!config.Disabled)
+                    SaveConfig(type, AdjustPath(config.Path, assembly), ob);
             }
         }
 
@@ -677,10 +679,14 @@ namespace Library
     public class ConfigPath : Attribute
     {
         public string Path { get; set; }
+        public bool Disabled { get; set; } // Skip the local ini file
 
-        public ConfigPath(string path)
+        public ConfigPath(string path): this(path, false) { }
+
+        public ConfigPath(string path, bool disabled)
         {
             Path = path;
+            Disabled = disabled;
         }
     }
 
