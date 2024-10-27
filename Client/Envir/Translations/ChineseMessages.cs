@@ -2,24 +2,24 @@
 
 namespace Client.Envir.Translations
 {
-    [ConfigPath(@".\Translations\ChineseMessages.ini", Disabled = true)]
+    [ConfigPath(@".\Translations\ChineseMessages.ini", Disabled = false)]
     public class ChineseMessages : StringMessages
     {
         [ConfigSection("Message")]
-        public override string CannotChangeGenderWhileWearingArmour { get; set; } = "You cannot change gender whilst you are wearing armour.";
+        public override string CannotChangeGenderWhileWearingArmour { get; set; } = "衣服穿戴中无法进行变性操作.";
         public override string WearingArmourBeforeDye { get; set; } = "You need to be wearing an armour before you can apply a dye.";
-        public override string UnableToRepairHere { get; set; } = "Unable to repair {0} here.";
-        public override string UnableToRepairFullyRepaired { get; set; } = "Unable to repair {0}, it is already fully repaired.";
+        public override string UnableToRepairHere { get; set; } = "无法在 {0} 这里进行修复.";
+        public override string UnableToRepairFullyRepaired { get; set; } = "无法重复修复 {0}, 它已经完全修复好了.";
         public override string UnableToCraft { get; set; } = "Unable to use {0} to Craft.";
         public override string UnableToFragment { get; set; } = "Unable to Fragment {0}, it cannot be Fragmented.";
-        public override string UnableToSellHere { get; set; } = "Unable to Sell {0} here.";
+        public override string UnableToSellHere { get; set; } = "无法在 {0} 这里进行售卖.";
         public override string UnableToSellHereCannotSold { get; set; } = "Unable to Sell {0}, it cannot be sold.";
         public override string UnableToLevel { get; set; } = "Unable to Level {0}.";
         public override string UnableToUseToLevel { get; set; } = "Unable to use {0} to level.";
-        public override string UnableToReset { get; set; } = "Unable to Reset {0}.";
-        public override string UnableToTrade { get; set; } = "Unable to trade this item.";
-        public override string UnableToRefine { get; set; } = "Unable to refine {0}.";
-        public override string UnableToUpgrade { get; set; } = "Unable to Upgrade {0}.";
+        public override string UnableToReset { get; set; } = "无法重置 {0}.";
+        public override string UnableToTrade { get; set; } = "无法交易该物品.";
+        public override string UnableToRefine { get; set; } = "无法炼制 {0}.";
+        public override string UnableToUpgrade { get; set; } = "无法升级 {0}.";
         public override string UnableToRefineIncorrectItem { get; set; } = "Unable to use {0} to refine.";
         public override string UnableToRefineHasBeenLevelled { get; set; } = "Unable to refine {0} because it has been levelled.";
         public override string UnableToRefineNeedCorundumOre { get; set; } = "You cannot use {0}, you must use Corundum Ore.";
@@ -45,16 +45,16 @@ namespace Client.Envir.Translations
         public override string ItemStatsEffected { get; set; } = "Your {0} has been effected: {1}";
         public override string ItemDurabilityDrop { get; set; } = "Your item {0} has dropped to durability 0";
         public override string RefineSuccess { get; set; } = "Your Refine has been placed successfully, please collect your weapon in {0}";
-        public override string GroupJoin { get; set; } = "-{0} has joined the group.";
-        public override string GroupRemove { get; set; } = "-{0} has left the group.";
+        public override string GroupJoin { get; set; } = "-{0} 已经加入了编组.";
+        public override string GroupRemove { get; set; } = "-{0} 已经离开了编组.";
         public override string GuildWarStarted { get; set; } = "You are at war with {0} for {1}";
-        public override string GuildWarFinished { get; set; } = "Your war with {0} has ended.";
-        public override string CompanionItemGained { get; set; } = "Your companion gained {0}.";
-        public override string CompanionItemsGained { get; set; } = "Your companion gained {0} x{1}.";
-        public override string UseThrusting { get; set; } = "Use Thrusting.";
-        public override string DoNotUseThrusting { get; set; } = "Do not use Thrusting.";
-        public override string UseHalfMoon { get; set; } = "Use Half Moon Strike.";
-        public override string DoNotUseHalfMoon { get; set; } = "Do not use Half Moon Strike.";
+        public override string GuildWarFinished { get; set; } = "与行会 {0} 的行会战已结束.";
+        public override string CompanionItemGained { get; set; } = "你的宠物获得 {0}.";
+        public override string CompanionItemsGained { get; set; } = "你的宠物获得 {0} x{1}.";
+        public override string UseThrusting { get; set; } = "使用刺杀.";
+        public override string DoNotUseThrusting { get; set; } = "不用刺杀.";
+        public override string UseHalfMoon { get; set; } = "使用半月攻击.";
+        public override string DoNotUseHalfMoon { get; set; } = "不用半月攻击.";
         public override string UseDestructiveSurge { get; set; } = "Use Destructive Surge.";
         public override string DoNotUseDestructiveSurge { get; set; } = "Do not use Destructive Surge.";
         public override string UseFlameSplash { get; set; } = "Use Flame Splash.";
@@ -527,8 +527,8 @@ namespace Client.Envir.Translations
         public override string GuildMemberDialogLeaderLabel { get; set; } = "Is Leader:";
         public override string GuildMemberDialogEditNoticeLabel { get; set; } = "编辑公告:";
         public override string GuildMemberDialogAddMemberLabel { get; set; } = "添加成员:";
-        public override string GuildMemberDialogUseStorageLabel { get; set; } = "Use Storage:";
-        public override string GuildMemberDialogStartWarLabel { get; set; } = "Start War:";
+        public override string GuildMemberDialogUseStorageLabel { get; set; } = "使用仓库:";
+        public override string GuildMemberDialogStartWarLabel { get; set; } = "开始战争:";
         public override string GuildMemberDialogRepairLabel { get; set; } = "Repair Fund:";
         public override string GuildMemberDialogMerchantLabel { get; set; } = "Merchant Fund:";
         public override string GuildMemberDialogMarketLabel { get; set; } = "Market Fund:";
@@ -541,16 +541,16 @@ namespace Client.Envir.Translations
         public override string GuildCastlePanelCostLabel { get; set; } = "花费:";
         public override string GuildCastlePanelNoneText { get; set; } = "无";
         public override string GuildCastlePanelInProgressText { get; set; } = "进行中";
-        public override string GuildRepairGatesConfirmMsg { get; set; } = "Estimated cost to repair gates will be {0:#,##0}. Are you sure?";
+        public override string GuildRepairGatesConfirmMsg { get; set; } = "修复城门会消耗 {0:#,##0}. 你确定吗?";
         public override string GuildRepairGatesConfirmCaption { get; set; } = "修复城门";
-        public override string GuildRepairGuardsConfirmMsg { get; set; } = "Estimated cost to repair guards will be {0:#,##0}. Are you sure?";
+        public override string GuildRepairGuardsConfirmMsg { get; set; } = "修复守卫会消耗 {0:#,##0}. 你确定吗?";
         public override string GuildRepairGuardsConfirmCaption { get; set; } = "修复守卫";
 
         public override string InventoryDialogTitle { get; set; } = "背包";
         public override string InventoryDialogPrimaryCurrencyTitle { get; set; } = "金币";
         public override string InventoryDialogSecondaryCurrencyTitle { get; set; } = "GG";
         public override string InventoryDialogSortButtonHint { get; set; } = "排序";
-        public override string InventoryDialogTrashButtonHint { get; set; } = "Trash";
+        public override string InventoryDialogTrashButtonHint { get; set; } = "移除";
         public override string InventoryDialogWalletLabelHint { get; set; } = "钱包 [{0}]";
 
         public override string MagicDialogTitle { get; set; } = "魔法";
@@ -652,10 +652,10 @@ namespace Client.Envir.Translations
         public override string MonsterDialogMortalIconHint { get; set; } = "Mortal";
         public override string MonsterDialogTamableIconHint { get; set; } = "Tamable";
         public override string MonsterDialogUntamableIconHint { get; set; } = "Untamable";
-        public override string MonsterDialogAttackingIconDefaultHint { get; set; } = "Attack Speed";
-        public override string MonsterDialogMovingIconDefaultHint { get; set; } = "Movement Speed";
-        public override string MonsterDialogGrowthIconDefaultHint { get; set; } = "Growth";
-        public override string MonsterDialogGrowthIconHint { get; set; } = "Growth Lv. {0}";
+        public override string MonsterDialogAttackingIconDefaultHint { get; set; } = "攻击速度";
+        public override string MonsterDialogMovingIconDefaultHint { get; set; } = "移动速度";
+        public override string MonsterDialogGrowthIconDefaultHint { get; set; } = "成长";
+        public override string MonsterDialogGrowthIconHint { get; set; } = "成长等级. {0}";
         public override string MonsterDialogAttackSpeedIconAttackingNonHint { get; set; } = "Non Attacking";
         public override string MonsterDialogAttackSpeedIconAttackingVerySlowHint { get; set; } = "Attacking: Very Slow";
         public override string MonsterDialogAttackSpeedIconAttackingSlowHint { get; set; } = "Attacking: Slow";
