@@ -22,12 +22,6 @@ namespace Client.Scenes.Views
 
             if (Links == null || Grid == null) return;
 
-            AdjustGrid();
-            UpdateLinks();
-        }
-
-        private void AdjustGrid()
-        {
             Grid?.Dispose();
 
             int cols = Math.Max(1, (ClientArea.Width) / (DXItemCell.CellWidth - 1));
@@ -56,6 +50,8 @@ namespace Client.Scenes.Views
 
             Grid.BringToFront();
             Grid.Visible = true;
+
+            UpdateLinks();
         }
 
         public override WindowType Type => WindowType.BeltBox;
@@ -71,7 +67,7 @@ namespace Client.Scenes.Views
             HasTopBorder = false;
             TitleLabel.Visible = false;
             CloseButton.Visible = false;
-            
+
             AllowResize = true;
 
             Links = new ClientBeltLink[Globals.MaxBeltCount];
@@ -80,11 +76,23 @@ namespace Client.Scenes.Views
 
             Size = GetAcceptableResize(Size.Empty);
 
-            AdjustGrid();
+            Grid = new DXItemGrid
+            {
+                Parent = this,
+                Location = new Point(0, 0),
+                GridSize = new Size(1, 1),
+                GridType = GridType.Belt,
+                AllowLink = false,
+            };
+
+            Grid.BringToFront();
+            Grid.Visible = true;
+
+            OnClientAreaChanged(ClientArea, ClientArea);
         }
 
-        #region Methods
 
+        #region Methods
         public void UpdateLinks()
         {
             foreach (ClientBeltLink link in Links)
@@ -97,7 +105,6 @@ namespace Client.Scenes.Views
                     Grid.Grid[link.Slot].QuickItem = GameScene.Game.Inventory.FirstOrDefault(x => x?.Index == link.LinkItemIndex);
             }
         }
-
         public override Size GetAcceptableResize(Size size)
         {
             Rectangle area = GetClientArea(size);
@@ -110,8 +117,8 @@ namespace Client.Scenes.Views
             else
                 y = 0;
 
-            x = Math.Max(1, Math.Min(Globals.MaxBeltCount, x))*(DXItemCell.CellWidth - 1) + 1;
-            y = Math.Max(1, Math.Min(Globals.MaxBeltCount, y))*(DXItemCell.CellHeight - 1) + 1;
+            x = Math.Max(1, Math.Min(Globals.MaxBeltCount, x)) * (DXItemCell.CellWidth - 1) + 1;
+            y = Math.Max(1, Math.Min(Globals.MaxBeltCount, y)) * (DXItemCell.CellHeight - 1) + 1;
 
             if (x >= y)
                 x += 10;
