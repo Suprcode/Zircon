@@ -439,7 +439,7 @@ namespace Client.Scenes.Views
                     if (itemCell.Item == null) continue;
                     if ((itemCell.Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) continue;
                     
-                    if (!SellableItemTypes.Contains(itemCell.Item.Info.ItemType)) continue;
+                    if (SellableItemTypes.Count > 0 && !SellableItemTypes.Contains(itemCell.Item.Info.ItemType)) continue;
 
                     links.Add(new CellLinkInfo { Count = itemCell.Item.Count, GridType = GridType.Inventory, Slot = itemCell.Slot });
                 }
