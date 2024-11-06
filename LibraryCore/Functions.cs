@@ -594,7 +594,7 @@ namespace Library
 
             if (time.Seconds >= 2) textS = $"{time.Seconds} {(small ? "Secs" : "Seconds")}";
             else if (time.Seconds >= 1) textS = $"{time.Seconds} {(small ? "Sec" : "Second")}";
-            else if (time.TotalSeconds > 1 && time.Seconds > 0) textS = "less than a second";
+            else if (time.TotalSeconds > 0) textS = "less than a second";
 
             if (!details)
                 return textD ?? textH ?? textM ?? textS;

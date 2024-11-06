@@ -841,24 +841,24 @@ namespace Server.Envir
                 }
 
                 map.HasSafeZone = true;
+   
+                HashSet<Point> edges = new HashSet<Point>();
 
-                if (info.Border)
+                foreach (Point point in info.Region.PointList)
                 {
-                    HashSet<Point> edges = new HashSet<Point>();
+                    Cell cell = map.GetCell(point);
 
-                    foreach (Point point in info.Region.PointList)
+                    if (cell == null)
                     {
-                        Cell cell = map.GetCell(point);
+                        Log($"[Safe Zone] Bad Location, Region: {info.Region.ServerDescription}, X: {point.X}, Y: {point.Y}.");
 
-                        if (cell == null)
-                        {
-                            Log($"[Safe Zone] Bad Location, Region: {info.Region.ServerDescription}, X: {point.X}, Y: {point.Y}.");
+                        continue;
+                    }
 
-                            continue;
-                        }
+                    cell.SafeZone = info;
 
-                        cell.SafeZone = info;
-
+                    if (info.Border)
+                    {
                         for (int i = 0; i < 8; i++)
                         {
                             Point test = Functions.Move(point, (MirDirection)i);
@@ -870,20 +870,20 @@ namespace Server.Envir
                             edges.Add(test);
                         }
                     }
+                }
 
-                    foreach (Point point in edges)
+                foreach (Point point in edges)
+                {
+                    SpellObject ob = new SpellObject
                     {
-                        SpellObject ob = new SpellObject
-                        {
-                            Visible = true,
-                            DisplayLocation = point,
-                            TickCount = 10,
-                            TickFrequency = TimeSpan.FromDays(365),
-                            Effect = SpellEffect.SafeZone
-                        };
+                        Visible = true,
+                        DisplayLocation = point,
+                        TickCount = 10,
+                        TickFrequency = TimeSpan.FromDays(365),
+                        Effect = SpellEffect.SafeZone
+                    };
 
-                        ob.Spawn(map, point);
-                    }
+                    ob.Spawn(map, point);
                 }
 
                 if (info.BindRegion == null || instance != null) continue;

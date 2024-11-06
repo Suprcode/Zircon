@@ -3314,9 +3314,9 @@ namespace Client.Envir
             GameScene.Game.BuffBox.BuffsChanged();
         }
 
-        public void Process(S.SafeZoneChanged P)
+        public void Process(S.SafeZoneChanged p)
         {
-            MapObject.User.InSafeZone = P.InSafeZone;
+            MapObject.User.InSafeZone = p.InSafeZone;
         }
 
         public void Process(S.CombatTime p)
