@@ -12,7 +12,7 @@
     <OutputPath>..\..\Debug\ServerCore\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="autofac" Version="6.5.0" />
+    <PackageReference Include="autofac" Version="8.1.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
