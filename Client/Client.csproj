@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <OutputType>WinExe</OutputType>
     <AssemblyName>Zircon</AssemblyName>

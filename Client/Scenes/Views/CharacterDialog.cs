@@ -354,7 +354,7 @@ namespace Client.Scenes.Views
                 ForeColour = Color.FromArgb(222, 255, 222),
                 Outline = false,
                 Parent = namePanel,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                Font = new System.Drawing.Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
             };
             GuildNameLabel = new DXLabel
@@ -3331,7 +3331,7 @@ namespace Client.Scenes.Views
             KeyLabel = new DXLabel
             {
                 Parent = Image,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                Font = new System.Drawing.Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 IsControl = false,
                 ForeColour = Color.Aquamarine,
                 AutoSize = false,
