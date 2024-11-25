@@ -48,6 +48,8 @@
     <PackageReference Include="DevExpress.Win.Design" Version="22.2.3" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+    <PackageReference Include="System.Formats.Asn1" Version="9.0.0" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Runtime.Serialization.Schema" Version="7.0.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
