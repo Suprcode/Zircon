@@ -154,6 +154,7 @@ namespace Server.Models
                         {
                             MonsterInfo = Castle.Monster,
                             War = this,
+                            Castle = Castle
                         };
 
                         CastleTarget.Spawn(Castle.CastleRegion, null, 0);
@@ -163,6 +164,7 @@ namespace Server.Models
                         {
                             MonsterInfo = Castle.Monster,
                             War = this,
+                            Castle = Castle
                         };
 
                         CastleTarget.Spawn(Castle.CastleRegion, null, 0);
