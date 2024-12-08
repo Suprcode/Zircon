@@ -82,6 +82,21 @@ namespace Library.SystemModels
         }
         private MapRegion _CastleRegion;
 
+        public MapRegion ObjectiveRegion
+        {
+            get { return _ObjectiveRegion; }
+            set
+            {
+                if (_ObjectiveRegion == value) return;
+
+                var oldValue = _ObjectiveRegion;
+                _ObjectiveRegion = value;
+
+                OnChanged(oldValue, value, "ObjectiveRegion");
+            }
+        }
+        private MapRegion _ObjectiveRegion;
+
         public MapRegion AttackSpawnRegion
         {
             get { return _AttackSpawnRegion; }
@@ -152,6 +167,16 @@ namespace Library.SystemModels
         public DBBindingList<CastleGuardInfo> Guards { get; set; }
 
         public DateTime WarDate;
+
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            if (ObjectiveRegion == null)
+            {
+                ObjectiveRegion = CastleRegion;
+            }
+        }
     }
 }
 

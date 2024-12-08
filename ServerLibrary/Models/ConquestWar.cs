@@ -34,7 +34,7 @@ namespace Server.Models
             for (int i = Map.NPCs.Count - 1; i >= 0; i--)
             {
                 NPCObject npc = Map.NPCs[i];
-             //   if (!Castle.CastleRegion.PointList.Contains(npc.CurrentLocation)) continue;
+                if (!Castle.ObjectiveRegion.PointList.Contains(npc.CurrentLocation)) continue;
                 
                 npc.Visible = false;
                 npc.RemoveAllObjects();
@@ -66,16 +66,16 @@ namespace Server.Models
                 con.ReceiveChat(string.Format(con.Language.ConquestFinished, Castle.Name), MessageType.System);
 
             Ended = true;
-            
 
-            //for (int i = Map.NPCs.Count - 1; i >= 0; i--)
-            //{
-            //    NPCObject npc = Map.NPCs[i];
-            //    if (!Castle.CastleRegion.PointList.Contains(npc.CurrentLocation)) continue;
 
-            //    npc.Visible = true;
-            //    npc.AddAllObjects();
-            //}
+            for (int i = Map.NPCs.Count - 1; i >= 0; i--)
+            {
+                NPCObject npc = Map.NPCs[i];
+                if (!Castle.ObjectiveRegion.PointList.Contains(npc.CurrentLocation)) continue;
+
+                npc.Visible = true;
+                npc.AddAllObjects();
+            }
 
             PingPlayers();
 
@@ -157,7 +157,7 @@ namespace Server.Models
                             Castle = Castle
                         };
 
-                        CastleTarget.Spawn(Castle.CastleRegion, null, 0);
+                        CastleTarget.Spawn(Castle.ObjectiveRegion, null, 0);
                         break;
                     case 1001: //CastleFlag
                         CastleTarget = new CastleFlag
@@ -167,7 +167,7 @@ namespace Server.Models
                             Castle = Castle
                         };
 
-                        CastleTarget.Spawn(Castle.CastleRegion, null, 0);
+                        CastleTarget.Spawn(Castle.ObjectiveRegion, null, 0);
                         break;
                 }
             }

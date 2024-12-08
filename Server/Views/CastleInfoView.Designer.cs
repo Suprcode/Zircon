@@ -42,11 +42,13 @@
             gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn14 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn15 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
             GuardGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn16 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn17 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn18 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn19 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn21 = new DevExpress.XtraGrid.Columns.GridColumn();
             CastleInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -68,8 +70,7 @@
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             repositoryItemTextEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemTextEdit();
-            gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn21 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn22 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)FlagGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MonsterLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CastleInfoGridControl).BeginInit();
@@ -145,7 +146,7 @@
             CastleInfoGridControl.Name = "CastleInfoGridControl";
             CastleInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MonsterLookUpEdit, RegionLookUpEdit, MapLookUpEdit, repositoryItemTextEdit1, ItemLookUpEdit });
             CastleInfoGridControl.ShowOnlyPredefinedDetails = true;
-            CastleInfoGridControl.Size = new System.Drawing.Size(742, 380);
+            CastleInfoGridControl.Size = new System.Drawing.Size(728, 373);
             CastleInfoGridControl.TabIndex = 2;
             CastleInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { GateGridView, GuardGridView, CastleInfoGridView, FlagGridView });
             // 
@@ -181,6 +182,13 @@
             gridColumn15.Name = "gridColumn15";
             gridColumn15.Visible = true;
             gridColumn15.VisibleIndex = 0;
+            // 
+            // gridColumn20
+            // 
+            gridColumn20.FieldName = "RepairCost";
+            gridColumn20.Name = "gridColumn20";
+            gridColumn20.Visible = true;
+            gridColumn20.VisibleIndex = 3;
             // 
             // GuardGridView
             // 
@@ -222,9 +230,16 @@
             gridColumn19.Visible = true;
             gridColumn19.VisibleIndex = 0;
             // 
+            // gridColumn21
+            // 
+            gridColumn21.FieldName = "RepairCost";
+            gridColumn21.Name = "gridColumn21";
+            gridColumn21.Visible = true;
+            gridColumn21.VisibleIndex = 4;
+            // 
             // CastleInfoGridView
             // 
-            CastleInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn2, gridColumn3, gridColumn4, gridColumn5, gridColumn6, gridColumn9, gridColumn7, gridColumn8 });
+            CastleInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn2, gridColumn3, gridColumn4, gridColumn5, gridColumn6, gridColumn9, gridColumn7, gridColumn8, gridColumn22 });
             CastleInfoGridView.GridControl = CastleInfoGridControl;
             CastleInfoGridView.Name = "CastleInfoGridView";
             CastleInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -276,10 +291,10 @@
             // gridColumn5
             // 
             gridColumn5.ColumnEdit = RegionLookUpEdit;
-            gridColumn5.FieldName = "CastleRegion";
+            gridColumn5.FieldName = "ObjectiveRegion";
             gridColumn5.Name = "gridColumn5";
             gridColumn5.Visible = true;
-            gridColumn5.VisibleIndex = 4;
+            gridColumn5.VisibleIndex = 5;
             // 
             // RegionLookUpEdit
             // 
@@ -297,7 +312,7 @@
             gridColumn6.FieldName = "AttackSpawnRegion";
             gridColumn6.Name = "gridColumn6";
             gridColumn6.Visible = true;
-            gridColumn6.VisibleIndex = 5;
+            gridColumn6.VisibleIndex = 6;
             // 
             // gridColumn9
             // 
@@ -305,7 +320,7 @@
             gridColumn9.FieldName = "Item";
             gridColumn9.Name = "gridColumn9";
             gridColumn9.Visible = true;
-            gridColumn9.VisibleIndex = 6;
+            gridColumn9.VisibleIndex = 7;
             // 
             // ItemLookUpEdit
             // 
@@ -323,14 +338,14 @@
             gridColumn7.FieldName = "Monster";
             gridColumn7.Name = "gridColumn7";
             gridColumn7.Visible = true;
-            gridColumn7.VisibleIndex = 7;
+            gridColumn7.VisibleIndex = 8;
             // 
             // gridColumn8
             // 
             gridColumn8.FieldName = "Discount";
             gridColumn8.Name = "gridColumn8";
             gridColumn8.Visible = true;
-            gridColumn8.VisibleIndex = 8;
+            gridColumn8.VisibleIndex = 9;
             // 
             // ribbon
             // 
@@ -340,7 +355,7 @@
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(742, 144);
+            ribbon.Size = new System.Drawing.Size(728, 144);
             // 
             // SaveButton
             // 
@@ -396,25 +411,19 @@
             repositoryItemTextEdit1.AutoHeight = false;
             repositoryItemTextEdit1.Name = "repositoryItemTextEdit1";
             // 
-            // gridColumn20
+            // gridColumn22
             // 
-            gridColumn20.FieldName = "RepairCost";
-            gridColumn20.Name = "gridColumn20";
-            gridColumn20.Visible = true;
-            gridColumn20.VisibleIndex = 3;
-            // 
-            // gridColumn21
-            // 
-            gridColumn21.FieldName = "RepairCost";
-            gridColumn21.Name = "gridColumn21";
-            gridColumn21.Visible = true;
-            gridColumn21.VisibleIndex = 4;
+            gridColumn22.ColumnEdit = RegionLookUpEdit;
+            gridColumn22.FieldName = "CastleRegion";
+            gridColumn22.Name = "gridColumn22";
+            gridColumn22.Visible = true;
+            gridColumn22.VisibleIndex = 4;
             // 
             // CastleInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(742, 524);
+            ClientSize = new System.Drawing.Size(728, 517);
             Controls.Add(CastleInfoGridControl);
             Controls.Add(ribbon);
             Name = "CastleInfoView";
@@ -475,5 +484,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn19;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn20;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn21;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn22;
     }
 }
