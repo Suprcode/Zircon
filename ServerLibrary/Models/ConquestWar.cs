@@ -67,7 +67,6 @@ namespace Server.Models
 
             Ended = true;
 
-
             for (int i = Map.NPCs.Count - 1; i >= 0; i--)
             {
                 NPCObject npc = Map.NPCs[i];
@@ -86,7 +85,6 @@ namespace Server.Models
             SEnvir.Broadcast(new S.GuildConquestFinished { Index = Castle.Index });
 
             GuildInfo ownerGuild = SEnvir.GuildInfoList.Binding.FirstOrDefault(x => x.Castle == Castle);
-
 
             if (ownerGuild != null)
             {

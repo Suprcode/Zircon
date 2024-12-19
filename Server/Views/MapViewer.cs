@@ -781,13 +781,23 @@ namespace Server.Views.DirectX
             using (MemoryStream mstream = new MemoryStream(_BReader.ReadBytes(_BReader.ReadInt32())))
             using (BinaryReader reader = new BinaryReader(mstream))
             {
-                Images = new MirImage[reader.ReadInt32()];
+                int value = reader.ReadInt32();
+
+                int count = value & 0x1FFFFFF;
+                var version = (value >> 25) & 0x7F;
+
+                if (version == 0)
+                {
+                    count = value;
+                }
+
+                Images = new MirImage[count];
 
                 for (int i = 0; i < Images.Length; i++)
                 {
                     if (!reader.ReadBoolean()) continue;
 
-                    Images[i] = new MirImage(reader, Manager);
+                    Images[i] = new MirImage(reader, Manager, version);
                 }
             }
 
@@ -1142,6 +1152,7 @@ namespace Server.Views.DirectX
     
     public sealed class MirImage : IDisposable
     {
+        public int Version;
         public int Position;
 
         public DXManager Manager;
@@ -1163,7 +1174,14 @@ namespace Server.Views.DirectX
                 int w = Width + (4 - Width % 4) % 4;
                 int h = Height + (4 - Height % 4) % 4;
 
-                return w * h / 2;
+                if (Version > 0)
+                {
+                    return w * h;
+                }
+                else
+                {
+                    return w * h / 2;
+                }
             }
         }
         #endregion
@@ -1185,7 +1203,14 @@ namespace Server.Views.DirectX
                 int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
                 int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
 
-                return w * h / 2;
+                if (Version > 0)
+                {
+                    return w * h;
+                }
+                else
+                {
+                    return w * h / 2;
+                }
             }
         }
         #endregion
@@ -1204,16 +1229,35 @@ namespace Server.Views.DirectX
                 int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
                 int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
 
-                return w * h / 2;
+                if (Version > 0)
+                {
+                    return w * h;
+                }
+                else
+                {
+                    return w * h / 2;
+                }
             }
         }
         #endregion
 
+        private Format DrawFormat
+        {
+            get
+            {
+                return Version switch
+                {
+                    0 => Format.Dxt1,
+                    _ => Format.Dxt5,
+                };
+            }
+        }
 
         public DateTime ExpireTime;
 
-        public MirImage(BinaryReader reader, DXManager manager)
+        public MirImage(BinaryReader reader, DXManager manager, int version)
         {
+            Version = version;
             Position = reader.ReadInt32();
 
             Width = reader.ReadInt16();
@@ -1298,7 +1342,7 @@ namespace Server.Views.DirectX
 
             if (w == 0 || h == 0) return;
 
-            Image = new Texture(Manager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Image = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Image.LockRectangle(0, LockFlags.Discard);
             ImageData = (byte*)rect.Data.DataPointer;
 
@@ -1327,7 +1371,7 @@ namespace Server.Views.DirectX
 
             if (w == 0 || h == 0) return;
 
-            Shadow = new Texture(Manager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Shadow = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Shadow.LockRectangle(0, LockFlags.Discard);
             ShadowData = (byte*)rect.Data.DataPointer;
 
@@ -1354,7 +1398,7 @@ namespace Server.Views.DirectX
 
             if (w == 0 || h == 0) return;
 
-            Overlay = new Texture(Manager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Overlay = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Overlay.LockRectangle(0, LockFlags.Discard);
             OverlayData = (byte*)rect.Data.DataPointer;
 

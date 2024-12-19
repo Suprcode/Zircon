@@ -1549,19 +1549,6 @@ namespace Server.Envir
 
             War.StartWar();
         }
-        public static void StartConquest(CastleInfo info, List<GuildInfo> participants)
-        {
-            ConquestWar War = new ConquestWar
-            {
-                Castle = info,
-                Participants = participants,
-                EndTime = Now + TimeSpan.FromMinutes(15),
-                StartTime = Now.Date + info.StartTime,
-            };
-
-            War.StartWar();
-        }
-
 
         public static UserItem CreateFreshItem(UserItem item)
         {
