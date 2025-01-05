@@ -2404,8 +2404,8 @@ namespace Server.Views
             // 
             // OpenDialog
             // 
-            OpenDialog.FileName = "Zircon.exe";
-            OpenDialog.Filter = "Zircon Client|Zircon.exe|All Files|*.*";
+            OpenDialog.FileName = "Zircon.dll";
+            OpenDialog.Filter = "Zircon Client|Zircon.dll|All Files|*.*";
             // 
             // FolderDialog
             // 

@@ -135,7 +135,7 @@ namespace Client.Envir
             byte[] clientHash;
             using (MD5 md5 = MD5.Create())
             {
-                using (FileStream stream = File.OpenRead(Application.ExecutablePath))
+                using (FileStream stream = File.OpenRead(Path.ChangeExtension(Application.ExecutablePath, ".dll")))
                     clientHash = md5.ComputeHash(stream);
             }
 

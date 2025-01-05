@@ -20,7 +20,7 @@ namespace Server.Envir
      
         [ConfigSection("System")]
         public static bool CheckVersion { get; set; } = true;
-        public static string VersionPath { get; set; } = @".\Zircon.exe";
+        public static string VersionPath { get; set; } = @".\Zircon.dll";
 
         public static string MapPath { get; set; } = @".\Map\";
         public static byte[] ClientHash;
