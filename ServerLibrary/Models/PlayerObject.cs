@@ -678,10 +678,10 @@ namespace Server.Models
 
             DailyQuestTime = SEnvir.Now.AddSeconds(20);
 
-            bool cancel = false;
-
             for (int i = Character.Quests.Count - 1; i >= 0; i--)
             {
+                bool cancel = false;
+
                 var quest = Character.Quests[i];
 
                 switch (quest.QuestInfo.QuestType)
