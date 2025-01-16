@@ -632,8 +632,6 @@ namespace Client.Envir
 
             OverlayWidth = reader.ReadInt16();
             OverlayHeight = reader.ReadInt16();
-
-
         }
 
         public unsafe bool VisiblePixel(Point p, bool acurrate)

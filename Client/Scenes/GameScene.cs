@@ -1191,11 +1191,11 @@ namespace Client.Scenes
                             return;
                         }
 
-                        if (BigMapBox.Opacity == 1F)
-                        {
-                            BigMapBox.Opacity = 0.5F;
-                            return;
-                        }
+                        //if (BigMapBox.Opacity == 1F)
+                        //{
+                        //    BigMapBox.Opacity = 0.5F;
+                        //    return;
+                        //}
 
                         BigMapBox.Visible = false;
                         break;

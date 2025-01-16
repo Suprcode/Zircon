@@ -50,7 +50,22 @@ namespace Client.Scenes.Views
             TitleLabel.Text = SelectedInfo.Description;
             Image.Index = SelectedInfo.MiniMap;
 
-            SetClientSize(Image.Size);
+            var maxWidth = 800;
+            var maxHeight = 600;
+
+            var locationX = 0;
+            var locationY = 0;
+
+            if (Image.Size.Width > maxWidth)
+                locationX = (Image.Size.Width - maxWidth) / 2;
+
+            if (Image.Size.Height > maxHeight)
+                locationY = (Image.Size.Height - maxHeight) / 2;
+
+            Image.Location = new Point(-locationX, -locationY);
+            Image.IgnoreMoveBounds = (Image.Size.Width > maxWidth || Image.Size.Height > maxHeight);
+
+            SetClientSize(Image.Size, maxWidth, maxHeight);
             Location = new Point((GameScene.Game.Size.Width - Size.Width) / 2, (GameScene.Game.Size.Height - Size.Height) / 2);
 
             Size size = GetMapSize(SelectedInfo.FileName);
@@ -65,9 +80,18 @@ namespace Client.Scenes.Views
 
             foreach (ClientObjectData ob in GameScene.Game.DataDictionary.Values)
                 Update(ob);
-
-
         }
+
+        private void RegionTest()
+        {
+            var region = SelectedInfo.Regions.OrderBy(x => x.Size).Last();
+        }
+
+        public void SetClientSize(Size clientSize, int maxWidth, int maxHeight)
+        {
+            SetClientSize(new Size(Math.Min(clientSize.Width, maxWidth), Math.Min(clientSize.Height, maxHeight)));
+        }
+
         private Size GetMapSize(string fileName)
         {
             var path = Path.Combine(Config.MapPath, fileName + ".map");
@@ -138,7 +162,7 @@ namespace Client.Scenes.Views
             BackColour = Color.Black;
             HasFooter = false;
 
-            AllowResize = true;
+            AllowResize = false;
 
             Panel = new DXControl
             {
@@ -151,6 +175,9 @@ namespace Client.Scenes.Views
             {
                 Parent = Panel,
                 LibraryFile = LibraryFile.MiniMap,
+                Movable = true,
+                IgnoreMoveBounds = true,
+                Clip = true
             };
             Image.MouseClick += Image_MouseClick;
         }
