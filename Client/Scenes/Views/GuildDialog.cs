@@ -2601,7 +2601,14 @@ namespace Client.Scenes.Views
                     
                     if (!GameScene.Game.DataDictionary.TryGetValue(MemberInfo.ObjectID, out ClientObjectData data)) return;
 
-                    GameScene.Game.BigMapBox.SelectedInfo = Globals.MapInfoList.Binding.FirstOrDefault(x => x.Index == data.MapIndex);
+                    var map = Globals.MapInfoList.Binding.FirstOrDefault(x => x.Index == data.MapIndex);
+
+                    if (!GameScene.Game.BigMapBox.TryShowMap(map))
+                    {
+                        return;
+                    }
+
+                    GameScene.Game.BigMapBox.SelectedInfo = map;
                     break;
                 case MouseButtons.Middle:
                     if (MemberInfo == null) return;

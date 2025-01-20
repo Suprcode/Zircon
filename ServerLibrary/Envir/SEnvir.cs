@@ -689,9 +689,15 @@ namespace Server.Envir
         {
             foreach (MovementInfo movement in MovementInfoList.Binding)
             {
+                if (movement.SourceRegion == null && movement.DestinationRegion == null)
+                {
+                    Log($"[Movement] No Source or Destination Region, Index: {movement.Index}");
+                    continue;
+                }
+
                 if (movement.SourceRegion == null)
                 {
-                    Log($"[Movement] No Source Region, Source: {movement.SourceRegion.ServerDescription}");
+                    Log($"[Movement] No Source Region, Destination: {movement.DestinationRegion.ServerDescription}");
                     continue;
                 }
 

@@ -82,9 +82,35 @@ namespace Client.Scenes.Views
                 Update(ob);
         }
 
-        private void RegionTest()
+        public void ToggleOpen(bool open)
         {
-            var region = SelectedInfo.Regions.OrderBy(x => x.Size).Last();
+            if (open)
+            {
+                if (!TryShowMap(GameScene.Game.MapControl.MapInfo))
+                {
+                    return;
+                }
+
+                Opacity = 1F;
+                Visible = true;
+            }
+            else
+            {
+                Visible = false;
+            }
+        }
+
+        public bool TryShowMap(MapInfo map, bool sendMessage = true)
+        {
+            if (map == null || map.MiniMap == 0)
+            {
+                if (sendMessage)
+                    GameScene.Game.ReceiveChat("No map available.", MessageType.System);
+
+                return false;
+            }
+
+            return true;
         }
 
         public void SetClientSize(Size clientSize, int maxWidth, int maxHeight)
@@ -307,7 +333,15 @@ namespace Client.Scenes.Views
 
             GameScene.Game.UpdateMapIcon(control, ob.Icon);
 
-            control.MouseClick += (o, e) => SelectedInfo = ob.DestinationRegion.Map;
+            control.MouseClick += (o, e) =>
+            {
+                if (!TryShowMap(ob.DestinationRegion.Map))
+                {
+                    return;
+                }
+
+                SelectedInfo = ob.DestinationRegion.Map;
+            };
             control.Location = new Point((int) (ScaleX*x) - control.Size.Width/2, (int) (ScaleY*y) - control.Size.Height/2);
         }
         public void Update(ClientObjectData ob)

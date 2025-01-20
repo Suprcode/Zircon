@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO.Compression;
+using System.IO;
 using System.Windows.Forms;
 using DevExpress.XtraBars;
 using Library;
@@ -15,7 +17,8 @@ namespace Server.Views
         public ConfigView()
         {
             InitializeComponent();
-            this.SyncronizeButton.Click += SyncronizeButton_Click;
+            this.SyncronizeRemoteButton.Click += SyncronizeRemoteButton_Click;
+            this.SyncronizeLocalButton.Click += SyncronizeLocalButton_Click;
             this.DatabaseEncryptionButton.Click += DatabaseEncryptionButton_Click;
             MysteryShipRegionIndexEdit.Properties.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
             LairRegionIndexEdit.Properties.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
@@ -27,10 +30,21 @@ namespace Server.Views
             form.ShowDialog();
         }
 
-        private void SyncronizeButton_Click(object sender, EventArgs e)
+        private void SyncronizeRemoteButton_Click(object sender, EventArgs e)
         {
             var form = new SyncForm();
             form.ShowDialog();
+        }
+
+        private void SyncronizeLocalButton_Click(object sender, EventArgs e)
+        {
+            SEnvir.Log($"Starting local syncronization...");
+
+            SMain.Session.Save(true);
+
+            File.Copy(SMain.Session.SystemPath, Config.ClientPath + "Data\\" + Path.GetFileName(SMain.Session.SystemPath), true);
+
+            SEnvir.Log($"Syncronization completed...");
         }
 
         protected override void OnLoad(EventArgs e)

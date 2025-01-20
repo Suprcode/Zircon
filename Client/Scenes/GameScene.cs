@@ -1184,20 +1184,7 @@ namespace Client.Scenes
                         MiniMapBox.Visible = false;
                         break;
                     case KeyBindAction.MapBigWindow:
-                        if (!BigMapBox.Visible)
-                        {
-                            BigMapBox.Opacity = 1F;
-                            BigMapBox.Visible = true;
-                            return;
-                        }
-
-                        //if (BigMapBox.Opacity == 1F)
-                        //{
-                        //    BigMapBox.Opacity = 0.5F;
-                        //    return;
-                        //}
-
-                        BigMapBox.Visible = false;
+                        BigMapBox.ToggleOpen(!BigMapBox.Visible);
                         break;
                     case KeyBindAction.MailBoxWindow:
                         if (Observer) continue;
