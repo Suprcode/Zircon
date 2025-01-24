@@ -1,6 +1,8 @@
-﻿using System;
-using DevExpress.XtraBars;
+﻿using DevExpress.XtraBars;
+using Library;
 using Library.SystemModels;
+using System;
+using System.Linq;
 
 namespace Server.Views
 {
@@ -13,7 +15,7 @@ namespace Server.Views
             RespawnInfoGridControl.DataSource = SMain.Session.GetCollection<RespawnInfo>().Binding;
 
             MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
-            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;
+            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding.Where(x => x.RegionType == RegionType.None || x.RegionType == RegionType.Spawn);
         }
 
         protected override void OnLoad(EventArgs e)

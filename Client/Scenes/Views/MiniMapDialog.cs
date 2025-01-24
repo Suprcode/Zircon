@@ -105,7 +105,7 @@ namespace Client.Scenes.Views
 
             if (GameScene.Game.MapControl.MapInfo == null) return;
 
-            TitleLabel.Text = GameScene.Game.MapControl.MapInfo.Description;
+            TitleLabel.Text = GameScene.Game.MapControl.MapInfo.PlayerDescription;
             Image.Index = GameScene.Game.MapControl.MapInfo.MiniMap;
 
             ScaleX = Image.Size.Width/(float) GameScene.Game.MapControl.Width;
@@ -211,7 +211,7 @@ namespace Client.Scenes.Views
                 Parent = Image,
                 Opacity = Opacity,
                 ImageOpacity = Opacity,
-                Hint = ob.DestinationRegion.Map.Description,
+                Hint = ob.DestinationRegion.Map.PlayerDescription,
             };
             control.OpacityChanged += (o, e) => control.ImageOpacity = control.Opacity;
 

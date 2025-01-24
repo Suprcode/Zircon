@@ -47,7 +47,7 @@ namespace Client.Scenes.Views
 
             if (SelectedInfo == null) return;
 
-            TitleLabel.Text = SelectedInfo.Description;
+            TitleLabel.Text = SelectedInfo.PlayerDescription;
             Image.Index = SelectedInfo.MiniMap;
 
             var maxWidth = 800;
@@ -327,7 +327,7 @@ namespace Client.Scenes.Views
                 Parent = Image,
                 Opacity =  Opacity,
                 ImageOpacity =  Opacity,
-                Hint = ob.DestinationRegion.Map.Description,
+                Hint = ob.DestinationRegion.Map.PlayerDescription,
             };
             control.OpacityChanged += (o, e) => control.ImageOpacity = control.Opacity;
 

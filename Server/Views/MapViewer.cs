@@ -404,7 +404,6 @@ namespace Server.Views.DirectX
 
                 LibraryList[pair.Key] = new MirLibrary(Path.Combine(Config.ClientPath, pair.Value), this);
             }
-
         }
 
         public void Create()
@@ -2099,7 +2098,7 @@ namespace Server.Views.DirectX
                 }
                 else
                 {
-                    path = Config.MapPath + fileName + ".map";
+                    path = Path.Combine(Config.MapPath, fileName + ".map");
                 }
 
                 if (!File.Exists(path)) return;

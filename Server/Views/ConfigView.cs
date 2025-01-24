@@ -42,7 +42,7 @@ namespace Server.Views
 
             SMain.Session.Save(true);
 
-            File.Copy(SMain.Session.SystemPath, Config.ClientPath + "Data\\" + Path.GetFileName(SMain.Session.SystemPath), true);
+            File.Copy(SMain.Session.SystemPath, Path.Combine(Config.ClientPath, "Data\\", Path.GetFileName(SMain.Session.SystemPath)), true);
 
             SEnvir.Log($"Syncronization completed...");
         }

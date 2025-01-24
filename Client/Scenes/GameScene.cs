@@ -4060,7 +4060,7 @@ namespace Client.Scenes
                     builder.AppendFormat("Collect {0} {1} from ", task.Amount, task.ItemParameter?.ItemName);  
                     break;
                 case QuestTaskType.Region:
-                    builder.AppendFormat("Goto {0} in {1}", task.RegionParameter?.Description, task.RegionParameter?.Map.Description);
+                    builder.AppendFormat("Goto {0} in {1}", task.RegionParameter?.Description, task.RegionParameter?.Map.PlayerDescription);
                     break;
             }
 
@@ -4085,7 +4085,7 @@ namespace Client.Scenes
                     builder.Append(monster.Monster.MonsterName);
 
                     if (monster.Map != null)
-                        builder.AppendFormat(" in {0}", monster.Map.Description);
+                        builder.AppendFormat(" in {0}", monster.Map.PlayerDescription);
                 }
             }
             else
