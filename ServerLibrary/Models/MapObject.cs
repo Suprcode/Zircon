@@ -806,8 +806,6 @@ namespace Server.Models
             return Spawn(map, location);
         }
 
-
-
         public bool Spawn(Map map, Point location)
         {
             if (Node != null)
@@ -867,6 +865,7 @@ namespace Server.Models
 
             OnLocationChanged();
         }
+
         protected virtual void OnLocationChanged()
         {
             CellTime = SEnvir.Now.AddMilliseconds(300);
@@ -883,6 +882,7 @@ namespace Server.Models
                     player.Enqueue(p);
             }
         }
+
         public virtual void CheckSpellObjects()
         {
             Cell cell = CurrentCell;
@@ -925,6 +925,7 @@ namespace Server.Models
 
             return Teleport(map, point, leaveEffect);
         }
+
         public virtual bool Teleport(Map map, Point location, bool leaveEffect = true, bool enterEffect = true)
         {
             if (Race == ObjectType.Player && map.Info.MinimumLevel > Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
@@ -948,6 +949,7 @@ namespace Server.Models
 
             return true;
         }
+
         public virtual void AddAllObjects()
         {
             foreach (PlayerObject ob in CurrentMap.Players)

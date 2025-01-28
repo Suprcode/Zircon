@@ -106,13 +106,13 @@ namespace Server.Envir.Translations
         public override string MarryTeleportOffline { get; set; } = "You cannot teleport to your partner whilst they are offline.";
         public override string MarryTeleportPartnerDead { get; set; } = "You cannot teleport to your partner whilst they are dead.";
         public override string MarryTeleportMap { get; set; } = "You cannot teleport to your partner on that map.";
-        public override string MarryTeleportMapEscape { get; set; } = "You cannot use marraige teleport on this map.";
+        public override string MarryTeleportMapEscape { get; set; } = "You cannot use marriage teleport on this map.";
 
-        public override string CompanionAppearanceAlready { get; set; } = "The {0} appreanace is already available.";
+        public override string CompanionAppearanceAlready { get; set; } = "The {0} appearance is already available.";
         public override string CompanionNeedTicket { get; set; } = "You need to have a Companion ticket to unlock a new appearance.";
         public override string CompanionSkillEnabled { get; set; } = "Companion Skill level {0} Enabled.";
         public override string CompanionSkillDisabled { get; set; } = "Companion Skill level {0} Disabled.";
-        public override string CompanionAppearanceLocked { get; set; } = "The {0} appreanace is not available to you.";
+        public override string CompanionAppearanceLocked { get; set; } = "The {0} appearance is not available to you.";
         public override string CompanionNeedGold { get; set; } = "You cannot afford to adopt this companion.";
         public override string CompanionBadName { get; set; } = "The name given for your new companion is not acceptable.";
         public override string CompanionRetrieveFailed { get; set; } = "Able able to retrieve {0} because it is currently with {1}.";

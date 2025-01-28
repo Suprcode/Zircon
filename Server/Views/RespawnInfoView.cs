@@ -15,7 +15,7 @@ namespace Server.Views
             RespawnInfoGridControl.DataSource = SMain.Session.GetCollection<RespawnInfo>().Binding;
 
             MonsterLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
-            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding.Where(x => x.RegionType == RegionType.None || x.RegionType == RegionType.Spawn);
+            RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding.Where(x => x.RegionType == RegionType.None || x.RegionType == RegionType.Spawn || x.RegionType == RegionType.SpawnConnection);
         }
 
         protected override void OnLoad(EventArgs e)

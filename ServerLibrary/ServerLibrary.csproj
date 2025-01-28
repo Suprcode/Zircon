@@ -9,5 +9,10 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Envir\Events\Actions\" />
+    <Folder Include="Envir\Events\Triggers\" />
+  </ItemGroup>
+
 
 </Project>

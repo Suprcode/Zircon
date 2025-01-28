@@ -95,6 +95,8 @@ namespace Server.Models
             CreateCastleGates();
             CreateCastleGuards();
 
+            CreateCellRegions();
+
             LastPlayer = DateTime.UtcNow;
         }
 
@@ -170,6 +172,32 @@ namespace Server.Models
                     {
                         mob.RepairGuard();
                     }
+                }
+            }
+        }
+
+        public void CreateCellRegions()
+        {
+            foreach (MapRegion region in Info.Regions)
+            {
+                if (region.RegionType != RegionType.Area) continue;
+
+                var points = region.GetPoints(Width);
+
+                foreach (Point sPoint in points)
+                {
+                    Cell source = GetCell(sPoint);
+
+                    if (source == null)
+                    {
+                        SEnvir.Log($"[Cell] Bad Point, Source: {Info.FileName} {region.Description}, X:{sPoint.X}, Y:{sPoint.Y}");
+                        continue;
+                    }
+
+                    if (source.Regions == null)
+                        source.Regions = new List<MapRegion>();
+
+                    source.Regions.Add(region);
                 }
             }
         }
@@ -435,6 +463,8 @@ namespace Server.Models
 
         public List<MovementInfo> Movements;
 
+        public List<MapRegion> Regions = [];
+
         public List<QuestTask> QuestTasks;
 
         public Cell(Point location)
@@ -486,6 +516,7 @@ namespace Server.Models
 
         public Cell GetMovement(MapObject ob)
         {
+            //TODO - This is probably not efficient for large regions. Find a better way to check when object has joined or left a region
             if (QuestTasks != null && QuestTasks.Count > 0)
             {
                 if (ob.Race == ObjectType.Player)
@@ -535,7 +566,7 @@ namespace Server.Models
                     }
                     else //Moving to instance
                     {
-                        var (index, result) = ((PlayerObject)ob).GetInstance(movement.NeedInstance);
+                        var (index, result) = ((PlayerObject)ob).GetInstance(movement.NeedInstance, walkOn: true);
 
                         if (result != InstanceResult.Success)
                         {

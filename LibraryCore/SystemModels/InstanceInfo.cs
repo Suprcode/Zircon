@@ -98,6 +98,21 @@ namespace Library.SystemModels
         }
         private bool _AllowRejoin;
 
+        public bool AllowTeleport
+        {
+            get { return _AllowTeleport; }
+            set
+            {
+                if (_AllowTeleport == value) return;
+
+                var oldValue = _AllowTeleport;
+                _AllowTeleport = value;
+
+                OnChanged(oldValue, value, "AllowTeleport");
+            }
+        }
+        private bool _AllowTeleport;
+
         public bool SavePlace
         {
             get { return _SavePlace; }

@@ -34,6 +34,7 @@
             InstanceMapGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             MapInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            gridColumn19 = new DevExpress.XtraGrid.Columns.GridColumn();
             InstanceInfoGridControl = new DevExpress.XtraGrid.GridControl();
             InstanceInfoStatsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             colStat = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -67,7 +68,7 @@
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            gridColumn19 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn20 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)InstanceMapGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapInfoLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InstanceInfoGridControl).BeginInit();
@@ -111,6 +112,13 @@
             MapInfoLookUpEdit.Name = "MapInfoLookUpEdit";
             MapInfoLookUpEdit.NullText = "[Map is null]";
             // 
+            // gridColumn19
+            // 
+            gridColumn19.FieldName = "RespawnIndex";
+            gridColumn19.Name = "gridColumn19";
+            gridColumn19.Visible = true;
+            gridColumn19.VisibleIndex = 1;
+            // 
             // InstanceInfoGridControl
             // 
             InstanceInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -125,7 +133,7 @@
             InstanceInfoGridControl.Name = "InstanceInfoGridControl";
             InstanceInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MapInfoLookUpEdit, RegionLookUpEdit, InstanceTypeImageComboBox, StatComboBox, ItemLookUpEdit });
             InstanceInfoGridControl.ShowOnlyPredefinedDetails = true;
-            InstanceInfoGridControl.Size = new System.Drawing.Size(1031, 335);
+            InstanceInfoGridControl.Size = new System.Drawing.Size(1017, 328);
             InstanceInfoGridControl.TabIndex = 2;
             InstanceInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { InstanceInfoStatsGridView, InstanceInfoGridView, InstanceMapGridView });
             // 
@@ -163,7 +171,7 @@
             // 
             // InstanceInfoGridView
             // 
-            InstanceInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn6, gridColumn5, gridColumn17, gridColumn18, gridColumn3, gridColumn4, gridColumn7, gridColumn8, gridColumn10, gridColumn9, gridColumn11, gridColumn12, gridColumn13, gridColumn14, gridColumn15, gridColumn16 });
+            InstanceInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn6, gridColumn5, gridColumn17, gridColumn18, gridColumn3, gridColumn4, gridColumn7, gridColumn8, gridColumn10, gridColumn9, gridColumn11, gridColumn12, gridColumn13, gridColumn14, gridColumn15, gridColumn16, gridColumn20 });
             InstanceInfoGridView.GridControl = InstanceInfoGridControl;
             InstanceInfoGridView.Name = "InstanceInfoGridView";
             InstanceInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -219,7 +227,7 @@
             gridColumn3.FieldName = "MinPlayerLevel";
             gridColumn3.Name = "gridColumn3";
             gridColumn3.Visible = true;
-            gridColumn3.VisibleIndex = 7;
+            gridColumn3.VisibleIndex = 8;
             // 
             // gridColumn4
             // 
@@ -227,7 +235,7 @@
             gridColumn4.FieldName = "MaxPlayerLevel";
             gridColumn4.Name = "gridColumn4";
             gridColumn4.Visible = true;
-            gridColumn4.VisibleIndex = 8;
+            gridColumn4.VisibleIndex = 9;
             // 
             // gridColumn7
             // 
@@ -235,7 +243,7 @@
             gridColumn7.FieldName = "MinPlayerCount";
             gridColumn7.Name = "gridColumn7";
             gridColumn7.Visible = true;
-            gridColumn7.VisibleIndex = 9;
+            gridColumn7.VisibleIndex = 10;
             // 
             // gridColumn8
             // 
@@ -243,7 +251,7 @@
             gridColumn8.FieldName = "MaxPlayerCount";
             gridColumn8.Name = "gridColumn8";
             gridColumn8.Visible = true;
-            gridColumn8.VisibleIndex = 10;
+            gridColumn8.VisibleIndex = 11;
             // 
             // gridColumn10
             // 
@@ -252,7 +260,7 @@
             gridColumn10.FieldName = "ConnectRegion";
             gridColumn10.Name = "gridColumn10";
             gridColumn10.Visible = true;
-            gridColumn10.VisibleIndex = 15;
+            gridColumn10.VisibleIndex = 16;
             // 
             // RegionLookUpEdit
             // 
@@ -271,7 +279,7 @@
             gridColumn9.FieldName = "ReconnectRegion";
             gridColumn9.Name = "gridColumn9";
             gridColumn9.Visible = true;
-            gridColumn9.VisibleIndex = 16;
+            gridColumn9.VisibleIndex = 17;
             // 
             // gridColumn11
             // 
@@ -294,7 +302,7 @@
             gridColumn12.FieldName = "CooldownTimeInMinutes";
             gridColumn12.Name = "gridColumn12";
             gridColumn12.Visible = true;
-            gridColumn12.VisibleIndex = 13;
+            gridColumn12.VisibleIndex = 14;
             // 
             // gridColumn13
             // 
@@ -311,7 +319,7 @@
             gridColumn14.FieldName = "RequiredItem";
             gridColumn14.Name = "gridColumn14";
             gridColumn14.Visible = true;
-            gridColumn14.VisibleIndex = 11;
+            gridColumn14.VisibleIndex = 12;
             // 
             // ItemLookUpEdit
             // 
@@ -328,7 +336,7 @@
             gridColumn15.FieldName = "RequiredItemSingleUse";
             gridColumn15.Name = "gridColumn15";
             gridColumn15.Visible = true;
-            gridColumn15.VisibleIndex = 12;
+            gridColumn15.VisibleIndex = 13;
             // 
             // gridColumn16
             // 
@@ -336,7 +344,7 @@
             gridColumn16.FieldName = "TimeLimitInMinutes";
             gridColumn16.Name = "gridColumn16";
             gridColumn16.Visible = true;
-            gridColumn16.VisibleIndex = 14;
+            gridColumn16.VisibleIndex = 15;
             // 
             // ribbon
             // 
@@ -346,7 +354,7 @@
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(1031, 144);
+            ribbon.Size = new System.Drawing.Size(1017, 144);
             // 
             // SaveDatabaseButton
             // 
@@ -397,18 +405,19 @@
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
             // 
-            // gridColumn19
+            // gridColumn20
             // 
-            gridColumn19.FieldName = "RespawnIndex";
-            gridColumn19.Name = "gridColumn19";
-            gridColumn19.Visible = true;
-            gridColumn19.VisibleIndex = 1;
+            gridColumn20.Caption = "Allow Teleport";
+            gridColumn20.FieldName = "AllowTeleport";
+            gridColumn20.Name = "gridColumn20";
+            gridColumn20.Visible = true;
+            gridColumn20.VisibleIndex = 7;
             // 
             // InstanceInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1031, 479);
+            ClientSize = new System.Drawing.Size(1017, 472);
             Controls.Add(InstanceInfoGridControl);
             Controls.Add(ribbon);
             Name = "InstanceInfoView";
@@ -467,5 +476,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn17;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn18;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn19;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn20;
     }
 }

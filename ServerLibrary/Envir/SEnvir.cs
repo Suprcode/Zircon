@@ -1,31 +1,29 @@
-﻿using System;
+﻿using Library;
+using Library.Network;
+using Library.SystemModels;
+using MirDB;
+using Server.DBModels;
+using Server.Envir.Commands;
+using Server.Envir.Commands.Handler;
+using Server.Models;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Library;
-using Library.Network;
-using Library.SystemModels;
-using MirDB;
-using Server.DBModels;
-using Server.Models;
+using C = Library.Network.ClientPackets;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
-using System.Reflection;
-using System.Globalization;
-using Server.Envir.Commands.Handler;
-using Server.Envir.Commands;
-using Server.Models.Magics;
-using System.Numerics;
 
 namespace Server.Envir
 {
@@ -247,6 +245,7 @@ namespace Server.Envir
         public static Session Session;
 
         public static DBCollection<MapInfo> MapInfoList;
+        public static DBCollection<MapRegion> RegionInfoList;
         public static DBCollection<InstanceInfo> InstanceInfoList;
         public static DBCollection<InstanceMapInfo> InstanceMapInfoList;
         public static DBCollection<SafeZoneInfo> SafeZoneInfoList;
@@ -417,6 +416,7 @@ namespace Server.Envir
             );
 
             MapInfoList = Session.GetCollection<MapInfo>();
+            Session.GetCollection<MapRegion>();
             InstanceInfoList = Session.GetCollection<InstanceInfo>();
             SafeZoneInfoList = Session.GetCollection<SafeZoneInfo>();
             ItemInfoList = Session.GetCollection<ItemInfo>();
@@ -740,7 +740,7 @@ namespace Server.Envir
                     }
                 }
 
-                foreach (Point sPoint in movement.SourceRegion.PointList)
+                foreach (Point sPoint in movement.SourceRegion.PointRegion)
                 {
                     Cell source = sourceMap.GetCell(sPoint);
 
@@ -3668,9 +3668,21 @@ namespace Server.Envir
                 {
                     if (instance.ReconnectRegion != null && map.Players[i].Teleport(instance.ReconnectRegion, null, 0))
                     {
+                        continue;
                     }
-                    else if (map.Players[i].Teleport(map.Players[i].Character.BindPoint.BindRegion, null, 0))
+
+                    if (map.Info.ReconnectMap != null)
                     {
+                        var reconnectMap = GetMap(map.Info.ReconnectMap);
+                        if (map.Players[i].Teleport(reconnectMap, reconnectMap.GetRandomLocation()))
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (map.Players[i].Teleport(map.Players[i].Character.BindPoint.BindRegion, null, 0))
+                    {
+                        continue;
                     }
                 }
             }

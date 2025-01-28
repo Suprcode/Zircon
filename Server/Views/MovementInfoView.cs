@@ -14,7 +14,7 @@ namespace Server.Views
 
             MovementGridControl.DataSource = SMain.Session.GetCollection<MovementInfo>().Binding;
 
-            MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding.Where(x => x.RegionType == RegionType.None || x.RegionType == RegionType.Connection);
+            MapLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding.Where(x => x.RegionType == RegionType.None || x.RegionType == RegionType.Connection || x.RegionType == RegionType.SpawnConnection);
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
             SpawnLookUpEdit.DataSource = SMain.Session.GetCollection<RespawnInfo>().Binding;
             InstanceLookUpEdit.DataSource = SMain.Session.GetCollection<InstanceInfo>().Binding;

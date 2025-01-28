@@ -881,7 +881,17 @@ namespace Server.Models
                 {
                     return;
                 }
-                else if (Spawn(Character.BindPoint.BindRegion, null, 0))
+
+                if (Character.CurrentMap.ReconnectMap != null)
+                {
+                    var reconnectMap = SEnvir.GetMap(Character.CurrentMap.ReconnectMap);
+                    if (Spawn(reconnectMap, reconnectMap.GetRandomLocation()))
+                    {
+                        return;
+                    }
+                }
+
+                if (Spawn(Character.BindPoint.BindRegion, null, 0))
                 {
                     return;
                 }
@@ -2575,6 +2585,8 @@ namespace Server.Models
             {
                 if (!Config.TestServer && Stats[Stat.TeleportRing] == 0) return;
 
+                if (CurrentMap.Instance != null && !CurrentMap.Instance.AllowTeleport) return;
+
                 if (!CurrentMap.Info.AllowRT || !CurrentMap.Info.AllowTT) return;
 
                 if (!destInfo.AllowRT || !destInfo.AllowTT) return;
@@ -2821,6 +2833,18 @@ namespace Server.Models
             if (!Character.Partner.Player.CurrentMap.Info.CanMarriageRecall)
             {
                 Connection.ReceiveChatWithObservers(con => con.Language.MarryTeleportMap, MessageType.System);
+                return;
+            }
+
+            if (Character.Partner.Player.CurrentMap.Instance != null && !Character.Partner.Player.CurrentMap.Instance.AllowTeleport)
+            {
+                Connection.ReceiveChatWithObservers(con => con.Language.MarryTeleportMap, MessageType.System);
+                return;
+            }
+
+            if (CurrentMap.Instance != null && !CurrentMap.Instance.AllowTeleport)
+            {
+                Connection.ReceiveChatWithObservers(con => con.Language.MarryTeleportMapEscape, MessageType.System);
                 return;
             }
 
@@ -5551,7 +5575,14 @@ namespace Server.Models
                             if (!ItemBuffAdd(item.Info)) return;
                             break;
                         case 2: //Town Teleport
-                            if (!CurrentMap.Info.AllowTT || CurrentMap.Instance != null)
+
+                            if (CurrentMap.Instance != null && !CurrentMap.Instance.AllowTeleport)
+                            {
+                                Connection.ReceiveChatWithObservers(con => con.Language.CannotTownTeleport, MessageType.System);
+                                return;
+                            }
+
+                            if (!CurrentMap.Info.AllowTT)
                             {
                                 Connection.ReceiveChatWithObservers(con => con.Language.CannotTownTeleport, MessageType.System);
                                 return;
@@ -13190,6 +13221,7 @@ namespace Server.Models
             Broadcast(new S.ObjectMove { ObjectID = ObjectID, Direction = direction, Location = CurrentLocation, Slow = slow, Distance = distance });
             CheckSpellObjects();
         }
+
         public void Attack(MirDirection direction, MagicType attackMagic)
         {
             if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
@@ -15361,11 +15393,11 @@ namespace Server.Models
             Enqueue(joinResult);
         }
 
-        public (byte? index, InstanceResult result) GetInstance(InstanceInfo instance, bool checkOnly = false, bool dungeonFinder = false)
+        public (byte? index, InstanceResult result) GetInstance(InstanceInfo instance, bool checkOnly = false, bool dungeonFinder = false, bool walkOn = false)
         {
             var mapInstance = SEnvir.Instances[instance];
 
-            if (instance.ConnectRegion == null)
+            if (instance.ConnectRegion == null && !walkOn)
                 return (null, InstanceResult.ConnectRegionNotSet);
 
             if (instance.MinPlayerLevel > 0 && Level < instance.MinPlayerLevel || instance.MaxPlayerLevel > 0 && Level > instance.MaxPlayerLevel)

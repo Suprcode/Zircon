@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Library;
-using Library.SystemModels;
-using Server.DBModels;
+﻿using Library;
 using Server.Envir;
+using System;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters

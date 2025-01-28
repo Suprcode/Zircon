@@ -19,6 +19,9 @@ namespace Server.Envir.Commands.Command.Player
             if (player.GroupMembers[0] != player)
                 throw new UserCommandException(player.Connection.Language.GroupNotLeader);
 
+            if (player.CurrentMap.Instance != null && !player.CurrentMap.Instance.AllowTeleport)
+                throw new UserCommandException(player.Connection.Language.GroupRecallMap);
+
             if (!player.CurrentMap.Info.AllowTT || !player.CurrentMap.Info.AllowRT || player.CurrentMap.Info.SkillDelay > 0)
                 throw new UserCommandException(player.Connection.Language.GroupRecallMap);
 
@@ -29,6 +32,7 @@ namespace Server.Envir.Commands.Command.Player
             {
                 if (member.Dead || member == player)
                     continue;
+
                 if (!member.CurrentMap.Info.AllowTT)
                 {
                     member.Connection.ReceiveChatWithObservers(con => con.Language.GroupRecallFromMap, MessageType.System);

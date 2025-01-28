@@ -357,7 +357,8 @@ namespace Library
         Area = 1,
         Connection = 2,
         Spawn = 3,
-        Npc= 4
+        Npc = 4,
+        SpawnConnection = 5
     }
 
     public enum ObjectType : byte
