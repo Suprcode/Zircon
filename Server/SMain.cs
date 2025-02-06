@@ -531,7 +531,6 @@ namespace Server
 
         private void EventInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
-
             ShowView(typeof(EventInfoView));
         }
 

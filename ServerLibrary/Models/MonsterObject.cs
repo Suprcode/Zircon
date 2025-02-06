@@ -1005,9 +1005,10 @@ namespace Server.Models
 
 
             if (SpawnInfo != null)
+            {
                 SpawnInfo.AliveCount--;
-
-            ProcessEvents();
+                SEnvir.EventHandler.Process(this, "MONSTERDIE");
+            }
 
             SpawnInfo = null;
 
@@ -2480,85 +2481,15 @@ namespace Server.Models
                 DeadTime += Config.HarvestDuration;
 
             if (SpawnInfo != null)
+            {
                 SpawnInfo.AliveCount--;
 
-            ProcessEvents();
+                SEnvir.EventHandler.Process(this, "MONSTERDIE");
+            }
 
             SpawnInfo = null;
 
             EXPOwner = null;
-        }
-
-        private void ProcessEvents()
-        {
-            if (SpawnInfo == null) return;
-
-            foreach (EventTarget target in MonsterInfo.Events)
-            {
-                if ((DropSet & target.DropSet) != target.DropSet) continue;
-
-                int start = target.Event.CurrentValue;
-                int end = Math.Min(target.Event.MaxValue, Math.Max(0, start + target.Value));
-
-                target.Event.CurrentValue = end;
-
-                foreach (EventAction action in target.Event.Actions)
-                {
-                    if (start >= action.TriggerValue || end < action.TriggerValue) continue;
-
-                    Map map;
-                    switch (action.Type)
-                    {
-                        case EventActionType.GlobalMessage:
-                            SEnvir.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
-                            break;
-                        case EventActionType.MapMessage:
-                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            if (map == null) continue;
-
-                            map.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
-                            break;
-                        case EventActionType.PlayerMessage:
-                            if (EXPOwner == null) continue;
-
-                            EXPOwner.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
-                            break;
-                        case EventActionType.MonsterSpawn:
-                            SpawnInfo spawn = SEnvir.Spawns.FirstOrDefault(x => x.Info == action.RespawnParameter1);
-                            if (spawn == null) continue;
-
-                            spawn.DoSpawn(true);
-                            break;
-                        case EventActionType.MonsterPlayerSpawn:
-
-                            MonsterObject mob = GetMonster(action.MonsterParameter1);
-                            mob.Spawn(CurrentMap, CurrentMap.GetRandomLocation(CurrentLocation, 10));
-                            break;
-                        case EventActionType.MovementSettings:
-                            break;
-                        case EventActionType.PlayerRecall:
-                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            if (map == null) continue;
-
-                            for (int i = map.Players.Count - 1; i >= 0; i--)
-                            {
-                                PlayerObject player = map.Players[i];
-                                player.Teleport(action.RegionParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            }
-                            break;
-                        case EventActionType.PlayerEscape:
-                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            if (map == null) continue;
-
-                            for (int i = map.Players.Count - 1; i >= 0; i--)
-                            {
-                                PlayerObject player = map.Players[i];
-                                player.Teleport(player.Character.BindPoint.BindRegion, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            }
-                            break;
-                    }
-                }
-            }
         }
 
         protected void YieldReward()

@@ -3,10 +3,12 @@ using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
+using Server.Envir.Events.Triggers;
 using Server.Models.Magics;
 using Server.Models.Monsters;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -283,6 +285,8 @@ namespace Server.Models
                 }
             }
         }
+
+        #region Process
 
         public override void Process()
         {
@@ -750,7 +754,9 @@ namespace Server.Models
             else if (Stats[Stat.PKPoint] >= 50)
                 NameColour = Color.Yellow;
         }
-        
+
+        #endregion
+
         private StartInformation GetStartInformation(bool observer = false)
         {
             List<ClientBeltLink> blinks = new List<ClientBeltLink>();
@@ -939,6 +945,8 @@ namespace Server.Models
             BuffRemove(BuffType.Veteran);
             BuffRemove(BuffType.ElementalHurricane);
             BuffRemove(BuffType.SuperiorMagicShield);
+
+            SEnvir.EventLogs.RemoveAll(x => x.PlayerIndex == Character.Index);
 
             if (GroupMembers != null) GroupLeave();
 
@@ -1373,13 +1381,20 @@ namespace Server.Models
             }
             else if (Spawned && CurrentMap.Info.CanMine)
                 PauseBuffs();
+
+            if (PlayerMove.QuickCheck(this))
+            {
+                SEnvir.EventHandler.Process(this, "PLAYERMOVE");
+            }
         }
+
         public override void OnDespawned()
         {
             base.OnDespawned();
 
             SEnvir.Players.Remove(this);
         }
+
         public override void OnSafeDespawn()
         {
             throw new NotImplementedException();
@@ -13203,6 +13218,8 @@ namespace Server.Models
             ActionTime = SEnvir.Now + Globals.MoveTime;
             MoveTime = SEnvir.Now + Globals.MoveTime;
 
+            var previousCell = CurrentCell;
+
             PreventSpellCheck = true;
             CurrentCell = cell.GetMovement(this);
             PreventSpellCheck = false;
@@ -14703,6 +14720,8 @@ namespace Server.Models
             if (Buffs.Any(x => x.Type == BuffType.SoulResonance))
                 SoulResonance.Activate(this);
 
+            SEnvir.EventHandler.Process(this, "PLAYERDIE");
+
             #region Conquest Stats
 
             UserConquestStats conquest = SEnvir.GetConquestStats(this);
@@ -15411,7 +15430,7 @@ namespace Server.Models
 
             switch (instance.Type)
             {
-                case InstanceType.Solo:
+                case InstanceType.Player:
                     {
                         if (instance.UserCooldown.TryGetValue(Name, out DateTime cooldown))
                         {
@@ -15428,7 +15447,7 @@ namespace Server.Models
                                 return (instance.UserRecord[Name], InstanceResult.Success);
                         }
 
-                        for (int i = 0; i < mapInstance.Length; i++)
+                        for (byte i = 0; i < mapInstance.Length; i++)
                         {
                             if (CheckInstanceFreeSpace(instance, i))
                             {
@@ -15436,15 +15455,15 @@ namespace Server.Models
                                 {
                                     if (instance.UserRecord.ContainsKey(Name))
                                     {
-                                        instance.UserRecord[Name] = (byte)i;
+                                        instance.UserRecord[Name] = i;
                                     }
                                     else
                                     {
-                                        instance.UserRecord.Add(Name, (byte)i);
+                                        instance.UserRecord.Add(Name, i);
                                     }
                                 }
 
-                                return ((byte)i, InstanceResult.Success);
+                                return (i, InstanceResult.Success);
                             }
                         }
                     }
@@ -15568,11 +15587,11 @@ namespace Server.Models
             }
 
             byte? instanceSequence = null;
-            for (int i = 0; i < mapInstance.Length; i++)
+            for (byte i = 0; i < mapInstance.Length; i++)
             {
                 if (mapInstance[i] == null)
                 {
-                    instanceSequence = (byte)i;
+                    instanceSequence = i;
                     break;
                 }
             }

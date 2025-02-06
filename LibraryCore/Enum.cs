@@ -327,8 +327,6 @@ namespace Library
 
     public enum TimeOfDay : byte
     {
-        None,
-
         Dawn,
         Day,
         Dusk,
@@ -344,7 +342,7 @@ namespace Library
 
     public enum InstanceType : byte
     {
-        Solo = 0,
+        Player = 0,
         Group = 1,
         Guild = 2,
         Castle = 3

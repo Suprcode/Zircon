@@ -1,13 +1,9 @@
-﻿using System;
+﻿using MirDB;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
 
 namespace Library.SystemModels
 {
-    public sealed class EventInfo : DBObject
+    public sealed class WorldEventInfo : DBObject
     {
         [IsIdentity]
         public string Description
@@ -40,23 +36,32 @@ namespace Library.SystemModels
         }
         private int _MaxValue;
 
+        public bool ResetWhenMax
+        {
+            get { return _ResetWhenMax; }
+            set
+            {
+                if (_ResetWhenMax == value) return;
 
+                var oldValue = _ResetWhenMax;
+                _ResetWhenMax = value;
 
-        [Association("Targets", true)]
-        public DBBindingList<EventTarget> Targets { get; set; }
+                OnChanged(oldValue, value, "ResetWhenMax");
+            }
+        }
+        private bool _ResetWhenMax;
+
+        [Association("Triggers", true)]
+        public DBBindingList<WorldEventTrigger> Triggers { get; set; }
 
         [Association("Actions", true)]
-        public DBBindingList<EventAction> Actions { get; set; }
-
-
-        public int CurrentValue; //Server Variable.
-
+        public DBBindingList<WorldEventAction> Actions { get; set; }
     }
 
-    public sealed class EventTarget : DBObject
+    public sealed class WorldEventTrigger : DBObject
     {
-        [Association("Targets")]
-        public EventInfo Event
+        [Association("Triggers")]
+        public WorldEventInfo Event
         {
             get { return _Event; }
             set
@@ -69,7 +74,390 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "Event");
             }
         }
-        private EventInfo _Event;
+        private WorldEventInfo _Event;
+
+        public WorldEventTriggerType Type
+        {
+            get { return _Type; }
+            set
+            {
+                if (_Type == value) return;
+
+                var oldValue = _Type;
+                _Type = value;
+
+                OnChanged(oldValue, value, "Type");
+            }
+        }
+        private WorldEventTriggerType _Type;
+
+        public int Value
+        {
+            get { return _Value; }
+            set
+            {
+                if (_Value == value) return;
+
+                var oldValue = _Value;
+                _Value = value;
+
+                OnChanged(oldValue, value, "Value");
+            }
+        }
+        private int _Value;
+
+        public int MaxTriggers
+        {
+            get { return _MaxTriggers; }
+            set
+            {
+                if (_MaxTriggers == value) return;
+
+                var oldValue = _MaxTriggers;
+                _MaxTriggers = value;
+
+                OnChanged(oldValue, value, "MaxTriggers");
+            }
+        }
+        private int _MaxTriggers;
+    }
+
+    public sealed class WorldEventAction : BaseEventAction
+    {
+        [Association("Actions")]
+        public WorldEventInfo Event
+        {
+            get { return _Event; }
+            set
+            {
+                if (_Event == value) return;
+
+                var oldValue = _Event;
+                _Event = value;
+
+                OnChanged(oldValue, value, "Event");
+            }
+        }
+        private WorldEventInfo _Event;
+    }
+
+
+    public sealed class PlayerEventInfo : DBObject
+    {
+        [IsIdentity]
+        public string Description
+        {
+            get { return _Description; }
+            set
+            {
+                if (_Description == value) return;
+
+                var oldValue = _Description;
+                _Description = value;
+
+                OnChanged(oldValue, value, "Description");
+            }
+        }
+        private string _Description;
+
+        public EventTrackingType TrackingType
+        {
+            get { return _TrackingType; }
+            set
+            {
+                if (_TrackingType == value) return;
+
+                var oldValue = _TrackingType;
+                _TrackingType = value;
+
+                OnChanged(oldValue, value, "TrackingType");
+            }
+        }
+        private EventTrackingType _TrackingType;
+
+        public int MaxValue
+        {
+            get { return _MaxValue; }
+            set
+            {
+                if (_MaxValue == value) return;
+
+                var oldValue = _MaxValue;
+                _MaxValue = value;
+
+                OnChanged(oldValue, value, "MaxValue");
+            }
+        }
+        private int _MaxValue;
+
+        public bool ResetWhenMax
+        {
+            get { return _ResetWhenMax; }
+            set
+            {
+                if (_ResetWhenMax == value) return;
+
+                var oldValue = _ResetWhenMax;
+                _ResetWhenMax = value;
+
+                OnChanged(oldValue, value, "ResetWhenMax");
+            }
+        }
+        private bool _ResetWhenMax;
+
+        [Association("Triggers", true)]
+        public DBBindingList<PlayerEventTrigger> Triggers { get; set; }
+
+        [Association("Actions", true)]
+        public DBBindingList<PlayerEventAction> Actions { get; set; }
+    }
+
+    public sealed class PlayerEventTrigger : DBObject
+    {
+        [Association("Triggers")]
+        public PlayerEventInfo Event
+        {
+            get { return _Event; }
+            set
+            {
+                if (_Event == value) return;
+
+                var oldValue = _Event;
+                _Event = value;
+
+                OnChanged(oldValue, value, "Event");
+            }
+        }
+        private PlayerEventInfo _Event;
+
+        public PlayerEventTriggerType Type
+        {
+            get { return _Type; }
+            set
+            {
+                if (_Type == value) return;
+
+                var oldValue = _Type;
+                _Type = value;
+
+                OnChanged(oldValue, value, "Type");
+            }
+        }
+        private PlayerEventTriggerType _Type; 
+        
+        public int Value
+        {
+            get { return _Value; }
+            set
+            {
+                if (_Value == value) return;
+
+                var oldValue = _Value;
+                _Value = value;
+
+                OnChanged(oldValue, value, "Value");
+            }
+        }
+        private int _Value;
+
+        public string StringParameter1
+        {
+            get { return _StringParameter1; }
+            set
+            {
+                if (_StringParameter1 == value) return;
+
+                var oldValue = _StringParameter1;
+                _StringParameter1 = value;
+
+                OnChanged(oldValue, value, "StringParameter1");
+            }
+        }
+        private string _StringParameter1;
+
+        public MapInfo MapParameter1
+        {
+            get { return _MapParameter1; }
+            set
+            {
+                if (_MapParameter1 == value) return;
+
+                var oldValue = _MapParameter1;
+                _MapParameter1 = value;
+
+                OnChanged(oldValue, value, "MapParameter1");
+            }
+        }
+        private MapInfo _MapParameter1;
+
+        public MapRegion RegionParameter1
+        {
+            get { return _RegionParameter1; }
+            set
+            {
+                if (_RegionParameter1 == value) return;
+
+                var oldValue = _RegionParameter1;
+                _RegionParameter1 = value;
+
+                OnChanged(oldValue, value, "RegionParameter1");
+            }
+        }
+        private MapRegion _RegionParameter1;
+
+        public InstanceInfo InstanceParameter1
+        {
+            get { return _InstanceParameter1; }
+            set
+            {
+                if (_InstanceParameter1 == value) return;
+
+                var oldValue = _InstanceParameter1;
+                _InstanceParameter1 = value;
+
+                OnChanged(oldValue, value, "InstanceParameter1");
+            }
+        }
+        private InstanceInfo _InstanceParameter1;
+
+        public int MaxTriggers
+        {
+            get { return _MaxTriggers; }
+            set
+            {
+                if (_MaxTriggers == value) return;
+
+                var oldValue = _MaxTriggers;
+                _MaxTriggers = value;
+
+                OnChanged(oldValue, value, "MaxTriggers");
+            }
+        }
+        private int _MaxTriggers;
+    }
+
+    public sealed class PlayerEventAction : BaseEventAction
+    {
+        [Association("Actions")]
+        public PlayerEventInfo Event
+        {
+            get { return _Event; }
+            set
+            {
+                if (_Event == value) return;
+
+                var oldValue = _Event;
+                _Event = value;
+
+                OnChanged(oldValue, value, "Event");
+            }
+        }
+        private PlayerEventInfo _Event;
+    }
+
+
+    public sealed class MonsterEventInfo : DBObject
+    {
+        [IsIdentity]
+        public string Description
+        {
+            get { return _Description; }
+            set
+            {
+                if (_Description == value) return;
+
+                var oldValue = _Description;
+                _Description = value;
+
+                OnChanged(oldValue, value, "Description");
+            }
+        }
+        private string _Description;
+
+        public EventTrackingType TrackingType
+        {
+            get { return _TrackingType; }
+            set
+            {
+                if (_TrackingType == value) return;
+
+                var oldValue = _TrackingType;
+                _TrackingType = value;
+
+                OnChanged(oldValue, value, "TrackingType");
+            }
+        }
+        private EventTrackingType _TrackingType;
+
+        public int MaxValue
+        {
+            get { return _MaxValue; }
+            set
+            {
+                if (_MaxValue == value) return;
+
+                var oldValue = _MaxValue;
+                _MaxValue = value;
+
+                OnChanged(oldValue, value, "MaxValue");
+            }
+        }
+        private int _MaxValue;
+
+        public bool ResetWhenMax
+        {
+            get { return _ResetWhenMax; }
+            set
+            {
+                if (_ResetWhenMax == value) return;
+
+                var oldValue = _ResetWhenMax;
+                _ResetWhenMax = value;
+
+                OnChanged(oldValue, value, "ResetWhenMax");
+            }
+        }
+        private bool _ResetWhenMax;
+
+        [Association("Triggers", true)]
+        public DBBindingList<MonsterEventTrigger> Triggers { get; set; }
+
+        [Association("Actions", true)]
+        public DBBindingList<MonsterEventAction> Actions { get; set; }
+    }
+
+    public sealed class MonsterEventTrigger : DBObject
+    {
+        [Association("Triggers")]
+        public MonsterEventInfo Event
+        {
+            get { return _Event; }
+            set
+            {
+                if (_Event == value) return;
+
+                var oldValue = _Event;
+                _Event = value;
+
+                OnChanged(oldValue, value, "Event");
+            }
+        }
+        private MonsterEventInfo _Event;
+
+        public MonsterEventTriggerType Type
+        {
+            get { return _Type; }
+            set
+            {
+                if (_Type == value) return;
+
+                var oldValue = _Type;
+                _Type = value;
+
+                OnChanged(oldValue, value, "Type");
+            }
+        }
+        private MonsterEventTriggerType _Type;
 
         [Association("Events")]
         public MonsterInfo Monster
@@ -102,6 +490,51 @@ namespace Library.SystemModels
         }
         private int _DropSet;
 
+        public MapInfo MapParameter1
+        {
+            get { return _MapParameter1; }
+            set
+            {
+                if (_MapParameter1 == value) return;
+
+                var oldValue = _MapParameter1;
+                _MapParameter1 = value;
+
+                OnChanged(oldValue, value, "MapParameter1");
+            }
+        }
+        private MapInfo _MapParameter1;
+
+        public MapRegion RegionParameter1
+        {
+            get { return _RegionParameter1; }
+            set
+            {
+                if (_RegionParameter1 == value) return;
+
+                var oldValue = _RegionParameter1;
+                _RegionParameter1 = value;
+
+                OnChanged(oldValue, value, "RegionParameter1");
+            }
+        }
+        private MapRegion _RegionParameter1;
+
+        public InstanceInfo InstanceParameter1
+        {
+            get { return _InstanceParameter1; }
+            set
+            {
+                if (_InstanceParameter1 == value) return;
+
+                var oldValue = _InstanceParameter1;
+                _InstanceParameter1 = value;
+
+                OnChanged(oldValue, value, "InstanceParameter1");
+            }
+        }
+        private InstanceInfo _InstanceParameter1;
+
         public int Value
         {
             get { return _Value; }
@@ -116,12 +549,27 @@ namespace Library.SystemModels
             }
         }
         private int _Value;
+
+        public int MaxTriggers
+        {
+            get { return _MaxTriggers; }
+            set
+            {
+                if (_MaxTriggers == value) return;
+
+                var oldValue = _MaxTriggers;
+                _MaxTriggers = value;
+
+                OnChanged(oldValue, value, "MaxTriggers");
+            }
+        }
+        private int _MaxTriggers;
     }
 
-    public sealed class EventAction : DBObject
+    public sealed class MonsterEventAction : BaseEventAction
     {
         [Association("Actions")]
-        public EventInfo Event
+        public MonsterEventInfo Event
         {
             get { return _Event; }
             set
@@ -134,8 +582,25 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "Event");
             }
         }
-        private EventInfo _Event;
-        
+        private MonsterEventInfo _Event;     
+    }
+
+    public class BaseEventAction : DBObject
+    {
+        public EventActionType Type
+        {
+            get { return _Type; }
+            set
+            {
+                if (_Type == value) return;
+
+                var oldValue = _Type;
+                _Type = value;
+
+                OnChanged(oldValue, value, "Type");
+            }
+        }
+        private EventActionType _Type;
 
         public int TriggerValue
         {
@@ -151,21 +616,6 @@ namespace Library.SystemModels
             }
         }
         private int _TriggerValue;
-
-        public EventActionType Type
-        {
-            get { return _Type; }
-            set
-            {
-                if (_Type == value) return;
-
-                var oldValue = _Type;
-                _Type = value;
-
-                OnChanged(oldValue, value, "Type");
-            }
-        }
-        private EventActionType _Type;
 
         public string StringParameter1
         {
@@ -211,22 +661,6 @@ namespace Library.SystemModels
             }
         }
         private RespawnInfo _RespawnParameter1;
-        
-        
-        public MapRegion RegionParameter1
-        {
-            get { return _RegionParameter1; }
-            set
-            {
-                if (_RegionParameter1 == value) return;
-
-                var oldValue = _RegionParameter1;
-                _RegionParameter1 = value;
-
-                OnChanged(oldValue, value, "RegionParameter1");
-            }
-        }
-        private MapRegion _RegionParameter1;
 
         public MapInfo MapParameter1
         {
@@ -242,18 +676,138 @@ namespace Library.SystemModels
             }
         }
         private MapInfo _MapParameter1;
+
+        public MapRegion RegionParameter1
+        {
+            get { return _RegionParameter1; }
+            set
+            {
+                if (_RegionParameter1 == value) return;
+
+                var oldValue = _RegionParameter1;
+                _RegionParameter1 = value;
+
+                OnChanged(oldValue, value, "RegionParameter1");
+            }
+        }
+        private MapRegion _RegionParameter1;
+
+        public InstanceInfo InstanceParameter1
+        {
+            get { return _InstanceParameter1; }
+            set
+            {
+                if (_InstanceParameter1 == value) return;
+
+                var oldValue = _InstanceParameter1;
+                _InstanceParameter1 = value;
+
+                OnChanged(oldValue, value, "InstanceParameter1");
+            }
+        }
+        private InstanceInfo _InstanceParameter1;
+
+        public ItemInfo ItemParameter1
+        {
+            get { return _ItemParameter1; }
+            set
+            {
+                if (_ItemParameter1 == value) return;
+
+                var oldValue = _ItemParameter1;
+                _ItemParameter1 = value;
+
+                OnChanged(oldValue, value, "ItemParameter1");
+            }
+        }
+        private ItemInfo _ItemParameter1;
+    }
+
+
+
+    public enum EventTrackingType
+    {
+        Global = 0,
+        Player = 1,
+        Group = 2,
+        Guild = 3,
+
+        Instance = 10
+    }
+
+    public enum WorldEventTriggerType
+    {
+        Dawn = 0,
+        Day = 1,
+        Dusk = 2,
+        Night = 3,
+    }
+
+    public enum PlayerEventTriggerType
+    {
+        PlayerEnter = 0,
+        PlayerLeave = 1,
+        PlayerDie = 2,
+
+        TimerMinute = 20,
+    }
+
+    public enum MonsterEventTriggerType
+    {
+        MonsterDie = 0,
+        MonsterClear = 1
     }
 
     public enum EventActionType
     {
-        None,
-        GlobalMessage,
-        MapMessage,
-        PlayerMessage,
-        MonsterSpawn,
-        MonsterPlayerSpawn,
-        MovementSettings,
-        PlayerRecall,
-        PlayerEscape,
+        GlobalMessage = 0,
+        MapMessage = 1,
+
+        MonsterSpawn = 10,
+        MonsterPlayerSpawn = 11,
+        MonsterBuffAdd = 12,
+        MonsterBuffRemove = 13,
+
+        PlayerMessage = 20,
+        PlayerTeleport = 21,
+        PlayerEscape = 22,
+        PlayerBuffAdd = 23,
+        PlayerBuffRemove = 24,
+
+        TimerStart = 30,
+        TimerStop = 31,
+        TimerReset = 32,
+
+        ItemDrop = 40,
+        ItemGive = 41
+    }
+
+    public class EventLog
+    {
+        public string Key { get; set; }
+
+        public WorldEventInfo WorldEvent { get; set; }
+        public PlayerEventInfo PlayerEvent { get; set; }
+        public MonsterEventInfo MonsterEvent { get; set; }
+
+        public int PlayerIndex { get; set; }
+
+        public InstanceInfo InstanceInfo { get; set; }
+        public byte InstanceSequence { get; set; }
+
+        public int CurrentValue;
+
+        public Dictionary<WorldEventTrigger, int> WorldTriggerCount { get; set; } = [];
+        public Dictionary<PlayerEventTrigger, int> PlayerTriggerCount { get; set; } = [];
+        public Dictionary<MonsterEventTrigger, int> MonsterTriggerCount { get; set; } = [];
+
+        public void Reset()
+        {
+            CurrentValue = 0;
+
+            WorldTriggerCount.Clear();
+            PlayerTriggerCount.Clear();
+            MonsterTriggerCount.Clear();
+        }
     }
 }
