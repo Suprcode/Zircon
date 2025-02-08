@@ -54,9 +54,9 @@ namespace Server.Envir.Events.Actions
             var item = SEnvir.CreateDropItem(action.ItemParameter1);
             item.Count = 1;
 
-            foreach (var actionAct in action.Stats)
+            foreach (var stat in action.CalculatedStats.Values)
             {
-                item.AddStat(actionAct.Stat, actionAct.Amount, StatSource.Enhancement);
+                item.AddStat(stat.Key, stat.Value, StatSource.Enhancement);
                 item.StatsChanged();
             }
 

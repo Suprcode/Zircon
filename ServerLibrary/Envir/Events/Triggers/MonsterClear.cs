@@ -46,7 +46,7 @@ namespace Server.Envir.Events.Triggers
                 }
             }
 
-            return true;
+            return false;
         }
 
         private static bool IsValidInstance(MonsterObject monster, InstanceInfo instance)

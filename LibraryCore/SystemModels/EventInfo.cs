@@ -1,5 +1,6 @@
 ﻿using MirDB;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Library.SystemModels
@@ -142,6 +143,75 @@ namespace Library.SystemModels
             }
         }
         private WorldEventInfo _Event;
+
+        [Association("TriggerStats", true)]
+        public DBBindingList<WorldEventInfoTriggerStat> Stats { get; set; }
+
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            StatsChanged();
+        }
+
+        public void StatsChanged()
+        {
+            CalculatedStats.Clear();
+
+            foreach (var stat in Stats)
+                CalculatedStats[stat.Stat] += stat.Amount;
+        }
+    }
+
+    public class WorldEventInfoTriggerStat : DBObject
+    {
+        [IsIdentity]
+        [Association("TriggerStats")]
+        public WorldEventAction Action
+        {
+            get { return _Action; }
+            set
+            {
+                if (_Action == value) return;
+
+                var oldValue = _Action;
+                _Action = value;
+
+                OnChanged(oldValue, value, "Action");
+            }
+        }
+        private WorldEventAction _Action;
+
+        [IsIdentity]
+        public Stat Stat
+        {
+            get { return _Stat; }
+            set
+            {
+                if (_Stat == value) return;
+
+                var oldValue = _Stat;
+                _Stat = value;
+
+                OnChanged(oldValue, value, "Stat");
+            }
+        }
+        private Stat _Stat;
+
+        public int Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (_Amount == value) return;
+
+                var oldValue = _Amount;
+                _Amount = value;
+
+                OnChanged(oldValue, value, "Amount");
+            }
+        }
+        private int _Amount;
     }
 
     #endregion
@@ -359,6 +429,75 @@ namespace Library.SystemModels
             }
         }
         private PlayerEventInfo _Event;
+
+        [Association("TriggerStats", true)]
+        public DBBindingList<PlayerEventInfoTriggerStat> Stats { get; set; }
+
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            StatsChanged();
+        }
+
+        public void StatsChanged()
+        {
+            CalculatedStats.Clear();
+
+            foreach (var stat in Stats)
+                CalculatedStats[stat.Stat] += stat.Amount;
+        }
+    }
+
+    public class PlayerEventInfoTriggerStat : DBObject
+    {
+        [IsIdentity]
+        [Association("TriggerStats")]
+        public PlayerEventAction Action
+        {
+            get { return _Action; }
+            set
+            {
+                if (_Action == value) return;
+
+                var oldValue = _Action;
+                _Action = value;
+
+                OnChanged(oldValue, value, "Action");
+            }
+        }
+        private PlayerEventAction _Action;
+
+        [IsIdentity]
+        public Stat Stat
+        {
+            get { return _Stat; }
+            set
+            {
+                if (_Stat == value) return;
+
+                var oldValue = _Stat;
+                _Stat = value;
+
+                OnChanged(oldValue, value, "Stat");
+            }
+        }
+        private Stat _Stat;
+
+        public int Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (_Amount == value) return;
+
+                var oldValue = _Amount;
+                _Amount = value;
+
+                OnChanged(oldValue, value, "Amount");
+            }
+        }
+        private int _Amount;
     }
 
     #endregion
@@ -591,7 +730,76 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "Event");
             }
         }
-        private MonsterEventInfo _Event;     
+        private MonsterEventInfo _Event;
+
+        [Association("TriggerStats", true)]
+        public DBBindingList<MonsterEventInfoTriggerStat> Stats { get; set; }
+
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            StatsChanged();
+        }
+
+        public void StatsChanged()
+        {
+            CalculatedStats.Clear();
+
+            foreach (var stat in Stats)
+                CalculatedStats[stat.Stat] += stat.Amount;
+        }
+    }
+
+    public class MonsterEventInfoTriggerStat : DBObject
+    {
+        [IsIdentity]
+        [Association("TriggerStats")]
+        public MonsterEventAction Action
+        {
+            get { return _Action; }
+            set
+            {
+                if (_Action == value) return;
+
+                var oldValue = _Action;
+                _Action = value;
+
+                OnChanged(oldValue, value, "Action");
+            }
+        }
+        private MonsterEventAction _Action;
+
+        [IsIdentity]
+        public Stat Stat
+        {
+            get { return _Stat; }
+            set
+            {
+                if (_Stat == value) return;
+
+                var oldValue = _Stat;
+                _Stat = value;
+
+                OnChanged(oldValue, value, "Stat");
+            }
+        }
+        private Stat _Stat;
+
+        public int Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (_Amount == value) return;
+
+                var oldValue = _Amount;
+                _Amount = value;
+
+                OnChanged(oldValue, value, "Amount");
+            }
+        }
+        private int _Amount;
     }
 
     #endregion
@@ -750,76 +958,7 @@ namespace Library.SystemModels
         }
         private ItemInfo _ItemParameter1;
 
-        [Association("TriggerStats", true)]
-        public DBBindingList<EventInfoTriggerStat> Stats { get; set; }
-
         public Stats CalculatedStats = new();
-
-        protected internal override void OnLoaded()
-        {
-            base.OnLoaded();
-
-            StatsChanged();
-        }
-
-        public void StatsChanged()
-        {
-            CalculatedStats.Clear();
-
-            foreach (EventInfoTriggerStat stat in Stats)
-                CalculatedStats[stat.Stat] += stat.Amount;
-        }
-    }
-
-    public class EventInfoTriggerStat : DBObject
-    {
-        [IsIdentity]
-        [Association("TriggerStats")]
-        public BaseEventAction Action
-        {
-            get { return _Action; }
-            set
-            {
-                if (_Action == value) return;
-
-                var oldValue = _Action;
-                _Action = value;
-
-                OnChanged(oldValue, value, "Action");
-            }
-        }
-        private BaseEventAction _Action;
-
-        [IsIdentity]
-        public Stat Stat
-        {
-            get { return _Stat; }
-            set
-            {
-                if (_Stat == value) return;
-
-                var oldValue = _Stat;
-                _Stat = value;
-
-                OnChanged(oldValue, value, "Stat");
-            }
-        }
-        private Stat _Stat;
-
-        public int Amount
-        {
-            get { return _Amount; }
-            set
-            {
-                if (_Amount == value) return;
-
-                var oldValue = _Amount;
-                _Amount = value;
-
-                OnChanged(oldValue, value, "Amount");
-            }
-        }
-        private int _Amount;
     }
 
     #endregion

@@ -315,7 +315,7 @@
             MonsterEventInfoGridControl.MenuManager = ribbon;
             MonsterEventInfoGridControl.Name = "MonsterEventInfoGridControl";
             MonsterEventInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MonsterMonsterLookUpEdit, MonsterRespawnLookUpEdit, MonsterRegionLookUpEdit, MonsterMapLookUpEdit, MonsterInstanceLookUpEdit, MonsterActionTypeLookUpEdit, MonsterItemLookUpEdit });
-            MonsterEventInfoGridControl.Size = new System.Drawing.Size(806, 314);
+            MonsterEventInfoGridControl.Size = new System.Drawing.Size(913, 356);
             MonsterEventInfoGridControl.TabIndex = 4;
             MonsterEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { MonsterActionsInfoGridView, MonsterActionStatsInfoGridView, MonsterEventInfoGridView, MonsterTriggersInfoGridView });
             // 
@@ -506,7 +506,7 @@
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(792, 144);
+            ribbon.Size = new System.Drawing.Size(913, 144);
             // 
             // SaveButton
             // 
@@ -663,7 +663,7 @@
             PlayerEventInfoGridControl.MenuManager = ribbon;
             PlayerEventInfoGridControl.Name = "PlayerEventInfoGridControl";
             PlayerEventInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { PlayerMonsterLookUpEdit, PlayerRespawnLookUpEdit, PlayerRegionLookUpEdit, PlayerMapLookUpEdit, PlayerInstanceLookUpEdit, PlayerActionTypeLookUpEdit, PlayerItemLookUpEdit });
-            PlayerEventInfoGridControl.Size = new System.Drawing.Size(806, 314);
+            PlayerEventInfoGridControl.Size = new System.Drawing.Size(927, 363);
             PlayerEventInfoGridControl.TabIndex = 3;
             PlayerEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { PlayerActionsInfoGridView, PlayerActionStatsInfoGridView, PlayerEventInfoGridView, PlayerTriggersInfoGridView });
             // 
@@ -903,7 +903,7 @@
             WorldEventInfoGridControl.MenuManager = ribbon;
             WorldEventInfoGridControl.Name = "WorldEventInfoGridControl";
             WorldEventInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { WorldMonsterLookUpEdit, WorldRespawnLookUpEdit, WorldRegionLookUpEdit, WorldMapLookUpEdit, WorldInstanceLookUpEdit, WorldActionTypeLookUpEdit });
-            WorldEventInfoGridControl.Size = new System.Drawing.Size(792, 307);
+            WorldEventInfoGridControl.Size = new System.Drawing.Size(913, 356);
             WorldEventInfoGridControl.TabIndex = 2;
             WorldEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { WorldActionsInfoGridView, WorldActionStatsInfoGridView, WorldEventInfoGridView, WorldTriggersInfoGridView });
             // 
@@ -1108,9 +1108,9 @@
             tabPane1.Location = new System.Drawing.Point(0, 144);
             tabPane1.Name = "tabPane1";
             tabPane1.Pages.AddRange(new DevExpress.XtraBars.Navigation.NavigationPageBase[] { tabNavigationPage1, tabNavigationPage2, tabNavigationPage3 });
-            tabPane1.RegularSize = new System.Drawing.Size(792, 336);
+            tabPane1.RegularSize = new System.Drawing.Size(913, 385);
             tabPane1.SelectedPage = tabNavigationPage1;
-            tabPane1.Size = new System.Drawing.Size(792, 336);
+            tabPane1.Size = new System.Drawing.Size(913, 385);
             tabPane1.TabIndex = 3;
             // 
             // tabNavigationPage1
@@ -1118,27 +1118,27 @@
             tabNavigationPage1.Caption = "World Event Info";
             tabNavigationPage1.Controls.Add(WorldEventInfoGridControl);
             tabNavigationPage1.Name = "tabNavigationPage1";
-            tabNavigationPage1.Size = new System.Drawing.Size(792, 307);
+            tabNavigationPage1.Size = new System.Drawing.Size(913, 356);
             // 
             // tabNavigationPage2
             // 
             tabNavigationPage2.Caption = "Player Event Info";
             tabNavigationPage2.Controls.Add(PlayerEventInfoGridControl);
             tabNavigationPage2.Name = "tabNavigationPage2";
-            tabNavigationPage2.Size = new System.Drawing.Size(806, 314);
+            tabNavigationPage2.Size = new System.Drawing.Size(927, 363);
             // 
             // tabNavigationPage3
             // 
             tabNavigationPage3.Caption = "Monster Event Info";
             tabNavigationPage3.Controls.Add(MonsterEventInfoGridControl);
             tabNavigationPage3.Name = "tabNavigationPage3";
-            tabNavigationPage3.Size = new System.Drawing.Size(806, 314);
+            tabNavigationPage3.Size = new System.Drawing.Size(913, 356);
             // 
             // EventInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(792, 480);
+            ClientSize = new System.Drawing.Size(913, 529);
             Controls.Add(tabPane1);
             Controls.Add(ribbon);
             Name = "EventInfoView";
