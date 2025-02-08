@@ -33,7 +33,7 @@ namespace Server.Envir.Events
         {
             var eventTriggers = Assembly.GetAssembly(typeof(EventInfoHandler))?
                                 .GetTypes()
-                                .Where(type => typeof(IEventTrigger).IsAssignableFrom(type) && type.IsClass && !type.IsAbstract) ?? Enumerable.Empty<Type>();
+                                .Where(type => typeof(IEventTrigger).IsAssignableFrom(type) && type.IsClass && !type.IsAbstract) ?? [];
 
             foreach (var eventTrigger in eventTriggers)
             {
@@ -62,7 +62,7 @@ namespace Server.Envir.Events
         {
             var actionTypes = Assembly.GetAssembly(typeof(EventInfoHandler))?
                                 .GetTypes()
-                                .Where(type => typeof(IEventAction).IsAssignableFrom(type) && type.IsClass && !type.IsAbstract) ?? Enumerable.Empty<Type>();
+                                .Where(type => typeof(IEventAction).IsAssignableFrom(type) && type.IsClass && !type.IsAbstract) ?? [];
 
             foreach (var type in actionTypes)
             {
@@ -385,7 +385,7 @@ namespace Server.Envir.Events
                     return $"Player:{player.Character.Index}";
 
                 case EventTrackingType.Group:
-                    bool hasGroupMembers = player.GroupMembers != null && player.GroupMembers.Count > 0;
+                    bool hasGroupMembers = player.GroupMembers != null && player.GroupMembers.Count > 1;
                     if (!hasGroupMembers)
                         return null;
                     int groupLeaderIndex = player.GroupMembers[0].Character.Index;

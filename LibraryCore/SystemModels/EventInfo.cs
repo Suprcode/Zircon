@@ -1,8 +1,11 @@
 ﻿using MirDB;
+using System;
 using System.Collections.Generic;
 
 namespace Library.SystemModels
 {
+    #region World Event
+
     public sealed class WorldEventInfo : DBObject
     {
         [IsIdentity]
@@ -141,6 +144,9 @@ namespace Library.SystemModels
         private WorldEventInfo _Event;
     }
 
+    #endregion
+
+    #region Player Event
 
     public sealed class PlayerEventInfo : DBObject
     {
@@ -355,6 +361,9 @@ namespace Library.SystemModels
         private PlayerEventInfo _Event;
     }
 
+    #endregion
+
+    #region Monster Event
 
     public sealed class MonsterEventInfo : DBObject
     {
@@ -585,6 +594,10 @@ namespace Library.SystemModels
         private MonsterEventInfo _Event;     
     }
 
+    #endregion
+
+    #region Base Event
+
     public class BaseEventAction : DBObject
     {
         public EventActionType Type
@@ -601,6 +614,21 @@ namespace Library.SystemModels
             }
         }
         private EventActionType _Type;
+
+        public bool Restrict
+        {
+            get { return _Restrict; }
+            set
+            {
+                if (_Restrict == value) return;
+
+                var oldValue = _Restrict;
+                _Restrict = value;
+
+                OnChanged(oldValue, value, "Restrict");
+            }
+        }
+        private bool _Restrict;
 
         public int TriggerValue
         {
@@ -721,9 +749,82 @@ namespace Library.SystemModels
             }
         }
         private ItemInfo _ItemParameter1;
+
+        [Association("TriggerStats", true)]
+        public DBBindingList<EventInfoTriggerStat> Stats { get; set; }
+
+        public Stats CalculatedStats = new();
+
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            StatsChanged();
+        }
+
+        public void StatsChanged()
+        {
+            CalculatedStats.Clear();
+
+            foreach (EventInfoTriggerStat stat in Stats)
+                CalculatedStats[stat.Stat] += stat.Amount;
+        }
     }
 
+    public class EventInfoTriggerStat : DBObject
+    {
+        [IsIdentity]
+        [Association("TriggerStats")]
+        public BaseEventAction Action
+        {
+            get { return _Action; }
+            set
+            {
+                if (_Action == value) return;
 
+                var oldValue = _Action;
+                _Action = value;
+
+                OnChanged(oldValue, value, "Action");
+            }
+        }
+        private BaseEventAction _Action;
+
+        [IsIdentity]
+        public Stat Stat
+        {
+            get { return _Stat; }
+            set
+            {
+                if (_Stat == value) return;
+
+                var oldValue = _Stat;
+                _Stat = value;
+
+                OnChanged(oldValue, value, "Stat");
+            }
+        }
+        private Stat _Stat;
+
+        public int Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (_Amount == value) return;
+
+                var oldValue = _Amount;
+                _Amount = value;
+
+                OnChanged(oldValue, value, "Amount");
+            }
+        }
+        private int _Amount;
+    }
+
+    #endregion
+
+    #region Enums
 
     public enum EventTrackingType
     {
@@ -749,7 +850,7 @@ namespace Library.SystemModels
         PlayerLeave = 1,
         PlayerDie = 2,
 
-        TimerMinute = 20,
+        TimerMinute = 10,
     }
 
     public enum MonsterEventTriggerType
@@ -760,27 +861,28 @@ namespace Library.SystemModels
 
     public enum EventActionType
     {
-        GlobalMessage = 0,
-        MapMessage = 1,
+        MonsterSpawn = 0,
+        MonsterPlayerSpawn = 1,
+        MonsterBuffAdd = 2,
+        MonsterBuffRemove = 3,
 
-        MonsterSpawn = 10,
-        MonsterPlayerSpawn = 11,
-        MonsterBuffAdd = 12,
-        MonsterBuffRemove = 13,
+        PlayerMessage = 10,
+        PlayerTeleport = 11,
+        PlayerEscape = 12,
+        PlayerBuffAdd = 13,
+        PlayerBuffRemove = 14,
 
-        PlayerMessage = 20,
-        PlayerTeleport = 21,
-        PlayerEscape = 22,
-        PlayerBuffAdd = 23,
-        PlayerBuffRemove = 24,
+        TimerStart = 20,
+        TimerStop = 21,
+        TimerReset = 22,
 
-        TimerStart = 30,
-        TimerStop = 31,
-        TimerReset = 32,
-
-        ItemDrop = 40,
-        ItemGive = 41
+        ItemDrop = 30,
+        ItemGive = 31
     }
+
+    #endregion
+
+    #region Event Log
 
     public class EventLog
     {
@@ -810,4 +912,6 @@ namespace Library.SystemModels
             MonsterTriggerCount.Clear();
         }
     }
+
+    #endregion
 }

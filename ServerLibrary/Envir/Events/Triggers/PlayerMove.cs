@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Server.Envir.Events.Triggers
 {
+    /// <summary>
+    /// Triggers when a player moves to another map/region/instance
+    /// </summary>
     [EventTriggerType("PLAYERMOVE")]
     public class PlayerMove : IPlayerEventTrigger, IEventTrigger
     {

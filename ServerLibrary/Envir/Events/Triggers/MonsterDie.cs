@@ -3,6 +3,9 @@ using Server.Models;
 
 namespace Server.Envir.Events.Triggers
 {
+    /// <summary>
+    /// Triggers when a monster dies
+    /// </summary>
     [EventTriggerType("MONSTERDIE")]
     public class MonsterDie : IMonsterEventTrigger, IEventTrigger
     {

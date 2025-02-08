@@ -914,6 +914,7 @@ namespace Server.Models
 
             Teleport(CurrentMap, cells[SEnvir.Random.Next(cells.Count)].Location);
         }
+
         public bool Teleport(MapRegion region, InstanceInfo instance, byte instanceSequence, bool leaveEffect = true)
         {
             Map map = SEnvir.GetMap(region.Map, instance, instanceSequence);

@@ -8,27 +8,27 @@ using System.Linq;
 namespace Server.Envir.Events.Actions
 {
     /// <summary>
-    /// Gives monsters a buff with stats
+    /// Removes a buff from monsters
     /// </summary>
-    [EventActionType(EventActionType.MonsterBuffAdd)]
-    public class MonsterBuffAdd : IWorldEventAction, IPlayerEventAction, IMonsterEventAction, IEventAction
+    [EventActionType(EventActionType.MonsterBuffRemove)]
+    public class MonsterBuffRemove : IWorldEventAction, IPlayerEventAction, IMonsterEventAction, IEventAction
     {
         public void Act(PlayerObject triggerPlayer, EventLog log, MonsterEventAction action)
         {
-            ApplyBuff(action, triggerPlayer.CurrentMap.Instance, triggerPlayer.CurrentMap.InstanceSequence);
+            RemoveBuff(action, triggerPlayer.CurrentMap.Instance, triggerPlayer.CurrentMap.InstanceSequence);
         }
 
         public void Act(PlayerObject triggerPlayer, EventLog log, PlayerEventAction action)
         {
-            ApplyBuff(action, triggerPlayer.CurrentMap.Instance, triggerPlayer.CurrentMap.InstanceSequence);
+            RemoveBuff(action, triggerPlayer.CurrentMap.Instance, triggerPlayer.CurrentMap.InstanceSequence);
         }
 
         public void Act(EventLog log, WorldEventAction action)
         {
-            ApplyBuff(action, null, 0);
+            RemoveBuff(action, null, 0);
         }
 
-        private static void ApplyBuff(BaseEventAction action, InstanceInfo instance, byte instanceSequence)
+        private static void RemoveBuff(BaseEventAction action, InstanceInfo instance, byte instanceSequence)
         {
             if (string.IsNullOrEmpty(action.StringParameter1) ||
                 !Enum.TryParse(action.StringParameter1, true, out BuffType type)) return;
@@ -43,19 +43,19 @@ namespace Server.Envir.Events.Actions
             {
                 if (action.RegionParameter1 == null || monster.CurrentCell.Regions.Contains(action.RegionParameter1))
                 {
-                    monster.BuffAdd(type, TimeSpan.MaxValue, action.CalculatedStats, false, false, TimeSpan.Zero);
+                    monster.BuffRemove(type);
 
                     if (action.Restrict) break;
                 }
             }
         }
 
-        private static Map GetTargetMap(BaseEventAction action, InstanceInfo instance, byte instanceSequence)
+        private static Map GetTargetMap(BaseEventAction action, InstanceInfo playerInstance, byte playerInstanceSequence)
         {
             return action.MapParameter1 != null
-                ? SEnvir.GetMap(action.MapParameter1, instance, instanceSequence)
+                ? SEnvir.GetMap(action.MapParameter1, playerInstance, playerInstanceSequence)
                 : action.RegionParameter1 != null
-                    ? SEnvir.GetMap(action.RegionParameter1.Map, instance, instanceSequence)
+                    ? SEnvir.GetMap(action.RegionParameter1.Map, playerInstance, playerInstanceSequence)
                     : null;
         }
 

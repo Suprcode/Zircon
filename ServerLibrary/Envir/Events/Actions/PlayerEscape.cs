@@ -1,48 +1,76 @@
 ﻿using Library.SystemModels;
 using Server.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Server.Envir.Events.Actions
 {
+    /// <summary>
+    /// Teleports players to their current bind region, or when in an instance their reconnect region
+    /// </summary>
     [EventActionType(EventActionType.PlayerEscape)]
     public class PlayerEscape : IWorldEventAction, IPlayerEventAction, IMonsterEventAction, IEventAction
     {
-        public void Act(PlayerObject player, EventLog log, MonsterEventAction action)
+        public void Act(PlayerObject triggerPlayer, EventLog log, MonsterEventAction action)
         {
-            EscapePlayer(action.MapParameter1, player.CurrentMap.Instance, player.CurrentMap.InstanceSequence);
+            EscapePlayer(action, log.MonsterEvent.TrackingType, triggerPlayer);
         }
 
-        public void Act(PlayerObject player, EventLog log, PlayerEventAction action)
+        public void Act(PlayerObject triggerPlayer, EventLog log, PlayerEventAction action)
         {
-            EscapePlayer(action.MapParameter1, player.CurrentMap.Instance, player.CurrentMap.InstanceSequence);
+            EscapePlayer(action, log.PlayerEvent.TrackingType, triggerPlayer);
         }
 
         public void Act(EventLog log, WorldEventAction action)
         {
-            if (action.InstanceParameter1 == null)
-            {
-                EscapePlayer(action.MapParameter1, null, 0);
-            }
-            else
-            {
-                var mapInstance = SEnvir.Instances[action.InstanceParameter1];
+            EscapePlayer(action, EventTrackingType.Global, null);
+        }
 
-                for (byte i = 0; i < mapInstance.Length; i++)
-                {
-                    EscapePlayer(action.MapParameter1, action.InstanceParameter1, i);
-                }
+        private static void EscapePlayer(BaseEventAction action, EventTrackingType trackingType, PlayerObject triggerPlayer)
+        {
+            if (action.InstanceParameter1 != triggerPlayer?.CurrentMap.Instance) return;
+
+            if (action.Restrict && triggerPlayer != null)
+            {
+                triggerPlayer.Teleport(GetBindRegion(triggerPlayer), null, 0);
+                return;
+            }
+
+            var map = GetTargetMap(action, triggerPlayer?.CurrentMap.Instance, triggerPlayer?.CurrentMap.InstanceSequence ?? 0);
+
+            var players = GetTargetPlayers(trackingType, triggerPlayer, map?.Players ?? SEnvir.Players);
+            foreach (var player in players)
+            {
+                player.Teleport(GetBindRegion(player), null, 0);
+                if (action.Restrict) break;
             }
         }
 
-        private static void EscapePlayer(MapInfo mapInfo, InstanceInfo instanceInfo, byte instanceSequence)
+        private static MapRegion GetBindRegion(PlayerObject player)
         {
-            var map = SEnvir.GetMap(mapInfo, instanceInfo, instanceSequence);
-            if (map == null) return;
+            return player?.CurrentMap.Instance?.ReconnectRegion ?? player?.Character.BindPoint.BindRegion;
+        }
 
-            for (int i = map.Players.Count - 1; i >= 0; i--)
+        private static Map GetTargetMap(BaseEventAction action, InstanceInfo playerInstance, byte playerInstanceSequence)
+        {
+            return action.MapParameter1 != null
+                ? SEnvir.GetMap(action.MapParameter1, playerInstance, playerInstanceSequence)
+                : null;
+        }
+
+        private static List<PlayerObject> GetTargetPlayers(EventTrackingType trackingType, PlayerObject triggerPlayer, List<PlayerObject> players)
+        {
+            if (triggerPlayer == null) return players;
+
+            return trackingType switch
             {
-                PlayerObject mapPlayer = map.Players[i];
-                mapPlayer.Teleport(mapPlayer.Character.BindPoint.BindRegion, instanceInfo, instanceSequence);
-            }
+                EventTrackingType.Global => players,
+                EventTrackingType.Player => [triggerPlayer],
+                EventTrackingType.Group => players.Where(pl => triggerPlayer.GroupMembers.Contains(pl)).ToList(),
+                EventTrackingType.Guild => players.Where(pl => pl.Character.Account.GuildMember?.Guild == triggerPlayer.Character.Account.GuildMember?.Guild).ToList(),
+                EventTrackingType.Instance => players.Where(pl => pl.CurrentMap.Instance == triggerPlayer.CurrentMap.Instance && pl.CurrentMap.InstanceSequence == triggerPlayer.CurrentMap.InstanceSequence).ToList(),
+                _ => []
+            };
         }
     }
 }

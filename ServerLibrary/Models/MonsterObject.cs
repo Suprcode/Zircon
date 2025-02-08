@@ -1008,6 +1008,11 @@ namespace Server.Models
             {
                 SpawnInfo.AliveCount--;
                 SEnvir.EventHandler.Process(this, "MONSTERDIE");
+
+                if (SpawnInfo.AliveCount == 0)
+                {
+                    SEnvir.EventHandler.Process(this, "MONSTERCLEAR");
+                }
             }
 
             SpawnInfo = null;

@@ -30,11 +30,14 @@
         {
             DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EventInfoView));
             DevExpress.XtraGrid.GridLevelNode gridLevelNode3 = new DevExpress.XtraGrid.GridLevelNode();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EventInfoView));
             DevExpress.XtraGrid.GridLevelNode gridLevelNode4 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode5 = new DevExpress.XtraGrid.GridLevelNode();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode6 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode7 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode8 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode9 = new DevExpress.XtraGrid.GridLevelNode();
             MonsterTriggersInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
             MonsterMonsterLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
@@ -62,6 +65,10 @@
             gridColumn23 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn45 = new DevExpress.XtraGrid.Columns.GridColumn();
             MonsterItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            gridColumn62 = new DevExpress.XtraGrid.Columns.GridColumn();
+            MonsterActionStatsInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            gridColumn56 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn57 = new DevExpress.XtraGrid.Columns.GridColumn();
             MonsterEventInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -100,6 +107,10 @@
             gridColumn33 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn46 = new DevExpress.XtraGrid.Columns.GridColumn();
             PlayerItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            gridColumn63 = new DevExpress.XtraGrid.Columns.GridColumn();
+            PlayerActionStatsInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            gridColumn58 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn59 = new DevExpress.XtraGrid.Columns.GridColumn();
             PlayerEventInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -125,6 +136,10 @@
             WorldRegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             gridColumn55 = new DevExpress.XtraGrid.Columns.GridColumn();
             WorldInstanceLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            gridColumn64 = new DevExpress.XtraGrid.Columns.GridColumn();
+            WorldActionStatsInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            gridColumn60 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn61 = new DevExpress.XtraGrid.Columns.GridColumn();
             WorldEventInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn39 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn40 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -143,6 +158,7 @@
             ((System.ComponentModel.ISupportInitialize)MonsterActionTypeLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MonsterRespawnLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MonsterItemLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterActionStatsInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MonsterEventInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PlayerTriggersInfoGridView).BeginInit();
@@ -155,6 +171,7 @@
             ((System.ComponentModel.ISupportInitialize)PlayerMonsterLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PlayerRespawnLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PlayerItemLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)PlayerActionStatsInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PlayerEventInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)WorldTriggersInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)WorldEventInfoGridControl).BeginInit();
@@ -165,6 +182,7 @@
             ((System.ComponentModel.ISupportInitialize)WorldMapLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)WorldRegionLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)WorldInstanceLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)WorldActionStatsInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)WorldEventInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)tabPane1).BeginInit();
             tabPane1.SuspendLayout();
@@ -287,6 +305,9 @@
             gridLevelNode1.LevelTemplate = MonsterTriggersInfoGridView;
             gridLevelNode1.RelationName = "Triggers";
             gridLevelNode2.LevelTemplate = MonsterActionsInfoGridView;
+            gridLevelNode3.LevelTemplate = MonsterActionStatsInfoGridView;
+            gridLevelNode3.RelationName = "Stats";
+            gridLevelNode2.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode3 });
             gridLevelNode2.RelationName = "Actions";
             MonsterEventInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1, gridLevelNode2 });
             MonsterEventInfoGridControl.Location = new System.Drawing.Point(0, 0);
@@ -294,15 +315,16 @@
             MonsterEventInfoGridControl.MenuManager = ribbon;
             MonsterEventInfoGridControl.Name = "MonsterEventInfoGridControl";
             MonsterEventInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MonsterMonsterLookUpEdit, MonsterRespawnLookUpEdit, MonsterRegionLookUpEdit, MonsterMapLookUpEdit, MonsterInstanceLookUpEdit, MonsterActionTypeLookUpEdit, MonsterItemLookUpEdit });
-            MonsterEventInfoGridControl.Size = new System.Drawing.Size(862, 342);
+            MonsterEventInfoGridControl.Size = new System.Drawing.Size(806, 314);
             MonsterEventInfoGridControl.TabIndex = 4;
-            MonsterEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { MonsterActionsInfoGridView, MonsterEventInfoGridView, MonsterTriggersInfoGridView });
+            MonsterEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { MonsterActionsInfoGridView, MonsterActionStatsInfoGridView, MonsterEventInfoGridView, MonsterTriggersInfoGridView });
             // 
             // MonsterActionsInfoGridView
             // 
-            MonsterActionsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn16, gridColumn17, gridColumn18, gridColumn19, gridColumn20, gridColumn21, gridColumn22, gridColumn23, gridColumn45 });
+            MonsterActionsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn16, gridColumn17, gridColumn18, gridColumn19, gridColumn20, gridColumn21, gridColumn22, gridColumn23, gridColumn45, gridColumn62 });
             MonsterActionsInfoGridView.GridControl = MonsterEventInfoGridControl;
             MonsterActionsInfoGridView.Name = "MonsterActionsInfoGridView";
+            MonsterActionsInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
             MonsterActionsInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
             MonsterActionsInfoGridView.OptionsView.EnableAppearanceOddRow = true;
             MonsterActionsInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
@@ -336,7 +358,7 @@
             gridColumn18.FieldName = "StringParameter1";
             gridColumn18.Name = "gridColumn18";
             gridColumn18.Visible = true;
-            gridColumn18.VisibleIndex = 2;
+            gridColumn18.VisibleIndex = 3;
             // 
             // gridColumn19
             // 
@@ -344,7 +366,7 @@
             gridColumn19.FieldName = "MonsterParameter1";
             gridColumn19.Name = "gridColumn19";
             gridColumn19.Visible = true;
-            gridColumn19.VisibleIndex = 3;
+            gridColumn19.VisibleIndex = 4;
             // 
             // gridColumn20
             // 
@@ -352,7 +374,7 @@
             gridColumn20.FieldName = "RespawnParameter1";
             gridColumn20.Name = "gridColumn20";
             gridColumn20.Visible = true;
-            gridColumn20.VisibleIndex = 4;
+            gridColumn20.VisibleIndex = 5;
             // 
             // MonsterRespawnLookUpEdit
             // 
@@ -369,7 +391,7 @@
             gridColumn21.FieldName = "MapParameter1";
             gridColumn21.Name = "gridColumn21";
             gridColumn21.Visible = true;
-            gridColumn21.VisibleIndex = 5;
+            gridColumn21.VisibleIndex = 6;
             // 
             // gridColumn22
             // 
@@ -377,7 +399,7 @@
             gridColumn22.FieldName = "RegionParameter1";
             gridColumn22.Name = "gridColumn22";
             gridColumn22.Visible = true;
-            gridColumn22.VisibleIndex = 6;
+            gridColumn22.VisibleIndex = 7;
             // 
             // gridColumn23
             // 
@@ -385,7 +407,7 @@
             gridColumn23.FieldName = "InstanceParameter1";
             gridColumn23.Name = "gridColumn23";
             gridColumn23.Visible = true;
-            gridColumn23.VisibleIndex = 7;
+            gridColumn23.VisibleIndex = 8;
             // 
             // gridColumn45
             // 
@@ -393,7 +415,7 @@
             gridColumn45.FieldName = "ItemParameter1";
             gridColumn45.Name = "gridColumn45";
             gridColumn45.Visible = true;
-            gridColumn45.VisibleIndex = 8;
+            gridColumn45.VisibleIndex = 9;
             // 
             // MonsterItemLookUpEdit
             // 
@@ -403,6 +425,38 @@
             MonsterItemLookUpEdit.DisplayMember = "ItemName";
             MonsterItemLookUpEdit.Name = "MonsterItemLookUpEdit";
             MonsterItemLookUpEdit.NullText = "[Item is null]";
+            // 
+            // gridColumn62
+            // 
+            gridColumn62.FieldName = "Restrict";
+            gridColumn62.Name = "gridColumn62";
+            gridColumn62.Visible = true;
+            gridColumn62.VisibleIndex = 2;
+            // 
+            // MonsterActionStatsInfoGridView
+            // 
+            MonsterActionStatsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn56, gridColumn57 });
+            MonsterActionStatsInfoGridView.GridControl = MonsterEventInfoGridControl;
+            MonsterActionStatsInfoGridView.Name = "MonsterActionStatsInfoGridView";
+            MonsterActionStatsInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            MonsterActionStatsInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            MonsterActionStatsInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            MonsterActionStatsInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            MonsterActionStatsInfoGridView.OptionsView.ShowGroupPanel = false;
+            // 
+            // gridColumn56
+            // 
+            gridColumn56.FieldName = "Stat";
+            gridColumn56.Name = "gridColumn56";
+            gridColumn56.Visible = true;
+            gridColumn56.VisibleIndex = 0;
+            // 
+            // gridColumn57
+            // 
+            gridColumn57.FieldName = "Amount";
+            gridColumn57.Name = "gridColumn57";
+            gridColumn57.Visible = true;
+            gridColumn57.VisibleIndex = 1;
             // 
             // MonsterEventInfoGridView
             // 
@@ -452,7 +506,7 @@
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(862, 144);
+            ribbon.Size = new System.Drawing.Size(792, 144);
             // 
             // SaveButton
             // 
@@ -596,25 +650,29 @@
             // PlayerEventInfoGridControl
             // 
             PlayerEventInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            gridLevelNode3.LevelTemplate = PlayerTriggersInfoGridView;
-            gridLevelNode3.RelationName = "Triggers";
-            gridLevelNode4.LevelTemplate = PlayerActionsInfoGridView;
-            gridLevelNode4.RelationName = "Actions";
-            PlayerEventInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode3, gridLevelNode4 });
+            gridLevelNode4.LevelTemplate = PlayerTriggersInfoGridView;
+            gridLevelNode4.RelationName = "Triggers";
+            gridLevelNode5.LevelTemplate = PlayerActionsInfoGridView;
+            gridLevelNode6.LevelTemplate = PlayerActionStatsInfoGridView;
+            gridLevelNode6.RelationName = "Stats";
+            gridLevelNode5.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode6 });
+            gridLevelNode5.RelationName = "Actions";
+            PlayerEventInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode4, gridLevelNode5 });
             PlayerEventInfoGridControl.Location = new System.Drawing.Point(0, 0);
             PlayerEventInfoGridControl.MainView = PlayerEventInfoGridView;
             PlayerEventInfoGridControl.MenuManager = ribbon;
             PlayerEventInfoGridControl.Name = "PlayerEventInfoGridControl";
             PlayerEventInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { PlayerMonsterLookUpEdit, PlayerRespawnLookUpEdit, PlayerRegionLookUpEdit, PlayerMapLookUpEdit, PlayerInstanceLookUpEdit, PlayerActionTypeLookUpEdit, PlayerItemLookUpEdit });
-            PlayerEventInfoGridControl.Size = new System.Drawing.Size(876, 349);
+            PlayerEventInfoGridControl.Size = new System.Drawing.Size(806, 314);
             PlayerEventInfoGridControl.TabIndex = 3;
-            PlayerEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { PlayerActionsInfoGridView, PlayerEventInfoGridView, PlayerTriggersInfoGridView });
+            PlayerEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { PlayerActionsInfoGridView, PlayerActionStatsInfoGridView, PlayerEventInfoGridView, PlayerTriggersInfoGridView });
             // 
             // PlayerActionsInfoGridView
             // 
-            PlayerActionsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn7, gridColumn8, gridColumn24, gridColumn25, gridColumn26, gridColumn27, gridColumn28, gridColumn33, gridColumn46 });
+            PlayerActionsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn7, gridColumn8, gridColumn24, gridColumn25, gridColumn26, gridColumn27, gridColumn28, gridColumn33, gridColumn46, gridColumn63 });
             PlayerActionsInfoGridView.GridControl = PlayerEventInfoGridControl;
             PlayerActionsInfoGridView.Name = "PlayerActionsInfoGridView";
+            PlayerActionsInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
             PlayerActionsInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
             PlayerActionsInfoGridView.OptionsView.EnableAppearanceOddRow = true;
             PlayerActionsInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
@@ -641,7 +699,7 @@
             gridColumn8.FieldName = "StringParameter1";
             gridColumn8.Name = "gridColumn8";
             gridColumn8.Visible = true;
-            gridColumn8.VisibleIndex = 2;
+            gridColumn8.VisibleIndex = 3;
             // 
             // gridColumn24
             // 
@@ -649,7 +707,7 @@
             gridColumn24.FieldName = "MonsterParameter1";
             gridColumn24.Name = "gridColumn24";
             gridColumn24.Visible = true;
-            gridColumn24.VisibleIndex = 3;
+            gridColumn24.VisibleIndex = 4;
             // 
             // PlayerMonsterLookUpEdit
             // 
@@ -667,7 +725,7 @@
             gridColumn25.FieldName = "RespawnParameter1";
             gridColumn25.Name = "gridColumn25";
             gridColumn25.Visible = true;
-            gridColumn25.VisibleIndex = 4;
+            gridColumn25.VisibleIndex = 5;
             // 
             // PlayerRespawnLookUpEdit
             // 
@@ -684,7 +742,7 @@
             gridColumn26.FieldName = "MapParameter1";
             gridColumn26.Name = "gridColumn26";
             gridColumn26.Visible = true;
-            gridColumn26.VisibleIndex = 5;
+            gridColumn26.VisibleIndex = 6;
             // 
             // gridColumn27
             // 
@@ -692,7 +750,7 @@
             gridColumn27.FieldName = "RegionParameter1";
             gridColumn27.Name = "gridColumn27";
             gridColumn27.Visible = true;
-            gridColumn27.VisibleIndex = 6;
+            gridColumn27.VisibleIndex = 7;
             // 
             // gridColumn28
             // 
@@ -700,7 +758,7 @@
             gridColumn28.FieldName = "InstanceParameter1";
             gridColumn28.Name = "gridColumn28";
             gridColumn28.Visible = true;
-            gridColumn28.VisibleIndex = 7;
+            gridColumn28.VisibleIndex = 8;
             // 
             // gridColumn33
             // 
@@ -715,7 +773,7 @@
             gridColumn46.FieldName = "ItemParameter1";
             gridColumn46.Name = "gridColumn46";
             gridColumn46.Visible = true;
-            gridColumn46.VisibleIndex = 8;
+            gridColumn46.VisibleIndex = 9;
             // 
             // PlayerItemLookUpEdit
             // 
@@ -724,6 +782,38 @@
             PlayerItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "ItemName"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "ItemType") });
             PlayerItemLookUpEdit.Name = "PlayerItemLookUpEdit";
             PlayerItemLookUpEdit.NullText = "[Item is null]";
+            // 
+            // gridColumn63
+            // 
+            gridColumn63.FieldName = "Restrict";
+            gridColumn63.Name = "gridColumn63";
+            gridColumn63.Visible = true;
+            gridColumn63.VisibleIndex = 2;
+            // 
+            // PlayerActionStatsInfoGridView
+            // 
+            PlayerActionStatsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn58, gridColumn59 });
+            PlayerActionStatsInfoGridView.GridControl = PlayerEventInfoGridControl;
+            PlayerActionStatsInfoGridView.Name = "PlayerActionStatsInfoGridView";
+            PlayerActionStatsInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            PlayerActionStatsInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            PlayerActionStatsInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            PlayerActionStatsInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            PlayerActionStatsInfoGridView.OptionsView.ShowGroupPanel = false;
+            // 
+            // gridColumn58
+            // 
+            gridColumn58.FieldName = "Stat";
+            gridColumn58.Name = "gridColumn58";
+            gridColumn58.Visible = true;
+            gridColumn58.VisibleIndex = 0;
+            // 
+            // gridColumn59
+            // 
+            gridColumn59.FieldName = "Amount";
+            gridColumn59.Name = "gridColumn59";
+            gridColumn59.Visible = true;
+            gridColumn59.VisibleIndex = 1;
             // 
             // PlayerEventInfoGridView
             // 
@@ -800,25 +890,29 @@
             // WorldEventInfoGridControl
             // 
             WorldEventInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            gridLevelNode5.LevelTemplate = WorldTriggersInfoGridView;
-            gridLevelNode5.RelationName = "Triggers";
-            gridLevelNode6.LevelTemplate = WorldActionsInfoGridView;
-            gridLevelNode6.RelationName = "Actions";
-            WorldEventInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode5, gridLevelNode6 });
+            gridLevelNode7.LevelTemplate = WorldTriggersInfoGridView;
+            gridLevelNode7.RelationName = "Triggers";
+            gridLevelNode8.LevelTemplate = WorldActionsInfoGridView;
+            gridLevelNode9.LevelTemplate = WorldActionStatsInfoGridView;
+            gridLevelNode9.RelationName = "Stats";
+            gridLevelNode8.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode9 });
+            gridLevelNode8.RelationName = "Actions";
+            WorldEventInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode7, gridLevelNode8 });
             WorldEventInfoGridControl.Location = new System.Drawing.Point(0, 0);
             WorldEventInfoGridControl.MainView = WorldEventInfoGridView;
             WorldEventInfoGridControl.MenuManager = ribbon;
             WorldEventInfoGridControl.Name = "WorldEventInfoGridControl";
             WorldEventInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { WorldMonsterLookUpEdit, WorldRespawnLookUpEdit, WorldRegionLookUpEdit, WorldMapLookUpEdit, WorldInstanceLookUpEdit, WorldActionTypeLookUpEdit });
-            WorldEventInfoGridControl.Size = new System.Drawing.Size(862, 342);
+            WorldEventInfoGridControl.Size = new System.Drawing.Size(792, 307);
             WorldEventInfoGridControl.TabIndex = 2;
-            WorldEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { WorldActionsInfoGridView, WorldEventInfoGridView, WorldTriggersInfoGridView });
+            WorldEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { WorldActionsInfoGridView, WorldActionStatsInfoGridView, WorldEventInfoGridView, WorldTriggersInfoGridView });
             // 
             // WorldActionsInfoGridView
             // 
-            WorldActionsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn48, gridColumn49, gridColumn50, gridColumn51, gridColumn52, gridColumn53, gridColumn54, gridColumn55 });
+            WorldActionsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn48, gridColumn49, gridColumn50, gridColumn51, gridColumn52, gridColumn53, gridColumn54, gridColumn55, gridColumn64 });
             WorldActionsInfoGridView.GridControl = WorldEventInfoGridControl;
             WorldActionsInfoGridView.Name = "WorldActionsInfoGridView";
+            WorldActionsInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
             WorldActionsInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
             WorldActionsInfoGridView.OptionsView.EnableAppearanceOddRow = true;
             WorldActionsInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
@@ -852,7 +946,7 @@
             gridColumn50.FieldName = "StringParameter1";
             gridColumn50.Name = "gridColumn50";
             gridColumn50.Visible = true;
-            gridColumn50.VisibleIndex = 2;
+            gridColumn50.VisibleIndex = 3;
             // 
             // gridColumn51
             // 
@@ -860,7 +954,7 @@
             gridColumn51.FieldName = "MonsterParameter1";
             gridColumn51.Name = "gridColumn51";
             gridColumn51.Visible = true;
-            gridColumn51.VisibleIndex = 3;
+            gridColumn51.VisibleIndex = 4;
             // 
             // WorldMonsterLookUpEdit
             // 
@@ -878,7 +972,7 @@
             gridColumn52.FieldName = "RespawnParameter1";
             gridColumn52.Name = "gridColumn52";
             gridColumn52.Visible = true;
-            gridColumn52.VisibleIndex = 4;
+            gridColumn52.VisibleIndex = 5;
             // 
             // WorldRespawnLookUpEdit
             // 
@@ -895,7 +989,7 @@
             gridColumn53.FieldName = "MapParameter1";
             gridColumn53.Name = "gridColumn53";
             gridColumn53.Visible = true;
-            gridColumn53.VisibleIndex = 5;
+            gridColumn53.VisibleIndex = 6;
             // 
             // WorldMapLookUpEdit
             // 
@@ -912,7 +1006,7 @@
             gridColumn54.FieldName = "RegionParameter1";
             gridColumn54.Name = "gridColumn54";
             gridColumn54.Visible = true;
-            gridColumn54.VisibleIndex = 6;
+            gridColumn54.VisibleIndex = 7;
             // 
             // WorldRegionLookUpEdit
             // 
@@ -929,7 +1023,7 @@
             gridColumn55.FieldName = "InstanceParameter1";
             gridColumn55.Name = "gridColumn55";
             gridColumn55.Visible = true;
-            gridColumn55.VisibleIndex = 7;
+            gridColumn55.VisibleIndex = 8;
             // 
             // WorldInstanceLookUpEdit
             // 
@@ -939,6 +1033,38 @@
             WorldInstanceLookUpEdit.DisplayMember = "Name";
             WorldInstanceLookUpEdit.Name = "WorldInstanceLookUpEdit";
             WorldInstanceLookUpEdit.NullText = "[Instance is null]";
+            // 
+            // gridColumn64
+            // 
+            gridColumn64.FieldName = "Restrict";
+            gridColumn64.Name = "gridColumn64";
+            gridColumn64.Visible = true;
+            gridColumn64.VisibleIndex = 2;
+            // 
+            // WorldActionStatsInfoGridView
+            // 
+            WorldActionStatsInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn60, gridColumn61 });
+            WorldActionStatsInfoGridView.GridControl = WorldEventInfoGridControl;
+            WorldActionStatsInfoGridView.Name = "WorldActionStatsInfoGridView";
+            WorldActionStatsInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            WorldActionStatsInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            WorldActionStatsInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            WorldActionStatsInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            WorldActionStatsInfoGridView.OptionsView.ShowGroupPanel = false;
+            // 
+            // gridColumn60
+            // 
+            gridColumn60.FieldName = "Stat";
+            gridColumn60.Name = "gridColumn60";
+            gridColumn60.Visible = true;
+            gridColumn60.VisibleIndex = 0;
+            // 
+            // gridColumn61
+            // 
+            gridColumn61.FieldName = "Amount";
+            gridColumn61.Name = "gridColumn61";
+            gridColumn61.Visible = true;
+            gridColumn61.VisibleIndex = 1;
             // 
             // WorldEventInfoGridView
             // 
@@ -982,9 +1108,9 @@
             tabPane1.Location = new System.Drawing.Point(0, 144);
             tabPane1.Name = "tabPane1";
             tabPane1.Pages.AddRange(new DevExpress.XtraBars.Navigation.NavigationPageBase[] { tabNavigationPage1, tabNavigationPage2, tabNavigationPage3 });
-            tabPane1.RegularSize = new System.Drawing.Size(862, 371);
+            tabPane1.RegularSize = new System.Drawing.Size(792, 336);
             tabPane1.SelectedPage = tabNavigationPage1;
-            tabPane1.Size = new System.Drawing.Size(862, 371);
+            tabPane1.Size = new System.Drawing.Size(792, 336);
             tabPane1.TabIndex = 3;
             // 
             // tabNavigationPage1
@@ -992,27 +1118,27 @@
             tabNavigationPage1.Caption = "World Event Info";
             tabNavigationPage1.Controls.Add(WorldEventInfoGridControl);
             tabNavigationPage1.Name = "tabNavigationPage1";
-            tabNavigationPage1.Size = new System.Drawing.Size(862, 342);
+            tabNavigationPage1.Size = new System.Drawing.Size(792, 307);
             // 
             // tabNavigationPage2
             // 
             tabNavigationPage2.Caption = "Player Event Info";
             tabNavigationPage2.Controls.Add(PlayerEventInfoGridControl);
             tabNavigationPage2.Name = "tabNavigationPage2";
-            tabNavigationPage2.Size = new System.Drawing.Size(876, 349);
+            tabNavigationPage2.Size = new System.Drawing.Size(806, 314);
             // 
             // tabNavigationPage3
             // 
             tabNavigationPage3.Caption = "Monster Event Info";
             tabNavigationPage3.Controls.Add(MonsterEventInfoGridControl);
             tabNavigationPage3.Name = "tabNavigationPage3";
-            tabNavigationPage3.Size = new System.Drawing.Size(862, 342);
+            tabNavigationPage3.Size = new System.Drawing.Size(806, 314);
             // 
             // EventInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(862, 515);
+            ClientSize = new System.Drawing.Size(792, 480);
             Controls.Add(tabPane1);
             Controls.Add(ribbon);
             Name = "EventInfoView";
@@ -1028,6 +1154,7 @@
             ((System.ComponentModel.ISupportInitialize)MonsterActionTypeLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)MonsterRespawnLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)MonsterItemLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MonsterActionStatsInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)MonsterEventInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
             ((System.ComponentModel.ISupportInitialize)PlayerTriggersInfoGridView).EndInit();
@@ -1040,6 +1167,7 @@
             ((System.ComponentModel.ISupportInitialize)PlayerMonsterLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)PlayerRespawnLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)PlayerItemLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)PlayerActionStatsInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)PlayerEventInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)WorldTriggersInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)WorldEventInfoGridControl).EndInit();
@@ -1050,6 +1178,7 @@
             ((System.ComponentModel.ISupportInitialize)WorldMapLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)WorldRegionLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)WorldInstanceLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)WorldActionStatsInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)WorldEventInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)tabPane1).EndInit();
             tabPane1.ResumeLayout(false);
@@ -1160,5 +1289,17 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit MonsterItemLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn46;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit PlayerItemLookUpEdit;
+        private DevExpress.XtraGrid.Views.Grid.GridView MonsterActionStatsInfoGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn56;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn57;
+        private DevExpress.XtraGrid.Views.Grid.GridView PlayerActionStatsInfoGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn58;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn59;
+        private DevExpress.XtraGrid.Views.Grid.GridView WorldActionStatsInfoGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn60;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn61;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn62;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn63;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn64;
     }
 }

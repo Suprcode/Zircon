@@ -1,8 +1,10 @@
 ﻿using Library.SystemModels;
-using System.Collections.Generic;
 
 namespace Server.Envir.Events.Triggers
 {
+    /// <summary>
+    /// Triggers when time of day changes
+    /// </summary>
     [EventTriggerType("TIMEOFDAY")]
     public class WorldTimeOfDay : IWorldEventTrigger, IEventTrigger
     {

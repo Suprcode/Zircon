@@ -1,42 +1,43 @@
 ﻿using Library;
 using Library.SystemModels;
 using Server.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using S = Library.Network.ServerPackets;
 
 namespace Server.Envir.Events.Actions
 {
     /// <summary>
-    /// Send system message to players
+    /// Removes buff from players
     /// </summary>
-    [EventActionType(EventActionType.PlayerMessage)]
-    public class PlayerMessage : IWorldEventAction, IPlayerEventAction, IMonsterEventAction, IEventAction
+    [EventActionType(EventActionType.PlayerBuffRemove)]
+    public class PlayerBuffRemove : IWorldEventAction, IPlayerEventAction, IMonsterEventAction, IEventAction
     {
         public void Act(PlayerObject triggerPlayer, EventLog log, MonsterEventAction action)
         {
-            SendMessage(action, log.MonsterEvent.TrackingType, null);
+            RemoveBuff(action, log.MonsterEvent.TrackingType, triggerPlayer);
         }
 
         public void Act(PlayerObject triggerPlayer, EventLog log, PlayerEventAction action)
         {
-            SendMessage(action, log.PlayerEvent.TrackingType, null);
+            RemoveBuff(action, log.PlayerEvent.TrackingType, triggerPlayer);
         }
 
         public void Act(EventLog log, WorldEventAction action)
         {
-            SendMessage(action, EventTrackingType.Global, null);
+            RemoveBuff(action, EventTrackingType.Global, null);
         }
 
-        private static void SendMessage(BaseEventAction action, EventTrackingType trackingType, PlayerObject triggerPlayer)
+        private static void RemoveBuff(BaseEventAction action, EventTrackingType trackingType, PlayerObject triggerPlayer)
         {
-            if (string.IsNullOrEmpty(action.StringParameter1)) return;
+            if (string.IsNullOrEmpty(action.StringParameter1) ||
+                !Enum.TryParse(action.StringParameter1, true, out BuffType type)) return;
 
             if (action.InstanceParameter1 != triggerPlayer?.CurrentMap.Instance) return;
 
             if (action.Restrict && triggerPlayer != null)
             {
-                triggerPlayer.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
+                triggerPlayer.BuffRemove(type);
                 return;
             }
 
@@ -47,7 +48,7 @@ namespace Server.Envir.Events.Actions
             {
                 if (action.RegionParameter1 == null || player.CurrentCell.Regions.Contains(action.RegionParameter1))
                 {
-                    player.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
+                    player.BuffRemove(type);
 
                     if (action.Restrict) break;
                 }

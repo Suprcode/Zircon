@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Server.Envir.Events.Triggers
 {
+    /// <summary>
+    /// Triggers when all monster spawns on a map/region/instance are killed
+    /// </summary>
     [EventTriggerType("MONSTERCLEAR")]
     public class MonsterClear : IMonsterEventTrigger, IEventTrigger
     {
@@ -14,6 +17,7 @@ namespace Server.Envir.Events.Triggers
             if (eventTrigger.MapParameter1 != null && eventTrigger.InstanceParameter1 != null)
             {
                 if (!IsValidInstance(monster, eventTrigger.InstanceParameter1)) return false;
+                if (!IsValidMap(monster, eventTrigger.MapParameter1)) return false;
 
                 var map = SEnvir.GetMap(eventTrigger.MapParameter1, eventTrigger.InstanceParameter1, monster.CurrentMap.InstanceSequence);
                 if (map == null) return false;
@@ -23,6 +27,8 @@ namespace Server.Envir.Events.Triggers
 
             if (eventTrigger.MapParameter1 != null)
             {
+                if (!IsValidMap(monster, eventTrigger.MapParameter1)) return false;
+
                 var map = SEnvir.GetMap(eventTrigger.MapParameter1);
                 if (map == null) return false;
 
@@ -46,6 +52,11 @@ namespace Server.Envir.Events.Triggers
         private static bool IsValidInstance(MonsterObject monster, InstanceInfo instance)
         {
             return monster.CurrentMap.Instance != null && instance == monster.CurrentMap.Instance;
+        }
+
+        private static bool IsValidMap(MonsterObject monster, MapInfo map)
+        {
+            return monster.CurrentMap.Info == map;
         }
 
         private static bool ContainsAliveMonsters(Map map, MapRegion region)

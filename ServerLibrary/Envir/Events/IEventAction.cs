@@ -15,11 +15,11 @@ namespace Server.Envir.Events
 
     public interface IPlayerEventAction
     {
-        void Act(PlayerObject player, EventLog log, PlayerEventAction action);
+        void Act(PlayerObject triggerPlayer, EventLog log, PlayerEventAction action);
     }
 
     public interface IMonsterEventAction
     {
-        void Act(PlayerObject player, EventLog log, MonsterEventAction action);
+        void Act(PlayerObject triggerPlayer, EventLog log, MonsterEventAction action);
     }
 }
