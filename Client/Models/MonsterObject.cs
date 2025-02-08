@@ -3027,21 +3027,6 @@ namespace Client.Models
                     if (action.Action == MirAction.Show)
                         Visible = true;
                     break;
-                case MonsterImage.GhostMage:
-                    switch (action.Action)
-                    {
-                        case MirAction.Show:
-                            DXSoundManager.Play(SoundIndex.GhostMageAppear);
-                            new MirEffect(240, 1, TimeSpan.FromMinutes(1), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
-                            {
-                                MapTarget = action.Location,
-                                DrawType = DrawType.Floor,
-                                Direction = Direction,
-                                Skip = 1,
-                            };
-                            break;
-                    }
-                    break;
                 case MonsterImage.StoneGolem:
                     switch (action.Action)
                     {

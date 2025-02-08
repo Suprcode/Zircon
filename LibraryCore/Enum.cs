@@ -1443,6 +1443,8 @@ namespace Library
         Rubble,
 
         MonsterDeathCloud,
+
+        ZombieHole
     }
 
 

@@ -1351,7 +1351,13 @@ namespace Server.Models
                 RemoveMount();
 
             ApplyMapBuff();
+
+            if (PlayerMoveMap.QuickMapCheck(this))
+            {
+                SEnvir.EventHandler.Process(this, "PLAYERMOVEMAP");
+            }
         }
+
         protected override void OnLocationChanged()
         {
             base.OnLocationChanged();
@@ -1382,9 +1388,9 @@ namespace Server.Models
             else if (Spawned && CurrentMap.Info.CanMine)
                 PauseBuffs();
 
-            if (PlayerMove.QuickCheck(this))
+            if (PlayerMoverRegion.QuickRegionCheck(this))
             {
-                SEnvir.EventHandler.Process(this, "PLAYERMOVE");
+                SEnvir.EventHandler.Process(this, "PLAYERMOVEREGION");
             }
         }
 
