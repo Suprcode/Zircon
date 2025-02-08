@@ -264,7 +264,7 @@ namespace Library.SystemModels
 
         [JsonIgnore]
         [Association("Events", true)]
-        public DBBindingList<EventTarget> Events { get; set; }
+        public DBBindingList<MonsterEventTrigger> Events { get; set; }
 
         [JsonIgnore]
         [Association("QuestDetails", true)]

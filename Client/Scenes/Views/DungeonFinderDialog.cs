@@ -373,7 +373,7 @@ namespace Client.Scenes.Views
                 return;
             }
 
-            if (instance.Type == InstanceType.Solo)
+            if (instance.Type == InstanceType.Player)
             {
                 CEnvir.Enqueue(new C.JoinInstance { Index = SelectedDungeonRow.InstanceInfo.Index });
             }

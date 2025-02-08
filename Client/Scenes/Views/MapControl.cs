@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.Models.Particles;
@@ -12,6 +6,12 @@ using Library;
 using Library.SystemModels;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 //Cleaned

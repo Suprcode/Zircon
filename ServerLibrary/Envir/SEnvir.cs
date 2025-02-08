@@ -5,6 +5,8 @@ using MirDB;
 using Server.DBModels;
 using Server.Envir.Commands;
 using Server.Envir.Commands.Handler;
+using Server.Envir.Events;
+using Server.Envir.Events.Triggers;
 using Server.Models;
 using System;
 using System.Collections.Concurrent;
@@ -29,24 +31,10 @@ namespace Server.Envir
 {
     public static class SEnvir
     {
-        #region Synchronization
-
-        private static readonly SynchronizationContext Context = SynchronizationContext.Current;
-        public static void Send(SendOrPostCallback method)
-        {
-            Context.Send(method, null);
-        }
-        public static void Post(SendOrPostCallback method)
-        {
-            Context.Post(method, null);
-        }
-
-        #endregion
-
         #region Logging
 
-        public static ConcurrentQueue<string> DisplayLogs = new ConcurrentQueue<string>();
-        public static ConcurrentQueue<string> Logs = new ConcurrentQueue<string>();
+        public static ConcurrentQueue<string> DisplayLogs = [];
+        public static ConcurrentQueue<string> Logs = [];
         public static bool UseLogConsole = false;
 
         public static void Log(string log, bool hardLog = true)
@@ -218,8 +206,6 @@ namespace Server.Envir
 
         #endregion
 
-
-
         public static bool Started { get; set; }
         public static bool NetworkStarted { get; set; }
         public static bool Saving { get; private set; }
@@ -240,12 +226,13 @@ namespace Server.Envir
 
         public static bool ServerBuffChanged;
 
+        public static EventInfoHandler EventHandler = new EventInfoHandler();
+
         #region Database
 
         public static Session Session;
 
         public static DBCollection<MapInfo> MapInfoList;
-        public static DBCollection<MapRegion> RegionInfoList;
         public static DBCollection<InstanceInfo> InstanceInfoList;
         public static DBCollection<InstanceMapInfo> InstanceMapInfoList;
         public static DBCollection<SafeZoneInfo> SafeZoneInfoList;
@@ -302,15 +289,18 @@ namespace Server.Envir
         public static DBCollection<WeaponCraftStatInfo> WeaponCraftStatInfoList;
         public static DBCollection<UserDiscipline> UserDisciplineList;
 
+        public static DBCollection<WorldEventTrigger> WorldEventInfoTriggerList;
+        public static DBCollection<PlayerEventTrigger> PlayerEventInfoTriggerList;
+
         public static ItemInfo GoldInfo, RefinementStoneInfo, FragmentInfo, Fragment2Info, Fragment3Info, FortuneCheckerInfo, ItemPartInfo;
 
         public static GuildInfo StarterGuild;
 
         public static MapRegion MysteryShipMapRegion, LairMapRegion;
 
-        public static List<MonsterInfo> BossList = new List<MonsterInfo>();
+        public static List<MonsterInfo> BossList = [];
 
-        public static List<Type> MagicTypes = new List<Type>();
+        public static List<Type> MagicTypes = [];
 
         #endregion
 
@@ -318,20 +308,35 @@ namespace Server.Envir
 
         public static Random Random;
 
-        public static Dictionary<MapInfo, Map> Maps = new Dictionary<MapInfo, Map>();
-        public static Dictionary<InstanceInfo, Dictionary<MapInfo, Map>[]> Instances = new Dictionary<InstanceInfo, Dictionary<MapInfo, Map>[]>();
+        public static Dictionary<MapInfo, Map> Maps = [];
+        public static Dictionary<InstanceInfo, Dictionary<MapInfo, Map>[]> Instances = [];
 
         private static long _ObjectID;
         public static uint ObjectID => (uint)Interlocked.Increment(ref _ObjectID);
 
-        public static LinkedList<MapObject> Objects = new LinkedList<MapObject>();
-        public static List<MapObject> ActiveObjects = new List<MapObject>();
+        public static LinkedList<MapObject> Objects = [];
+        public static List<MapObject> ActiveObjects = [];
 
-        public static List<PlayerObject> Players = new List<PlayerObject>();
-        public static List<ConquestWar> ConquestWars = new List<ConquestWar>();
+        public static List<PlayerObject> Players = [];
+        public static List<ConquestWar> ConquestWars = [];
 
-        public static List<SpawnInfo> Spawns = new List<SpawnInfo>();
+        public static List<SpawnInfo> Spawns = [];
 
+        public static List<EventLog> EventLogs = [];
+
+        private static TimeOfDay _TimeOfDay;
+        public static TimeOfDay TimeOfDay
+        {
+            get { return _TimeOfDay; }
+            set
+            {
+                if (_TimeOfDay == value) return;
+
+                _TimeOfDay = value;
+            }
+        }
+
+        public static float PreviousDayTime { get; private set; }
         private static float _DayTime;
         public static float DayTime
         {
@@ -340,6 +345,7 @@ namespace Server.Envir
             {
                 if (_DayTime == value) return;
 
+                PreviousDayTime = _DayTime;
                 _DayTime = value;
 
                 Broadcast(new S.DayChanged { DayTime = DayTime });
@@ -416,7 +422,6 @@ namespace Server.Envir
             );
 
             MapInfoList = Session.GetCollection<MapInfo>();
-            Session.GetCollection<MapRegion>();
             InstanceInfoList = Session.GetCollection<InstanceInfo>();
             SafeZoneInfoList = Session.GetCollection<SafeZoneInfo>();
             ItemInfoList = Session.GetCollection<ItemInfo>();
@@ -472,6 +477,9 @@ namespace Server.Envir
             UserFortuneInfoList = Session.GetCollection<UserFortuneInfo>();
             WeaponCraftStatInfoList = Session.GetCollection<WeaponCraftStatInfo>();
             UserDisciplineList = Session.GetCollection<UserDiscipline>();
+
+            WorldEventInfoTriggerList = Session.GetCollection<WorldEventTrigger>();
+            PlayerEventInfoTriggerList = Session.GetCollection<PlayerEventTrigger>();
 
             GoldInfo = CurrencyInfoList.Binding.First(x => x.Type == CurrencyType.Gold).DropItem;
 
@@ -991,6 +999,9 @@ namespace Server.Envir
             SetInfoList = null;
             UserDisciplineList = null;
 
+            WorldEventInfoTriggerList = null;
+            PlayerEventInfoTriggerList = null;
+
             Rankings = null;
             Random = null;
 
@@ -1023,7 +1034,7 @@ namespace Server.Envir
             Started = NetworkStarted;
 
             int count = 0, loopCount = 0;
-            DateTime nextCount = Now.AddSeconds(1), UserCountTime = Now.AddMinutes(5), saveTime;
+            DateTime nextCount = Now.AddSeconds(1), UserCountTime = Now.AddMinutes(5), EventTimerTime = Now.AddMinutes(1), saveTime;
             long previousTotalSent = 0, previousTotalReceived = 0;
             int lastindex = 0;
             long conDelay = 0;
@@ -1161,6 +1172,18 @@ namespace Server.Envir
                                         conn.ReceiveChat(string.Format(conn.Language.ObserverCount, conn.Observed.Observers.Count), MessageType.Hint);
                                         break;
                                 }
+                            }
+                        }
+
+                        if (Now >= EventTimerTime)
+                        {
+                            EventTimerTime = Now.AddMinutes(1);
+
+                            foreach(var timer in EventTimer.Timers)
+                            {
+                                if (!timer.Started) continue;
+
+                                EventHandler.Process(timer.Player, "TIMERMINUTE");
                             }
                         }
 
@@ -1510,10 +1533,39 @@ namespace Server.Envir
             }
 
         }
+
         public static void CalculateLights()
         {
             DayTime = Math.Max(0.05F, Math.Abs((float)Math.Round(((Now.TimeOfDay.TotalMinutes * Config.DayCycleCount) % 1440) / 1440F * 2 - 1, 2))); //12 hour rotation
+
+            var previousTimeOfDay = TimeOfDay;
+
+            if (DayTime <= 0.35F)
+            {
+                TimeOfDay = TimeOfDay.Night;
+            }
+            else if (DayTime > 0.65F)
+            {
+                TimeOfDay = TimeOfDay.Day;
+            }
+            else
+            {
+                if (DayTime > PreviousDayTime)
+                {
+                    TimeOfDay = TimeOfDay.Dawn;
+                }
+                else
+                {
+                    TimeOfDay = TimeOfDay.Dusk;
+                }
+            }
+
+            if (previousTimeOfDay != TimeOfDay)
+            {
+                SEnvir.EventHandler.Process("TIMEOFDAY");
+            }
         }
+
         public static void StartConquest(CastleInfo info, bool forced)
         {
             List<GuildInfo> participants = new List<GuildInfo>();
@@ -3688,6 +3740,8 @@ namespace Server.Envir
             }
 
             RemoveSpawns(instance, instanceSequence);
+
+            EventLogs.RemoveAll(x => x.InstanceInfo == instance && x.InstanceSequence == instanceSequence);
 
             Instances[instance][instanceSequence] = null;
 

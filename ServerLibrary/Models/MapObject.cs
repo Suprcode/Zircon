@@ -30,6 +30,7 @@ namespace Server.Models
     
         public virtual int Level { get; set; }
 
+        public Cell PreviousCell { get; private set; }
         public Cell CurrentCell
         {
             get { return _CurrentCell; }
@@ -37,14 +38,15 @@ namespace Server.Models
             {
                 if (_CurrentCell == value) return;
 
-                var oldValue = _CurrentCell;
+                PreviousCell = _CurrentCell;
                 _CurrentCell = value;
 
-                LocationChanged(oldValue, value);
+                LocationChanged(PreviousCell, value);
             }
         }
         private Cell _CurrentCell;
 
+        public Map PreviousMap { get; private set; }
         public Map CurrentMap
         {
             get { return _CurrentMap; }
@@ -52,10 +54,10 @@ namespace Server.Models
             {
                 if (_CurrentMap == value) return;
 
-                var oldValue = _CurrentMap;
+                PreviousMap = _CurrentMap;
                 _CurrentMap = value;
 
-                MapChanged(oldValue, value);
+                MapChanged(PreviousMap, value);
             }
         }
         private Map _CurrentMap;
@@ -912,6 +914,7 @@ namespace Server.Models
 
             Teleport(CurrentMap, cells[SEnvir.Random.Next(cells.Count)].Location);
         }
+
         public bool Teleport(MapRegion region, InstanceInfo instance, byte instanceSequence, bool leaveEffect = true)
         {
             Map map = SEnvir.GetMap(region.Map, instance, instanceSequence);
