@@ -5,7 +5,7 @@ using Server.Models;
 namespace Server.Envir.Events.Triggers
 {
     /// <summary>
-    /// Triggers when a player dies
+    /// Triggers when a player types @event command
     /// </summary>
     [EventTriggerType("PLAYERCOMMAND")]
     public class PlayerCommand : IPlayerEventTrigger, IEventTrigger
