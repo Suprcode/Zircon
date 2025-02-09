@@ -19,6 +19,21 @@ namespace Server.Envir.Events.Triggers
                 return false;
             }
 
+            if (eventTrigger.MapParameter1 != null && player.CurrentMap.Info != eventTrigger.MapParameter1)
+            {
+                return false;
+            }
+
+            if (eventTrigger.RegionParameter1 != null && !player.CurrentCell.Regions.Contains(eventTrigger.RegionParameter1))
+            {
+                return false;
+            }
+
+            if (eventTrigger.InstanceParameter1 != null && player.CurrentMap.Instance != eventTrigger.InstanceParameter1)
+            {
+                return false;
+            }
+
             if (!Event.LastCommand.TryGetValue(player.Name, out string value))
             {
                 return false;
