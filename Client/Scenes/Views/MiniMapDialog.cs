@@ -119,7 +119,6 @@ namespace Client.Scenes.Views
 
             foreach (ClientObjectData ob in GameScene.Game.DataDictionary.Values)
                 Update(ob);
-
         }
 
         public void Update(NPCInfo ob)
@@ -392,6 +391,8 @@ namespace Client.Scenes.Views
         public override void Draw()
         {
             if (!IsVisible || Size.Width == 0 || Size.Height == 0) return;
+
+            if (Image.Index <= 0) return;
 
             OnBeforeDraw();
             DrawControl();

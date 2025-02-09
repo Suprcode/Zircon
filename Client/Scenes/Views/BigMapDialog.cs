@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
     public sealed  class BigMapDialog : DXWindow
@@ -50,22 +49,24 @@ namespace Client.Scenes.Views
             TitleLabel.Text = SelectedInfo.PlayerDescription;
             Image.Index = SelectedInfo.MiniMap;
 
+            var minWidth = 320;
+            var minHeight = 240;
+
             var maxWidth = 800;
             var maxHeight = 600;
 
-            var locationX = 0;
-            var locationY = 0;
+            SetClientSize(Image.Size, minWidth, minHeight, maxWidth, maxHeight);
 
-            if (Image.Size.Width > maxWidth)
-                locationX = (Image.Size.Width - maxWidth) / 2;
+            var imageLargerThanPanel = (Image.Size.Width > maxWidth || Image.Size.Height > maxHeight);
 
-            if (Image.Size.Height > maxHeight)
-                locationY = (Image.Size.Height - maxHeight) / 2;
+            Image.Movable = imageLargerThanPanel;
+            Image.IgnoreMoveBounds = imageLargerThanPanel;
+
+            var locationX = (Image.Size.Width - Panel.Size.Width) / 2; 
+            var locationY = (Image.Size.Height - Panel.Size.Height) / 2;
 
             Image.Location = new Point(-locationX, -locationY);
-            Image.IgnoreMoveBounds = (Image.Size.Width > maxWidth || Image.Size.Height > maxHeight);
 
-            SetClientSize(Image.Size, maxWidth, maxHeight);
             Location = new Point((GameScene.Game.Size.Width - Size.Width) / 2, (GameScene.Game.Size.Height - Size.Height) / 2);
 
             Size size = GetMapSize(SelectedInfo.FileName);
@@ -113,9 +114,9 @@ namespace Client.Scenes.Views
             return true;
         }
 
-        public void SetClientSize(Size clientSize, int maxWidth, int maxHeight)
+        public void SetClientSize(Size clientSize, int minWidth, int minHeight, int maxWidth, int maxHeight)
         {
-            SetClientSize(new Size(Math.Min(clientSize.Width, maxWidth), Math.Min(clientSize.Height, maxHeight)));
+            SetClientSize(new Size(Math.Min(Math.Max(clientSize.Width, minWidth), maxWidth), Math.Min(Math.Max(clientSize.Height, minHeight), maxHeight)));
         }
 
         private Size GetMapSize(string fileName)
