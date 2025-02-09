@@ -16,7 +16,7 @@ namespace Server.Envir.Commands.Command.Player
         public override string VALUE => "EVENT";
         public override int PARAMS_LENGTH => 1;
 
-        public static Dictionary<PlayerObject, string> LastCommand { get; set; } = [];
+        public static Dictionary<string, string> LastCommand { get; set; } = [];
 
         public override void Action(PlayerObject player, string[] vals)
         {
@@ -26,7 +26,7 @@ namespace Server.Envir.Commands.Command.Player
             if (string.IsNullOrEmpty(vals[1]))
                 return;
 
-            LastCommand[player] = vals[1];
+            LastCommand[player.Name] = vals[1];
 
             SEnvir.EventHandler.Process(player, "PLAYERCOMMAND");
         }

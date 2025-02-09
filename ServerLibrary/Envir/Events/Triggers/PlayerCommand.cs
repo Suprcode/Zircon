@@ -19,7 +19,7 @@ namespace Server.Envir.Events.Triggers
                 return false;
             }
 
-            if (!Event.LastCommand.TryGetValue(player, out string value))
+            if (!Event.LastCommand.TryGetValue(player.Name, out string value))
             {
                 return false;
             }
