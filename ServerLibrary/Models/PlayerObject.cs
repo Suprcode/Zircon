@@ -1352,7 +1352,7 @@ namespace Server.Models
 
             ApplyMapBuff();
 
-            if (PlayerMoveMap.QuickMapCheck(this))
+            if (PlayerMoveMap.QuickCheck(this))
             {
                 SEnvir.EventHandler.Process(this, "PLAYERMOVEMAP");
             }
@@ -1388,7 +1388,7 @@ namespace Server.Models
             else if (Spawned && CurrentMap.Info.CanMine)
                 PauseBuffs();
 
-            if (PlayerMoverRegion.QuickRegionCheck(this))
+            if (PlayerMoverRegion.QuickCheck(this))
             {
                 SEnvir.EventHandler.Process(this, "PLAYERMOVEREGION");
             }

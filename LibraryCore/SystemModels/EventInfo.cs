@@ -988,6 +988,7 @@ namespace Library.SystemModels
         PlayerEnter = 0,
         PlayerLeave = 1,
         PlayerDie = 2,
+        PlayerCommand = 3,
 
         TimerMinute = 10,
     }

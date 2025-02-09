@@ -12,7 +12,7 @@ namespace Server.Envir.Events.Triggers
     {
         public PlayerEventTriggerType[] PlayerTypes => [PlayerEventTriggerType.PlayerEnter, PlayerEventTriggerType.PlayerLeave];
 
-        public static bool QuickMapCheck(PlayerObject player)
+        public static bool QuickCheck(PlayerObject player)
         {
             if (player.PreviousMap == null)
             {
