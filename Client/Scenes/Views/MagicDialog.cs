@@ -188,11 +188,18 @@ namespace Client.Scenes.Views
 
             foreach (MagicInfo magic in magics)
             {
-                if (magic.Class != MapObject.User.Class || magic.School == MagicSchool.None || magic.School == MagicSchool.Discipline) continue;
+                var hasMagic = MapObject.User.Magics.TryGetValue(magic, out ClientUserMagic userMagic);
 
-                MagicTab tab;
+                if (!hasMagic && (magic.Class != MapObject.User.Class || magic.School == MagicSchool.None || magic.School == MagicSchool.Discipline)) continue;
 
-                if (!SchoolTabs.TryGetValue(magic.School, out tab))
+                if (hasMagic && userMagic.ItemRequired)
+                {
+                    var magicItem = GameScene.Game.Equipment.FirstOrDefault(x => x != null && x.Info.ItemEffect == ItemEffect.MagicRing && x.Info.Shape == magic.Index);
+
+                    if (magicItem == null) continue;
+                }
+
+                if (!SchoolTabs.TryGetValue(magic.School, out MagicTab tab))
                 {
                     SchoolTabs[magic.School] = tab = new MagicTab(magic.School);
                     tab.MouseWheel += tab.ScrollBar.DoMouseWheel;

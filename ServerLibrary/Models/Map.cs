@@ -104,6 +104,12 @@ namespace Server.Models
         {
             foreach (GuardInfo info in Info.Guards)
             {
+                if (info.Monster == null)
+                {
+                    SEnvir.Log($"Failed to spawn Unset Guard Map:{Info.Description}, Location: {info.X}, {info.Y}");
+                    continue;
+                }
+
                 MonsterObject mob = MonsterObject.GetMonster(info.Monster);
                 mob.Direction = info.Direction;
 

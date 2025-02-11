@@ -2853,7 +2853,6 @@ namespace Client.Scenes
 
             foreach (KeyValuePair<MagicInfo, ClientUserMagic> pair in User.Magics)
             {
-
                 switch (MagicBarBox.SpellSet)
                 {
                     case 1:
@@ -2877,7 +2876,18 @@ namespace Client.Scenes
                 if (magic != null) break;
             }
 
-            if (magic == null || User.Level < magic.Info.NeedLevel1) return;
+            if (magic == null) return;
+
+            if (magic.ItemRequired)
+            {
+                var magicItem = Equipment.FirstOrDefault(x => x != null && x.Info.ItemEffect == ItemEffect.MagicRing && x.Info.Shape == magic.Info.Index);
+
+                if (magicItem == null) return;
+            }
+            else
+            {
+                if (User.Level < magic.Info.NeedLevel1) return;
+            }
 
             switch (magic.Info.Magic)
             {

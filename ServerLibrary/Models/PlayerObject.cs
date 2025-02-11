@@ -2107,6 +2107,26 @@ namespace Server.Models
                     if (ele != Stat.None)
                         Stats[ele] += item.Stats.GetWeaponElementValue() + item.Info.Stats.GetWeaponElementValue();
                 }
+
+                if (item.Info.ItemEffect == ItemEffect.MagicRing)
+                {
+                    MagicInfo info = SEnvir.GetMagicInfo(item.Info.Shape);
+
+                    if (info != null && info.School != MagicSchool.None)
+                    {
+                        if (!GetMagic(info.Magic, out MagicObject magicObject))
+                        {
+                            var magic = SEnvir.UserMagicList.CreateNewObject();
+                            magic.Character = Character;
+                            magic.Info = info;
+                            magic.ItemRequired = true;
+
+                            SetupMagic(magic);
+                            Enqueue(new S.NewMagic { Magic = magic.ToClientInfo() });
+                            Connection.ReceiveChatWithObservers(con => string.Format(con.Language.LearnBookSuccess, magic.Info.Name), MessageType.System);
+                        }
+                    }
+                }
             }
 
             if (GroupMembers != null && GroupMembers.Count >= 8)
@@ -2143,7 +2163,7 @@ namespace Server.Models
             {
                 var magicObject = MagicObjects[type];
 
-                if (Level < magicObject.Magic.Info.NeedLevel1) continue;
+                if (!magicObject.CanUseMagic()) continue;
 
                 Stats.Add(magicObject.GetPassiveStats());
             }
@@ -2273,7 +2293,12 @@ namespace Server.Models
             Stats[Stat.DropRate] += 20 * Stats[Stat.Rebirth];
             Stats[Stat.GoldRate] += 20 * Stats[Stat.Rebirth];
 
-            Enqueue(new S.StatsUpdate { Stats = Stats, HermitStats = Config.EnableHermit ? Character.HermitStats : new Stats(), HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints) });
+            Enqueue(new S.StatsUpdate 
+            { 
+                Stats = Stats, 
+                HermitStats = Config.EnableHermit ? Character.HermitStats : new Stats(), 
+                HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints)
+            });
 
             S.DataObjectMaxHealthMana p = new S.DataObjectMaxHealthMana { ObjectID = ObjectID, MaxHealth = Stats[Stat.Health], MaxMana = Stats[Stat.Mana] };
 
@@ -6296,13 +6321,19 @@ namespace Server.Models
                 case ItemType.Book:
                     if (SEnvir.Now < UseItemTime || Horse != HorseType.None) return;
 
-                    MagicInfo info = SEnvir.MagicInfoList.Binding.First(x => x.Index == item.Info.Shape);
+                    MagicInfo info = SEnvir.GetMagicInfo(item.Info.Shape);
 
                     if (info.School == MagicSchool.None) return;
 
                     if (GetMagic(info.Magic, out MagicObject magicObject))
                     {
                         var magic = magicObject.Magic;
+
+                        if (magic.ItemRequired)
+                        {
+                            magic.ItemRequired = false;
+                            Enqueue(new S.NewMagic { Magic = magic.ToClientInfo() });
+                        }
 
                         if (magic.Level < 3) return;
 
@@ -6538,7 +6569,7 @@ namespace Server.Models
             switch (item.Info.ItemType)
             {
                 case ItemType.Book:
-                    MagicInfo magic = SEnvir.MagicInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+                    MagicInfo magic = SEnvir.GetMagicInfo(item.Info.Shape);
                     if (magic == null) return false;
                     if (GetMagic(magic.Magic, out MagicObject magicObject) && (magicObject.Magic.Level < 3 || (item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)) return false;
                     return true;
@@ -13298,7 +13329,7 @@ namespace Server.Models
 
                 if (magicObject.AttackSkill)
                 {
-                    if (Level < magicObject.Magic.Info.NeedLevel1)
+                    if (!magicObject.CanUseMagic())
                     {
                         continue;
                     }
@@ -14599,7 +14630,7 @@ namespace Server.Models
         {
             var hasMagic = MagicObjects.TryGetValue(type, out var retrievedMagic);
 
-            if (hasMagic && Level >= retrievedMagic.Magic.Info.NeedLevel1)
+            if (hasMagic && retrievedMagic.CanUseMagic())
             {
                 magic = (T)retrievedMagic;
                 return true;

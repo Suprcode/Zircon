@@ -42,6 +42,12 @@ namespace Server.Envir.Commands.Command.Admin
                 else
                 {
                     uMagic = magicObject.Magic;
+
+                    if (uMagic.ItemRequired)
+                    {
+                        uMagic.ItemRequired = false;
+                        player.Enqueue(new S.NewMagic { Magic = uMagic.ToClientInfo() });
+                    }
                 }
 
                 int level = player.Level >= mInfo.NeedLevel3 ? 3 : player.Level >= mInfo.NeedLevel2 ? 2 : 1;

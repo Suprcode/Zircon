@@ -783,6 +783,7 @@ namespace Library
 
         public int Level { get; set; }
         public long Experience { get; set; }
+        public bool ItemRequired { get; set; }
 
         public TimeSpan Cooldown { get; set; }
 

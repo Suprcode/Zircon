@@ -1754,6 +1754,11 @@ namespace Server.Envir
             return null;
         }
 
+        public static MagicInfo GetMagicInfo(int index)
+        {
+            return MagicInfoList.Binding.FirstOrDefault(magic => magic.Index == index);
+        }
+
         public static MonsterInfo GetMonsterInfo(string name)
         {
             return MonsterInfoList.Binding.FirstOrDefault

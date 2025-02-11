@@ -52,6 +52,22 @@ namespace Server.Models
             Magic = magic;
         }
 
+        public virtual bool CanUseMagic()
+        {
+            if (Magic.ItemRequired)
+            {
+                var magicItem = Player.Equipment.FirstOrDefault(x => x != null && x.Info.ItemEffect == ItemEffect.MagicRing && x.Info.Shape == Magic.Info.Index);
+
+                if (magicItem == null) return false;
+            }
+            else if (Player.Level < Magic.Info.NeedLevel1)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public virtual bool CheckCost()
         {
             if (Magic.Cost > Player.CurrentMP)
@@ -258,7 +274,7 @@ namespace Server.Models
         {
             if (Player.GetMagic(type, out MagicObject augMagic))
             {
-                if (Player.Level >= augMagic.Magic.Info.NeedLevel1)
+                if (augMagic.CanUseMagic())
                 {
                     return augMagic.Magic;
                 }

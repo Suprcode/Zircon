@@ -30,7 +30,7 @@ namespace Server.Models.Magics
             {
                 var canUse = true;
 
-                if (Player.Level < Magic.Info.NeedLevel1)
+                if (!CanUseMagic())
                     canUse = false;
 
                 Player.Enqueue(new S.MagicToggle { Magic = MagicType.FlameSplash, CanUse = canUse });

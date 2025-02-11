@@ -22,7 +22,7 @@ namespace Server.Models.Magics
 
         public override void Process()
         {
-            if (Player.Level < Magic.Info.NeedLevel1) return;
+            if (!CanUseMagic()) return;
 
             if (!Active && LowHP)
             {

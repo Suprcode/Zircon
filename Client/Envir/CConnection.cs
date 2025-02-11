@@ -1718,6 +1718,8 @@ namespace Client.Envir
 
             if (GameScene.Game.CharacterBox.DisciplineMagics.ContainsKey(p.Magic.Info))
                 GameScene.Game.CharacterBox.DisciplineMagics[p.Magic.Info].Refresh();
+
+            GameScene.Game.MagicBox?.CreateTabs();
         }
 
         public void Process(S.MagicLeveled p)
@@ -2332,6 +2334,11 @@ namespace Client.Envir
             MapObject.User.HermitPoints = p.HermitPoints;
             MapObject.User.Stats = p.Stats;
             MapObject.User.HermitStats = p.HermitStats;
+
+            if (MapObject.User.Magics.Any(x => x.Value.ItemRequired))
+            {
+                GameScene.Game.MagicBox?.CreateTabs();
+            }
         }
         public void Process(S.ItemUseDelay p)
         {

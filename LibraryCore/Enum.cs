@@ -1672,7 +1672,8 @@ namespace Library
         SpiritBlade = 91,
         RefineExtractor = 92,
 
-        DualWield = 100
+        DualWield = 100,
+        MagicRing = 101
     }
 
     public enum CurrencyType
