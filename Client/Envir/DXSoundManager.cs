@@ -520,6 +520,11 @@ namespace Client.Envir
             [SoundIndex.SpinedDarkLizardStruck] = new DXSound(SoundPath + @"246-4.wav", SoundType.Monster),
             [SoundIndex.SpinedDarkLizardDie] = new DXSound(SoundPath + @"246-5.wav", SoundType.Monster),
 
+            //TODO
+            [SoundIndex.DungAttack] = new DXSound(SoundPath + @"246-2.wav", SoundType.Monster),
+            [SoundIndex.DungStruck] = new DXSound(SoundPath + @"246-4.wav", SoundType.Monster),
+            [SoundIndex.DungDie] = new DXSound(SoundPath + @"246-5.wav", SoundType.Monster),
+
             [SoundIndex.UmaInfidelAttack] = new DXSound(SoundPath + @"242-2.wav", SoundType.Monster),
             [SoundIndex.UmaInfidelStruck] = new DXSound(SoundPath + @"242-4.wav", SoundType.Monster),
             [SoundIndex.UmaInfidelDie] = new DXSound(SoundPath + @"242-5.wav", SoundType.Monster),

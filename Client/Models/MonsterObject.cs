@@ -575,6 +575,13 @@ namespace Client.Models
                     StruckSound = SoundIndex.SpinedDarkLizardStruck;
                     DieSound = SoundIndex.SpinedDarkLizardDie;
                     break;
+                case MonsterImage.Dung:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_5, out BodyLibrary);
+                    BodyShape = 7;
+                    AttackSound = SoundIndex.DungAttack;
+                    StruckSound = SoundIndex.DungStruck;
+                    DieSound = SoundIndex.DungDie;
+                    break;
                 case MonsterImage.UmaInfidel:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_5, out BodyLibrary);
                     BodyShape = 1;
@@ -588,6 +595,20 @@ namespace Client.Models
                     AttackSound = SoundIndex.UmaFlameThrowerAttack;
                     StruckSound = SoundIndex.UmaFlameThrowerStruck;
                     DieSound = SoundIndex.UmaFlameThrowerDie;
+                    break;
+                case MonsterImage.UmaMaceInfidel:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_10, out BodyLibrary);
+                    BodyShape = 1;
+                    AttackSound = SoundIndex.UmaInfidelAttack; //TODO
+                    StruckSound = SoundIndex.UmaInfidelStruck;
+                    DieSound = SoundIndex.UmaInfidelDie;
+                    break;
+                case MonsterImage.UmaTridentInfidel:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_28, out BodyLibrary);
+                    BodyShape = 7;
+                    AttackSound = SoundIndex.UmaInfidelAttack; //TODO
+                    StruckSound = SoundIndex.UmaInfidelStruck;
+                    DieSound = SoundIndex.UmaInfidelDie;
                     break;
                 case MonsterImage.UmaAnguisher:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_5, out BodyLibrary);
@@ -1139,7 +1160,7 @@ namespace Client.Models
                         DieSound = SoundIndex.ShinsuSmallDie;
                     }
                     break;
-                    
+
                 case MonsterImage.CorpseStalker:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_2, out BodyLibrary);
                     BodyShape = 2;

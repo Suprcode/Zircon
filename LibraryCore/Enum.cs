@@ -855,7 +855,7 @@ namespace Library
         UmaAnguisher = 54,
         UmaKing = 55,
         SpinedDarkLizard = 56,
-        //NF_Dung = 57,
+        Dung = 57,
         GhostSorcerer = 58,
         GhostMage = 59,
 
@@ -904,7 +904,7 @@ namespace Library
         Shinsu = 99, //Small
 
         Shinsu1 = 100, //Large
-        //NF_UmaMaceInfidel = 101,
+        UmaMaceInfidel = 101,
         AquaLizard = 102,
         CorrosivePoisonSpitter = 103,
         SandShark = 104,
@@ -1097,7 +1097,7 @@ namespace Library
         OmaInfant = 284,
         Yob = 285,
         RakingCat = 286,
-        //NF_UmaTrident = 287,
+        UmaTridentInfidel = 287,
         GangSpider = 288,
         VenomSpider = 289,
 
@@ -1334,7 +1334,7 @@ namespace Library
         CaveUpDown,
         SmallManInTriangle,
         Dunes,
-        MineUpDown,
+        Doorway,
         GinkoTree,
         Forest,
         InsectCaveBubble,
@@ -2628,6 +2628,10 @@ namespace Library
         SpinedDarkLizardStruck,
         SpinedDarkLizardDie,
 
+        DungAttack,
+        DungStruck,
+        DungDie,
+
         UmaInfidelAttack,
         UmaInfidelStruck,
         UmaInfidelDie,
@@ -2643,6 +2647,10 @@ namespace Library
         UmaKingAttack,
         UmaKingStruck,
         UmaKingDie,
+
+        UmaMaceInfidelAttack,
+        UmaMaceInfidelStruck,
+        UmaMaceInfidelDie,
 
         SpiderBatAttack,
         SpiderBatStruck,

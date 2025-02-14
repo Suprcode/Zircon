@@ -126,6 +126,7 @@ namespace LibraryEditor
 
             WidthLabel.Text = "<No Image>";
             HeightLabel.Text = "<No Image>";
+            ShadowTypeLabel.Text = "<No Image>";
             OffSetXTextBox.Text = string.Empty;
             OffSetYTextBox.Text = string.Empty;
             OffSetXTextBox.BackColor = SystemColors.Window;
@@ -153,6 +154,8 @@ namespace LibraryEditor
                 WidthLabel.Text = _selectedImage.Width.ToString();
                 HeightLabel.Text = _selectedImage.Height.ToString();
 
+                ShadowTypeLabel.Text = _selectedImage.ShadowType.ToString();
+
                 OffSetXTextBox.Text = _selectedImage.OffSetX.ToString();
                 OffSetYTextBox.Text = _selectedImage.OffSetY.ToString();
 
@@ -163,6 +166,8 @@ namespace LibraryEditor
                 WidthLabel.Text = _selectedImage.ShadowWidth.ToString();
                 HeightLabel.Text = _selectedImage.ShadowHeight.ToString();
 
+                ShadowTypeLabel.Text = _selectedImage.ShadowType.ToString();
+
                 OffSetXTextBox.Text = _selectedImage.ShadowOffSetX.ToString();
                 OffSetYTextBox.Text = _selectedImage.ShadowOffSetY.ToString();
 
@@ -172,6 +177,8 @@ namespace LibraryEditor
             {
                 WidthLabel.Text = _selectedImage.OverlayWidth.ToString();
                 HeightLabel.Text = _selectedImage.OverlayHeight.ToString();
+
+                ShadowTypeLabel.Text = _selectedImage.ShadowType.ToString();
 
                 OffSetXTextBox.Text = _selectedImage.OffSetX.ToString();
                 OffSetYTextBox.Text = _selectedImage.OffSetY.ToString();
