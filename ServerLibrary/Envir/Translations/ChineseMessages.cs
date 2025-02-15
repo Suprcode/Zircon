@@ -226,7 +226,7 @@ namespace Server.Envir.Translations
         public override string GroupRecallMemberNotAllowed { get; set; } = "{0}当前拒绝天地合一";
         public override string GroupRecallFromMap { get; set; } = "你所在的地图无法使用天地合一";
         public override string GroupRecallMemberFromMap { get; set; } = "{0}无法从该地图天地合一传送出去";
-
+        public override string GroupRequestDeclined { get; set; } = "Request to join group has been declined.";
 
         public override string TradeAlreadyTrading { get; set; } = "你已经在和别人交易了";
         public override string TradeAlreadyHaveRequest { get; set; } = "你已经申请交易";
