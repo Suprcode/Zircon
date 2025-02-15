@@ -37,6 +37,8 @@ namespace Client.Envir
             [SoundIndex.BD60] = new DXSound(SoundPath + @"BD60.wav", SoundType.Music) { Loop = true },
             [SoundIndex.BD70] = new DXSound(SoundPath + @"BD70.wav", SoundType.Music) { Loop = true },
             [SoundIndex.BD99] = new DXSound(SoundPath + @"BD99.wav", SoundType.Music) { Loop = true },
+            [SoundIndex.BDUnderseaCave] = new DXSound(SoundPath + @"BDUnderseaCave.wav", SoundType.Music) { Loop = true },
+            [SoundIndex.BDUnderseaCaveBoss] = new DXSound(SoundPath + @"BDUnderseaCaveBoss.wav", SoundType.Music) { Loop = true },
 
             #endregion
 
@@ -346,6 +348,10 @@ namespace Client.Envir
             [SoundIndex.SheepStruck] = new DXSound(SoundPath + @"258-4.wav", SoundType.Monster),
             [SoundIndex.SheepDie] = new DXSound(SoundPath + @"258-5.wav", SoundType.Monster),
 
+            [SoundIndex.SkyStingerAttack] = new DXSound(SoundPath + @"69-2.wav", SoundType.Monster),
+            [SoundIndex.SkyStingerStruck] = new DXSound(SoundPath + @"69-4.wav", SoundType.Monster),
+            [SoundIndex.SkyStingerDie] = new DXSound(SoundPath + @"69-5.wav", SoundType.Monster),
+
             [SoundIndex.ClawCatAttack] = new DXSound(SoundPath + @"238-2.wav", SoundType.Monster),
             [SoundIndex.ClawCatStruck] = new DXSound(SoundPath + @"238-4.wav", SoundType.Monster),
             [SoundIndex.ClawCatDie] = new DXSound(SoundPath + @"238-5.wav", SoundType.Monster),
@@ -361,6 +367,10 @@ namespace Client.Envir
             [SoundIndex.CarnivorousPlantAttack] = new DXSound(SoundPath + @"231-2.wav", SoundType.Monster),
             [SoundIndex.CarnivorousPlantStruck] = new DXSound(SoundPath + @"231-4.wav", SoundType.Monster),
             [SoundIndex.CarnivorousPlantDie] = new DXSound(SoundPath + @"231-5.wav", SoundType.Monster),
+
+            [SoundIndex.YobAttack] = new DXSound(SoundPath + @"211-2.wav", SoundType.Monster),
+            [SoundIndex.YobStruck] = new DXSound(SoundPath + @"211-4.wav", SoundType.Monster),
+            [SoundIndex.YobDie] = new DXSound(SoundPath + @"211-5.wav", SoundType.Monster),
 
             [SoundIndex.OmaAttack] = new DXSound(SoundPath + @"223-2.wav", SoundType.Monster),
             [SoundIndex.OmaStruck] = new DXSound(SoundPath + @"223-4.wav", SoundType.Monster),
@@ -509,6 +519,11 @@ namespace Client.Envir
             [SoundIndex.SpinedDarkLizardAttack] = new DXSound(SoundPath + @"246-2.wav", SoundType.Monster),
             [SoundIndex.SpinedDarkLizardStruck] = new DXSound(SoundPath + @"246-4.wav", SoundType.Monster),
             [SoundIndex.SpinedDarkLizardDie] = new DXSound(SoundPath + @"246-5.wav", SoundType.Monster),
+
+            //TODO
+            [SoundIndex.DungAttack] = new DXSound(SoundPath + @"246-2.wav", SoundType.Monster),
+            [SoundIndex.DungStruck] = new DXSound(SoundPath + @"246-4.wav", SoundType.Monster),
+            [SoundIndex.DungDie] = new DXSound(SoundPath + @"246-5.wav", SoundType.Monster),
 
             [SoundIndex.UmaInfidelAttack] = new DXSound(SoundPath + @"242-2.wav", SoundType.Monster),
             [SoundIndex.UmaInfidelStruck] = new DXSound(SoundPath + @"242-4.wav", SoundType.Monster),

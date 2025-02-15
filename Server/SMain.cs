@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Threading;
-using System.Windows.Forms;
-using DevExpress.XtraEditors;
+﻿using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Views.Grid;
@@ -20,6 +9,16 @@ using PluginCore;
 using Server.DBModels;
 using Server.Envir;
 using Server.Views;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace Server
 {
@@ -31,7 +30,6 @@ namespace Server
         public SMain()
         {
             InitializeComponent();
-            SetupPlugin();
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
                                                    SecurityProtocolType.Tls11 |
@@ -40,16 +38,42 @@ namespace Server
 
         private void SetupPlugin()
         {
-            PluginLoader.Init();
+            PluginLoader.Instance.Log += PluginLoader_Log;
+            PluginLoader.Instance.View += PluginLoader_ShowView;
+            PluginLoader.Instance.MapViewer += PluginLoader_MapViewer;
 
-            PluginLoader.Loader.Log += PluginLoader_Log;
-
-            PluginLoader.LoadIntegrated(this.ribbonPage3);
+            PluginLoader.LoadPlugins(this.ribbonPage3, SMain.Session);
         }
 
         private void PluginLoader_Log(object sender, PluginCore.LogEventArgs e)
         {
             SEnvir.Log(e.Message);
+        }
+
+        private void PluginLoader_ShowView(object sender, ShowViewEventArgs e)
+        {
+            ShowView(e.View);
+        }
+
+        private void PluginLoader_MapViewer(object sender, ShowMapViewerEventArgs e)
+        {
+            if (string.IsNullOrEmpty(e.MapPath)) return;
+
+            if (MapViewer.CurrentViewer == null)
+            {
+                MapViewer.CurrentViewer = new MapViewer();
+                MapViewer.CurrentViewer.Show();
+            }
+
+            MapViewer.CurrentViewer.BringToFront();
+
+            if (!System.IO.File.Exists(e.MapPath))
+            {
+                XtraMessageBox.Show("Map file does not exist.");
+                return;
+            }
+
+            MapViewer.CurrentViewer.MapPath = e.MapPath;
         }
 
         private void SMain_Load(object sender, EventArgs e)
@@ -83,6 +107,8 @@ namespace Server
             );
 
             CurrencyInfoView.AddDefaultCurrencies();
+
+            SetupPlugin();
 
             UpdateInterface();
 
@@ -120,6 +146,7 @@ namespace Server
 
             while (SEnvir.EnvirThread != null) Thread.Sleep(1);
         }
+
         private void ShowView(Type type)
         {
             try
@@ -141,6 +168,7 @@ namespace Server
             finally
             { }
         }
+
         private void View_Disposed(object sender, EventArgs e)
         {
             Windows.Remove((Control)sender);
@@ -230,7 +258,6 @@ namespace Server
             UpdateInterface();
         }
 
-
         private void LogNavButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(SystemLogView));
@@ -271,7 +298,7 @@ namespace Server
         {
             if (e.KeyCode != Keys.Delete) return;
 
-            if (MessageBox.Show("Delete rows?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            if (XtraMessageBox.Show("Delete rows?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
                 return;
 
             GridView view = (GridView)sender;
@@ -287,7 +314,7 @@ namespace Server
             foreach (DBObject ob in objects)
                 ob?.Delete();
         }
-        public static void PasteData_KeyPress(object sender, KeyPressEventArgs e)
+        private static void PasteData_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 0x16)
             {
@@ -467,10 +494,6 @@ namespace Server
         }
         #endregion
 
-        private void barButtonItem1_ItemClick_1(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-        }
-
         private void SafeZoneInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(SafeZoneInfoView));
@@ -508,7 +531,6 @@ namespace Server
 
         private void EventInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
-
             ShowView(typeof(EventInfoView));
         }
 

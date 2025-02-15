@@ -51,6 +51,7 @@ namespace Client
             }
 
             CEnvir.Target = new TargetForm();
+
             DXManager.Create();
             DXSoundManager.Create();
 

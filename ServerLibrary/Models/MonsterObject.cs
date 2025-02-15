@@ -635,6 +635,10 @@ namespace Server.Models
 
                 case 1001:
                     return new CastleFlag { MonsterInfo = monsterInfo };
+                case 1002:
+                    return new CastleGate { MonsterInfo = monsterInfo };
+                case 1003:
+                    return new CastleGuard { MonsterInfo = monsterInfo };
                 default:
                     return new MonsterObject { MonsterInfo = monsterInfo };
             }
@@ -654,16 +658,27 @@ namespace Server.Models
 
             int offset = 1000000;
 
-            MapHealthRate = SEnvir.Random.Next(CurrentMap.Info.MonsterHealth + offset, CurrentMap.Info.MaxMonsterHealth + offset);
-            MapDamageRate = SEnvir.Random.Next(CurrentMap.Info.MonsterDamage + offset, CurrentMap.Info.MaxMonsterDamage + offset);
+            var monsterHealth = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterHealth)?.Amount ?? 0;
+            var maxMonsterHealth = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterHealth)?.Amount ?? 0;
+            var monsterDamage = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterDamage)?.Amount ?? 0;
+            var maxMonsterDamage = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterDamage)?.Amount ?? 0;
+            var monsterExperience = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterExperience)?.Amount ?? 0;
+            var maxMonsterExperience = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterExperience)?.Amount ?? 0;
+            var monsterDrop = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterDrop)?.Amount ?? 0;
+            var maxMonsterDrop = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterDrop)?.Amount ?? 0;
+            var monsterGold = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MonsterGold)?.Amount ?? 0;
+            var maxMonsterGold = CurrentMap.Info.BuffStats.FirstOrDefault(x => x.Stat == Stat.MaxMonsterGold)?.Amount ?? 0;
 
-            if (MapHealthRate >= CurrentMap.Info.ExperienceRate && MapHealthRate <= CurrentMap.Info.MaxExperienceRate)
+            MapHealthRate = SEnvir.Random.Next(monsterHealth + offset, Math.Max(monsterHealth, maxMonsterHealth) + offset);
+            MapDamageRate = SEnvir.Random.Next(monsterDamage + offset, Math.Max(monsterDamage, maxMonsterDamage) + offset);
+
+            if (MapHealthRate >= monsterExperience && MapHealthRate <= maxMonsterExperience)
                 MapExperienceRate = MapHealthRate;
             else
-                MapExperienceRate = SEnvir.Random.Next(CurrentMap.Info.ExperienceRate + offset, CurrentMap.Info.MaxExperienceRate + offset);
+                MapExperienceRate = SEnvir.Random.Next(monsterExperience + offset, Math.Max(monsterExperience, maxMonsterExperience) + offset);
 
-            MapDropRate = SEnvir.Random.Next(CurrentMap.Info.DropRate + offset, CurrentMap.Info.MaxDropRate + offset);
-            MapGoldRate = SEnvir.Random.Next(CurrentMap.Info.GoldRate + offset, CurrentMap.Info.MaxGoldRate + offset);
+            MapDropRate = SEnvir.Random.Next(monsterDrop + offset, Math.Max(monsterDrop, maxMonsterDrop) + offset);
+            MapGoldRate = SEnvir.Random.Next(monsterGold + offset, Math.Max(monsterGold, maxMonsterGold) + offset);
 
             MapHealthRate -= offset;
             MapDamageRate -= offset;
@@ -861,7 +876,6 @@ namespace Server.Models
             Magics?.Clear();
         }
 
-
         public override void Activate()
         {
             if (Activated) return;
@@ -880,8 +894,6 @@ namespace Server.Models
             Activated = false;
             SEnvir.ActiveObjects.Remove(this);
         }
-
-
 
         public override void ProcessAction(DelayedAction action)
         {
@@ -973,9 +985,9 @@ namespace Server.Models
             ProcessRoam();
             ProcessTarget();
         }
-        public override void OnSafeDespawn()
+        public override void OnDespawned()
         {
-            base.OnSafeDespawn();
+            base.OnDespawned();
 
             Master?.MinionList.Remove(this);
             Master = null;
@@ -991,17 +1003,10 @@ namespace Server.Models
                 MinionList.Clear();
             }
 
-
-            if (SpawnInfo != null)
-                SpawnInfo.AliveCount--;
-
-            ProcessEvents();
-
             SpawnInfo = null;
 
             EXPOwner = null;
         }
-
 
         public void UnTame()
         {
@@ -2468,85 +2473,19 @@ namespace Server.Models
                 DeadTime += Config.HarvestDuration;
 
             if (SpawnInfo != null)
+            {
                 SpawnInfo.AliveCount--;
+                SEnvir.EventHandler.Process(this, "MONSTERDIE");
 
-            ProcessEvents();
+                if (SpawnInfo.AliveCount == 0)
+                {
+                    SEnvir.EventHandler.Process(this, "MONSTERCLEAR");
+                }
+            }
 
             SpawnInfo = null;
 
             EXPOwner = null;
-        }
-
-        private void ProcessEvents()
-        {
-            if (SpawnInfo == null) return;
-
-            foreach (EventTarget target in MonsterInfo.Events)
-            {
-                if ((DropSet & target.DropSet) != target.DropSet) continue;
-
-                int start = target.Event.CurrentValue;
-                int end = Math.Min(target.Event.MaxValue, Math.Max(0, start + target.Value));
-
-                target.Event.CurrentValue = end;
-
-                foreach (EventAction action in target.Event.Actions)
-                {
-                    if (start >= action.TriggerValue || end < action.TriggerValue) continue;
-
-                    Map map;
-                    switch (action.Type)
-                    {
-                        case EventActionType.GlobalMessage:
-                            SEnvir.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
-                            break;
-                        case EventActionType.MapMessage:
-                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            if (map == null) continue;
-
-                            map.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
-                            break;
-                        case EventActionType.PlayerMessage:
-                            if (EXPOwner == null) continue;
-
-                            EXPOwner.Broadcast(new S.Chat { Text = action.StringParameter1, Type = MessageType.System });
-                            break;
-                        case EventActionType.MonsterSpawn:
-                            SpawnInfo spawn = SEnvir.Spawns.FirstOrDefault(x => x.Info == action.RespawnParameter1);
-                            if (spawn == null) continue;
-
-                            spawn.DoSpawn(true);
-                            break;
-                        case EventActionType.MonsterPlayerSpawn:
-
-                            MonsterObject mob = GetMonster(action.MonsterParameter1);
-                            mob.Spawn(CurrentMap, CurrentMap.GetRandomLocation(CurrentLocation, 10));
-                            break;
-                        case EventActionType.MovementSettings:
-                            break;
-                        case EventActionType.PlayerRecall:
-                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            if (map == null) continue;
-
-                            for (int i = map.Players.Count - 1; i >= 0; i--)
-                            {
-                                PlayerObject player = map.Players[i];
-                                player.Teleport(action.RegionParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            }
-                            break;
-                        case EventActionType.PlayerEscape:
-                            map = SEnvir.GetMap(action.MapParameter1, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            if (map == null) continue;
-
-                            for (int i = map.Players.Count - 1; i >= 0; i--)
-                            {
-                                PlayerObject player = map.Players[i];
-                                player.Teleport(player.Character.BindPoint.BindRegion, CurrentMap.Instance, CurrentMap.InstanceSequence);
-                            }
-                            break;
-                    }
-                }
-            }
         }
 
         protected void YieldReward()
@@ -2792,13 +2731,7 @@ namespace Server.Models
 
                         if (drop.Item.Rarity != Rarity.Common)
                         {
-                            owner.Connection.ReceiveChat(
-                                string.Format(owner.Connection.Language.HarvestRare, MonsterInfo.MonsterName),
-                                MessageType.System);
-
-                            foreach (SConnection con in owner.Connection.Observers)
-                                con.ReceiveChat(string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName),
-                                    MessageType.System);
+                            owner.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName), MessageType.System);
                         }
 
                         drops.Add(item);
@@ -2851,10 +2784,7 @@ namespace Server.Models
 
                         if (item.Info.Rarity != Rarity.Common)
                         {
-                            owner.Connection.ReceiveChat(string.Format(owner.Connection.Language.HarvestRare, MonsterInfo.MonsterName), MessageType.System);
-
-                            foreach (SConnection con in owner.Connection.Observers)
-                                con.ReceiveChat(string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName), MessageType.System);
+                            owner.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.HarvestRare, MonsterInfo.MonsterName), MessageType.System);
                         }
 
                         drops.Add(item);

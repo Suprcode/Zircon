@@ -444,33 +444,7 @@ namespace Client.Models
                     
                     if (GameScene.Game.Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
                     {
-                        foreach (KeyValuePair<Stat, int> stats in GameScene.Game.Equipment[(int)EquipmentSlot.Amulet].Info.Stats.Values)
-                        {
-                            switch (stats.Key)
-                            {
-                                case Stat.FireAffinity:
-                                    action.Extra[2] = Element.Fire;
-                                    break;
-                                case Stat.IceAffinity:
-                                    action.Extra[2] = Element.Ice;
-                                    break;
-                                case Stat.LightningAffinity:
-                                    action.Extra[2] = Element.Lightning;
-                                    break;
-                                case Stat.WindAffinity:
-                                    action.Extra[2] = Element.Wind;
-                                    break;
-                                case Stat.HolyAffinity:
-                                    action.Extra[2] = Element.Holy;
-                                    break;
-                                case Stat.DarkAffinity:
-                                    action.Extra[2] = Element.Dark;
-                                    break;
-                                case Stat.PhantomAffinity:
-                                    action.Extra[2] = Element.Phantom;
-                                    break;
-                            }
-                        }
+                        action.Extra[2] = GameScene.Game.Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();
                     }
 
                     MagicType attackMagic = MagicType.None;
@@ -651,6 +625,17 @@ namespace Client.Models
                     CEnvir.Enqueue(new C.Attack { Direction = action.Direction, Action = action.Action, AttackMagic = MagicType });
                     GameScene.Game.CanRun = false;
                     break;
+                case MirAction.RangeAttack:
+                    attackDelay = Globals.AttackDelay - Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
+                    attackDelay = Math.Max(800, attackDelay);
+                    AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(attackDelay);
+
+                    if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
+                        AttackTime += TimeSpan.FromMilliseconds(attackDelay);
+
+                    CEnvir.Enqueue(new C.RangeAttack { Direction = action.Direction, Target = (uint)action.Extra[0], DelayedTime = (int)action.Extra[2] });
+                    GameScene.Game.CanRun = false;
+                    break;
                 case MirAction.Spell:
                     NextMagicTime = CEnvir.Now + Globals.MagicDelay;
 
@@ -673,6 +658,7 @@ namespace Client.Models
                 case MirAction.Mining:
                     attackDelay = Globals.AttackDelay - Stats[Stat.AttackSpeed] * Globals.ASpeedRate;
                     attackDelay = Math.Max(800, attackDelay);
+                    AttackTime = CEnvir.Now + TimeSpan.FromMilliseconds(attackDelay);
 
                     if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                         AttackTime += TimeSpan.FromMilliseconds(attackDelay);

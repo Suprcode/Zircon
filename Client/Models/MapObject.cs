@@ -672,13 +672,13 @@ namespace Client.Models
         }
 
         public abstract void SetAnimation(ObjectAction action);
-        public virtual void SetFrame(ObjectAction action)
+        public virtual void SetFrame(ObjectAction action, int frameStartDelay = 0)
         {
             SetAnimation(action);
 
             FrameIndex = -1;
             CurrentAction = action.Action;
-            FrameStart = CEnvir.Now;
+            FrameStart = CEnvir.Now.AddMilliseconds(frameStartDelay);
 
             switch (action.Action)
             {
@@ -704,7 +704,7 @@ namespace Client.Models
                 case MirAction.Mining:
                     if (!MiningEffect) break;
 
-                    Effects.Add(new MirEffect(3470, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 20, 70, Globals.NoneColour) //Element style?
+                    Effects.Add(new MirEffect(3470, 3, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 0, 0, Globals.NoneColour) //Element style? 20, 70
                     {
                         Blend = true,
                         MapTarget = CurrentLocation,
@@ -2869,7 +2869,39 @@ namespace Client.Models
                     break;
                 case MirAction.RangeAttack:
 
-                    targets = (List<uint>)action.Extra[0];
+                    targets = new List<uint>();
+                    if (action.Extra[0] is uint @tar)
+                    {
+                        targets.Add(tar);
+                    }
+                    else
+                    {
+                        targets = (List<uint>)action.Extra[0];
+                    }
+
+                    if (targets.Count < 1) return;
+
+                    if (action.Extra[1] is MagicType magicType && magicType == MagicType.Shuriken)
+                    {
+
+                        foreach (uint target in targets)
+                        {
+                            MapObject attackTarget = GameScene.Game.MapControl.Objects.FirstOrDefault(x => x.ObjectID == target);
+
+                            Effects.Add(spell = new MirProjectile(1270, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 1, 5, Globals.NoneColour, CurrentLocation)
+                            {
+                                Blend = false,
+                                Reversed = false,
+                                Explode = true,
+                                Delay = 2,
+                                Has16Directions = true,
+                                MapTarget = attackTarget.CurrentLocation,
+                                Direction = attackTarget.Direction
+                            });
+                            spell.Process();
+                        }
+
+                    }
                     AttackTargets = new List<MapObject>();
                     foreach (uint target in targets)
                     {
@@ -4840,8 +4872,6 @@ namespace Client.Models
 
         public virtual void NameChanged()
         {
-
-
             if (Race is ObjectType.Player && Caption is not null)
             {
                 CaptionLabel = new DXLabel
@@ -4853,10 +4883,10 @@ namespace Client.Models
                     Text = Caption,
                     IsControl = false,
                     IsVisible = true,
-
                 };
             }
-                if (string.IsNullOrEmpty(Name))
+
+            if (string.IsNullOrEmpty(Name))
             {
                 NameLabel = null;
             }
@@ -4872,7 +4902,6 @@ namespace Client.Models
                     NameLabel = new DXLabel
                     {
                         BackColour = Color.Empty,
-                        ForeColour = NameColour,
                         Outline = true,
                         OutlineColour = Color.Black,
                         Text = Name,
@@ -4883,6 +4912,8 @@ namespace Client.Models
                     NameLabel.Disposing += (o, e) => names.Remove(NameLabel);
                     names.Add(NameLabel);
                 }
+
+                NameLabel.ForeColour = NameColour;
             }
 
             if (string.IsNullOrEmpty(Title))
@@ -4908,23 +4939,26 @@ namespace Client.Models
 
                 TitleNameLabel = titles.FirstOrDefault(x => x.ForeColour == NameColour && x.BackColour == Color.Empty);
 
-                if (TitleNameLabel != null) return;
-
-                TitleNameLabel = new DXLabel
+                if (TitleNameLabel == null)
                 {
-                    BackColour = Color.Empty,
-                    ForeColour = Race != ObjectType.Player ? Color.Orange : NameColour,
-                    Outline = true,
-                    OutlineColour = Color.Black,
-                    Text = title,
-                    IsControl = false,
-                    IsVisible = true,
-                };
+                    TitleNameLabel = new DXLabel
+                    {
+                        BackColour = Color.Empty,
+                        Outline = true,
+                        OutlineColour = Color.Black,
+                        Text = title,
+                        IsControl = false,
+                        IsVisible = true,
+                    };
 
-                TitleNameLabel.Disposing += (o, e) => titles.Remove(TitleNameLabel);
-                titles.Add(TitleNameLabel);
+                    TitleNameLabel.Disposing += (o, e) => titles.Remove(TitleNameLabel);
+                    titles.Add(TitleNameLabel);
+                }
+
+                TitleNameLabel.ForeColour = Race != ObjectType.Player ? Color.Orange : NameColour;
             }
         }
+
         public virtual void DrawName()
         {
             if (NameLabel != null)
@@ -4941,7 +4975,6 @@ namespace Client.Models
                     y -= 13;
 
                 NameLabel.Location = new Point(x, y);
-                NameLabel.ForeColour = NameColour;
                 if (Config.HighlightedItems != string.Empty)
                 {
                     string[] items = Config.HighlightedItems.Split(',');
@@ -4957,8 +4990,6 @@ namespace Client.Models
                 NameLabel.Draw();
             }
 
-         
-
             if (TitleNameLabel != null)
             {
                 int x = DrawX + (48 - TitleNameLabel.Size.Width) / 2;
@@ -4973,9 +5004,8 @@ namespace Client.Models
                 TitleNameLabel.Draw();
             }
 
-            if (CaptionLabel is not null)
+            if (CaptionLabel != null)
             {
-
                 int x = DrawX + (48 - CaptionLabel.Size.Width) / 2;
                 int y = (DrawY - (32 - CaptionLabel.Size.Height) / 2) - 13;
 
@@ -4993,12 +5023,13 @@ namespace Client.Models
                 CaptionLabel.Draw();
             }
         }
+
         public virtual void DrawDamage()
         {
-
             foreach (DamageInfo damageInfo in DamageList)
                 damageInfo.Draw(DrawX, DrawY);
         }
+
         public void DrawChat()
         {
             if (ChatLabel == null || ChatLabel.IsDisposed) return;

@@ -107,52 +107,59 @@ namespace Client.Envir
 
         public static void Create()
         {
-            Parameters = new PresentParameters
+            try
             {
-                Windowed = !Config.FullScreen,
-                SwapEffect = SwapEffect.Discard,
-                BackBufferFormat = Format.X8R8G8B8,
-                PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate,
-                BackBufferWidth = CEnvir.Target.ClientSize.Width,
-                BackBufferHeight = CEnvir.Target.ClientSize.Height,
-                PresentFlags = PresentFlags.LockableBackBuffer,
-            };
-
-            Direct3D direct3D = new Direct3D();
-
-            Device = new Device(direct3D, direct3D.Adapters.DefaultAdapter.Adapter, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
-
-            AdapterInformation adapterInfo = direct3D.Adapters.DefaultAdapter;
-            var modes = adapterInfo.GetDisplayModes(Format.X8R8G8B8);
-
-            foreach (DisplayMode mode in modes)
-            {
-                Size s = new Size(mode.Width, mode.Height);
-                if (s.Width < MinimumResolution.Width || s.Height < MinimumResolution.Height) continue;
-
-                if (!ValidResolutions.Contains(s))
-                    ValidResolutions.Add(s);
-            }
-            ValidResolutions.Sort((s1, s2) => (s1.Width * s1.Height).CompareTo(s2.Width * s2.Height));
-
-            LoadTextures();
-
-            Device.SetDialogBoxMode(true);
-
-
-            const string path = @".\Data\Pallete.png";
-
-            if (File.Exists(path))
-            {
-                using (Bitmap pallete = new Bitmap(path))
+                Parameters = new PresentParameters
                 {
-                    BitmapData data = pallete.LockBits(new Rectangle(Point.Empty, pallete.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                    Windowed = !Config.FullScreen,
+                    SwapEffect = SwapEffect.Discard,
+                    BackBufferFormat = Format.X8R8G8B8,
+                    PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate,
+                    BackBufferWidth = CEnvir.Target.ClientSize.Width,
+                    BackBufferHeight = CEnvir.Target.ClientSize.Height,
+                    PresentFlags = PresentFlags.LockableBackBuffer,
+                };
 
-                    PalleteData = new byte[pallete.Width*pallete.Height*4];
-                    Marshal.Copy(data.Scan0, PalleteData, 0, PalleteData.Length);
+                Direct3D direct3D = new Direct3D();
 
-                    pallete.UnlockBits(data);
+                Device = new Device(direct3D, direct3D.Adapters.DefaultAdapter.Adapter, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
+
+                AdapterInformation adapterInfo = direct3D.Adapters.DefaultAdapter;
+                var modes = adapterInfo.GetDisplayModes(Format.X8R8G8B8);
+
+                foreach (DisplayMode mode in modes)
+                {
+                    Size s = new Size(mode.Width, mode.Height);
+                    if (s.Width < MinimumResolution.Width || s.Height < MinimumResolution.Height) continue;
+
+                    if (!ValidResolutions.Contains(s))
+                        ValidResolutions.Add(s);
                 }
+                ValidResolutions.Sort((s1, s2) => (s1.Width * s1.Height).CompareTo(s2.Width * s2.Height));
+
+                LoadTextures();
+
+                Device.SetDialogBoxMode(true);
+
+                const string path = @".\Data\Pallete.png";
+
+                if (File.Exists(path))
+                {
+                    using (Bitmap pallete = new Bitmap(path))
+                    {
+                        BitmapData data = pallete.LockBits(new Rectangle(Point.Empty, pallete.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+                        PalleteData = new byte[pallete.Width * pallete.Height * 4];
+                        Marshal.Copy(data.Scan0, PalleteData, 0, PalleteData.Length);
+
+                        pallete.UnlockBits(data);
+                    }
+                }
+            }
+            catch (Direct3DX9NotFoundException ex)
+            {
+                CEnvir.SaveException(ex);
+                throw;
             }
         }
 

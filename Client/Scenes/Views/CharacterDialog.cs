@@ -197,8 +197,6 @@ namespace Client.Scenes.Views
             if (!Inspect)
             {
                 GameScene.Game.FishingBox.Visible = HasFishingRod && IsVisible;
-
-                HermitTab.TabButton.Visible = GameScene.Game.HermitEnabled;
             }
 
             base.OnIsVisibleChanged(oValue, nValue);
@@ -227,6 +225,11 @@ namespace Client.Scenes.Views
                     }
                     break;
             }
+        }
+
+        public void OnHermitChanged(bool hermitEnabled)
+        {
+            HermitTab.TabButton.Visible = !Inspect && hermitEnabled;
         }
 
         #endregion
@@ -332,7 +335,7 @@ namespace Client.Scenes.Views
                 Location = new Point(0, 26),
             };
 
-            HermitTab.TabButton.Visible = !Inspect;
+            HermitTab.TabButton.Visible = !Inspect && GameScene.Game.HermitEnabled;
             HermitTab.TabButton.MouseClick += (o, e) =>
             {
                 Index = 111;
@@ -351,7 +354,7 @@ namespace Client.Scenes.Views
                 ForeColour = Color.FromArgb(222, 255, 222),
                 Outline = false,
                 Parent = namePanel,
-                Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
+                Font = new System.Drawing.Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
             };
             GuildNameLabel = new DXLabel
@@ -602,6 +605,7 @@ namespace Client.Scenes.Views
                 Size = new Size(36, 75)
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 39);
+            cell.AfterDraw += (o, e) => DrawAfter((DXItemCell)o);
             cell.MouseEnter += Cell_MouseEnter;
             cell.MouseLeave += Cell_MouseLeave;
 
@@ -2701,6 +2705,23 @@ namespace Client.Scenes.Views
             InterfaceLibrary.Draw(index, x, y, Color.White, false, 0.2F, ImageType.Image);
         }
 
+        public void DrawAfter(DXItemCell cell)
+        {
+            if (cell.Item == null) return;
+
+            var image = ItemEffectDecider.GetItemEffectImageOrNull(cell.Item.Info.ItemType, cell.Item.Info.Shape, out int x, out int y);
+
+            if (image != null)
+            {
+                bool oldBlend = DXManager.Blending;
+                float oldRate = DXManager.BlendRate;
+
+                DXManager.SetBlend(true, 0.8F);
+                PresentTexture(image.Image, CharacterTab, new Rectangle(cell.DisplayArea.X + image.OffSetX + x, cell.DisplayArea.Y + image.OffSetY + y, image.Width, image.Height), ForeColour, this);
+                DXManager.SetBlend(oldBlend, oldRate);
+            }
+        }
+
         public void UpdateStats()
         {
             foreach (KeyValuePair<Stat, DXLabel> pair in DisplayStats)
@@ -2856,7 +2877,7 @@ namespace Client.Scenes.Views
 
             var nextLevel = GetNextDisciplineLevel();
 
-            DisciplineButton.Enabled = nextLevel != null;
+            DisciplineButton.Enabled = nextLevel != null && nextLevel.RequiredLevel <= GameScene.Game.User.Level;
 
             var userDiscipline = GameScene.Game.User.Discipline;
 
@@ -3310,7 +3331,7 @@ namespace Client.Scenes.Views
             KeyLabel = new DXLabel
             {
                 Parent = Image,
-                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                Font = new System.Drawing.Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 IsControl = false,
                 ForeColour = Color.Aquamarine,
                 AutoSize = false,

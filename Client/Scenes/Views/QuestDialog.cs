@@ -1215,7 +1215,7 @@ namespace Client.Scenes.Views
         public void OnMapChanged(MapInfo oValue, MapInfo nValue)
         {
             Expanded = Map.Expanded;
-            MapLabel.Text = Map.Description;
+            MapLabel.Text = Map.PlayerDescription;
 
             MapChanged?.Invoke(this, EventArgs.Empty);
         }

@@ -205,6 +205,16 @@ namespace Client.Scenes.Views
 
         #endregion
 
+        #region Castle Tab
+
+        private DXTab CastleTab;
+        public DXButton ToggleGates, RepairGates, RepairGuards;
+        public DXControl CastlePanel;
+
+        //public Dictionary<CastleInfo, GuildCastlePanel> CastlePanels = new Dictionary<CastleInfo, GuildCastlePanel>();
+
+        #endregion
+
         #region GuildInfo
 
         public ClientGuildInfo GuildInfo
@@ -383,6 +393,8 @@ namespace Client.Scenes.Views
 
             CreateStyleTab();
 
+            CreateCastleTab();
+
             ClearGuild();
         }
 
@@ -397,6 +409,7 @@ namespace Client.Scenes.Views
             StorageTab.TabButton.Visible = GuildInfo != null;
             WarTab.TabButton.Visible = GuildInfo != null;
             StyleTab.TabButton.Visible = GuildInfo != null;
+            CastleTab.TabButton.Visible = GuildInfo != null && GameScene.Game.CastleOwners.Any(x => x.Value == GuildInfo.GuildName);
 
             if (CreateTab.TabButton.Visible)
                 CreateTab.TabButton.InvokeMouseClick();
@@ -534,6 +547,41 @@ namespace Client.Scenes.Views
             }
         }
 
+        public void RefreshCastleControls()
+        {
+            if (GuildInfo == null) return;
+
+            ToggleGates.Enabled = false;
+            RepairGates.Enabled = false;
+            RepairGuards.Enabled = false;
+
+            CastleTab.TabButton.Visible = false;
+
+            foreach (var castle in GameScene.Game.CastleOwners)
+            {
+                if (castle.Value == GuildInfo.GuildName)
+                {
+                    CastleTab.TabButton.Visible = true;
+
+                    GuildTabs.TabsChanged();
+
+                    if ((GuildInfo.Permission & GuildPermission.Leader) == GuildPermission.Leader)
+                    {
+                        if (castle.Key.Gates.Count > 0)
+                        {
+                            ToggleGates.Enabled = true;
+                            RepairGates.Enabled = true;
+                        }
+
+                        if (castle.Key.Guards.Count > 0)
+                            RepairGuards.Enabled = true;
+                    }
+
+                    return;
+                }
+            }
+        }
+
         #region Create Tab
 
         public void CreateCreateTab()
@@ -553,6 +601,7 @@ namespace Client.Scenes.Views
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
                 WarPanel.Visible = false;
+                CastlePanel.Visible = false;
             };
 
             CreatePanel = new DXControl
@@ -850,6 +899,7 @@ namespace Client.Scenes.Views
                 TreasuryPanel.Visible = true;
                 StoragePanel.Visible = false;
                 WarPanel.Visible = false;
+                CastlePanel.Visible = false;
             };
 
             new DXLabel
@@ -1130,7 +1180,6 @@ namespace Client.Scenes.Views
                     CEnvir.Enqueue(new C.GuildTax { Tax = long.Parse(window.Value) });
                 };
             };
-
         }
 
         public void UpdateNoticePosition()
@@ -1180,6 +1229,7 @@ namespace Client.Scenes.Views
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
                 WarPanel.Visible = false;
+                CastlePanel.Visible = false;
             };
 
             new GuildMemberRow
@@ -1328,6 +1378,7 @@ namespace Client.Scenes.Views
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = true;
                 WarPanel.Visible = false;
+                CastlePanel.Visible = false;
             };
 
             DXControl filterPanel = new DXControl
@@ -1380,7 +1431,7 @@ namespace Client.Scenes.Views
 
             Type itemType = typeof(ItemType);
 
-            for (ItemType i = ItemType.Nothing; i <= ItemType.ItemPart; i++)
+            for (ItemType i = ItemType.Nothing; i <= ItemType.Reel; i++)
             {
                 MemberInfo[] infos = itemType.GetMember(i.ToString());
 
@@ -1538,6 +1589,7 @@ namespace Client.Scenes.Views
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
                 WarPanel.Visible = true;
+                CastlePanel.Visible = false;
             };
          
             WarPanel = new DXControl
@@ -1573,7 +1625,6 @@ namespace Client.Scenes.Views
                     CEnvir.Enqueue(new C.GuildWar { GuildName = window.Value });
                 };
             };
-
 
             int count = 0;
             foreach (CastleInfo castle in CEnvir.CastleInfoList.Binding)
@@ -1628,6 +1679,7 @@ namespace Client.Scenes.Views
                 TreasuryPanel.Visible = false;
                 StoragePanel.Visible = false;
                 WarPanel.Visible = false;
+                CastlePanel.Visible = false;
             };
             StyleTab.BeforeChildrenDraw += StyleTab_BeforeChildrenDraw;
 
@@ -1739,6 +1791,115 @@ namespace Client.Scenes.Views
 
             library.Draw(GuildInfo.Flag * 100, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
             library.Draw(GuildInfo.Flag * 100, DisplayArea.X + x, DisplayArea.Y + y, GuildInfo.Colour, true, 1F, ImageType.Overlay);
+        }
+
+        #endregion
+
+        #region Castle Tab
+
+        public void CreateCastleTab()
+        {
+            CastleTab = new DXTab
+            {
+                TabButton = { Label = { Text = CEnvir.Language.GuildDialogCastleTabLabel } },
+                Parent = GuildTabs,
+                BackColour = Color.Empty,
+                Location = new Point(0, 23)
+            };
+            CastleTab.TabButton.MouseClick += (o, e) =>
+            {
+                BackgroundImage.Index = 264;
+                CreatePanel.Visible = false;
+                AddMemberPanel.Visible = false;
+                TreasuryPanel.Visible = false;
+                StoragePanel.Visible = false;
+                WarPanel.Visible = false;
+                CastlePanel.Visible = true;
+            };
+
+            CastlePanel = new DXControl
+            {
+                Parent = this,
+                Location = new Point(10, 500),
+                Size = new Size(436, 50),
+                Border = false,
+                Visible = true
+            };
+
+            ToggleGates = new DXButton
+            {
+                Parent = CastlePanel,
+                Location = new Point(10, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(120, DefaultHeight),
+                Label = { Text = "Open/Close Gates" },
+                Enabled = false,
+                Visible = true
+            };
+            ToggleGates.MouseClick += (o, e) =>
+            {
+                CEnvir.Enqueue(new C.GuildToggleCastleGates());
+            };
+
+            RepairGates = new DXButton
+            {
+                Parent = CastlePanel,
+                Location = new Point(220, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(100, DefaultHeight),
+                Label = { Text = "Repair Gates" },
+                Enabled = false,
+                Visible = true
+            };
+            RepairGates.MouseClick += (o, e) =>
+            {
+                var castle = GameScene.Game.CastleOwners.Single(x => x.Value == GuildInfo.GuildName).Key;
+                var cost = castle.Gates.Sum(x => x.RepairCost);
+
+                DXMessageBox box = new DXMessageBox(string.Format(CEnvir.Language.GuildRepairGatesConfirmMsg, cost), CEnvir.Language.GuildRepairGatesConfirmCaption, DXMessageBoxButtons.YesNo);
+
+                box.YesButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.GuildRepairCastleGates());
+                };
+            };
+
+            RepairGuards = new DXButton
+            {
+                Parent = CastlePanel,
+                Location = new Point(330, 10),
+                ButtonType = ButtonType.Default,
+                Size = new Size(100, DefaultHeight),
+                Label = { Text = "Repair Guards" },
+                Enabled = false,
+                Visible = true
+            };
+            RepairGuards.MouseClick += (o, e) =>
+            {
+                var castle = GameScene.Game.CastleOwners.Single(x => x.Value == GuildInfo.GuildName).Key;
+                var cost = castle.Guards.Sum(x => x.RepairCost);
+
+                DXMessageBox box = new DXMessageBox(string.Format(CEnvir.Language.GuildRepairGuardsConfirmMsg, cost), CEnvir.Language.GuildRepairGuardsConfirmCaption, DXMessageBoxButtons.YesNo);
+
+                box.YesButton.MouseClick += (o1, e1) =>
+                {
+                    CEnvir.Enqueue(new C.GuildRepairCastleGuards());
+                };
+            };
+
+            //int count = 0;
+            //foreach (CastleInfo castle in CEnvir.CastleInfoList.Binding)
+            //{
+            //    CastlePanels[castle] = new GuildCastlePanel
+            //    {
+            //        Parent = WarTab,
+            //        Castle = castle,
+            //        Location = new Point(14, (142 * count) + 7),
+            //        Visible = true
+            //    };
+            //    count++;
+            //}
+
         }
 
         #endregion
@@ -2214,6 +2375,42 @@ namespace Client.Scenes.Views
 
                 #endregion
 
+                #region Castle Tab
+
+                if (CastleTab != null)
+                {
+                    if (!CastleTab.IsDisposed)
+                        CastleTab.Dispose();
+
+                    CastleTab = null;
+                }
+
+                if (ToggleGates != null)
+                {
+                    if (!ToggleGates.IsDisposed)
+                        ToggleGates.Dispose();
+
+                    ToggleGates = null;
+                }
+
+                if (RepairGates != null)
+                {
+                    if (!RepairGates.IsDisposed)
+                        RepairGates.Dispose();
+
+                    RepairGates = null;
+                }
+
+                if (RepairGuards != null)
+                {
+                    if (!RepairGuards.IsDisposed)
+                        RepairGuards.Dispose();
+
+                    RepairGuards = null;
+                }
+
+                #endregion
+
                 _GuildInfo = null;
                 GuildInfoChanged = null;
             }
@@ -2404,7 +2601,14 @@ namespace Client.Scenes.Views
                     
                     if (!GameScene.Game.DataDictionary.TryGetValue(MemberInfo.ObjectID, out ClientObjectData data)) return;
 
-                    GameScene.Game.BigMapBox.SelectedInfo = Globals.MapInfoList.Binding.FirstOrDefault(x => x.Index == data.MapIndex);
+                    var map = Globals.MapInfoList.Binding.FirstOrDefault(x => x.Index == data.MapIndex);
+
+                    if (!GameScene.Game.BigMapBox.TryShowMap(map))
+                    {
+                        return;
+                    }
+
+                    GameScene.Game.BigMapBox.SelectedInfo = map;
                     break;
                 case MouseButtons.Middle:
                     if (MemberInfo == null) return;

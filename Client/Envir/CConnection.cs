@@ -110,6 +110,9 @@ namespace Client.Envir
                 case DisconnectReason.Banned:
                     DXMessageBox.Show("Disconnected from server\nReason: You have been banned.", "Disconnected", DialogAction.ReturnToLogin);
                     break;
+                case DisconnectReason.Kicked:
+                    DXMessageBox.Show("Disconnected from server\nReason: You have been kicked.", "Disconnected", DialogAction.ReturnToLogin);
+                    break;
                 case DisconnectReason.Crashed:
                     DXMessageBox.Show("Disconnected from server\nReason: Server Crashed.", "Disconnected", DialogAction.ReturnToLogin);
                     break;
@@ -132,7 +135,7 @@ namespace Client.Envir
             byte[] clientHash;
             using (MD5 md5 = MD5.Create())
             {
-                using (FileStream stream = File.OpenRead(Application.ExecutablePath))
+                using (FileStream stream = File.OpenRead(Path.ChangeExtension(Application.ExecutablePath, ".dll")))
                     clientHash = md5.ComputeHash(stream);
             }
 
@@ -1553,6 +1556,15 @@ namespace Client.Envir
                                 DXSoundManager.Play(SoundIndex.ChainofFireExplode);
                         };
                         break;
+                    case Effect.MirrorImage:
+                        new MirEffect(1280, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 30, 60, Globals.NoneColour)
+                        {
+                            Target = ob,
+                            Blend = true,
+                        };
+
+                        DXSoundManager.Play(SoundIndex.SummonSkeletonEnd);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -1581,15 +1593,6 @@ namespace Client.Envir
                     };
 
                     DXSoundManager.Play(SoundIndex.SummonShinsuEnd);
-                    break;
-                case Effect.MirrorImage:
-                    new MirEffect(1280, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 30, 60, Globals.NoneColour)
-                    {
-                        MapTarget = p.Location,
-                        Blend = true,
-                    };
-
-                    DXSoundManager.Play(SoundIndex.SummonSkeletonEnd);
                     break;
                 case Effect.CursedDoll:
                     new MirEffect(700, 13, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 30, 60, Globals.NoneColour)
@@ -1715,6 +1718,8 @@ namespace Client.Envir
 
             if (GameScene.Game.CharacterBox.DisciplineMagics.ContainsKey(p.Magic.Info))
                 GameScene.Game.CharacterBox.DisciplineMagics[p.Magic.Info].Refresh();
+
+            GameScene.Game.MagicBox?.CreateTabs();
         }
 
         public void Process(S.MagicLeveled p)
@@ -2470,7 +2475,18 @@ namespace Client.Envir
 
             foreach (var item in p.Items)
             {
-                grid[item.Slot].Item = item;
+                switch (p.Grid)
+                {
+                    case GridType.Inventory:
+                        grid[item.Slot].Item = item;
+                        break;
+                    case GridType.Storage:
+                        grid[item.Slot].Item = item;
+                        break;
+                    case GridType.PartsStorage:
+                        grid[item.Slot - Globals.PartsStorageOffset].Item = item;
+                        break;
+                }
             }
         }
 
@@ -3320,9 +3336,9 @@ namespace Client.Envir
             GameScene.Game.BuffBox.BuffsChanged();
         }
 
-        public void Process(S.SafeZoneChanged P)
+        public void Process(S.SafeZoneChanged p)
         {
-            MapObject.User.InSafeZone = P.InSafeZone;
+            MapObject.User.InSafeZone = p.InSafeZone;
         }
 
         public void Process(S.CombatTime p)
@@ -3976,6 +3992,8 @@ namespace Client.Envir
                 ob.NameChanged();
 
             GameScene.Game.GuildBox.CastlePanels[castle].Update();
+
+            GameScene.Game.GuildBox.RefreshCastleControls();
         }
         public void Process(S.GuildConquestDate p)
         {

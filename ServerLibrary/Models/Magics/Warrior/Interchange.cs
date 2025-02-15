@@ -70,10 +70,7 @@ namespace Server.Models.Magics
               {
                   TimeSpan delay = TimeSpan.FromMilliseconds(CurrentMap.Info.SkillDelay);
 
-                  Connection.ReceiveChat(string.Format(Connection.Language.SkillEffort, magic.Info.Name, Functions.ToString(delay, true)), MessageType.System);
-
-                  foreach (SConnection con in Connection.Observers)
-                      con.ReceiveChat(string.Format(con.Language.SkillEffort, magic.Info.Name, Functions.ToString(delay, true)), MessageType.System);
+                  Connection.ReceiveChat(con => string.Format(con.Language.SkillEffort, magic.Info.Name, Functions.ToString(delay, true)), MessageType.System);
 
                   UseItemTime = (UseItemTime < SEnvir.Now ? SEnvir.Now : UseItemTime) + delay;
                   Enqueue(new S.ItemUseDelay { Delay = SEnvir.Now - UseItemTime });

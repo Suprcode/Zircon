@@ -440,6 +440,45 @@ namespace Client.Envir
             }
         }
 
+        public static string GetKeyBindLabel(KeyBindAction action)
+        {
+            var bind = KeyBinds.Binding.FirstOrDefault(x => x.Action == action);
+
+            if (bind == null)
+            {
+                return Keys.None.ToString();
+            }
+
+            string text = "";
+            if (bind.Control1)
+                text += "Ctrl + ";
+
+            if (bind.Alt1)
+                text += "Alt + ";
+
+            if (bind.Shift1)
+                text += "Shift + ";
+
+            text += CEnvir.GetText(bind.Key1);
+
+            if (bind.Key2 != Keys.None)
+            {
+                text += ", ";
+                if (bind.Control2)
+                    text += "Ctrl + ";
+
+                if (bind.Alt2)
+                    text += "Alt + ";
+
+                if (bind.Shift2)
+                    text += "Shift + ";
+
+                text += CEnvir.GetText(bind.Key2);
+            }
+
+            return text;
+        }
+
         public static void FillStorage(List<ClientUserItem> items, bool observer)
         {
             Storage = new ClientUserItem[1000];

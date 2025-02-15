@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.Models.Particles;
@@ -12,6 +6,12 @@ using Library;
 using Library.SystemModels;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 //Cleaned
@@ -199,6 +199,8 @@ namespace Client.Scenes.Views
 
             if (!Visible) return;
 
+            DrawBackground();
+
             if (FLayer.TextureValid)
                 DXManager.Sprite.Draw(FLayer.ControlTexture, Color.White);
 
@@ -303,6 +305,19 @@ namespace Client.Scenes.Views
             
             DrawBorder();
             OnAfterDraw();
+        }
+
+        private void DrawBackground()
+        {
+            if (MapInfo.Background <= 0) return;
+
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Background, out MirLibrary library)) return;
+
+            MirImage image = library.CreateImage(MapInfo.Background, ImageType.Image);
+
+            if (image?.Image == null) return;
+
+            PresentTexture(image.Image, Parent,DisplayArea, Color.White, this, 0, 0, 1F);
         }
 
         private void DrawObjects()
@@ -426,9 +441,11 @@ namespace Client.Scenes.Views
         {
             try
             {
-                if (!File.Exists(Config.MapPath + MapInfo.FileName + ".map")) return;
+                var path = Path.Combine(Config.MapPath, MapInfo.FileName + ".map");
 
-                using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(Config.MapPath + MapInfo.FileName + ".map")))
+                if (!File.Exists(path)) return;
+
+                using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(path)))
                 using (BinaryReader reader = new BinaryReader(mStream))
                 {
                     mStream.Seek(22, SeekOrigin.Begin);
@@ -618,6 +635,72 @@ namespace Client.Scenes.Views
             {
                 MapObject.TargetObject = MapObject.MouseObject;
 
+                #region Shuriken
+                if (!Functions.InRange(MapObject.TargetObject.CurrentLocation, User.CurrentLocation, Globals.MagicRange) && User.LibraryWeaponShape == Globals.ShurikenLibraryWeaponShape)
+                {
+
+                    GameScene.Game.OutputTime = CEnvir.Now.AddSeconds(1);
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GameSceneThrowTooFar, "Shuriken"), MessageType.Hint);
+
+                    Stop();
+
+                    return;
+                }
+
+                if (User.Horse == HorseType.None && User.LibraryWeaponShape == Globals.ShurikenLibraryWeaponShape && MapObject.TargetObject != null &&
+                    (MapObject.TargetObject.Race == ObjectType.Monster || MapObject.TargetObject.Race == ObjectType.Player))
+                {
+
+                    if (CEnvir.Now < User.AttackTime)
+                    {
+                        Stop();
+
+                        return;
+                    }
+
+
+                    if (CEnvir.Now >= User.AttackTime)
+                    {
+                        int delayTime = 500;
+
+                        if (Functions.Distance(MapObject.TargetObject.CurrentLocation, MapObject.User.CurrentLocation) == 1)
+                        {
+                            delayTime = 100;
+                        }
+                        else
+                        {
+                            int x = MapObject.OffSetX * MapObject.CellWidth - MapObject.User.MovingOffSet.X;
+                            int y = MapObject.OffSetY * MapObject.CellHeight - MapObject.User.MovingOffSet.Y;
+
+                            int x1 = (MapObject.TargetObject.CurrentLocation.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth - MapObject.User.MovingOffSet.X;
+                            int y1 = (MapObject.TargetObject.CurrentLocation.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight - MapObject.User.MovingOffSet.Y;
+
+                            long duration = Functions.Distance(new Point(x, y / 32 * 48), new Point(x1, y1 / 32 * 48)) * TimeSpan.TicksPerMillisecond * 2;
+
+                            delayTime = int.Parse(duration.ToString().Substring(0, 3));
+                        }
+
+                        MapObject.User.AttemptAction(
+                            new ObjectAction
+                            (
+                                      MirAction.RangeAttack,
+                                      Functions.DirectionFromPoint(MapObject.User.CurrentLocation, MapObject.TargetObject.CurrentLocation),
+                                      MapObject.User.CurrentLocation,
+                                      MapObject.TargetObject.ObjectID, //Ranged Attack Target ID;
+                                      MagicType.Shuriken,
+                                      delayTime
+                            ));
+
+                        Stop();
+
+                        return;
+                    }
+
+
+                }
+
+                #endregion Shukiran
+
                 if (MapObject.MouseObject.Race == ObjectType.Monster && ((MonsterObject) MapObject.MouseObject).MonsterInfo.AI >= 0) //Check if AI is guard
                 {
                     MapObject.MagicObject = MapObject.TargetObject;
@@ -629,6 +712,13 @@ namespace Client.Scenes.Views
             MapObject.TargetObject = null;
             GameScene.Game.FocusObject = null;
             //GameScene.Game.OldTargetObjectID = 0;
+        }
+
+        private void Stop()
+        {
+            Functions.Move(Location, MapObject.TargetObject.Direction, 0);
+            GameScene.Game.FocusObject = null;
+            MapObject.TargetObject = null;
         }
         public override void OnMouseClick(MouseEventArgs e)
         {

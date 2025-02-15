@@ -254,12 +254,6 @@ namespace Server.Models
 
             Owner?.SpellList.Remove(this);
         }
-        public override void OnSafeDespawn()
-        {
-            base.OnSafeDespawn();
-
-            Owner?.SpellList.Remove(this);
-        }
 
         public override void CleanUp()
         {

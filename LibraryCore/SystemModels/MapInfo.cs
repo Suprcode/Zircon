@@ -1,9 +1,11 @@
 ﻿using MirDB;
+using System;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Library.SystemModels
 {
-    public sealed class MapInfo : DBObject
+    public partial class MapInfo : DBObject
     {
         [IsIdentity]
         public string FileName
@@ -35,6 +37,10 @@ namespace Library.SystemModels
             }
         }
         private string _Description;
+
+        [JsonIgnore]
+        [IgnoreProperty]
+        public string PlayerDescription => TrailingSpaceAndNumberRegex().Replace(Description, string.Empty);
 
         [JsonIgnore]
         [IgnoreProperty]
@@ -265,6 +271,23 @@ namespace Library.SystemModels
         }
         private SoundIndex _Music;
 
+        public int Background
+        {
+            get { return _Background; }
+            set
+            {
+                if (_Background == value) return;
+
+                var oldValue = _Background;
+                _Background = value;
+
+                OnChanged(oldValue, value, "Background");
+            }
+        }
+        private int _Background;
+
+        //DO NOT USE
+
         public int MonsterHealth
         {
             get { return _MonsterHealth; }
@@ -414,6 +437,7 @@ namespace Library.SystemModels
             }
         }
         private int _MaxGoldRate;
+        //DO NOT USE
 
         [JsonIgnore]
         [Association("Maps")]
@@ -459,6 +483,11 @@ namespace Library.SystemModels
         [Association("Castles", true)]
         public DBBindingList<CastleInfo> Castles { get; set; }
 
+        [Association("MapInfoStats", true)]
+        public DBBindingList<MapInfoStat> BuffStats { get; set; }
+
+        public Stats Stats = new();
+
         protected internal override void OnCreated()
         {
             base.OnCreated();
@@ -469,8 +498,77 @@ namespace Library.SystemModels
             AllowRecall = true;
         }
 
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            StatsChanged();
+        }
+
+        public void StatsChanged()
+        {
+            Stats.Clear();
+            foreach (MapInfoStat stat in BuffStats)
+                Stats[stat.Stat] += stat.Amount;
+        }
+
         //Client Variables
 
         public bool Expanded = true;
+
+        [GeneratedRegex(@"\s\d+$", RegexOptions.Compiled)]
+        public static partial Regex TrailingSpaceAndNumberRegex();
+    }
+
+
+    public sealed class MapInfoStat : DBObject
+    {
+        [IsIdentity]
+        [Association("MapInfoStats")]
+        public MapInfo Map
+        {
+            get { return _Map; }
+            set
+            {
+                if (_Map == value) return;
+
+                var oldValue = _Map;
+                _Map = value;
+
+                OnChanged(oldValue, value, "Map");
+            }
+        }
+        private MapInfo _Map;
+
+        [IsIdentity]
+        public Stat Stat
+        {
+            get { return _Stat; }
+            set
+            {
+                if (_Stat == value) return;
+
+                var oldValue = _Stat;
+                _Stat = value;
+
+                OnChanged(oldValue, value, "Stat");
+            }
+        }
+        private Stat _Stat;
+
+        public int Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (_Amount == value) return;
+
+                var oldValue = _Amount;
+                _Amount = value;
+
+                OnChanged(oldValue, value, "Amount");
+            }
+        }
+        private int _Amount;
     }
 }

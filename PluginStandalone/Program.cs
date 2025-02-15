@@ -1,9 +1,6 @@
 ﻿using PluginCore;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PluginStandalone
@@ -29,11 +26,9 @@ namespace PluginStandalone
                     throw new Exception("Plugin filename must be referenced in the application config under the 'Plugin' key.");
                 }
 
-                PluginLoader.Init();
+                PluginLoader.Instance.Log += Loader_Log;
 
-                PluginLoader.Loader.Log += Loader_Log;
-
-                var plugin = PluginLoader.LoadStandalone(pluginFilename);
+                var plugin = PluginLoader.LoadPlugin(pluginFilename);
 
                 if (plugin == null)
                 {

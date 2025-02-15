@@ -717,7 +717,7 @@ namespace Server.DBModels
                 OnChanged(oldValue, value, "FiltersClass");
             }
         }
-        private string _FiltersClass;
+        private string _FiltersClass = "";
 
         public string FiltersRarity
         {
@@ -732,7 +732,7 @@ namespace Server.DBModels
                 OnChanged(oldValue, value, "FiltersRarity");
             }
         }
-        private string _FiltersRarity;
+        private string _FiltersRarity = "";
 
         public string FiltersItemType
         {
@@ -747,7 +747,7 @@ namespace Server.DBModels
                 OnChanged(oldValue, value, "FiltersItemType");
             }
         }
-        private string _FiltersItemType;
+        private string _FiltersItemType = "";
 
         public Dictionary<RequiredClass, int> CurrentRank = new ();
         public Dictionary<RequiredClass, int> RankChange = new ();

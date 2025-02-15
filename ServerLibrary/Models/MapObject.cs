@@ -30,6 +30,7 @@ namespace Server.Models
     
         public virtual int Level { get; set; }
 
+        public Cell PreviousCell { get; private set; }
         public Cell CurrentCell
         {
             get { return _CurrentCell; }
@@ -37,14 +38,15 @@ namespace Server.Models
             {
                 if (_CurrentCell == value) return;
 
-                var oldValue = _CurrentCell;
+                PreviousCell = _CurrentCell;
                 _CurrentCell = value;
 
-                LocationChanged(oldValue, value);
+                LocationChanged(PreviousCell, value);
             }
         }
         private Cell _CurrentCell;
 
+        public Map PreviousMap { get; private set; }
         public Map CurrentMap
         {
             get { return _CurrentMap; }
@@ -52,10 +54,10 @@ namespace Server.Models
             {
                 if (_CurrentMap == value) return;
 
-                var oldValue = _CurrentMap;
+                PreviousMap = _CurrentMap;
                 _CurrentMap = value;
 
-                MapChanged(oldValue, value);
+                MapChanged(PreviousMap, value);
             }
         }
         private Map _CurrentMap;
@@ -441,8 +443,6 @@ namespace Server.Models
 
                             player.Companion.UserCompanion.Experience += highest + Stats[Stat.CompanionRate];
 
-
-
                             if (player.Companion.UserCompanion.Experience >= player.Companion.LevelInfo.MaxExperience)
                             {
                                 player.Companion.UserCompanion.Experience = 0;
@@ -450,7 +450,6 @@ namespace Server.Models
                                 player.Companion.CheckSkills();
                                 player.Companion.RefreshStats();
                             }
-
                         }
 
                         player.Companion.AutoFeed();
@@ -809,8 +808,6 @@ namespace Server.Models
             return Spawn(map, location);
         }
 
-
-
         public bool Spawn(Map map, Point location)
         {
             if (Node != null)
@@ -870,6 +867,7 @@ namespace Server.Models
 
             OnLocationChanged();
         }
+
         protected virtual void OnLocationChanged()
         {
             CellTime = SEnvir.Now.AddMilliseconds(300);
@@ -886,6 +884,7 @@ namespace Server.Models
                     player.Enqueue(p);
             }
         }
+
         public virtual void CheckSpellObjects()
         {
             Cell cell = CurrentCell;
@@ -915,6 +914,7 @@ namespace Server.Models
 
             Teleport(CurrentMap, cells[SEnvir.Random.Next(cells.Count)].Location);
         }
+
         public bool Teleport(MapRegion region, InstanceInfo instance, byte instanceSequence, bool leaveEffect = true)
         {
             Map map = SEnvir.GetMap(region.Map, instance, instanceSequence);
@@ -928,6 +928,7 @@ namespace Server.Models
 
             return Teleport(map, point, leaveEffect);
         }
+
         public virtual bool Teleport(Map map, Point location, bool leaveEffect = true, bool enterEffect = true)
         {
             if (Race == ObjectType.Player && map.Info.MinimumLevel > Level && !((PlayerObject)this).Character.Account.TempAdmin) return false;
@@ -951,6 +952,7 @@ namespace Server.Models
 
             return true;
         }
+
         public virtual void AddAllObjects()
         {
             foreach (PlayerObject ob in CurrentMap.Players)
@@ -1114,24 +1116,6 @@ namespace Server.Models
             CleanUp();
         }
 
-        public void SafeDespawn()
-        {
-            CurrentMap = null;
-            CurrentCell = null;
-
-            RemoveAllObjects();
-
-            if (Node != null)
-            {
-                Node.List.Remove(Node);
-                Node = null;
-            }
-
-            OnSafeDespawn();
-
-            CleanUp();
-        }
-
         public virtual void CleanUp()
         {
             ActionList?.Clear();
@@ -1153,17 +1137,12 @@ namespace Server.Models
             for (int i = SpellList.Count - 1; i >= 0; i--)
                 SpellList[i].Despawn();
         }
-        public virtual void OnSafeDespawn()
-        {
-            for (int i = SpellList.Count - 1; i >= 0; i--)
-                SpellList[i].Despawn();
-        }
+
         public virtual void RefreshStats() { }
 
         public virtual Cell GetDropLocation(int distance, PlayerObject player)
         {
             if (CurrentMap == null || CurrentCell == null) return null;
-
 
             Cell bestCell = null;
             int layers = 0;
@@ -1216,13 +1195,13 @@ namespace Server.Models
                 }
             }
 
-
-            if (bestCell == null || layers >= Config.DropLayers) return null;
+            if (bestCell == null || layers >= Config.DropLayers) 
+                return null;
 
             return bestCell;
         }
 
-        public void SetHP(int amount)
+        public virtual void SetHP(int amount)
         {
             if (Dead) return;
 
@@ -1244,7 +1223,7 @@ namespace Server.Models
                 Die();
             }
         }
-        public void ChangeHP(int amount)
+        public virtual void ChangeHP(int amount)
         {
             if (Dead) return;
 
@@ -1285,7 +1264,7 @@ namespace Server.Models
             }
         }
 
-        public void SetMP(int amount)
+        public virtual void SetMP(int amount)
         {
             CurrentMP = Math.Min(amount, Stats[Stat.Mana]);
         }
@@ -1295,7 +1274,7 @@ namespace Server.Models
             CurrentFP = Math.Min(amount, Stats[Stat.Focus]);
         }
 
-        public void ChangeMP(int amount)
+        public virtual void ChangeMP(int amount)
         {
             if (CurrentMP + amount > Stats[Stat.Mana])
                 amount = Stats[Stat.Mana] - CurrentMP;
@@ -1615,10 +1594,12 @@ namespace Server.Models
 
             return obs;
         }
+
         public virtual bool CanHelpTarget(MapObject ob)
         {
             return false;
         }
+
         public virtual bool CanAttackTarget(MapObject ob)
         {
             return false;

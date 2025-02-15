@@ -48,22 +48,6 @@ namespace Server.Models
             Account = null;
         }
 
-        public override void OnSafeDespawn()
-        {
-            base.OnSafeDespawn();
-
-
-            if (Item.UserTask != null)
-            {
-                Item.UserTask.Objects.Remove(this);
-                Item.UserTask = null;
-                Item.Flags &= ~UserItemFlags.QuestItem;
-            }
-
-            Item = null;
-            Account = null;
-        }
-
         public bool CanPickUpItem(PlayerObject ob)
         {
             if (Account != null && Account != ob.Character.Account)

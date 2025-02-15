@@ -132,7 +132,7 @@ namespace Client.Scenes.Views
                     Parent = TextPanel,
                     Location = new Point(2, Lines.Count * 15),
                     Loop = true,
-                    LibraryFile = LibraryFile.Interface,
+                    LibraryFile = LibraryFile.QuestIcon,
                     BaseIndex = 83,
                     FrameCount = 2,
                     AnimationDelay = TimeSpan.FromSeconds(1),
@@ -148,7 +148,46 @@ namespace Client.Scenes.Views
                     QuestIcon.Location = new Point(QuestIcon.Location.X, label.Location.Y);
                 };
 
-                QuestIcon.BaseIndex = !userQuest.IsComplete ? 85 : 93;
+                var type = userQuest.Quest.QuestType;
+                var icon = userQuest.IsComplete ? Library.QuestIcon.Complete : Library.QuestIcon.Incomplete;
+                int startIndex = 0;
+
+                switch (type)
+                {
+                    case QuestType.General:
+                        startIndex = 16;
+                        break;
+                    case QuestType.Daily:
+                        startIndex = 76;
+                        break;
+                    case QuestType.Weekly:
+                        startIndex = 76;
+                        break;
+                    case QuestType.Repeatable:
+                        startIndex = 16;
+                        break;
+                    case QuestType.Story:
+                        startIndex = 56;
+                        break;
+                    case QuestType.Account:
+                        startIndex = 36;
+                        break;
+                }
+
+                switch (icon)
+                {
+                    case Library.QuestIcon.New:
+                        startIndex += 0;
+                        break;
+                    case Library.QuestIcon.Incomplete:
+                        startIndex = 2;
+                        break;
+                    case Library.QuestIcon.Complete:
+                        startIndex += 2;
+                        break;
+                }
+
+                QuestIcon.BaseIndex = startIndex;
 
 
                 if (userQuest.IsComplete)

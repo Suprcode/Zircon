@@ -106,13 +106,13 @@ namespace Server.Envir.Translations
         public override string MarryTeleportOffline { get; set; } = "You cannot teleport to your partner whilst they are offline.";
         public override string MarryTeleportPartnerDead { get; set; } = "You cannot teleport to your partner whilst they are dead.";
         public override string MarryTeleportMap { get; set; } = "You cannot teleport to your partner on that map.";
-        public override string MarryTeleportMapEscape { get; set; } = "You cannot use marraige teleport on this map.";
+        public override string MarryTeleportMapEscape { get; set; } = "You cannot use marriage teleport on this map.";
 
-        public override string CompanionAppearanceAlready { get; set; } = "The {0} appreanace is already available.";
+        public override string CompanionAppearanceAlready { get; set; } = "The {0} appearance is already available.";
         public override string CompanionNeedTicket { get; set; } = "You need to have a Companion ticket to unlock a new appearance.";
         public override string CompanionSkillEnabled { get; set; } = "Companion Skill level {0} Enabled.";
         public override string CompanionSkillDisabled { get; set; } = "Companion Skill level {0} Disabled.";
-        public override string CompanionAppearanceLocked { get; set; } = "The {0} appreanace is not available to you.";
+        public override string CompanionAppearanceLocked { get; set; } = "The {0} appearance is not available to you.";
         public override string CompanionNeedGold { get; set; } = "You cannot afford to adopt this companion.";
         public override string CompanionBadName { get; set; } = "The name given for your new companion is not acceptable.";
         public override string CompanionRetrieveFailed { get; set; } = "Able able to retrieve {0} because it is currently with {1}.";
@@ -162,6 +162,7 @@ namespace Server.Envir.Translations
         public override string GuildMemberKicked { get; set; } = "{0} has been kicked from the guild by {1}.";
         public override string GuildKicked { get; set; } = "You have been kicked form the guild by {0}.";
         public override string GuildManagePermission { get; set; } = "You do not have permission to Manage the guild.";
+        public override string GuildCastleRepairPermission { get; set; } = "You do not have permission to Repair Castle Defenses.";
         public override string GuildMemberLimit { get; set; } = "Guild has already reached the Maxmimum Member Limit.";
         public override string GuildMemberCost { get; set; } = "Guild does not have enough funds to increase member limit.";
         public override string GuildStorageLimit { get; set; } = "Guild has already reached the Maxmimum Storage Size.";
@@ -197,6 +198,8 @@ namespace Server.Envir.Translations
         public override string GuildLeave { get; set; } = "You have left the guild.";
         public override string GuildMemberLeave { get; set; } = "{0} has left the guild.";
         public override string GuildWarDeath { get; set; } = "{0} from {1} was killed by {2} from the guild {3}.";
+        public override string GuildRepairCastleGatesCost { get; set; } = "Unable to repair gates, Your Guild needs another {0:#,##0} Gold.";
+        public override string GuildRepairCastleGuardsCost { get; set; } = "Unable to repair guards, Your Guild needs another {0:#,##0} Gold.";
 
         public override string GroupNoGroup { get; set; } = "You are not in a group.";
         public override string GroupNotLeader { get; set; } = "You are not the leader of your group";
@@ -293,6 +296,7 @@ namespace Server.Envir.Translations
         public override string InstanceSafeZoneOnly { get; set; } = "You must be in a safe zone to join instance.";
         public override string InstanceNotInGroup { get; set; } = "You must be in a group to join instance.";
         public override string InstanceNotInGuild { get; set; } = "You must be in a guild to join instance.";
+        public override string InstanceNotInCastle { get; set; } = "Your guild must own a castle to join instance.";
         public override string InstanceTooFewInGroup { get; set; } = "Minimum {0} people required to join instance.";
         public override string InstanceTooManyInGroup { get; set; } = "Maximum {0} people required to join instance.";
         public override string InstanceConnectRegionNotSet { get; set; } = "Connect region has not been setup for instance.";

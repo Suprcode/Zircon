@@ -297,7 +297,7 @@ namespace Server.DBModels
         }
         private bool _Banned;
 
-        public DateTime ExpiryDate
+        public DateTime BanExpiry
         {
             get { return _ExpiryDate; }
             set
@@ -414,7 +414,7 @@ namespace Server.DBModels
         }
         private GuildMemberInfo _GuildMember;
         
-        public DateTime GlobalTime
+        public DateTime GlobalShoutExpiry
         {
             get { return _GlobalTime; }
             set

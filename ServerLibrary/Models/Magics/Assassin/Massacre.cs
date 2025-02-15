@@ -21,7 +21,7 @@ namespace Server.Models.Magics
         {
             if (target?.Node != null && target.Dead && target.Race == ObjectType.Monster && target.CurrentHP < 0)
             {
-                if (Player.Level >= Magic.Info.NeedLevel1)
+                if (CanUseMagic())
                 {
                     types.Add(MagicType.Massacre);
 

@@ -39,7 +39,18 @@ namespace Client.Models
 
             Light = 10;
 
-            Name = NPCInfo.NPCName;
+            var splitName = NPCInfo.NPCName.Split('_');
+
+            if (splitName.Length > 1)
+            {
+                Title = splitName[0];
+                Name = splitName[1];
+            }
+            else
+            {
+                Name = splitName[0];
+            }
+
             NameColour = Color.Lime;
             BodyShape = NPCInfo.Image;
 
@@ -73,13 +84,78 @@ namespace Client.Models
             UpdateQuests();
         }
         
-
         public override void SetAnimation(ObjectAction action)
         {
             CurrentAnimation = MirAnimation.Standing;
             if (!Frames.TryGetValue(CurrentAnimation, out CurrentFrame))
                 CurrentFrame = Frame.EmptyFrame;
         }
+
+        public override void NameChanged()
+        {
+            if (string.IsNullOrEmpty(Name))
+            {
+                NameLabel = null;
+            }
+            else
+            {
+                if (!NameLabels.TryGetValue(Name, out List<DXLabel> names))
+                    NameLabels[Name] = names = new List<DXLabel>();
+
+                NameLabel = names.FirstOrDefault(x => x.ForeColour == NameColour && x.BackColour == Color.Empty);
+
+                if (NameLabel == null)
+                {
+                    NameLabel = new DXLabel
+                    {
+                        BackColour = Color.Empty,
+                        Outline = true,
+                        OutlineColour = Color.Black,
+                        Text = Name,
+                        IsControl = false,
+                        IsVisible = true,
+                    };
+
+                    NameLabel.Disposing += (o, e) => names.Remove(NameLabel);
+                    names.Add(NameLabel);
+                }
+
+                NameLabel.ForeColour = string.IsNullOrEmpty(Title) ? NameColour : Color.White;
+            }
+
+            if (string.IsNullOrEmpty(Title))
+            {
+                TitleNameLabel = null;
+            }
+            else
+            {
+                string title = Title;
+
+                if (!NameLabels.TryGetValue(title, out List<DXLabel> titles))
+                    NameLabels[title] = titles = new List<DXLabel>();
+
+                TitleNameLabel = titles.FirstOrDefault(x => x.ForeColour == NameColour && x.BackColour == Color.Empty);
+
+                if (TitleNameLabel == null)
+                {
+                    TitleNameLabel = new DXLabel
+                    {
+                        BackColour = Color.Empty,
+                        Outline = true,
+                        OutlineColour = Color.Black,
+                        Text = title,
+                        IsControl = false,
+                        IsVisible = true,
+                    };
+
+                    TitleNameLabel.Disposing += (o, e) => titles.Remove(TitleNameLabel);
+                    titles.Add(TitleNameLabel);
+                }
+
+                TitleNameLabel.ForeColour = NameColour;
+            }
+        }
+
         public override void Draw()
         {
             if (BodyLibrary == null) return;

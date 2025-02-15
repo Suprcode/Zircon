@@ -15,6 +15,7 @@ namespace Server.Views
             CurrencyInfoGridControl.DataSource = SMain.Session.GetCollection<CurrencyInfo>().Binding;
 
             CurrencyTypeImageComboBox.Items.AddEnum<CurrencyType>();
+            CurrencyCategoryImageComboBox.Items.AddEnum<CurrencyCategory>();
             ItemLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding.Where(x => x.ItemType == ItemType.Currency);
         }
 
@@ -50,6 +51,7 @@ namespace Server.Views
                 gold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 gold.Name = "Gold";
                 gold.Type = CurrencyType.Gold;
+                gold.Category = CurrencyCategory.Basic;
                 needSave = true;
 
                 if (goldItem != null)
@@ -120,6 +122,7 @@ namespace Server.Views
                 gameGold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 gameGold.Name = "Game Gold";
                 gameGold.Type = CurrencyType.GameGold;
+                gameGold.Category = CurrencyCategory.Other;
                 needSave = true;
             }
 
@@ -138,6 +141,7 @@ namespace Server.Views
                 huntGold = SMain.Session.GetCollection<CurrencyInfo>().CreateNewObject();
                 huntGold.Name = "Hunt Gold";
                 huntGold.Type = CurrencyType.HuntGold;
+                huntGold.Category = CurrencyCategory.Other;
                 needSave = true;
             }
 
@@ -169,6 +173,7 @@ namespace Server.Views
                 fp.Name = "Fame Point";
                 fp.Abbreviation = "FP";
                 fp.Type = CurrencyType.FP;
+                fp.Category = CurrencyCategory.Player;
                 fp.DropItem = fpItem;
                 needSave = true;
             }
@@ -194,6 +199,7 @@ namespace Server.Views
                 cp.Name = "Contribution Point";
                 cp.Abbreviation = "CP";
                 cp.Type = CurrencyType.CP;
+                cp.Category = CurrencyCategory.Player;
                 cp.DropItem = cpItem;
                 needSave = true;
             }

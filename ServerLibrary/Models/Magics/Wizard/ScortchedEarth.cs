@@ -91,13 +91,23 @@ namespace Server.Models.Magics
 
             if (cell?.Objects == null) return;
 
+            var burning = GetAugmentedSkill(MagicType.Burning);
+
             for (int i = cell.Objects.Count - 1; i >= 0; i--)
             {
                 if (i >= cell.Objects.Count) continue;
                 MapObject ob = cell.Objects[i];
                 if (!Player.CanAttackTarget(ob)) continue;
 
-                Player.MagicAttack(new List<MagicType> { Type }, ob, primary);
+                var damage = Player.MagicAttack(new List<MagicType> { Type }, ob, primary);
+
+                if (damage > 0)
+                {
+                    if (burning != null)
+                    {
+                        Player.LevelMagic(burning);
+                    }
+                }
             }
         }
 

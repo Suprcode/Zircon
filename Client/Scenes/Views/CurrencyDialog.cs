@@ -5,6 +5,7 @@ using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Client.Scenes.Views
@@ -13,29 +14,21 @@ namespace Client.Scenes.Views
     {
         #region Properties
 
-        private DXVScrollBar ScrollBar;
-
-        public List<CurrencyCell> Cells = new List<CurrencyCell>();
-
-        public DXControl ClientPanel;
+        private CurrencyTree BindTree;
 
         public override void OnClientAreaChanged(Rectangle oValue, Rectangle nValue)
         {
             base.OnClientAreaChanged(oValue, nValue);
-
-            if (ClientPanel == null) return;
-
-            ClientPanel.Size = ClientArea.Size;
-            ClientPanel.Location = ClientArea.Location;
         }
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
-            SetCurrencies();
-
             base.OnIsVisibleChanged(oValue, nValue);
-        }
 
+            BindTree.TreeList.Clear();
+
+            LoadList();
+        }
 
         public override WindowType Type => WindowType.None;
         public override bool CustomSize => false;
@@ -52,73 +45,227 @@ namespace Client.Scenes.Views
 
             SetClientSize(new Size(227, 7 * 43 + 1));
 
-            ClientPanel = new DXControl
+            BindTree = new CurrencyTree
             {
                 Parent = this,
-                Size = ClientArea.Size,
-                Location = ClientArea.Location,
-                PassThrough = true,
+                Location = new Point(ClientArea.X, ClientArea.Y),
+                Size = new Size(ClientArea.Width, ClientArea.Height)
             };
+        }
+
+        public void LoadList()
+        {
+            BindTree.TreeList.Clear();
+
+            foreach (ClientUserCurrency bind in GameScene.Game.User.Currencies.OrderBy(x => x.Info.Category))
+            {
+                List<ClientUserCurrency> list;
+
+                var category = bind.Info.Category.ToString();
+
+                if (!BindTree.TreeList.TryGetValue(category, out list))
+                    BindTree.TreeList[category] = list = new List<ClientUserCurrency>();
+
+                list.Add(bind);
+            }
+
+            foreach (KeyValuePair<string, List<ClientUserCurrency>> pair in BindTree.TreeList)
+                pair.Value.Sort((x1, x2) => String.Compare(x1.Info.Name, x2.Info.Name, StringComparison.Ordinal));
+
+            BindTree.ListChanged();
+        }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (BindTree != null)
+                {
+                    if (!BindTree.IsDisposed)
+                        BindTree.Dispose();
+
+                    BindTree = null;
+                }
+            }
+        }
+
+        #endregion
+    }
+
+    public class CurrencyTree : DXControl
+    {
+
+        #region Properties
+
+        #region SelectedEntry
+
+        public CurrencyItem SelectedEntry
+        {
+            get => _SelectedEntry;
+            set
+            {
+                CurrencyItem oldValue = _SelectedEntry;
+                _SelectedEntry = value;
+
+                OnSelectedEntryChanged(oldValue, value);
+            }
+        }
+        private CurrencyItem _SelectedEntry;
+        public event EventHandler<EventArgs> SelectedEntryChanged;
+        public virtual void OnSelectedEntryChanged(CurrencyItem oValue, CurrencyItem nValue)
+        {
+            SelectedEntryChanged?.Invoke(this, EventArgs.Empty);
+
+            if (oValue != null)
+                oValue.Selected = false;
+
+            if (nValue != null)
+                nValue.Selected = true;
+        }
+
+        #endregion
+
+        public static Dictionary<string, bool> ExpandedInfo = new Dictionary<string, bool>();
+        public Dictionary<string, List<ClientUserCurrency>> TreeList = new Dictionary<string, List<ClientUserCurrency>>();
+
+        private DXVScrollBar ScrollBar;
+
+        public List<DXControl> Lines = new List<DXControl>();
+
+        private const int HeaderHeight = 22;
+        private const int CurrencyHeight = 42;
+        private int HeaderCount = 0;
+        private int CurrencyCount = 0;
+        private int TotalCount => (HeaderCount * HeaderHeight) + (CurrencyCount * CurrencyHeight);
+
+        public override void OnSizeChanged(Size oValue, Size nValue)
+        {
+            base.OnSizeChanged(oValue, nValue);
+
+            ScrollBar.Size = new Size(14, Size.Height);
+            ScrollBar.Location = new Point(Size.Width - 14, 0);
+            ScrollBar.VisibleSize = Size.Height;
+        }
+
+        #endregion
+
+        public CurrencyTree()
+        {
+            Border = true;
+            BorderColour = Color.FromArgb(198, 166, 99);
 
             ScrollBar = new DXVScrollBar
             {
                 Parent = this,
-                Size = new Size(14, ClientArea.Height - 1),
+                Change = 22,
             };
-            ScrollBar.Location = new Point(ClientArea.Right - ScrollBar.Size.Width - 2, ClientArea.Y + 1);
-            ScrollBar.ValueChanged += (o, e) => UpdateLocations();
+            ScrollBar.ValueChanged += (o, e) => UpdateScrollBar();
 
             MouseWheel += ScrollBar.DoMouseWheel;
         }
 
         #region Methods
 
-        public void SetCurrencies()
+        public void UpdateScrollBar()
         {
-            foreach (CurrencyCell cell in Cells)
-                cell.Dispose();
+            ScrollBar.MaxValue = TotalCount;
 
-            Cells.Clear();
+            int current = 0;
 
-            foreach (var currency in GameScene.Game.User.Currencies)
+            for (int i = 0; i < Lines.Count; i++)
             {
-                CurrencyCell cell;
-                Cells.Add(cell = new CurrencyCell
+                Lines[i].Location = new Point(Lines[i].Location.X, current - ScrollBar.Value);
+
+                if (Lines[i] is CurrencyTreeHeader)
                 {
-                    Parent = ClientPanel,
-                    Currency = currency
-                });
-                cell.MouseClick += Currency_MouseClick;
-                cell.MouseWheel += ScrollBar.DoMouseWheel;
+                    current += HeaderHeight;
+                }
+                else if (Lines[i] is CurrencyItem)
+                {
+                    current += CurrencyHeight;
+                }
             }
-
-            ScrollBar.MaxValue = GameScene.Game.User.Currencies.Count * 43 - 2;
-            SetClientSize(new Size(ClientArea.Width, Math.Min(ScrollBar.MaxValue, 7 * 43 - 3) + 1));
-            ScrollBar.VisibleSize = ClientArea.Height;
-            ScrollBar.Size = new Size(ScrollBar.Size.Width, ClientArea.Height - 2);
-
-            ScrollBar.Value = 0;
-            UpdateLocations();
         }
 
-        private void UpdateLocations()
+        public void ListChanged()
         {
-            int y = -ScrollBar.Value + 1;
+            ClientUserCurrency selectedKeyBind = SelectedEntry?.Currency;
 
-            foreach (CurrencyCell cell in Cells)
+            foreach (DXControl control in Lines)
+                control.Dispose();
+
+            Lines.Clear();
+            HeaderCount = 0;
+            CurrencyCount = 0;
+
+            _SelectedEntry = null;
+            CurrencyItem firstEntry = null;
+
+            foreach (KeyValuePair<string, List<ClientUserCurrency>> pair in TreeList)
             {
-                cell.Location = new Point(1, y);
+                CurrencyTreeHeader header = new CurrencyTreeHeader
+                {
+                    Parent = this,
+                    Location = new Point(1, TotalCount),
+                    Size = new Size(Size.Width - 17, HeaderHeight - 2),
+                    HeaderLabel = { Text = pair.Key }
+                };
+                header.ExpandButton.MouseClick += (o, e) => ListChanged();
+                header.MouseWheel += ScrollBar.DoMouseWheel;
+                Lines.Add(header);
+                HeaderCount++;
 
-                y += cell.Size.Height + 3;
+                bool expanded;
+
+                if (!ExpandedInfo.TryGetValue(header.HeaderLabel.Text, out expanded))
+                    ExpandedInfo[header.HeaderLabel.Text] = expanded = true;
+
+                header.Expanded = expanded;
+
+                if (!header.Expanded) continue;
+
+                foreach (ClientUserCurrency KeyBind in pair.Value)
+                {
+                    CurrencyItem entry = new CurrencyItem
+                    {
+                        Parent = this,
+                        Location = new Point(1, TotalCount),
+                        Size = new Size(Size.Width - 17, CurrencyHeight - 2),
+                        Currency = KeyBind,
+                        Selected = KeyBind == selectedKeyBind,
+                    };
+
+                    entry.MouseWheel += ScrollBar.DoMouseWheel;
+
+                    entry.CurrencyNameLabel.MouseWheel += ScrollBar.DoMouseWheel;
+                    entry.AmountLabel.MouseWheel += ScrollBar.DoMouseWheel;
+                    entry.MouseClick += Currency_MouseClick;
+                    entry.DropItemCell.MouseClick += (o, e) => Currency_MouseClick(entry, e);
+                    entry.MouseWheel += ScrollBar.DoMouseWheel;
+
+                    if (firstEntry == null)
+                        firstEntry = entry;
+
+                    if (entry.Selected)
+                        SelectedEntry = entry;
+
+                    Lines.Add(entry);
+                    CurrencyCount++;
+                }
             }
-        }
 
+            UpdateScrollBar();
+        }
 
         private void Currency_MouseClick(object sender, MouseEventArgs e)
         {
             if (GameScene.Game.SelectedCell == null)
             {
-                var cell = (CurrencyCell)sender;
+                var cell = (CurrencyItem)sender;
 
                 if (cell.Currency == null || !cell.Currency.CanPickup) return;
 
@@ -131,8 +278,6 @@ namespace Client.Scenes.Views
             }
         }
 
-
-
         #endregion
 
         #region IDisposable
@@ -143,6 +288,12 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
+                TreeList.Clear();
+                TreeList = null;
+
+                _SelectedEntry = null;
+                SelectedEntryChanged = null;
+
                 if (ScrollBar != null)
                 {
                     if (!ScrollBar.IsDisposed)
@@ -151,29 +302,22 @@ namespace Client.Scenes.Views
                     ScrollBar = null;
                 }
 
-                if (ClientPanel != null)
+                if (Lines != null)
                 {
-                    if (!ClientPanel.IsDisposed)
-                        ClientPanel.Dispose();
-
-                    ClientPanel = null;
-                }
-
-                if (Cells != null)
-                {
-                    for (int i = 0; i < Cells.Count; i++)
+                    for (int i = 0; i < Lines.Count; i++)
                     {
-                        if (Cells[i] != null)
+                        if (Lines[i] != null)
                         {
-                            if (!Cells[i].IsDisposed)
-                                Cells[i].Dispose();
+                            if (!Lines[i].IsDisposed)
+                                Lines[i].Dispose();
 
-                            Cells[i] = null;
+                            Lines[i] = null;
                         }
+
                     }
 
-                    Cells.Clear();
-                    Cells = null;
+                    Lines.Clear();
+                    Lines = null;
                 }
             }
 
@@ -182,7 +326,96 @@ namespace Client.Scenes.Views
         #endregion
     }
 
-    public sealed class CurrencyCell : DXControl
+    public sealed class CurrencyTreeHeader : DXControl
+    {
+        #region Properties
+
+        #region Expanded
+
+        public bool Expanded
+        {
+            get => _Expanded;
+            set
+            {
+                if (_Expanded == value) return;
+
+                bool oldValue = _Expanded;
+                _Expanded = value;
+
+                OnExpandedChanged(oldValue, value);
+            }
+        }
+        private bool _Expanded;
+        public event EventHandler<EventArgs> ExpandedChanged;
+        public void OnExpandedChanged(bool oValue, bool nValue)
+        {
+            ExpandButton.Index = Expanded ? 4871 : 4870;
+            CurrencyTree.ExpandedInfo[HeaderLabel.Text] = Expanded;
+
+            ExpandedChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        public DXButton ExpandButton;
+        public DXLabel HeaderLabel;
+
+        #endregion
+
+        public CurrencyTreeHeader()
+        {
+            ExpandButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 4870,
+                Location = new Point(2, 2)
+            };
+            ExpandButton.MouseClick += (o, e) => Expanded = !Expanded;
+
+            HeaderLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false,
+                Location = new Point(25, 2)
+            };
+        }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                _Expanded = false;
+                ExpandedChanged = null;
+
+                if (ExpandButton != null)
+                {
+                    if (!ExpandButton.IsDisposed)
+                        ExpandButton.Dispose();
+
+                    ExpandButton = null;
+                }
+
+                if (HeaderLabel != null)
+                {
+                    if (!HeaderLabel.IsDisposed)
+                        HeaderLabel.Dispose();
+
+                    HeaderLabel = null;
+                }
+            }
+
+        }
+
+        #endregion
+    }
+
+    public sealed class CurrencyItem : DXControl
     {
         #region Properties
 
@@ -208,10 +441,13 @@ namespace Client.Scenes.Views
             if (Currency.Info.DropItem != null)
             {
                 DropItemCell.Item = new ClientUserItem(Currency.Info.DropItem, Currency.Amount);
+                CurrencyImage.Visible = false;
             }
             else
             {
                 DropItemCell.Item = null;
+                CurrencyImage.Visible = true;
+                CurrencyImage.Index = 2683;
             }
 
             CurrencyNameLabel.Text = Currency.Info.Name;
@@ -254,9 +490,11 @@ namespace Client.Scenes.Views
 
         public DXLabel CurrencyNameLabel, AmountLabel;
 
+        public DXImageControl CurrencyImage;
+
         #endregion
 
-        public CurrencyCell()
+        public CurrencyItem()
         {
             DrawTexture = true;
             BackColour = Color.FromArgb(25, 20, 0);
@@ -276,6 +514,15 @@ namespace Client.Scenes.Views
                 FixedBorderColour = true,
                 ShowCountLabel = false,
             };
+
+            CurrencyImage = new DXImageControl
+            {
+                Parent = this,
+                Location = new Point((Size.Height - DXItemCell.CellHeight) / 2 + 1, (Size.Height - DXItemCell.CellHeight) / 2 + 1),
+                Visible = false,
+                LibraryFile = LibraryFile.StoreItems
+            };
+
             CurrencyNameLabel = new DXLabel
             {
                 Parent = this,
@@ -333,6 +580,14 @@ namespace Client.Scenes.Views
                         CurrencyNameLabel.Dispose();
 
                     CurrencyNameLabel = null;
+                }
+
+                if (CurrencyImage != null)
+                {
+                    if (!CurrencyImage.IsDisposed)
+                        CurrencyImage.Dispose();
+
+                    CurrencyImage = null;
                 }
             }
 

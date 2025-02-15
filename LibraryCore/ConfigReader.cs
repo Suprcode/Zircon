@@ -33,7 +33,8 @@ namespace Library
                 if (!type.IsAbstract || !type.IsSealed)
                     ConfigObjects[type] = ob = Activator.CreateInstance(type);
 
-                ReadConfig(type, config.Path, ob);
+                if (!config.Disabled)
+                    ReadConfig(type, AdjustPath(config.Path, assembly), ob);
             }
         }
         public static void Save(Assembly assembly)
@@ -51,8 +52,33 @@ namespace Library
                 if (!type.IsAbstract || !type.IsSealed)
                     ob = ConfigObjects[type];
 
-                SaveConfig(type, config.Path, ob);
+                if (!config.Disabled)
+                    SaveConfig(type, AdjustPath(config.Path, assembly), ob);
             }
+        }
+
+        public static string AdjustPath(string originalPath, Assembly assembly)
+        {
+            var subFolder = GetSubFolder(assembly);
+
+            if (!string.IsNullOrEmpty(subFolder))
+            {
+                return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, subFolder, $"{originalPath}"));
+            }
+
+            return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{originalPath}"));
+        }
+
+        private static string GetSubFolder(Assembly assembly)
+        {
+            string assemblyName = assembly.GetName().Name;
+
+            if (assemblyName.StartsWith("Plugin.", StringComparison.OrdinalIgnoreCase))
+            {
+                return Globals.PluginPath(assemblyName);
+            }
+
+            return null;
         }
 
         private static void ReadConfig(Type type, string path, object ob)
@@ -83,7 +109,7 @@ namespace Library
 
                 if (!match.Success) continue;
 
-                section[match.Groups["Key"].Value] = match.Groups["Value"].Value;
+                section[match.Groups["Key"].Value] = UnescapeSpecialCharacters(match.Groups["Value"].Value);
             }
 
             string lastSection = null;
@@ -105,6 +131,7 @@ namespace Library
                 property.SetValue(ob, method.Invoke(null, new[] { type, lastSection, property.Name, property.GetValue(ob) }));
             }
         }
+
         private static void SaveConfig(Type type, string path, object ob)
         {
             PropertyInfo[] properties = type.GetProperties();
@@ -136,7 +163,11 @@ namespace Library
                 lines.Add($"[{header.Key}]");
 
                 foreach (KeyValuePair<string, string> entries in header.Value)
-                    lines.Add($"{entries.Key}={entries.Value}");
+                {
+                    string escapedValue = EscapeSpecialCharacters(entries.Value);
+
+                    lines.Add($"{entries.Key}={escapedValue}");
+                }
 
                 lines.Add(string.Empty);
             }
@@ -145,6 +176,19 @@ namespace Library
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
 
             File.WriteAllLines(path, lines, Encoding.Unicode);
+        }
+
+        private static string EscapeSpecialCharacters(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+
+            return value.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t");
+        }
+        private static string UnescapeSpecialCharacters(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+
+            return value.Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t");
         }
 
         private static bool TryGetEntry(Type type, string section, string key, out string value)
@@ -635,10 +679,14 @@ namespace Library
     public class ConfigPath : Attribute
     {
         public string Path { get; set; }
+        public bool Disabled { get; set; } // Skip the local ini file
 
-        public ConfigPath(string path)
+        public ConfigPath(string path): this(path, false) { }
+
+        public ConfigPath(string path, bool disabled)
         {
             Path = path;
+            Disabled = disabled;
         }
     }
 

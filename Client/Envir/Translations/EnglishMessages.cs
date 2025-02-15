@@ -2,7 +2,7 @@
 
 namespace Client.Envir.Translations
 {
-    [ConfigPath(@".\Translations\EnglishMessages.ini")]
+    [ConfigPath(@".\Translations\EnglishMessages.ini", Disabled = false)]
     public class EnglishMessages : StringMessages
     {
         [ConfigSection("Message")]
@@ -67,6 +67,7 @@ namespace Client.Envir.Translations
         public override string GameSceneCastNoEnoughHealth { get; set; } = "Unable to cast {0}, You do not have enough Health.";
         public override string GameSceneCastNoEnoughMana { get; set; } = "Unable to cast {0}, You do not have enough Mana.";
         public override string GameSceneCastTooFar { get; set; } = "Unable to cast {0}, Your target is too far.";
+        public override string GameSceneThrowTooFar { get; set; } = "Unable to throw {0}, Your target is too far.";
         public override string GameSceneHoldTooHeavy { get; set; } = "Unable to hold {0}, it is too heavy.";
         public override string GameSceneNeedFishingRod { get; set; } = "Unable to hold {0}, must be holding fishing rod.";
         public override string GameSceneWearTooHeavy { get; set; } = "Unable to wear {0}, it is too heavy.";
@@ -81,6 +82,7 @@ namespace Client.Envir.Translations
         public override string DungeonNotEnoughPeople { get; set; } = "There are not enough people in your group.";
         public override string DungeonTooManyPeople { get; set; } = "There are too many people in your group.";
         public override string DungeonInGuild { get; set; } = "You must be in a guild.";
+        public override string DungeonInCastle { get; set; } = "Your guild must own a castle.";
         public override string CharacterSameGender { get; set; } = "You are already a {0}.";
         public override string LogoutInCombat { get; set; } = "Unable to logout whilst in combat.";
         public override string ExitInCombat { get; set; } = "Unable to exit game whilst in combat.";
@@ -354,7 +356,7 @@ namespace Client.Envir.Translations
         public override string CharacterDisciplineTabUnusedLabel { get; set; } = "Label Unused";
         public override string CharacterDisciplineTabExpLabel { get; set; } = "Discipline Exp:";
         public override string CharacterDisciplineTabButtonGainLabel { get; set; } = "Gain Discipline";
-        public override string CharacterDisciplineTabConfirmationMessage { get; set; } = "Are you sure you want to discipline your character?\nDisciplining will cost {nextLevel.RequiredGold:n0} Gold";
+        public override string CharacterDisciplineTabConfirmationMessage { get; set; } = "Are you sure you want to discipline your character?\nDisciplining will cost {0:n0} Gold";
         public override string CharacterDisciplineTabConfirmationCaption { get; set; } = "Discipline Character";
 
         public override string ChatOptionsDialogTitle { get; set; } = "Chat Options";
@@ -503,6 +505,7 @@ namespace Client.Envir.Translations
         public override string GuildDialogStorageTabItemLabel { get; set; } = "Item:";
         public override string GuildDialogStorageTabClearButtonLabel { get; set; } = "Clear";
         public override string GuildDialogWarTabLabel { get; set; } = "War";
+        public override string GuildDialogCastleTabLabel { get; set; } = "Castle";
         public override string GuildDialogManageTabMembershipLabel { get; set; } = "Membership";
         public override string GuildDialogManageTabMembershipMemberConfirmMessage { get; set; } = "Please enter the name of the person you wish to Invite.";
         public override string GuildDialogManageTabMembershipIncreaseMemberConfirmMessage { get; set; } = "Would you like to increase member limit for {0:#,##0}?.";
@@ -534,7 +537,7 @@ namespace Client.Envir.Translations
         public override string GuildMemberDialogMerchantLabel { get; set; } = "Merchant Fund:";
         public override string GuildMemberDialogMarketLabel { get; set; } = "Market Fund:";
         public override string GuildMemberDialogKickButtonLabel { get; set; } = "Kick";
-        public override string GuildMemberDialogKickButtonConfirmMsg { get; set; } = "Are you sure you want to remove {0} from the guild";
+        public override string GuildMemberDialogKickButtonConfirmMsg { get; set; } = "Are you sure you want to remove {0} from the guild?";
         public override string GuildMemberDialogKickButtonConfirmCaption { get; set; } = "Kick Member";
         public override string GuildCastlePanelOwnerLabel { get; set; } = "Current Owner:";
         public override string GuildCastlePanelScheduleLabel { get; set; } = "Schedule:";
@@ -542,13 +545,17 @@ namespace Client.Envir.Translations
         public override string GuildCastlePanelCostLabel { get; set; } = "Cost:";
         public override string GuildCastlePanelNoneText { get; set; } = "None";
         public override string GuildCastlePanelInProgressText { get; set; } = "In Progress";
+        public override string GuildRepairGatesConfirmMsg { get; set; } = "Estimated cost to repair gates will be {0:#,##0}. Are you sure?";
+        public override string GuildRepairGatesConfirmCaption { get; set; } = "Repair Gates";
+        public override string GuildRepairGuardsConfirmMsg { get; set; } = "Estimated cost to repair guards will be {0:#,##0}. Are you sure?";
+        public override string GuildRepairGuardsConfirmCaption { get; set; } = "Repair Guards";
 
         public override string InventoryDialogTitle { get; set; } = "Inventory";
         public override string InventoryDialogPrimaryCurrencyTitle { get; set; } = "Gold";
         public override string InventoryDialogSecondaryCurrencyTitle { get; set; } = "GG";
         public override string InventoryDialogSortButtonHint { get; set; } = "Sort";
         public override string InventoryDialogTrashButtonHint { get; set; } = "Trash";
-        public override string InventoryDialogWalletLabelHint { get; set; } = "Wallet [Ctrl + C]";
+        public override string InventoryDialogWalletLabelHint { get; set; } = "Wallet [{0}]";
 
         public override string MagicDialogTitle { get; set; } = "Magic";
 
@@ -560,22 +567,23 @@ namespace Client.Envir.Translations
         public override string MenuDialogCompanionButtonLabel { get; set; } = "Companion";
         public override string MenuDialogLeaveButtonLabel { get; set; } = "Exit Game";
 
-        public override string MenuDialogSettingsButtonHint { get; set; } = "Settings [O]";
-        public override string MenuDialogGuildButtonHint { get; set; } = "Guild [G]";
-        public override string MenuDialogStorageButtonHint { get; set; } = "Storage [S]";
-        public override string MenuDialogRankingButtonHint { get; set; } = "Ranking [R]";
-        public override string MenuDialogCompanionButtonHint { get; set; } = "Companion [U]";
-        public override string MenuDialogLeaveButtonHint { get; set; } = "Exit Game [Alt + Q]";
+        public override string MenuDialogSettingsButtonHint { get; set; } = "Settings [{0}]";
+        public override string MenuDialogGuildButtonHint { get; set; } = "Guild [{0}]";
+        public override string MenuDialogStorageButtonHint { get; set; } = "Storage [{0}]";
+        public override string MenuDialogRankingButtonHint { get; set; } = "Ranking [{0}]";
+        public override string MenuDialogCompanionButtonHint { get; set; } = "Companion [{0}]";
+        public override string MenuDialogLeaveButtonHint { get; set; } = "Exit Game [{0}]";
 
-        public override string MainPanelCharacterButtonHint { get; set; } = "Character [Q]";
-        public override string MainPanelInventoryButtonHint { get; set; } = "Inventory [W]\nCompanion [U]";
-        public override string MainPanelSpellButtonHint { get; set; } = "Spells [E]";
-        public override string MainPanelQuestButtonHint { get; set; } = "Quests [J]";
-        public override string MainPanelMailButtonHint { get; set; } = "Communication [,]";
-        public override string MainPanelBeltButtonHint { get; set; } = "Belt [Z]";
-        public override string MainPanelGroupButtonHint { get; set; } = "Group [P]";
-        public override string MainPanelMenuButtonHint { get; set; } = "Menu [N]";
-        public override string MainPanelCashShopButtonHint { get; set; } = "Cash Shop [Y]";
+        public override string MainPanelCharacterButtonHint { get; set; } = "Character [{0}]";
+        public override string MainPanelInventoryButtonHint { get; set; } = "Inventory [{0}]";
+        public override string MainPanelCompanionButtonHint { get; set; } = "Companion [{0}]";
+        public override string MainPanelSpellButtonHint { get; set; } = "Spells [{0}]";
+        public override string MainPanelQuestButtonHint { get; set; } = "Quests [{0}]";
+        public override string MainPanelMailButtonHint { get; set; } = "Communication [{0}]";
+        public override string MainPanelBeltButtonHint { get; set; } = "Belt [{0}]";
+        public override string MainPanelGroupButtonHint { get; set; } = "Group [{0}]";
+        public override string MainPanelMenuButtonHint { get; set; } = "Menu [{0}]";
+        public override string MainPanelCashShopButtonHint { get; set; } = "Cash Shop [{0}]";
         public override string MainPanelClassLabel { get; set; } = "Cl";
         public override string MainPanelClassHint { get; set; } = "Class";
         public override string MainPanelLevelLabel { get; set; } = "Lv";

@@ -27,9 +27,7 @@ namespace Server.Models.Magics
                 CanBladeStorm = false;
                 Player.Enqueue(new S.MagicToggle { Magic = MagicType.BladeStorm, CanUse = CanBladeStorm });
 
-                Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
-                foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
+                Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
             }
         }
 
@@ -43,10 +41,7 @@ namespace Server.Models.Magics
 
             if (CanBladeStorm)
             {
-                Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.ChargeFail, Magic.Info.Name), MessageType.System);
-
-                foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.ChargeFail, Magic.Info.Name), MessageType.System);
+                Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.ChargeFail, Magic.Info.Name), MessageType.System);
             }
             else
             {

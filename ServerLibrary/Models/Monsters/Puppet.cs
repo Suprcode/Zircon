@@ -61,12 +61,6 @@ namespace Server.Models.Monsters
 
             Player?.Pets.Remove(this);
         }
-        public override void OnSafeDespawn()
-        {
-            base.OnSafeDespawn();
-
-            Player?.Pets.Remove(this);
-        }
 
         public override void Activate()
         {

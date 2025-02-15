@@ -33,10 +33,7 @@ namespace Server.Models.Magics
 
             if ((target.Race == ObjectType.Player && target.Level >= Player.Level) || (target.Race == ObjectType.Monster && ((MonsterObject)target).MonsterInfo.IsBoss))
             {
-                Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.AbyssLevel, target.Name), MessageType.System);
-
-                foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.AbyssLevel, target.Name), MessageType.System);
+                Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.AbyssLevel, target.Name), MessageType.System);
 
                 response.Ob = null;
                 response.Cast = false;

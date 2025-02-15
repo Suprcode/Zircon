@@ -74,6 +74,8 @@ namespace Server.Models.Magics
                     hasGreaterPoisonDust = true;
                 }
 
+                response.Targets.Add(realTarget.ObjectID);
+
                 ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, realTarget, shape == 0 ? PoisonType.Green : PoisonType.Red, hasGreaterPoisonDust));
             }
 

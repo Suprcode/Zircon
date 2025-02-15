@@ -145,6 +145,8 @@ namespace Library
         Fog = 4,
         Lightning = 8,
 
+        [Description("Snow, Fog")]
+        SnowFog = 6,
         [Description("Rain, Lightning")]
         RainLightning = 9,
         [Description("Fog, Lightning")]
@@ -317,6 +319,7 @@ namespace Library
     public enum LightSetting : byte
     {
         Default,
+
         Light,
         Night,
         Twilight,
@@ -324,8 +327,6 @@ namespace Library
 
     public enum TimeOfDay : byte
     {
-        None,
-
         Dawn,
         Day,
         Dusk,
@@ -341,9 +342,21 @@ namespace Library
 
     public enum InstanceType : byte
     {
-        Solo,
-        Group,
-        Guild
+        Player = 0,
+        Group = 1,
+        Guild = 2,
+        Castle = 3
+    }
+
+    public enum RegionType : byte
+    {
+        None = 0,
+
+        Area = 1,
+        Connection = 2,
+        Spawn = 3,
+        Npc = 4,
+        SpawnConnection = 5
     }
 
     public enum ObjectType : byte
@@ -598,6 +611,7 @@ namespace Library
         MagicImmunity = 129,
         DefensiveBlow = 130,
         ElementalSwords = 131,
+        Shuriken = 132,
 
         FireBall = 201,
         LightningBall = 202,
@@ -841,7 +855,7 @@ namespace Library
         UmaAnguisher = 54,
         UmaKing = 55,
         SpinedDarkLizard = 56,
-        //NF_Dung = 57,
+        Dung = 57,
         GhostSorcerer = 58,
         GhostMage = 59,
 
@@ -854,11 +868,11 @@ namespace Library
         WhiteBone = 66,
         TigerSnake = 67,
         Sheep = 68,
-        //NF_SkyStinger = 69,
+        SkyStinger = 69,
 
         ShellNipper = 70,
         VisceralWorm = 71,
-        //NF_RedVisceralWorm = 72,
+        //NF_KingScorpion = 72,
         Beetle = 73,
         SpikedBeetle = 74,
         Wolf = 75,
@@ -890,7 +904,7 @@ namespace Library
         Shinsu = 99, //Small
 
         Shinsu1 = 100, //Large
-        //NF_UmaMaceInfidel = 101,
+        UmaMaceInfidel = 101,
         AquaLizard = 102,
         CorrosivePoisonSpitter = 103,
         SandShark = 104,
@@ -914,9 +928,9 @@ namespace Library
         //NF_RedMoonGrayProtector = 120,
         VenomousArachnid = 121,
         DarkArachnid = 122,
-        //NF_WoomyonGuard = 123,
-        //NF_GinkoGuard = 124,
-        //NF_ZarcaniumGuard = 125,
+        ForestGuard = 123,
+        TownGuard = 124,
+        SandGuard = 125,
         //NF_Blank126 = 126,
         //NF_Blank127 = 127,
         //NF_Blank128 = 128,
@@ -931,7 +945,7 @@ namespace Library
         //NF_WhiteSnake = 136,
         ChestnutTree = 137,
         NumaGrunt = 138,
-        //NF_NumaWarrior = 139,
+        NumaWarrior = 139,
 
         BanyaRightGuard = 140,
         BanyaLeftGuard = 141,
@@ -1080,10 +1094,10 @@ namespace Library
         SandGolem = 281,
         //NF_NumaLoneGuard = 282,
         //NF_SmallSpider = 283,
-        //NF_OmaInfant = 284,
-        //NF_Yob = 285,
-        //NF_RakingCat = 286,
-        //NF_UmaTrident = 287,
+        OmaInfant = 284,
+        Yob = 285,
+        RakingCat = 286,
+        UmaTridentInfidel = 287,
         GangSpider = 288,
         VenomSpider = 289,
 
@@ -1262,13 +1276,41 @@ namespace Library
 
         //Mon52
 
-        //Mon53
+        //MonMagicEx25
+        SeaHorseCavalry = 530,
+        Seamancer = 531,
+        CoralStoneDuin = 532,
+        Brachiopod = 533,
+        GiantClam = 534,
+        BlueMassif = 535,
+        Mollusk = 536,
+        Kraken = 537,
+        KrakenLeg = 538,
+        GiantClam1 = 539,
 
         //Mon54
+        SabukGateSouth = 540,
+        SabukGateNorth = 541,
+        SabukGateEast = 542,
+        SabukGateWest = 543,
+        //NF_NorthBarrier = 544,
+        //NF_SouthBarrier = 545,
+        //NF_EastBarrier = 546,
+        //NF_WestBarrier = 547,
+        //NF_TaoSungDoor = 548,
+        //NF_Blank_549 = 549,
 
         //Mon55
 
+        //Mon56
         Tornado = 566,
+
+        //Mon57
+
+        //Mon58
+
+        //Mon59
+
 
         //Flag
         CastleFlag = 1000
@@ -1279,12 +1321,50 @@ namespace Library
     {
         None,
 
-        Cave,
-        Exit,
-        Down,
-        Up,
-        Province,
-        Building
+        Cave = 1,
+        Exit = 2,
+        Down = 3,
+        Up = 4,
+        Province = 5,
+        Building = 6,
+
+        BichonCity = 100,
+        Castle,
+        BugCaves,
+        CaveUpDown,
+        SmallManInTriangle,
+        Dunes,
+        Doorway,
+        GinkoTree,
+        Forest,
+        InsectCaveBubble,
+        AntCave,
+        JinchonTemple,
+        MiningCave,
+        Mudwall,
+        BorderTown,
+        Oasis,
+        UnknownPalace,
+        Pointer,
+        Serpent,
+        Shrine,
+        SkullCave,
+        SkullBonesCave,
+        StairDown,
+        StairUp,
+        UnknownTemple,
+        Walkway,
+        StoneTemple,
+        WoomaTemple,
+        ZumaTemple,
+        IslandShores,
+        DuneWalkway,
+        DuneWalkway2,
+        ForestWalkway,
+        ForestWalkway2,
+        ForestWalkway3,
+        Star,
+        Lock
     }
 
     public enum Effect
@@ -1363,6 +1443,8 @@ namespace Library
         Rubble,
 
         MonsterDeathCloud,
+
+        ZombieHole
     }
 
 
@@ -1466,7 +1548,7 @@ namespace Library
 
     public enum ExteriorEffect : byte
     {
-        None,
+        None = 0,
 
         //EquipEffect_Part [1~99] 
         A_WhiteAura = 1,
@@ -1590,7 +1672,8 @@ namespace Library
         SpiritBlade = 91,
         RefineExtractor = 92,
 
-        DualWield = 100
+        DualWield = 100,
+        MagicRing = 101
     }
 
     public enum CurrencyType
@@ -1601,6 +1684,15 @@ namespace Library
         Other = 3,
         FP = 4,
         CP = 5
+    }
+
+    public enum CurrencyCategory
+    {
+        Basic = 0,
+        Player = 1,
+        Event = 2,
+        Map = 3,
+        Other = 4
     }
 
     [Flags]
@@ -1783,6 +1875,9 @@ namespace Library
         UndeadSoul = 9,
 
         CastleObjective = 10,
+        CastleDefense = 11,
+
+        Blocker = 20,
 
         Larva = 100,
 
@@ -1975,6 +2070,7 @@ namespace Library
         AnotherUserPassword,
         AnotherUserAdmin,
         Banned,
+        Kicked,
         Crashed
     }
 
@@ -1987,6 +2083,7 @@ namespace Library
         SafeZoneOnly,
         NotInGroup,
         NotInGuild,
+        NotInCastle,
         TooFewInGroup,
         TooManyInGroup,
         ConnectRegionNotSet,
@@ -2363,6 +2460,10 @@ namespace Library
         SheepStruck,
         SheepDie,
 
+        SkyStingerAttack,
+        SkyStingerStruck,
+        SkyStingerDie,
+
         ClawCatAttack,
         ClawCatStruck,
         ClawCatDie,
@@ -2378,6 +2479,10 @@ namespace Library
         CarnivorousPlantAttack,
         CarnivorousPlantStruck,
         CarnivorousPlantDie,
+
+        YobAttack,
+        YobStruck,
+        YobDie,
 
         OmaAttack,
         OmaStruck,
@@ -2525,6 +2630,10 @@ namespace Library
         SpinedDarkLizardStruck,
         SpinedDarkLizardDie,
 
+        DungAttack,
+        DungStruck,
+        DungDie,
+
         UmaInfidelAttack,
         UmaInfidelStruck,
         UmaInfidelDie,
@@ -2540,6 +2649,10 @@ namespace Library
         UmaKingAttack,
         UmaKingStruck,
         UmaKingDie,
+
+        UmaMaceInfidelAttack,
+        UmaMaceInfidelStruck,
+        UmaMaceInfidelDie,
 
         SpiderBatAttack,
         SpiderBatStruck,

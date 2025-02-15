@@ -480,7 +480,8 @@ namespace Server.Models.Monsters
                 itemType = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).ItemType;
                 itemRarity = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).Rarity;
                 itemClass = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).RequiredClass;
-            } else
+            } 
+            else
             {
                 itemType = check.Info.ItemType;
                 itemRarity = check.Info.Rarity;

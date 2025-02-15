@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Client.Envir;
+using Client.UserModels;
+using Library;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Client.Envir;
-using Client.UserModels;
-using Library;
 
 namespace Client.Controls
 {
@@ -376,8 +373,52 @@ namespace Client.Controls
 
             BindTree.ListChanged();
         }
+
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (BindTree != null)
+                {
+                    if (!BindTree.IsDisposed)
+                        BindTree.Dispose();
+
+                    BindTree = null;
+                }
+
+                if (SaveButton != null)
+                {
+                    if (!SaveButton.IsDisposed)
+                        SaveButton.Dispose();
+
+                    SaveButton = null;
+                }
+
+                if (CancelButton != null)
+                {
+                    if (!CancelButton.IsDisposed)
+                        CancelButton.Dispose();
+
+                    CancelButton = null;
+                }
+
+                if (DefaultButton != null)
+                {
+                    if (!DefaultButton.IsDisposed)
+                        DefaultButton.Dispose();
+
+                    DefaultButton = null;
+                }
+            }
+        }
+
+        #endregion
     }
-    
 
     public class KeyBindTree : DXControl
     {
@@ -894,8 +935,6 @@ namespace Client.Controls
         }
 
         #endregion
-
-
     }
 
     public class TempBindInfo

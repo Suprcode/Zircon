@@ -797,6 +797,9 @@ namespace Client.Controls
 
             switch (GridType) //To Grid
             {
+                case GridType.Storage:
+                    if (SelectedCell.Item.Info.ItemEffect == ItemEffect.ItemPart) return;
+                    break;
                 case GridType.PartsStorage:
                     if (SelectedCell.Item.Info.ItemEffect != ItemEffect.ItemPart) return;
                     break;
@@ -961,6 +964,8 @@ namespace Client.Controls
             }
 
             if (GridType == GridType.PartsStorage && toCell.Item != null && toCell.Item.Info.ItemEffect != ItemEffect.ItemPart) return;
+
+            if (GridType == GridType.Storage && toCell.Item != null && toCell.Item.Info.ItemEffect == ItemEffect.ItemPart) return;
 
             if (toCell.Linked)
             {
@@ -1156,6 +1161,7 @@ namespace Client.Controls
                     if (!MapObject.User.InSafeZone) return false;
                     if (GridType != GridType.Inventory && GridType != GridType.Equipment) return false;
                     if (!Item.Info.CanStore) return false;
+                    if (Item.Info.ItemEffect == ItemEffect.ItemPart) return false;
                     break;
 
                 case GridType.RefinementStoneIronOre:
@@ -1251,6 +1257,9 @@ namespace Client.Controls
                 case GridType.WeddingRing:
                     if (GridType != GridType.Inventory) return false;
                     if (Item.Info.ItemType != ItemType.Ring) return false;
+
+                    if (!(GameScene.Game.CanWearItem(Item, EquipmentSlot.RingL) || GameScene.Game.CanWearItem(Item, EquipmentSlot.RingR))) return false;
+
                     break;
                 case GridType.AccessoryRefineUpgradeTarget:
                     if ((Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;

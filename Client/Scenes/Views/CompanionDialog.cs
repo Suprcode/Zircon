@@ -134,6 +134,8 @@ namespace Client.Scenes.Views
             Settings.Size = Size;
             Settings.Visible = Visible;
             Settings.Location = Location;
+
+            ApplySettings();
         }
 
         public void ApplySettings()

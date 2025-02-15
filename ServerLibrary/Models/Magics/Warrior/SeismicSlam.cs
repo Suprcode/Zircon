@@ -27,6 +27,11 @@ namespace Server.Models.Magics
 
             var cells = CurrentMap.GetCells(Functions.Move(CurrentLocation, direction, 3), 0, 3);
 
+            if (Player.GetMagic(MagicType.SwiftBlade, out SwiftBlade swiftBlade) && swiftBlade != null)
+            {
+                swiftBlade.SwiftBladeLifeSteal = 0;
+            }
+
             var delay = SEnvir.Now.AddMilliseconds(600);
 
             foreach (Cell cell in cells)

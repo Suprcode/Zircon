@@ -235,6 +235,5 @@ namespace MirDB
             foreach (T ob in Binding)
                 ob.OnLoaded();
         }
-
     }
 }

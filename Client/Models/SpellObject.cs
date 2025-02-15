@@ -135,6 +135,12 @@ namespace Client.Models
 
                     Light = 0;
                     break;
+                case SpellEffect.ZombieHole:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out BodyLibrary);
+                    Frames[MirAnimation.Standing] = new Frame(240 + (int)Direction, 1, 0, TimeSpan.FromMilliseconds(100));
+                    Blended = false;
+                    Light = 0;
+                    break;
             }
 
         }

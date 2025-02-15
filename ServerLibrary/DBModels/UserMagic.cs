@@ -130,6 +130,22 @@ namespace Server.DBModels
         }
         private long _Experience;
 
+        public bool ItemRequired
+        {
+            get { return _ItemRequired; }
+            set
+            {
+                if (_ItemRequired == value)
+                {
+                    return;
+                }
+                var oldValue = _ItemRequired;
+                _ItemRequired = value;
+                OnChanged(oldValue, value, "ItemRequired");
+            }
+        }
+        private bool _ItemRequired;
+
         [Association("DisciplineMagics")]
         public UserDiscipline Discipline
         {
@@ -185,6 +201,7 @@ namespace Server.DBModels
 
                 Level = Level,
                 Experience = Experience,
+                ItemRequired = ItemRequired,
 
                 Cooldown = Cooldown > SEnvir.Now ? Cooldown - SEnvir.Now : TimeSpan.Zero,
             };

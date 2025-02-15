@@ -212,7 +212,7 @@ namespace Launcher
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                     }
 
-                    using (HttpResponseMessage response = await client.GetAsync(Config.Host + PListFileName))
+                    using (HttpResponseMessage response = await client.GetAsync(Config.Host + PListFileName + "?nocache=" + Guid.NewGuid().ToString("N")))
                     {
                         response.EnsureSuccessStatusCode();
 

@@ -9,7 +9,7 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public class CastleLord : CastleObjective
+    public class CastleLord : CastleObject
     {
         public DateTime CastTime;
         public TimeSpan CastDelay = TimeSpan.FromSeconds(15);

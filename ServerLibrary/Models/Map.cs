@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using Library;
+﻿using Library;
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using Server.Models.Monsters;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -32,7 +31,9 @@ namespace Server.Models
         public List<MapObject> Objects { get; } = new List<MapObject>();
         public List<PlayerObject> Players { get; } = new List<PlayerObject>();
         public List<MonsterObject> Bosses { get; } = new List<MonsterObject>();
-        public List<MonsterObject> Flags { get; } = new List<MonsterObject>();
+        public List<CastleFlag> CastleFlags { get; } = new List<CastleFlag>();
+        public List<CastleGate> CastleGates { get; } = new List<CastleGate>();
+        public List<CastleGuard> CastleGuards { get; } = new List<CastleGuard>();
         public List<NPCObject> NPCs { get; } = new List<NPCObject>();
         public HashSet<MapObject>[] OrderedObjects;
 
@@ -55,16 +56,15 @@ namespace Server.Models
 
         public void Load()
         {
-            string fileName = $"{Config.MapPath}{Info.FileName}.map";
+            var path = Path.Combine(Config.MapPath, Info.FileName + ".map");
 
-            if (!File.Exists(fileName))
+            if (!File.Exists(path))
             {
-                SEnvir.Log($"Map: {fileName} not found.");
+                SEnvir.Log($"Map: {path} not found.");
                 return;
             }
 
-
-            byte[] fileBytes = File.ReadAllBytes(fileName);
+            byte[] fileBytes = File.ReadAllBytes(path);
 
             Width = fileBytes[23] << 8 | fileBytes[22];
             Height = fileBytes[25] << 8 | fileBytes[24];
@@ -90,7 +90,12 @@ namespace Server.Models
         public void Setup()
         {
             CreateGuards();
-            CreateFlags();
+
+            CreateCastleFlags();
+            CreateCastleGates();
+            CreateCastleGuards();
+
+            CreateCellRegions();
 
             LastPlayer = DateTime.UtcNow;
         }
@@ -99,6 +104,12 @@ namespace Server.Models
         {
             foreach (GuardInfo info in Info.Guards)
             {
+                if (info.Monster == null)
+                {
+                    SEnvir.Log($"Failed to spawn Unset Guard Map:{Info.Description}, Location: {info.X}, {info.Y}");
+                    continue;
+                }
+
                 MonsterObject mob = MonsterObject.GetMonster(info.Monster);
                 mob.Direction = info.Direction;
 
@@ -110,33 +121,98 @@ namespace Server.Models
             }
         }
 
-        private void CreateFlags()
+        private void CreateCastleFlags()
         {
             foreach (var castle in Info.Castles)
             {
                 foreach (var info in castle.Flags)
                 {
-                    MonsterObject mob = MonsterObject.GetMonster(info.Monster);
+                    CastleFlag mob = MonsterObject.GetMonster(info.Monster) as CastleFlag;
 
-                    if (!mob.Spawn(this, new Point(info.X, info.Y)))
+                    mob.Castle = castle;
+
+                    if (!mob.Spawn(castle, info))
                     {
                         SEnvir.Log($"Failed to spawn Flag Map:{Info.Description}, Location: {info.X}, {info.Y}");
                         continue;
                     }
+                }
+            }
+        }
+        private void CreateCastleGates()
+        {
+            foreach (var castle in Info.Castles)
+            {
+                foreach (var gate in castle.Gates)
+                {
+                    var mob = CastleGates.FirstOrDefault(x => x.GateInfo == gate);
 
-                    Flags.Add(mob);
+                    if (mob == null)
+                    {
+                        mob = MonsterObject.GetMonster(gate.Monster) as CastleGate;
+
+                        mob.Spawn(castle, gate);
+                    }
+                    else
+                    {
+                        mob.RepairGate();
+                    }
+                }
+            }
+        }
+        private void CreateCastleGuards()
+        {
+            foreach (var castle in Info.Castles)
+            {
+                foreach (var guard in castle.Guards)
+                {
+                    var mob = CastleGuards.FirstOrDefault(x => x.GuardInfo == guard);
+
+                    if (mob == null)
+                    {
+                        mob = MonsterObject.GetMonster(guard.Monster) as CastleGuard;
+
+                        mob.Spawn(castle, guard);
+                    }
+                    else
+                    {
+                        mob.RepairGuard();
+                    }
+                }
+            }
+        }
+
+        public void CreateCellRegions()
+        {
+            foreach (MapRegion region in Info.Regions)
+            {
+                if (region.RegionType != RegionType.Area) continue;
+
+                var points = region.GetPoints(Width);
+
+                foreach (Point sPoint in points)
+                {
+                    Cell source = GetCell(sPoint);
+
+                    if (source == null)
+                    {
+                        SEnvir.Log($"[Cell] Bad Point, Source: {Info.FileName} {region.Description}, X:{sPoint.X}, Y:{sPoint.Y}");
+                        continue;
+                    }
+
+                    if (source.Regions == null)
+                        source.Regions = new List<MapRegion>();
+
+                    source.Regions.Add(region);
                 }
             }
         }
 
         public void RefreshFlags()
         {
-            foreach (var ob in Flags)
+            foreach (var ob in CastleFlags)
             {
-                if (ob is CastleFlag flag)
-                {
-                    flag.CurrentGuild = null;
-                }
+                ob.Refresh();
             }
         }
 
@@ -393,6 +469,8 @@ namespace Server.Models
 
         public List<MovementInfo> Movements;
 
+        public List<MapRegion> Regions = [];
+
         public List<QuestTask> QuestTasks;
 
         public Cell(Point location)
@@ -444,6 +522,7 @@ namespace Server.Models
 
         public Cell GetMovement(MapObject ob)
         {
+            //TODO - This is probably not efficient for large regions. Find a better way to check when object has joined or left a region
             if (QuestTasks != null && QuestTasks.Count > 0)
             {
                 if (ob.Race == ObjectType.Player)
@@ -493,7 +572,7 @@ namespace Server.Models
                     }
                     else //Moving to instance
                     {
-                        var (index, result) = ((PlayerObject)ob).GetInstance(movement.NeedInstance);
+                        var (index, result) = ((PlayerObject)ob).GetInstance(movement.NeedInstance, walkOn: true);
 
                         if (result != InstanceResult.Success)
                         {
@@ -518,20 +597,12 @@ namespace Server.Models
 
                     if (movement.DestinationRegion.Map.MinimumLevel > ob.Level && !player.Character.Account.TempAdmin)
                     {
-                        player.Connection.ReceiveChat(string.Format(player.Connection.Language.NeedLevel, movement.DestinationRegion.Map.MinimumLevel), MessageType.System);
-
-                        foreach (SConnection con in player.Connection.Observers)
-                            con.ReceiveChat(string.Format(con.Language.NeedLevel, movement.DestinationRegion.Map.MinimumLevel), MessageType.System);
-
+                        player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NeedLevel, movement.DestinationRegion.Map.MinimumLevel), MessageType.System);
                         break;
                     }
                     if (movement.DestinationRegion.Map.MaximumLevel > 0 && movement.DestinationRegion.Map.MaximumLevel < ob.Level && !player.Character.Account.TempAdmin)
                     {
-                        player.Connection.ReceiveChat(string.Format(player.Connection.Language.NeedMaxLevel, movement.DestinationRegion.Map.MaximumLevel), MessageType.System);
-
-                        foreach (SConnection con in player.Connection.Observers)
-                            con.ReceiveChat(string.Format(con.Language.NeedMaxLevel, movement.DestinationRegion.Map.MaximumLevel), MessageType.System);
-
+                        player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NeedMaxLevel, movement.DestinationRegion.Map.MaximumLevel), MessageType.System);
                         break;
                     }
 
@@ -559,11 +630,7 @@ namespace Server.Models
 
                         if (!allowed)
                         {
-                            var message = string.Format(player.Connection.Language.NeedClass, movement.DestinationRegion.Map.RequiredClass.ToString());
-                            player.Connection.ReceiveChat(message, MessageType.System);
-
-                            foreach (SConnection con in player.Connection.Observers)
-                                con.ReceiveChat(message, MessageType.System);
+                            player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NeedClass, movement.DestinationRegion.Map.RequiredClass.ToString()), MessageType.System);
 
                             break;
                         }
@@ -576,12 +643,14 @@ namespace Server.Models
                         if (spawn == null)
                             break;
 
+                        var holes = Objects.OfType<SpellObject>().Any(m => m.Effect == SpellEffect.ZombieHole && m.CurrentLocation == Location);
+
+                        if (!holes)
+                            break;
+
                         if (spawn.AliveCount == 0)
                         {
-                            player.Connection.ReceiveChat(player.Connection.Language.NeedMonster, MessageType.System);
-
-                            foreach (SConnection con in player.Connection.Observers)
-                                con.ReceiveChat(con.Language.NeedMonster, MessageType.System);
+                            player.Connection.ReceiveChatWithObservers(con => con.Language.NeedMonster, MessageType.System);
 
                             break;
                         }
@@ -591,10 +660,7 @@ namespace Server.Models
                     {
                         if (player.GetItemCount(movement.NeedItem) == 0)
                         {
-                            player.Connection.ReceiveChat(string.Format(player.Connection.Language.NeedItem, movement.NeedItem.ItemName), MessageType.System);
-
-                            foreach (SConnection con in player.Connection.Observers)
-                                con.ReceiveChat(string.Format(con.Language.NeedItem, movement.NeedItem.ItemName), MessageType.System);
+                            player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NeedItem, movement.NeedItem.ItemName), MessageType.System);
                             break;
                         }
 

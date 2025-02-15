@@ -13,7 +13,7 @@ namespace Server.Models.Magics
         protected override Element Element => Element.None;
         public override bool UpdateCombatTime => false;
         public override bool IgnoreAccuracy => true;
-        public decimal SwiftBladeLifeSteal { get; private set; }
+        public decimal SwiftBladeLifeSteal { get; set; }
 
         public SwiftBlade(PlayerObject player, UserMagic magic) : base(player, magic)
         {
@@ -36,6 +36,7 @@ namespace Server.Models.Magics
             response.Locations.Add(location);
 
             var cells = CurrentMap.GetCells(location, 0, 3);
+            SwiftBladeLifeSteal = 0;
 
             var delay = SEnvir.Now.AddMilliseconds(900);
 

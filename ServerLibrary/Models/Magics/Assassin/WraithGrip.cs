@@ -33,10 +33,7 @@ namespace Server.Models.Magics
 
             if (target.Race == ObjectType.Player ? target.Level >= Player.Level : target.Level > Player.Level + 15)
             {
-                Player.Connection.ReceiveChat(string.Format(Player.Connection.Language.WraithLevel, target.Name), MessageType.System);
-
-                foreach (SConnection con in Player.Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.WraithLevel, target.Name), MessageType.System);
+                Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.WraithLevel, target.Name), MessageType.System);
 
                 response.Ob = null;
                 response.Cast = false;

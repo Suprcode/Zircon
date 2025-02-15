@@ -12,7 +12,7 @@ namespace Client.Models
         public Point Origin { get; set; }
         public int Speed { get; set; }
         public bool Explode { get; set; }
-
+        public int Delay { get; set; }
         public int Direction16 { get; set; }
         public bool Has16Directions { get; set; }
 
@@ -51,6 +51,9 @@ namespace Client.Models
 
             Direction16 = Functions.Direction16(new Point(x, y / 32 * 48), new Point(x1, y1 / 32 * 48));
             long duration = Functions.Distance(new Point(x, y / 32 * 48), new Point(x1, y1 / 32 * 48)) * TimeSpan.TicksPerMillisecond;
+
+            if (Delay > 0)
+                duration *= Delay;
 
             if (!Has16Directions)
                 Direction16 /= 2;

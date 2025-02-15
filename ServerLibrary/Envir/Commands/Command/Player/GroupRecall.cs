@@ -19,6 +19,9 @@ namespace Server.Envir.Commands.Command.Player
             if (player.GroupMembers[0] != player)
                 throw new UserCommandException(player.Connection.Language.GroupNotLeader);
 
+            if (player.CurrentMap.Instance != null && !player.CurrentMap.Instance.AllowTeleport)
+                throw new UserCommandException(player.Connection.Language.GroupRecallMap);
+
             if (!player.CurrentMap.Info.AllowTT || !player.CurrentMap.Info.AllowRT || player.CurrentMap.Info.SkillDelay > 0)
                 throw new UserCommandException(player.Connection.Language.GroupRecallMap);
 
@@ -29,30 +32,19 @@ namespace Server.Envir.Commands.Command.Player
             {
                 if (member.Dead || member == player)
                     continue;
+
                 if (!member.CurrentMap.Info.AllowTT)
                 {
-                    member.Connection.ReceiveChat(member.Connection.Language.GroupRecallFromMap, MessageType.System);
-                    foreach (SConnection con in member.Connection.Observers)
-                        con.ReceiveChat(con.Language.GroupRecallFromMap, MessageType.System);
-
-                    player.Connection.ReceiveChat(string.Format(player.Connection.Language.GroupRecallMemberFromMap, member.Name), MessageType.System);
-
-                    foreach (SConnection con in player.Connection.Observers)
-                        con.ReceiveChat(string.Format(con.Language.GroupRecallMemberFromMap, member.Name), MessageType.System);
+                    member.Connection.ReceiveChatWithObservers(con => con.Language.GroupRecallFromMap, MessageType.System);
+                    player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GroupRecallMemberFromMap, member.Name), MessageType.System);
                     continue;
                 }
 
                 if (!member.Character.Account.AllowGroupRecall)
                 {
-                    member.Connection.ReceiveChat(member.Connection.Language.GroupRecallNotAllowed, MessageType.System);
+                    member.Connection.ReceiveChatWithObservers(con => con.Language.GroupRecallNotAllowed, MessageType.System);
 
-                    foreach (SConnection con in member.Connection.Observers)
-                        con.ReceiveChat(con.Language.GroupRecallNotAllowed, MessageType.System);
-
-                    player.Connection.ReceiveChat(string.Format(member.Connection.Language.GroupRecallMemberNotAllowed, member.Name), MessageType.System);
-
-                    foreach (SConnection con in player.Connection.Observers)
-                        con.ReceiveChat(string.Format(con.Language.GroupRecallMemberNotAllowed, member.Name), MessageType.System);
+                    player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GroupRecallMemberNotAllowed, member.Name), MessageType.System);
                     continue;
                 }
                 member.Teleport(player.CurrentMap, player.CurrentMap.GetRandomLocation(player.CurrentLocation, 10));

@@ -42,6 +42,8 @@
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            Category = new DevExpress.XtraGrid.Columns.GridColumn();
+            CurrencyCategoryImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
@@ -54,6 +56,7 @@
             ((System.ComponentModel.ISupportInitialize)CurrencyInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CurrencyTypeImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CurrencyCategoryImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             SuspendLayout();
             // 
@@ -94,14 +97,14 @@
             CurrencyInfoGridControl.MainView = CurrencyInfoGridView;
             CurrencyInfoGridControl.MenuManager = ribbon;
             CurrencyInfoGridControl.Name = "CurrencyInfoGridControl";
-            CurrencyInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { ItemLookUpEdit, CurrencyTypeImageComboBox });
+            CurrencyInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { ItemLookUpEdit, CurrencyTypeImageComboBox, CurrencyCategoryImageComboBox });
             CurrencyInfoGridControl.Size = new System.Drawing.Size(694, 432);
             CurrencyInfoGridControl.TabIndex = 1;
             CurrencyInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { CurrencyInfoGridView, CurrencyInfoImageGridView });
             // 
             // CurrencyInfoGridView
             // 
-            CurrencyInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn5, gridColumn2, gridColumn3, gridColumn4 });
+            CurrencyInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn5, gridColumn2, gridColumn3, gridColumn4, Category });
             CurrencyInfoGridView.GridControl = CurrencyInfoGridControl;
             CurrencyInfoGridView.Name = "CurrencyInfoGridView";
             CurrencyInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -149,7 +152,7 @@
             gridColumn3.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             gridColumn3.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
             gridColumn3.Visible = true;
-            gridColumn3.VisibleIndex = 3;
+            gridColumn3.VisibleIndex = 4;
             // 
             // ItemLookUpEdit
             // 
@@ -165,11 +168,26 @@
             // 
             // gridColumn4
             // 
-            gridColumn4.Caption = "Exchange Rate";
+            gridColumn4.Caption = "Gold Exchange Rate";
             gridColumn4.FieldName = "ExchangeRate";
             gridColumn4.Name = "gridColumn4";
             gridColumn4.Visible = true;
-            gridColumn4.VisibleIndex = 4;
+            gridColumn4.VisibleIndex = 5;
+            // 
+            // Category
+            // 
+            Category.Caption = "Category";
+            Category.ColumnEdit = CurrencyCategoryImageComboBox;
+            Category.Name = "Category";
+            Category.FieldName = "Category";
+            Category.Visible = true;
+            Category.VisibleIndex = 3;
+            // 
+            // CurrencyCategoryImageComboBox
+            // 
+            CurrencyCategoryImageComboBox.AutoHeight = false;
+            CurrencyCategoryImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            CurrencyCategoryImageComboBox.Name = "CurrencyCategoryImageComboBox";
             // 
             // ribbon
             // 
@@ -245,6 +263,7 @@
             ((System.ComponentModel.ISupportInitialize)CurrencyInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)CurrencyTypeImageComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CurrencyCategoryImageComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -271,5 +290,7 @@
         private DevExpress.XtraBars.BarButtonItem ImportButton;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
+        private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox CurrencyCategoryImageComboBox;
+        private DevExpress.XtraGrid.Columns.GridColumn Category;
     }
 }

@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Library;
+using Library.SystemModels;
+using Server.Envir;
+using Server.Views.DirectX;
+using SlimDX;
+using SlimDX.Direct3D9;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,15 +15,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Library;
-using Library.SystemModels;
-using Server.Envir;
-using Server.Views.DirectX;
-using SlimDX;
-using SlimDX.Direct3D9;
 using Blend = SlimDX.Direct3D9.Blend;
 using Matrix = SlimDX.Matrix;
-
 
 namespace Server.Views
 {
@@ -65,14 +64,55 @@ namespace Server.Views
 
             Map.Selection = MapRegion.GetPoints(Map.Width);
 
+            AttributesButton.Enabled = true;
+            BlockedOnlyButton.Enabled = true;
+            SelectionButton.Enabled = true;
+            SaveButton.Enabled = true;
+            CancelButton1.Enabled = true;
+
             MapRegionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
 
-        
-        
+        #region Map Path
 
+        public string MapPath
+        {
+            get { return _MapPath; }
+            set
+            {
+                if (_MapPath == value) return;
+
+                string oldValue = _MapPath;
+                _MapPath = value;
+
+                OnMapPathChanged(oldValue, value);
+            }
+        }
+        private string _MapPath;
+        public event EventHandler<EventArgs> MapPathChanged;
+        public virtual void OnMapPathChanged(string oValue, string nValue)
+        {
+            Map.Selection.Clear();
+            Map.TextureValid = false;
+            MapRegion = null;
+
+            if (oValue != nValue)
+                Map.Load(nValue);
+
+            Map.Selection = new HashSet<Point>();
+
+            AttributesButton.Enabled = false;
+            BlockedOnlyButton.Enabled = false;
+            SelectionButton.Enabled = false;
+            SaveButton.Enabled = false;
+            CancelButton1.Enabled = false;
+
+            MapPathChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
 
         public MapViewer()
         {
@@ -320,7 +360,7 @@ namespace Server.Views
 
 
 namespace Server.Views.DirectX
-{ 
+{
     public class DXManager : IDisposable
     {
         public Graphics Graphics;
@@ -364,7 +404,6 @@ namespace Server.Views.DirectX
 
                 LibraryList[pair.Key] = new MirLibrary(Path.Combine(Config.ClientPath, pair.Value), this);
             }
-
         }
 
         public void Create()
@@ -741,13 +780,23 @@ namespace Server.Views.DirectX
             using (MemoryStream mstream = new MemoryStream(_BReader.ReadBytes(_BReader.ReadInt32())))
             using (BinaryReader reader = new BinaryReader(mstream))
             {
-                Images = new MirImage[reader.ReadInt32()];
+                int value = reader.ReadInt32();
+
+                int count = value & 0x1FFFFFF;
+                var version = (value >> 25) & 0x7F;
+
+                if (version == 0)
+                {
+                    count = value;
+                }
+
+                Images = new MirImage[count];
 
                 for (int i = 0; i < Images.Length; i++)
                 {
                     if (!reader.ReadBoolean()) continue;
 
-                    Images[i] = new MirImage(reader, Manager);
+                    Images[i] = new MirImage(reader, Manager, version);
                 }
             }
 
@@ -1102,6 +1151,7 @@ namespace Server.Views.DirectX
     
     public sealed class MirImage : IDisposable
     {
+        public int Version;
         public int Position;
 
         public DXManager Manager;
@@ -1123,7 +1173,14 @@ namespace Server.Views.DirectX
                 int w = Width + (4 - Width % 4) % 4;
                 int h = Height + (4 - Height % 4) % 4;
 
-                return w * h / 2;
+                if (Version > 0)
+                {
+                    return w * h;
+                }
+                else
+                {
+                    return w * h / 2;
+                }
             }
         }
         #endregion
@@ -1145,7 +1202,14 @@ namespace Server.Views.DirectX
                 int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
                 int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
 
-                return w * h / 2;
+                if (Version > 0)
+                {
+                    return w * h;
+                }
+                else
+                {
+                    return w * h / 2;
+                }
             }
         }
         #endregion
@@ -1164,16 +1228,35 @@ namespace Server.Views.DirectX
                 int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
                 int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
 
-                return w * h / 2;
+                if (Version > 0)
+                {
+                    return w * h;
+                }
+                else
+                {
+                    return w * h / 2;
+                }
             }
         }
         #endregion
 
+        private Format DrawFormat
+        {
+            get
+            {
+                return Version switch
+                {
+                    0 => Format.Dxt1,
+                    _ => Format.Dxt5,
+                };
+            }
+        }
 
         public DateTime ExpireTime;
 
-        public MirImage(BinaryReader reader, DXManager manager)
+        public MirImage(BinaryReader reader, DXManager manager, int version)
         {
+            Version = version;
             Position = reader.ReadInt32();
 
             Width = reader.ReadInt16();
@@ -1258,7 +1341,7 @@ namespace Server.Views.DirectX
 
             if (w == 0 || h == 0) return;
 
-            Image = new Texture(Manager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Image = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Image.LockRectangle(0, LockFlags.Discard);
             ImageData = (byte*)rect.Data.DataPointer;
 
@@ -1287,7 +1370,7 @@ namespace Server.Views.DirectX
 
             if (w == 0 || h == 0) return;
 
-            Shadow = new Texture(Manager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Shadow = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Shadow.LockRectangle(0, LockFlags.Discard);
             ShadowData = (byte*)rect.Data.DataPointer;
 
@@ -1314,7 +1397,7 @@ namespace Server.Views.DirectX
 
             if (w == 0 || h == 0) return;
 
-            Overlay = new Texture(Manager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Overlay = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Overlay.LockRectangle(0, LockFlags.Discard);
             OverlayData = (byte*)rect.Data.DataPointer;
 
@@ -2007,9 +2090,20 @@ namespace Server.Views.DirectX
         {
             try
             {
-                if (!File.Exists(Config.MapPath + fileName + ".map")) return;
+                string path = null;
 
-                using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(Config.MapPath + fileName + ".map")))
+                if (Path.IsPathRooted(fileName))
+                {
+                    path = fileName;
+                }
+                else
+                {
+                    path = Path.Combine(Config.MapPath, fileName + ".map");
+                }
+
+                if (!File.Exists(path)) return;
+
+                using (MemoryStream mStream = new MemoryStream(File.ReadAllBytes(path)))
                 using (BinaryReader reader = new BinaryReader(mStream))
                 {
                     mStream.Seek(22, SeekOrigin.Begin);

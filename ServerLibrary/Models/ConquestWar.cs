@@ -18,7 +18,7 @@ namespace Server.Models
         public List<GuildInfo> Participants;
         public Map Map;
 
-        public CastleObjective CastleTarget;
+        public CastleObject CastleTarget;
         public bool Ended;
 
         public Dictionary<CharacterInfo, UserConquestStats> Stats = new Dictionary<CharacterInfo, UserConquestStats>();
@@ -34,7 +34,7 @@ namespace Server.Models
             for (int i = Map.NPCs.Count - 1; i >= 0; i--)
             {
                 NPCObject npc = Map.NPCs[i];
-             //   if (!Castle.CastleRegion.PointList.Contains(npc.CurrentLocation)) continue;
+                if (!Castle.ObjectiveRegion.PointList.Contains(npc.CurrentLocation)) continue;
                 
                 npc.Visible = false;
                 npc.RemoveAllObjects();
@@ -66,12 +66,11 @@ namespace Server.Models
                 con.ReceiveChat(string.Format(con.Language.ConquestFinished, Castle.Name), MessageType.System);
 
             Ended = true;
-            
 
             for (int i = Map.NPCs.Count - 1; i >= 0; i--)
             {
                 NPCObject npc = Map.NPCs[i];
-           //     if (!Castle.CastleRegion.PointList.Contains(npc.CurrentLocation)) continue;
+                if (!Castle.ObjectiveRegion.PointList.Contains(npc.CurrentLocation)) continue;
 
                 npc.Visible = true;
                 npc.AddAllObjects();
@@ -86,7 +85,6 @@ namespace Server.Models
             SEnvir.Broadcast(new S.GuildConquestFinished { Index = Castle.Index });
 
             GuildInfo ownerGuild = SEnvir.GuildInfoList.Binding.FirstOrDefault(x => x.Castle == Castle);
-
 
             if (ownerGuild != null)
             {
@@ -154,18 +152,20 @@ namespace Server.Models
                         {
                             MonsterInfo = Castle.Monster,
                             War = this,
+                            Castle = Castle
                         };
 
-                        CastleTarget.Spawn(Castle.CastleRegion, null, 0);
+                        CastleTarget.Spawn(Castle.ObjectiveRegion, null, 0);
                         break;
                     case 1001: //CastleFlag
                         CastleTarget = new CastleFlag
                         {
                             MonsterInfo = Castle.Monster,
                             War = this,
+                            Castle = Castle
                         };
 
-                        CastleTarget.Spawn(Castle.CastleRegion, null, 0);
+                        CastleTarget.Spawn(Castle.ObjectiveRegion, null, 0);
                         break;
                 }
             }

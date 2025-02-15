@@ -236,6 +236,14 @@ namespace Server.Envir
             }
         }
 
+        public void ReceiveChatWithObservers(Func<SConnection, string> messageFunc, MessageType messageType, List<ClientUserItem> linkedItems = null, uint objectID = 0)
+        {
+            ReceiveChat(messageFunc(this), messageType, linkedItems, objectID);
+
+            foreach (SConnection observer in Observers)
+                observer.ReceiveChat(messageFunc(observer), messageType, linkedItems, objectID);
+        }
+
         public void Process(C.SelectLanguage p)
         {
             switch (p.Language.ToUpper())
@@ -436,6 +444,15 @@ namespace Server.Envir
             if (p.Direction < MirDirection.Up || p.Direction > MirDirection.UpLeft) return;
 
             Player.Attack(p.Direction, p.AttackMagic);
+        }
+
+        public void Process(C.RangeAttack p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            if (p.Direction < MirDirection.Up || p.Direction > MirDirection.UpLeft) return;
+
+            Player.RangeAttack(p.Direction, p.DelayedTime, p.Target);
         }
         public void Process(C.Magic p)
         {
@@ -1147,6 +1164,24 @@ namespace Server.Envir
 
             Player.GuildFlag(p.Flag);
         }
+        public void Process(C.GuildToggleCastleGates p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GuildToggleCastleGates();
+        }
+        public void Process(C.GuildRepairCastleGates p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GuildRepairCastleGates();
+        }
+        public void Process(C.GuildRepairCastleGuards p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GuildRepairCastleGuards();
+        }
 
         public void Process(C.QuestAccept p)
         {
@@ -1213,7 +1248,6 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.MarriageMakeRing(p.Slot);
-
         }
         public void Process(C.MarriageTeleport p)
         {

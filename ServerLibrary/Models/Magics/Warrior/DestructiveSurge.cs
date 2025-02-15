@@ -41,6 +41,7 @@ namespace Server.Models.Magics
 
             if (cost <= Player.CurrentMP)
             {
+                DestructiveSurgeLifeSteal = 0;
                 Player.ChangeMP(-cost);
 
                 response.Cast = true;

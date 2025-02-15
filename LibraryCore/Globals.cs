@@ -103,7 +103,9 @@ namespace Library
 
             CommonCraftWeaponPercentCost = 30000000,
             SuperiorCraftWeaponPercentCost = 60000000,
-            EliteCraftWeaponPercentCost = 80000000;
+            EliteCraftWeaponPercentCost = 80000000,
+
+            ShurikenLibraryWeaponShape = 33;
 
         public static decimal MarketPlaceTax = 0.07M;  //2.5x Item cost
 
@@ -303,6 +305,11 @@ namespace Library
             [RefineQuality.Careful] = TimeSpan.FromHours(6),
             [RefineQuality.Precise] = TimeSpan.FromDays(1),
         };
+
+        public static string PluginPath(string assemblyName)
+        {
+            return "Plugins" + "\\" + assemblyName + "\\";
+        }
     }
 
     public sealed class SelectInfo
@@ -776,6 +783,7 @@ namespace Library
 
         public int Level { get; set; }
         public long Experience { get; set; }
+        public bool ItemRequired { get; set; }
 
         public TimeSpan Cooldown { get; set; }
 
