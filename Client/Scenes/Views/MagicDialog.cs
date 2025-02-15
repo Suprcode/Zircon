@@ -10,7 +10,9 @@ using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
+using Library.Network.ClientPackets;
 using Library.SystemModels;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -162,6 +164,8 @@ namespace Client.Scenes.Views
 
         public void CreateTabs()
         {
+            var selectedSchool = SchoolTabs.FirstOrDefault(x => x.Value.Selected).Key;
+
             foreach (KeyValuePair<MagicSchool, MagicTab> pair in SchoolTabs)
                 pair.Value.Dispose();
 
@@ -219,6 +223,11 @@ namespace Client.Scenes.Views
             foreach (KeyValuePair<MagicSchool, MagicTab> dxTab in SchoolTabs)
             {
                 dxTab.Value.Parent = TabControl;
+
+                if (dxTab.Key == selectedSchool)
+                {
+                    dxTab.Value.Selected = true;
+                }
             }
         }
 

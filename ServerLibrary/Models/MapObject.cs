@@ -1116,24 +1116,6 @@ namespace Server.Models
             CleanUp();
         }
 
-        public void SafeDespawn()
-        {
-            CurrentMap = null;
-            CurrentCell = null;
-
-            RemoveAllObjects();
-
-            if (Node != null)
-            {
-                Node.List.Remove(Node);
-                Node = null;
-            }
-
-            OnSafeDespawn();
-
-            CleanUp();
-        }
-
         public virtual void CleanUp()
         {
             ActionList?.Clear();
@@ -1157,11 +1139,7 @@ namespace Server.Models
             for (int i = SpellList.Count - 1; i >= 0; i--)
                 SpellList[i].Despawn();
         }
-        public virtual void OnSafeDespawn()
-        {
-            for (int i = SpellList.Count - 1; i >= 0; i--)
-                SpellList[i].Despawn();
-        }
+
         public virtual void RefreshStats() { }
 
         public virtual Cell GetDropLocation(int distance, PlayerObject player)

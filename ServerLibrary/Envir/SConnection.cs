@@ -1217,7 +1217,6 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.MarriageMakeRing(p.Slot);
-
         }
         public void Process(C.MarriageTeleport p)
         {

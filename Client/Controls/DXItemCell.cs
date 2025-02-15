@@ -1257,6 +1257,9 @@ namespace Client.Controls
                 case GridType.WeddingRing:
                     if (GridType != GridType.Inventory) return false;
                     if (Item.Info.ItemType != ItemType.Ring) return false;
+
+                    if (!(GameScene.Game.CanWearItem(Item, EquipmentSlot.RingL) || GameScene.Game.CanWearItem(Item, EquipmentSlot.RingR))) return false;
+
                     break;
                 case GridType.AccessoryRefineUpgradeTarget:
                     if ((Item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return false;
