@@ -96,6 +96,8 @@ namespace Client.Scenes.Views
             ClipMap();
         }
 
+        private int originalMiniMapHeight = 0;
+
         private void MapControl_MapInfoChanged(object sender, EventArgs e)
         {
             foreach (DXControl temp in MapInfoObjects.Values)
@@ -107,6 +109,18 @@ namespace Client.Scenes.Views
 
             TitleLabel.Text = GameScene.Game.MapControl.MapInfo.PlayerDescription;
             Image.Index = GameScene.Game.MapControl.MapInfo.MiniMap;
+
+            if (Image.Index <= 0 && Size.Height >= originalMiniMapHeight)
+            {
+                originalMiniMapHeight = Size.Height;
+                Size = new Size(Size.Width, 32);
+                AllowResize = false;
+            }
+            else if (originalMiniMapHeight > 0)
+            {
+                Size = new Size(Size.Width, originalMiniMapHeight);
+                AllowResize = true;
+            }
 
             ScaleX = Image.Size.Width/(float) GameScene.Game.MapControl.Width;
             ScaleY = Image.Size.Height/(float) GameScene.Game.MapControl.Height;
@@ -375,6 +389,16 @@ namespace Client.Scenes.Views
             if (y > 0)
                 y = 0;
 
+            if (Image.Size.Width < Panel.Size.Width)
+            {
+                x = -((Image.Size.Width - Panel.Size.Width) / 2);
+            }
+
+            if (Image.Size.Height < Panel.Size.Height)
+            {
+                y = -((Image.Size.Height - Panel.Size.Height) / 2);
+            }
+
             Image.Location = new Point(x, y);
         }
 
@@ -391,8 +415,6 @@ namespace Client.Scenes.Views
         public override void Draw()
         {
             if (!IsVisible || Size.Width == 0 || Size.Height == 0) return;
-
-            if (Image.Index <= 0) return;
 
             OnBeforeDraw();
             DrawControl();

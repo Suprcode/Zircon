@@ -1,5 +1,6 @@
 ﻿using Library;
 using Library.Network;
+using Library.Network.ClientPackets;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
@@ -13,6 +14,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
@@ -1401,11 +1403,6 @@ namespace Server.Models
             SEnvir.Players.Remove(this);
         }
 
-        public override void OnSafeDespawn()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void CleanUp()
         {
             base.CleanUp();
@@ -2121,7 +2118,7 @@ namespace Server.Models
                             magic.Info = info;
                             magic.ItemRequired = true;
 
-                            SetupMagic(magic);
+                            magicObject = SetupMagic(magic);
                             Enqueue(new S.NewMagic { Magic = magic.ToClientInfo() });
                             Connection.ReceiveChatWithObservers(con => string.Format(con.Language.LearnBookSuccess, magic.Info.Name), MessageType.System);
                         }
@@ -2817,6 +2814,8 @@ namespace Server.Models
             UserItem ring = Inventory[index];
 
             if (ring == null || ring.Info.ItemType != ItemType.Ring) return;
+
+            if (!(CanWearItem(ring, EquipmentSlot.RingL) || CanWearItem(ring, EquipmentSlot.RingR))) return;
 
             ring.Flags |= UserItemFlags.Marriage;
 

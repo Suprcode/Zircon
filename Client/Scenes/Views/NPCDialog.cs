@@ -4695,7 +4695,6 @@ namespace Client.Scenes.Views
             {
                 if (RingGrid.Grid[0].Item == null || RingGrid.Grid[0].Item.Info.ItemType != ItemType.Ring) return;
 
-
                 CEnvir.Enqueue(new C.MarriageMakeRing {  Slot = RingGrid.Grid[0].Link.Slot });
 
                 RingGrid.Grid[0].Link = null;

@@ -28,808 +28,809 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LMain));
-            this.MainMenu = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.functionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.countBlanksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeBlanksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.safeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.skinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.InsertBlankButton = new System.Windows.Forms.Button();
-            this.AddBlankButton = new System.Windows.Forms.Button();
-            this.nudJump = new System.Windows.Forms.NumericUpDown();
-            this.checkBoxPreventAntiAliasing = new System.Windows.Forms.CheckBox();
-            this.checkBoxQuality = new System.Windows.Forms.CheckBox();
-            this.buttonSkipPrevious = new System.Windows.Forms.Button();
-            this.buttonSkipNext = new System.Windows.Forms.Button();
-            this.buttonReplace = new System.Windows.Forms.Button();
-            this.pictureBox = new System.Windows.Forms.PictureBox();
-            this.ZoomTrackBar = new System.Windows.Forms.TrackBar();
-            this.ExportButton = new System.Windows.Forms.Button();
-            this.mergeBtn = new System.Windows.Forms.Button();
-            this.InsertImageButton = new System.Windows.Forms.Button();
-            this.OffSetYTextBox = new System.Windows.Forms.TextBox();
-            this.OffSetXTextBox = new System.Windows.Forms.TextBox();
-            this.DeleteButton = new System.Windows.Forms.Button();
-            this.AddButton = new System.Windows.Forms.Button();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.HeightLabel = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.WidthLabel = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.panel = new System.Windows.Forms.Panel();
-            this.ImageBox = new System.Windows.Forms.PictureBox();
-            this.PreviewListView = new LibraryEditor.FixedListView();
-            this.ImageList = new System.Windows.Forms.ImageList(this.components);
-            this.OpenLibraryDialog = new System.Windows.Forms.OpenFileDialog();
-            this.SaveLibraryDialog = new System.Windows.Forms.SaveFileDialog();
-            this.ImportImageDialog = new System.Windows.Forms.OpenFileDialog();
-            this.OpenWeMadeDialog = new System.Windows.Forms.OpenFileDialog();
-            this.OpenMergeDialog = new System.Windows.Forms.OpenFileDialog();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.radioButtonOverlay = new System.Windows.Forms.RadioButton();
-            this.radioButtonShadow = new System.Windows.Forms.RadioButton();
-            this.radioButtonImage = new System.Windows.Forms.RadioButton();
-            this.MainMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudJump)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ZoomTrackBar)).BeginInit();
-            this.panel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ImageBox)).BeginInit();
-            this.statusStrip.SuspendLayout();
-            this.panel1.SuspendLayout();
-            this.SuspendLayout();
+            MainMenu = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            functionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            copyToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            countBlanksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            removeBlanksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            safeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            convertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            skinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            splitContainer1 = new System.Windows.Forms.SplitContainer();
+            splitContainer2 = new System.Windows.Forms.SplitContainer();
+            ShadowTypeLabel = new System.Windows.Forms.Label();
+            InsertBlankButton = new System.Windows.Forms.Button();
+            AddBlankButton = new System.Windows.Forms.Button();
+            nudJump = new System.Windows.Forms.NumericUpDown();
+            checkBoxPreventAntiAliasing = new System.Windows.Forms.CheckBox();
+            checkBoxQuality = new System.Windows.Forms.CheckBox();
+            buttonSkipPrevious = new System.Windows.Forms.Button();
+            buttonSkipNext = new System.Windows.Forms.Button();
+            buttonReplace = new System.Windows.Forms.Button();
+            pictureBox = new System.Windows.Forms.PictureBox();
+            ZoomTrackBar = new System.Windows.Forms.TrackBar();
+            ExportButton = new System.Windows.Forms.Button();
+            mergeBtn = new System.Windows.Forms.Button();
+            InsertImageButton = new System.Windows.Forms.Button();
+            OffSetYTextBox = new System.Windows.Forms.TextBox();
+            OffSetXTextBox = new System.Windows.Forms.TextBox();
+            DeleteButton = new System.Windows.Forms.Button();
+            AddButton = new System.Windows.Forms.Button();
+            label10 = new System.Windows.Forms.Label();
+            label8 = new System.Windows.Forms.Label();
+            HeightLabel = new System.Windows.Forms.Label();
+            label6 = new System.Windows.Forms.Label();
+            WidthLabel = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            panel = new System.Windows.Forms.Panel();
+            ImageBox = new System.Windows.Forms.PictureBox();
+            PreviewListView = new FixedListView();
+            ImageList = new System.Windows.Forms.ImageList(components);
+            OpenLibraryDialog = new System.Windows.Forms.OpenFileDialog();
+            SaveLibraryDialog = new System.Windows.Forms.SaveFileDialog();
+            ImportImageDialog = new System.Windows.Forms.OpenFileDialog();
+            OpenWeMadeDialog = new System.Windows.Forms.OpenFileDialog();
+            OpenMergeDialog = new System.Windows.Forms.OpenFileDialog();
+            toolTip = new System.Windows.Forms.ToolTip(components);
+            statusStrip = new System.Windows.Forms.StatusStrip();
+            toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            panel1 = new System.Windows.Forms.Panel();
+            radioButtonOverlay = new System.Windows.Forms.RadioButton();
+            radioButtonShadow = new System.Windows.Forms.RadioButton();
+            radioButtonImage = new System.Windows.Forms.RadioButton();
+            label2 = new System.Windows.Forms.Label();
+            MainMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+            splitContainer2.Panel1.SuspendLayout();
+            splitContainer2.Panel2.SuspendLayout();
+            splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)nudJump).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ZoomTrackBar).BeginInit();
+            panel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ImageBox).BeginInit();
+            statusStrip.SuspendLayout();
+            panel1.SuspendLayout();
+            SuspendLayout();
             // 
             // MainMenu
             // 
-            this.MainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.functionsToolStripMenuItem,
-            this.skinToolStripMenuItem});
-            this.MainMenu.Location = new System.Drawing.Point(0, 0);
-            this.MainMenu.Name = "MainMenu";
-            this.MainMenu.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.MainMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.MainMenu.Size = new System.Drawing.Size(1256, 24);
-            this.MainMenu.TabIndex = 0;
-            this.MainMenu.Text = "menuStrip1";
+            MainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, functionsToolStripMenuItem, skinToolStripMenuItem });
+            MainMenu.Location = new System.Drawing.Point(0, 0);
+            MainMenu.Name = "MainMenu";
+            MainMenu.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            MainMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            MainMenu.Size = new System.Drawing.Size(1256, 24);
+            MainMenu.TabIndex = 0;
+            MainMenu.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem,
-            this.openToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem,
-            this.toolStripMenuItem2,
-            this.closeToolStripMenuItem});
-            this.fileToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("fileToolStripMenuItem.Image")));
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, toolStripMenuItem1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripMenuItem2, closeToolStripMenuItem });
+            fileToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("fileToolStripMenuItem.Image");
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            fileToolStripMenuItem.Text = "File";
             // 
             // newToolStripMenuItem
             // 
-            this.newToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem.Image")));
-            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.newToolStripMenuItem.Text = "New";
-            this.newToolStripMenuItem.ToolTipText = "New .Lib";
-            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            newToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("newToolStripMenuItem.Image");
+            newToolStripMenuItem.Name = "newToolStripMenuItem";
+            newToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            newToolStripMenuItem.Text = "New";
+            newToolStripMenuItem.ToolTipText = "New .Lib";
+            newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // openToolStripMenuItem
             // 
-            this.openToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem.Image")));
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.openToolStripMenuItem.Text = "Open";
-            this.openToolStripMenuItem.ToolTipText = "Open Shanda or Wemade files.";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            openToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("openToolStripMenuItem.Image");
+            openToolStripMenuItem.Name = "openToolStripMenuItem";
+            openToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            openToolStripMenuItem.Text = "Open";
+            openToolStripMenuItem.ToolTipText = "Open Shanda or Wemade files.";
+            openToolStripMenuItem.Click += openToolStripMenuItem_Click;
             // 
             // toolStripMenuItem1
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(111, 6);
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new System.Drawing.Size(111, 6);
             // 
             // saveToolStripMenuItem
             // 
-            this.saveToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem.Image")));
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.ToolTipText = "Saves currently open .Lib";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            saveToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("saveToolStripMenuItem.Image");
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.ToolTipText = "Saves currently open .Lib";
+            saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
-            this.saveAsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveAsToolStripMenuItem.Image")));
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.saveAsToolStripMenuItem.Text = "Save As";
-            this.saveAsToolStripMenuItem.ToolTipText = ".Lib Only.";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            saveAsToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("saveAsToolStripMenuItem.Image");
+            saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            saveAsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            saveAsToolStripMenuItem.Text = "Save As";
+            saveAsToolStripMenuItem.ToolTipText = ".Lib Only.";
+            saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // toolStripMenuItem2
             // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(111, 6);
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new System.Drawing.Size(111, 6);
             // 
             // closeToolStripMenuItem
             // 
-            this.closeToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("closeToolStripMenuItem.Image")));
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.ToolTipText = "Exit Application.";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            closeToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("closeToolStripMenuItem.Image");
+            closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            closeToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            closeToolStripMenuItem.Text = "Close";
+            closeToolStripMenuItem.ToolTipText = "Exit Application.";
+            closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
             // functionsToolStripMenuItem
             // 
-            this.functionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyToToolStripMenuItem,
-            this.countBlanksToolStripMenuItem,
-            this.removeBlanksToolStripMenuItem,
-            this.convertToolStripMenuItem});
-            this.functionsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("functionsToolStripMenuItem.Image")));
-            this.functionsToolStripMenuItem.Name = "functionsToolStripMenuItem";
-            this.functionsToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
-            this.functionsToolStripMenuItem.Text = "Functions";
+            functionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { copyToToolStripMenuItem, countBlanksToolStripMenuItem, removeBlanksToolStripMenuItem, convertToolStripMenuItem });
+            functionsToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("functionsToolStripMenuItem.Image");
+            functionsToolStripMenuItem.Name = "functionsToolStripMenuItem";
+            functionsToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
+            functionsToolStripMenuItem.Text = "Functions";
             // 
             // copyToToolStripMenuItem
             // 
-            this.copyToToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("copyToToolStripMenuItem.Image")));
-            this.copyToToolStripMenuItem.Name = "copyToToolStripMenuItem";
-            this.copyToToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.copyToToolStripMenuItem.Text = "Copy To..";
-            this.copyToToolStripMenuItem.ToolTipText = "Copy to a new .Lib or to the end of an exsisting one.";
-            this.copyToToolStripMenuItem.Visible = false;
-            this.copyToToolStripMenuItem.Click += new System.EventHandler(this.copyToToolStripMenuItem_Click);
+            copyToToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("copyToToolStripMenuItem.Image");
+            copyToToolStripMenuItem.Name = "copyToToolStripMenuItem";
+            copyToToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            copyToToolStripMenuItem.Text = "Copy To..";
+            copyToToolStripMenuItem.ToolTipText = "Copy to a new .Lib or to the end of an exsisting one.";
+            copyToToolStripMenuItem.Visible = false;
+            copyToToolStripMenuItem.Click += copyToToolStripMenuItem_Click;
             // 
             // countBlanksToolStripMenuItem
             // 
-            this.countBlanksToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("countBlanksToolStripMenuItem.Image")));
-            this.countBlanksToolStripMenuItem.Name = "countBlanksToolStripMenuItem";
-            this.countBlanksToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.countBlanksToolStripMenuItem.Text = "Count Blanks";
-            this.countBlanksToolStripMenuItem.ToolTipText = "Counts the blank images in the .Lib";
-            this.countBlanksToolStripMenuItem.Visible = false;
-            this.countBlanksToolStripMenuItem.Click += new System.EventHandler(this.countBlanksToolStripMenuItem_Click);
+            countBlanksToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("countBlanksToolStripMenuItem.Image");
+            countBlanksToolStripMenuItem.Name = "countBlanksToolStripMenuItem";
+            countBlanksToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            countBlanksToolStripMenuItem.Text = "Count Blanks";
+            countBlanksToolStripMenuItem.ToolTipText = "Counts the blank images in the .Lib";
+            countBlanksToolStripMenuItem.Visible = false;
+            countBlanksToolStripMenuItem.Click += countBlanksToolStripMenuItem_Click;
             // 
             // removeBlanksToolStripMenuItem
             // 
-            this.removeBlanksToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.safeToolStripMenuItem});
-            this.removeBlanksToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("removeBlanksToolStripMenuItem.Image")));
-            this.removeBlanksToolStripMenuItem.Name = "removeBlanksToolStripMenuItem";
-            this.removeBlanksToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.removeBlanksToolStripMenuItem.Text = "Remove Blanks";
-            this.removeBlanksToolStripMenuItem.ToolTipText = "Quick removal of blanks.";
-            this.removeBlanksToolStripMenuItem.Click += new System.EventHandler(this.removeBlanksToolStripMenuItem_Click);
+            removeBlanksToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { safeToolStripMenuItem });
+            removeBlanksToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("removeBlanksToolStripMenuItem.Image");
+            removeBlanksToolStripMenuItem.Name = "removeBlanksToolStripMenuItem";
+            removeBlanksToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            removeBlanksToolStripMenuItem.Text = "Remove Blanks";
+            removeBlanksToolStripMenuItem.ToolTipText = "Quick removal of blanks.";
+            removeBlanksToolStripMenuItem.Click += removeBlanksToolStripMenuItem_Click;
             // 
             // safeToolStripMenuItem
             // 
-            this.safeToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("safeToolStripMenuItem.Image")));
-            this.safeToolStripMenuItem.Name = "safeToolStripMenuItem";
-            this.safeToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
-            this.safeToolStripMenuItem.Text = "Safe";
-            this.safeToolStripMenuItem.ToolTipText = "Use the safe method of removing blanks.";
-            this.safeToolStripMenuItem.Click += new System.EventHandler(this.safeToolStripMenuItem_Click);
+            safeToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("safeToolStripMenuItem.Image");
+            safeToolStripMenuItem.Name = "safeToolStripMenuItem";
+            safeToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            safeToolStripMenuItem.Text = "Safe";
+            safeToolStripMenuItem.ToolTipText = "Use the safe method of removing blanks.";
+            safeToolStripMenuItem.Click += safeToolStripMenuItem_Click;
             // 
             // convertToolStripMenuItem
             // 
-            this.convertToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("convertToolStripMenuItem.Image")));
-            this.convertToolStripMenuItem.Name = "convertToolStripMenuItem";
-            this.convertToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.convertToolStripMenuItem.Text = "Converter";
-            this.convertToolStripMenuItem.ToolTipText = "Convert Wil/Wzl/Miz to .Lib";
-            this.convertToolStripMenuItem.Click += new System.EventHandler(this.convertToolStripMenuItem_Click);
+            convertToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("convertToolStripMenuItem.Image");
+            convertToolStripMenuItem.Name = "convertToolStripMenuItem";
+            convertToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            convertToolStripMenuItem.Text = "Converter";
+            convertToolStripMenuItem.ToolTipText = "Convert Wil/Wzl/Miz to .Lib";
+            convertToolStripMenuItem.Click += convertToolStripMenuItem_Click;
             // 
             // skinToolStripMenuItem
             // 
-            this.skinToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.skinToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("skinToolStripMenuItem.Image")));
-            this.skinToolStripMenuItem.Name = "skinToolStripMenuItem";
-            this.skinToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.skinToolStripMenuItem.Text = "Skin";
-            this.skinToolStripMenuItem.Visible = false;
+            skinToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            skinToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("skinToolStripMenuItem.Image");
+            skinToolStripMenuItem.Name = "skinToolStripMenuItem";
+            skinToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            skinToolStripMenuItem.Text = "Skin";
+            skinToolStripMenuItem.Visible = false;
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 67);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            splitContainer1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            splitContainer1.Location = new System.Drawing.Point(0, 67);
+            splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            splitContainer1.Name = "splitContainer1";
+            splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Panel1MinSize = 325;
+            splitContainer1.Panel1.Controls.Add(splitContainer2);
+            splitContainer1.Panel1MinSize = 325;
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.PreviewListView);
-            this.splitContainer1.Size = new System.Drawing.Size(1256, 967);
-            this.splitContainer1.SplitterDistance = 479;
-            this.splitContainer1.SplitterWidth = 5;
-            this.splitContainer1.TabIndex = 1;
+            splitContainer1.Panel2.Controls.Add(PreviewListView);
+            splitContainer1.Size = new System.Drawing.Size(1256, 967);
+            splitContainer1.SplitterDistance = 479;
+            splitContainer1.SplitterWidth = 5;
+            splitContainer1.TabIndex = 1;
             // 
             // splitContainer2
             // 
-            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer2.IsSplitterFixed = true;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 3);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.splitContainer2.Name = "splitContainer2";
+            splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            splitContainer2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            splitContainer2.IsSplitterFixed = true;
+            splitContainer2.Location = new System.Drawing.Point(0, 3);
+            splitContainer2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.InsertBlankButton);
-            this.splitContainer2.Panel1.Controls.Add(this.AddBlankButton);
-            this.splitContainer2.Panel1.Controls.Add(this.nudJump);
-            this.splitContainer2.Panel1.Controls.Add(this.checkBoxPreventAntiAliasing);
-            this.splitContainer2.Panel1.Controls.Add(this.checkBoxQuality);
-            this.splitContainer2.Panel1.Controls.Add(this.buttonSkipPrevious);
-            this.splitContainer2.Panel1.Controls.Add(this.buttonSkipNext);
-            this.splitContainer2.Panel1.Controls.Add(this.buttonReplace);
-            this.splitContainer2.Panel1.Controls.Add(this.pictureBox);
-            this.splitContainer2.Panel1.Controls.Add(this.ZoomTrackBar);
-            this.splitContainer2.Panel1.Controls.Add(this.ExportButton);
-            this.splitContainer2.Panel1.Controls.Add(this.mergeBtn);
-            this.splitContainer2.Panel1.Controls.Add(this.InsertImageButton);
-            this.splitContainer2.Panel1.Controls.Add(this.OffSetYTextBox);
-            this.splitContainer2.Panel1.Controls.Add(this.OffSetXTextBox);
-            this.splitContainer2.Panel1.Controls.Add(this.DeleteButton);
-            this.splitContainer2.Panel1.Controls.Add(this.AddButton);
-            this.splitContainer2.Panel1.Controls.Add(this.label10);
-            this.splitContainer2.Panel1.Controls.Add(this.label8);
-            this.splitContainer2.Panel1.Controls.Add(this.HeightLabel);
-            this.splitContainer2.Panel1.Controls.Add(this.label6);
-            this.splitContainer2.Panel1.Controls.Add(this.WidthLabel);
-            this.splitContainer2.Panel1.Controls.Add(this.label1);
-            this.splitContainer2.Panel1.ForeColor = System.Drawing.Color.Black;
-            this.splitContainer2.Panel1MinSize = 240;
+            splitContainer2.Panel1.Controls.Add(label2);
+            splitContainer2.Panel1.Controls.Add(ShadowTypeLabel);
+            splitContainer2.Panel1.Controls.Add(InsertBlankButton);
+            splitContainer2.Panel1.Controls.Add(AddBlankButton);
+            splitContainer2.Panel1.Controls.Add(nudJump);
+            splitContainer2.Panel1.Controls.Add(checkBoxPreventAntiAliasing);
+            splitContainer2.Panel1.Controls.Add(checkBoxQuality);
+            splitContainer2.Panel1.Controls.Add(buttonSkipPrevious);
+            splitContainer2.Panel1.Controls.Add(buttonSkipNext);
+            splitContainer2.Panel1.Controls.Add(buttonReplace);
+            splitContainer2.Panel1.Controls.Add(pictureBox);
+            splitContainer2.Panel1.Controls.Add(ZoomTrackBar);
+            splitContainer2.Panel1.Controls.Add(ExportButton);
+            splitContainer2.Panel1.Controls.Add(mergeBtn);
+            splitContainer2.Panel1.Controls.Add(InsertImageButton);
+            splitContainer2.Panel1.Controls.Add(OffSetYTextBox);
+            splitContainer2.Panel1.Controls.Add(OffSetXTextBox);
+            splitContainer2.Panel1.Controls.Add(DeleteButton);
+            splitContainer2.Panel1.Controls.Add(AddButton);
+            splitContainer2.Panel1.Controls.Add(label10);
+            splitContainer2.Panel1.Controls.Add(label8);
+            splitContainer2.Panel1.Controls.Add(HeightLabel);
+            splitContainer2.Panel1.Controls.Add(label6);
+            splitContainer2.Panel1.Controls.Add(WidthLabel);
+            splitContainer2.Panel1.Controls.Add(label1);
+            splitContainer2.Panel1.ForeColor = System.Drawing.Color.Black;
+            splitContainer2.Panel1MinSize = 240;
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.panel);
-            this.splitContainer2.Size = new System.Drawing.Size(1254, 474);
-            this.splitContainer2.SplitterDistance = 280;
-            this.splitContainer2.SplitterWidth = 5;
-            this.splitContainer2.TabIndex = 0;
+            splitContainer2.Panel2.Controls.Add(panel);
+            splitContainer2.Size = new System.Drawing.Size(1254, 474);
+            splitContainer2.SplitterDistance = 280;
+            splitContainer2.SplitterWidth = 5;
+            splitContainer2.TabIndex = 0;
+            // 
+            // ShadowTypeLabel
+            // 
+            ShadowTypeLabel.AutoSize = true;
+            ShadowTypeLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            ShadowTypeLabel.Location = new System.Drawing.Point(144, 119);
+            ShadowTypeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            ShadowTypeLabel.Name = "ShadowTypeLabel";
+            ShadowTypeLabel.Size = new System.Drawing.Size(75, 15);
+            ShadowTypeLabel.TabIndex = 25;
+            ShadowTypeLabel.Text = "<No Image>";
             // 
             // InsertBlankButton
             // 
-            this.InsertBlankButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.InsertBlankButton.Image = ((System.Drawing.Image)(resources.GetObject("InsertBlankButton.Image")));
-            this.InsertBlankButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.InsertBlankButton.Location = new System.Drawing.Point(141, 243);
-            this.InsertBlankButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.InsertBlankButton.Name = "InsertBlankButton";
-            this.InsertBlankButton.Size = new System.Drawing.Size(122, 30);
-            this.InsertBlankButton.TabIndex = 24;
-            this.InsertBlankButton.Tag = "";
-            this.InsertBlankButton.Text = "Insert Blanks";
-            this.InsertBlankButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.InsertBlankButton.UseVisualStyleBackColor = true;
-            this.InsertBlankButton.Click += new System.EventHandler(this.InsertBlanksButton_Click);
+            InsertBlankButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            InsertBlankButton.Image = (System.Drawing.Image)resources.GetObject("InsertBlankButton.Image");
+            InsertBlankButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            InsertBlankButton.Location = new System.Drawing.Point(141, 307);
+            InsertBlankButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            InsertBlankButton.Name = "InsertBlankButton";
+            InsertBlankButton.Size = new System.Drawing.Size(122, 30);
+            InsertBlankButton.TabIndex = 24;
+            InsertBlankButton.Tag = "";
+            InsertBlankButton.Text = "Insert Blanks";
+            InsertBlankButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            InsertBlankButton.UseVisualStyleBackColor = true;
+            InsertBlankButton.Click += InsertBlanksButton_Click;
             // 
             // AddBlankButton
             // 
-            this.AddBlankButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.AddBlankButton.Image = ((System.Drawing.Image)(resources.GetObject("AddBlankButton.Image")));
-            this.AddBlankButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.AddBlankButton.Location = new System.Drawing.Point(12, 240);
-            this.AddBlankButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.AddBlankButton.Name = "AddBlankButton";
-            this.AddBlankButton.Size = new System.Drawing.Size(122, 30);
-            this.AddBlankButton.TabIndex = 23;
-            this.AddBlankButton.Tag = "";
-            this.AddBlankButton.Text = "Add Blanks";
-            this.AddBlankButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.AddBlankButton.UseVisualStyleBackColor = true;
-            this.AddBlankButton.Click += new System.EventHandler(this.AddBlanksButton_Click);
+            AddBlankButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            AddBlankButton.Image = (System.Drawing.Image)resources.GetObject("AddBlankButton.Image");
+            AddBlankButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            AddBlankButton.Location = new System.Drawing.Point(12, 304);
+            AddBlankButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AddBlankButton.Name = "AddBlankButton";
+            AddBlankButton.Size = new System.Drawing.Size(122, 30);
+            AddBlankButton.TabIndex = 23;
+            AddBlankButton.Tag = "";
+            AddBlankButton.Text = "Add Blanks";
+            AddBlankButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            AddBlankButton.UseVisualStyleBackColor = true;
+            AddBlankButton.Click += AddBlanksButton_Click;
             // 
             // nudJump
             // 
-            this.nudJump.Location = new System.Drawing.Point(89, 284);
-            this.nudJump.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.nudJump.Maximum = new decimal(new int[] {
-            650000,
-            0,
-            0,
-            0});
-            this.nudJump.Name = "nudJump";
-            this.nudJump.Size = new System.Drawing.Size(90, 23);
-            this.nudJump.TabIndex = 21;
-            this.nudJump.ValueChanged += new System.EventHandler(this.nudJump_ValueChanged);
-            this.nudJump.KeyDown += new System.Windows.Forms.KeyEventHandler(this.nudJump_KeyDown);
+            nudJump.Location = new System.Drawing.Point(89, 348);
+            nudJump.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            nudJump.Maximum = new decimal(new int[] { 650000, 0, 0, 0 });
+            nudJump.Name = "nudJump";
+            nudJump.Size = new System.Drawing.Size(90, 23);
+            nudJump.TabIndex = 21;
+            nudJump.ValueChanged += nudJump_ValueChanged;
+            nudJump.KeyDown += nudJump_KeyDown;
             // 
             // checkBoxPreventAntiAliasing
             // 
-            this.checkBoxPreventAntiAliasing.AutoSize = true;
-            this.checkBoxPreventAntiAliasing.Location = new System.Drawing.Point(110, 376);
-            this.checkBoxPreventAntiAliasing.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.checkBoxPreventAntiAliasing.Name = "checkBoxPreventAntiAliasing";
-            this.checkBoxPreventAntiAliasing.Size = new System.Drawing.Size(112, 19);
-            this.checkBoxPreventAntiAliasing.TabIndex = 20;
-            this.checkBoxPreventAntiAliasing.Text = "No Anti-aliasing";
-            this.checkBoxPreventAntiAliasing.UseVisualStyleBackColor = true;
-            this.checkBoxPreventAntiAliasing.CheckedChanged += new System.EventHandler(this.checkBoxPreventAntiAliasing_CheckedChanged);
+            checkBoxPreventAntiAliasing.AutoSize = true;
+            checkBoxPreventAntiAliasing.Location = new System.Drawing.Point(110, 440);
+            checkBoxPreventAntiAliasing.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBoxPreventAntiAliasing.Name = "checkBoxPreventAntiAliasing";
+            checkBoxPreventAntiAliasing.Size = new System.Drawing.Size(112, 19);
+            checkBoxPreventAntiAliasing.TabIndex = 20;
+            checkBoxPreventAntiAliasing.Text = "No Anti-aliasing";
+            checkBoxPreventAntiAliasing.UseVisualStyleBackColor = true;
+            checkBoxPreventAntiAliasing.CheckedChanged += checkBoxPreventAntiAliasing_CheckedChanged;
             // 
             // checkBoxQuality
             // 
-            this.checkBoxQuality.AutoSize = true;
-            this.checkBoxQuality.Location = new System.Drawing.Point(12, 376);
-            this.checkBoxQuality.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.checkBoxQuality.Name = "checkBoxQuality";
-            this.checkBoxQuality.Size = new System.Drawing.Size(87, 19);
-            this.checkBoxQuality.TabIndex = 19;
-            this.checkBoxQuality.Text = "No Blurring";
-            this.checkBoxQuality.UseVisualStyleBackColor = true;
-            this.checkBoxQuality.CheckedChanged += new System.EventHandler(this.checkBoxQuality_CheckedChanged);
+            checkBoxQuality.AutoSize = true;
+            checkBoxQuality.Location = new System.Drawing.Point(12, 440);
+            checkBoxQuality.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBoxQuality.Name = "checkBoxQuality";
+            checkBoxQuality.Size = new System.Drawing.Size(87, 19);
+            checkBoxQuality.TabIndex = 19;
+            checkBoxQuality.Text = "No Blurring";
+            checkBoxQuality.UseVisualStyleBackColor = true;
+            checkBoxQuality.CheckedChanged += checkBoxQuality_CheckedChanged;
             // 
             // buttonSkipPrevious
             // 
-            this.buttonSkipPrevious.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonSkipPrevious.Image = ((System.Drawing.Image)(resources.GetObject("buttonSkipPrevious.Image")));
-            this.buttonSkipPrevious.Location = new System.Drawing.Point(48, 280);
-            this.buttonSkipPrevious.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.buttonSkipPrevious.Name = "buttonSkipPrevious";
-            this.buttonSkipPrevious.Size = new System.Drawing.Size(35, 30);
-            this.buttonSkipPrevious.TabIndex = 17;
-            this.buttonSkipPrevious.Tag = "";
-            this.buttonSkipPrevious.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.buttonSkipPrevious.UseVisualStyleBackColor = true;
-            this.buttonSkipPrevious.Click += new System.EventHandler(this.buttonSkipPrevious_Click);
+            buttonSkipPrevious.ForeColor = System.Drawing.SystemColors.ControlText;
+            buttonSkipPrevious.Image = (System.Drawing.Image)resources.GetObject("buttonSkipPrevious.Image");
+            buttonSkipPrevious.Location = new System.Drawing.Point(48, 344);
+            buttonSkipPrevious.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonSkipPrevious.Name = "buttonSkipPrevious";
+            buttonSkipPrevious.Size = new System.Drawing.Size(35, 30);
+            buttonSkipPrevious.TabIndex = 17;
+            buttonSkipPrevious.Tag = "";
+            buttonSkipPrevious.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            buttonSkipPrevious.UseVisualStyleBackColor = true;
+            buttonSkipPrevious.Click += buttonSkipPrevious_Click;
             // 
             // buttonSkipNext
             // 
-            this.buttonSkipNext.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonSkipNext.Image = ((System.Drawing.Image)(resources.GetObject("buttonSkipNext.Image")));
-            this.buttonSkipNext.Location = new System.Drawing.Point(184, 280);
-            this.buttonSkipNext.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.buttonSkipNext.Name = "buttonSkipNext";
-            this.buttonSkipNext.Size = new System.Drawing.Size(35, 30);
-            this.buttonSkipNext.TabIndex = 16;
-            this.buttonSkipNext.Tag = "";
-            this.buttonSkipNext.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.buttonSkipNext.UseVisualStyleBackColor = true;
-            this.buttonSkipNext.Click += new System.EventHandler(this.buttonSkipNext_Click);
+            buttonSkipNext.ForeColor = System.Drawing.SystemColors.ControlText;
+            buttonSkipNext.Image = (System.Drawing.Image)resources.GetObject("buttonSkipNext.Image");
+            buttonSkipNext.Location = new System.Drawing.Point(184, 344);
+            buttonSkipNext.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonSkipNext.Name = "buttonSkipNext";
+            buttonSkipNext.Size = new System.Drawing.Size(35, 30);
+            buttonSkipNext.TabIndex = 16;
+            buttonSkipNext.Tag = "";
+            buttonSkipNext.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            buttonSkipNext.UseVisualStyleBackColor = true;
+            buttonSkipNext.Click += buttonSkipNext_Click;
             // 
             // buttonReplace
             // 
-            this.buttonReplace.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonReplace.Image = ((System.Drawing.Image)(resources.GetObject("buttonReplace.Image")));
-            this.buttonReplace.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.buttonReplace.Location = new System.Drawing.Point(12, 166);
-            this.buttonReplace.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.buttonReplace.Name = "buttonReplace";
-            this.buttonReplace.Size = new System.Drawing.Size(122, 30);
-            this.buttonReplace.TabIndex = 15;
-            this.buttonReplace.Tag = "";
-            this.buttonReplace.Text = "Replace Image";
-            this.buttonReplace.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.buttonReplace.UseVisualStyleBackColor = true;
-            this.buttonReplace.Click += new System.EventHandler(this.buttonReplace_Click);
+            buttonReplace.ForeColor = System.Drawing.SystemColors.ControlText;
+            buttonReplace.Image = (System.Drawing.Image)resources.GetObject("buttonReplace.Image");
+            buttonReplace.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            buttonReplace.Location = new System.Drawing.Point(12, 230);
+            buttonReplace.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonReplace.Name = "buttonReplace";
+            buttonReplace.Size = new System.Drawing.Size(122, 30);
+            buttonReplace.TabIndex = 15;
+            buttonReplace.Tag = "";
+            buttonReplace.Text = "Replace Image";
+            buttonReplace.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            buttonReplace.UseVisualStyleBackColor = true;
+            buttonReplace.Click += buttonReplace_Click;
             // 
             // pictureBox
             // 
-            this.pictureBox.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox.Image")));
-            this.pictureBox.Location = new System.Drawing.Point(12, 10);
-            this.pictureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(16, 16);
-            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox.TabIndex = 14;
-            this.pictureBox.TabStop = false;
-            this.toolTip.SetToolTip(this.pictureBox, "Switch from Black to White background.");
-            this.pictureBox.Click += new System.EventHandler(this.pictureBox_Click);
+            pictureBox.Image = (System.Drawing.Image)resources.GetObject("pictureBox.Image");
+            pictureBox.Location = new System.Drawing.Point(12, 10);
+            pictureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pictureBox.Name = "pictureBox";
+            pictureBox.Size = new System.Drawing.Size(16, 16);
+            pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            pictureBox.TabIndex = 14;
+            pictureBox.TabStop = false;
+            toolTip.SetToolTip(pictureBox, "Switch from Black to White background.");
+            pictureBox.Click += pictureBox_Click;
             // 
             // ZoomTrackBar
             // 
-            this.ZoomTrackBar.LargeChange = 1;
-            this.ZoomTrackBar.Location = new System.Drawing.Point(48, 317);
-            this.ZoomTrackBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.ZoomTrackBar.Minimum = 1;
-            this.ZoomTrackBar.Name = "ZoomTrackBar";
-            this.ZoomTrackBar.Size = new System.Drawing.Size(172, 45);
-            this.ZoomTrackBar.TabIndex = 4;
-            this.ZoomTrackBar.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.ZoomTrackBar.Value = 1;
-            this.ZoomTrackBar.Scroll += new System.EventHandler(this.ZoomTrackBar_Scroll);
+            ZoomTrackBar.LargeChange = 1;
+            ZoomTrackBar.Location = new System.Drawing.Point(48, 381);
+            ZoomTrackBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ZoomTrackBar.Minimum = 1;
+            ZoomTrackBar.Name = "ZoomTrackBar";
+            ZoomTrackBar.Size = new System.Drawing.Size(172, 45);
+            ZoomTrackBar.TabIndex = 4;
+            ZoomTrackBar.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+            ZoomTrackBar.Value = 1;
+            ZoomTrackBar.Scroll += ZoomTrackBar_Scroll;
             // 
             // ExportButton
             // 
-            this.ExportButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ExportButton.Image = ((System.Drawing.Image)(resources.GetObject("ExportButton.Image")));
-            this.ExportButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.ExportButton.Location = new System.Drawing.Point(141, 203);
-            this.ExportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.ExportButton.Name = "ExportButton";
-            this.ExportButton.Size = new System.Drawing.Size(122, 30);
-            this.ExportButton.TabIndex = 3;
-            this.ExportButton.Tag = "";
-            this.ExportButton.Text = "Export Images";
-            this.ExportButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.ExportButton.UseVisualStyleBackColor = true;
-            this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
+            ExportButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            ExportButton.Image = (System.Drawing.Image)resources.GetObject("ExportButton.Image");
+            ExportButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            ExportButton.Location = new System.Drawing.Point(141, 267);
+            ExportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ExportButton.Name = "ExportButton";
+            ExportButton.Size = new System.Drawing.Size(122, 30);
+            ExportButton.TabIndex = 3;
+            ExportButton.Tag = "";
+            ExportButton.Text = "Export Images";
+            ExportButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            ExportButton.UseVisualStyleBackColor = true;
+            ExportButton.Click += ExportButton_Click;
             // 
             // mergeBtn
             // 
-            this.mergeBtn.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.mergeBtn.Image = ((System.Drawing.Image)(resources.GetObject("mergeBtn.Image")));
-            this.mergeBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.mergeBtn.Location = new System.Drawing.Point(12, 203);
-            this.mergeBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mergeBtn.Name = "mergeBtn";
-            this.mergeBtn.Size = new System.Drawing.Size(122, 30);
-            this.mergeBtn.TabIndex = 22;
-            this.mergeBtn.Tag = "";
-            this.mergeBtn.Text = "Merge Libraries";
-            this.mergeBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.mergeBtn.UseVisualStyleBackColor = true;
-            this.mergeBtn.Click += new System.EventHandler(this.MergeButton_Click);
+            mergeBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+            mergeBtn.Image = (System.Drawing.Image)resources.GetObject("mergeBtn.Image");
+            mergeBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            mergeBtn.Location = new System.Drawing.Point(12, 267);
+            mergeBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            mergeBtn.Name = "mergeBtn";
+            mergeBtn.Size = new System.Drawing.Size(122, 30);
+            mergeBtn.TabIndex = 22;
+            mergeBtn.Tag = "";
+            mergeBtn.Text = "Merge Libraries";
+            mergeBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            mergeBtn.UseVisualStyleBackColor = true;
+            mergeBtn.Click += MergeButton_Click;
             // 
             // InsertImageButton
             // 
-            this.InsertImageButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.InsertImageButton.Image = ((System.Drawing.Image)(resources.GetObject("InsertImageButton.Image")));
-            this.InsertImageButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.InsertImageButton.Location = new System.Drawing.Point(141, 166);
-            this.InsertImageButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.InsertImageButton.Name = "InsertImageButton";
-            this.InsertImageButton.Size = new System.Drawing.Size(122, 30);
-            this.InsertImageButton.TabIndex = 1;
-            this.InsertImageButton.Tag = "";
-            this.InsertImageButton.Text = "Insert Images";
-            this.InsertImageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.InsertImageButton.UseVisualStyleBackColor = true;
-            this.InsertImageButton.Click += new System.EventHandler(this.InsertImageButton_Click);
+            InsertImageButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            InsertImageButton.Image = (System.Drawing.Image)resources.GetObject("InsertImageButton.Image");
+            InsertImageButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            InsertImageButton.Location = new System.Drawing.Point(141, 230);
+            InsertImageButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            InsertImageButton.Name = "InsertImageButton";
+            InsertImageButton.Size = new System.Drawing.Size(122, 30);
+            InsertImageButton.TabIndex = 1;
+            InsertImageButton.Tag = "";
+            InsertImageButton.Text = "Insert Images";
+            InsertImageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            InsertImageButton.UseVisualStyleBackColor = true;
+            InsertImageButton.Click += InsertImageButton_Click;
             // 
             // OffSetYTextBox
             // 
-            this.OffSetYTextBox.Location = new System.Drawing.Point(144, 88);
-            this.OffSetYTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.OffSetYTextBox.Name = "OffSetYTextBox";
-            this.OffSetYTextBox.Size = new System.Drawing.Size(75, 23);
-            this.OffSetYTextBox.TabIndex = 6;
-            this.OffSetYTextBox.TextChanged += new System.EventHandler(this.OffSetYTextBox_TextChanged);
+            OffSetYTextBox.Location = new System.Drawing.Point(144, 88);
+            OffSetYTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            OffSetYTextBox.Name = "OffSetYTextBox";
+            OffSetYTextBox.Size = new System.Drawing.Size(75, 23);
+            OffSetYTextBox.TabIndex = 6;
+            OffSetYTextBox.TextChanged += OffSetYTextBox_TextChanged;
             // 
             // OffSetXTextBox
             // 
-            this.OffSetXTextBox.Location = new System.Drawing.Point(144, 58);
-            this.OffSetXTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.OffSetXTextBox.Name = "OffSetXTextBox";
-            this.OffSetXTextBox.Size = new System.Drawing.Size(75, 23);
-            this.OffSetXTextBox.TabIndex = 5;
-            this.OffSetXTextBox.TextChanged += new System.EventHandler(this.OffSetXTextBox_TextChanged);
+            OffSetXTextBox.Location = new System.Drawing.Point(144, 58);
+            OffSetXTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            OffSetXTextBox.Name = "OffSetXTextBox";
+            OffSetXTextBox.Size = new System.Drawing.Size(75, 23);
+            OffSetXTextBox.TabIndex = 5;
+            OffSetXTextBox.TextChanged += OffSetXTextBox_TextChanged;
             // 
             // DeleteButton
             // 
-            this.DeleteButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.DeleteButton.Image = ((System.Drawing.Image)(resources.GetObject("DeleteButton.Image")));
-            this.DeleteButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.DeleteButton.Location = new System.Drawing.Point(141, 129);
-            this.DeleteButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(122, 30);
-            this.DeleteButton.TabIndex = 2;
-            this.DeleteButton.Tag = "";
-            this.DeleteButton.Text = "Delete Images";
-            this.DeleteButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.DeleteButton.UseVisualStyleBackColor = true;
-            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
+            DeleteButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            DeleteButton.Image = (System.Drawing.Image)resources.GetObject("DeleteButton.Image");
+            DeleteButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            DeleteButton.Location = new System.Drawing.Point(141, 193);
+            DeleteButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            DeleteButton.Name = "DeleteButton";
+            DeleteButton.Size = new System.Drawing.Size(122, 30);
+            DeleteButton.TabIndex = 2;
+            DeleteButton.Tag = "";
+            DeleteButton.Text = "Delete Images";
+            DeleteButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            DeleteButton.UseVisualStyleBackColor = true;
+            DeleteButton.Click += DeleteButton_Click;
             // 
             // AddButton
             // 
-            this.AddButton.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.AddButton.Image = ((System.Drawing.Image)(resources.GetObject("AddButton.Image")));
-            this.AddButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.AddButton.Location = new System.Drawing.Point(12, 129);
-            this.AddButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.AddButton.Name = "AddButton";
-            this.AddButton.Size = new System.Drawing.Size(122, 30);
-            this.AddButton.TabIndex = 0;
-            this.AddButton.Tag = "";
-            this.AddButton.Text = "Add Images";
-            this.AddButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this.AddButton.UseVisualStyleBackColor = true;
-            this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
+            AddButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            AddButton.Image = (System.Drawing.Image)resources.GetObject("AddButton.Image");
+            AddButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            AddButton.Location = new System.Drawing.Point(12, 193);
+            AddButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AddButton.Name = "AddButton";
+            AddButton.Size = new System.Drawing.Size(122, 30);
+            AddButton.TabIndex = 0;
+            AddButton.Tag = "";
+            AddButton.Text = "Add Images";
+            AddButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            AddButton.UseVisualStyleBackColor = true;
+            AddButton.Click += AddButton_Click;
             // 
             // label10
             // 
-            this.label10.AutoSize = true;
-            this.label10.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label10.Location = new System.Drawing.Point(78, 91);
-            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(53, 15);
-            this.label10.TabIndex = 12;
-            this.label10.Text = "OffSet Y:";
+            label10.AutoSize = true;
+            label10.ForeColor = System.Drawing.SystemColors.ControlText;
+            label10.Location = new System.Drawing.Point(78, 91);
+            label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(53, 15);
+            label10.TabIndex = 12;
+            label10.Text = "OffSet Y:";
             // 
             // label8
             // 
-            this.label8.AutoSize = true;
-            this.label8.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label8.Location = new System.Drawing.Point(78, 61);
-            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(53, 15);
-            this.label8.TabIndex = 11;
-            this.label8.Text = "OffSet X:";
+            label8.AutoSize = true;
+            label8.ForeColor = System.Drawing.SystemColors.ControlText;
+            label8.Location = new System.Drawing.Point(78, 61);
+            label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(53, 15);
+            label8.TabIndex = 11;
+            label8.Text = "OffSet X:";
             // 
             // HeightLabel
             // 
-            this.HeightLabel.AutoSize = true;
-            this.HeightLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.HeightLabel.Location = new System.Drawing.Point(144, 35);
-            this.HeightLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.HeightLabel.Name = "HeightLabel";
-            this.HeightLabel.Size = new System.Drawing.Size(75, 15);
-            this.HeightLabel.TabIndex = 10;
-            this.HeightLabel.Text = "<No Image>";
+            HeightLabel.AutoSize = true;
+            HeightLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            HeightLabel.Location = new System.Drawing.Point(144, 35);
+            HeightLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            HeightLabel.Name = "HeightLabel";
+            HeightLabel.Size = new System.Drawing.Size(75, 15);
+            HeightLabel.TabIndex = 10;
+            HeightLabel.Text = "<No Image>";
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label6.Location = new System.Drawing.Point(89, 35);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(46, 15);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Height:";
+            label6.AutoSize = true;
+            label6.ForeColor = System.Drawing.SystemColors.ControlText;
+            label6.Location = new System.Drawing.Point(89, 35);
+            label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(46, 15);
+            label6.TabIndex = 9;
+            label6.Text = "Height:";
             // 
             // WidthLabel
             // 
-            this.WidthLabel.AutoSize = true;
-            this.WidthLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.WidthLabel.Location = new System.Drawing.Point(144, 14);
-            this.WidthLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.WidthLabel.Name = "WidthLabel";
-            this.WidthLabel.Size = new System.Drawing.Size(75, 15);
-            this.WidthLabel.TabIndex = 8;
-            this.WidthLabel.Text = "<No Image>";
+            WidthLabel.AutoSize = true;
+            WidthLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            WidthLabel.Location = new System.Drawing.Point(144, 14);
+            WidthLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            WidthLabel.Name = "WidthLabel";
+            WidthLabel.Size = new System.Drawing.Size(75, 15);
+            WidthLabel.TabIndex = 8;
+            WidthLabel.Text = "<No Image>";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label1.Location = new System.Drawing.Point(92, 14);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(42, 15);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "Width:";
+            label1.AutoSize = true;
+            label1.ForeColor = System.Drawing.SystemColors.ControlText;
+            label1.Location = new System.Drawing.Point(92, 14);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(42, 15);
+            label1.TabIndex = 7;
+            label1.Text = "Width:";
             // 
             // panel
             // 
-            this.panel.AutoScroll = true;
-            this.panel.BackColor = System.Drawing.Color.Black;
-            this.panel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel.Controls.Add(this.ImageBox);
-            this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel.Location = new System.Drawing.Point(0, 0);
-            this.panel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(967, 472);
-            this.panel.TabIndex = 1;
+            panel.AutoScroll = true;
+            panel.BackColor = System.Drawing.Color.Black;
+            panel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            panel.Controls.Add(ImageBox);
+            panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            panel.Location = new System.Drawing.Point(0, 0);
+            panel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel.Name = "panel";
+            panel.Size = new System.Drawing.Size(967, 472);
+            panel.TabIndex = 1;
             // 
             // ImageBox
             // 
-            this.ImageBox.BackColor = System.Drawing.Color.Transparent;
-            this.ImageBox.Location = new System.Drawing.Point(0, 0);
-            this.ImageBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.ImageBox.Name = "ImageBox";
-            this.ImageBox.Size = new System.Drawing.Size(64, 64);
-            this.ImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.ImageBox.TabIndex = 0;
-            this.ImageBox.TabStop = false;
+            ImageBox.BackColor = System.Drawing.Color.Transparent;
+            ImageBox.Location = new System.Drawing.Point(0, 0);
+            ImageBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ImageBox.Name = "ImageBox";
+            ImageBox.Size = new System.Drawing.Size(64, 64);
+            ImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            ImageBox.TabIndex = 0;
+            ImageBox.TabStop = false;
             // 
             // PreviewListView
             // 
-            this.PreviewListView.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.PreviewListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PreviewListView.BackColor = System.Drawing.Color.GhostWhite;
-            this.PreviewListView.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(152)))), ((int)(((byte)(156)))));
-            this.PreviewListView.LargeImageList = this.ImageList;
-            this.PreviewListView.Location = new System.Drawing.Point(0, 0);
-            this.PreviewListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.PreviewListView.Name = "PreviewListView";
-            this.PreviewListView.Size = new System.Drawing.Size(1253, 386);
-            this.PreviewListView.TabIndex = 0;
-            this.PreviewListView.UseCompatibleStateImageBehavior = false;
-            this.PreviewListView.VirtualMode = true;
-            this.PreviewListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.PreviewListView_RetrieveVirtualItem);
-            this.PreviewListView.SelectedIndexChanged += new System.EventHandler(this.PreviewListView_SelectedIndexChanged);
-            this.PreviewListView.VirtualItemsSelectionRangeChanged += new System.Windows.Forms.ListViewVirtualItemsSelectionRangeChangedEventHandler(this.PreviewListView_VirtualItemsSelectionRangeChanged);
+            PreviewListView.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            PreviewListView.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            PreviewListView.BackColor = System.Drawing.Color.GhostWhite;
+            PreviewListView.ForeColor = System.Drawing.Color.FromArgb(142, 152, 156);
+            PreviewListView.LargeImageList = ImageList;
+            PreviewListView.Location = new System.Drawing.Point(0, 0);
+            PreviewListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PreviewListView.Name = "PreviewListView";
+            PreviewListView.Size = new System.Drawing.Size(1253, 384);
+            PreviewListView.TabIndex = 0;
+            PreviewListView.UseCompatibleStateImageBehavior = false;
+            PreviewListView.VirtualMode = true;
+            PreviewListView.RetrieveVirtualItem += PreviewListView_RetrieveVirtualItem;
+            PreviewListView.SelectedIndexChanged += PreviewListView_SelectedIndexChanged;
+            PreviewListView.VirtualItemsSelectionRangeChanged += PreviewListView_VirtualItemsSelectionRangeChanged;
             // 
             // ImageList
             // 
-            this.ImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.ImageList.ImageSize = new System.Drawing.Size(64, 64);
-            this.ImageList.TransparentColor = System.Drawing.Color.Transparent;
+            ImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            ImageList.ImageSize = new System.Drawing.Size(64, 64);
+            ImageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // OpenLibraryDialog
             // 
-            this.OpenLibraryDialog.Filter = "Zircon Library|*.Zl";
-            this.OpenLibraryDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.OpenLibraryDialog_FileOk);
+            OpenLibraryDialog.Filter = "Zircon Library|*.Zl";
+            OpenLibraryDialog.FileOk += OpenLibraryDialog_FileOk;
             // 
             // SaveLibraryDialog
             // 
-            this.SaveLibraryDialog.Filter = "Zircon Library|*.Zl";
+            SaveLibraryDialog.Filter = "Zircon Library|*.Zl";
             // 
             // ImportImageDialog
             // 
-            this.ImportImageDialog.Filter = "Images (*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG|All files (*.*)|*.*";
-            this.ImportImageDialog.Multiselect = true;
+            ImportImageDialog.Filter = "Images (*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG|All files (*.*)|*.*";
+            ImportImageDialog.Multiselect = true;
             // 
             // OpenWeMadeDialog
             // 
-            this.OpenWeMadeDialog.Filter = "WeMade|*.Wil;*.Wtl|Shanda|*.Wzl;*.Miz|Lib|*.Lib";
-            this.OpenWeMadeDialog.Multiselect = true;
+            OpenWeMadeDialog.Filter = "WeMade|*.Wil;*.Wtl|Shanda|*.Wzl;*.Miz|Lib|*.Lib";
+            OpenWeMadeDialog.Multiselect = true;
             // 
             // OpenMergeDialog
             // 
-            this.OpenMergeDialog.Filter = "Zircon Library|*.Zl|WeMade|*.Wil;*.Wtl|Shanda|*.Wzl;*.Miz|Lib|*.Lib";
-            this.OpenMergeDialog.Multiselect = true;
+            OpenMergeDialog.Filter = "Zircon Library|*.Zl|WeMade|*.Wil;*.Wtl|Shanda|*.Wzl;*.Miz|Lib|*.Lib";
+            OpenMergeDialog.Multiselect = true;
             // 
             // statusStrip
             // 
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel,
-            this.toolStripProgressBar});
-            this.statusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.statusStrip.Location = new System.Drawing.Point(0, 915);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1256, 24);
-            this.statusStrip.TabIndex = 2;
-            this.statusStrip.Text = "statusStrip";
+            statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel, toolStripProgressBar });
+            statusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            statusStrip.Location = new System.Drawing.Point(0, 915);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+            statusStrip.Size = new System.Drawing.Size(1256, 24);
+            statusStrip.TabIndex = 2;
+            statusStrip.Text = "statusStrip";
             // 
             // toolStripStatusLabel
             // 
-            this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(90, 19);
-            this.toolStripStatusLabel.Text = "Selected Image:";
+            toolStripStatusLabel.Name = "toolStripStatusLabel";
+            toolStripStatusLabel.Size = new System.Drawing.Size(90, 19);
+            toolStripStatusLabel.Text = "Selected Image:";
             // 
             // toolStripProgressBar
             // 
-            this.toolStripProgressBar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripProgressBar.Name = "toolStripProgressBar";
-            this.toolStripProgressBar.Size = new System.Drawing.Size(233, 18);
-            this.toolStripProgressBar.Step = 1;
-            this.toolStripProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            toolStripProgressBar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            toolStripProgressBar.Name = "toolStripProgressBar";
+            toolStripProgressBar.Size = new System.Drawing.Size(233, 18);
+            toolStripProgressBar.Step = 1;
+            toolStripProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.radioButtonOverlay);
-            this.panel1.Controls.Add(this.radioButtonShadow);
-            this.panel1.Controls.Add(this.radioButtonImage);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 24);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1256, 32);
-            this.panel1.TabIndex = 3;
+            panel1.Controls.Add(radioButtonOverlay);
+            panel1.Controls.Add(radioButtonShadow);
+            panel1.Controls.Add(radioButtonImage);
+            panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            panel1.Location = new System.Drawing.Point(0, 24);
+            panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(1256, 32);
+            panel1.TabIndex = 3;
             // 
             // radioButtonOverlay
             // 
-            this.radioButtonOverlay.AutoSize = true;
-            this.radioButtonOverlay.Enabled = false;
-            this.radioButtonOverlay.Location = new System.Drawing.Point(166, 6);
-            this.radioButtonOverlay.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.radioButtonOverlay.Name = "radioButtonOverlay";
-            this.radioButtonOverlay.Size = new System.Drawing.Size(65, 19);
-            this.radioButtonOverlay.TabIndex = 2;
-            this.radioButtonOverlay.Text = "Overlay";
-            this.radioButtonOverlay.UseVisualStyleBackColor = true;
-            this.radioButtonOverlay.CheckedChanged += new System.EventHandler(this.radioButtonOverlay_CheckedChanged);
+            radioButtonOverlay.AutoSize = true;
+            radioButtonOverlay.Enabled = false;
+            radioButtonOverlay.Location = new System.Drawing.Point(166, 6);
+            radioButtonOverlay.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            radioButtonOverlay.Name = "radioButtonOverlay";
+            radioButtonOverlay.Size = new System.Drawing.Size(65, 19);
+            radioButtonOverlay.TabIndex = 2;
+            radioButtonOverlay.Text = "Overlay";
+            radioButtonOverlay.UseVisualStyleBackColor = true;
+            radioButtonOverlay.CheckedChanged += radioButtonOverlay_CheckedChanged;
             // 
             // radioButtonShadow
             // 
-            this.radioButtonShadow.AutoSize = true;
-            this.radioButtonShadow.Enabled = false;
-            this.radioButtonShadow.Location = new System.Drawing.Point(84, 6);
-            this.radioButtonShadow.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.radioButtonShadow.Name = "radioButtonShadow";
-            this.radioButtonShadow.Size = new System.Drawing.Size(67, 19);
-            this.radioButtonShadow.TabIndex = 1;
-            this.radioButtonShadow.Text = "Shadow";
-            this.radioButtonShadow.UseVisualStyleBackColor = true;
-            this.radioButtonShadow.CheckedChanged += new System.EventHandler(this.radioButtonShadow_CheckedChanged);
+            radioButtonShadow.AutoSize = true;
+            radioButtonShadow.Enabled = false;
+            radioButtonShadow.Location = new System.Drawing.Point(84, 6);
+            radioButtonShadow.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            radioButtonShadow.Name = "radioButtonShadow";
+            radioButtonShadow.Size = new System.Drawing.Size(67, 19);
+            radioButtonShadow.TabIndex = 1;
+            radioButtonShadow.Text = "Shadow";
+            radioButtonShadow.UseVisualStyleBackColor = true;
+            radioButtonShadow.CheckedChanged += radioButtonShadow_CheckedChanged;
             // 
             // radioButtonImage
             // 
-            this.radioButtonImage.AutoSize = true;
-            this.radioButtonImage.Checked = true;
-            this.radioButtonImage.Enabled = false;
-            this.radioButtonImage.Location = new System.Drawing.Point(15, 6);
-            this.radioButtonImage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.radioButtonImage.Name = "radioButtonImage";
-            this.radioButtonImage.Size = new System.Drawing.Size(58, 19);
-            this.radioButtonImage.TabIndex = 0;
-            this.radioButtonImage.TabStop = true;
-            this.radioButtonImage.Text = "Image";
-            this.radioButtonImage.UseVisualStyleBackColor = true;
-            this.radioButtonImage.CheckedChanged += new System.EventHandler(this.radioButtonImage_CheckedChanged);
+            radioButtonImage.AutoSize = true;
+            radioButtonImage.Checked = true;
+            radioButtonImage.Enabled = false;
+            radioButtonImage.Location = new System.Drawing.Point(15, 6);
+            radioButtonImage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            radioButtonImage.Name = "radioButtonImage";
+            radioButtonImage.Size = new System.Drawing.Size(58, 19);
+            radioButtonImage.TabIndex = 0;
+            radioButtonImage.TabStop = true;
+            radioButtonImage.Text = "Image";
+            radioButtonImage.UseVisualStyleBackColor = true;
+            radioButtonImage.CheckedChanged += radioButtonImage_CheckedChanged;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.ForeColor = System.Drawing.SystemColors.ControlText;
+            label2.Location = new System.Drawing.Point(51, 119);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(80, 15);
+            label2.TabIndex = 26;
+            label2.Text = "Shadow Type:";
             // 
             // LMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1256, 939);
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.splitContainer1);
-            this.Controls.Add(this.statusStrip);
-            this.Controls.Add(this.MainMenu);
-            this.DoubleBuffered = true;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.MainMenu;
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.MinimumSize = new System.Drawing.Size(756, 513);
-            this.Name = "LMain";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Zircon Library Editor";
-            this.Resize += new System.EventHandler(this.LMain_Resize);
-            this.MainMenu.ResumeLayout(false);
-            this.MainMenu.PerformLayout();
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel1.PerformLayout();
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nudJump)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ZoomTrackBar)).EndInit();
-            this.panel.ResumeLayout(false);
-            this.panel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ImageBox)).EndInit();
-            this.statusStrip.ResumeLayout(false);
-            this.statusStrip.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1256, 939);
+            Controls.Add(panel1);
+            Controls.Add(splitContainer1);
+            Controls.Add(statusStrip);
+            Controls.Add(MainMenu);
+            DoubleBuffered = true;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = MainMenu;
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MinimumSize = new System.Drawing.Size(756, 513);
+            Name = "LMain";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Zircon Library Editor";
+            Resize += LMain_Resize;
+            MainMenu.ResumeLayout(false);
+            MainMenu.PerformLayout();
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel1.PerformLayout();
+            splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
+            splitContainer2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)nudJump).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ZoomTrackBar).EndInit();
+            panel.ResumeLayout(false);
+            panel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)ImageBox).EndInit();
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -892,6 +893,8 @@
         private System.Windows.Forms.RadioButton radioButtonImage;
         private System.Windows.Forms.Button InsertBlankButton;
         private System.Windows.Forms.Button AddBlankButton;
+        private System.Windows.Forms.Label ShadowTypeLabel;
+        private System.Windows.Forms.Label label2;
     }
 }
 

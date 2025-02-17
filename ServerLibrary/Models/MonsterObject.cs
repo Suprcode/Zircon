@@ -985,9 +985,9 @@ namespace Server.Models
             ProcessRoam();
             ProcessTarget();
         }
-        public override void OnSafeDespawn()
+        public override void OnDespawned()
         {
-            base.OnSafeDespawn();
+            base.OnDespawned();
 
             Master?.MinionList.Remove(this);
             Master = null;
@@ -1001,18 +1001,6 @@ namespace Server.Models
                     MinionList[i].Master = null;
 
                 MinionList.Clear();
-            }
-
-
-            if (SpawnInfo != null)
-            {
-                SpawnInfo.AliveCount--;
-                SEnvir.EventHandler.Process(this, "MONSTERDIE");
-
-                if (SpawnInfo.AliveCount == 0)
-                {
-                    SEnvir.EventHandler.Process(this, "MONSTERCLEAR");
-                }
             }
 
             SpawnInfo = null;
@@ -2487,8 +2475,12 @@ namespace Server.Models
             if (SpawnInfo != null)
             {
                 SpawnInfo.AliveCount--;
-
                 SEnvir.EventHandler.Process(this, "MONSTERDIE");
+
+                if (SpawnInfo.AliveCount == 0)
+                {
+                    SEnvir.EventHandler.Process(this, "MONSTERCLEAR");
+                }
             }
 
             SpawnInfo = null;

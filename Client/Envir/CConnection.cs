@@ -1556,6 +1556,15 @@ namespace Client.Envir
                                 DXSoundManager.Play(SoundIndex.ChainofFireExplode);
                         };
                         break;
+                    case Effect.MirrorImage:
+                        new MirEffect(1280, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 30, 60, Globals.NoneColour)
+                        {
+                            Target = ob,
+                            Blend = true,
+                        };
+
+                        DXSoundManager.Play(SoundIndex.SummonSkeletonEnd);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -1584,15 +1593,6 @@ namespace Client.Envir
                     };
 
                     DXSoundManager.Play(SoundIndex.SummonShinsuEnd);
-                    break;
-                case Effect.MirrorImage:
-                    new MirEffect(1280, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 30, 60, Globals.NoneColour)
-                    {
-                        MapTarget = p.Location,
-                        Blend = true,
-                    };
-
-                    DXSoundManager.Play(SoundIndex.SummonSkeletonEnd);
                     break;
                 case Effect.CursedDoll:
                     new MirEffect(700, 13, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx3, 30, 60, Globals.NoneColour)
@@ -2334,11 +2334,6 @@ namespace Client.Envir
             MapObject.User.HermitPoints = p.HermitPoints;
             MapObject.User.Stats = p.Stats;
             MapObject.User.HermitStats = p.HermitStats;
-
-            if (MapObject.User.Magics.Any(x => x.Value.ItemRequired))
-            {
-                GameScene.Game.MagicBox?.CreateTabs();
-            }
         }
         public void Process(S.ItemUseDelay p)
         {
