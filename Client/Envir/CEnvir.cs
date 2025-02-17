@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,6 +16,7 @@ using Client.UserModels;
 using Library;
 using Library.Network;
 using Library.SystemModels;
+using LibraryCore.Coroutine;
 using MirDB;
 using SlimDX.Direct3D9;
 using System.IO.IsolatedStorage;
@@ -67,9 +69,9 @@ namespace Client.Envir
 
         public static bool TestServer;
 
+        public static DateTime CoroutineTime;
         public static StringMessages Language { get; set; }
-
-
+        
         static CEnvir()
         {
             LoadLanguage();
@@ -80,6 +82,38 @@ namespace Client.Envir
             try
             { A(); }
             catch { }
+        }
+
+        public static void Init(string[] args)
+        {
+            ProcessArgs(args);
+        }
+
+        private static void ProcessArgs(string[] args)
+        {
+            if (args == null || args.Length == 0)
+                return;
+            var text = string.Join(' ', args);
+            var strs = text.Split("--");
+            foreach (var str in strs)
+            {
+                var cmdArgs = str.Split(' ').AsSpan();
+                var cmd = cmdArgs[0].ToLower();
+                var args1 = cmdArgs.Length > 1 ? cmdArgs[1..] : new Span<string>();
+                switch (cmd)
+                {
+                    case "testserver":
+                        TestServer = args1.Length > 0 && args1[0].ToLower() == "true";
+                        break;
+                    case "login":
+                        if (args1.Length > 1)
+                        {
+                            CoroutineHelper.StartCoroutine(AutoLogin(args1.ToArray()), 1, "AutoLogin");
+                        }
+
+                        break;
+                }
+            }
         }
 
         public static void LoadLanguage()
@@ -149,6 +183,19 @@ namespace Client.Envir
             UpdateGame();
             RenderGame();
 
+            if (Now >= CoroutineTime)
+            {
+                CoroutineTime = Now.AddTicks(166666);//60 Frame
+                try
+                {
+                    CoroutineHelper.UpdateCoroutines();
+                }
+                catch (Exception e)
+                {
+                    SaveError(e.Message);
+                }
+            }
+            
             if (Config.LimitFPS)
                 Thread.Sleep(1);
         }
@@ -1038,6 +1085,35 @@ namespace Client.Envir
                 return image.Image;
             else
                 return currency.DropItem.Image;
+        }
+        
+        private static IEnumerable AutoLogin(string[] args)
+        {
+            if (DXControl.ActiveScene is LoginScene loginScene)
+            {
+                while (!loginScene.LoginBox.LoginButton.Enabled)//等待连接服务器成功登录按钮可以点击
+                {
+                    if (DXControl.ActiveScene != loginScene)
+                        yield break;
+                    yield return WaitTime.Build(0.5);
+                }
+                //设置账号密码 登录游戏
+                loginScene.LoginBox.EMailTextBox.TextBox.Text = args[0];
+                loginScene.LoginBox.PasswordTextBox.TextBox.Text = args[1];
+                loginScene.LoginBox.Login();
+                yield return WaitFrame.Build(1);
+            }
+            else
+            {
+                yield break;
+            }
+            
+            yield return WaitTime.Build(0.5);
+
+            if (DXControl.ActiveScene is SelectScene selectScene)
+            {
+                selectScene.SelectBox.StartGame();//点击开始游戏按钮
+            }
         }
     }
 }

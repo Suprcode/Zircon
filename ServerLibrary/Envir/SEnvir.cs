@@ -1,6 +1,8 @@
 ﻿using Library;
 using Library.Network;
 using Library.SystemModels;
+using LibraryCore.Coroutine;
+
 using MirDB;
 using Server.DBModels;
 using Server.Envir.Commands;
@@ -23,6 +25,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+
 using C = Library.Network.ClientPackets;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
@@ -1038,6 +1041,7 @@ namespace Server.Envir
             long previousTotalSent = 0, previousTotalReceived = 0;
             int lastindex = 0;
             long conDelay = 0;
+            DateTime coroutineTime = Now;
             Thread logThread = new Thread(WriteLogsLoop) { IsBackground = true };
             logThread.Start();
 
@@ -1261,6 +1265,21 @@ namespace Server.Envir
                             if (Now.TimeOfDay > info.StartTime) continue;
 
                             StartConquest(info, false);
+                        }
+                    }
+                    
+                    if (Now >= coroutineTime)
+                    {
+                        coroutineTime = Now.AddTicks(166666);//60 Frame
+                        try
+                        {
+                            CoroutineHelper.UpdateCoroutines();
+                        }
+                        catch (Exception e)
+                        {
+                            Log(e.Message);
+                            Log(e.StackTrace);
+                            File.AppendAllText(@".\Errors.txt", e.StackTrace + Environment.NewLine);
                         }
                     }
                 }
