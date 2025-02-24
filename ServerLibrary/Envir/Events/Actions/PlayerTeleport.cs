@@ -40,10 +40,10 @@ namespace Server.Envir.Events.Actions
 
             var map = GetTargetMap(action, triggerPlayer?.CurrentMap.Instance, triggerPlayer?.CurrentMap.InstanceSequence ?? 0);
 
-            var players = GetTargetPlayers(trackingType, triggerPlayer, map?.Players ?? SEnvir.Players);
-            foreach (var player in players)
+            var targetPlayers = GetTargetPlayers(trackingType, triggerPlayer, map?.Players ?? SEnvir.Players);
+            for (int i = 0; i < targetPlayers.Count; i++)
             {
-                player.Teleport(action.RegionParameter1, triggerPlayer?.CurrentMap.Instance, triggerPlayer?.CurrentMap.InstanceSequence ?? 0);
+                targetPlayers[i].Teleport(action.RegionParameter1, triggerPlayer?.CurrentMap.Instance, triggerPlayer?.CurrentMap.InstanceSequence ?? 0);
 
                 if (action.Restrict) break;
             }

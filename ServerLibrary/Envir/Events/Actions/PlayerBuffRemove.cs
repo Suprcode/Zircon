@@ -43,12 +43,12 @@ namespace Server.Envir.Events.Actions
 
             var map = GetTargetMap(action, triggerPlayer?.CurrentMap.Instance, triggerPlayer?.CurrentMap.InstanceSequence ?? 0);
 
-            var players = GetTargetPlayers(trackingType, triggerPlayer, map?.Players ?? SEnvir.Players);
-            foreach (var player in players)
+            var targetPlayers = GetTargetPlayers(trackingType, triggerPlayer, map?.Players ?? SEnvir.Players);
+            for (int i = 0; i < targetPlayers.Count; i++)
             {
-                if (action.RegionParameter1 == null || player.CurrentCell.Regions.Contains(action.RegionParameter1))
+                if (action.RegionParameter1 == null || targetPlayers[i].CurrentCell.Regions.Contains(action.RegionParameter1))
                 {
-                    player.BuffRemove(type);
+                    targetPlayers[i].BuffRemove(type);
 
                     if (action.Restrict) break;
                 }
