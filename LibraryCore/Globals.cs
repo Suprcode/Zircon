@@ -30,6 +30,7 @@ namespace Library
         public static DBCollection<CurrencyInfo> CurrencyInfoList;
         public static DBCollection<DisciplineInfo> DisciplineInfoList;
         public static DBCollection<FameInfo> FameInfoList;
+        public static DBCollection<BundleInfo> BundleInfoList;
 
         public static Random Random = new Random();
 

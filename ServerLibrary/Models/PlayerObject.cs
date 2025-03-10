@@ -5616,7 +5616,7 @@ namespace Server.Models
 
                             if (item.Info.Stats[Stat.Experience] > 0) GainExperience(item.Info.Stats[Stat.Experience], false);
                             break;
-                        case 1:
+                        case 1: //Buff
                             if (!ItemBuffAdd(item.Info)) return;
                             break;
                         case 2: //Town Teleport
@@ -5946,7 +5946,7 @@ namespace Server.Models
                                     return;
                             }
                             break;
-                        case 17:
+                        case 17: //Storage Increase
 
                             int size = Character.Account.StorageSize + 10;
 
@@ -5959,7 +5959,7 @@ namespace Server.Models
                             Character.Account.StorageSize = size;
                             Enqueue(new S.StorageSize { Size = Character.Account.StorageSize });
                             break;
-                        case 18:
+                        case 18: //Football Whistle
                             if (item.Info.Stats[Stat.MapSummoning] > 0 && CurrentMap.HasSafeZone)
                             {
                                 Connection.ReceiveChat($"You cannot use [{item.Info.ItemName}] with maps that have a SafeZone.", MessageType.System);
@@ -6053,7 +6053,7 @@ namespace Server.Models
                                 }
                             }
                             break;
-                        case 19:
+                        case 19: 
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6123,7 +6123,7 @@ namespace Server.Models
                             RefreshStats();
 
                             break;
-                        case 20:
+                        case 20: //Stat Extractor
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6245,7 +6245,7 @@ namespace Server.Models
                             RefreshStats();
 
                             break;
-                        case 22:
+                        case 22: //Refine Extractor
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6406,6 +6406,8 @@ namespace Server.Models
 
                     gainItem = SEnvir.CreateDropItem(partInfo, 2);
 
+                    break;
+                case ItemType.Bundle:
                     break;
                 default:
                     return;

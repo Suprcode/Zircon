@@ -199,6 +199,7 @@ namespace Client.Scenes
         public NPCAccessoryRefineDialog NPCAccessoryRefineBox;
         public CurrencyDialog CurrencyBox;
         public TimerDialog TimerBox;
+        public BundleDialog BundleBox;
 
         public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
@@ -698,6 +699,11 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
             };
+            BundleBox = new BundleDialog
+            {
+                Parent = this,
+                Visible = false
+            };
 
             SetDefaultLocations();
 
@@ -801,6 +807,8 @@ namespace Client.Scenes
             FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2), ((Size.Height - FishingCatchBox.Size.Height) / 2) + 200);
 
             TimerBox.Location = new Point(Size.Width - 120, Size.Height - 180);
+
+            BundleBox.Location = new Point((Size.Width - BundleBox.Size.Width) / 2, (Size.Height - BundleBox.Size.Height) / 2);
         }
 
         public void SaveChatTabs()
@@ -1724,6 +1732,9 @@ namespace Client.Scenes
 
                         ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
                     }
+                    break;
+                case ItemType.Bundle:
+                    EquipmentItemInfo(); //TODO - Custom view?
                     break;
                 default:
                     EquipmentItemInfo();

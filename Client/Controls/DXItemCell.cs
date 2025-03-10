@@ -1557,10 +1557,19 @@ namespace Client.Controls
 
                     GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(Math.Max(250, Item.Info.Durability));
                     
-
                     Locked = true;
 
                     CEnvir.Enqueue(new C.ItemUse { Link = new CellLinkInfo { GridType = GridType, Slot = Slot, Count = 1 } });
+                    PlayItemSound();
+                    break;
+                case ItemType.Bundle:
+                    if (!GameScene.Game.CanUseItem(Item)) return false;
+
+                    if (GridType != GridType.Inventory && GridType != GridType.PartsStorage && GridType != GridType.CompanionEquipment && GridType != GridType.CompanionInventory) return false;
+
+                    GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(Math.Max(250, Item.Info.Durability));
+
+                    GameScene.Game.BundleBox.Show(Item);
                     PlayItemSound();
                     break;
                 case ItemType.Book:

@@ -1559,7 +1559,7 @@ namespace Client.Envir
                     case Effect.MirrorImage:
                         new MirEffect(1280, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx2, 30, 60, Globals.NoneColour)
                         {
-                            Target = ob,
+                            MapTarget = ob.CurrentLocation,
                             Blend = true,
                         };
 
@@ -1695,8 +1695,6 @@ namespace Client.Envir
         }
         public void Process(S.HealthChanged p)
         {
-
-
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
             {
                 if (ob.ObjectID != p.ObjectID) continue;

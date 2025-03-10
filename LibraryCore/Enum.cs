@@ -201,7 +201,8 @@ namespace Library
         RefineCorundumOre,
         AccessoryRefineCombTarget,
         AccessoryRefineCombItems,
-        PartsStorage
+        PartsStorage,
+        Bundle
     }
 
     public enum InventoryMode
@@ -415,7 +416,8 @@ namespace Library
         Bait = 31,
         Finder = 32,
         Reel = 33,
-        Currency = 34
+        Currency = 34,
+        Bundle = 35
     }
 
     public enum MirAction : byte
@@ -1674,6 +1676,18 @@ namespace Library
 
         DualWield = 100,
         MagicRing = 101
+    }
+
+    public enum BundleType
+    {
+        [Description("Any Of")]
+        AnyOf,
+        [Description("All Of")]
+        AllOf,
+        [Description("One Of")]
+        OneOf,
+        [Description("Loot Box")]
+        LootBox //TODO - Hide all by default. Pay to open. Pay to reveal.
     }
 
     public enum CurrencyType
