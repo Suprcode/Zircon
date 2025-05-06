@@ -81,6 +81,21 @@ namespace Library.SystemModels
         }
         private RespawnInfo _NeedSpawn;
 
+        public bool NeedHole
+        {
+            get { return _NeedHole; }
+            set
+            {
+                if (_NeedHole == value) return;
+
+                var oldValue = _NeedHole;
+                _NeedHole = value;
+
+                OnChanged(oldValue, value, "NeedHole");
+            }
+        }
+        private bool _NeedHole;
+
         public InstanceInfo NeedInstance
         {
             get { return _NeedInstance; }
