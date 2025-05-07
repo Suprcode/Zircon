@@ -1831,17 +1831,18 @@ namespace Client.Envir
 
             GameScene.Game.ReceiveChat(CEnvir.Language.LevelIncreased, MessageType.System);
         }
+
         public void Process(S.GainedExperience p)
         {
             MapObject.User.Experience += p.Amount;
-
-            ClientUserItem weapon = GameScene.Game.Equipment[(int)EquipmentSlot.Weapon];
 
             if (p.Amount < 0)
             {
                 GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.LostExperience, p.Amount), MessageType.Combat);
                 return;
             }
+
+            ClientUserItem weapon = GameScene.Game.Equipment[(int)EquipmentSlot.Weapon];
 
             if (weapon != null && weapon.Info.ItemEffect != ItemEffect.PickAxe && (weapon.Flags & UserItemFlags.Refinable) != UserItemFlags.Refinable && (weapon.Flags & UserItemFlags.NonRefinable) != UserItemFlags.NonRefinable && weapon.Level < Globals.WeaponExperienceList.Count)
             {
@@ -1858,7 +1859,10 @@ namespace Client.Envir
                 else
                     GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GainedExperienceAndWeaponExperience, p.Amount, p.Amount / 10), MessageType.Combat);
             }
+            else
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.GainedExperience, p.Amount), MessageType.Combat);
         }
+
         public void Process(S.ObjectLeveled p)
         {
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
