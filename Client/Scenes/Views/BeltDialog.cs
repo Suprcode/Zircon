@@ -91,7 +91,6 @@ namespace Client.Scenes.Views
             OnClientAreaChanged(ClientArea, ClientArea);
         }
 
-
         #region Methods
         public void UpdateLinks()
         {
