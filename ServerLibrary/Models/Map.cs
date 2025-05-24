@@ -643,17 +643,19 @@ namespace Server.Models
                         if (spawn == null)
                             break;
 
+                        if (spawn.AliveCount == 0)
+                        {
+                            player.Connection.ReceiveChatWithObservers(con => con.Language.NeedMonster, MessageType.System);
+                            break;
+                        }
+                    }
+
+                    if (movement.NeedHole)
+                    {
                         var holes = Objects.OfType<SpellObject>().Any(m => m.Effect == SpellEffect.ZombieHole && m.CurrentLocation == Location);
 
                         if (!holes)
                             break;
-
-                        if (spawn.AliveCount == 0)
-                        {
-                            player.Connection.ReceiveChatWithObservers(con => con.Language.NeedMonster, MessageType.System);
-
-                            break;
-                        }
                     }
 
                     if (movement.NeedItem != null)
