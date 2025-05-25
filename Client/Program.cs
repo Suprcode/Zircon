@@ -20,24 +20,24 @@ namespace Client
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             ConfigReader.Load(Assembly.GetAssembly(typeof(Config)));
 
             if (Config.SentryEnabled && !string.IsNullOrEmpty(Config.SentryDSN))
             {
                 using (SentrySdk.Init(Config.SentryDSN))
-                    Init();
+                    Init(args);
             }
             else
             {
-                Init();
+                Init(args);
             }
 
             ConfigReader.Save(typeof(Config).Assembly);
         }
 
-        static void Init()
+        static void Init(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
@@ -57,6 +57,7 @@ namespace Client
 
             DXControl.ActiveScene = new LoginScene(Config.IntroSceneSize);
 
+            CEnvir.Init(args);
             MessagePump.Run(CEnvir.Target, CEnvir.GameLoop);
 
 
