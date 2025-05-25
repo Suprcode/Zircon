@@ -375,6 +375,7 @@ namespace Client.Controls
             float oldOpacity = DXManager.Opacity;
 
             DXManager.SetOpacity(Opacity);
+
             PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
 
             DXManager.SetOpacity(oldOpacity);

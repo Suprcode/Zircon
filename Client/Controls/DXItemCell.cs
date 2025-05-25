@@ -643,10 +643,6 @@ namespace Client.Controls
                     MirImage image = Library.CreateImage(drawIndex, ImageType.Image);
                     if (image != null)
                     {
-                        float oldOpacity = DXManager.Opacity;
-
-                        DXManager.SetOpacity(Opacity);
-
                         Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
                         area.Offset((Size.Width - image.Width) / 2, (Size.Height - image.Height) / 2);
                         ItemInfo info = Item.Info;
@@ -657,8 +653,6 @@ namespace Client.Controls
                         }
                         else
                             PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
-
-                        DXManager.SetOpacity(oldOpacity);
                     }
                 }
             }
