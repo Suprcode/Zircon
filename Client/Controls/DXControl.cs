@@ -1691,6 +1691,7 @@ namespace Client.Controls
                 control.Draw();
             }
         }
+
         protected virtual void DrawControl()
         {
             if (!DrawTexture) return;

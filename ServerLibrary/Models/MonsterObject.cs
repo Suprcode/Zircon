@@ -2472,10 +2472,11 @@ namespace Server.Models
             if (Drops != null)
                 DeadTime += Config.HarvestDuration;
 
+            SEnvir.EventHandler.Process(this, "MONSTERDIE");
+
             if (SpawnInfo != null)
             {
                 SpawnInfo.AliveCount--;
-                SEnvir.EventHandler.Process(this, "MONSTERDIE");
 
                 if (SpawnInfo.AliveCount == 0)
                 {
