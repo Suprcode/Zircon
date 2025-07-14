@@ -201,6 +201,8 @@ namespace Client.Scenes.Views
 
             if (SelectedBundle == null || Info == null || Info.Type != BundleType.OneOf) return;
 
+            ConfirmButton.Enabled = false;
+
             if (cell.Item == null) return;
 
             for (int i = 0; i < Grid.Grid.Length; i++)

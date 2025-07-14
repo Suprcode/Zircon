@@ -735,20 +735,14 @@ namespace Library.Network.ClientPackets
     {
     }
 
-    public sealed class BundleOpen : Packet
-    {
-        public int Slot { get; set; }
-    }
-
     public sealed class LootBoxOpen : Packet
     {
         public int Slot { get; set; }
     }
 
-    public sealed class LootBoxReveal : Packet
+    public sealed class LootBoxReroll : Packet
     {
         public int Slot { get; set; }
-        public int Choice { get; set; }
     }
 
     public sealed class LootBoxConfirmSelection : Packet
@@ -756,7 +750,7 @@ namespace Library.Network.ClientPackets
         public int Slot { get; set; }
     }
 
-    public sealed class BundleConfirm : Packet
+    public sealed class LootBoxReveal : Packet
     {
         public int Slot { get; set; }
         public int Choice { get; set; }
@@ -768,8 +762,14 @@ namespace Library.Network.ClientPackets
         public int Choice { get; set; }
     }
 
-    public sealed class LootBoxReroll : Packet
+    public sealed class BundleOpen : Packet
     {
         public int Slot { get; set; }
+    }
+
+    public sealed class BundleConfirm : Packet
+    {
+        public int Slot { get; set; }
+        public int Choice { get; set; }
     }
 }

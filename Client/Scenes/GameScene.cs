@@ -1764,7 +1764,7 @@ namespace Client.Scenes
 
                         label = new DXLabel
                         {
-                            ForeColour = Color.White,
+                            ForeColour = Color.Yellow,
                             Location = new Point(ItemLabel.DisplayArea.Right, 4),
                             Parent = ItemLabel,
                             Text = $"Open Count: {openCount}/{LootBoxInfo.SlotSize}",
@@ -1776,10 +1776,10 @@ namespace Client.Scenes
                     {
                         label = new DXLabel
                         {
-                            ForeColour = Color.White,
+                            ForeColour = Color.Yellow,
                             Location = new Point(ItemLabel.DisplayArea.Right, 4),
                             Parent = ItemLabel,
-                            Text = $"Remaining rerolls: {remainingRerolls}",
+                            Text = $"Reroll Count: {remainingRerolls}/{Globals.LootBoxRerollCount}",
                         };
 
                         ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
