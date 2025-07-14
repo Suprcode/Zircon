@@ -82,7 +82,7 @@ namespace Server.Envir.Translations
         public override string CannotTownTeleport { get; set; } = "无法传送到该地图";
         public override string CannotRandomTeleport { get; set; } = "当前地图无法使用随机传送卷";
         public override string ConnotResetCompanionSkill { get; set; } = "为了避免误操作，要使用{0}请输入'@宠物技能{1}'";
-        public override string MagicMaxLevelReached { get; set; } = "You have already reached max {0} level.";
+        public override string MagicMaxLevelReached { get; set; } = "您已达到最高{0}级";
         public override string LearnBookFailed { get; set; } = "技能书太过残破,修炼技能失败";
         public override string LearnBookSuccess { get; set; } = "恭喜你，你已经成功的掌握{0}";
         public override string LearnBook4Failed { get; set; } = "学习{0}等级技能失败";
@@ -92,6 +92,7 @@ namespace Server.Envir.Translations
         public override string GuildStorageSafeZone { get; set; } = "你在非安全区无法使用行会仓库";
         public override string CompanionNoRoom { get; set; } = "你的宠物已经无法携带更多物品";
         public override string StorageLimit { get; set; } = "你不能再扩展存储空间了";
+        public override string NotEnoughBagSpaceAvailable { get; set; } = "行李空间不足";
 
 
         public override string MarryAlreadyMarried { get; set; } = "你已经结婚了";

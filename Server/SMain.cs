@@ -598,5 +598,10 @@ namespace Server
         {
             ShowView(typeof(BundleInfoView));
         }
+
+        private void LootBoxInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(LootBoxInfoView));
+        }
     }
 }

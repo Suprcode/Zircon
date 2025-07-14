@@ -93,6 +93,7 @@ namespace Server.Envir
         public abstract string GuildStorageSafeZone { get; set; }
         public abstract string CompanionNoRoom { get; set; }
         public abstract string StorageLimit { get; set; }
+        public abstract string NotEnoughBagSpaceAvailable { get; set; }
 
         [ConfigSection("Marriage")]
         public abstract string MarryAlreadyMarried { get; set; }

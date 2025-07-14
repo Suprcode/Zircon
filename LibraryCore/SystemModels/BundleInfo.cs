@@ -1,4 +1,5 @@
 ﻿using MirDB;
+using System;
 
 namespace Library.SystemModels
 {
@@ -35,6 +36,21 @@ namespace Library.SystemModels
         }
         private BundleType _Type;
 
+        public int SlotSize
+        {
+            get { return _SlotSize; }
+            set
+            {
+                if (_SlotSize == value) return;
+
+                var oldValue = _SlotSize;
+                _SlotSize = value;
+
+                OnChanged(oldValue, value, "SlotSize");
+            }
+        }
+        private int _SlotSize;
+
         public bool AutoOpen
         {
             get { return _AutoOpen; }
@@ -50,8 +66,37 @@ namespace Library.SystemModels
         }
         private bool _AutoOpen;
 
+        public bool LootBox
+        {
+            get { return _LootBox; }
+            set
+            {
+                if (_LootBox == value) return;
+
+                var oldValue = _LootBox;
+                _LootBox = value;
+
+                OnChanged(oldValue, value, "LootBox");
+            }
+        }
+        private bool _LootBox;
+
         [Association("Contents", true)]
         public DBBindingList<BundleItemInfo> Contents { get; set; }
+
+        protected internal override void OnCreated()
+        {
+            base.OnCreated();
+
+            SlotSize = 16;
+        }
+
+        protected internal override void OnLoaded()
+        {
+            base.OnLoaded();
+
+            SlotSize = Math.Clamp(SlotSize, 1, 16);
+        }
     }
 
     public class BundleItemInfo : DBObject

@@ -3,12 +3,10 @@ using Client.Envir;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Windows.Forms;
-using static Sentry.MeasurementUnit;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -17,12 +15,16 @@ namespace Client.Scenes.Views
     {
         #region Properties
 
+        public DXLabel TitleLabel;
         public DXItemGrid Grid;
-        public DXLabel Label, PlayerGoldLabel;
+
         public DXButton CloseButton, ConfirmButton;
 
         private ClientUserItem[] BundleArray;
+        private DXItemCell SelectedBundle;
         private int SelectedIndex = -1;
+
+        private BundleInfo Info;
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -41,7 +43,7 @@ namespace Client.Scenes.Views
         public BundleDialog()
         {
             LibraryFile = LibraryFile.GameInter;
-            Index = 4400;
+            Index = 3350;
             Movable = true;
 
             CloseButton = new DXButton
@@ -51,15 +53,15 @@ namespace Client.Scenes.Views
                 LibraryFile = LibraryFile.Interface,
             };
             CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width, 1);
-            CloseButton.MouseClick += (o, e) => Visible = false;
+            CloseButton.MouseClick += (o, e) => Close();
 
-            BundleArray = new ClientUserItem[15];
+            BundleArray = new ClientUserItem[16];
             Grid = new DXItemGrid
             {
-                GridSize = new Size(5, 3),
+                GridSize = new Size(4, 4),
                 Parent = this,
                 ReadOnly = true,
-                Location = new Point(38, 40),
+                Location = new Point(15, 48),
                 GridType = GridType.Bundle,
                 GridPadding = 1,
                 BackColour = Color.Empty,
@@ -72,37 +74,38 @@ namespace Client.Scenes.Views
                 cell.MouseClick += Cell_MouseClick;
             }
 
-            Label = new DXLabel
+            TitleLabel = new DXLabel
             {
-                AutoSize = false,
-                Border = false,
-                ForeColour = Color.White,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
+                Text = CEnvir.Language.BundleTitle,
                 Parent = this,
-                Location = new Point(30, 170),
-                Text = "Select one item...",
-                Size = new Size(200, 15)
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
             };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
             ConfirmButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(Grid.Location.X + Grid.Size.Width - 80, Label.Location.Y + 38),
-                Label = { Text = "Take Items" },
+                Label = { Text = "" },
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                Enabled = false
             };
+            ConfirmButton.Location = new Point((DisplayArea.Width - ConfirmButton.Size.Width) / 2, 225);
             ConfirmButton.MouseClick += (o, e) =>
             {
-                if (GameScene.Game.Observer) return;
+                if (Info == null) return;
 
                 ConfirmButton.Enabled = false;
 
-                //CEnvir.Enqueue(new C.TradeConfirm());
+                CEnvir.Enqueue(new C.BundleConfirm { Slot = SelectedBundle.Slot, Choice = SelectedIndex });
             };
         }
 
-        private void Reset(bool cleanItems = true)
+        private void ResetCells(bool cleanItems = true)
         {
             SelectedIndex = -1;
 
@@ -121,42 +124,84 @@ namespace Client.Scenes.Views
             }
         }
 
-        public void Show(ClientUserItem bundleItem)
+        public void Open(DXItemCell itemCell, List<ClientBundleItemInfo> bundleItems)
         {
-            if (bundleItem.Info.ItemType != ItemType.Bundle) return;
+            var item = itemCell.Item;
 
-            BundleInfo info = Globals.BundleInfoList.Binding.FirstOrDefault(x => x.Index == bundleItem.Info.Shape);
+            if (item == null || item.Info.ItemType != ItemType.Bundle) return;
 
-            if (info == null) return;
+            Info = Globals.BundleInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
 
-            Reset();
+            if (Info == null || Info.Contents.Count == 0) return;
 
-            int choice = 0;
+            SelectedBundle = itemCell;
 
-            foreach (var bundleContent in info.Contents)
+            ResetCells();
+
+            switch (Info.Type)
             {
-                if (choice >= Grid.Grid.Length) return;
+                case BundleType.AnyOf:
+                    ConfirmButton.Label.Text = CEnvir.Language.BundleConfirmRandomButtonLabel;
+                    ConfirmButton.Enabled = true;
 
-                ClientUserItem item = new ClientUserItem(bundleContent.Item, bundleContent.Amount)
-                {
+                    if (Info.AutoOpen)
+                    {
+                        ConfirmButton.InvokeMouseClick();
+                        return;
+                    }
 
-                };
+                    break;
+                case BundleType.AllOf:
+                    ConfirmButton.Label.Text = CEnvir.Language.BundleConfirmAllButtonLabel;
+                    ConfirmButton.Enabled = true;
 
-                Grid.Grid[choice].Item = item;
+                    if (Info.AutoOpen)
+                    {
+                        ConfirmButton.InvokeMouseClick();
+                        return;
+                    }
 
-                choice++;
+                    break;
+                case BundleType.OneOf:
+                    ConfirmButton.Label.Text = CEnvir.Language.BundleConfirmOneButtonLabel;
+                    ConfirmButton.Enabled = false;
+                    break;
             }
 
-            if (info == null) return;
+            for (int i = 0; i < Grid.Grid.Length; i++)
+            {
+                if (i >= Info.SlotSize) break;
+
+                var bundleContent = bundleItems.FirstOrDefault(x => x.Slot == i);
+
+                if (bundleContent != null)
+                {
+                    ClientUserItem bundleItem = new(bundleContent.ItemInfo, bundleContent.Amount);
+                    Grid.Grid[i].Item = bundleItem;
+                }
+            }
 
             Visible = true;
+        }
+
+        public void Close()
+        {
+            ResetCells();
+
+            SelectedBundle.Locked = false;
+
+            Visible = false;
         }
 
         private void Cell_MouseClick(object sender, MouseEventArgs e)
         {
             var cell = (DXItemCell)sender;
 
-            Reset(false);
+            ResetCells(false);
+
+            if (SelectedBundle == null || Info == null || Info.Type != BundleType.OneOf) return;
+
+            if (cell.Item == null) return;
 
             for (int i = 0; i < Grid.Grid.Length; i++)
             {
@@ -168,23 +213,13 @@ namespace Client.Scenes.Views
                     cell.BorderColour = Color.Lime;
 
                     SelectedIndex = i;
+
+                    ConfirmButton.Enabled = true;
+
+                    break;
                 }
             }
         }
-
-        #region Methods
-
-        public void Clear()
-        {
-            Label.Text = "0";
-            PlayerGoldLabel.Text = "0";
-            ConfirmButton.Enabled = true;
-
-            Reset();
-        }
-
-        #endregion
-
 
         #region IDisposable
 
@@ -194,28 +229,20 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
                 if (Grid != null)
                 {
                     if (!Grid.IsDisposed)
                         Grid.Dispose();
 
                     Grid = null;
-                }
-
-                if (Label != null)
-                {
-                    if (!Label.IsDisposed)
-                        Label.Dispose();
-
-                    Label = null;
-                }
-
-                if (PlayerGoldLabel != null)
-                {
-                    if (!PlayerGoldLabel.IsDisposed)
-                        PlayerGoldLabel.Dispose();
-
-                    PlayerGoldLabel = null;
                 }
 
                 if (CloseButton != null)

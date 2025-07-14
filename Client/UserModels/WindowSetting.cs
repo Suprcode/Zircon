@@ -159,6 +159,7 @@ namespace Client.UserModels
         CommunicationBox,
         FishingBox,
         MenuBox,
-        BundleBox
+        BundleBox,
+        LootBoxBox
     }
 }

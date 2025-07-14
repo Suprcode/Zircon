@@ -4824,6 +4824,30 @@ namespace Client.Envir
         {
 
         }
+
+        public void Process(S.BundleOpen p)
+        {
+            DXItemCell fromCell = GameScene.Game.InventoryBox.Grid.Grid[p.Slot];
+
+            GameScene.Game.BundleBox.Open(fromCell, p.Items);
+        }
+
+        public void Process(S.BundleClose p)
+        {
+            GameScene.Game.BundleBox.Close();
+        }
+
+        public void Process(S.LootBoxOpen p)
+        {
+            DXItemCell fromCell = GameScene.Game.InventoryBox.Grid.Grid[p.Slot];
+
+            GameScene.Game.LootBoxBox.Open(fromCell, p.Items);
+        }
+
+        public void Process(S.LootBoxClose p)
+        {
+            GameScene.Game.LootBoxBox.Close();
+        }
     }
 }
 

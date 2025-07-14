@@ -1,6 +1,6 @@
 ﻿namespace Server.Views
 {
-    partial class BundleInfoView
+    partial class LootBoxInfoView
     {
         /// <summary>
         /// Required designer variable.
@@ -29,18 +29,17 @@
         private void InitializeComponent()
         {
             DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BundleInfoView));
-            BundleItemInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LootBoxInfoView));
+            LootBoxItemInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
             ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            BundleInfoGridControl = new DevExpress.XtraGrid.GridControl();
-            BundleInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            LootBoxInfoGridControl = new DevExpress.XtraGrid.GridControl();
+            LootBoxInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            CurrencyLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveDatabaseButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
@@ -48,25 +47,26 @@
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            BundleItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            ((System.ComponentModel.ISupportInitialize)BundleItemInfoGridView).BeginInit();
+            LootBoxItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            ((System.ComponentModel.ISupportInitialize)LootBoxItemInfoGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)BundleInfoGridControl).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)BundleInfoGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)LootBoxInfoGridControl).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)LootBoxInfoGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CurrencyLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)BundleItemLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)LootBoxItemLookUpEdit).BeginInit();
             SuspendLayout();
             // 
-            // BundleItemInfoGridView
+            // LootBoxItemInfoGridView
             // 
-            BundleItemInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn8, gridColumn9 });
-            BundleItemInfoGridView.GridControl = BundleInfoGridControl;
-            BundleItemInfoGridView.Name = "BundleItemInfoGridView";
-            BundleItemInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
-            BundleItemInfoGridView.OptionsView.EnableAppearanceOddRow = true;
-            BundleItemInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            BundleItemInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            BundleItemInfoGridView.OptionsView.ShowGroupPanel = false;
+            LootBoxItemInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn8, gridColumn9 });
+            LootBoxItemInfoGridView.GridControl = LootBoxInfoGridControl;
+            LootBoxItemInfoGridView.Name = "LootBoxItemInfoGridView";
+            LootBoxItemInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
+            LootBoxItemInfoGridView.OptionsView.EnableAppearanceOddRow = true;
+            LootBoxItemInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            LootBoxItemInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            LootBoxItemInfoGridView.OptionsView.ShowGroupPanel = false;
             // 
             // gridColumn8
             // 
@@ -94,30 +94,30 @@
             ItemLookUpEdit.Name = "ItemLookUpEdit";
             ItemLookUpEdit.NullText = "[Item is null]";
             // 
-            // BundleInfoGridControl
+            // LootBoxInfoGridControl
             // 
-            BundleInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            gridLevelNode1.LevelTemplate = BundleItemInfoGridView;
+            LootBoxInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            gridLevelNode1.LevelTemplate = LootBoxItemInfoGridView;
             gridLevelNode1.RelationName = "Contents";
-            BundleInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1 });
-            BundleInfoGridControl.Location = new System.Drawing.Point(0, 144);
-            BundleInfoGridControl.MainView = BundleInfoGridView;
-            BundleInfoGridControl.MenuManager = ribbon;
-            BundleInfoGridControl.Name = "BundleInfoGridControl";
-            BundleInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { BundleItemLookUpEdit, ItemLookUpEdit });
-            BundleInfoGridControl.Size = new System.Drawing.Size(596, 383);
-            BundleInfoGridControl.TabIndex = 1;
-            BundleInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { BundleInfoGridView, BundleItemInfoGridView });
+            LootBoxInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1 });
+            LootBoxInfoGridControl.Location = new System.Drawing.Point(0, 144);
+            LootBoxInfoGridControl.MainView = LootBoxInfoGridView;
+            LootBoxInfoGridControl.MenuManager = ribbon;
+            LootBoxInfoGridControl.Name = "LootBoxInfoGridControl";
+            LootBoxInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { LootBoxItemLookUpEdit, ItemLookUpEdit, CurrencyLookUpEdit });
+            LootBoxInfoGridControl.Size = new System.Drawing.Size(596, 383);
+            LootBoxInfoGridControl.TabIndex = 1;
+            LootBoxInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { LootBoxInfoGridView, LootBoxItemInfoGridView });
             // 
-            // BundleInfoGridView
+            // LootBoxInfoGridView
             // 
-            BundleInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn2, gridColumn3, gridColumn4, gridColumn5 });
-            BundleInfoGridView.GridControl = BundleInfoGridControl;
-            BundleInfoGridView.Name = "BundleInfoGridView";
-            BundleInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
-            BundleInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            BundleInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            BundleInfoGridView.OptionsView.ShowGroupPanel = false;
+            LootBoxInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn3, gridColumn5 });
+            LootBoxInfoGridView.GridControl = LootBoxInfoGridControl;
+            LootBoxInfoGridView.Name = "LootBoxInfoGridView";
+            LootBoxInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
+            LootBoxInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            LootBoxInfoGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            LootBoxInfoGridView.OptionsView.ShowGroupPanel = false;
             // 
             // gridColumn1
             // 
@@ -126,13 +126,6 @@
             gridColumn1.Visible = true;
             gridColumn1.VisibleIndex = 1;
             // 
-            // gridColumn2
-            // 
-            gridColumn2.FieldName = "Type";
-            gridColumn2.Name = "gridColumn2";
-            gridColumn2.Visible = true;
-            gridColumn2.VisibleIndex = 2;
-            // 
             // gridColumn3
             // 
             gridColumn3.FieldName = "Index";
@@ -140,19 +133,22 @@
             gridColumn3.Visible = true;
             gridColumn3.VisibleIndex = 0;
             // 
-            // gridColumn4
-            // 
-            gridColumn4.FieldName = "SlotSize";
-            gridColumn4.Name = "gridColumn4";
-            gridColumn4.Visible = true;
-            gridColumn4.VisibleIndex = 3;
-            // 
             // gridColumn5
             // 
-            gridColumn5.FieldName = "AutoOpen";
+            gridColumn5.ColumnEdit = CurrencyLookUpEdit;
+            gridColumn5.FieldName = "Currency";
             gridColumn5.Name = "gridColumn5";
             gridColumn5.Visible = true;
-            gridColumn5.VisibleIndex = 4;
+            gridColumn5.VisibleIndex = 2;
+            // 
+            // CurrencyLookUpEdit
+            // 
+            CurrencyLookUpEdit.AutoHeight = false;
+            CurrencyLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            CurrencyLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Abbreviation", "Abbreviation") });
+            CurrencyLookUpEdit.DisplayMember = "Name";
+            CurrencyLookUpEdit.Name = "CurrencyLookUpEdit";
+            CurrencyLookUpEdit.NullText = "[Currency is null]";
             // 
             // ribbon
             // 
@@ -213,34 +209,35 @@
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
             // 
-            // BundleItemLookUpEdit
+            // LootBoxItemLookUpEdit
             // 
-            BundleItemLookUpEdit.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
-            BundleItemLookUpEdit.AutoHeight = false;
-            BundleItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
-            BundleItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            BundleItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size") });
-            BundleItemLookUpEdit.DisplayMember = "ItemName";
-            BundleItemLookUpEdit.Name = "BundleItemLookUpEdit";
-            BundleItemLookUpEdit.NullText = "[Item is null]";
-            BundleItemLookUpEdit.UseCtrlScroll = false;
+            LootBoxItemLookUpEdit.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
+            LootBoxItemLookUpEdit.AutoHeight = false;
+            LootBoxItemLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            LootBoxItemLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            LootBoxItemLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemName", "Item Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ItemType", "Item Type"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Price", "Price"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StackSize", "Stack Size") });
+            LootBoxItemLookUpEdit.DisplayMember = "ItemName";
+            LootBoxItemLookUpEdit.Name = "LootBoxItemLookUpEdit";
+            LootBoxItemLookUpEdit.NullText = "[Item is null]";
+            LootBoxItemLookUpEdit.UseCtrlScroll = false;
             // 
-            // BundleInfoView
+            // LootBoxInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(596, 527);
-            Controls.Add(BundleInfoGridControl);
+            Controls.Add(LootBoxInfoGridControl);
             Controls.Add(ribbon);
-            Name = "BundleInfoView";
+            Name = "LootBoxInfoView";
             Ribbon = ribbon;
-            Text = "Bundle Info";
-            ((System.ComponentModel.ISupportInitialize)BundleItemInfoGridView).EndInit();
+            Text = "Loot Box Info";
+            ((System.ComponentModel.ISupportInitialize)LootBoxItemInfoGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).EndInit();
-            ((System.ComponentModel.ISupportInitialize)BundleInfoGridControl).EndInit();
-            ((System.ComponentModel.ISupportInitialize)BundleInfoGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)LootBoxInfoGridControl).EndInit();
+            ((System.ComponentModel.ISupportInitialize)LootBoxInfoGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CurrencyLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
-            ((System.ComponentModel.ISupportInitialize)BundleItemLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)LootBoxItemLookUpEdit).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -251,20 +248,19 @@
         private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage1;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup1;
         private DevExpress.XtraBars.BarButtonItem SaveDatabaseButton;
-        private DevExpress.XtraGrid.GridControl BundleInfoGridControl;
-        private DevExpress.XtraGrid.Views.Grid.GridView BundleInfoGridView;
-        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit BundleItemLookUpEdit;
+        private DevExpress.XtraGrid.GridControl LootBoxInfoGridControl;
+        private DevExpress.XtraGrid.Views.Grid.GridView LootBoxInfoGridView;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit LootBoxItemLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
         private DevExpress.XtraBars.BarButtonItem ImportButton;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
-        private DevExpress.XtraGrid.Views.Grid.GridView BundleItemInfoGridView;
+        private DevExpress.XtraGrid.Views.Grid.GridView LootBoxItemInfoGridView;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn8;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit ItemLookUpEdit;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit CurrencyLookUpEdit;
     }
 }

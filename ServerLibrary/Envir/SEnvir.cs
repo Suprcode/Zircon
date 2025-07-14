@@ -288,6 +288,8 @@ namespace Server.Envir
         public static DBCollection<UserFortuneInfo> UserFortuneInfoList;
         public static DBCollection<WeaponCraftStatInfo> WeaponCraftStatInfoList;
         public static DBCollection<UserDiscipline> UserDisciplineList;
+        public static DBCollection<BundleInfo> BundleInfoList;
+        public static DBCollection<LootBoxInfo> LootBoxInfoList;
 
         public static DBCollection<WorldEventTrigger> WorldEventInfoTriggerList;
         public static DBCollection<PlayerEventTrigger> PlayerEventInfoTriggerList;
@@ -477,6 +479,8 @@ namespace Server.Envir
             UserFortuneInfoList = Session.GetCollection<UserFortuneInfo>();
             WeaponCraftStatInfoList = Session.GetCollection<WeaponCraftStatInfo>();
             UserDisciplineList = Session.GetCollection<UserDiscipline>();
+            BundleInfoList = Session.GetCollection<BundleInfo>();
+            LootBoxInfoList = Session.GetCollection<LootBoxInfo>();
 
             WorldEventInfoTriggerList = Session.GetCollection<WorldEventTrigger>();
             PlayerEventInfoTriggerList = Session.GetCollection<PlayerEventTrigger>();
@@ -1712,6 +1716,12 @@ namespace Server.Envir
                     case ItemType.Shoes:
                         UpgradeShoes(item);
                         break;
+                    case ItemType.Bundle:
+                        UpgradeBundle(item);
+                        break;
+                    case ItemType.LootBox:
+                        UpgradeLootBox(item);
+                        break;
                 }
                 item.StatsChanged();
             }
@@ -2726,6 +2736,20 @@ namespace Server.Envir
 
                 item.AddStat(element, -1, StatSource.Added);
             }
+        }
+
+        public static void UpgradeBundle(UserItem item)
+        {
+            item.AddStat(Stat.Random1, Random.Next(byte.MaxValue), StatSource.Added); // Full randomise
+        }
+
+        public static void UpgradeLootBox(UserItem item)
+        {
+            item.AddStat(Stat.Random1, Random.Next(byte.MaxValue), StatSource.Added); // Full randomise
+            item.AddStat(Stat.Random2, Random.Next(byte.MaxValue), StatSource.Added); // LootBox grid randomise
+
+            item.AddStat(Stat.Counter1, Globals.LootBoxRerollCount, StatSource.Added);
+            item.AddStat(Stat.Counter2, 1, StatSource.Added); // Step 1 = Randomise, 2 = Selection
         }
 
         public static void Login(C.Login p, SConnection con)

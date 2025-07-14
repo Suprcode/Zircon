@@ -58,7 +58,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> GridSizeChanged;
         public void OnGridSizeChanged(Size oValue, Size nValue)
         {
-            Size = new Size(GridSize.Width * (DXItemCell.CellWidth - 1 + (GridPadding * 2)) + 1, Math.Min(GridSize.Height, VisibleHeight) * (DXItemCell.CellHeight - 1 + (GridPadding * 2)) + 1);
+            Size = new Size((int)(GridSize.Width * (DXItemCell.CellWidth - 1 + (GridPadding * 2)) + 1), (int)(Math.Min(GridSize.Height, VisibleHeight) * (DXItemCell.CellHeight - 1 + (GridPadding * 2)) + 1));
             CreateGrid();
 
             GridSizeChanged?.Invoke(this, EventArgs.Empty);
@@ -68,24 +68,24 @@ namespace Client.Controls
 
         #region GridPadding
 
-        public int GridPadding
+        public float GridPadding
         {
             get => _GridPadding;
             set
             {
                 if (_GridPadding == value) return;
 
-                int oldValue = _GridPadding;
+                float oldValue = _GridPadding;
                 _GridPadding = value;
 
                 OnGridPaddingChanged(oldValue, value);
             }
         }
-        private int _GridPadding;
+        private float _GridPadding;
         public event EventHandler<EventArgs> GridPaddingChanged;
-        public void OnGridPaddingChanged(int oValue, int nValue)
+        public void OnGridPaddingChanged(float oValue, float nValue)
         {
-            Size = new Size(GridSize.Width * (DXItemCell.CellWidth - 1 + (GridPadding * 2)) + 1, Math.Min(GridSize.Height, VisibleHeight) * (DXItemCell.CellHeight - 1 + (GridPadding * 2)) + 1);
+            Size = new Size((int)(GridSize.Width * (DXItemCell.CellWidth - 1 + (GridPadding * 2)) + 1), (int)(Math.Min(GridSize.Height, VisibleHeight) * (DXItemCell.CellHeight - 1 + (GridPadding * 2)) + 1));
             CreateGrid();
 
             GridPaddingChanged?.Invoke(this, EventArgs.Empty);
@@ -299,7 +299,7 @@ namespace Client.Controls
                     Grid[y * GridSize.Width + x] = new DXItemCell
                     {
                         Parent = this,
-                        Location = new Point((x * (DXItemCell.CellWidth - 1 + (GridPadding * 2))) + GridPadding, (y * (DXItemCell.CellHeight - 1 + (GridPadding * 2))) + GridPadding),
+                        Location = new Point((int)((x * (DXItemCell.CellWidth - 1 + (GridPadding * 2))) + GridPadding), (int)((y * (DXItemCell.CellHeight - 1 + (GridPadding * 2))) + GridPadding)),
                         Slot = y * GridSize.Width + x,
                         HostGrid = this,
                         ItemGrid = ItemGrid,
@@ -328,7 +328,7 @@ namespace Client.Controls
 
                     cell.Visible = true;
 
-                    cell.Location = new Point((x * (DXItemCell.CellWidth - 1 + (GridPadding * 2))) + GridPadding, ((y - ScrollValue) * (DXItemCell.CellHeight - 1 + (GridPadding * 2))) + GridPadding);
+                    cell.Location = new Point((int)((x * (DXItemCell.CellWidth - 1 + (GridPadding * 2))) + GridPadding), (int)(((y - ScrollValue) * (DXItemCell.CellHeight - 1 + (GridPadding * 2))) + GridPadding));
                 }
         }
 

@@ -734,4 +734,42 @@ namespace Library.Network.ClientPackets
     public sealed class IncreaseDiscipline : Packet
     {
     }
+
+    public sealed class BundleOpen : Packet
+    {
+        public int Slot { get; set; }
+    }
+
+    public sealed class LootBoxOpen : Packet
+    {
+        public int Slot { get; set; }
+    }
+
+    public sealed class LootBoxReveal : Packet
+    {
+        public int Slot { get; set; }
+        public int Choice { get; set; }
+    }
+
+    public sealed class LootBoxConfirmSelection : Packet
+    {
+        public int Slot { get; set; }
+    }
+
+    public sealed class BundleConfirm : Packet
+    {
+        public int Slot { get; set; }
+        public int Choice { get; set; }
+    }
+
+    public sealed class LootBoxTakeItems : Packet
+    {
+        public int Slot { get; set; }
+        public int Choice { get; set; }
+    }
+
+    public sealed class LootBoxReroll : Packet
+    {
+        public int Slot { get; set; }
+    }
 }

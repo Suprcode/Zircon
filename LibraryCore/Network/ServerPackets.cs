@@ -1358,5 +1358,27 @@ namespace Library.Network.ServerPackets
         public byte Type { get; set; }
         public int Seconds { get; set; }
     }
+
+    public sealed class BundleOpen : Packet
+    {
+        public int Slot { get; set; }
+        public List<ClientBundleItemInfo> Items { get; set; }
+    }
+
+    public sealed class BundleClose : Packet
+    {
+
+    }
+
+    public sealed class LootBoxOpen : Packet
+    {
+        public int Slot { get; set; }
+        public List<ClientLootBoxItemInfo> Items { get; set; }
+    }
+
+    public sealed class LootBoxClose : Packet
+    {
+
+    }
 }
 

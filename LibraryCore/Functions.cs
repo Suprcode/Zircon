@@ -730,5 +730,20 @@ namespace Library
 
             return result;
         }
+
+        public static void Shuffle<T>(this IList<T> list, int seed)
+        {
+            var rng = new Random(seed); // Use the provided number as seed
+            int n = list.Count;
+
+            // Fisher–Yates shuffle algorithm
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1); // Random index
+                                         // Swap elements at k and n
+                (list[k], list[n]) = (list[n], list[k]);
+            }
+        }
     }
 }

@@ -29,12 +29,24 @@ namespace Client.Scenes
 
         public SelectScene(Size size) : base(size)
         {
+            //DXImageControl extendedBackground = new DXImageControl
+            //{
+            //    Index = 50,
+            //    LibraryFile = LibraryFile.Interface1c,
+            //    Parent = this
+            //};
+
+            //extendedBackground.Location = new Point((size.Width - extendedBackground.Size.Width) / 2, (size.Height - extendedBackground.Size.Height) / 2);
+
             DXImageControl background = new DXImageControl
             {
                 Index = 50,
                 LibraryFile = LibraryFile.Interface1c,
                 Parent = this,
+                Size = new Size(1024, 768)
             };
+
+            background.Location = new Point((size.Width - background.Size.Width) / 2, (size.Height - background.Size.Height) / 2);
 
             new DXAnimatedControl
             {

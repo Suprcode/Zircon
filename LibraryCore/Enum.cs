@@ -202,7 +202,8 @@ namespace Library
         AccessoryRefineCombTarget,
         AccessoryRefineCombItems,
         PartsStorage,
-        Bundle
+        Bundle,
+        LootBox
     }
 
     public enum InventoryMode
@@ -417,7 +418,9 @@ namespace Library
         Finder = 32,
         Reel = 33,
         Currency = 34,
-        Bundle = 35
+        Bundle = 35,
+        [Description("Loot Box")]
+        LootBox = 36
     }
 
     public enum MirAction : byte
@@ -1685,9 +1688,7 @@ namespace Library
         [Description("All Of")]
         AllOf,
         [Description("One Of")]
-        OneOf,
-        [Description("Loot Box")]
-        LootBox //TODO - Hide all by default. Pay to open. Pay to reveal.
+        OneOf
     }
 
     public enum CurrencyType

@@ -87,6 +87,7 @@ namespace Server.Envir.Translations
         public override string GuildStorageSafeZone { get; set; } = "You cannot use guild storage unless you are in a safe zone";
         public override string CompanionNoRoom { get; set; } = "Your companion cannot carry this many items";
         public override string StorageLimit { get; set; } = "You cannot expand your storage anymore.";
+        public override string NotEnoughBagSpaceAvailable { get; set; } = "Not enough bag space available.";
 
         public override string MarryAlreadyMarried { get; set; } = "You are already married.";
         public override string MarryNeedLevel { get; set; } = "You need to be atleast level 22 to get married.";

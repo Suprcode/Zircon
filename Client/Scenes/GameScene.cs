@@ -200,6 +200,7 @@ namespace Client.Scenes
         public CurrencyDialog CurrencyBox;
         public TimerDialog TimerBox;
         public BundleDialog BundleBox;
+        public LootBoxDialog LootBoxBox;
 
         public FishingDialog FishingBox;
         public FishingCatchDialog FishingCatchBox;
@@ -699,7 +700,14 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
             };
+
             BundleBox = new BundleDialog
+            {
+                Parent = this,
+                Visible = false
+            };
+
+            LootBoxBox = new LootBoxDialog
             {
                 Parent = this,
                 Visible = false
@@ -809,6 +817,8 @@ namespace Client.Scenes
             TimerBox.Location = new Point(Size.Width - 120, Size.Height - 180);
 
             BundleBox.Location = new Point((Size.Width - BundleBox.Size.Width) / 2, (Size.Height - BundleBox.Size.Height) / 2);
+
+            LootBoxBox.Location = new Point((Size.Width - LootBoxBox.Size.Width) / 2, (Size.Height - LootBoxBox.Size.Height) / 2);
         }
 
         public void SaveChatTabs()
@@ -1063,6 +1073,8 @@ namespace Client.Scenes
         public override void OnKeyPress(KeyPressEventArgs e)
         {
             base.OnKeyPress(e);
+
+            if (e.Handled) return;
 
             switch ((Keys)e.KeyChar)
             {
@@ -1734,7 +1746,44 @@ namespace Client.Scenes
                     }
                     break;
                 case ItemType.Bundle:
-                    EquipmentItemInfo(); //TODO - Custom view?
+                    break;
+                case ItemType.LootBox:
+
+                    var remainingRerolls = MouseItem.AddedStats[Stat.Counter1];
+                    var lootBoxState = MouseItem.AddedStats[Stat.Counter2];
+
+                    if (lootBoxState > 1)
+                    {
+                        var openCount = 0;
+
+                        for (int i = 0; i <= LootBoxInfo.SlotSize; i++)
+                        {
+                            if ((MouseItem.CurrentDurability & (1 << i)) != 0)
+                                openCount++;
+                        }
+
+                        label = new DXLabel
+                        {
+                            ForeColour = Color.White,
+                            Location = new Point(ItemLabel.DisplayArea.Right, 4),
+                            Parent = ItemLabel,
+                            Text = $"Open Count: {openCount}/{LootBoxInfo.SlotSize}",
+                        };
+
+                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
+                    }
+                    else
+                    {
+                        label = new DXLabel
+                        {
+                            ForeColour = Color.White,
+                            Location = new Point(ItemLabel.DisplayArea.Right, 4),
+                            Parent = ItemLabel,
+                            Text = $"Remaining rerolls: {remainingRerolls}",
+                        };
+
+                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
+                    }
                     break;
                 default:
                     EquipmentItemInfo();
