@@ -158,6 +158,8 @@ namespace Client.UserModels
         FilterDropBox,
         CommunicationBox,
         FishingBox,
-        MenuBox
+        MenuBox,
+        BundleBox,
+        LootBoxBox
     }
 }

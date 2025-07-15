@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Scenes;
 using Library;
 using Sentry;
 using SlimDX.Windows;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace Client
 {
@@ -58,8 +56,6 @@ namespace Client
             DXControl.ActiveScene = new LoginScene(Config.IntroSceneSize);
 
             MessagePump.Run(CEnvir.Target, CEnvir.GameLoop);
-
-
 
             CEnvir.Session?.Save(true);
             CEnvir.Unload();

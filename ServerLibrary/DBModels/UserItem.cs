@@ -467,7 +467,6 @@ namespace Server.DBModels
             {
                 if (addedStat.Stat != stat || addedStat.StatSource != source) continue;
 
-
                 addedStat.Amount += amount;
 
                 return;
@@ -506,7 +505,7 @@ namespace Server.DBModels
                 SpecialRepairCoolDown = SpecialRepairCoolDown > SEnvir.Now ? SpecialRepairCoolDown - SEnvir.Now : TimeSpan.Zero,
                 ResetCoolDown = ResetCoolDown > SEnvir.Now ? ResetCoolDown - SEnvir.Now : TimeSpan.Zero,
 
-                AddedStats = new Stats(Stats),
+                AddedStats = new Stats(Stats, true),
 
                 Flags = Flags,
 

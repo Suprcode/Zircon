@@ -9,12 +9,10 @@ using Server.Models.Magics;
 using Server.Models.Monsters;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
@@ -5496,7 +5494,6 @@ namespace Server.Models
             foreach (UserQuest quest in changedQuests)
                 Enqueue(new S.QuestChanged { Quest = quest.ToClientInfo() });
 
-
             RefreshWeight();
         }
 
@@ -5616,7 +5613,7 @@ namespace Server.Models
 
                             if (item.Info.Stats[Stat.Experience] > 0) GainExperience(item.Info.Stats[Stat.Experience], false);
                             break;
-                        case 1:
+                        case 1: //Buff
                             if (!ItemBuffAdd(item.Info)) return;
                             break;
                         case 2: //Town Teleport
@@ -5946,7 +5943,7 @@ namespace Server.Models
                                     return;
                             }
                             break;
-                        case 17:
+                        case 17: //Storage Increase
 
                             int size = Character.Account.StorageSize + 10;
 
@@ -5959,7 +5956,7 @@ namespace Server.Models
                             Character.Account.StorageSize = size;
                             Enqueue(new S.StorageSize { Size = Character.Account.StorageSize });
                             break;
-                        case 18:
+                        case 18: //Football Whistle
                             if (item.Info.Stats[Stat.MapSummoning] > 0 && CurrentMap.HasSafeZone)
                             {
                                 Connection.ReceiveChat($"You cannot use [{item.Info.ItemName}] with maps that have a SafeZone.", MessageType.System);
@@ -6053,7 +6050,7 @@ namespace Server.Models
                                 }
                             }
                             break;
-                        case 19:
+                        case 19: 
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6123,7 +6120,7 @@ namespace Server.Models
                             RefreshStats();
 
                             break;
-                        case 20:
+                        case 20: //Stat Extractor
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6245,7 +6242,7 @@ namespace Server.Models
                             RefreshStats();
 
                             break;
-                        case 22:
+                        case 22: //Refine Extractor
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6406,6 +6403,8 @@ namespace Server.Models
 
                     gainItem = SEnvir.CreateDropItem(partInfo, 2);
 
+                    break;
+                case ItemType.Bundle:
                     break;
                 default:
                     return;
@@ -15928,6 +15927,492 @@ namespace Server.Models
             RefreshStats();
 
             Enqueue(new S.DisciplineUpdate { Discipline = uFocus.ToClientInfo() });
+        }
+
+        #endregion
+
+        #region Loot Boxes
+
+        public void LootBoxOpen(LootBoxOpen p)
+        {
+            if (p.Slot < 0 || p.Slot >= Inventory.Length) return;
+
+            UserItem item = Inventory[p.Slot];
+
+            if (item == null || item.Info.ItemType != ItemType.LootBox) return;
+
+            LootBoxUpdate(item, p.Slot);
+        }
+
+        public void LootBoxReroll(LootBoxReroll p)
+        {
+            if (p.Slot < 0 || p.Slot >= Inventory.Length) return;
+
+            UserItem item = Inventory[p.Slot];
+
+            if (item == null || item.Info.ItemType != ItemType.LootBox) return;
+
+            var lootBoxInfo = SEnvir.LootBoxInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+            if (lootBoxInfo == null) return;
+
+            var remainingShuffles = item.Stats[Stat.Counter1];
+            if (remainingShuffles <= 0) return;
+
+            var state = item.Stats[Stat.Counter2];
+            if (state > 1) return; // Already confirmed 
+
+            item.AddStat(Stat.Random1, SEnvir.Random.Next(byte.MaxValue), StatSource.Added);
+            item.AddStat(Stat.Counter1, -1, StatSource.Added);
+            item.StatsChanged();
+
+            Enqueue(new S.ItemStatsRefreshed 
+            { 
+                GridType = GridType.Inventory, 
+                Slot = p.Slot, 
+                NewStats = new Stats(item.Stats, true) 
+            });
+
+            LootBoxUpdate(item, p.Slot);
+        }
+
+        public void LootBoxConfirmSelection(LootBoxConfirmSelection p)
+        {
+            if (p.Slot < 0 || p.Slot >= Inventory.Length) return;
+
+            UserItem item = Inventory[p.Slot];
+
+            if (item == null || item.Info.ItemType != ItemType.LootBox) return;
+
+            var lootBoxInfo = SEnvir.LootBoxInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+            if (lootBoxInfo == null) return;
+
+            var state = item.Stats[Stat.Counter2];
+            if (state > 1) return; // Already confirmed 
+
+            item.AddStat(Stat.Counter2, 1, StatSource.Added);
+            item.StatsChanged();
+
+            Enqueue(new S.ItemStatsRefreshed 
+            { 
+                GridType = GridType.Inventory, 
+                Slot = p.Slot, 
+                NewStats = new Stats(item.Stats, true) 
+            });
+
+            LootBoxUpdate(item, p.Slot);
+        }
+
+        public void LootBoxReveal(LootBoxReveal p)
+        {
+            if (p.Slot < 0 || p.Slot >= Inventory.Length) return;
+
+            UserItem item = Inventory[p.Slot];
+
+            if (item == null || item.Info.ItemType != ItemType.LootBox) return;
+
+            var lootBoxInfo = SEnvir.LootBoxInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+            if (lootBoxInfo == null) return;
+
+            if (p.Choice < 0 || p.Choice >= LootBoxInfo.SlotSize) return;
+
+            var openCount = 0;
+
+            for (int i = 0; i < LootBoxInfo.SlotSize; i++)
+            {
+                if ((item.CurrentDurability & (1 << i)) != 0)
+                    openCount++;
+            }
+
+            var currency = GetCurrency(lootBoxInfo.Currency) ?? GameGold;
+
+            var totalCost = openCount * Globals.LootBoxRevealCost;
+
+            if (currency.Amount < totalCost) return;
+            currency.Amount -= totalCost;
+
+            CurrencyChanged(currency);
+
+            // Update durability to mark the slot as revealed
+            item.CurrentDurability |= (1 << p.Choice);
+
+            Enqueue(new S.ItemDurability
+            {
+                GridType = GridType.Inventory,
+                Slot = p.Slot,
+                CurrentDurability = item.CurrentDurability,
+            });
+
+            LootBoxUpdate(item, p.Slot);
+        }
+
+        private void LootBoxUpdate(UserItem item, int slot)
+        {
+            var lootBoxInfo = SEnvir.LootBoxInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+            if (lootBoxInfo == null) return;
+
+            var lootBoxContents = lootBoxInfo.Contents.ToList();
+
+            // Shuffle the full list based on the random 1 seed
+            Functions.Shuffle(lootBoxContents, item.Stats[Stat.Random1]);
+
+            // Take the top selection based on slot amount
+            var taken = lootBoxContents.Take(LootBoxInfo.SlotSize).ToList();
+
+            // Calculate how many more items are needed to reach SlotSize
+            int itemsToAdd = LootBoxInfo.SlotSize - taken.Count;
+
+            // If more items are needed, pad the list with default values
+            if (itemsToAdd > 0)
+            {
+                taken.AddRange(Enumerable.Repeat(default(LootBoxItemInfo), itemsToAdd));
+            }
+
+            var items = new List<ClientLootBoxItemInfo>();
+
+            var lootBoxState = item.Stats[Stat.Counter2];
+
+            if (lootBoxState > 1) // Confirmed Choice
+            {
+                // Shuffle the taken list based on random 2 seed
+                Functions.Shuffle(taken, item.Stats[Stat.Random2]);
+
+                var lockState = item.CurrentDurability;
+
+                for (int i = 0; i < LootBoxInfo.SlotSize; i++)
+                {
+                    bool unlocked = (lockState & (1 << i)) != 0;
+
+                    if (unlocked)
+                    {
+                        var content = taken[i];
+
+                        if (content == default(LootBoxItemInfo))
+                        {
+                            items.Add(new ClientLootBoxItemInfo { ItemIndex = -1, Amount = 1, Slot = i });
+                        }
+                        else
+                        {
+                            items.Add(new ClientLootBoxItemInfo { ItemIndex = taken[i].Item.Index, Amount = taken[i].Amount, Slot = i });
+                        }
+                    }
+                }
+
+                Enqueue(new S.LootBoxOpen { Slot = slot, Items = items });
+            }
+            else
+            {
+                for (int i = 0; i < taken.Count; i++)
+                {
+                    items.Add(new ClientLootBoxItemInfo { ItemIndex = taken[i].Item.Index, Amount = taken[i].Amount, Slot = i });
+                }
+
+                Enqueue(new S.LootBoxOpen { Slot = slot, Items = items });
+            }
+        }
+
+        public void LootBoxConfirm(LootBoxTakeItems p)
+        {
+            if (p.Slot < 0 || p.Slot >= Inventory.Length) return;
+
+            UserItem item = Inventory[p.Slot];
+
+            if (item == null || item.Info.ItemType != ItemType.LootBox) return;
+
+            var lootBoxInfo = SEnvir.LootBoxInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+            if (lootBoxInfo == null) return;
+
+            var lootBoxState = item.Stats[Stat.Counter2];
+            if (lootBoxState < 2) return; // Hasn't been confirmed yet
+
+            var lootBoxContents = lootBoxInfo.Contents.ToList();
+
+            // Shuffle the full list based on the random 1 seed
+            Functions.Shuffle(lootBoxContents, item.Stats[Stat.Random1]);
+
+            // Take the top selection based on slot amount
+            var taken = lootBoxContents.Take(LootBoxInfo.SlotSize).ToList();
+
+            // Calculate how many more items are needed to reach SlotSize
+            int itemsToAdd = LootBoxInfo.SlotSize - taken.Count;
+
+            // If more items are needed, pad the list with default values
+            if (itemsToAdd > 0)
+            {
+                taken.AddRange(Enumerable.Repeat(default(LootBoxItemInfo), itemsToAdd));
+            }
+
+            // Shuffle the taken list based on random 2 seed
+            Functions.Shuffle(taken, item.Stats[Stat.Random2]);
+
+            var itemChecks = new List<ItemCheck>();
+
+            var lockState = item.CurrentDurability;
+
+            for (int i = 0; i < taken.Count; i++)
+            {
+                bool unlocked = (lockState & (1 << i)) != 0;
+
+                if (unlocked)
+                {
+                    var selection = taken[i];
+
+                    if (selection == default(LootBoxItemInfo))
+                    {
+                        continue;
+                    }
+
+                    var amount = selection.Amount;
+
+                    if (amount > selection.Item.StackSize)
+                    {
+                        while (amount > selection.Item.StackSize)
+                        {
+                            itemChecks.Add(new ItemCheck(selection.Item, selection.Item.StackSize, UserItemFlags.None, TimeSpan.Zero));
+
+                            amount -= selection.Item.StackSize;
+                        }
+                    }
+
+                    if (amount > 0)
+                    {
+                        itemChecks.Add(new ItemCheck(selection.Item, amount, UserItemFlags.None, TimeSpan.Zero));
+                    }
+                }
+            }
+
+            if (!CanGainItems(true, [.. itemChecks]))
+            {
+                Connection.ReceiveChat(Connection.Language.NotEnoughBagSpaceAvailable, MessageType.System);
+
+                Enqueue(new S.LootBoxClose());
+                return;
+            }
+
+            for (int i = 0; i < itemChecks.Count; i++)
+            {
+                var selection = itemChecks[i];
+
+                var gainItem = SEnvir.CreateFreshItem(selection.Info);
+                gainItem.Count = selection.Count;
+
+                if (gainItem != null)
+                    GainItem(gainItem);
+            }
+
+            S.ItemChanged result = new S.ItemChanged
+            {
+                Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = p.Slot },
+                Success = true
+            };
+
+            if (item.Count > 1)
+            {
+                item.Count--;
+                result.Link.Count = item.Count;
+            }
+            else
+            {
+                RemoveItem(item);
+                Inventory[p.Slot] = null;
+                item.Delete();
+
+                result.Link.Count = 0;
+            }
+
+            Enqueue(result);
+
+            Companion?.RefreshWeight();
+            RefreshWeight();
+
+            Enqueue(new S.LootBoxClose());
+        }
+
+        #endregion
+
+        #region Bundles
+
+        public void BundleOpen(BundleOpen p)
+        {
+            if (p.Slot < 0 || p.Slot >= Inventory.Length) return;
+
+            UserItem item = Inventory[p.Slot];
+
+            if (item == null || item.Info.ItemType != ItemType.Bundle) return;
+
+            BundleUpdate(item, p.Slot);
+        }
+
+        private void BundleUpdate(UserItem item, int slot)
+        {
+            var bundleInfo = SEnvir.BundleInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+            if (bundleInfo == null) return;
+
+            var bundleContents = bundleInfo.Contents.ToList();
+
+            // Shuffle the full list based on the random 1 seed
+            Functions.Shuffle(bundleContents, item.Stats[Stat.Random1]);
+
+            var bundleItems = new List<ClientBundleItemInfo>();
+
+            for (int i = 0; i < bundleInfo.SlotSize; i++)
+            {
+                if (i >= bundleContents.Count) break;
+
+                bundleItems.Add(new ClientBundleItemInfo { ItemIndex = bundleContents[i].Item.Index, Amount = bundleContents[i].Amount, Slot = i });
+            }
+
+            Enqueue(new S.BundleOpen { Slot = slot, Items = bundleItems });
+        }
+
+        public void BundleConfirm(BundleConfirm p)
+        {
+            if (p.Slot < 0 || p.Slot >= Inventory.Length) return;
+
+            UserItem item = Inventory[p.Slot];
+
+            if (item == null || item.Info.ItemType != ItemType.Bundle) return;
+
+            var bundleInfo = SEnvir.BundleInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+            if (bundleInfo == null) return;
+
+            var bundleContents = bundleInfo.Contents.ToList();
+
+            // Shuffle the full list based on the random 1 seed
+            Functions.Shuffle(bundleContents, item.Stats[Stat.Random1]);
+
+            switch (bundleInfo.Type)
+            {
+                case BundleType.OneOf:
+                case BundleType.AnyOf:
+                    {
+                        var choice = p.Choice;
+
+                        int smallest = Math.Min(bundleInfo.SlotSize, bundleContents.Count);
+
+                        if (bundleInfo.Type == BundleType.AnyOf)
+                        {
+                            choice = SEnvir.Random.Next(smallest);
+                        }
+
+                        if (choice < 0 || choice >= smallest) return;
+
+                        var selection = bundleContents[choice];
+
+                        var itemChecks = new List<ItemCheck>();
+
+                        var amount = selection.Amount;
+
+                        if (amount > selection.Item.StackSize)
+                        {
+                            while (amount > selection.Item.StackSize)
+                            {
+                                itemChecks.Add(new ItemCheck(selection.Item, selection.Item.StackSize, UserItemFlags.None, TimeSpan.Zero));
+
+                                amount -= selection.Item.StackSize;
+                            }
+                        }
+
+                        if (amount > 0)
+                        {
+                            itemChecks.Add(new ItemCheck(selection.Item, amount, UserItemFlags.None, TimeSpan.Zero));
+                        }
+
+                        if (!CanGainItems(true, itemChecks.ToArray()))
+                        {
+                            Connection.ReceiveChat(Connection.Language.NotEnoughBagSpaceAvailable, MessageType.System);
+
+                            Enqueue(new S.BundleClose());
+                            return;
+                        }
+
+                        for (int i = 0; i < itemChecks.Count; i++)
+                        {
+                            var itemCheck = itemChecks[i];
+
+                            var gainItem = SEnvir.CreateFreshItem(itemCheck.Info);
+                            gainItem.Count = itemCheck.Count;
+
+                            if (gainItem != null)
+                                GainItem(gainItem);
+                        }
+                    }
+                    break;
+                case BundleType.AllOf:
+                    {
+                        var itemChecks = new List<ItemCheck>();
+
+                        for (int i = 0; i < bundleContents.Count; i++)
+                        {
+                            if (i >= bundleInfo.SlotSize) break;
+
+                            var selection = bundleContents[i];
+
+                            var amount = selection.Amount;
+
+                            if (amount > selection.Item.StackSize)
+                            {
+                                while (amount > selection.Item.StackSize)
+                                {
+                                    itemChecks.Add(new ItemCheck(selection.Item, selection.Item.StackSize, UserItemFlags.None, TimeSpan.Zero));
+
+                                    amount -= selection.Item.StackSize;
+                                }
+                            }
+
+                            if (amount > 0)
+                            {
+                                itemChecks.Add(new ItemCheck(selection.Item, amount, UserItemFlags.None, TimeSpan.Zero));
+                            }
+                        }
+
+                        if (!CanGainItems(true, [.. itemChecks]))
+                        {
+                            Connection.ReceiveChat(Connection.Language.NotEnoughBagSpaceAvailable, MessageType.System);
+
+                            Enqueue(new S.BundleClose());
+                            return;
+                        }
+
+                        for (int i = 0; i < itemChecks.Count; i++)
+                        {
+                            var itemCheck = itemChecks[i];
+
+                            var gainItem = SEnvir.CreateFreshItem(itemCheck.Info);
+                            gainItem.Count = itemCheck.Count;
+
+                            if (gainItem != null)
+                                GainItem(gainItem);
+                        }
+                    }
+                    break;
+            }
+
+            S.ItemChanged result = new S.ItemChanged
+            {
+                Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = p.Slot },
+                Success = true
+            };
+
+            if (item.Count > 1)
+            {
+                item.Count--;
+                result.Link.Count = item.Count;
+            }
+            else
+            {
+                RemoveItem(item);
+                Inventory[p.Slot] = null;
+                item.Delete();
+
+                result.Link.Count = 0;
+            }
+
+            Enqueue(result);
+
+            Companion?.RefreshWeight();
+            RefreshWeight();
+
+            Enqueue(new S.BundleClose());
         }
 
         #endregion

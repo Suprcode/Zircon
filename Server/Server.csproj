@@ -63,7 +63,13 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\LootBoxInfoView.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Views\EventInfoView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Views\BundleInfoView.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\FameInfoView.cs">

@@ -294,6 +294,31 @@ namespace Client.Controls
 
         #endregion
 
+        #region LootBox Locked
+
+        public bool LootBoxLocked
+        {
+            get => _LootBoxLocked;
+            set
+            {
+                if (_LootBoxLocked == value) return;
+
+                bool oldValue = _LootBoxLocked;
+                _LootBoxLocked = value;
+
+                OnLootBoxLockedChanged(oldValue, value);
+            }
+        }
+        private bool _LootBoxLocked;
+        public event EventHandler<EventArgs> LootBoxLockedChanged;
+        public void OnLootBoxLockedChanged(bool oValue, bool nValue)
+        {
+            LootBoxLockedChanged?.Invoke(this, EventArgs.Empty);
+            RefreshItem();
+        }
+
+        #endregion
+
         #region ShowCountLabel
 
         public bool ShowCountLabel
@@ -620,6 +645,23 @@ namespace Client.Controls
 
             CEnvir.LibraryList.TryGetValue(LibraryFile.StoreItems, out Library);
 
+            if (LootBoxLocked)
+            {
+                CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter2, out Library);
+                MirImage image = Library.CreateImage(2930, ImageType.Image);
+                if (image != null)
+                {
+                    Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
+                    area.Offset((Size.Width - image.Width) / 2, (Size.Height - image.Height) / 2);
+                    ItemInfo info = Item.Info;
+                    PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
+                }
+
+                base.DrawControl();
+
+                return;
+            }
+
             if (Library != null && Item != null)
             {
                 int drawIndex;
@@ -667,7 +709,6 @@ namespace Client.Controls
                 image = InterfaceLibrary.CreateImage(48, ImageType.Image);
                 if (Item != null && (Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked && image != null && !Hidden && GridType != GridType.Inspect)
                     PresentTexture(image.Image, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
-
 
                 image = InterfaceLibrary.CreateImage(49, ImageType.Image);
                 if (Item != null && GameScene.Game != null && !GameScene.Game.CanUseItem(Item) && image != null && !Hidden && GridType != GridType.Inspect)
@@ -731,7 +772,7 @@ namespace Client.Controls
                 GameScene.Game.MouseItem = Item;
             }
 
-            CountLabel.Visible = ShowCountLabel && !Hidden && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.ItemEffect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
+            CountLabel.Visible = ShowCountLabel && !Hidden && !LootBoxLocked && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.ItemEffect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
             CountLabel.Text = Linked ? LinkedCount.ToString() : Item?.Count.ToString();
         }
         public void MoveItem()
@@ -1014,11 +1055,6 @@ namespace Client.Controls
             Locked = true;
             toCell.Locked = true;
             CEnvir.Enqueue(packet);
-        }
-
-        public bool SellMode
-        {
-            get { return (GameScene.Game.InventoryBox.InvMode == InventoryMode.Sell && GridType == GridType.Inventory); }
         }
 
         public bool MoveItem(DXItemGrid toGrid, bool skipCount = false)
@@ -1557,10 +1593,35 @@ namespace Client.Controls
 
                     GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(Math.Max(250, Item.Info.Durability));
                     
-
                     Locked = true;
 
                     CEnvir.Enqueue(new C.ItemUse { Link = new CellLinkInfo { GridType = GridType, Slot = Slot, Count = 1 } });
+                    PlayItemSound();
+                    break;
+                case ItemType.Bundle:
+                    if (!GameScene.Game.CanUseItem(Item)) return false;
+
+                    if (CEnvir.Now < GameScene.Game.UseItemTime || MapObject.User.Horse != HorseType.None) return false;
+
+                    if (GameScene.Game.BundleBox.Visible) return false;
+
+                    GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(250);
+                    Locked = true;
+
+                    CEnvir.Enqueue(new C.BundleOpen { Slot = Slot });
+                    PlayItemSound();
+                    break;
+                case ItemType.LootBox:
+                    if (!GameScene.Game.CanUseItem(Item)) return false;
+
+                    if (CEnvir.Now < GameScene.Game.UseItemTime || MapObject.User.Horse != HorseType.None) return false;
+
+                    if (GameScene.Game.LootBoxBox.Visible) return false;
+
+                    GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(250);
+                    Locked = true;
+
+                    CEnvir.Enqueue(new C.LootBoxOpen { Slot = Slot });
                     PlayItemSound();
                     break;
                 case ItemType.Book:
@@ -1568,7 +1629,6 @@ namespace Client.Controls
 
                     if (CEnvir.Now < GameScene.Game.UseItemTime || MapObject.User.Horse != HorseType.None) return false;
 
-                    
                     GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(250);
                     Locked = true;
 
@@ -1697,7 +1757,10 @@ namespace Client.Controls
         {
             base.OnMouseEnter();
 
-            GameScene.Game.MouseItem = Item;
+            if (!LootBoxLocked)
+            {
+                GameScene.Game.MouseItem = Item;
+            }
 
             if (Item != null)
                 Item.New = false;

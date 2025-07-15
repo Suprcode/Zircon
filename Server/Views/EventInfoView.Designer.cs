@@ -663,7 +663,7 @@
             PlayerEventInfoGridControl.MenuManager = ribbon;
             PlayerEventInfoGridControl.Name = "PlayerEventInfoGridControl";
             PlayerEventInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { PlayerMonsterLookUpEdit, PlayerRespawnLookUpEdit, PlayerRegionLookUpEdit, PlayerMapLookUpEdit, PlayerInstanceLookUpEdit, PlayerActionTypeLookUpEdit, PlayerItemLookUpEdit });
-            PlayerEventInfoGridControl.Size = new System.Drawing.Size(927, 363);
+            PlayerEventInfoGridControl.Size = new System.Drawing.Size(913, 356);
             PlayerEventInfoGridControl.TabIndex = 3;
             PlayerEventInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { PlayerActionsInfoGridView, PlayerActionStatsInfoGridView, PlayerEventInfoGridView, PlayerTriggersInfoGridView });
             // 
@@ -1125,7 +1125,7 @@
             tabNavigationPage2.Caption = "Player Event Info";
             tabNavigationPage2.Controls.Add(PlayerEventInfoGridControl);
             tabNavigationPage2.Name = "tabNavigationPage2";
-            tabNavigationPage2.Size = new System.Drawing.Size(927, 363);
+            tabNavigationPage2.Size = new System.Drawing.Size(913, 356);
             // 
             // tabNavigationPage3
             // 

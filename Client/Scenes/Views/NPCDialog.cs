@@ -1103,6 +1103,7 @@ namespace Client.Scenes.Views
                 case ItemType.Poison:
                 case ItemType.Amulet:
                 case ItemType.DarkStone:
+                case ItemType.Bundle:
 
                     if (GameScene.Game.CanUseItem(ItemCell.Item))
                     {
@@ -1282,6 +1283,7 @@ namespace Client.Scenes.Views
                 case ItemType.Poison:
                 case ItemType.Amulet:
                 case ItemType.DarkStone:
+                case ItemType.Bundle:
                     RequirementLabel.ForeColour = GameScene.Game.CanUseItem(ItemCell.Item) ? Color.Aquamarine : Color.Red;
                     break;
             }

@@ -41,6 +41,7 @@ namespace Client.Envir.Translations
         public override string ItemGained { get; set; } = "你获得 {0}.";
         public override string ItemsGained { get; set; } = "你获得 {0} x{1}.";
         public override string NothingHappen { get; set; } = "Nothing happen to your {0}";
+        public override string NotEnoughCurrency { get; set; } = "Not enough {0}.";
         public override string ItemStatsNewElement { get; set; } = "Your {0} has been effected: New Element {1}";
         public override string ItemStatsEffected { get; set; } = "Your {0} has been effected: {1}";
         public override string ItemDurabilityDrop { get; set; } = "Your item {0} has dropped to durability 0";
@@ -707,5 +708,25 @@ namespace Client.Envir.Translations
         public override string TradeDialogUserLabel { get; set; } = "用户";
         public override string TradeDialogPlayerLabel { get; set; } = "玩家";
         public override string TradeDialogGoldLabel { get; set; } = "金币";
+
+        public override string LootBoxRerollMessage { get; set; } = "Rerolling a lootbox will cost {0} {1}. Are you sure?";
+        public override string LootBoxRerollTitle { get; set; } = "Reroll Confirmation";
+        public override string LootBoxItemChoiceMessage { get; set; } = "Are you sure you want to confirm your choice of items?";
+        public override string LootBoxItemChoiceTitle { get; set; } = "Confirm Choice Confirmation";
+        public override string LootBoxTakeItemsMessage { get; set; } = "Are you ready to take your items?";
+        public override string LootBoxTakeItemsTitle { get; set; } = "Take Items Confirmation";
+        public override string LootBoxShuffleMessage { get; set; } = "Items displayed above will be shuffled.\n\nConfirm the selection of items or reroll\nfor a new selection.";
+        public override string LootBoxOpenDescription { get; set; } = "Click a box to open it.\nNext opening cost is {0} {1}.";
+        public override string LootBoxOpenMessage { get; set; } = "Opening this box will cost {0} {1}. Are you sure?";
+        public override string LootBoxOpenTitle { get; set; } = "Open Confirmation";
+        public override string LootBoxRerollCountLabel { get; set; } = "Remaining Rerolls: {0}";
+        public override string LootBoxRerollButtonLabel { get; set; } = "Reroll ({0} {1})";
+        public override string LootBoxConfirmChoiceButtonLabel { get; set; } = "Confirm Choice";
+        public override string LootBoxTakeItemsButtonLabel { get; set; } = "Take Items";
+
+        public override string BundleTitle { get; set; } = "Bundle";
+        public override string BundleConfirmRandomButtonLabel { get; set; } = "Take Random";
+        public override string BundleConfirmAllButtonLabel { get; set; } = "Take All";
+        public override string BundleConfirmOneButtonLabel { get; set; } = "Take Item";
     }
 }

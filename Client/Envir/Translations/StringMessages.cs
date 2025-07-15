@@ -40,6 +40,7 @@ namespace Client.Envir.Translations
         public abstract string ItemGained { get; set; }
         public abstract string ItemsGained { get; set; }
         public abstract string NothingHappen { get; set; }
+        public abstract string NotEnoughCurrency { get; set; }
         public abstract string ItemStatsNewElement { get; set; }
         public abstract string ItemStatsEffected { get; set; }
         public abstract string ItemDurabilityDrop { get; set; }
@@ -708,5 +709,25 @@ namespace Client.Envir.Translations
         public abstract string TradeDialogUserLabel { get; set; }
         public abstract string TradeDialogPlayerLabel { get; set; }
         public abstract string TradeDialogGoldLabel { get; set; }
+
+        public abstract string LootBoxRerollMessage { get; set; }
+        public abstract string LootBoxRerollTitle { get; set; }
+        public abstract string LootBoxItemChoiceMessage { get; set; }
+        public abstract string LootBoxItemChoiceTitle { get; set; }
+        public abstract string LootBoxTakeItemsMessage { get; set; }
+        public abstract string LootBoxTakeItemsTitle { get; set; }
+        public abstract string LootBoxShuffleMessage { get; set; }
+        public abstract string LootBoxOpenDescription { get; set; }
+        public abstract string LootBoxOpenMessage { get; set; }
+        public abstract string LootBoxOpenTitle { get; set; }
+        public abstract string LootBoxRerollCountLabel { get; set; }
+        public abstract string LootBoxRerollButtonLabel { get; set; }
+        public abstract string LootBoxConfirmChoiceButtonLabel { get; set; }
+        public abstract string LootBoxTakeItemsButtonLabel { get; set; }
+
+        public abstract string BundleTitle { get; set; }
+        public abstract string BundleConfirmRandomButtonLabel { get; set; }
+        public abstract string BundleConfirmAllButtonLabel { get; set; }
+        public abstract string BundleConfirmOneButtonLabel { get; set; }
     }
 }

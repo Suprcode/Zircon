@@ -593,5 +593,15 @@ namespace Server
         {
             ShowView(typeof(FameInfoView));
         }
+
+        private void BundleInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(BundleInfoView));
+        }
+
+        private void LootBoxInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(LootBoxInfoView));
+        }
     }
 }

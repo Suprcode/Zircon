@@ -373,6 +373,8 @@ namespace Client.Envir
                     Globals.CompanionLevelInfoList = Session.GetCollection<CompanionLevelInfo>();
                     Globals.DisciplineInfoList = Session.GetCollection<DisciplineInfo>();
                     Globals.FameInfoList = Session.GetCollection<FameInfo>();
+                    Globals.BundleInfoList = Session.GetCollection<BundleInfo>();
+                    Globals.LootBoxInfoList = Session.GetCollection<LootBoxInfo>();
 
                     KeyBinds = Session.GetCollection<KeyBindInfo>();
                     WindowSettings = Session.GetCollection<WindowSetting>();

@@ -4847,8 +4847,10 @@ namespace Client.Models
         {
             const int chatWidth = 200;
 
+            var cleanedText = Globals.LinkedItemRegex.Replace(text, @"[${Text}]");
+
             Color colour = Dead ? Color.Gray : Color.White;
-            ChatLabel = ChatLabels.FirstOrDefault(x => x.Text == text && x.ForeColour == colour);
+            ChatLabel = ChatLabels.FirstOrDefault(x => x.Text == cleanedText && x.ForeColour == colour);
 
             ChatTime = CEnvir.Now.AddSeconds(5);
 
@@ -4860,7 +4862,7 @@ namespace Client.Models
                 Outline = true,
                 OutlineColour = Color.Black,
                 ForeColour = colour,
-                Text = text,
+                Text = cleanedText,
                 IsVisible = true,
                 DrawFormat = TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis,
             };

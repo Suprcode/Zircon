@@ -39,10 +39,19 @@ namespace Library
         public Stats()
         { }
 
-        public Stats(Stats stats)
+        public Stats(Stats stats, bool client = false)
         {
             foreach (KeyValuePair<Stat, int> pair in stats.Values)
-                this[pair.Key] += pair.Value;
+            {
+                var stat = pair.Key;
+
+                Type type = stat.GetType();
+
+                if (!client || !type.GetMember(stat.ToString())[0].GetCustomAttribute<StatDescription>().ServerOnly)
+                {
+                    this[pair.Key] += pair.Value;
+                }
+            }
         }
         public Stats(BinaryReader reader)
         {
@@ -861,6 +870,15 @@ namespace Library
         [StatDescription(Title = "Finder Chance", Format = "{0:+#0%;-#0%;#0%}", Mode = StatType.Percent)]
         FinderChance,
 
+        [StatDescription(Mode = StatType.None, ServerOnly = true)]
+        Random1 = 250,
+        [StatDescription(Mode = StatType.None, ServerOnly = true)]
+        Random2,
+        [StatDescription(Mode = StatType.None)]
+        Counter1,
+        [StatDescription(Mode = StatType.None)]
+        Counter2,
+
         [StatDescription(Title = "Duration", Mode = StatType.Time)]
         Duration = 10000,
     }
@@ -897,5 +915,6 @@ namespace Library
         public Stat MinStat { get; set; }
         public Stat MaxStat { get; set; }
         public string UsageHint { get; set; }
+        public bool ServerOnly { get; set; }
     }
 }
