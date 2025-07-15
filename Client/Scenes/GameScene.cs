@@ -1756,7 +1756,7 @@ namespace Client.Scenes
                     {
                         var openCount = 0;
 
-                        for (int i = 0; i <= LootBoxInfo.SlotSize; i++)
+                        for (int i = 0; i < LootBoxInfo.SlotSize; i++)
                         {
                             if ((MouseItem.CurrentDurability & (1 << i)) != 0)
                                 openCount++;

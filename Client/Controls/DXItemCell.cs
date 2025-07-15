@@ -1603,6 +1603,8 @@ namespace Client.Controls
 
                     if (CEnvir.Now < GameScene.Game.UseItemTime || MapObject.User.Horse != HorseType.None) return false;
 
+                    if (GameScene.Game.BundleBox.Visible) return false;
+
                     GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(250);
                     Locked = true;
 
@@ -1613,6 +1615,8 @@ namespace Client.Controls
                     if (!GameScene.Game.CanUseItem(Item)) return false;
 
                     if (CEnvir.Now < GameScene.Game.UseItemTime || MapObject.User.Horse != HorseType.None) return false;
+
+                    if (GameScene.Game.LootBoxBox.Visible) return false;
 
                     GameScene.Game.UseItemTime = CEnvir.Now.AddMilliseconds(250);
                     Locked = true;

@@ -265,8 +265,15 @@ namespace Client.Scenes.Views
                 }
                 else
                 {
-                    ClientUserItem lootBoxItem = new(lootBoxContent.ItemInfo, lootBoxContent.Amount);
-                    Grid.Grid[i].Item = lootBoxItem;
+                    if (lootBoxContent.ItemInfo == null)
+                    {
+                        Grid.Grid[i].Item = null;
+                    }
+                    else
+                    {
+                        ClientUserItem lootBoxItem = new(lootBoxContent.ItemInfo, lootBoxContent.Amount);
+                        Grid.Grid[i].Item = lootBoxItem;
+                    }
                 }
             }
 

@@ -16013,13 +16013,11 @@ namespace Server.Models
             var lootBoxInfo = SEnvir.LootBoxInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
             if (lootBoxInfo == null) return;
 
-            int smallest = Math.Min(LootBoxInfo.SlotSize, lootBoxInfo.Contents.Count);
-
-            if (p.Choice < 0 || p.Choice >= smallest) return;
+            if (p.Choice < 0 || p.Choice >= LootBoxInfo.SlotSize) return;
 
             var openCount = 0;
 
-            for (int i = 0; i <= LootBoxInfo.SlotSize; i++)
+            for (int i = 0; i < LootBoxInfo.SlotSize; i++)
             {
                 if ((item.CurrentDurability & (1 << i)) != 0)
                     openCount++;
@@ -16060,6 +16058,15 @@ namespace Server.Models
             // Take the top selection based on slot amount
             var taken = lootBoxContents.Take(LootBoxInfo.SlotSize).ToList();
 
+            // Calculate how many more items are needed to reach SlotSize
+            int itemsToAdd = LootBoxInfo.SlotSize - taken.Count;
+
+            // If more items are needed, pad the list with default values
+            if (itemsToAdd > 0)
+            {
+                taken.AddRange(Enumerable.Repeat(default(LootBoxItemInfo), itemsToAdd));
+            }
+
             var items = new List<ClientLootBoxItemInfo>();
 
             var lootBoxState = item.Stats[Stat.Counter2];
@@ -16071,13 +16078,22 @@ namespace Server.Models
 
                 var lockState = item.CurrentDurability;
 
-                for (int i = 0; i < taken.Count; i++)
+                for (int i = 0; i < LootBoxInfo.SlotSize; i++)
                 {
                     bool unlocked = (lockState & (1 << i)) != 0;
 
                     if (unlocked)
                     {
-                        items.Add(new ClientLootBoxItemInfo { ItemIndex = taken[i].Item.Index, Amount = taken[i].Amount, Slot = i });
+                        var content = taken[i];
+
+                        if (content == default(LootBoxItemInfo))
+                        {
+                            items.Add(new ClientLootBoxItemInfo { ItemIndex = -1, Amount = 1, Slot = i });
+                        }
+                        else
+                        {
+                            items.Add(new ClientLootBoxItemInfo { ItemIndex = taken[i].Item.Index, Amount = taken[i].Amount, Slot = i });
+                        }
                     }
                 }
 
@@ -16116,6 +16132,15 @@ namespace Server.Models
             // Take the top selection based on slot amount
             var taken = lootBoxContents.Take(LootBoxInfo.SlotSize).ToList();
 
+            // Calculate how many more items are needed to reach SlotSize
+            int itemsToAdd = LootBoxInfo.SlotSize - taken.Count;
+
+            // If more items are needed, pad the list with default values
+            if (itemsToAdd > 0)
+            {
+                taken.AddRange(Enumerable.Repeat(default(LootBoxItemInfo), itemsToAdd));
+            }
+
             // Shuffle the taken list based on random 2 seed
             Functions.Shuffle(taken, item.Stats[Stat.Random2]);
 
@@ -16130,6 +16155,11 @@ namespace Server.Models
                 if (unlocked)
                 {
                     var selection = taken[i];
+
+                    if (selection == default(LootBoxItemInfo))
+                    {
+                        continue;
+                    }
 
                     var amount = selection.Amount;
 

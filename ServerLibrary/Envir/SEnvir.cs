@@ -2745,11 +2745,16 @@ namespace Server.Envir
 
         public static void UpgradeLootBox(UserItem item)
         {
+            var lootBoxInfo = SEnvir.LootBoxInfoList.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+
+            if (lootBoxInfo == null) return;
+
             item.AddStat(Stat.Random1, Random.Next(byte.MaxValue), StatSource.Added); // Full randomise
-            item.AddStat(Stat.Random2, Random.Next(byte.MaxValue), StatSource.Added); // LootBox grid randomise
+            item.AddStat(Stat.Random2, Random.Next(byte.MaxValue), StatSource.Added); // Loot Box grid randomise
 
             item.AddStat(Stat.Counter1, Globals.LootBoxRerollCount, StatSource.Added);
-            item.AddStat(Stat.Counter2, 1, StatSource.Added); // Step 1 = Randomise, 2 = Selection
+
+            item.AddStat(Stat.Counter2, lootBoxInfo.Contents.Count <= 15 ? 2 : 1, StatSource.Added); // Step 1 = Randomise, 2 = Selection
         }
 
         public static void Login(C.Login p, SConnection con)

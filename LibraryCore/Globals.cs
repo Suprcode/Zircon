@@ -1172,7 +1172,7 @@ namespace Library
         [CompleteObject]
         public void OnComplete()
         {
-            ItemInfo = Globals.ItemInfoList.Binding.First(x => x.Index == ItemIndex);
+            ItemInfo = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == ItemIndex);
         }
     }
 }
