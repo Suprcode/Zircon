@@ -195,6 +195,8 @@ namespace Client.Controls
                 Parent = this,
                 Index = 15,
                 LibraryFile = LibraryFile.Interface,
+                Hint = CEnvir.Language.CommonControlClose,
+                HintPosition = HintPosition.TopLeft
             };
             CloseButton.MouseClick += (o, e) => Visible = false;
 

@@ -105,7 +105,7 @@
             BundleInfoGridControl.MenuManager = ribbon;
             BundleInfoGridControl.Name = "BundleInfoGridControl";
             BundleInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { BundleItemLookUpEdit, ItemLookUpEdit });
-            BundleInfoGridControl.Size = new System.Drawing.Size(596, 383);
+            BundleInfoGridControl.Size = new System.Drawing.Size(582, 376);
             BundleInfoGridControl.TabIndex = 1;
             BundleInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { BundleInfoGridView, BundleItemInfoGridView });
             // 
@@ -162,7 +162,7 @@
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(596, 144);
+            ribbon.Size = new System.Drawing.Size(582, 144);
             // 
             // SaveDatabaseButton
             // 
@@ -229,7 +229,7 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(596, 527);
+            ClientSize = new System.Drawing.Size(582, 520);
             Controls.Add(BundleInfoGridControl);
             Controls.Add(ribbon);
             Name = "BundleInfoView";

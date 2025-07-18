@@ -727,7 +727,7 @@ namespace Server.Envir
 
                 if (movement.DestinationRegion == null)
                 {
-                    Log($"[Movement] No Destinaton Region, Source: {movement.SourceRegion.ServerDescription}");
+                    Log($"[Movement] No Destination Region, Source: {movement.SourceRegion.ServerDescription}");
                     continue;
                 }
 

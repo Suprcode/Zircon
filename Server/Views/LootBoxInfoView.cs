@@ -23,6 +23,7 @@ namespace Server.Views
             base.OnLoad(e);
 
             SMain.SetUpView(LootBoxInfoGridView);
+            SMain.SetUpView(LootBoxItemInfoGridView);
         }
 
         private void SaveDatabaseButton_ItemClick(object sender, ItemClickEventArgs e)

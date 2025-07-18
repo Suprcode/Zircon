@@ -15961,6 +15961,13 @@ namespace Server.Models
             var state = item.Stats[Stat.Counter2];
             if (state > 1) return; // Already confirmed 
 
+            var currency = GetCurrency(lootBoxInfo.Currency) ?? GameGold;
+
+            if (currency.Amount < Globals.LootBoxRerollCost) return;
+            currency.Amount -= Globals.LootBoxRerollCost;
+
+            CurrencyChanged(currency);
+
             item.AddStat(Stat.Random1, SEnvir.Random.Next(byte.MaxValue), StatSource.Added);
             item.AddStat(Stat.Counter1, -1, StatSource.Added);
             item.StatsChanged();

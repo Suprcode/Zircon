@@ -22,6 +22,7 @@ namespace Server.Views
             base.OnLoad(e);
 
             SMain.SetUpView(BundleInfoGridView);
+            SMain.SetUpView(BundleItemInfoGridView);
         }
 
         private void SaveDatabaseButton_ItemClick(object sender, ItemClickEventArgs e)

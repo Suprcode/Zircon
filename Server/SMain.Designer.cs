@@ -72,6 +72,7 @@
             SetInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             WeaponCraftInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             BundleInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            LootBoxInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             navBarGroup6 = new DevExpress.XtraNavBar.NavBarGroup();
             MonsterInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             MonsterInfoStatButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -107,8 +108,6 @@
             barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
             barDockControlRight = new DevExpress.XtraBars.BarDockControl();
             InterfaceTimer = new System.Windows.Forms.Timer(components);
-            navBarItem6 = new DevExpress.XtraNavBar.NavBarItem();
-            LootBoxInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             ((System.ComponentModel.ISupportInitialize)ribbonControl1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)navBarControl1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DManager).BeginInit();
@@ -434,6 +433,14 @@
             BundleInfoButton.Name = "BundleInfoButton";
             BundleInfoButton.LinkClicked += BundleInfoButton_LinkClicked;
             // 
+            // LootBoxInfoButton
+            // 
+            LootBoxInfoButton.Caption = "Loot Box Info";
+            LootBoxInfoButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("LootBoxInfoButton.ImageOptions.LargeImage");
+            LootBoxInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("LootBoxInfoButton.ImageOptions.SmallImage");
+            LootBoxInfoButton.Name = "LootBoxInfoButton";
+            LootBoxInfoButton.LinkClicked += LootBoxInfoButton_LinkClicked;
+            // 
             // navBarGroup6
             // 
             navBarGroup6.Caption = "Monster";
@@ -678,18 +685,6 @@
             InterfaceTimer.Interval = 1000;
             InterfaceTimer.Tick += InterfaceTimer_Tick;
             // 
-            // navBarItem6
-            // 
-            navBarItem6.Name = "navBarItem6";
-            // 
-            // LootBoxInfoButton
-            // 
-            LootBoxInfoButton.Caption = "Loot Box Info";
-            LootBoxInfoButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("LootBoxInfoButton.ImageOptions.LargeImage");
-            LootBoxInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("LootBoxInfoButton.ImageOptions.SmallImage");
-            LootBoxInfoButton.Name = "LootBoxInfoButton";
-            LootBoxInfoButton.LinkClicked += LootBoxInfoButton_LinkClicked;
-            // 
             // SMain
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -785,7 +780,6 @@
         private DevExpress.XtraNavBar.NavBarItem UserMailButton;
         private DevExpress.XtraNavBar.NavBarItem WeaponCraftInfoButton;
         private DevExpress.XtraNavBar.NavBarItem CurrencyInfoButton;
-        private DevExpress.XtraNavBar.NavBarItem navBarItem6;
         private DevExpress.XtraNavBar.NavBarItem FishingInfoButton;
         private DevExpress.XtraNavBar.NavBarItem DisciplineInfoButton;
         private DevExpress.XtraNavBar.NavBarItem NPCDataButton;
