@@ -887,7 +887,7 @@ namespace Library
         Earwig = 79,
 
         IronLance = 80,
-        WasHatchling = 81,
+        WaspHatchling = 81,
         ButterflyWorm = 82,
         WedgeMothLarva = 83,
         LesserWedgeMoth = 84,

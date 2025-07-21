@@ -488,7 +488,7 @@ namespace Client.Models
                     DieSound = SoundIndex.BlasterMutantFleaDie;
                     break;
 
-                case MonsterImage.WasHatchling:
+                case MonsterImage.WaspHatchling:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_8, out BodyLibrary);
                     BodyShape = 1;
                     AttackSound = SoundIndex.WasHatchlingAttack;

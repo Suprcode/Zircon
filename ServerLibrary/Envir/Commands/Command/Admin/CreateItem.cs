@@ -25,6 +25,19 @@ namespace Server.Envir.Commands.Command.Admin
             if (vals.Length < 3 || !int.TryParse(vals[2], out value) || value == 0)
                 value = 1;
 
+            if (SEnvir.IsCurrencyItem(item))
+            {
+                var currency = player.GetCurrency(item);
+
+                if (currency.Amount > long.MaxValue - value)
+                    currency.Amount = long.MaxValue;
+                else
+                    currency.Amount += value;
+
+                player.CurrencyChanged(currency);
+                return;
+            }
+
             while (value > 0)
             {
                 int count = Math.Min(value, item.StackSize);
@@ -38,7 +51,6 @@ namespace Server.Envir.Commands.Command.Admin
                 value -= count;
                 player.GainItem(userItem);
             }
-
         }
     }
 }
