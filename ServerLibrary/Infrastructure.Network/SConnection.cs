@@ -29,7 +29,6 @@ namespace Server.Infrastructure.Network
         public GameStage Stage { get; set; }
         public AccountInfo Account { get; set; }
         public PlayerObject Player { get; set; }
-        public string IPAddress { get; }
         public int SessionID { get; }
 
         public SConnection Observed;
@@ -42,9 +41,12 @@ namespace Server.Infrastructure.Network
         // new S.SystemMessage { id = 1 }; 
         public StringMessages Language;
 
-        public SConnection(TcpClient client) : base(client)
+        public Action<SConnection> DisconnectCallback;
+
+        public SConnection(TcpClient client, Action<SConnection> disconnectCallback) : base(client)
         {
-            IPAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
+            DisconnectCallback = disconnectCallback;
+
             SessionID = ++SessionCount;
 
             Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)];
@@ -65,20 +67,21 @@ namespace Server.Infrastructure.Network
             Enqueue(new G.Connected());
         }
 
+        //TODO: whats the difference between Disconnect and SendDisconnect? Can we consolodate the two?
         public override void Disconnect()
         {
             if (!Connected) return;
             base.Disconnect();
             CleanUp();
-            TcpServer.Disconnect(this);
+            DisconnectCallback.Invoke(this);
         }
 
         public override void SendDisconnect(Packet p)
         {
             base.SendDisconnect(p);
-
             CleanUp();
         }
+
         public override void TryDisconnect()
         {
             if (Stage == GameStage.Game)

@@ -443,11 +443,11 @@ namespace Server.Models
                 {
                     if (Info.Delay >= 1000000)
                     {
-                        TcpServer.BroadcastMessage($"{mob.MonsterInfo.MonsterName} has appeared.", null, MessageType.System, c => true);
+                        SEnvir.BroadcastService.BroadcastSystemMessage(c => $"{mob.MonsterInfo.MonsterName} has appeared.");
                     }
                     else
                     {
-                        TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.BossSpawn, CurrentMap.Info.Description));
+                        SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.BossSpawn, CurrentMap.Info.Description));
                     }
                 }
 

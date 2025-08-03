@@ -1570,7 +1570,7 @@ namespace Server.Models
                 }
 
                 text = string.Format("(!@){0}: {1}", Name, text.Remove(0, 2));
-                TcpServer.BroadcastMessage(text, linkedItems, MessageType.Global, c => !SEnvir.IsBlocking(Character.Account, c.Account));
+                SEnvir.BroadcastService.BroadcastMessage(text, linkedItems, MessageType.Global, c => !SEnvir.IsBlocking(Character.Account, c.Account));
 
             }
             else if (text.StartsWith("!"))
@@ -1613,7 +1613,7 @@ namespace Server.Models
                 if (!Character.Account.TempAdmin) return;
 
                 text = string.Format("{0}: {1}", Name, text.Remove(0, 2));
-                TcpServer.BroadcastMessage(text, linkedItems, MessageType.Announcement, c => true);
+                SEnvir.BroadcastService.BroadcastMessage(text, linkedItems, MessageType.Announcement, c => true);
             }
             else if (text.StartsWith("@"))
             {
@@ -1738,14 +1738,14 @@ namespace Server.Models
                 }
 
                 text = string.Format("(!@){0}: {1}", con.Account.LastCharacter.CharacterName, text.Remove(0, 2));
-                TcpServer.BroadcastMessage(text, null, MessageType.Global, c => SEnvir.IsBlocking(con.Account, c.Account));
+                SEnvir.BroadcastService.BroadcastMessage(text, null, MessageType.Global, c => SEnvir.IsBlocking(con.Account, c.Account));
             }
             else if (text.StartsWith("@!"))
             {
                 if (!con.Account.LastCharacter.Account.TempAdmin) return;
 
                 text = string.Format("{0}: {1}", con.Account.LastCharacter.CharacterName, text.Remove(0, 2));
-                TcpServer.BroadcastMessage(text, null, MessageType.Announcement, c => true);
+                SEnvir.BroadcastService.BroadcastMessage(text, null, MessageType.Announcement, c => true);
             }
             else
             {
@@ -5988,7 +5988,7 @@ namespace Server.Models
 
 
                                         string text = $"A [{item.Info.ItemName}] has been used in {CurrentMap.Info.Description}";
-                                        TcpServer.BroadcastMessage(text, null, MessageType.System, c => true);
+                                        SEnvir.BroadcastService.BroadcastMessage(text, null, MessageType.System, c => true);
                                     }
                                 }
                             }

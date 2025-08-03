@@ -72,7 +72,7 @@ namespace Server.Models.Monsters
 
             if (Target == null && Contester != null)
             {
-                TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestNotTakingFlag, Contester.GuildName, War.Castle.Name));
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestNotTakingFlag, Contester.GuildName, War.Castle.Name));
                 Contester = null;
                 ContesterTime = DateTime.MaxValue;
             }
@@ -126,8 +126,7 @@ namespace Server.Models.Monsters
 
                 //Start 30 seconds timer
                 ContesterTime = SEnvir.Now.Add(ContesterDelay);
-
-                TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestTakingFlag, Contester.GuildName, War.Castle.Name, _takeDuration));
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestTakingFlag, Contester.GuildName, War.Castle.Name, _takeDuration));
                 return;
             }
             else
@@ -151,7 +150,7 @@ namespace Server.Models.Monsters
                     {
                         //Another guild near flag - reset contest time
                         ContesterTime = SEnvir.Now.Add(ContesterDelay);
-                        TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestPreventingFlag, player.Character.Account.GuildMember.Guild.GuildName, Contester.GuildName, War.Castle.Name));
+                        SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestPreventingFlag, player.Character.Account.GuildMember.Guild.GuildName, Contester.GuildName, War.Castle.Name));
 
                         return;
                     }
@@ -163,7 +162,7 @@ namespace Server.Models.Monsters
 
                 if (!contestGuildNear)
                 {
-                    TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestNotTakingFlag, Contester.GuildName, War.Castle.Name));
+                    SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestNotTakingFlag, Contester.GuildName, War.Castle.Name));
 
                     Contester = null;
                     ContesterTime = DateTime.MaxValue;
@@ -173,7 +172,7 @@ namespace Server.Models.Monsters
                 else
                 {
                     var difference = (ContesterTime - SEnvir.Now).Seconds;
-                    TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestTakingFlag, Contester.GuildName, War.Castle.Name, difference));
+                    SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestTakingFlag, Contester.GuildName, War.Castle.Name, difference));
                 }
             }
 
@@ -188,8 +187,7 @@ namespace Server.Models.Monsters
             //Update new guild with castle
             Contester.Castle = War.Castle;
 
-            TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestCapture, Contester.GuildName, War.Castle.Name));
-
+            SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestCapture, Contester.GuildName, War.Castle.Name));
             SEnvir.Broadcast(new S.GuildCastleInfo { Index = War.Castle.Index, Owner = Contester.GuildName });
 
             Contester = null;

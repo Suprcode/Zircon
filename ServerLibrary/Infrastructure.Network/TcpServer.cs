@@ -1,118 +1,47 @@
-﻿using Library;
-using Library.Network;
-using Server.DBModels;
+﻿using Library.Network;
 using Server.Envir;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using G = Library.Network.GeneralPackets;
 
 namespace Server.Infrastructure.Network
 {
-    public class TcpServer
+    public class TcpServer<ConnectionType>(ConnectionManager<ConnectionType> ConnectionManager) where ConnectionType : BaseConnection
     {
-        public static bool NetworkStarted { get; set; }
+        public bool Started { get; private set; }
+        public long DownloadSpeed => ConnectionManager.TotalBytesReceived - ConnectionManager.PreviousTotalReceived;
+        public long UploadSpeed => ConnectionManager.TotalBytesSent - ConnectionManager.PreviousTotalSent;
 
-        public readonly IpService IpService;
-        //public static Dictionary<string, int> IPCount = new Dictionary<string, int>(); //TODO: this isn't used but i imagine its intended to limit connections from single IP
-
-        public static List<SConnection> Connections = new List<SConnection>();
-        public static ConcurrentQueue<SConnection> NewConnections;
-
-        private static TcpListener _listener, _userCountListener;
-
-        public static long DBytesSent, DBytesReceived;
-        
-        public static long TotalBytesSent, TotalBytesReceived;
-        public static long PreviousTotalReceived, PreviousTotalSent;
-
-        public static long DownloadSpeed, UploadSpeed;
-
-        public TcpServer(IpService ipBanService)
-        {
-            IpService = ipBanService;
-        }
+        private TcpListener _listener, 
+            _userCountListener; //TODO: move this out - inject ConnectionHandler, inject port and create separate tcpServer for handling UC
 
         public void StartNetwork(bool log = true)
         {
             try
             {
-                NewConnections = new ConcurrentQueue<SConnection>();
-
                 _listener = new TcpListener(IPAddress.Parse(Config.IPAddress), Config.Port);
                 _listener.Start();
-                _listener.BeginAcceptTcpClient(Connection, null);
+                _listener.BeginAcceptTcpClient(TcpConnection, null);
 
                 _userCountListener = new TcpListener(IPAddress.Parse(Config.IPAddress), Config.UserCountPort);
                 _userCountListener.Start();
                 _userCountListener.BeginAcceptTcpClient(CountConnection, null);
 
-                NetworkStarted = true;
+                Started = true;
                 if (log) SEnvir.Log($"Network Started. Listen: {Config.IPAddress}:{Config.Port}");
             }
             catch (Exception ex)
             {
-                NetworkStarted = false;
+                Started = false;
                 SEnvir.Log(ex.ToString());
             }
         }
 
         public void Process()
         {
-            SConnection connection;
-            while (!NewConnections.IsEmpty)
-            {
-                if (!NewConnections.TryDequeue(out connection)) break;
-
-                //IPCount.TryGetValue(connection.IPAddress, out var ipCount);
-                //IPCount[connection.IPAddress] = ipCount + 1;
-
-                Connections.Add(connection);
-            }
-
-            long bytesSent = 0;
-            long bytesReceived = 0;
-
-            for (int i = Connections.Count - 1; i >= 0; i--)
-            {
-                if (i >= Connections.Count) break;
-
-                connection = Connections[i];
-                connection.Process();
-
-                if (connection.TotalPacketsProcessed == 0 && connection.TotalBytesReceived > 1024)
-                {
-                    connection.TryDisconnect();
-                    IpService.Ban(connection, Config.PacketBanTime);
-                    SEnvir.Log($"{connection.IPAddress} Disconnected, Large Packet");
-                    return;
-                }
-
-                if (connection.ReceiveList.Count > Config.MaxPacket)
-                {
-                    connection.TryDisconnect();
-                    IpService.Ban(connection, Config.PacketBanTime);
-                    SEnvir.Log($"{connection.IPAddress} Disconnected, Large amount of Packets");
-                    return;
-                }
-
-                bytesSent += connection.TotalBytesSent;
-                bytesReceived += connection.TotalBytesReceived;
-            }
-
-            TotalBytesSent = DBytesSent + bytesSent;
-            TotalBytesReceived = DBytesReceived + bytesReceived;
-
-            DownloadSpeed = TotalBytesReceived - PreviousTotalReceived;
-            UploadSpeed = TotalBytesSent - PreviousTotalSent;
-
-            PreviousTotalReceived = TotalBytesReceived;
-            PreviousTotalSent = TotalBytesSent;
+            ConnectionManager.Process();
         }
 
         public void StopNetwork(bool log = true)
@@ -123,137 +52,43 @@ namespace Server.Infrastructure.Network
             _listener = null;
             _userCountListener = null;
 
-            NetworkStarted = false;
+            Started = false;
 
             expiredListener?.Stop();
             expiredUserListener?.Stop();
-
-            NewConnections = null;
-
-            try
-            {
-                Packet p = new G.Disconnect { Reason = DisconnectReason.ServerClosing };
-                for (int i = Connections.Count - 1; i >= 0; i--)
-                    Connections[i].SendDisconnect(p);
-
-                Thread.Sleep(2000);
-            }
-            catch (Exception ex)
-            {
-                SEnvir.Log(ex.ToString());
-            }
+            ConnectionManager?.Reset();
 
             if (log) SEnvir.Log("Network Stopped.");
         }
 
-        //TODO: work out what SendDisconnect is doing differently to a Enqueue and see if we can consolodate.
         public void Broadcast(Packet packet)
         {
-            for (int i = Connections.Count - 1; i >= 0; i--)
-                Connections[i].SendDisconnect(packet);
+            ConnectionManager.Broadcast(packet);
         }
 
-        #region GameEngine Logic Stuff - Move Out
-        //TODO: pull out the chat logic from here - its not a network component
-        internal static void BroadcastOnlineMessage()
-        {
-            foreach (SConnection conn in Connections)
-            {
-                conn.ReceiveChat(string.Format(conn.Language.OnlineCount, Connections.Count(x => x.Stage == GameStage.Game), Connections.Count(x => x.Stage == GameStage.Observer)), MessageType.Hint);
-
-                switch (conn.Stage)
-                {
-                    case GameStage.Game:
-                        if (conn.Player.Character.Observable)
-                            conn.ReceiveChat(string.Format(conn.Language.ObserverCount, conn.Observers.Count), MessageType.Hint);
-                        break;
-                    case GameStage.Observer:
-                        conn.ReceiveChat(string.Format(conn.Language.ObserverCount, conn.Observed.Observers.Count), MessageType.Hint);
-                        break;
-                }
-            }
-        }
-
-        internal static void BroadcastSystemMessage(Func<SConnection, string> messageSupplier)
-        {
-            foreach (SConnection con in Connections)
-            {
-                switch (con.Stage)
-                {
-                    case GameStage.Game:
-                    case GameStage.Observer:
-                        con.ReceiveChat(messageSupplier.Invoke(con), MessageType.System);
-                        break;
-                    default:
-                        continue;
-                }
-            }
-        }
-
-        internal static void BroadcastMessage(string text, List<ClientUserItem> linkedItems, MessageType messageType, Predicate<SConnection> shouldReceive)
-        {
-            foreach (SConnection con in Connections)
-            {
-                switch (con.Stage)
-                {
-                    case GameStage.Game:
-                    case GameStage.Observer:
-                        if (!shouldReceive.Invoke(con)) continue;
-
-                        con.ReceiveChat(text, messageType, linkedItems);
-                        break;
-                    default: continue;
-                }
-            }
-        }
-        #endregion
-
-        internal static void Disconnect(SConnection connection)
-        {
-            if (!Connections.Contains(connection))
-                throw new InvalidOperationException("Connection was not found in list"); //TODO: do we want to cause an exception here? Why not just log a warning and return?
-
-            Connections.Remove(connection);
-            //IPCount[connection.IPAddress]--;
-            DBytesSent += TotalBytesSent;
-            DBytesReceived += TotalBytesReceived;
-        }
-
-        #region Connection Stuff - Move out
-        private void Connection(IAsyncResult result)
+        private void TcpConnection(IAsyncResult result)
         {
             try
             {
                 if (_listener == null || !_listener.Server.IsBound) return;
-
-                TcpClient client = _listener.EndAcceptTcpClient(result);
-
-                string ipAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
-                if (IpService.IsBanned(ipAddress))
-                {
-                    SConnection Connection = new SConnection(client);
-
-                    if (Connection.Connected)
-                        NewConnections?.Enqueue(Connection);
-                }
+                ConnectionManager.Add(_listener.EndAcceptTcpClient(result));                
             }
-            catch (SocketException)
-            {
-
-            }
+            catch (SocketException) { }
             catch (Exception ex)
             {
                 SEnvir.Log(ex.ToString());
             }
             finally
             {
-                while (NewConnections?.Count >= 15)
+                while (ConnectionManager.AcceptingConnections)
                     Thread.Sleep(1);
 
                 if (_listener != null && _listener.Server.IsBound)
-                    _listener.BeginAcceptTcpClient(Connection, null);
+                    _listener.BeginAcceptTcpClient(TcpConnection, null);
             }
         }
+
+        #region Count Connection Stuff - Separate into a different TcpServer
         private void CountConnection(IAsyncResult result)
         {
             try
@@ -261,9 +96,7 @@ namespace Server.Infrastructure.Network
                 if (_userCountListener == null || !_userCountListener.Server.IsBound) return;
 
                 TcpClient client = _userCountListener.EndAcceptTcpClient(result);
-
-                byte[] data = Encoding.ASCII.GetBytes(string.Format("c;/Zircon/{0}/;", Connections.Count));
-
+                byte[] data = Encoding.ASCII.GetBytes(string.Format("c;/Zircon/{0}/;", ConnectionManager.Connections.Count));
                 client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, CountConnectionEnd, client);
             }
             catch { }
@@ -277,12 +110,10 @@ namespace Server.Infrastructure.Network
         {
             try
             {
-                TcpClient client = result.AsyncState as TcpClient;
+                var client = result.AsyncState as TcpClient;
 
                 if (client == null) return;
-
                 client.Client.EndSend(result);
-
                 client.Client.Dispose();
             }
             catch { }

@@ -24,11 +24,10 @@ namespace Server.Models
 
         public Dictionary<CharacterInfo, UserConquestStats> Stats = new Dictionary<CharacterInfo, UserConquestStats>();
 
+
         public void StartWar()
         {
-            TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestStarted, Castle.Name));
-            
-
+            SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestStarted, Castle.Name));
             Map = SEnvir.GetMap(Castle.Map);
 
             for (int i = Map.NPCs.Count - 1; i >= 0; i--)
@@ -62,7 +61,7 @@ namespace Server.Models
         
         public void EndWar()
         {
-            TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestFinished, Castle.Name));
+            SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestFinished, Castle.Name));
 
             Ended = true;
 
@@ -87,7 +86,7 @@ namespace Server.Models
 
             if (ownerGuild != null)
             {
-                TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestOwner, ownerGuild.GuildName, Castle.Name));
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestOwner, ownerGuild.GuildName, Castle.Name));
 
                 UserConquest conquest = SEnvir.UserConquestList.Binding.FirstOrDefault(x => x.Castle == Castle && x.Castle == ownerGuild?.Castle);
 

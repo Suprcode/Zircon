@@ -16,11 +16,8 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -71,23 +68,26 @@ namespace Server.Envir
 
         #endregion
 
-        public static readonly IpService IpService = new IpService();
-        private static readonly TcpServer TcpServer = new TcpServer(IpService);
+        public static readonly IpAddressManager IpManager = new IpAddressManager();
+        public static readonly SConnectionManager SConnectionManager = new SConnectionManager(
+            new SConnectionFactory(() => SConnectionManager.RemoveConnection), 
+            IpManager
+        );
+        public static readonly TcpServer<SConnection> TcpServer = new TcpServer<SConnection>(SConnectionManager);
+        public static BroadcastService BroadcastService = new BroadcastService(SConnectionManager);
 
-        //TODO: make this public readonly - too much leakage, expose a SEnvir.Stop() method where we are trying to do SEnvir.Started = false instead;
         public static bool Started
         { 
-            get => TcpServer.NetworkStarted;
+            get => TcpServer.Started;
             set 
             {
-                if (TcpServer.NetworkStarted == value) return;
+                if (TcpServer.Started == value) return;
                 if (value) TcpServer.StartNetwork();
                 else TcpServer.StopNetwork();
             } 
         }
         public static bool Saving { get; private set; }
 
-        //TODO: why are we leaking thread implementation here - why not just reuse !SEnvir.Started? logic here?
         public static Thread EnvirThread { get; private set; }
 
         public static DateTime Now, StartTime, LastWarTime;
@@ -999,7 +999,7 @@ namespace Server.Envir
                         if (Now >= UserCountTime)
                         {
                             UserCountTime = Now.AddMinutes(5);
-                            TcpServer.BroadcastOnlineMessage();
+                            BroadcastService.SendOnlineCount();
                         }
 
                         if (Now >= EventTimerTime)
@@ -2786,7 +2786,7 @@ namespace Server.Envir
 
             if (nowcount > 2 || todaycount > 5)
             {
-                IpService.Ban(con, TimeSpan.FromDays(7));
+                IpManager.Timeout(con, TimeSpan.FromDays(7));
                 Log($"{con.IPAddress} Disconnected and banned for trying too many accounts");
                 return;
             }

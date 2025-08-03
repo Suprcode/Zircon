@@ -17,7 +17,6 @@ namespace Server.Models.Monsters
 
         public DateTime DespawnTime;
 
-
         public JinamStoneGate()
         {
             Direction = MirDirection.Up;
@@ -32,12 +31,9 @@ namespace Server.Models.Monsters
         {
             base.OnSpawned();
 
-
             DespawnTime = SEnvir.Now.AddMinutes(20);
-
-            TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.LairGateOpen, CurrentMap.Info.Description, CurrentLocation));
-
-           }
+            SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.LairGateOpen, CurrentMap.Info.Description, CurrentLocation));
+        }
 
         public override void Process()
         {
@@ -48,7 +44,7 @@ namespace Server.Models.Monsters
                 if (SpawnInfo != null)
                     SpawnInfo.AliveCount--;
 
-                TcpServer.BroadcastSystemMessage(c => c.Language.LairGateClosed);
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => c.Language.LairGateClosed);
 
                 SpawnInfo = null;
                 Despawn();

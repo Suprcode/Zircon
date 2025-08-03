@@ -31,7 +31,7 @@ namespace Server.Envir.Commands.Command.Admin
                     throw new UserCommandException(string.Format("No guild currently owns {0} castle.", castle.Name));
                 ownerGuild.Castle = null;
 
-                TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestLost, ownerGuild.GuildName, castle.Name));
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestLost, ownerGuild.GuildName, castle.Name));
                 SEnvir.Broadcast(new S.GuildCastleInfo { Index = castle.Index, Owner = string.Empty });
 
                 foreach (PlayerObject user in SEnvir.Players)
@@ -42,8 +42,7 @@ namespace Server.Envir.Commands.Command.Admin
             else
             {
                 player.Character.Account.GuildMember.Guild.Castle = castle;
-                TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.ConquestCapture, player.Character.Account.GuildMember.Guild.GuildName, castle.Name));
-
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestCapture, player.Character.Account.GuildMember.Guild.GuildName, castle.Name));
                 SEnvir.Broadcast(new S.GuildCastleInfo { Index = castle.Index, Owner = player.Character.Account.GuildMember.Guild.GuildName });
                 foreach (PlayerObject user in SEnvir.Players)
                     user.ApplyCastleBuff();
