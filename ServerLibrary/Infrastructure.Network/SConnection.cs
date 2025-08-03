@@ -169,23 +169,6 @@ namespace Server.Infrastructure.Network
                 PingSent = true;
                 Enqueue(new G.Ping { ObserverPacket = false });
             }
-
-            if (TotalPacketsProcessed == 0 && TotalBytesReceived > 1024)
-            {
-                TryDisconnect();
-                TcpServer.IpBan(IPAddress, Config.PacketBanTime);
-                SEnvir.Log($"{IPAddress} Disconnected, Large Packet");
-                return;
-            }
-
-            if (ReceiveList.Count > Config.MaxPacket)
-            {
-                TryDisconnect();
-                TcpServer.IpBan(IPAddress, Config.PacketBanTime);
-                SEnvir.Log($"{IPAddress} Disconnected, Large amount of Packets");
-                return;
-            }
-
             base.Process();
         }
 

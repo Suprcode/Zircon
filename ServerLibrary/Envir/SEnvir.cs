@@ -71,13 +71,10 @@ namespace Server.Envir
 
         #endregion
 
-        #region Network
+        public static readonly IpService IpService = new IpService();
+        private static readonly TcpServer TcpServer = new TcpServer(IpService);
 
-
-
-        #endregion
-
-        //TODO: make this public readonly - too much leakage, expose a SEnvir.Stop() method where we are tryingto do SEnvir.Started = false;
+        //TODO: make this public readonly - too much leakage, expose a SEnvir.Stop() method where we are trying to do SEnvir.Started = false instead;
         public static bool Started
         { 
             get => TcpServer.NetworkStarted;
@@ -2789,7 +2786,7 @@ namespace Server.Envir
 
             if (nowcount > 2 || todaycount > 5)
             {
-                TcpServer.IpBan(con.IPAddress, TimeSpan.FromDays(7));
+                IpService.Ban(con, TimeSpan.FromDays(7));
                 Log($"{con.IPAddress} Disconnected and banned for trying too many accounts");
                 return;
             }

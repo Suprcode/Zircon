@@ -18,9 +18,8 @@ namespace Server.Infrastructure.Network
     {
         public static bool NetworkStarted { get; set; }
 
-        public static Dictionary<string, DateTime> IPBlocks = new Dictionary<string, DateTime>(); //TODO: this should be supplied & encapsulated in a Service (i.e ConnectionService.CanConnect(IpAddress))
-
-        public static Dictionary<string, int> IPCount = new Dictionary<string, int>();
+        public readonly IpService IpService;
+        //public static Dictionary<string, int> IPCount = new Dictionary<string, int>(); //TODO: this isn't used but i imagine its intended to limit connections from single IP
 
         public static List<SConnection> Connections = new List<SConnection>();
         public static ConcurrentQueue<SConnection> NewConnections;
@@ -34,7 +33,12 @@ namespace Server.Infrastructure.Network
 
         public static long DownloadSpeed, UploadSpeed;
 
-        public static void StartNetwork(bool log = true)
+        public TcpServer(IpService ipBanService)
+        {
+            IpService = ipBanService;
+        }
+
+        public void StartNetwork(bool log = true)
         {
             try
             {
@@ -58,7 +62,60 @@ namespace Server.Infrastructure.Network
             }
         }
 
-        public static void StopNetwork(bool log = true)
+        public void Process()
+        {
+            SConnection connection;
+            while (!NewConnections.IsEmpty)
+            {
+                if (!NewConnections.TryDequeue(out connection)) break;
+
+                //IPCount.TryGetValue(connection.IPAddress, out var ipCount);
+                //IPCount[connection.IPAddress] = ipCount + 1;
+
+                Connections.Add(connection);
+            }
+
+            long bytesSent = 0;
+            long bytesReceived = 0;
+
+            for (int i = Connections.Count - 1; i >= 0; i--)
+            {
+                if (i >= Connections.Count) break;
+
+                connection = Connections[i];
+                connection.Process();
+
+                if (connection.TotalPacketsProcessed == 0 && connection.TotalBytesReceived > 1024)
+                {
+                    connection.TryDisconnect();
+                    IpService.Ban(connection, Config.PacketBanTime);
+                    SEnvir.Log($"{connection.IPAddress} Disconnected, Large Packet");
+                    return;
+                }
+
+                if (connection.ReceiveList.Count > Config.MaxPacket)
+                {
+                    connection.TryDisconnect();
+                    IpService.Ban(connection, Config.PacketBanTime);
+                    SEnvir.Log($"{connection.IPAddress} Disconnected, Large amount of Packets");
+                    return;
+                }
+
+                bytesSent += connection.TotalBytesSent;
+                bytesReceived += connection.TotalBytesReceived;
+            }
+
+            TotalBytesSent = DBytesSent + bytesSent;
+            TotalBytesReceived = DBytesReceived + bytesReceived;
+
+            DownloadSpeed = TotalBytesReceived - PreviousTotalReceived;
+            UploadSpeed = TotalBytesSent - PreviousTotalSent;
+
+            PreviousTotalReceived = TotalBytesReceived;
+            PreviousTotalSent = TotalBytesSent;
+        }
+
+        public void StopNetwork(bool log = true)
         {
             TcpListener expiredListener = _listener;
             TcpListener expiredUserListener = _userCountListener;
@@ -89,122 +146,14 @@ namespace Server.Infrastructure.Network
             if (log) SEnvir.Log("Network Stopped.");
         }
 
-        private static void Connection(IAsyncResult result)
-        {
-            try
-            {
-                if (_listener == null || !_listener.Server.IsBound) return;
-
-                TcpClient client = _listener.EndAcceptTcpClient(result);
-
-                string ipAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
-
-                if (!IPBlocks.TryGetValue(ipAddress, out DateTime banDate) || banDate < SEnvir.Now)
-                {
-                    SConnection Connection = new SConnection(client);
-
-                    if (Connection.Connected)
-                        NewConnections?.Enqueue(Connection);
-                }
-            }
-            catch (SocketException)
-            {
-
-            }
-            catch (Exception ex)
-            {
-                SEnvir.Log(ex.ToString());
-            }
-            finally
-            {
-                while (NewConnections?.Count >= 15)
-                    Thread.Sleep(1);
-
-                if (_listener != null && _listener.Server.IsBound)
-                    _listener.BeginAcceptTcpClient(Connection, null);
-            }
-        }
-
-        private static void CountConnection(IAsyncResult result)
-        {
-            try
-            {
-                if (_userCountListener == null || !_userCountListener.Server.IsBound) return;
-
-                TcpClient client = _userCountListener.EndAcceptTcpClient(result);
-
-                byte[] data = Encoding.ASCII.GetBytes(string.Format("c;/Zircon/{0}/;", Connections.Count));
-
-                client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, CountConnectionEnd, client);
-            }
-            catch { }
-            finally
-            {
-                if (_userCountListener != null && _userCountListener.Server.IsBound)
-                    _userCountListener.BeginAcceptTcpClient(CountConnection, null);
-            }
-        }
-        private static void CountConnectionEnd(IAsyncResult result)
-        {
-            try
-            {
-                TcpClient client = result.AsyncState as TcpClient;
-
-                if (client == null) return;
-
-                client.Client.EndSend(result);
-
-                client.Client.Dispose();
-            }
-            catch { }
-        }
-
-        public static void Process()
-        {
-            SConnection connection;
-            while (!NewConnections.IsEmpty)
-            {
-                if (!NewConnections.TryDequeue(out connection)) break;
-
-                IPCount.TryGetValue(connection.IPAddress, out var ipCount);
-
-                IPCount[connection.IPAddress] = ipCount + 1;
-
-                Connections.Add(connection);
-            }
-
-            long bytesSent = 0;
-            long bytesReceived = 0;
-
-            for (int i = Connections.Count - 1; i >= 0; i--)
-            {
-                if (i >= Connections.Count) break;
-
-                connection = Connections[i];
-
-                connection.Process();
-                bytesSent += connection.TotalBytesSent;
-                bytesReceived += connection.TotalBytesReceived;
-            }
-
-            TotalBytesSent = DBytesSent + bytesSent;
-            TotalBytesReceived = DBytesReceived + bytesReceived;
-
-            DownloadSpeed = TotalBytesReceived - PreviousTotalReceived;
-            UploadSpeed = TotalBytesSent - PreviousTotalSent;
-
-            PreviousTotalReceived = TotalBytesReceived;
-            PreviousTotalSent = TotalBytesSent;
-        }
-
         //TODO: work out what SendDisconnect is doing differently to a Enqueue and see if we can consolodate.
-        internal static void Broadcast(Packet packet)
+        public void Broadcast(Packet packet)
         {
             for (int i = Connections.Count - 1; i >= 0; i--)
                 Connections[i].SendDisconnect(packet);
         }
 
-        #region Not Connection Stuff
+        #region GameEngine Logic Stuff - Move Out
         //TODO: pull out the chat logic from here - its not a network component
         internal static void BroadcastOnlineMessage()
         {
@@ -259,27 +208,85 @@ namespace Server.Infrastructure.Network
         }
         #endregion
 
-
-        internal static void IpBan(string ipAddress, TimeSpan duration)
-        {
-            IPBlocks[ipAddress] = SEnvir.Now.Add(duration);
-
-            for (int i = Connections.Count - 1; i >= 0; i--)
-                if (Connections[i].IPAddress == ipAddress)
-                    Connections[i].TryDisconnect();
-        }
-
         internal static void Disconnect(SConnection connection)
         {
             if (!Connections.Contains(connection))
                 throw new InvalidOperationException("Connection was not found in list"); //TODO: do we want to cause an exception here? Why not just log a warning and return?
 
             Connections.Remove(connection);
-            IPCount[connection.IPAddress]--;
+            //IPCount[connection.IPAddress]--;
             DBytesSent += TotalBytesSent;
             DBytesReceived += TotalBytesReceived;
         }
 
+        #region Connection Stuff - Move out
+        private void Connection(IAsyncResult result)
+        {
+            try
+            {
+                if (_listener == null || !_listener.Server.IsBound) return;
 
+                TcpClient client = _listener.EndAcceptTcpClient(result);
+
+                string ipAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
+                if (IpService.IsBanned(ipAddress))
+                {
+                    SConnection Connection = new SConnection(client);
+
+                    if (Connection.Connected)
+                        NewConnections?.Enqueue(Connection);
+                }
+            }
+            catch (SocketException)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                SEnvir.Log(ex.ToString());
+            }
+            finally
+            {
+                while (NewConnections?.Count >= 15)
+                    Thread.Sleep(1);
+
+                if (_listener != null && _listener.Server.IsBound)
+                    _listener.BeginAcceptTcpClient(Connection, null);
+            }
+        }
+        private void CountConnection(IAsyncResult result)
+        {
+            try
+            {
+                if (_userCountListener == null || !_userCountListener.Server.IsBound) return;
+
+                TcpClient client = _userCountListener.EndAcceptTcpClient(result);
+
+                byte[] data = Encoding.ASCII.GetBytes(string.Format("c;/Zircon/{0}/;", Connections.Count));
+
+                client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, CountConnectionEnd, client);
+            }
+            catch { }
+            finally
+            {
+                if (_userCountListener != null && _userCountListener.Server.IsBound)
+                    _userCountListener.BeginAcceptTcpClient(CountConnection, null);
+            }
+        }
+        private void CountConnectionEnd(IAsyncResult result)
+        {
+            try
+            {
+                TcpClient client = result.AsyncState as TcpClient;
+
+                if (client == null) return;
+
+                client.Client.EndSend(result);
+
+                client.Client.Dispose();
+            }
+            catch { }
+        }
+        #endregion
     }
 }
