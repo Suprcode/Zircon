@@ -3,6 +3,7 @@ using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
+using Server.Infrastructure.Network;
 using Server.Models.Monsters;
 using System;
 using System.Collections.Generic;
@@ -442,13 +443,11 @@ namespace Server.Models
                 {
                     if (Info.Delay >= 1000000)
                     {
-                        foreach (SConnection con in SEnvir.Connections)
-                            con.ReceiveChat($"{mob.MonsterInfo.MonsterName} has appeared.", MessageType.System);
+                        TcpServer.BroadcastMessage($"{mob.MonsterInfo.MonsterName} has appeared.", null, MessageType.System, c => true);
                     }
                     else
                     {
-                        foreach (SConnection con in SEnvir.Connections)
-                            con.ReceiveChat(string.Format(con.Language.BossSpawn, CurrentMap.Info.Description), MessageType.System);
+                        TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.BossSpawn, CurrentMap.Info.Description));
                     }
                 }
 

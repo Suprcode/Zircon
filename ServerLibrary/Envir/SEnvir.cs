@@ -7,6 +7,7 @@ using Server.Envir.Commands;
 using Server.Envir.Commands.Handler;
 using Server.Envir.Events;
 using Server.Envir.Events.Triggers;
+using Server.Infrastructure.Network;
 using Server.Models;
 using System;
 using System.Collections.Concurrent;
@@ -72,152 +73,29 @@ namespace Server.Envir
 
         #region Network
 
-        public static Dictionary<string, DateTime> IPBlocks = new Dictionary<string, DateTime>();
-        public static Dictionary<string, int> IPCount = new Dictionary<string, int>();
 
-        public static List<SConnection> Connections = new List<SConnection>();
-        public static ConcurrentQueue<SConnection> NewConnections;
-
-        private static TcpListener _listener, _userCountListener;
-
-        private static void StartNetwork(bool log = true)
-        {
-            try
-            {
-                NewConnections = new ConcurrentQueue<SConnection>();
-
-                _listener = new TcpListener(IPAddress.Parse(Config.IPAddress), Config.Port);
-                _listener.Start();
-                _listener.BeginAcceptTcpClient(Connection, null);
-
-                _userCountListener = new TcpListener(IPAddress.Parse(Config.IPAddress), Config.UserCountPort);
-                _userCountListener.Start();
-                _userCountListener.BeginAcceptTcpClient(CountConnection, null);
-
-                NetworkStarted = true;
-                if (log) Log($"Network Started. Listen: {Config.IPAddress}:{Config.Port}");
-            }
-            catch (Exception ex)
-            {
-                Started = false;
-                Log(ex.ToString());
-            }
-        }
-        private static void StopNetwork(bool log = true)
-        {
-            TcpListener expiredListener = _listener;
-            TcpListener expiredUserListener = _userCountListener;
-
-            _listener = null;
-            _userCountListener = null;
-
-            Started = false;
-
-            expiredListener?.Stop();
-            expiredUserListener?.Stop();
-
-            NewConnections = null;
-
-            try
-            {
-                Packet p = new G.Disconnect { Reason = DisconnectReason.ServerClosing };
-                for (int i = Connections.Count - 1; i >= 0; i--)
-                    Connections[i].SendDisconnect(p);
-
-                Thread.Sleep(2000);
-            }
-            catch (Exception ex)
-            {
-                Log(ex.ToString());
-            }
-
-            if (log) Log("Network Stopped.");
-        }
-
-        private static void Connection(IAsyncResult result)
-        {
-            try
-            {
-                if (_listener == null || !_listener.Server.IsBound) return;
-
-                TcpClient client = _listener.EndAcceptTcpClient(result);
-
-                string ipAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
-
-                if (!IPBlocks.TryGetValue(ipAddress, out DateTime banDate) || banDate < Now)
-                {
-                    SConnection Connection = new SConnection(client);
-
-                    if (Connection.Connected)
-                        NewConnections?.Enqueue(Connection);
-                }
-            }
-            catch (SocketException)
-            {
-
-            }
-            catch (Exception ex)
-            {
-                Log(ex.ToString());
-            }
-            finally
-            {
-                while (NewConnections?.Count >= 15)
-                    Thread.Sleep(1);
-
-                if (_listener != null && _listener.Server.IsBound)
-                    _listener.BeginAcceptTcpClient(Connection, null);
-            }
-        }
-
-        private static void CountConnection(IAsyncResult result)
-        {
-            try
-            {
-                if (_userCountListener == null || !_userCountListener.Server.IsBound) return;
-
-                TcpClient client = _userCountListener.EndAcceptTcpClient(result);
-
-                byte[] data = Encoding.ASCII.GetBytes(string.Format("c;/Zircon/{0}/;", Connections.Count));
-
-                client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, CountConnectionEnd, client);
-            }
-            catch { }
-            finally
-            {
-                if (_userCountListener != null && _userCountListener.Server.IsBound)
-                    _userCountListener.BeginAcceptTcpClient(CountConnection, null);
-            }
-        }
-        private static void CountConnectionEnd(IAsyncResult result)
-        {
-            try
-            {
-                TcpClient client = result.AsyncState as TcpClient;
-
-                if (client == null) return;
-
-                client.Client.EndSend(result);
-
-                client.Client.Dispose();
-            }
-            catch { }
-        }
 
         #endregion
 
-        public static bool Started { get; set; }
-        public static bool NetworkStarted { get; set; }
+        //TODO: make this public readonly - too much leakage, expose a SEnvir.Stop() method where we are tryingto do SEnvir.Started = false;
+        public static bool Started
+        { 
+            get => TcpServer.NetworkStarted;
+            set 
+            {
+                if (TcpServer.NetworkStarted == value) return;
+                if (value) TcpServer.StartNetwork();
+                else TcpServer.StopNetwork();
+            } 
+        }
         public static bool Saving { get; private set; }
+
+        //TODO: why are we leaking thread implementation here - why not just reuse !SEnvir.Started? logic here?
         public static Thread EnvirThread { get; private set; }
 
         public static DateTime Now, StartTime, LastWarTime;
 
         public static int ProcessObjectCount, LoopCount;
-
-        public static long DBytesSent, DBytesReceived;
-        public static long TotalBytesSent, TotalBytesReceived;
-        public static long DownloadSpeed, UploadSpeed;
 
         public static ICommandHandler CommandHandler = new ErrorHandlingCommandHandler(
             new PlayerCommandHandler(),
@@ -1031,15 +909,11 @@ namespace Server.Envir
             DateTime DBTime = Now + Config.DBSaveDelay;
 
             StartEnvir();
-            StartNetwork();
-
+            TcpServer.StartNetwork();
             WebServer.StartWebServer();
-
-            Started = NetworkStarted;
 
             int count = 0, loopCount = 0;
             DateTime nextCount = Now.AddSeconds(1), UserCountTime = Now.AddMinutes(5), EventTimerTime = Now.AddMinutes(1), saveTime;
-            long previousTotalSent = 0, previousTotalReceived = 0;
             int lastindex = 0;
             long conDelay = 0;
             Thread logThread = new Thread(WriteLogsLoop) { IsBackground = true };
@@ -1056,31 +930,7 @@ namespace Server.Envir
 
                 try
                 {
-                    SConnection connection;
-                    while (!NewConnections.IsEmpty)
-                    {
-                        if (!NewConnections.TryDequeue(out connection)) break;
-
-                        IPCount.TryGetValue(connection.IPAddress, out var ipCount);
-
-                        IPCount[connection.IPAddress] = ipCount + 1;
-
-                        Connections.Add(connection);
-                    }
-
-                    long bytesSent = 0;
-                    long bytesReceived = 0;
-
-                    for (int i = Connections.Count - 1; i >= 0; i--)
-                    {
-                        if (i >= Connections.Count) break;
-
-                        connection = Connections[i];
-
-                        connection.Process();
-                        bytesSent += connection.TotalBytesSent;
-                        bytesReceived += connection.TotalBytesReceived;
-                    }
+                    TcpServer.Process();
 
                     long delay = (Time.Now - Now).Ticks / TimeSpan.TicksPerMillisecond;
                     if (delay > conDelay)
@@ -1088,9 +938,6 @@ namespace Server.Envir
 
                     for (int i = Players.Count - 1; i >= 0; i--)
                         Players[i].StartProcess();
-
-                    TotalBytesSent = DBytesSent + bytesSent;
-                    TotalBytesReceived = DBytesReceived + bytesReceived;
 
                     if (ServerBuffChanged)
                     {
@@ -1152,31 +999,10 @@ namespace Server.Envir
                         loopCount = 0;
                         conDelay = 0;
 
-                        DownloadSpeed = TotalBytesReceived - previousTotalReceived;
-                        UploadSpeed = TotalBytesSent - previousTotalSent;
-
-                        previousTotalReceived = TotalBytesReceived;
-                        previousTotalSent = TotalBytesSent;
-
                         if (Now >= UserCountTime)
                         {
                             UserCountTime = Now.AddMinutes(5);
-
-                            foreach (SConnection conn in Connections)
-                            {
-                                conn.ReceiveChat(string.Format(conn.Language.OnlineCount, Players.Count, Connections.Count(x => x.Stage == GameStage.Observer)), MessageType.Hint);
-
-                                switch (conn.Stage)
-                                {
-                                    case GameStage.Game:
-                                        if (conn.Player.Character.Observable)
-                                            conn.ReceiveChat(string.Format(conn.Language.ObserverCount, conn.Observers.Count), MessageType.Hint);
-                                        break;
-                                    case GameStage.Observer:
-                                        conn.ReceiveChat(string.Format(conn.Language.ObserverCount, conn.Observed.Observers.Count), MessageType.Hint);
-                                        break;
-                                }
-                            }
+                            TcpServer.BroadcastOnlineMessage();
                         }
 
                         if (Now >= EventTimerTime)
@@ -1276,9 +1102,7 @@ namespace Server.Envir
                     Log(ex.StackTrace);
                     File.AppendAllText(@".\Errors.txt", ex.StackTrace + Environment.NewLine);
 
-                    Packet p = new G.Disconnect { Reason = DisconnectReason.Crashed };
-                    for (int i = Connections.Count - 1; i >= 0; i--)
-                        Connections[i].SendDisconnect(p);
+                    TcpServer.Broadcast(new G.Disconnect { Reason = DisconnectReason.Crashed });
 
                     Thread.Sleep(3000);
                     break;
@@ -1286,7 +1110,7 @@ namespace Server.Envir
             }
 
             WebServer.StopWebServer();
-            StopNetwork();
+            TcpServer.StopNetwork();
 
             while (Saving) Thread.Sleep(1);
             if (Session != null)
@@ -2965,12 +2789,7 @@ namespace Server.Envir
 
             if (nowcount > 2 || todaycount > 5)
             {
-                IPBlocks[con.IPAddress] = Now.AddDays(7);
-
-                for (int i = Connections.Count - 1; i >= 0; i--)
-                    if (Connections[i].IPAddress == con.IPAddress)
-                        Connections[i].Disconnecting = true;
-
+                TcpServer.IpBan(con.IPAddress, TimeSpan.FromDays(7));
                 Log($"{con.IPAddress} Disconnected and banned for trying too many accounts");
                 return;
             }

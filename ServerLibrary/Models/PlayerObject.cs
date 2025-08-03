@@ -5,6 +5,7 @@ using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using Server.Envir.Events.Triggers;
+using Server.Infrastructure.Network;
 using Server.Models.Magics;
 using Server.Models.Monsters;
 using System;
@@ -1569,20 +1570,8 @@ namespace Server.Models
                 }
 
                 text = string.Format("(!@){0}: {1}", Name, text.Remove(0, 2));
+                TcpServer.BroadcastMessage(text, linkedItems, MessageType.Global, c => !SEnvir.IsBlocking(Character.Account, c.Account));
 
-                foreach (SConnection con in SEnvir.Connections)
-                {
-                    switch (con.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            if (SEnvir.IsBlocking(Character.Account, con.Account)) continue;
-
-                            con.ReceiveChat(text, MessageType.Global, linkedItems);
-                            break;
-                        default: continue;
-                    }
-                }
             }
             else if (text.StartsWith("!"))
             {
@@ -1624,18 +1613,7 @@ namespace Server.Models
                 if (!Character.Account.TempAdmin) return;
 
                 text = string.Format("{0}: {1}", Name, text.Remove(0, 2));
-
-                foreach (SConnection con in SEnvir.Connections)
-                {
-                    switch (con.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            con.ReceiveChat(text, MessageType.Announcement, linkedItems);
-                            break;
-                        default: continue;
-                    }
-                }
+                TcpServer.BroadcastMessage(text, linkedItems, MessageType.Announcement, c => true);
             }
             else if (text.StartsWith("@"))
             {
@@ -1760,38 +1738,14 @@ namespace Server.Models
                 }
 
                 text = string.Format("(!@){0}: {1}", con.Account.LastCharacter.CharacterName, text.Remove(0, 2));
-
-                foreach (SConnection target in SEnvir.Connections)
-                {
-                    switch (target.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            if (SEnvir.IsBlocking(con.Account, target.Account)) continue;
-
-                            target.ReceiveChat(text, MessageType.Global);
-                            break;
-                        default: continue;
-                    }
-                }
+                TcpServer.BroadcastMessage(text, null, MessageType.Global, c => SEnvir.IsBlocking(con.Account, c.Account));
             }
             else if (text.StartsWith("@!"))
             {
                 if (!con.Account.LastCharacter.Account.TempAdmin) return;
 
                 text = string.Format("{0}: {1}", con.Account.LastCharacter.CharacterName, text.Remove(0, 2));
-
-                foreach (SConnection target in SEnvir.Connections)
-                {
-                    switch (target.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            target.ReceiveChat(text, MessageType.Announcement);
-                            break;
-                        default: continue;
-                    }
-                }
+                TcpServer.BroadcastMessage(text, null, MessageType.Announcement, c => true);
             }
             else
             {
@@ -6034,18 +5988,7 @@ namespace Server.Models
 
 
                                         string text = $"A [{item.Info.ItemName}] has been used in {CurrentMap.Info.Description}";
-
-                                        foreach (SConnection con in SEnvir.Connections)
-                                        {
-                                            switch (con.Stage)
-                                            {
-                                                case GameStage.Game:
-                                                case GameStage.Observer:
-                                                    con.ReceiveChat(text, MessageType.System);
-                                                    break;
-                                                default: continue;
-                                            }
-                                        }
+                                        TcpServer.BroadcastMessage(text, null, MessageType.System, c => true);
                                     }
                                 }
                             }

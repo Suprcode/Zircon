@@ -2,6 +2,7 @@
 using System.Drawing;
 using Library;
 using Server.Envir;
+using Server.Infrastructure.Network;
 
 namespace Server.Models.Monsters
 {
@@ -28,9 +29,7 @@ namespace Server.Models.Monsters
             base.OnSpawned();
 
             DespawnTime = SEnvir.Now.AddMinutes(20);
-
-            foreach (SConnection con in SEnvir.Connections)
-                con.ReceiveChat(string.Format(con.Language.NetherGateOpen, CurrentMap.Info.Description, CurrentLocation), MessageType.System);
+            TcpServer.BroadcastSystemMessage(c => string.Format(c.Language.NetherGateOpen, CurrentMap.Info.Description, CurrentLocation));
         }
 
         public override void Process()
@@ -42,8 +41,7 @@ namespace Server.Models.Monsters
                 if (SpawnInfo != null)
                     SpawnInfo.AliveCount--;
 
-                foreach (SConnection con in SEnvir.Connections)
-                    con.ReceiveChat(con.Language.NetherGateClosed, MessageType.System);
+                TcpServer.BroadcastSystemMessage(c => c.Language.NetherGateClosed);
 
                 SpawnInfo = null;
                 Despawn();

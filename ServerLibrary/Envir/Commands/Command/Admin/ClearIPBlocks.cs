@@ -1,4 +1,5 @@
-﻿using Server.Models;
+﻿using Server.Infrastructure.Network;
+using Server.Models;
 
 namespace Server.Envir.Commands.Command.Admin
 {
@@ -8,7 +9,7 @@ namespace Server.Envir.Commands.Command.Admin
 
         public override void Action(PlayerObject player)
         {
-            SEnvir.IPBlocks.Clear();
+            TcpServer.IPBlocks.Clear();
         }
     }
 }

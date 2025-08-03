@@ -2,6 +2,7 @@
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
+using Server.Envir;
 using Server.Envir.Translations;
 using Server.Models;
 using System;
@@ -13,7 +14,7 @@ using C = Library.Network.ClientPackets;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 
-namespace Server.Envir
+namespace Server.Infrastructure.Network
 {
     public sealed class SConnection : BaseConnection
     {
@@ -37,6 +38,8 @@ namespace Server.Envir
         public List<AuctionInfo> MPSearchResults = new List<AuctionInfo>();
         public HashSet<AuctionInfo> VisibleResults = new HashSet<AuctionInfo>();
 
+        //TODO: language should be owned by client, just send a numeric value and let the client translate it.
+        // new S.SystemMessage { id = 1 }; 
         public StringMessages Language;
 
         public SConnection(TcpClient client) : base(client)
@@ -65,18 +68,9 @@ namespace Server.Envir
         public override void Disconnect()
         {
             if (!Connected) return;
-
             base.Disconnect();
-
             CleanUp();
-
-            if (!SEnvir.Connections.Contains(this))
-                throw new InvalidOperationException("Connection was not found in list");
-
-            SEnvir.Connections.Remove(this);
-            SEnvir.IPCount[IPAddress]--;
-            SEnvir.DBytesSent += TotalBytesSent;
-            SEnvir.DBytesReceived += TotalBytesReceived;
+            TcpServer.Disconnect(this);
         }
 
         public override void SendDisconnect(Packet p)
@@ -164,7 +158,7 @@ namespace Server.Envir
             Observed = null;
 
             //   ItemList.Clear();
-            //    MagicList.Clear();
+            //   MagicList.Clear();
         }
 
         public override void Process()
@@ -179,25 +173,15 @@ namespace Server.Envir
             if (TotalPacketsProcessed == 0 && TotalBytesReceived > 1024)
             {
                 TryDisconnect();
-                SEnvir.IPBlocks[IPAddress] = SEnvir.Now.Add(Config.PacketBanTime);
-
-                for (int i = SEnvir.Connections.Count - 1; i >= 0; i--)
-                    if (SEnvir.Connections[i].IPAddress == IPAddress)
-                        SEnvir.Connections[i].TryDisconnect();
-
+                TcpServer.IpBan(IPAddress, Config.PacketBanTime);
                 SEnvir.Log($"{IPAddress} Disconnected, Large Packet");
                 return;
             }
-            
+
             if (ReceiveList.Count > Config.MaxPacket)
             {
                 TryDisconnect();
-                SEnvir.IPBlocks[IPAddress] = SEnvir.Now.Add(Config.PacketBanTime);
-
-                for (int i = SEnvir.Connections.Count - 1; i >= 0; i--)
-                    if (SEnvir.Connections[i].IPAddress == IPAddress)
-                        SEnvir.Connections[i].TryDisconnect();
-
+                TcpServer.IpBan(IPAddress, Config.PacketBanTime);
                 SEnvir.Log($"{IPAddress} Disconnected, Large amount of Packets");
                 return;
             }
@@ -758,13 +742,13 @@ namespace Server.Envir
 
         public void Process(C.ObserverRequest p)
         {
-            if (!Config.AllowObservation && (Account == null || (!Account.TempAdmin && !Account.Observer))) return;
+            if (!Config.AllowObservation && (Account == null || !Account.TempAdmin && !Account.Observer)) return;
 
             PlayerObject player = SEnvir.GetPlayerByCharacter(p.Name);
 
             if (player == null || player == Player) return;
 
-            if (!player.Character.Observable && (Account == null || (!Account.TempAdmin && !Account.Observer))) return;
+            if (!player.Character.Observable && (Account == null || !Account.TempAdmin && !Account.Observer)) return;
 
             if (Stage == GameStage.Game)
                 Player.StopGame();
