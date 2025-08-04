@@ -3,9 +3,9 @@ using Server.Envir;
 using System;
 using System.Collections.Generic;
 
-namespace Server.Infrastructure.Network
+namespace Server.Infrastructure.Service
 {
-    public class IpAddressManager
+    public class IpAddressService
     {
         public Dictionary<string, DateTime> IpAddressTimeOuts = [];
 

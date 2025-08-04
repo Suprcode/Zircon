@@ -8,6 +8,7 @@ using MirDB;
 using PluginCore;
 using Server.DBModels;
 using Server.Envir;
+using Server.Infrastructure.Network.Smtp;
 using Server.Views;
 using System;
 using System.Collections.Generic;
@@ -188,7 +189,7 @@ namespace Server
             StartServerButton.Enabled = SEnvir.EnvirThread == null;
             StopServerButton.Enabled = SEnvir.Started;
 
-            ConnectionLabel.Caption = string.Format(@"Connections: {0:#,##0}", SEnvir.SConnectionManager.Connections.Count);
+            ConnectionLabel.Caption = string.Format(@"Connections: {0:#,##0}", SEnvir.UserConnectionService.ActiveConnections.Count);
             ObjectLabel.Caption = string.Format(@"Objects: {0} of {1:#,##0}", SEnvir.ActiveObjects.Count, SEnvir.Objects.Count);
             ProcessLabel.Caption = string.Format(@"Process Count: {0:#,##0}", SEnvir.ProcessObjectCount);
             LoopLabel.Caption = string.Format(@"Loop Count: {0:#,##0}", SEnvir.LoopCount);
@@ -201,42 +202,42 @@ namespace Server
             const decimal MB = KB * 1024;
             const decimal GB = MB * 1024;
 
-            if (SEnvir.SConnectionManager.TotalBytesReceived > GB)
-                TotalDownloadLabel.Caption = string.Format(@"Downloaded: {0:#,##0.0}GB", SEnvir.SConnectionManager.TotalBytesReceived / GB);
-            else if (SEnvir.SConnectionManager.TotalBytesReceived > MB)
-                TotalDownloadLabel.Caption = string.Format(@"Downloaded: {0:#,##0.0}MB", SEnvir.SConnectionManager.TotalBytesReceived / MB);
-            else if (SEnvir.SConnectionManager.TotalBytesReceived > KB)
-                TotalDownloadLabel.Caption = string.Format(@"Downloaded: {0:#,##0}KB", SEnvir.SConnectionManager.TotalBytesReceived / KB);
+            if (SEnvir.UserConnectionService.TotalBytesReceived > GB)
+                TotalDownloadLabel.Caption = string.Format(@"Downloaded: {0:#,##0.0}GB", SEnvir.UserConnectionService.TotalBytesReceived / GB);
+            else if (SEnvir.UserConnectionService.TotalBytesReceived > MB)
+                TotalDownloadLabel.Caption = string.Format(@"Downloaded: {0:#,##0.0}MB", SEnvir.UserConnectionService.TotalBytesReceived / MB);
+            else if (SEnvir.UserConnectionService.TotalBytesReceived > KB)
+                TotalDownloadLabel.Caption = string.Format(@"Downloaded: {0:#,##0}KB", SEnvir.UserConnectionService.TotalBytesReceived / KB);
             else
-                TotalDownloadLabel.Caption = string.Format(@"Downloaded: {0:#,##0}B", SEnvir.SConnectionManager.TotalBytesReceived);
+                TotalDownloadLabel.Caption = string.Format(@"Downloaded: {0:#,##0}B", SEnvir.UserConnectionService.TotalBytesReceived);
 
-            if (SEnvir.SConnectionManager.TotalBytesSent > GB)
-                TotalUploadLabel.Caption = string.Format(@"Uploaded: {0:#,##0.0}GB", SEnvir.SConnectionManager.TotalBytesSent / GB);
-            else if (SEnvir.SConnectionManager.TotalBytesSent > MB)
-                TotalUploadLabel.Caption = string.Format(@"Uploaded: {0:#,##0.0}MB", SEnvir.SConnectionManager.TotalBytesSent / MB);
-            else if (SEnvir.SConnectionManager.TotalBytesSent > KB)
-                TotalUploadLabel.Caption = string.Format(@"Uploaded: {0:#,##0}KB", SEnvir.SConnectionManager.TotalBytesSent / KB);
+            if (SEnvir.UserConnectionService.TotalBytesSent > GB)
+                TotalUploadLabel.Caption = string.Format(@"Uploaded: {0:#,##0.0}GB", SEnvir.UserConnectionService.TotalBytesSent / GB);
+            else if (SEnvir.UserConnectionService.TotalBytesSent > MB)
+                TotalUploadLabel.Caption = string.Format(@"Uploaded: {0:#,##0.0}MB", SEnvir.UserConnectionService.TotalBytesSent / MB);
+            else if (SEnvir.UserConnectionService.TotalBytesSent > KB)
+                TotalUploadLabel.Caption = string.Format(@"Uploaded: {0:#,##0}KB", SEnvir.UserConnectionService.TotalBytesSent / KB);
             else
-                TotalUploadLabel.Caption = string.Format(@"Uploaded: {0:#,##0}B", SEnvir.SConnectionManager.TotalBytesSent);
+                TotalUploadLabel.Caption = string.Format(@"Uploaded: {0:#,##0}B", SEnvir.UserConnectionService.TotalBytesSent);
 
 
-            if (SEnvir.TcpServer.DownloadSpeed > GB)
-                DownloadSpeedLabel.Caption = string.Format(@"D/L Speed: {0:#,##0.0}GBps", SEnvir.TcpServer.DownloadSpeed / GB);
-            else if (SEnvir.TcpServer.DownloadSpeed > MB)
-                DownloadSpeedLabel.Caption = string.Format(@"D/L Speed: {0:#,##0.0}MBps", SEnvir.TcpServer.DownloadSpeed / MB);
-            else if (SEnvir.TcpServer.DownloadSpeed > KB)
-                DownloadSpeedLabel.Caption = string.Format(@"D/L Speed: {0:#,##0}KBps", SEnvir.TcpServer.DownloadSpeed / KB);
+            if (SEnvir.UserConnectionService.DownloadSpeed > GB)
+                DownloadSpeedLabel.Caption = string.Format(@"D/L Speed: {0:#,##0.0}GBps", SEnvir.UserConnectionService.DownloadSpeed / GB);
+            else if (SEnvir.UserConnectionService.DownloadSpeed > MB)
+                DownloadSpeedLabel.Caption = string.Format(@"D/L Speed: {0:#,##0.0}MBps", SEnvir.UserConnectionService.DownloadSpeed / MB);
+            else if (SEnvir.UserConnectionService.DownloadSpeed > KB)
+                DownloadSpeedLabel.Caption = string.Format(@"D/L Speed: {0:#,##0}KBps", SEnvir.UserConnectionService.DownloadSpeed / KB);
             else
-                DownloadSpeedLabel.Caption = string.Format(@"D/L Speed: {0:#,##0}Bps", SEnvir.TcpServer.DownloadSpeed);
+                DownloadSpeedLabel.Caption = string.Format(@"D/L Speed: {0:#,##0}Bps", SEnvir.UserConnectionService.DownloadSpeed);
 
-            if (SEnvir.TcpServer.UploadSpeed > GB)
-                UploadSpeedLabel.Caption = string.Format(@"U/L Speed: {0:#,##0.0}GBps", SEnvir.TcpServer.UploadSpeed / GB);
-            else if (SEnvir.TcpServer.UploadSpeed > MB)
-                UploadSpeedLabel.Caption = string.Format(@"U/L Speed: {0:#,##0.0}MBps", SEnvir.TcpServer.UploadSpeed / MB);
-            else if (SEnvir.TcpServer.UploadSpeed > KB)
-                UploadSpeedLabel.Caption = string.Format(@"U/L Speed: {0:#,##0}KBps", SEnvir.TcpServer.UploadSpeed / KB);
+            if (SEnvir.UserConnectionService.UploadSpeed > GB)
+                UploadSpeedLabel.Caption = string.Format(@"U/L Speed: {0:#,##0.0}GBps", SEnvir.UserConnectionService.UploadSpeed / GB);
+            else if (SEnvir.UserConnectionService.UploadSpeed > MB)
+                UploadSpeedLabel.Caption = string.Format(@"U/L Speed: {0:#,##0.0}MBps", SEnvir.UserConnectionService.UploadSpeed / MB);
+            else if (SEnvir.UserConnectionService.UploadSpeed > KB)
+                UploadSpeedLabel.Caption = string.Format(@"U/L Speed: {0:#,##0}KBps", SEnvir.UserConnectionService.UploadSpeed / KB);
             else
-                UploadSpeedLabel.Caption = string.Format(@"U/L Speed: {0:#,##0}Bps", SEnvir.TcpServer.UploadSpeed);
+                UploadSpeedLabel.Caption = string.Format(@"U/L Speed: {0:#,##0}Bps", SEnvir.UserConnectionService.UploadSpeed);
         }
 
         private void StartServerButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)

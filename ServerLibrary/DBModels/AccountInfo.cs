@@ -2,7 +2,7 @@
 using Library.SystemModels;
 using MirDB;
 using Server.Envir;
-using Server.Infrastructure.Network;
+using Server.Infrastructure.Service.Connection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -618,7 +618,7 @@ namespace Server.DBModels
         
 
         public int WrongPasswordCount;
-        public SConnection Connection;
+        public UserConnection Connection;
         public string Key;
 
         protected override void OnCreated()

@@ -1,17 +1,8 @@
-﻿using MirDB;
-using Server.Envir;
+﻿using Server.Envir;
+using Server.Infrastructure.Network.Http;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Server.Views
@@ -33,7 +24,7 @@ namespace Server.Views
 
             string key = Uri.EscapeDataString(txtKey.Text);
 
-            var url = $"{txtRemoteIP.Text}?Type={WebServer.SystemDBSyncCommand}&Key={key}";
+            var url = $"{txtRemoteIP.Text}?Type={HttpWebServer.SystemDBSyncCommand}&Key={key}";
             try
             {
                 HttpResponseMessage response = client.PostAsync(url, content).Result;

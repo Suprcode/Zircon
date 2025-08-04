@@ -1,7 +1,7 @@
 ﻿using Library;
 using Server.Envir.Commands.Exceptions;
 using Server.Envir.Commands.Handler;
-using Server.Infrastructure.Network;
+using Server.Infrastructure.Service.Connection;
 using Server.Models;
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,7 @@ namespace Server.Envir.Commands
                 player.Connection.ReceiveChat(exception.Message, MessageType.System);
                 if (!exception.userOnly)
                 {
-                    foreach (SConnection connection in player.Connection.Observers)
+                    foreach (UserConnection connection in player.Connection.Observers)
                         connection.ReceiveChat(exception.Message, MessageType.System);
                 }
             }

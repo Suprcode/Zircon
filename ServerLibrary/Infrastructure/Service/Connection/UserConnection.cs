@@ -14,9 +14,9 @@ using C = Library.Network.ClientPackets;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 
-namespace Server.Infrastructure.Network
+namespace Server.Infrastructure.Service.Connection
 {
-    public sealed class SConnection : BaseConnection
+    public sealed class UserConnection : BaseConnection
     {
         private static int SessionCount;
 
@@ -31,19 +31,17 @@ namespace Server.Infrastructure.Network
         public PlayerObject Player { get; set; }
         public int SessionID { get; }
 
-        public SConnection Observed;
-        public List<SConnection> Observers = new List<SConnection>();
+        public UserConnection Observed;
+        public List<UserConnection> Observers = new List<UserConnection>();
 
         public List<AuctionInfo> MPSearchResults = new List<AuctionInfo>();
         public HashSet<AuctionInfo> VisibleResults = new HashSet<AuctionInfo>();
 
-        //TODO: language should be owned by client, just send a numeric value and let the client translate it.
-        // new S.SystemMessage { id = 1 }; 
         public StringMessages Language;
 
-        public Action<SConnection> DisconnectCallback;
+        public Action<UserConnection> DisconnectCallback;
 
-        public SConnection(TcpClient client, Action<SConnection> disconnectCallback) : base(client)
+        public UserConnection(TcpClient client, Action<UserConnection> disconnectCallback) : base(client)
         {
             DisconnectCallback = disconnectCallback;
 
@@ -181,7 +179,7 @@ namespace Server.Infrastructure.Network
 
             if (p == null || !p.ObserverPacket) return;
 
-            foreach (SConnection observer in Observers)
+            foreach (UserConnection observer in Observers)
                 observer.Enqueue(p);
         }
 
@@ -206,11 +204,11 @@ namespace Server.Infrastructure.Network
             }
         }
 
-        public void ReceiveChatWithObservers(Func<SConnection, string> messageFunc, MessageType messageType, List<ClientUserItem> linkedItems = null, uint objectID = 0)
+        public void ReceiveChatWithObservers(Func<UserConnection, string> messageFunc, MessageType messageType, List<ClientUserItem> linkedItems = null, uint objectID = 0)
         {
             ReceiveChat(messageFunc(this), messageType, linkedItems, objectID);
 
-            foreach (SConnection observer in Observers)
+            foreach (UserConnection observer in Observers)
                 observer.ReceiveChat(messageFunc(observer), messageType, linkedItems, objectID);
         }
 
@@ -596,7 +594,7 @@ namespace Server.Infrastructure.Network
             Player.NPC = null;
             Player.NPCPage = null;
 
-            foreach (SConnection con in Observers)
+            foreach (UserConnection con in Observers)
             {
                 con.Enqueue(new S.NPCClose());
             }

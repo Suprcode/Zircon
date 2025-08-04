@@ -1,18 +1,20 @@
 ﻿using Library;
-using Server.Infrastructure.Network;
+using Server.Infrastructure.Service.Connection;
 using System;
 using System.Collections.Generic;
 
-namespace Server.Envir
+namespace Server.Infrastructure.Service
 {
-    public class BroadcastService(SConnectionManager ConnectionManager)
+    public class UserBroadcastService(UserConnectionService UserConnectionService)
     {
-        //TODO: dont think this should be here
-        internal void SendOnlineCount()
+        //TODO: some of this is convoluted because Language is owned by Server. It should be owned by client server should just send (i.e S.TemplatedMessage { type = 1, args = [...] } and let the client handle local translations
+        //TODO: not 100% happy - any other improvements?
+
+        internal void BroadcastOnlineCount()
         {
-            foreach (SConnection conn in ConnectionManager.Connections)
+            foreach (UserConnection conn in UserConnectionService.ActiveConnections)
             {
-                conn.ReceiveChat(string.Format(conn.Language.OnlineCount, ConnectionManager.Players, ConnectionManager.Observers), MessageType.Hint);
+                conn.ReceiveChat(string.Format(conn.Language.OnlineCount, UserConnectionService.Players, UserConnectionService.Observers), MessageType.Hint);
 
                 switch (conn.Stage)
                 {
@@ -26,11 +28,9 @@ namespace Server.Envir
                 }
             }
         }
-
-        //TODO: dont think this should be here - this is also so convoluted because server owns the languages
-        internal void BroadcastSystemMessage(Func<SConnection, string> messageSupplier)
+        internal void BroadcastSystemMessage(Func<UserConnection, string> messageSupplier)
         {
-            foreach (SConnection con in ConnectionManager.Connections)
+            foreach (UserConnection con in UserConnectionService.ActiveConnections)
             {
                 switch (con.Stage)
                 {
@@ -44,10 +44,9 @@ namespace Server.Envir
             }
         }
 
-        //TODO: dont think this should be here
-        internal void BroadcastMessage(string text, List<ClientUserItem> linkedItems, MessageType messageType, Predicate<SConnection> shouldReceive)
+        internal void BroadcastMessage(string text, List<ClientUserItem> linkedItems, MessageType messageType, Predicate<UserConnection> shouldReceive)
         {
-            foreach (SConnection con in ConnectionManager.Connections)
+            foreach (UserConnection con in UserConnectionService.ActiveConnections)
             {
                 switch (con.Stage)
                 {

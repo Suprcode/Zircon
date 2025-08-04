@@ -7,7 +7,12 @@ using Server.Envir.Commands;
 using Server.Envir.Commands.Handler;
 using Server.Envir.Events;
 using Server.Envir.Events.Triggers;
-using Server.Infrastructure.Network;
+using Server.Infrastructure.Network.Http;
+using Server.Infrastructure.Network.Smtp;
+using Server.Infrastructure.Network.Tcp;
+using Server.Infrastructure.Network.Tcp.ListenerHandler;
+using Server.Infrastructure.Service;
+using Server.Infrastructure.Service.Connection;
 using Server.Models;
 using System;
 using System.Collections.Concurrent;
@@ -68,22 +73,32 @@ namespace Server.Envir
 
         #endregion
 
-        public static readonly IpAddressManager IpManager = new IpAddressManager();
-        public static readonly SConnectionManager SConnectionManager = new SConnectionManager(
-            new SConnectionFactory(() => SConnectionManager.RemoveConnection), 
+        public static readonly IpAddressService IpManager = new IpAddressService();
+        public static readonly UserConnectionService UserConnectionService = new UserConnectionService(
+            new UserConnectionFactory(() => UserConnectionService.RemoveConnection), 
             IpManager
         );
-        public static readonly TcpServer<SConnection> TcpServer = new TcpServer<SConnection>(SConnectionManager);
-        public static BroadcastService BroadcastService = new BroadcastService(SConnectionManager);
 
-        public static bool Started
+        public static readonly TcpServer UserTcpServer = new TcpServer(
+            new UserConnectionListenerHandler(UserConnectionService), 
+            Config.IPAddress, 
+            Config.Port
+        );
+        public static readonly TcpServer ActiveUserCountTcpServer = new TcpServer(
+            new ActiveUserCountListenerHandler(() => UserConnectionService.ActiveConnections.Count), 
+            Config.IPAddress, 
+            Config.UserCountPort
+        );
+        public static readonly UserBroadcastService BroadcastService = new UserBroadcastService(UserConnectionService);
+
+        public static bool Started //TODO: not sure what purpose of this was really.. it was 100% controlled by UserTcpServer
         { 
-            get => TcpServer.Started;
+            get => UserTcpServer.Started;
             set 
             {
-                if (TcpServer.Started == value) return;
-                if (value) TcpServer.StartNetwork();
-                else TcpServer.StopNetwork();
+                if (UserTcpServer.Started == value) return;
+                if (value) UserTcpServer.Start();
+                else UserTcpServer.Stop();
             } 
         }
         public static bool Saving { get; private set; }
@@ -906,8 +921,10 @@ namespace Server.Envir
             DateTime DBTime = Now + Config.DBSaveDelay;
 
             StartEnvir();
-            TcpServer.StartNetwork();
-            WebServer.StartWebServer();
+            UserTcpServer.Start();
+            ActiveUserCountTcpServer.Start();
+            SEnvir.Log($"Network Started. Listen: {Config.IPAddress}:{Config.Port}");
+            HttpWebServer.StartWebServer();
 
             int count = 0, loopCount = 0;
             DateTime nextCount = Now.AddSeconds(1), UserCountTime = Now.AddMinutes(5), EventTimerTime = Now.AddMinutes(1), saveTime;
@@ -927,7 +944,7 @@ namespace Server.Envir
 
                 try
                 {
-                    TcpServer.Process();
+                    UserConnectionService.Process();
 
                     long delay = (Time.Now - Now).Ticks / TimeSpan.TicksPerMillisecond;
                     if (delay > conDelay)
@@ -999,7 +1016,7 @@ namespace Server.Envir
                         if (Now >= UserCountTime)
                         {
                             UserCountTime = Now.AddMinutes(5);
-                            BroadcastService.SendOnlineCount();
+                            BroadcastService.BroadcastOnlineCount();
                         }
 
                         if (Now >= EventTimerTime)
@@ -1055,7 +1072,7 @@ namespace Server.Envir
 
                         if (Config.EnableWebServer)
                         {
-                            WebServer.Process();
+                            HttpWebServer.Process();
                         }
 
                         if (Config.ProcessGameGold)
@@ -1099,15 +1116,17 @@ namespace Server.Envir
                     Log(ex.StackTrace);
                     File.AppendAllText(@".\Errors.txt", ex.StackTrace + Environment.NewLine);
 
-                    TcpServer.Broadcast(new G.Disconnect { Reason = DisconnectReason.Crashed });
+                    UserConnectionService.Broadcast(new G.Disconnect { Reason = DisconnectReason.Crashed });
 
                     Thread.Sleep(3000);
                     break;
                 }
             }
 
-            WebServer.StopWebServer();
-            TcpServer.StopNetwork();
+            HttpWebServer.StopWebServer();
+            UserTcpServer.Stop();
+            ActiveUserCountTcpServer.Stop();
+            SEnvir.Log("Network Stopped.");
 
             while (Saving) Thread.Sleep(1);
             if (Session != null)
@@ -1120,13 +1139,13 @@ namespace Server.Envir
 
         public static void ProcessGameGold()
         {
-            while (!WebServer.Messages.IsEmpty)
+            while (!HttpWebServer.Messages.IsEmpty)
             {
                 IPNMessage message;
 
-                if (!WebServer.Messages.TryDequeue(out message) || message == null) return;
+                if (!HttpWebServer.Messages.TryDequeue(out message) || message == null) return;
 
-                WebServer.PaymentList.Add(message);
+                HttpWebServer.PaymentList.Add(message);
 
                 if (!message.Verified)
                 {
@@ -1222,17 +1241,17 @@ namespace Server.Envir
                     case "Completed":
                         break;
                 }
-                if (payment.Status != WebServer.Completed) continue;
+                if (payment.Status != HttpWebServer.Completed) continue;
 
                 //check that receiver_email is my primary paypal email
                 if (string.Compare(payment.Receiver_EMail, Config.ReceiverEMail, StringComparison.OrdinalIgnoreCase) != 0)
                     payment.Error = true;
 
                 //check that paymentamount/current are correct
-                if (payment.Currency != WebServer.Currency)
+                if (payment.Currency != HttpWebServer.Currency)
                     payment.Error = true;
 
-                if (WebServer.GoldTable.TryGetValue(payment.Price, out tempInt))
+                if (HttpWebServer.GoldTable.TryGetValue(payment.Price, out tempInt))
                     payment.GameGoldAmount = tempInt;
                 else
                     payment.Error = true;
@@ -1274,7 +1293,7 @@ namespace Server.Envir
             Saving = true;
             Session.Save(false);
 
-            WebServer.Save();
+            HttpWebServer.Save();
 
             Thread saveThread = new Thread(CommitChanges) { IsBackground = true };
             saveThread.Start(Session);
@@ -1284,7 +1303,7 @@ namespace Server.Envir
             Session session = (Session)data;
             session?.Commit();
 
-            WebServer.CommitChanges(data);
+            HttpWebServer.CommitChanges(data);
 
             Saving = false;
         }
@@ -2578,7 +2597,7 @@ namespace Server.Envir
             item.AddStat(Stat.Counter2, lootBoxInfo.Contents.Count <= 15 ? 2 : 1, StatSource.Added); // Step 1 = Randomise, 2 = Selection
         }
 
-        public static void Login(C.Login p, SConnection con)
+        public static void Login(C.Login p, UserConnection con)
         {
             AccountInfo account = null;
             bool admin = false;
@@ -2735,7 +2754,7 @@ namespace Server.Envir
 
             Log($"[Account Logon] Admin: {admin}, Account: {account.EMailAddress}, IP Address: {account.LastIP}, Security: {p.CheckSum}");
         }
-        public static void NewAccount(C.NewAccount p, SConnection con)
+        public static void NewAccount(C.NewAccount p, UserConnection con)
         {
             if (!Config.AllowNewAccount)
             {
@@ -2855,7 +2874,7 @@ namespace Server.Envir
 
             Log($"[Account Created] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void ChangePassword(C.ChangePassword p, SConnection con)
+        public static void ChangePassword(C.ChangePassword p, UserConnection con)
         {
             if (!Config.AllowChangePassword)
             {
@@ -2938,7 +2957,7 @@ namespace Server.Envir
 
             Log($"[Password Changed] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void RequestPasswordReset(C.RequestPasswordReset p, SConnection con)
+        public static void RequestPasswordReset(C.RequestPasswordReset p, UserConnection con)
         {
             if (!Config.AllowRequestPasswordReset)
             {
@@ -2983,7 +3002,7 @@ namespace Server.Envir
 
             Log($"[Request Password] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void ResetPassword(C.ResetPassword p, SConnection con)
+        public static void ResetPassword(C.ResetPassword p, UserConnection con)
         {
             if (!Config.AllowManualResetPassword)
             {
@@ -3026,7 +3045,7 @@ namespace Server.Envir
 
             Log($"[Reset Password] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void Activation(C.Activation p, SConnection con)
+        public static void Activation(C.Activation p, UserConnection con)
         {
             if (!Config.AllowManualActivation)
             {
@@ -3055,7 +3074,7 @@ namespace Server.Envir
 
             Log($"[Activation] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void RequestActivationKey(C.RequestActivationKey p, SConnection con)
+        public static void RequestActivationKey(C.RequestActivationKey p, UserConnection con)
         {
             if (!Config.AllowRequestActivation)
             {
@@ -3099,7 +3118,7 @@ namespace Server.Envir
             Log($"[Request Activation] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
 
-        public static void NewCharacter(C.NewCharacter p, SConnection con)
+        public static void NewCharacter(C.NewCharacter p, UserConnection con)
         {
             if (!Config.AllowNewCharacter)
             {
@@ -3256,7 +3275,7 @@ namespace Server.Envir
 
             Log($"[Character Created] Character: {p.CharacterName}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void DeleteCharacter(C.DeleteCharacter p, SConnection con)
+        public static void DeleteCharacter(C.DeleteCharacter p, UserConnection con)
         {
             if (!Config.AllowDeleteCharacter)
             {
@@ -3283,7 +3302,7 @@ namespace Server.Envir
 
             con.Enqueue(new S.DeleteCharacter { Result = DeleteCharacterResult.NotFound });
         }
-        public static void StartGame(C.StartGame p, SConnection con)
+        public static void StartGame(C.StartGame p, UserConnection con)
         {
             if (!Config.AllowStartGame)
             {
@@ -3398,7 +3417,7 @@ namespace Server.Envir
         {
             return GetCharacter(name)?.Account.Connection?.Player;
         }
-        public static SConnection GetConnectionByCharacter(string name)
+        public static UserConnection GetConnectionByCharacter(string name)
         {
             return GetCharacter(name)?.Account.Connection;
         }

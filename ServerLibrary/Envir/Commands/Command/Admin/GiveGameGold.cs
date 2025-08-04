@@ -3,7 +3,7 @@ using Server.DBModels;
 using Server.Envir.Commands.Command;
 using Server.Envir.Commands.Command.Admin;
 using Server.Envir.Commands.Exceptions;
-using Server.Infrastructure.Network;
+using Server.Infrastructure.Service.Connection;
 using Server.Models;
 
 namespace Server.Envir.Commands.Admin

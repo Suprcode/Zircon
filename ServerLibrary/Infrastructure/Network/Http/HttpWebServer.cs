@@ -7,18 +7,18 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using G = Library.Network.GeneralPackets;
-using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
 using System.Net.Http;
 using MirDB;
 using System.IO.Compression;
+using Server.Infrastructure.Network.Smtp;
+using Server.Envir;
 
-namespace Server.Envir
+namespace Server.Infrastructure.Network.Http
 {
-    public static class WebServer
+    public static class HttpWebServer
     {
+        //TODO: separate the HttpWeb components from all the other stuff like GG processing
+
         public static ConcurrentQueue<WebCommand> WebCommandQueue;
         public static bool WebServerStarted { get; set; }
 
@@ -49,7 +49,7 @@ namespace Server.Envir
         public static ConcurrentQueue<IPNMessage> Messages = new ConcurrentQueue<IPNMessage>();
         public static List<IPNMessage> PaymentList = new List<IPNMessage>(), HandledPayments = new List<IPNMessage>();
 
-        static WebServer()
+        static HttpWebServer()
         {
             Messages = new ConcurrentQueue<IPNMessage>();
 
@@ -89,8 +89,6 @@ namespace Server.Envir
 
                 IPNListener.Start();
                 IPNListener.BeginGetContext(IPNConnection, null);
-
-
 
                 WebServerStarted = true;
 

@@ -7,16 +7,16 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Server.Infrastructure.Network
+namespace Server.Infrastructure.Service.Connection
 {
-    public class ConnectionManager<ConnectionType>(IConnectionFactory<ConnectionType> ConnectionFactory, IpAddressManager IpManager) where ConnectionType : BaseConnection
+    public abstract class AbstractConnectionService<ConnectionType>(IConnectionFactory<ConnectionType> ConnectionFactory, IpAddressService IpManager) where ConnectionType : BaseConnection
     {
         //public static Dictionary<string, int> IPCount = new Dictionary<string, int>(); //TODO: this isn't used but i imagine its intended to limit connections from single IP
 
         private bool IsResetting = false;
 
         public ConcurrentQueue<ConnectionType> PendingConnections = [];
-        public List<ConnectionType> Connections = [];
+        public List<ConnectionType> ActiveConnections = [];
 
         public bool AcceptingConnections => PendingConnections?.Count >= 15 || IsResetting;
 
@@ -25,6 +25,9 @@ namespace Server.Infrastructure.Network
 
         public long TotalBytesSent, TotalBytesReceived;
         public long PreviousTotalReceived, PreviousTotalSent;
+
+        public long DownloadSpeed => TotalBytesReceived - PreviousTotalReceived;
+       public long UploadSpeed => TotalBytesSent - PreviousTotalSent;
         #endregion
 
         internal void Add(TcpClient tcpClient)
@@ -45,16 +48,16 @@ namespace Server.Infrastructure.Network
 
                 //IPCount.TryGetValue(connection.IPAddress, out var ipCount);
                 //IPCount[connection.IPAddress] = ipCount + 1;
-                Connections.Add(connection);
+                ActiveConnections.Add(connection);
             }
 
             long bytesSent = 0;
             long bytesReceived = 0;
-            for (int i = Connections.Count - 1; i >= 0; i--)
+            for (int i = ActiveConnections.Count - 1; i >= 0; i--)
             {
-                if (i >= Connections.Count) break;
+                if (i >= ActiveConnections.Count) break;
 
-                var connection = Connections[i];
+                var connection = ActiveConnections[i];
                 connection.Process();
 
                 if (connection.TotalPacketsProcessed == 0 && connection.TotalBytesReceived > 1024)
@@ -65,7 +68,7 @@ namespace Server.Infrastructure.Network
                     return;
                 }
 
-                if (connection.ReceiveList.Count > Config.MaxPacket)
+                if (connection.ReceiveList?.Count > Config.MaxPacket)
                 {
                     connection.TryDisconnect();
                     IpManager.Timeout(connection, Config.PacketBanTime);
@@ -85,22 +88,22 @@ namespace Server.Infrastructure.Network
 
         internal void Broadcast(Packet packet)
         {
-            for (int i = Connections.Count - 1; i >= 0; i--)
-                Connections[i].SendDisconnect(packet);
+            for (int i = ActiveConnections.Count - 1; i >= 0; i--)
+                ActiveConnections[i].SendDisconnect(packet);
         }
 
         internal void Broadcast(Func<ConnectionType, Packet> packet)
         {
-            for (int i = Connections.Count - 1; i >= 0; i--)
-                Connections[i].SendDisconnect(packet.Invoke(Connections[i]));
+            for (int i = ActiveConnections.Count - 1; i >= 0; i--)
+                ActiveConnections[i].SendDisconnect(packet.Invoke(ActiveConnections[i]));
         }
 
         internal void RemoveConnection(ConnectionType connection)
         {
-            if (!Connections.Contains(connection))
+            if (!ActiveConnections.Contains(connection))
                 throw new InvalidOperationException("Connection was not found in list"); //TODO: why do we want to cause an exception here? Why not just log a warning and return?
 
-            Connections.Remove(connection);
+            ActiveConnections.Remove(connection);
             //IPCount[connection.IPAddress]--;
             DBytesSent += TotalBytesSent;
             DBytesReceived += TotalBytesReceived;
@@ -114,8 +117,8 @@ namespace Server.Infrastructure.Network
             try
             {
                 Packet p = new Library.Network.GeneralPackets.Disconnect { Reason = DisconnectReason.ServerClosing };
-                for (int i = Connections.Count - 1; i >= 0; i--)
-                    Connections[i].SendDisconnect(p);
+                for (int i = ActiveConnections.Count - 1; i >= 0; i--)
+                    ActiveConnections[i].SendDisconnect(p);
 
                 Thread.Sleep(2000); // wait for disconnects
                 

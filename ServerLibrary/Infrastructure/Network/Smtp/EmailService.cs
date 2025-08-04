@@ -1,16 +1,18 @@
 ﻿using Library;
 using Server.DBModels;
+using Server.Envir;
+using Server.Infrastructure.Network.Http;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Envir
+namespace Server.Infrastructure.Network.Smtp
 {
     public static class EmailService
     {
+        //TODO: separate SMTP components and game related components (i.e AccountInfo etc).
+
         public static int EMailsSent;
 
         public static void SendActivationEmail(AccountInfo account)
@@ -40,12 +42,12 @@ namespace Server.Envir
                         Body = $"Dear {account.RealName}, <br><br>" +
                                $"Thank you for registering a Zircon account, before you can log in to the game, you are required to activate your account.<br><br>" +
                                $"To complete your registration and activate the account please visit the following link:<br>" +
-                               $"<a href=\"{Config.WebCommandLink}?Type={WebServer.ActivationCommand}&{WebServer.ActivationKey}={account.ActivationKey}\">Click here to Activate</a><br><br>" +
+                               $"<a href=\"{Config.WebCommandLink}?Type={HttpWebServer.ActivationCommand}&{HttpWebServer.ActivationKey}={account.ActivationKey}\">Click here to Activate</a><br><br>" +
                                $"If the above link does not work please use the following Activation Key when you next attempt to log in to your account<br>" +
                                $"Activation Key: {account.ActivationKey}<br><br>" +
                                (account.Referral != null ? $"You were referred by: {account.Referral.EMailAddress}<br><br>" : "") +
                                $"If you did not create this account and want to cancel the registration to delete this account please visit the following link:<br>" +
-                               $"<a href=\"{Config.WebCommandLink}?Type={WebServer.DeleteCommand}&{WebServer.DeleteKey}={account.ActivationKey}\">Click here to Delete Account</a><br><br>" +
+                               $"<a href=\"{Config.WebCommandLink}?Type={HttpWebServer.DeleteCommand}&{HttpWebServer.DeleteKey}={account.ActivationKey}\">Click here to Delete Account</a><br><br>" +
                                $"We'll see you in game<br>" +
                                $"<a href=\"http://www.zirconserver.com\">Zircon Server</a>"
                     };
@@ -180,7 +182,7 @@ namespace Server.Envir
                                $"A request to reset your password has been made.<br>" +
                                $"IP Address: {ipAddress}<br><br>" +
                                $"To reset your password please click on the following link:<br>" +
-                               $"<a href=\"{Config.WebCommandLink}?Type={WebServer.ResetCommand}&{WebServer.ResetKey}={account.ResetKey}\">Reset Password</a><br><br>" +
+                               $"<a href=\"{Config.WebCommandLink}?Type={HttpWebServer.ResetCommand}&{HttpWebServer.ResetKey}={account.ResetKey}\">Reset Password</a><br><br>" +
                                $"If the above link does not work please use the following Reset Key to reset your password<br>" +
                                $"Reset Key: {account.ResetKey}<br><br>" +
                                $"If you did not request this reset, please ignore this email as your password will not be changed.<br><br>" +
