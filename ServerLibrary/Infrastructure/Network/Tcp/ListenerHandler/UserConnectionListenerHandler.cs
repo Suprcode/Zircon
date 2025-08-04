@@ -20,9 +20,14 @@ namespace Server.Infrastructure.Network.Tcp.ListenerHandler
                 Thread.Sleep(1);
         }
 
-        public void OnException(Exception ex)
+        public void OnAcceptException(Exception ex)
         {
             SEnvir.Log(ex.ToString());
+        }
+
+        public void OnTermination()
+        {
+            ConnectionService.Reset();
         }
     }
 }

@@ -121,7 +121,6 @@ namespace Server.Infrastructure.Service.Connection
                     ActiveConnections[i].SendDisconnect(p);
 
                 Thread.Sleep(2000); // wait for disconnects
-                
             }
             catch (Exception ex)
             {

@@ -18,7 +18,12 @@ namespace Server.Infrastructure.Network.Tcp.ListenerHandler
             // Do Nothing
         }
 
-        public void OnException(Exception ex)
+        public void OnAcceptException(Exception ex)
+        {
+            // Do Nothing
+        }
+
+        public void OnTermination()
         {
             // Do Nothing
         }

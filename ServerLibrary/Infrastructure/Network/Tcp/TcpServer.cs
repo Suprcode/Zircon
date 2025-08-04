@@ -35,6 +35,7 @@ namespace Server.Infrastructure.Network.Tcp
             Listener = null;
             Started = false;
             expiredListener?.Stop();
+            ListenerHandler.OnTermination();
         }
 
         private void HandleConnection(IAsyncResult result)
@@ -47,7 +48,7 @@ namespace Server.Infrastructure.Network.Tcp
             catch (SocketException) { }
             catch (Exception ex)
             {
-                ListenerHandler.OnException(ex);
+                ListenerHandler.OnAcceptException(ex);
             }
             finally
             {
