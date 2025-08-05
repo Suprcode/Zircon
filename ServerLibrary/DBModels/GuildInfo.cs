@@ -319,7 +319,7 @@ namespace Server.DBModels
             {
                 if (item.Slot < 0 || item.Slot >= Storage.Length)
                 {
-                    SEnvir.Log(string.Format("[BAD ITEM] Guild: {0}, Slot: {1}", GuildName, item.Slot));
+                    SEnvir.ServerLogger.Log(string.Format("[BAD ITEM] Guild: {0}, Slot: {1}", GuildName, item.Slot));
                     continue;
                 }
 

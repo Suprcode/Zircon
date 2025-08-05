@@ -52,7 +52,7 @@ namespace Server.Models.Monsters
 
                 if (item.Slot - Globals.EquipmentOffSet >= Equipment.Length)
                 {
-                    SEnvir.Log($"[Bag Companion Equipment] Slot: {item.Slot}, Character: {UserCompanion.Character.CharacterName}, Companion: {UserCompanion.Name}");
+                    SEnvir.ServerLogger.Log($"[Bag Companion Equipment] Slot: {item.Slot}, Character: {UserCompanion.Character.CharacterName}, Companion: {UserCompanion.Name}");
                     continue;
                 }
 
@@ -76,7 +76,7 @@ namespace Server.Models.Monsters
 
                 if (item.Slot >= Inventory.Length)
                 {
-                    SEnvir.Log($"[Bag Companion Inventory] Slot: {item.Slot}, Character: {UserCompanion.Character.CharacterName}, Companion: {UserCompanion.Name}");
+                    SEnvir.ServerLogger.Log($"[Bag Companion Inventory] Slot: {item.Slot}, Character: {UserCompanion.Character.CharacterName}, Companion: {UserCompanion.Name}");
                     continue;
                 }
 

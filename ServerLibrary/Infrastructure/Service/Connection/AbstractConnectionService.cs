@@ -64,7 +64,7 @@ namespace Server.Infrastructure.Service.Connection
                 {
                     connection.TryDisconnect();
                     IpManager.Timeout(connection, Config.PacketBanTime);
-                    SEnvir.Log($"{connection.IPAddress} Disconnected, Large Packet");
+                    SEnvir.ServerLogger.Log($"{connection.IPAddress} Disconnected, Large Packet");
                     return;
                 }
 
@@ -72,7 +72,7 @@ namespace Server.Infrastructure.Service.Connection
                 {
                     connection.TryDisconnect();
                     IpManager.Timeout(connection, Config.PacketBanTime);
-                    SEnvir.Log($"{connection.IPAddress} Disconnected, Large amount of Packets");
+                    SEnvir.ServerLogger.Log($"{connection.IPAddress} Disconnected, Large amount of Packets");
                     return;
                 }
 
@@ -124,7 +124,7 @@ namespace Server.Infrastructure.Service.Connection
             }
             catch (Exception ex)
             {
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
             }
 
             IsResetting = false;

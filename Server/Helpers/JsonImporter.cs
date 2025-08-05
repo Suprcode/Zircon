@@ -50,7 +50,7 @@ namespace Server
                 }
                 catch (Exception ex)
                 {
-                    SEnvir.Log(ex.Message);
+                    SEnvir.ServerLogger.Log(ex.Message);
 
                     XtraMessageBox.Show($"Failed to import all rows.\r\n\r\n{ex.Message}", "Fail", MessageBoxButtons.OK);
                 }

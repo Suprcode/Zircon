@@ -12,7 +12,7 @@ namespace Server.Infrastructure.Network.Tcp
 
         private TcpListener Listener;
 
-        public void Start(bool log = true)
+        public void Start()
         {
             try
             {
@@ -24,11 +24,11 @@ namespace Server.Infrastructure.Network.Tcp
             catch (Exception ex)
             {
                 Started = false;
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
             }
         }
 
-        public void Stop(bool log = true)
+        public void Stop()
         {
             TcpListener expiredListener = Listener;
 

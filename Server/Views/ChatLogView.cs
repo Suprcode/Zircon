@@ -18,11 +18,11 @@ namespace Server.Views
 
         private void InterfaceTimer_Tick(object sender, EventArgs e)
         {
-            while (!SEnvir.ChatLogs.IsEmpty)
+            while (!SEnvir.ChatAppLogs.IsEmpty) //TODO: not sure if this was a bug or intentional? why was it using SEnvir.ChatLogs instead of ChatDisplayLogs
             {
                 string log;
 
-                if (!SEnvir.DisplayChatLogs.TryDequeue(out log)) continue;
+                if (!SEnvir.ChatAppLogs.TryDequeue(out log)) continue;
 
                 Logs.Add(log);
             }

@@ -48,7 +48,7 @@ namespace Server
 
         private void PluginLoader_Log(object sender, PluginCore.LogEventArgs e)
         {
-            SEnvir.Log(e.Message);
+            SEnvir.ServerLogger.Log(e.Message);
         }
 
         private void PluginLoader_ShowView(object sender, ShowViewEventArgs e)
@@ -130,7 +130,7 @@ namespace Server
             }
             catch (Exception ex)
             {
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
             }
         }
 
@@ -250,7 +250,7 @@ namespace Server
             }
             catch (Exception ex)
             {
-                SEnvir.Log($"Exception: " + ex.ToString(), true);
+                SEnvir.ServerLogger.Log($"Exception: " + ex.ToString());
             }
         }
 

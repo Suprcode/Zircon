@@ -48,7 +48,7 @@ namespace Server.Envir.Commands
             }
             catch (Exception exception)
             {
-                SEnvir.Log("FatalCommandError [" + player.Name + "]: " + exception.Message);
+                SEnvir.ServerLogger.Log("FatalCommandError [" + player.Name + "]: " + exception.Message);
                 player.Connection.ReceiveChat("FatalCommandError: The error has been logged. Contact an admin.", MessageType.System);
             }
         }

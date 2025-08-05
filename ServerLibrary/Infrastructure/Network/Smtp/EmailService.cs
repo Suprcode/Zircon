@@ -59,8 +59,8 @@ namespace Server.Infrastructure.Network.Smtp
                 }
                 catch (Exception ex)
                 {
-                    SEnvir.Log(ex.Message);
-                    SEnvir.Log(ex.StackTrace);
+                    SEnvir.ServerLogger.Log(ex.Message);
+                    SEnvir.ServerLogger.Log(ex.StackTrace);
                 }
             });
         }
@@ -107,8 +107,8 @@ namespace Server.Infrastructure.Network.Smtp
                 }
                 catch (Exception ex)
                 {
-                    SEnvir.Log(ex.Message);
-                    SEnvir.Log(ex.StackTrace);
+                    SEnvir.ServerLogger.Log(ex.Message);
+                    SEnvir.ServerLogger.Log(ex.StackTrace);
                 }
             });
         }
@@ -151,8 +151,8 @@ namespace Server.Infrastructure.Network.Smtp
                 }
                 catch (Exception ex)
                 {
-                    SEnvir.Log(ex.Message);
-                    SEnvir.Log(ex.StackTrace);
+                    SEnvir.ServerLogger.Log(ex.Message);
+                    SEnvir.ServerLogger.Log(ex.StackTrace);
                 }
             });
         }
@@ -197,8 +197,8 @@ namespace Server.Infrastructure.Network.Smtp
                 }
                 catch (Exception ex)
                 {
-                    SEnvir.Log(ex.Message);
-                    SEnvir.Log(ex.StackTrace);
+                    SEnvir.ServerLogger.Log(ex.Message);
+                    SEnvir.ServerLogger.Log(ex.StackTrace);
                 }
             });
         }
@@ -239,8 +239,8 @@ namespace Server.Infrastructure.Network.Smtp
                 }
                 catch (Exception ex)
                 {
-                    SEnvir.Log(ex.Message);
-                    SEnvir.Log(ex.StackTrace);
+                    SEnvir.ServerLogger.Log(ex.Message);
+                    SEnvir.ServerLogger.Log(ex.StackTrace);
                 }
             });
         }

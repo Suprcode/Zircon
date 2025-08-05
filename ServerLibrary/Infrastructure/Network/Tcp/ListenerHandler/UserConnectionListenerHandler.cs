@@ -22,7 +22,7 @@ namespace Server.Infrastructure.Network.Tcp.ListenerHandler
 
         public void OnAcceptException(Exception ex)
         {
-            SEnvir.Log(ex.ToString());
+            SEnvir.ServerLogger.Log(ex.ToString());
         }
 
         public void OnTermination()

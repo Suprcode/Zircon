@@ -92,12 +92,12 @@ namespace Server.Infrastructure.Network.Http
 
                 WebServerStarted = true;
 
-                if (log) SEnvir.Log("Web Server Started.");
+                if (log) SEnvir.ServerLogger.Log("Web Server Started.");
             }
             catch (Exception ex)
             {
                 WebServerStarted = false;
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
 
                 if (WebListener != null && WebListener.IsListening)
                     WebListener?.Stop();
@@ -130,7 +130,7 @@ namespace Server.Infrastructure.Network.Http
             expiredBuyListener?.Stop();
             expiredIPNListener?.Stop();
 
-            if (log) SEnvir.Log("Web Server Stopped.");
+            if (log) SEnvir.ServerLogger.Log("Web Server Stopped.");
         }
 
         private static void WebConnection(IAsyncResult result)
@@ -171,21 +171,21 @@ namespace Server.Infrastructure.Network.Http
             {
                 if (!Config.AllowSystemDBSync)
                 {
-                    SEnvir.Log($"Trying sync but not enabled");
+                    SEnvir.ServerLogger.Log($"Trying sync but not enabled");
                     context.Response.StatusCode = 401;
                     return;
                 }
 
                 if (context.Request.HttpMethod != "POST" || !context.Request.HasEntityBody)
                 {
-                    SEnvir.Log($"Trying sync but method is not post or not have body");
+                    SEnvir.ServerLogger.Log($"Trying sync but method is not post or not have body");
                     context.Response.StatusCode = 401;
                     return;
                 }
 
                 if (context.Request.ContentLength64 > 1024 * 1024 * 10)
                 {
-                    SEnvir.Log($"Trying sync but exceeded SystemDB size");
+                    SEnvir.ServerLogger.Log($"Trying sync but exceeded SystemDB size");
                     context.Response.StatusCode = 400;
                     return;
                 }
@@ -193,12 +193,12 @@ namespace Server.Infrastructure.Network.Http
                 var masterPassword = context.Request.QueryString["Key"];
                 if (string.IsNullOrEmpty(masterPassword) || !masterPassword.Equals(Config.SyncKey))
                 {
-                    SEnvir.Log($"Trying sync but key received is not valid");
+                    SEnvir.ServerLogger.Log($"Trying sync but key received is not valid");
                     context.Response.StatusCode = 400;
                     return;
                 }
 
-                SEnvir.Log($"Starting remote syncronization...");
+                SEnvir.ServerLogger.Log($"Starting remote syncronization...");
 
                 var buffer = new byte[context.Request.ContentLength64];
                 var offset = 0;
@@ -228,7 +228,7 @@ namespace Server.Infrastructure.Network.Http
 
                 context.Response.StatusCode = 200;
 
-                SEnvir.Log($"Syncronization completed...");
+                SEnvir.ServerLogger.Log($"Syncronization completed...");
             }
             catch (Exception ex)
             {
@@ -236,7 +236,7 @@ namespace Server.Infrastructure.Network.Http
                 context.Response.ContentType = "text/plain";
                 var message = Encoding.UTF8.GetBytes(ex.ToString());
                 context.Response.OutputStream.Write(message, 0, message.Length);
-                SEnvir.Log("Syncronization exception: " + ex.ToString());
+                SEnvir.ServerLogger.Log("Syncronization exception: " + ex.ToString());
             }
             finally
             {
@@ -403,7 +403,7 @@ namespace Server.Infrastructure.Network.Http
             }
             catch (Exception ex)
             {
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
             }
             finally
             {

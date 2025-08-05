@@ -205,7 +205,7 @@ namespace Server.Views
             }
             catch (Exception ex)
             {
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
 
                 Manager.AttemptRecovery();
             }
@@ -2152,7 +2152,7 @@ namespace Server.Views.DirectX
             }
             catch (Exception ex)
             {
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
             }
             TextureValid = false;
         }

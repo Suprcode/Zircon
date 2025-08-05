@@ -160,7 +160,7 @@ namespace Server.Envir
             }
             catch (Exception ex)
             {
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
             }
         }
     }

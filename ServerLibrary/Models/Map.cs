@@ -61,7 +61,7 @@ namespace Server.Models
 
             if (!File.Exists(path))
             {
-                SEnvir.Log($"Map: {path} not found.");
+                SEnvir.ServerLogger.Log($"Map: {path} not found.");
                 return;
             }
 
@@ -107,7 +107,7 @@ namespace Server.Models
             {
                 if (info.Monster == null)
                 {
-                    SEnvir.Log($"Failed to spawn Unset Guard Map:{Info.Description}, Location: {info.X}, {info.Y}");
+                    SEnvir.ServerLogger.Log($"Failed to spawn Unset Guard Map:{Info.Description}, Location: {info.X}, {info.Y}");
                     continue;
                 }
 
@@ -116,7 +116,7 @@ namespace Server.Models
 
                 if (!mob.Spawn(this, new Point(info.X, info.Y)))
                 {
-                    SEnvir.Log($"Failed to spawn Guard Map:{Info.Description}, Location: {info.X}, {info.Y}");
+                    SEnvir.ServerLogger.Log($"Failed to spawn Guard Map:{Info.Description}, Location: {info.X}, {info.Y}");
                     continue;
                 }
             }
@@ -134,7 +134,7 @@ namespace Server.Models
 
                     if (!mob.Spawn(castle, info))
                     {
-                        SEnvir.Log($"Failed to spawn Flag Map:{Info.Description}, Location: {info.X}, {info.Y}");
+                        SEnvir.ServerLogger.Log($"Failed to spawn Flag Map:{Info.Description}, Location: {info.X}, {info.Y}");
                         continue;
                     }
                 }
@@ -197,7 +197,7 @@ namespace Server.Models
 
                     if (source == null)
                     {
-                        SEnvir.Log($"[Cell] Bad Point, Source: {Info.FileName} {region.Description}, X:{sPoint.X}, Y:{sPoint.Y}");
+                        SEnvir.ServerLogger.Log($"[Cell] Bad Point, Source: {Info.FileName} {region.Description}, X:{sPoint.X}, Y:{sPoint.Y}");
                         continue;
                     }
 

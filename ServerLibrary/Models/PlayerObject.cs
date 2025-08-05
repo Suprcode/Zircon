@@ -875,7 +875,7 @@ namespace Server.Models
         {
             if (!SetBindPoint())
             {
-                SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}, Failed to reset bind point.");
+                SEnvir.ServerLogger.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}, Failed to reset bind point.");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                 Connection = null;
                 Character = null;
@@ -904,7 +904,7 @@ namespace Server.Models
                 }
                 else
                 {
-                    SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
+                    SEnvir.ServerLogger.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
                     Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                     Connection = null;
                     Character = null;
@@ -913,7 +913,7 @@ namespace Server.Models
             }
             else if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
             {
-                SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
+                SEnvir.ServerLogger.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                 Connection = null;
                 Character = null;
@@ -1456,7 +1456,7 @@ namespace Server.Models
         public void Chat(string text)
         {
             if (string.IsNullOrEmpty(text)) return;
-            SEnvir.LogChat($"{Name}: {text}");
+            SEnvir.UserChatLogger.Log($"{Name}: {text}");
 
             //Item Links
 
@@ -1667,7 +1667,7 @@ namespace Server.Models
                 con.ReceiveChat(con.Language.ObserverNotLoggedIn, MessageType.System);
                 return;
             }
-            SEnvir.LogChat($"{con.Account.LastCharacter.CharacterName}: {text}");
+            SEnvir.UserChatLogger.Log($"{con.Account.LastCharacter.CharacterName}: {text}");
 
             string[] parts;
 
@@ -8265,7 +8265,7 @@ namespace Server.Models
                 result.Link.Count = 0;
             }
 
-            SEnvir.Log($"[NAME CHANGED] Old: {Name}, New: {newName}.", true);
+            SEnvir.ServerLogger.Log($"[NAME CHANGED] Old: {Name}, New: {newName}.");
             Name = newName;
 
             SendChangeUpdate();
@@ -8311,7 +8311,7 @@ namespace Server.Models
             }
             Character.Caption = newCaption;
             Caption = newCaption;
-            SEnvir.Log($"[CAPTION CHANGED] {Character.CharacterName} caption changed to: {Caption}", true);
+            SEnvir.ServerLogger.Log($"[CAPTION CHANGED] {Character.CharacterName} caption changed to: {Caption}");
             Connection.ReceiveChat($"Your caption changed to: {Caption}.", MessageType.System);
 
 
@@ -13286,7 +13286,7 @@ namespace Server.Models
 
             if (attackMagic != validMagic)
             {
-                SEnvir.Log($"[ERROR] {Name} requested Attack Skill '{attackMagic}' but valid magic was '{validMagic}'.");
+                SEnvir.ServerLogger.Log($"[ERROR] {Name} requested Attack Skill '{attackMagic}' but valid magic was '{validMagic}'.");
                 Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
                 return;
             }
