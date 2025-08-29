@@ -564,7 +564,7 @@ namespace Client.Envir
 
                     p.Characters.Sort((x1, x2) => x2.LastLogin.CompareTo(x1.LastLogin));
 
-                    DXControl.ActiveScene = scene = new SelectScene(Config.IntroSceneSize)
+                    DXControl.ActiveScene = scene = new SelectScene(Config.ExtendedLogin ? Config.GameSize : Config.IntroSceneSize)
                     {
                         SelectBox = { CharacterList = p.Characters },
                     };
@@ -600,7 +600,7 @@ namespace Client.Envir
 
             p.Characters.Sort((x1, x2) => x2.LastLogin.CompareTo(x1.LastLogin));
 
-            DXControl.ActiveScene = scene = new SelectScene(Config.IntroSceneSize)
+            DXControl.ActiveScene = scene = new SelectScene(Config.ExtendedLogin ? Config.GameSize : Config.IntroSceneSize)
             {
                 SelectBox = { CharacterList = p.Characters },
             };

@@ -106,14 +106,17 @@ namespace Client.Scenes
 
         public LoginScene(Size size) : base(size)
         {
-            //DXImageControl extendedBackground = new DXImageControl
-            //{
-            //    Index = 20,
-            //    LibraryFile = LibraryFile.Interface1c,
-            //    Parent = this
-            //};
+            if (Config.ExtendedLogin)
+            {
+                DXImageControl extendedBackground = new DXImageControl
+                {
+                    Index = 0,
+                    LibraryFile = LibraryFile.Interface1cExtended,
+                    Parent = this
+                };
 
-            //extendedBackground.Location = new Point((size.Width - extendedBackground.Size.Width) / 2, (size.Height - extendedBackground.Size.Height) / 2);
+                extendedBackground.Location = new Point((size.Width - extendedBackground.Size.Width) / 2, (size.Height - extendedBackground.Size.Height) / 2);
+            }
 
             DXImageControl background = new DXImageControl
             {
@@ -122,6 +125,12 @@ namespace Client.Scenes
                 Parent = this,
                 Size = new Size(1024, 768)
             };
+
+            if (Config.ExtendedLogin)
+            {
+                background.Index = 0;
+                background.FixedSize = true;
+            }
 
             background.Location = new Point((size.Width - background.Size.Width) / 2, (size.Height - background.Size.Height) / 2);
 

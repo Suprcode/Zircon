@@ -11,6 +11,7 @@ namespace Library
         public static Dictionary<LibraryFile, string> LibraryList = new Dictionary<LibraryFile, string>
         {
             [LibraryFile.Interface1c] = @"Data\Interface1c.Zl",
+            [LibraryFile.Interface1cExtended] = @"Data\Interface1c-Extended.Zl",
             [LibraryFile.Interface] = @"Data\Interface.Zl",
             [LibraryFile.GameInter] = @"Data\GameInter.Zl",
             [LibraryFile.Equip] = @"Data\Equip.Zl",
@@ -449,6 +450,7 @@ namespace Library
         None,
 
         Interface1c,
+        Interface1cExtended,
         Interface,
         GameInter,
         GameInter2,

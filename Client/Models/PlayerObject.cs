@@ -215,7 +215,7 @@ namespace Client.Models
         public int HelmetShape;
 
         public int HairFrame => DrawFrame + (HairType - 1) * HairTypeOffSet;
-        public int HelmetFrame => DrawFrame + ((HelmetShape % 10) - 1) * ArmourShapeOffSet + ArmourShift;
+        public int HelmetFrame => DrawFrame + ((HelmetShape - 1) % 10) * ArmourShapeOffSet + ArmourShift;
 
         public MirLibrary WeaponLibrary1, WeaponLibrary2;
         public int WeaponShapeOffSet;
@@ -396,7 +396,8 @@ namespace Client.Models
 
                             CEnvir.LibraryList.TryGetValue(LibraryFile.M_Hair, out HairLibrary);
 
-                            if (!HelmetList.TryGetValue(HelmetShape / 10, out file)) file = LibraryFile.None;
+                            if (!HelmetList.TryGetValue((HelmetShape - 1) / 10, out file)) file = LibraryFile.None;
+
                             CEnvir.LibraryList.TryGetValue(file, out HelmetLibrary);
 
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10, out file)) file = LibraryFile.None;
@@ -428,7 +429,7 @@ namespace Client.Models
 
                             CEnvir.LibraryList.TryGetValue(LibraryFile.WM_Hair, out HairLibrary);
 
-                            if (!HelmetList.TryGetValue(HelmetShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
+                            if (!HelmetList.TryGetValue(((HelmetShape - 1) / 10) + FemaleOffSet, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out HelmetLibrary);
 
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;
@@ -468,7 +469,7 @@ namespace Client.Models
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);
                             CEnvir.LibraryList.TryGetValue(LibraryFile.M_HairA, out HairLibrary);
 
-                            if (!HelmetList.TryGetValue(HelmetShape / 10 + AssassinOffSet, out file)) file = LibraryFile.None;
+                            if (!HelmetList.TryGetValue(((HelmetShape - 1) / 10) + AssassinOffSet, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out HelmetLibrary);
 
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10, out file)) file = LibraryFile.None;
@@ -513,7 +514,7 @@ namespace Client.Models
                             CEnvir.LibraryList.TryGetValue(file, out BodyLibrary);
                             CEnvir.LibraryList.TryGetValue(LibraryFile.WM_HairA, out HairLibrary);
 
-                            if (!HelmetList.TryGetValue(HelmetShape / 10 + AssassinOffSet + FemaleOffSet, out file)) file = LibraryFile.None;
+                            if (!HelmetList.TryGetValue(((HelmetShape - 1) / 10) + AssassinOffSet + FemaleOffSet, out file)) file = LibraryFile.None;
                             CEnvir.LibraryList.TryGetValue(file, out HelmetLibrary);
 
                             if (!WeaponList.TryGetValue(LibraryWeaponShape / 10 + FemaleOffSet, out file)) file = LibraryFile.None;

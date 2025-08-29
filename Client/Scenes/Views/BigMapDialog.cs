@@ -328,7 +328,7 @@ namespace Client.Scenes.Views
                 Parent = Image,
                 Opacity =  Opacity,
                 ImageOpacity =  Opacity,
-                Hint = ob.DestinationRegion.Map.PlayerDescription,
+                Hint = ob.DestinationRegion.Map.PlayerDescription
             };
             control.OpacityChanged += (o, e) => control.ImageOpacity = control.Opacity;
 

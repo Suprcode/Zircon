@@ -16195,15 +16195,10 @@ namespace Server.Models
                 return;
             }
 
-            for (int i = 0; i < itemChecks.Count; i++)
+            foreach (ItemCheck check in itemChecks)
             {
-                var selection = itemChecks[i];
-
-                var gainItem = SEnvir.CreateFreshItem(selection.Info);
-                gainItem.Count = selection.Count;
-
-                if (gainItem != null)
-                    GainItem(gainItem);
+                while (check.Count > 0)
+                    GainItem(SEnvir.CreateFreshItem(check));
             }
 
             S.ItemChanged result = new S.ItemChanged

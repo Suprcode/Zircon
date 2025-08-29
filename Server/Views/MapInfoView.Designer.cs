@@ -178,7 +178,7 @@ namespace Server.Views
             MapInfoGridControl.Name = "MapInfoGridControl";
             MapInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { LightComboBox, MonsterLookUpEdit, DirectionImageComboBox, MapInfoLookUpEdit, MapIconImageComboBox, StartClassImageComboBox, RequiredClassImageComboBox, EditButtonEdit, ItemLookUpEdit, WeatherComboBox, StatImageComboBox, RegionLookUpEdit });
             MapInfoGridControl.ShowOnlyPredefinedDetails = true;
-            MapInfoGridControl.Size = new System.Drawing.Size(830, 395);
+            MapInfoGridControl.Size = new System.Drawing.Size(774, 367);
             MapInfoGridControl.TabIndex = 2;
             MapInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { GuardsGridView, MiningGridView, MapInfoStatsGridView, MapInfoGridView, RegionGridView });
             // 
@@ -531,7 +531,7 @@ namespace Server.Views
             ribbon.MaxItemId = 6;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(830, 144);
+            ribbon.Size = new System.Drawing.Size(774, 144);
             // 
             // SaveButton
             // 
@@ -608,7 +608,7 @@ namespace Server.Views
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(830, 539);
+            ClientSize = new System.Drawing.Size(774, 511);
             Controls.Add(MapInfoGridControl);
             Controls.Add(ribbon);
             Name = "MapInfoView";

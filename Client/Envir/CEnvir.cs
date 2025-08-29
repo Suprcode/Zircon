@@ -337,7 +337,7 @@ namespace Client.Envir
 
             DXControl.ActiveScene.Dispose();
             DXSoundManager.StopAllSounds();
-            DXControl.ActiveScene = new LoginScene(Config.IntroSceneSize);
+            DXControl.ActiveScene = new LoginScene(Config.ExtendedLogin ? Config.GameSize : Config.IntroSceneSize);
 
             BlockList = new List<ClientBlockInfo>();
         }

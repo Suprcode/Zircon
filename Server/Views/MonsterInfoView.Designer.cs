@@ -42,7 +42,6 @@
             RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             colDelay = new DevExpress.XtraGrid.Columns.GridColumn();
             colCount = new DevExpress.XtraGrid.Columns.GridColumn();
-            colSpread = new DevExpress.XtraGrid.Columns.GridColumn();
             DropsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             ColItem = new DevExpress.XtraGrid.Columns.GridColumn();
             ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
@@ -137,13 +136,13 @@
             MonsterInfoGridControl.Name = "MonsterInfoGridControl";
             MonsterInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MonsterImageComboBox, StatComboBox, ItemLookUpEdit, RegionLookUpEdit });
             MonsterInfoGridControl.ShowOnlyPredefinedDetails = true;
-            MonsterInfoGridControl.Size = new System.Drawing.Size(775, 373);
+            MonsterInfoGridControl.Size = new System.Drawing.Size(761, 366);
             MonsterInfoGridControl.TabIndex = 2;
             MonsterInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { RespawnsGridView, DropsGridView, MonsterInfoGridView, MonsterInfoStatsGridView });
             // 
             // RespawnsGridView
             // 
-            RespawnsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colRegion, colDelay, colCount, colSpread });
+            RespawnsGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colRegion, colDelay, colCount });
             RespawnsGridView.GridControl = MonsterInfoGridControl;
             RespawnsGridView.Name = "RespawnsGridView";
             RespawnsGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -183,14 +182,7 @@
             colCount.FieldName = "Count";
             colCount.Name = "colCount";
             colCount.Visible = true;
-            colCount.VisibleIndex = 3;
-            // 
-            // colSpread
-            // 
-            colSpread.FieldName = "Spread";
-            colSpread.Name = "colSpread";
-            colSpread.Visible = true;
-            colSpread.VisibleIndex = 2;
+            colCount.VisibleIndex = 2;
             // 
             // DropsGridView
             // 
@@ -391,7 +383,7 @@
             ribbon.MaxItemId = 5;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(775, 144);
+            ribbon.Size = new System.Drawing.Size(761, 144);
             // 
             // SaveButton
             // 
@@ -461,7 +453,7 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(775, 517);
+            ClientSize = new System.Drawing.Size(761, 510);
             Controls.Add(MonsterInfoGridControl);
             Controls.Add(ribbon);
             Name = "MonsterInfoView";
@@ -506,7 +498,6 @@
         private DevExpress.XtraGrid.Views.Grid.GridView RespawnsGridView;
         private DevExpress.XtraGrid.Columns.GridColumn colRegion;
         private DevExpress.XtraGrid.Columns.GridColumn colDelay;
-        private DevExpress.XtraGrid.Columns.GridColumn colSpread;
         private DevExpress.XtraGrid.Columns.GridColumn colCount;
         private DevExpress.XtraGrid.Views.Grid.GridView DropsGridView;
         private DevExpress.XtraGrid.Columns.GridColumn ColItem;
