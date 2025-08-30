@@ -3,9 +3,11 @@ using Server.DBModels;
 using Server.Envir.Commands.Command;
 using Server.Envir.Commands.Command.Admin;
 using Server.Envir.Commands.Exceptions;
+using Server.Infrastructure.Service.Connection;
 using Server.Models;
 
-namespace Server.Envir.Commands.Admin {
+namespace Server.Envir.Commands.Admin
+{
     class GiveGameGold : AbstractParameterizedCommand<IAdminCommand> {
         public override string VALUE => "GIVEGAMEGOLD";
         public override int PARAMS_LENGTH => 3;

@@ -97,13 +97,13 @@ namespace Server.Models
 
                     if (CurrentCell == null)
                     {
-                        SEnvir.Log($"[ERROR] {Effect} CurrentCell Null.");
+                        SEnvir.ServerLogger.Log($"[ERROR] {Effect} CurrentCell Null.");
                         return;
                     }
 
                     if (CurrentCell.Objects == null)
                     {
-                        SEnvir.Log($"[ERROR] {Effect} CurrentCell.Objects Null.");
+                        SEnvir.ServerLogger.Log($"[ERROR] {Effect} CurrentCell.Objects Null.");
                         return;
                     }
 
@@ -116,13 +116,13 @@ namespace Server.Models
 
                         if (CurrentCell == null)
                         {
-                            SEnvir.Log($"[ERROR] {Effect} CurrentCell Null Loop.");
+                            SEnvir.ServerLogger.Log($"[ERROR] {Effect} CurrentCell Null Loop.");
                             return;
                         }
 
                         if (CurrentCell.Objects == null)
                         {
-                            SEnvir.Log($"[ERROR] {Effect} CurrentCell.Objects Null Loop.");
+                            SEnvir.ServerLogger.Log($"[ERROR] {Effect} CurrentCell.Objects Null Loop.");
                             return;
                         }
 

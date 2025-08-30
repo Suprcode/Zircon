@@ -5,6 +5,7 @@ using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
 using Server.Envir.Events.Triggers;
+using Server.Infrastructure.Service.Connection;
 using Server.Models.Magics;
 using Server.Models.Monsters;
 using System;
@@ -24,7 +25,7 @@ namespace Server.Models
         public override ObjectType Race => ObjectType.Player;
 
         public CharacterInfo Character;
-        public SConnection Connection;
+        public UserConnection Connection;
 
         public override string Name
         {
@@ -179,7 +180,7 @@ namespace Server.Models
         public Point FishingLocation;
         public MirDirection FishingDirection;
 
-        public PlayerObject(CharacterInfo info, SConnection con)
+        public PlayerObject(CharacterInfo info, UserConnection con)
         {
             Character = info;
             Connection = con;
@@ -874,7 +875,7 @@ namespace Server.Models
         {
             if (!SetBindPoint())
             {
-                SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}, Failed to reset bind point.");
+                SEnvir.ServerLogger.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}, Failed to reset bind point.");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                 Connection = null;
                 Character = null;
@@ -903,7 +904,7 @@ namespace Server.Models
                 }
                 else
                 {
-                    SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
+                    SEnvir.ServerLogger.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
                     Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                     Connection = null;
                     Character = null;
@@ -912,7 +913,7 @@ namespace Server.Models
             }
             else if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
             {
-                SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
+                SEnvir.ServerLogger.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                 Connection = null;
                 Character = null;
@@ -1110,7 +1111,7 @@ namespace Server.Models
 
             Enqueue(new S.FortuneUpdate { Fortunes = Character.Account.Fortunes.Select(x => x.ToClientInfo()).ToList() });
         }
-        public void SetUpObserver(SConnection con)
+        public void SetUpObserver(UserConnection con)
         {
             con.Stage = GameStage.Observer;
             con.Observed = Connection;
@@ -1455,7 +1456,7 @@ namespace Server.Models
         public void Chat(string text)
         {
             if (string.IsNullOrEmpty(text)) return;
-            SEnvir.LogChat($"{Name}: {text}");
+            SEnvir.UserChatLogger.Log($"{Name}: {text}");
 
             //Item Links
 
@@ -1493,7 +1494,7 @@ namespace Server.Models
 
                 if (parts.Length == 0) return;
 
-                SConnection con = SEnvir.GetConnectionByCharacter(parts[0]);
+                UserConnection con = SEnvir.GetConnectionByCharacter(parts[0]);
 
                 if (con == null || (con.Stage != GameStage.Observer && con.Stage != GameStage.Game) || SEnvir.IsBlocking(Character.Account, con.Account))
                 {
@@ -1569,20 +1570,8 @@ namespace Server.Models
                 }
 
                 text = string.Format("(!@){0}: {1}", Name, text.Remove(0, 2));
+                SEnvir.BroadcastService.BroadcastMessage(text, linkedItems, MessageType.Global, c => !SEnvir.IsBlocking(Character.Account, c.Account));
 
-                foreach (SConnection con in SEnvir.Connections)
-                {
-                    switch (con.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            if (SEnvir.IsBlocking(Character.Account, con.Account)) continue;
-
-                            con.ReceiveChat(text, MessageType.Global, linkedItems);
-                            break;
-                        default: continue;
-                    }
-                }
             }
             else if (text.StartsWith("!"))
             {
@@ -1611,7 +1600,7 @@ namespace Server.Models
                     if (!SEnvir.IsBlocking(Character.Account, player.Character.Account))
                         player.Connection.ReceiveChat(text, MessageType.Shout, linkedItems);
 
-                    foreach (SConnection observer in player.Connection.Observers)
+                    foreach (UserConnection observer in player.Connection.Observers)
                     {
                         if (SEnvir.IsBlocking(Character.Account, observer.Account)) continue;
 
@@ -1624,18 +1613,7 @@ namespace Server.Models
                 if (!Character.Account.TempAdmin) return;
 
                 text = string.Format("{0}: {1}", Name, text.Remove(0, 2));
-
-                foreach (SConnection con in SEnvir.Connections)
-                {
-                    switch (con.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            con.ReceiveChat(text, MessageType.Announcement, linkedItems);
-                            break;
-                        default: continue;
-                    }
-                }
+                SEnvir.BroadcastService.BroadcastMessage(text, linkedItems, MessageType.Announcement, c => true);
             }
             else if (text.StartsWith("@"))
             {
@@ -1652,7 +1630,7 @@ namespace Server.Models
 
                 Connection.ReceiveChat(text, MessageType.ObserverChat, linkedItems);
 
-                foreach (SConnection target in Connection.Observers)
+                foreach (UserConnection target in Connection.Observers)
                 {
                     if (SEnvir.IsBlocking(Character.Account, target.Account)) continue;
 
@@ -1671,7 +1649,7 @@ namespace Server.Models
                     if (!SEnvir.IsBlocking(Character.Account, player.Character.Account))
                         player.Connection.ReceiveChat(text, MessageType.Normal, linkedItems, ObjectID);
 
-                    foreach (SConnection observer in player.Connection.Observers)
+                    foreach (UserConnection observer in player.Connection.Observers)
                     {
                         if (SEnvir.IsBlocking(Character.Account, observer.Account)) continue;
 
@@ -1680,7 +1658,7 @@ namespace Server.Models
                 }
             }
         }
-        public void ObserverChat(SConnection con, string text)
+        public void ObserverChat(UserConnection con, string text)
         {
             if (string.IsNullOrEmpty(text)) return;
 
@@ -1689,7 +1667,7 @@ namespace Server.Models
                 con.ReceiveChat(con.Language.ObserverNotLoggedIn, MessageType.System);
                 return;
             }
-            SEnvir.LogChat($"{con.Account.LastCharacter.CharacterName}: {text}");
+            SEnvir.UserChatLogger.Log($"{con.Account.LastCharacter.CharacterName}: {text}");
 
             string[] parts;
 
@@ -1701,7 +1679,7 @@ namespace Server.Models
 
                 if (parts.Length == 0) return;
 
-                SConnection target = SEnvir.GetConnectionByCharacter(parts[0]);
+                UserConnection target = SEnvir.GetConnectionByCharacter(parts[0]);
 
                 if (target == null || (target.Stage != GameStage.Observer && target.Stage != GameStage.Game) || SEnvir.IsBlocking(con.Account, target.Account))
                 {
@@ -1760,38 +1738,14 @@ namespace Server.Models
                 }
 
                 text = string.Format("(!@){0}: {1}", con.Account.LastCharacter.CharacterName, text.Remove(0, 2));
-
-                foreach (SConnection target in SEnvir.Connections)
-                {
-                    switch (target.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            if (SEnvir.IsBlocking(con.Account, target.Account)) continue;
-
-                            target.ReceiveChat(text, MessageType.Global);
-                            break;
-                        default: continue;
-                    }
-                }
+                SEnvir.BroadcastService.BroadcastMessage(text, null, MessageType.Global, c => SEnvir.IsBlocking(con.Account, c.Account));
             }
             else if (text.StartsWith("@!"))
             {
                 if (!con.Account.LastCharacter.Account.TempAdmin) return;
 
                 text = string.Format("{0}: {1}", con.Account.LastCharacter.CharacterName, text.Remove(0, 2));
-
-                foreach (SConnection target in SEnvir.Connections)
-                {
-                    switch (target.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            target.ReceiveChat(text, MessageType.Announcement);
-                            break;
-                        default: continue;
-                    }
-                }
+                SEnvir.BroadcastService.BroadcastMessage(text, null, MessageType.Announcement, c => true);
             }
             else
             {
@@ -1801,7 +1755,7 @@ namespace Server.Models
 
                 Connection.ReceiveChat(text, MessageType.ObserverChat);
 
-                foreach (SConnection target in Connection.Observers)
+                foreach (UserConnection target in Connection.Observers)
                 {
                     if (SEnvir.IsBlocking(con.Account, target.Account)) continue;
 
@@ -1810,7 +1764,7 @@ namespace Server.Models
             }
         }
 
-        public void Inspect(int index, bool ranking, SConnection con)
+        public void Inspect(int index, bool ranking, UserConnection con)
         {
             //if (index == Character.Index) return;
 
@@ -1885,7 +1839,7 @@ namespace Server.Models
             UpdateReviveTimers(Connection);
         }
 
-        public void UpdateReviveTimers(SConnection con)
+        public void UpdateReviveTimers(UserConnection con)
         {
             con.Enqueue(new S.ReviveTimers
             {
@@ -6034,18 +5988,7 @@ namespace Server.Models
 
 
                                         string text = $"A [{item.Info.ItemName}] has been used in {CurrentMap.Info.Description}";
-
-                                        foreach (SConnection con in SEnvir.Connections)
-                                        {
-                                            switch (con.Stage)
-                                            {
-                                                case GameStage.Game:
-                                                case GameStage.Observer:
-                                                    con.ReceiveChat(text, MessageType.System);
-                                                    break;
-                                                default: continue;
-                                            }
-                                        }
+                                        SEnvir.BroadcastService.BroadcastMessage(text, null, MessageType.System, c => true);
                                     }
                                 }
                             }
@@ -6898,7 +6841,7 @@ namespace Server.Models
                     }
                     else
                     {
-                        foreach (SConnection con in Connection.Observers)
+                        foreach (UserConnection con in Connection.Observers)
                         {
                             con.Enqueue(new S.ItemChanged
                             {
@@ -6930,7 +6873,7 @@ namespace Server.Models
                     }
                     else
                     {
-                        foreach (SConnection con in Connection.Observers)
+                        foreach (UserConnection con in Connection.Observers)
                         {
                             con.Enqueue(new S.ItemChanged
                             {
@@ -7014,7 +6957,7 @@ namespace Server.Models
                     {
                         //Sendto MY observers I got item from guild store and what slot?
 
-                        foreach (SConnection con in Connection.Observers)
+                        foreach (UserConnection con in Connection.Observers)
                         {
                             con.Enqueue(new S.GuildGetItem
                             {
@@ -7084,7 +7027,7 @@ namespace Server.Models
                     if (p.FromGrid == GridType.GuildStorage) break; //Already Handled
 
                     //Must be removing from player to GuildStorage, Update Observer's bag
-                    foreach (SConnection con in Connection.Observers)
+                    foreach (UserConnection con in Connection.Observers)
                     {
                         con.Enqueue(new S.ItemChanged
                         {
@@ -8322,7 +8265,7 @@ namespace Server.Models
                 result.Link.Count = 0;
             }
 
-            SEnvir.Log($"[NAME CHANGED] Old: {Name}, New: {newName}.", true);
+            SEnvir.ServerLogger.Log($"[NAME CHANGED] Old: {Name}, New: {newName}.");
             Name = newName;
 
             SendChangeUpdate();
@@ -8368,7 +8311,7 @@ namespace Server.Models
             }
             Character.Caption = newCaption;
             Caption = newCaption;
-            SEnvir.Log($"[CAPTION CHANGED] {Character.CharacterName} caption changed to: {Caption}", true);
+            SEnvir.ServerLogger.Log($"[CAPTION CHANGED] {Character.CharacterName} caption changed to: {Caption}");
             Connection.ReceiveChat($"Your caption changed to: {Caption}.", MessageType.System);
 
 
@@ -13343,7 +13286,7 @@ namespace Server.Models
 
             if (attackMagic != validMagic)
             {
-                SEnvir.Log($"[ERROR] {Name} requested Attack Skill '{attackMagic}' but valid magic was '{validMagic}'.");
+                SEnvir.ServerLogger.Log($"[ERROR] {Name} requested Attack Skill '{attackMagic}' but valid magic was '{validMagic}'.");
                 Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
                 return;
             }

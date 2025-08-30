@@ -7,18 +7,18 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using G = Library.Network.GeneralPackets;
-using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
 using System.Net.Http;
 using MirDB;
 using System.IO.Compression;
+using Server.Infrastructure.Network.Smtp;
+using Server.Envir;
 
-namespace Server.Envir
+namespace Server.Infrastructure.Network.Http
 {
-    public static class WebServer
+    public static class HttpWebServer
     {
+        //TODO: separate the HttpWeb components from all the other stuff like GG processing
+
         public static ConcurrentQueue<WebCommand> WebCommandQueue;
         public static bool WebServerStarted { get; set; }
 
@@ -49,7 +49,7 @@ namespace Server.Envir
         public static ConcurrentQueue<IPNMessage> Messages = new ConcurrentQueue<IPNMessage>();
         public static List<IPNMessage> PaymentList = new List<IPNMessage>(), HandledPayments = new List<IPNMessage>();
 
-        static WebServer()
+        static HttpWebServer()
         {
             Messages = new ConcurrentQueue<IPNMessage>();
 
@@ -90,16 +90,14 @@ namespace Server.Envir
                 IPNListener.Start();
                 IPNListener.BeginGetContext(IPNConnection, null);
 
-
-
                 WebServerStarted = true;
 
-                if (log) SEnvir.Log("Web Server Started.");
+                if (log) SEnvir.ServerLogger.Log("Web Server Started.");
             }
             catch (Exception ex)
             {
                 WebServerStarted = false;
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
 
                 if (WebListener != null && WebListener.IsListening)
                     WebListener?.Stop();
@@ -132,7 +130,7 @@ namespace Server.Envir
             expiredBuyListener?.Stop();
             expiredIPNListener?.Stop();
 
-            if (log) SEnvir.Log("Web Server Stopped.");
+            if (log) SEnvir.ServerLogger.Log("Web Server Stopped.");
         }
 
         private static void WebConnection(IAsyncResult result)
@@ -173,21 +171,21 @@ namespace Server.Envir
             {
                 if (!Config.AllowSystemDBSync)
                 {
-                    SEnvir.Log($"Trying sync but not enabled");
+                    SEnvir.ServerLogger.Log($"Trying sync but not enabled");
                     context.Response.StatusCode = 401;
                     return;
                 }
 
                 if (context.Request.HttpMethod != "POST" || !context.Request.HasEntityBody)
                 {
-                    SEnvir.Log($"Trying sync but method is not post or not have body");
+                    SEnvir.ServerLogger.Log($"Trying sync but method is not post or not have body");
                     context.Response.StatusCode = 401;
                     return;
                 }
 
                 if (context.Request.ContentLength64 > 1024 * 1024 * 10)
                 {
-                    SEnvir.Log($"Trying sync but exceeded SystemDB size");
+                    SEnvir.ServerLogger.Log($"Trying sync but exceeded SystemDB size");
                     context.Response.StatusCode = 400;
                     return;
                 }
@@ -195,12 +193,12 @@ namespace Server.Envir
                 var masterPassword = context.Request.QueryString["Key"];
                 if (string.IsNullOrEmpty(masterPassword) || !masterPassword.Equals(Config.SyncKey))
                 {
-                    SEnvir.Log($"Trying sync but key received is not valid");
+                    SEnvir.ServerLogger.Log($"Trying sync but key received is not valid");
                     context.Response.StatusCode = 400;
                     return;
                 }
 
-                SEnvir.Log($"Starting remote syncronization...");
+                SEnvir.ServerLogger.Log($"Starting remote syncronization...");
 
                 var buffer = new byte[context.Request.ContentLength64];
                 var offset = 0;
@@ -230,7 +228,7 @@ namespace Server.Envir
 
                 context.Response.StatusCode = 200;
 
-                SEnvir.Log($"Syncronization completed...");
+                SEnvir.ServerLogger.Log($"Syncronization completed...");
             }
             catch (Exception ex)
             {
@@ -238,7 +236,7 @@ namespace Server.Envir
                 context.Response.ContentType = "text/plain";
                 var message = Encoding.UTF8.GetBytes(ex.ToString());
                 context.Response.OutputStream.Write(message, 0, message.Length);
-                SEnvir.Log("Syncronization exception: " + ex.ToString());
+                SEnvir.ServerLogger.Log("Syncronization exception: " + ex.ToString());
             }
             finally
             {
@@ -405,7 +403,7 @@ namespace Server.Envir
             }
             catch (Exception ex)
             {
-                SEnvir.Log(ex.ToString());
+                SEnvir.ServerLogger.Log(ex.ToString());
             }
             finally
             {

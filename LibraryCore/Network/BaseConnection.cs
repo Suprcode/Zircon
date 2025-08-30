@@ -22,6 +22,8 @@ namespace Library.Network
 
         public bool AdditionalLogging;
 
+        public string IPAddress => Client?.Client?.RemoteEndPoint?.ToString()?.Split(':')[0];
+
         protected TcpClient Client;
 
         public DateTime TimeConnected { get; set; }

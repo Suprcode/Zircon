@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Library;
 using Server.Envir;
+using Server.Infrastructure.Network;
 
 namespace Server.Models.Monsters
 {
@@ -15,7 +16,6 @@ namespace Server.Models.Monsters
         public override bool CanAttack => false;
 
         public DateTime DespawnTime;
-
 
         public JinamStoneGate()
         {
@@ -31,13 +31,9 @@ namespace Server.Models.Monsters
         {
             base.OnSpawned();
 
-
             DespawnTime = SEnvir.Now.AddMinutes(20);
-
-            foreach (SConnection con in SEnvir.Connections)
-                con.ReceiveChat(string.Format(con.Language.LairGateOpen, CurrentMap.Info.Description, CurrentLocation), MessageType.System);
-
-           }
+            SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.LairGateOpen, CurrentMap.Info.Description, CurrentLocation));
+        }
 
         public override void Process()
         {
@@ -48,8 +44,7 @@ namespace Server.Models.Monsters
                 if (SpawnInfo != null)
                     SpawnInfo.AliveCount--;
 
-                foreach (SConnection con in SEnvir.Connections)
-                    con.ReceiveChat(con.Language.LairGateClosed, MessageType.System);
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => c.Language.LairGateClosed);
 
                 SpawnInfo = null;
                 Despawn();

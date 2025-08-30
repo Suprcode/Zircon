@@ -18,11 +18,11 @@ namespace Server.Views
 
         private void InterfaceTimer_Tick(object sender, EventArgs e)
         {
-            while (!SEnvir.DisplayLogs.IsEmpty)
+            while (!SEnvir.ServerAppLogs.IsEmpty)
             {
                 string log;
 
-                if (!SEnvir.DisplayLogs.TryDequeue(out log)) continue;
+                if (!SEnvir.ServerAppLogs.TryDequeue(out log)) continue;
 
                 Logs.Add(log);
             }

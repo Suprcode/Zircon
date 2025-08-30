@@ -2,6 +2,7 @@
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir.Commands.Exceptions;
+using Server.Infrastructure.Network;
 using Server.Models;
 using System;
 using System.Linq;
@@ -30,19 +31,7 @@ namespace Server.Envir.Commands.Command.Admin
                     throw new UserCommandException(string.Format("No guild currently owns {0} castle.", castle.Name));
                 ownerGuild.Castle = null;
 
-                foreach (SConnection con in SEnvir.Connections)
-                {
-                    switch (con.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            con.ReceiveChat(string.Format(con.Language.ConquestLost, ownerGuild.GuildName, castle.Name), MessageType.System);
-                            break;
-                        default:
-                            continue;
-                    }
-                }
-
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestLost, ownerGuild.GuildName, castle.Name));
                 SEnvir.Broadcast(new S.GuildCastleInfo { Index = castle.Index, Owner = string.Empty });
 
                 foreach (PlayerObject user in SEnvir.Players)
@@ -53,19 +42,7 @@ namespace Server.Envir.Commands.Command.Admin
             else
             {
                 player.Character.Account.GuildMember.Guild.Castle = castle;
-                foreach (SConnection con in SEnvir.Connections)
-                {
-                    switch (con.Stage)
-                    {
-                        case GameStage.Game:
-                        case GameStage.Observer:
-                            con.ReceiveChat(string.Format(con.Language.ConquestCapture, player.Character.Account.GuildMember.Guild.GuildName, castle.Name), MessageType.System);
-                            break;
-                        default:
-                            continue;
-                    }
-                }
-
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestCapture, player.Character.Account.GuildMember.Guild.GuildName, castle.Name));
                 SEnvir.Broadcast(new S.GuildCastleInfo { Index = castle.Index, Owner = player.Character.Account.GuildMember.Guild.GuildName });
                 foreach (PlayerObject user in SEnvir.Players)
                     user.ApplyCastleBuff();

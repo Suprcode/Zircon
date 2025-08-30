@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using Server.Infrastructure.Network;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -280,9 +281,8 @@ namespace Server.Models.Monsters
 
                 EXPOwner.Character.Account.GuildMember.Guild.Castle = War.Castle;
 
-                foreach (SConnection con in SEnvir.Connections)
-                    con.ReceiveChat(string.Format(con.Language.ConquestCapture, EXPOwner.Character.Account.GuildMember.Guild.GuildName, War.Castle.Name), MessageType.System);
 
+                SEnvir.BroadcastService.BroadcastSystemMessage(c => string.Format(c.Language.ConquestCapture, EXPOwner.Character.Account.GuildMember.Guild.GuildName, War.Castle.Name));
                 SEnvir.Broadcast(new S.GuildCastleInfo { Index = War.Castle.Index, Owner = EXPOwner.Character.Account.GuildMember.Guild.GuildName });
 
                 War.CastleTarget = null;

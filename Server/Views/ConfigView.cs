@@ -38,13 +38,13 @@ namespace Server.Views
 
         private void SyncronizeLocalButton_Click(object sender, EventArgs e)
         {
-            SEnvir.Log($"Starting local syncronization...");
+            SEnvir.ServerLogger.Log($"Starting local syncronization...");
 
             SMain.Session.Save(true);
 
             File.Copy(SMain.Session.SystemPath, Path.Combine(Config.ClientPath, "Data\\", Path.GetFileName(SMain.Session.SystemPath)), true);
 
-            SEnvir.Log($"Syncronization completed...");
+            SEnvir.ServerLogger.Log($"Syncronization completed...");
         }
 
         protected override void OnLoad(EventArgs e)

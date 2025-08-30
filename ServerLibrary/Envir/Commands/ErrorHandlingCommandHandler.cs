@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.Envir.Commands.Exceptions;
 using Server.Envir.Commands.Handler;
+using Server.Infrastructure.Service.Connection;
 using Server.Models;
 using System;
 using System.Collections.Generic;
@@ -41,13 +42,13 @@ namespace Server.Envir.Commands
                 player.Connection.ReceiveChat(exception.Message, MessageType.System);
                 if (!exception.userOnly)
                 {
-                    foreach (SConnection connection in player.Connection.Observers)
+                    foreach (UserConnection connection in player.Connection.Observers)
                         connection.ReceiveChat(exception.Message, MessageType.System);
                 }
             }
             catch (Exception exception)
             {
-                SEnvir.Log("FatalCommandError [" + player.Name + "]: " + exception.Message);
+                SEnvir.ServerLogger.Log("FatalCommandError [" + player.Name + "]: " + exception.Message);
                 player.Connection.ReceiveChat("FatalCommandError: The error has been logged. Contact an admin.", MessageType.System);
             }
         }

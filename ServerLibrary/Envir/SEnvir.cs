@@ -7,6 +7,15 @@ using Server.Envir.Commands;
 using Server.Envir.Commands.Handler;
 using Server.Envir.Events;
 using Server.Envir.Events.Triggers;
+using Server.Infrastructure.Logging;
+using Server.Infrastructure.Logging.Formatter;
+using Server.Infrastructure.Network.Http;
+using Server.Infrastructure.Network.Smtp;
+using Server.Infrastructure.Network.Tcp;
+using Server.Infrastructure.Network.Tcp.ListenerHandler;
+using Server.Infrastructure.Scheduler;
+using Server.Infrastructure.Service;
+using Server.Infrastructure.Service.Connection;
 using Server.Models;
 using System;
 using System.Collections.Concurrent;
@@ -15,11 +24,8 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -31,193 +37,63 @@ namespace Server.Envir
 {
     public static class SEnvir
     {
+        //TODO: EVERYTHING static in here should be using DI ideally.
+
+        public static readonly IpAddressService IpManager = new IpAddressService();
+        public static readonly UserConnectionService UserConnectionService = new UserConnectionService(
+            new UserConnectionFactory(() => UserConnectionService.RemoveConnection),
+            IpManager
+        );
+        public static readonly UserBroadcastService BroadcastService = new UserBroadcastService(UserConnectionService);
+
         #region Logging
-
-        public static ConcurrentQueue<string> DisplayLogs = [];
-        public static ConcurrentQueue<string> Logs = [];
+        //TODO: these things should not exist here - need to move to DI then we can push this up outside of SEnvir
         public static bool UseLogConsole = false;
+        public static readonly ConcurrentQueue<string> ServerAppLogs = []; 
+        public static readonly ConcurrentQueue<string> ChatAppLogs = [];
+        //TODO-END
 
-        public static void Log(string log, bool hardLog = true)
-        {
-            log = string.Format("[{0:F}]: {1}", Time.Now, log);
-
-            if (UseLogConsole)
-            {
-                Console.WriteLine(log);
-            }
-            else
-            {
-                if (DisplayLogs.Count < 100)
-                    DisplayLogs.Enqueue(log);
-
-                if (hardLog && Logs.Count < 1000)
-                    Logs.Enqueue(log);
-            }
-        }
-
-        public static ConcurrentQueue<string> DisplayChatLogs = new ConcurrentQueue<string>();
-        public static ConcurrentQueue<string> ChatLogs = new ConcurrentQueue<string>();
-        public static void LogChat(string log)
-        {
-            log = string.Format("[{0:F}]: {1}", Time.Now, log);
-
-            if (DisplayChatLogs.Count < 500)
-                DisplayChatLogs.Enqueue(log);
-
-            if (ChatLogs.Count < 1000)
-                ChatLogs.Enqueue(log);
-        }
-
+        private static SingleThreadScheduler LogWritingScheduler = new SingleThreadScheduler();
+        private static readonly ILogFormatter LogFormatter = new StdLogFormatter();
+        public static readonly ILogger ServerLogger = new CompositeLogger(
+            UseLogConsole ? [new SystemConsoleLogger(LogFormatter)] : [new SystemAppLogger(ServerAppLogs, LogFormatter), new SystemFileLogger(LogWritingScheduler, LogFormatter)]
+        );
+        public static readonly ILogger UserChatLogger = new CompositeLogger(
+            UseLogConsole ? [new UserChatFileLogger(LogWritingScheduler,LogFormatter)] : [new UserChatAppLogger(ChatAppLogs, LogFormatter), new UserChatFileLogger(LogWritingScheduler, LogFormatter)]
+        );
         #endregion
 
-        #region Network
+        #region TcpServer
+        private static readonly TcpServer UserTcpServer = new TcpServer(
+            new UserConnectionListenerHandler(UserConnectionService), 
+            Config.IPAddress, 
+            Config.Port
+        );
 
-        public static Dictionary<string, DateTime> IPBlocks = new Dictionary<string, DateTime>();
-        public static Dictionary<string, int> IPCount = new Dictionary<string, int>();
-
-        public static List<SConnection> Connections = new List<SConnection>();
-        public static ConcurrentQueue<SConnection> NewConnections;
-
-        private static TcpListener _listener, _userCountListener;
-
-        private static void StartNetwork(bool log = true)
-        {
-            try
-            {
-                NewConnections = new ConcurrentQueue<SConnection>();
-
-                _listener = new TcpListener(IPAddress.Parse(Config.IPAddress), Config.Port);
-                _listener.Start();
-                _listener.BeginAcceptTcpClient(Connection, null);
-
-                _userCountListener = new TcpListener(IPAddress.Parse(Config.IPAddress), Config.UserCountPort);
-                _userCountListener.Start();
-                _userCountListener.BeginAcceptTcpClient(CountConnection, null);
-
-                NetworkStarted = true;
-                if (log) Log($"Network Started. Listen: {Config.IPAddress}:{Config.Port}");
-            }
-            catch (Exception ex)
-            {
-                Started = false;
-                Log(ex.ToString());
-            }
-        }
-        private static void StopNetwork(bool log = true)
-        {
-            TcpListener expiredListener = _listener;
-            TcpListener expiredUserListener = _userCountListener;
-
-            _listener = null;
-            _userCountListener = null;
-
-            Started = false;
-
-            expiredListener?.Stop();
-            expiredUserListener?.Stop();
-
-            NewConnections = null;
-
-            try
-            {
-                Packet p = new G.Disconnect { Reason = DisconnectReason.ServerClosing };
-                for (int i = Connections.Count - 1; i >= 0; i--)
-                    Connections[i].SendDisconnect(p);
-
-                Thread.Sleep(2000);
-            }
-            catch (Exception ex)
-            {
-                Log(ex.ToString());
-            }
-
-            if (log) Log("Network Stopped.");
-        }
-
-        private static void Connection(IAsyncResult result)
-        {
-            try
-            {
-                if (_listener == null || !_listener.Server.IsBound) return;
-
-                TcpClient client = _listener.EndAcceptTcpClient(result);
-
-                string ipAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
-
-                if (!IPBlocks.TryGetValue(ipAddress, out DateTime banDate) || banDate < Now)
-                {
-                    SConnection Connection = new SConnection(client);
-
-                    if (Connection.Connected)
-                        NewConnections?.Enqueue(Connection);
-                }
-            }
-            catch (SocketException)
-            {
-
-            }
-            catch (Exception ex)
-            {
-                Log(ex.ToString());
-            }
-            finally
-            {
-                while (NewConnections?.Count >= 15)
-                    Thread.Sleep(1);
-
-                if (_listener != null && _listener.Server.IsBound)
-                    _listener.BeginAcceptTcpClient(Connection, null);
-            }
-        }
-
-        private static void CountConnection(IAsyncResult result)
-        {
-            try
-            {
-                if (_userCountListener == null || !_userCountListener.Server.IsBound) return;
-
-                TcpClient client = _userCountListener.EndAcceptTcpClient(result);
-
-                byte[] data = Encoding.ASCII.GetBytes(string.Format("c;/Zircon/{0}/;", Connections.Count));
-
-                client.Client.BeginSend(data, 0, data.Length, SocketFlags.None, CountConnectionEnd, client);
-            }
-            catch { }
-            finally
-            {
-                if (_userCountListener != null && _userCountListener.Server.IsBound)
-                    _userCountListener.BeginAcceptTcpClient(CountConnection, null);
-            }
-        }
-        private static void CountConnectionEnd(IAsyncResult result)
-        {
-            try
-            {
-                TcpClient client = result.AsyncState as TcpClient;
-
-                if (client == null) return;
-
-                client.Client.EndSend(result);
-
-                client.Client.Dispose();
-            }
-            catch { }
-        }
-
+        private static readonly TcpServer ActiveUserCountTcpServer = new TcpServer(
+            new ActiveUserCountListenerHandler(() => UserConnectionService.ActiveConnections.Count), 
+            Config.IPAddress, 
+            Config.UserCountPort
+        );
         #endregion
 
-        public static bool Started { get; set; }
-        public static bool NetworkStarted { get; set; }
+        public static bool Started //TODO: not sure what purpose of this was really.. it was 100% controlled by UserTcpServer
+        { 
+            get => UserTcpServer.Started;
+            set 
+            {
+                if (UserTcpServer.Started == value) return;
+                if (value) UserTcpServer.Start();
+                else UserTcpServer.Stop();
+            } 
+        }
         public static bool Saving { get; private set; }
+
         public static Thread EnvirThread { get; private set; }
 
         public static DateTime Now, StartTime, LastWarTime;
 
         public static int ProcessObjectCount, LoopCount;
-
-        public static long DBytesSent, DBytesReceived;
-        public static long TotalBytesSent, TotalBytesReceived;
-        public static long DownloadSpeed, UploadSpeed;
 
         public static ICommandHandler CommandHandler = new ErrorHandlingCommandHandler(
             new PlayerCommandHandler(),
@@ -402,11 +278,11 @@ namespace Server.Envir
                     }
                     catch (Exception)
                     {
-                        Log(string.Format("ExperienceList: Error parsing line {0} - {1}", i, lines[i]));
+                        ServerLogger.Log(string.Format("ExperienceList: Error parsing line {0} - {1}", i, lines[i]));
                     }
                 }
             }
-            Log("Experience List Loaded.");
+            ServerLogger.Log("Experience List Loaded.");
         }
 
         private static void LoadDatabase()
@@ -703,13 +579,13 @@ namespace Server.Envir
             {
                 if (movement.SourceRegion == null && movement.DestinationRegion == null)
                 {
-                    Log($"[Movement] No Source or Destination Region, Index: {movement.Index}");
+                    ServerLogger.Log($"[Movement] No Source or Destination Region, Index: {movement.Index}");
                     continue;
                 }
 
                 if (movement.SourceRegion == null)
                 {
-                    Log($"[Movement] No Source Region, Destination: {movement.DestinationRegion.ServerDescription}");
+                    ServerLogger.Log($"[Movement] No Source Region, Destination: {movement.DestinationRegion.ServerDescription}");
                     continue;
                 }
 
@@ -719,7 +595,7 @@ namespace Server.Envir
                 {
                     if (instance == null)
                     {
-                        Log($"[Movement] Bad Source Map, Source: {movement.SourceRegion.ServerDescription}");
+                        ServerLogger.Log($"[Movement] Bad Source Map, Source: {movement.SourceRegion.ServerDescription}");
                     }
 
                     continue;
@@ -727,13 +603,13 @@ namespace Server.Envir
 
                 if (movement.DestinationRegion == null)
                 {
-                    Log($"[Movement] No Destination Region, Source: {movement.SourceRegion.ServerDescription}");
+                    ServerLogger.Log($"[Movement] No Destination Region, Source: {movement.SourceRegion.ServerDescription}");
                     continue;
                 }
 
                 if (movement.DestinationRegion.PointList.Count == 0)
                 {
-                    Log($"[Movement] Bad Destination, Dest: {movement.DestinationRegion.ServerDescription}, No Points");
+                    ServerLogger.Log($"[Movement] Bad Destination, Dest: {movement.DestinationRegion.ServerDescription}, No Points");
                     continue;
                 }
 
@@ -743,7 +619,7 @@ namespace Server.Envir
                 {
                     if (instance == null)
                     {
-                        Log($"[Movement] Bad Destination Map, Destination: {movement.DestinationRegion.ServerDescription}");
+                        ServerLogger.Log($"[Movement] Bad Destination Map, Destination: {movement.DestinationRegion.ServerDescription}");
                     }
 
                     if (movement.NeedInstance == null || movement.NeedInstance != instance)
@@ -758,7 +634,7 @@ namespace Server.Envir
 
                     if (source == null)
                     {
-                        Log($"[Movement] Bad Origin, Source: {movement.SourceRegion.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
+                        ServerLogger.Log($"[Movement] Bad Origin, Source: {movement.SourceRegion.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
                         continue;
                     }
 
@@ -782,7 +658,7 @@ namespace Server.Envir
                 {
                     if (instance == null)
                     {
-                        Log(string.Format("[NPC] Bad Map, NPC: {0}, Map: {1}", info.NPCName, info.Region.ServerDescription));
+                        ServerLogger.Log(string.Format("[NPC] Bad Map, NPC: {0}, Map: {1}", info.NPCName, info.Region.ServerDescription));
                     }
 
                     continue;
@@ -794,7 +670,7 @@ namespace Server.Envir
                 };
 
                 if (!ob.Spawn(info.Region, instance, instanceSequence))
-                    Log($"[NPC] Failed to spawn NPC, Region: {info.Region.ServerDescription}, NPC: {info.NPCName}");
+                    ServerLogger.Log($"[NPC] Failed to spawn NPC, Region: {info.Region.ServerDescription}, NPC: {info.NPCName}");
             }
         }
 
@@ -813,7 +689,7 @@ namespace Server.Envir
                     {
                         if (instance == null)
                         {
-                            Log($"[Quest Region] Bad Map, Map: {task.RegionParameter.ServerDescription}");
+                            ServerLogger.Log($"[Quest Region] Bad Map, Map: {task.RegionParameter.ServerDescription}");
                         }
 
                         continue;
@@ -825,7 +701,7 @@ namespace Server.Envir
 
                         if (source == null)
                         {
-                            Log($"[Quest Region] Bad Quest Region, Source: {task.RegionParameter.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
+                            ServerLogger.Log($"[Quest Region] Bad Quest Region, Source: {task.RegionParameter.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
                             continue;
                         }
 
@@ -852,7 +728,7 @@ namespace Server.Envir
                 {
                     if (instance == null)
                     {
-                        Log($"[Safe Zone] Bad Map, Map: {info.Region.ServerDescription}");
+                        ServerLogger.Log($"[Safe Zone] Bad Map, Map: {info.Region.ServerDescription}");
                     }
 
                     continue;
@@ -868,7 +744,7 @@ namespace Server.Envir
 
                     if (cell == null)
                     {
-                        Log($"[Safe Zone] Bad Location, Region: {info.Region.ServerDescription}, X: {point.X}, Y: {point.Y}.");
+                        ServerLogger.Log($"[Safe Zone] Bad Location, Region: {info.Region.ServerDescription}, X: {point.X}, Y: {point.Y}.");
 
                         continue;
                     }
@@ -910,7 +786,7 @@ namespace Server.Envir
 
                 if (map == null)
                 {
-                    Log($"[Safe Zone] Bad Bind Map, Map: {info.Region.ServerDescription}");
+                    ServerLogger.Log($"[Safe Zone] Bad Bind Map, Map: {info.Region.ServerDescription}");
 
                     continue;
                 }
@@ -921,7 +797,7 @@ namespace Server.Envir
 
                     if (cell == null)
                     {
-                        Log($"[Safe Zone] Bad Location, Region: {info.BindRegion.ServerDescription}, X: {point.X}, Y: {point.Y}.");
+                        ServerLogger.Log($"[Safe Zone] Bad Location, Region: {info.BindRegion.ServerDescription}, X: {point.X}, Y: {point.Y}.");
                         continue;
                     }
 
@@ -943,7 +819,7 @@ namespace Server.Envir
                 {
                     if (instance == null)
                     {
-                        Log(string.Format("[Respawn] Bad Map, Map: {0}", info.Region.ServerDescription));
+                        ServerLogger.Log(string.Format("[Respawn] Bad Map, Map: {0}", info.Region.ServerDescription));
                     }
 
                     continue;
@@ -1031,23 +907,19 @@ namespace Server.Envir
             DateTime DBTime = Now + Config.DBSaveDelay;
 
             StartEnvir();
-            StartNetwork();
-
-            WebServer.StartWebServer();
-
-            Started = NetworkStarted;
+            UserTcpServer.Start();
+            ServerLogger.Log($"Network Started. Listen: {Config.IPAddress}:{Config.Port}"); //TODO: maybe pass this into Start() method as a PostStartupHook param
+            ActiveUserCountTcpServer.Start();
+            HttpWebServer.StartWebServer();
 
             int count = 0, loopCount = 0;
             DateTime nextCount = Now.AddSeconds(1), UserCountTime = Now.AddMinutes(5), EventTimerTime = Now.AddMinutes(1), saveTime;
-            long previousTotalSent = 0, previousTotalReceived = 0;
             int lastindex = 0;
             long conDelay = 0;
-            Thread logThread = new Thread(WriteLogsLoop) { IsBackground = true };
-            logThread.Start();
 
             LastWarTime = Now;
 
-            Log($"Loading Time: {Functions.ToString(Time.Now - Now, true)}");
+            ServerLogger.Log($"Loading Time: {Functions.ToString(Time.Now - Now, true)}");
 
             while (Started)
             {
@@ -1056,31 +928,7 @@ namespace Server.Envir
 
                 try
                 {
-                    SConnection connection;
-                    while (!NewConnections.IsEmpty)
-                    {
-                        if (!NewConnections.TryDequeue(out connection)) break;
-
-                        IPCount.TryGetValue(connection.IPAddress, out var ipCount);
-
-                        IPCount[connection.IPAddress] = ipCount + 1;
-
-                        Connections.Add(connection);
-                    }
-
-                    long bytesSent = 0;
-                    long bytesReceived = 0;
-
-                    for (int i = Connections.Count - 1; i >= 0; i--)
-                    {
-                        if (i >= Connections.Count) break;
-
-                        connection = Connections[i];
-
-                        connection.Process();
-                        bytesSent += connection.TotalBytesSent;
-                        bytesReceived += connection.TotalBytesReceived;
-                    }
+                    UserConnectionService.Process();
 
                     long delay = (Time.Now - Now).Ticks / TimeSpan.TicksPerMillisecond;
                     if (delay > conDelay)
@@ -1088,9 +936,6 @@ namespace Server.Envir
 
                     for (int i = Players.Count - 1; i >= 0; i--)
                         Players[i].StartProcess();
-
-                    TotalBytesSent = DBytesSent + bytesSent;
-                    TotalBytesReceived = DBytesReceived + bytesReceived;
 
                     if (ServerBuffChanged)
                     {
@@ -1126,8 +971,8 @@ namespace Server.Envir
                             ActiveObjects.Remove(ob);
                             ob.Activated = false;
 
-                            Log(ex.Message);
-                            Log(ex.StackTrace);
+                            ServerLogger.Log(ex.Message);
+                            ServerLogger.Log(ex.StackTrace);
                             File.AppendAllText(@".\Errors.txt", ex.StackTrace + Environment.NewLine);
                         }
                     }
@@ -1152,31 +997,10 @@ namespace Server.Envir
                         loopCount = 0;
                         conDelay = 0;
 
-                        DownloadSpeed = TotalBytesReceived - previousTotalReceived;
-                        UploadSpeed = TotalBytesSent - previousTotalSent;
-
-                        previousTotalReceived = TotalBytesReceived;
-                        previousTotalSent = TotalBytesSent;
-
                         if (Now >= UserCountTime)
                         {
                             UserCountTime = Now.AddMinutes(5);
-
-                            foreach (SConnection conn in Connections)
-                            {
-                                conn.ReceiveChat(string.Format(conn.Language.OnlineCount, Players.Count, Connections.Count(x => x.Stage == GameStage.Observer)), MessageType.Hint);
-
-                                switch (conn.Stage)
-                                {
-                                    case GameStage.Game:
-                                        if (conn.Player.Character.Observable)
-                                            conn.ReceiveChat(string.Format(conn.Language.ObserverCount, conn.Observers.Count), MessageType.Hint);
-                                        break;
-                                    case GameStage.Observer:
-                                        conn.ReceiveChat(string.Format(conn.Language.ObserverCount, conn.Observed.Observers.Count), MessageType.Hint);
-                                        break;
-                                }
-                            }
+                            BroadcastService.BroadcastOnlineCount();
                         }
 
                         if (Now >= EventTimerTime)
@@ -1232,7 +1056,7 @@ namespace Server.Envir
 
                         if (Config.EnableWebServer)
                         {
-                            WebServer.Process();
+                            HttpWebServer.Process();
                         }
 
                         if (Config.ProcessGameGold)
@@ -1272,21 +1096,21 @@ namespace Server.Envir
                 {
                     Session = null;
 
-                    Log(ex.Message);
-                    Log(ex.StackTrace);
+                    ServerLogger.Log(ex.Message);
+                    ServerLogger.Log(ex.StackTrace);
                     File.AppendAllText(@".\Errors.txt", ex.StackTrace + Environment.NewLine);
 
-                    Packet p = new G.Disconnect { Reason = DisconnectReason.Crashed };
-                    for (int i = Connections.Count - 1; i >= 0; i--)
-                        Connections[i].SendDisconnect(p);
+                    UserConnectionService.Broadcast(new G.Disconnect { Reason = DisconnectReason.Crashed });
 
                     Thread.Sleep(3000);
                     break;
                 }
             }
 
-            WebServer.StopWebServer();
-            StopNetwork();
+            HttpWebServer.StopWebServer();
+            UserTcpServer.Stop();
+            ActiveUserCountTcpServer.Stop();
+            SEnvir.ServerLogger.Log("Network Stopped.");
 
             while (Saving) Thread.Sleep(1);
             if (Session != null)
@@ -1299,17 +1123,17 @@ namespace Server.Envir
 
         public static void ProcessGameGold()
         {
-            while (!WebServer.Messages.IsEmpty)
+            while (!HttpWebServer.Messages.IsEmpty)
             {
                 IPNMessage message;
 
-                if (!WebServer.Messages.TryDequeue(out message) || message == null) return;
+                if (!HttpWebServer.Messages.TryDequeue(out message) || message == null) return;
 
-                WebServer.PaymentList.Add(message);
+                HttpWebServer.PaymentList.Add(message);
 
                 if (!message.Verified)
                 {
-                    SEnvir.Log("INVALID PAYPAL TRANSACTION " + message.Message);
+                    SEnvir.ServerLogger.Log("INVALID PAYPAL TRANSACTION " + message.Message);
                     continue;
                 }
 
@@ -1345,7 +1169,7 @@ namespace Server.Envir
                     if (SEnvir.GameGoldPaymentList[i].Status != paymentStatus) continue;
 
 
-                    SEnvir.Log(string.Format("[Duplicated Transaction] ID:{0} Status:{1}.", transactionID, paymentStatus));
+                    SEnvir.ServerLogger.Log(string.Format("[Duplicated Transaction] ID:{0} Status:{1}.", transactionID, paymentStatus));
                     message.Duplicate = true;
                     return;
                 }
@@ -1401,17 +1225,17 @@ namespace Server.Envir
                     case "Completed":
                         break;
                 }
-                if (payment.Status != WebServer.Completed) continue;
+                if (payment.Status != HttpWebServer.Completed) continue;
 
                 //check that receiver_email is my primary paypal email
                 if (string.Compare(payment.Receiver_EMail, Config.ReceiverEMail, StringComparison.OrdinalIgnoreCase) != 0)
                     payment.Error = true;
 
                 //check that paymentamount/current are correct
-                if (payment.Currency != WebServer.Currency)
+                if (payment.Currency != HttpWebServer.Currency)
                     payment.Error = true;
 
-                if (WebServer.GoldTable.TryGetValue(payment.Price, out tempInt))
+                if (HttpWebServer.GoldTable.TryGetValue(payment.Price, out tempInt))
                     payment.GameGoldAmount = tempInt;
                 else
                     payment.Error = true;
@@ -1420,7 +1244,7 @@ namespace Server.Envir
 
                 if (character == null || payment.Error)
                 {
-                    SEnvir.Log($"[Transaction Error] ID:{transactionID} Status:{paymentStatus}, Amount{payment.Price}.");
+                    SEnvir.ServerLogger.Log($"[Transaction Error] ID:{transactionID} Status:{paymentStatus}, Amount{payment.Price}.");
                     continue;
                 }
 
@@ -1442,7 +1266,7 @@ namespace Server.Envir
                     }
                 }
 
-                SEnvir.Log($"[Game Gold Purchase] Character: {character.CharacterName}, Amount: {payment.GameGoldAmount}.");
+                SEnvir.ServerLogger.Log($"[Game Gold Purchase] Character: {character.CharacterName}, Amount: {payment.GameGoldAmount}.");
             }
         }
 
@@ -1453,7 +1277,7 @@ namespace Server.Envir
             Saving = true;
             Session.Save(false);
 
-            WebServer.Save();
+            HttpWebServer.Save();
 
             Thread saveThread = new Thread(CommitChanges) { IsBackground = true };
             saveThread.Start(Session);
@@ -1463,54 +1287,10 @@ namespace Server.Envir
             Session session = (Session)data;
             session?.Commit();
 
-            WebServer.CommitChanges(data);
+            HttpWebServer.CommitChanges(data);
 
             Saving = false;
         }
-        private static void WriteLogsLoop()
-        {
-            DateTime NextLogTime = Now.AddSeconds(10);
-
-            while (Started)
-            {
-                if (Now < NextLogTime)
-                {
-                    Thread.Sleep(1);
-                    continue;
-                }
-
-                WriteLogs();
-
-                NextLogTime = Now.AddSeconds(10);
-            }
-        }
-        private static void WriteLogs()
-        {
-            var logPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Logs.txt"));
-            var chatLogPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Chat Logs.txt"));
-
-            List<string> lines = new List<string>();
-            while (!Logs.IsEmpty)
-            {
-                if (!Logs.TryDequeue(out string line)) continue;
-                lines.Add(line);
-            }
-
-            File.AppendAllLines(logPath, lines);
-
-            lines.Clear();
-
-            while (!ChatLogs.IsEmpty)
-            {
-                if (!ChatLogs.TryDequeue(out string line)) continue;
-                lines.Add(line);
-            }
-
-            File.AppendAllLines(chatLogPath, lines);
-
-            lines.Clear();
-        }
-
         public static void CheckGuildWars()
         {
             TimeSpan change = Now - LastWarTime;
@@ -2757,7 +2537,7 @@ namespace Server.Envir
             item.AddStat(Stat.Counter2, lootBoxInfo.Contents.Count <= 15 ? 2 : 1, StatSource.Added); // Step 1 = Randomise, 2 = Selection
         }
 
-        public static void Login(C.Login p, SConnection con)
+        public static void Login(C.Login p, UserConnection con)
         {
             AccountInfo account = null;
             bool admin = false;
@@ -2765,7 +2545,7 @@ namespace Server.Envir
             {
                 account = GetCharacter(p.EMailAddress)?.Account;
                 admin = true;
-                Log($"[Admin Attempted] Character: {p.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+                ServerLogger.Log($"[Admin Attempted] Character: {p.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
             }
             else
             {
@@ -2823,7 +2603,7 @@ namespace Server.Envir
 
             if (!admin && !PasswordMatch(p.Password, account.Password))
             {
-                Log($"[Wrong Password] IP Address: {con.IPAddress}, Account: {account.EMailAddress}, Security: {p.CheckSum}");
+                ServerLogger.Log($"[Wrong Password] IP Address: {con.IPAddress}, Account: {account.EMailAddress}, Security: {p.CheckSum}");
 
                 if (account.WrongPasswordCount++ >= 5)
                 {
@@ -2853,7 +2633,7 @@ namespace Server.Envir
                     //  account.Connection.SendDisconnect(new G.Disconnect { Reason = DisconnectReason.AnotherUserAdmin });
                 }
 
-                Log($"[Account in Use] Account: {account.EMailAddress}, Current IP: {account.LastIP}, New IP: {con.IPAddress}, Security: {p.CheckSum}");
+                ServerLogger.Log($"[Account in Use] Account: {account.EMailAddress}, Current IP: {account.LastIP}, New IP: {con.IPAddress}, Security: {p.CheckSum}");
 
                 if (account.TempAdmin)
                 {
@@ -2912,9 +2692,9 @@ namespace Server.Envir
                 account.LastSum = p.CheckSum;
             }
 
-            Log($"[Account Logon] Admin: {admin}, Account: {account.EMailAddress}, IP Address: {account.LastIP}, Security: {p.CheckSum}");
+            ServerLogger.Log($"[Account Logon] Admin: {admin}, Account: {account.EMailAddress}, IP Address: {account.LastIP}, Security: {p.CheckSum}");
         }
-        public static void NewAccount(C.NewAccount p, SConnection con)
+        public static void NewAccount(C.NewAccount p, UserConnection con)
         {
             if (!Config.AllowNewAccount)
             {
@@ -2965,13 +2745,8 @@ namespace Server.Envir
 
             if (nowcount > 2 || todaycount > 5)
             {
-                IPBlocks[con.IPAddress] = Now.AddDays(7);
-
-                for (int i = Connections.Count - 1; i >= 0; i--)
-                    if (Connections[i].IPAddress == con.IPAddress)
-                        Connections[i].Disconnecting = true;
-
-                Log($"{con.IPAddress} Disconnected and banned for trying too many accounts");
+                IpManager.Timeout(con, TimeSpan.FromDays(7));
+                ServerLogger.Log($"{con.IPAddress} Disconnected and banned for trying too many accounts");
                 return;
             }
 
@@ -3037,9 +2812,9 @@ namespace Server.Envir
 
             con.Enqueue(new S.NewAccount { Result = NewAccountResult.Success });
 
-            Log($"[Account Created] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+            ServerLogger.Log($"[Account Created] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void ChangePassword(C.ChangePassword p, SConnection con)
+        public static void ChangePassword(C.ChangePassword p, UserConnection con)
         {
             if (!Config.AllowChangePassword)
             {
@@ -3100,7 +2875,7 @@ namespace Server.Envir
 
             if (!PasswordMatch(p.CurrentPassword, account.Password))
             {
-                Log($"[Wrong Password] IP Address: {con.IPAddress}, Account: {account.EMailAddress}, Security: {p.CheckSum}");
+                ServerLogger.Log($"[Wrong Password] IP Address: {con.IPAddress}, Account: {account.EMailAddress}, Security: {p.CheckSum}");
 
                 if (account.WrongPasswordCount++ >= 5)
                 {
@@ -3120,9 +2895,9 @@ namespace Server.Envir
             EmailService.SendChangePasswordEmail(account, con.IPAddress);
             con.Enqueue(new S.ChangePassword { Result = ChangePasswordResult.Success });
 
-            Log($"[Password Changed] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+            ServerLogger.Log($"[Password Changed] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void RequestPasswordReset(C.RequestPasswordReset p, SConnection con)
+        public static void RequestPasswordReset(C.RequestPasswordReset p, UserConnection con)
         {
             if (!Config.AllowRequestPasswordReset)
             {
@@ -3165,9 +2940,9 @@ namespace Server.Envir
             EmailService.SendResetPasswordRequestEmail(account, con.IPAddress);
             con.Enqueue(new S.RequestPasswordReset { Result = RequestPasswordResetResult.Success });
 
-            Log($"[Request Password] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+            ServerLogger.Log($"[Request Password] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void ResetPassword(C.ResetPassword p, SConnection con)
+        public static void ResetPassword(C.ResetPassword p, UserConnection con)
         {
             if (!Config.AllowManualResetPassword)
             {
@@ -3208,9 +2983,9 @@ namespace Server.Envir
             EmailService.SendChangePasswordEmail(account, con.IPAddress);
             con.Enqueue(new S.ResetPassword { Result = ResetPasswordResult.Success });
 
-            Log($"[Reset Password] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+            ServerLogger.Log($"[Reset Password] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void Activation(C.Activation p, SConnection con)
+        public static void Activation(C.Activation p, UserConnection con)
         {
             if (!Config.AllowManualActivation)
             {
@@ -3237,9 +3012,9 @@ namespace Server.Envir
 
             con.Enqueue(new S.Activation { Result = ActivationResult.Success });
 
-            Log($"[Activation] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+            ServerLogger.Log($"[Activation] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void RequestActivationKey(C.RequestActivationKey p, SConnection con)
+        public static void RequestActivationKey(C.RequestActivationKey p, UserConnection con)
         {
             if (!Config.AllowRequestActivation)
             {
@@ -3280,10 +3055,10 @@ namespace Server.Envir
             }
             EmailService.ResendActivationEmail(account);
             con.Enqueue(new S.RequestActivationKey { Result = RequestActivationKeyResult.Success });
-            Log($"[Request Activation] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+            ServerLogger.Log($"[Request Activation] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
 
-        public static void NewCharacter(C.NewCharacter p, SConnection con)
+        public static void NewCharacter(C.NewCharacter p, UserConnection con)
         {
             if (!Config.AllowNewCharacter)
             {
@@ -3438,9 +3213,9 @@ namespace Server.Envir
                 Character = cInfo.ToSelectInfo(),
             });
 
-            Log($"[Character Created] Character: {p.CharacterName}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+            ServerLogger.Log($"[Character Created] Character: {p.CharacterName}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
-        public static void DeleteCharacter(C.DeleteCharacter p, SConnection con)
+        public static void DeleteCharacter(C.DeleteCharacter p, UserConnection con)
         {
             if (!Config.AllowDeleteCharacter)
             {
@@ -3461,13 +3236,13 @@ namespace Server.Envir
                 character.Deleted = true;
                 con.Enqueue(new S.DeleteCharacter { Result = DeleteCharacterResult.Success, DeletedIndex = character.Index });
 
-                Log($"[Character Deleted] Character: {character.CharacterName}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
+                ServerLogger.Log($"[Character Deleted] Character: {character.CharacterName}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
                 return;
             }
 
             con.Enqueue(new S.DeleteCharacter { Result = DeleteCharacterResult.NotFound });
         }
-        public static void StartGame(C.StartGame p, SConnection con)
+        public static void StartGame(C.StartGame p, UserConnection con)
         {
             if (!Config.AllowStartGame)
             {
@@ -3582,7 +3357,7 @@ namespace Server.Envir
         {
             return GetCharacter(name)?.Account.Connection?.Player;
         }
-        public static SConnection GetConnectionByCharacter(string name)
+        public static UserConnection GetConnectionByCharacter(string name)
         {
             return GetCharacter(name)?.Account.Connection;
         }
@@ -3737,7 +3512,7 @@ namespace Server.Envir
 
             CreateQuestRegions(instance, instanceSequence);
 
-            Log($"Loaded Instance {instance.Name} at index {instanceSequence}");
+            ServerLogger.Log($"Loaded Instance {instance.Name} at index {instanceSequence}");
 
             return instanceSequence;
         }
@@ -3811,7 +3586,7 @@ namespace Server.Envir
                 }
             }
 
-            Log($"Unloaded Instance {instance.Name} at index {instanceSequence} and removed {users.Count} user records");
+            ServerLogger.Log($"Unloaded Instance {instance.Name} at index {instanceSequence} and removed {users.Count} user records");
         }
 
         public static UserConquestStats GetConquestStats(PlayerObject player)

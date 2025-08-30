@@ -2,6 +2,7 @@
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
+using Server.Envir;
 using Server.Envir.Translations;
 using Server.Models;
 using System;
@@ -13,9 +14,9 @@ using C = Library.Network.ClientPackets;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 
-namespace Server.Envir
+namespace Server.Infrastructure.Service.Connection
 {
-    public sealed class SConnection : BaseConnection
+    public sealed class UserConnection : BaseConnection
     {
         private static int SessionCount;
 
@@ -28,33 +29,35 @@ namespace Server.Envir
         public GameStage Stage { get; set; }
         public AccountInfo Account { get; set; }
         public PlayerObject Player { get; set; }
-        public string IPAddress { get; }
         public int SessionID { get; }
 
-        public SConnection Observed;
-        public List<SConnection> Observers = new List<SConnection>();
+        public UserConnection Observed;
+        public List<UserConnection> Observers = new List<UserConnection>();
 
         public List<AuctionInfo> MPSearchResults = new List<AuctionInfo>();
         public HashSet<AuctionInfo> VisibleResults = new HashSet<AuctionInfo>();
 
         public StringMessages Language;
 
-        public SConnection(TcpClient client) : base(client)
+        public Action<UserConnection> DisconnectCallback;
+
+        public UserConnection(TcpClient client, Action<UserConnection> disconnectCallback) : base(client)
         {
-            IPAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
+            DisconnectCallback = disconnectCallback;
+
             SessionID = ++SessionCount;
 
             Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)];
 
             OnException += (o, e) =>
             {
-                SEnvir.Log(string.Format("Crashed: Account: {0}, Character: {1}.", Account?.EMailAddress, Player?.Name));
-                SEnvir.Log(e.ToString());
-                SEnvir.Log(e.StackTrace.ToString());
+                SEnvir.ServerLogger.Log(string.Format("Crashed: Account: {0}, Character: {1}.", Account?.EMailAddress, Player?.Name));
+                SEnvir.ServerLogger.Log(e.ToString());
+                SEnvir.ServerLogger.Log(e.StackTrace.ToString());
                 File.AppendAllText(@".\Errors.txt", e.StackTrace + Environment.NewLine);
             };
 
-            SEnvir.Log(string.Format("[Connection] IP Address:{0}", IPAddress));
+            SEnvir.ServerLogger.Log(string.Format("[Connection] IP Address:{0}", IPAddress));
 
             UpdateTimeOut();
             BeginReceive();
@@ -62,29 +65,21 @@ namespace Server.Envir
             Enqueue(new G.Connected());
         }
 
+        //TODO: whats the difference between Disconnect and SendDisconnect? Can we consolodate the two?
         public override void Disconnect()
         {
             if (!Connected) return;
-
             base.Disconnect();
-
             CleanUp();
-
-            if (!SEnvir.Connections.Contains(this))
-                throw new InvalidOperationException("Connection was not found in list");
-
-            SEnvir.Connections.Remove(this);
-            SEnvir.IPCount[IPAddress]--;
-            SEnvir.DBytesSent += TotalBytesSent;
-            SEnvir.DBytesReceived += TotalBytesReceived;
+            DisconnectCallback.Invoke(this);
         }
 
         public override void SendDisconnect(Packet p)
         {
             base.SendDisconnect(p);
-
             CleanUp();
         }
+
         public override void TryDisconnect()
         {
             if (Stage == GameStage.Game)
@@ -164,7 +159,7 @@ namespace Server.Envir
             Observed = null;
 
             //   ItemList.Clear();
-            //    MagicList.Clear();
+            //   MagicList.Clear();
         }
 
         public override void Process()
@@ -175,33 +170,6 @@ namespace Server.Envir
                 PingSent = true;
                 Enqueue(new G.Ping { ObserverPacket = false });
             }
-
-            if (TotalPacketsProcessed == 0 && TotalBytesReceived > 1024)
-            {
-                TryDisconnect();
-                SEnvir.IPBlocks[IPAddress] = SEnvir.Now.Add(Config.PacketBanTime);
-
-                for (int i = SEnvir.Connections.Count - 1; i >= 0; i--)
-                    if (SEnvir.Connections[i].IPAddress == IPAddress)
-                        SEnvir.Connections[i].TryDisconnect();
-
-                SEnvir.Log($"{IPAddress} Disconnected, Large Packet");
-                return;
-            }
-            
-            if (ReceiveList.Count > Config.MaxPacket)
-            {
-                TryDisconnect();
-                SEnvir.IPBlocks[IPAddress] = SEnvir.Now.Add(Config.PacketBanTime);
-
-                for (int i = SEnvir.Connections.Count - 1; i >= 0; i--)
-                    if (SEnvir.Connections[i].IPAddress == IPAddress)
-                        SEnvir.Connections[i].TryDisconnect();
-
-                SEnvir.Log($"{IPAddress} Disconnected, Large amount of Packets");
-                return;
-            }
-
             base.Process();
         }
 
@@ -211,7 +179,7 @@ namespace Server.Envir
 
             if (p == null || !p.ObserverPacket) return;
 
-            foreach (SConnection observer in Observers)
+            foreach (UserConnection observer in Observers)
                 observer.Enqueue(p);
         }
 
@@ -236,11 +204,11 @@ namespace Server.Envir
             }
         }
 
-        public void ReceiveChatWithObservers(Func<SConnection, string> messageFunc, MessageType messageType, List<ClientUserItem> linkedItems = null, uint objectID = 0)
+        public void ReceiveChatWithObservers(Func<UserConnection, string> messageFunc, MessageType messageType, List<ClientUserItem> linkedItems = null, uint objectID = 0)
         {
             ReceiveChat(messageFunc(this), messageType, linkedItems, objectID);
 
-            foreach (SConnection observer in Observers)
+            foreach (UserConnection observer in Observers)
                 observer.ReceiveChat(messageFunc(observer), messageType, linkedItems, objectID);
         }
 
@@ -626,7 +594,7 @@ namespace Server.Envir
             Player.NPC = null;
             Player.NPCPage = null;
 
-            foreach (SConnection con in Observers)
+            foreach (UserConnection con in Observers)
             {
                 con.Enqueue(new S.NPCClose());
             }
@@ -758,13 +726,13 @@ namespace Server.Envir
 
         public void Process(C.ObserverRequest p)
         {
-            if (!Config.AllowObservation && (Account == null || (!Account.TempAdmin && !Account.Observer))) return;
+            if (!Config.AllowObservation && (Account == null || !Account.TempAdmin && !Account.Observer)) return;
 
             PlayerObject player = SEnvir.GetPlayerByCharacter(p.Name);
 
             if (player == null || player == Player) return;
 
-            if (!player.Character.Observable && (Account == null || (!Account.TempAdmin && !Account.Observer))) return;
+            if (!player.Character.Observable && (Account == null || !Account.TempAdmin && !Account.Observer)) return;
 
             if (Stage == GameStage.Game)
                 Player.StopGame();
