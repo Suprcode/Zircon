@@ -758,7 +758,11 @@ namespace Server.Envir
 
                     if (source == null)
                     {
-                        Log($"[Movement] Bad Origin, Source: {movement.SourceRegion.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
+                        if (!movement.SkipValidation)
+                        {
+                            Log($"[Movement] Bad Origin, Source: {movement.SourceRegion.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
+                        }
+
                         continue;
                     }
 

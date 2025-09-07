@@ -141,6 +141,24 @@ namespace Library.SystemModels
         }
         private RequiredClass _RequiredClass;
 
+        /// <summary>
+        /// Skips valid origin cell validation, allowing for invalid movements to added. Situations such as wanting to add minimap connections for npc movements.
+        /// </summary>
+        public bool SkipValidation
+        {
+            get { return _SkipValidation; }
+            set
+            {
+                if (_SkipValidation == value) return;
+
+                var oldValue = _SkipValidation;
+                _SkipValidation = value;
+
+                OnChanged(oldValue, value, "SkipValidation");
+            }
+        }
+        private bool _SkipValidation;
+
 
         protected internal override void OnCreated()
         {

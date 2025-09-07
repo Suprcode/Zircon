@@ -13741,7 +13741,7 @@ namespace Server.Models
                 Location = CurrentLocation,
                 AttackMagic = MagicType.Shuriken,
                 AttackElement = element,
-                Targets = new List<uint> { ob.ObjectID },
+                Targets = new List<uint> { ob.ObjectID }
             });
 
             ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(delayTime), ActionType.DelayAttack, ob, new List<MagicType>() { MagicType.Shuriken }, true, 50));

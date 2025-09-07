@@ -50,8 +50,9 @@
             gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             InstanceLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
-            MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
+            MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MovementGridControl).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MovementGridView).BeginInit();
@@ -70,7 +71,7 @@
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(719, 144);
+            ribbon.Size = new System.Drawing.Size(705, 144);
             // 
             // SaveButton
             // 
@@ -130,13 +131,13 @@
             MovementGridControl.Name = "MovementGridControl";
             MovementGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MapLookUpEdit, MapIconImageComboBox, ItemLookUpEdit, SpawnLookUpEdit, InstanceLookUpEdit });
             MovementGridControl.ShowOnlyPredefinedDetails = true;
-            MovementGridControl.Size = new System.Drawing.Size(719, 384);
+            MovementGridControl.Size = new System.Drawing.Size(705, 377);
             MovementGridControl.TabIndex = 2;
             MovementGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { MovementGridView });
             // 
             // MovementGridView
             // 
-            MovementGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn2, gridColumn3, gridColumn4, gridColumn5, gridColumn6, gridColumn7, gridColumn8, gridColumn9 });
+            MovementGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn1, gridColumn2, gridColumn3, gridColumn4, gridColumn5, gridColumn6, gridColumn7, gridColumn8, gridColumn9, gridColumn10 });
             MovementGridView.GridControl = MovementGridControl;
             MovementGridView.Name = "MovementGridView";
             MovementGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -250,12 +251,6 @@
             InstanceLookUpEdit.Name = "InstanceLookUpEdit";
             InstanceLookUpEdit.NullText = "[Instance is null]";
             // 
-            // MapIconImageComboBox
-            // 
-            MapIconImageComboBox.AutoHeight = false;
-            MapIconImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            MapIconImageComboBox.Name = "MapIconImageComboBox";
-            // 
             // gridColumn9
             // 
             gridColumn9.FieldName = "NeedHole";
@@ -263,11 +258,24 @@
             gridColumn9.Visible = true;
             gridColumn9.VisibleIndex = 6;
             // 
+            // MapIconImageComboBox
+            // 
+            MapIconImageComboBox.AutoHeight = false;
+            MapIconImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            MapIconImageComboBox.Name = "MapIconImageComboBox";
+            // 
+            // gridColumn10
+            // 
+            gridColumn10.FieldName = "SkipValidation";
+            gridColumn10.Name = "gridColumn10";
+            gridColumn10.Visible = true;
+            gridColumn10.VisibleIndex = 9;
+            // 
             // MovementInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(719, 528);
+            ClientSize = new System.Drawing.Size(705, 521);
             Controls.Add(MovementGridControl);
             Controls.Add(ribbon);
             Name = "MovementInfoView";
@@ -311,5 +319,6 @@
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn10;
     }
 }

@@ -1369,7 +1369,8 @@ namespace Library
         ForestWalkway2,
         ForestWalkway3,
         Star,
-        Lock
+        Lock,
+        Boat
     }
 
     public enum Effect
