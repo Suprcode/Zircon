@@ -652,7 +652,7 @@ namespace Server.Models
 
                     if (movement.NeedHole)
                     {
-                        var holes = Objects.OfType<SpellObject>().Any(m => m.Effect == SpellEffect.ZombieHole && m.CurrentLocation == Location);
+                        var holes = Objects?.OfType<SpellObject>().Any(m => m.Effect == SpellEffect.ZombieHole && m.CurrentLocation == Location) ?? false;
 
                         if (!holes)
                             break;
