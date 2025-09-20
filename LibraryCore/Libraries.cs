@@ -68,6 +68,10 @@ namespace Library
             [LibraryFile.WM_HumEx12] = @"Data\WM-HumEx12.Zl",
             [LibraryFile.WM_HumEx13] = @"Data\WM-HumEx13.Zl",
 
+            //Custom
+            [LibraryFile.M_HumCx1] = @"Data\M-HumCx1.Zl",
+            [LibraryFile.WM_HumCx1] = @"Data\WM-HumCx1.Zl",
+
             [LibraryFile.M_Hair] = @"Data\M-Hair.Zl",
             [LibraryFile.WM_Hair] = @"Data\WM-Hair.Zl",
 
@@ -80,6 +84,10 @@ namespace Library
             [LibraryFile.WM_HumAEx1] = @"Data\WM-HumAEx1.Zl",
             [LibraryFile.WM_HumAEx2] = @"Data\WM-HumAEx2.Zl",
             [LibraryFile.WM_HumAEx3] = @"Data\WM-HumAEx3.Zl",
+
+            //Custom
+            [LibraryFile.M_HumACx1] = @"Data\M-HumACx1.Zl",
+            [LibraryFile.WM_HumACx1] = @"Data\WM-HumACx1.Zl",
 
             [LibraryFile.M_HairA] = @"Data\M-HairA.Zl",
             [LibraryFile.WM_HairA] = @"Data\WM-HairA.Zl",
@@ -194,6 +202,9 @@ namespace Library
             [LibraryFile.WM_Helmet13] = @"Data\WM-Helmet13.Zl",
             [LibraryFile.WM_Helmet14] = @"Data\WM-Helmet14.Zl",
 
+            //Custom
+            [LibraryFile.M_HelmetCx1] = @"Data\M-HelmetCx1.Zl",
+            [LibraryFile.WM_HelmetCx1] = @"Data\WM-HelmetCx1.Zl",
 
             [LibraryFile.M_HelmetA1] = @"Data\M-HelmetA1.Zl",
             [LibraryFile.M_HelmetA2] = @"Data\M-HelmetA2.Zl",
@@ -206,6 +217,9 @@ namespace Library
             [LibraryFile.WM_HelmetA3] = @"Data\WM-HelmetA3.Zl",
             [LibraryFile.WM_HelmetA4] = @"Data\WM-HelmetA4.Zl",
 
+            //Custom
+            [LibraryFile.M_HelmetACx1] = @"Data\M-HelmetACx1.Zl",
+            [LibraryFile.WM_HelmetACx1] = @"Data\WM-HelmetACx1.Zl",
 
 
             [LibraryFile.MonMagic] = @"Data\MonMagic.Zl", //
@@ -491,6 +505,9 @@ namespace Library
         M_HumEx11,
         M_HumEx12,
         M_HumEx13,
+
+        M_HumCx1,
+
         M_Hair,
 
         WM_Hum,
@@ -502,19 +519,29 @@ namespace Library
         WM_HumEx11,
         WM_HumEx12,
         WM_HumEx13,
+
+        WM_HumCx1,
+
         WM_Hair,
 
         M_HumA,
         M_HumAEx1,
         M_HumAEx2,
         M_HumAEx3,
+
+        M_HumACx1,
+
         M_HairA,
 
         WM_HumA,
         WM_HumAEx1,
         WM_HumAEx2,
         WM_HumAEx3,
+
+        WM_HumACx1,
+
         WM_HairA,
+
 
         M_Costume,
         M_CostumeA,
@@ -613,6 +640,8 @@ namespace Library
         M_Helmet13,
         M_Helmet14,
 
+        M_HelmetCx1,
+
         WM_Helmet1,
         WM_Helmet2,
         WM_Helmet3,
@@ -623,16 +652,22 @@ namespace Library
         WM_Helmet12,
         WM_Helmet13,
         WM_Helmet14,
-        
+
+        WM_HelmetCx1,
+
         M_HelmetA1,
         M_HelmetA2,
         M_HelmetA3,
         M_HelmetA4,
 
+        M_HelmetACx1,
+
         WM_HelmetA1,
         WM_HelmetA2,
         WM_HelmetA3,
         WM_HelmetA4,
+
+        WM_HelmetACx1,
 
         MonMagic,
         MonMagicEx,

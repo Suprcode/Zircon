@@ -110,6 +110,8 @@ namespace Client.Models
             [12] = LibraryFile.M_Helmet13,
             [13] = LibraryFile.M_Helmet14,
 
+            [20] = LibraryFile.M_HelmetCx1,
+
             [0 + FemaleOffSet] = LibraryFile.WM_Helmet1,
             [1 + FemaleOffSet] = LibraryFile.WM_Helmet2,
             [2 + FemaleOffSet] = LibraryFile.WM_Helmet3,
@@ -121,15 +123,21 @@ namespace Client.Models
             [12 + FemaleOffSet] = LibraryFile.WM_Helmet13,
             [13 + FemaleOffSet] = LibraryFile.WM_Helmet14,
 
+            [20 + FemaleOffSet] = LibraryFile.WM_HelmetCx1,
+
             [0 + AssassinOffSet] = LibraryFile.M_HelmetA1,
             [1 + AssassinOffSet] = LibraryFile.M_HelmetA2,
             [2 + AssassinOffSet] = LibraryFile.M_HelmetA3,
             [3 + AssassinOffSet] = LibraryFile.M_HelmetA4,
 
+            [20 + AssassinOffSet] = LibraryFile.M_HelmetACx1,
+
             [0 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HelmetA1,
             [1 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HelmetA2,
             [2 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HelmetA3,
             [3 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HelmetA4,
+
+            [20 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HelmetACx1,
         };
         #endregion
 
@@ -146,6 +154,7 @@ namespace Client.Models
             [12] = LibraryFile.M_HumEx12,
             [13] = LibraryFile.M_HumEx13,
 
+            [20] = LibraryFile.M_HumCx1,
 
             [0 + FemaleOffSet] = LibraryFile.WM_Hum,
             [1 + FemaleOffSet] = LibraryFile.WM_HumEx1,
@@ -157,16 +166,21 @@ namespace Client.Models
             [12 + FemaleOffSet] = LibraryFile.WM_HumEx12,
             [13 + FemaleOffSet] = LibraryFile.WM_HumEx13,
 
+            [20 + FemaleOffSet] = LibraryFile.WM_HumCx1,
 
             [0 + AssassinOffSet] = LibraryFile.M_HumA,
             [1 + AssassinOffSet] = LibraryFile.M_HumAEx1,
             [2 + AssassinOffSet] = LibraryFile.M_HumAEx2,
             [3 + AssassinOffSet] = LibraryFile.M_HumAEx3,
 
+            [20 + AssassinOffSet] = LibraryFile.M_HumACx1,
+
             [0 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HumA,
             [1 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HumAEx1,
             [2 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HumAEx2,
             [3 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HumAEx3,
+
+            [20 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_HumACx1
         };
         #endregion
 
