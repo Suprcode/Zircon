@@ -2551,13 +2551,20 @@ namespace Client.Scenes.Views
                 if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && Grid[(int)EquipmentSlot.Helmet].Item == null)
                     library.Draw(1160, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
 
+                int index = Gender == MirGender.Male ? 0 : 1;
+
+                if (Stats[Stat.NakedVariant] == 1)
+                {
+                    index += 10;
+                }
+
                 switch (Gender)
                 {
                     case MirGender.Male:
-                        library.Draw(0, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                         break;
                     case MirGender.Female:
-                        library.Draw(1, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        library.Draw(index, DisplayArea.X + x, DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                         break;
                 }
             }
