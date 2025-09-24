@@ -391,12 +391,6 @@ namespace Client.Models
                     {
                         case MirGender.Male:
 
-                            if (ArmourShape == 0 && Stats[Stat.NakedVariant] == 1)
-                            {
-                                file = LibraryFile.M_HumCx1;
-                                ArmourShape = 221;
-                            }
-
                             if (!ArmourList.TryGetValue(ArmourShape / 11, out file))
                             {
                                 file = LibraryFile.M_Hum;
@@ -429,12 +423,6 @@ namespace Client.Models
                             }
                             break;
                         case MirGender.Female:
-
-                            if (ArmourShape == 0 && Stats[Stat.NakedVariant] == 1)
-                            {
-                                file = LibraryFile.WM_HumCx1;
-                                ArmourShape = 221;
-                            }
 
                             if (!ArmourList.TryGetValue(ArmourShape / 11 + FemaleOffSet, out file))
                             {

@@ -12930,6 +12930,9 @@ namespace Server.Models
             else
                 Horse = HorseType.None;
 
+            BuffRemove(BuffType.Cloak);
+            BuffRemove(BuffType.Transparency);
+
             Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
         }
         public void FishingCast(FishingState state, MirDirection castDirection, Point floatLocation, bool caught = false)

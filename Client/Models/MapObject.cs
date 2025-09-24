@@ -1243,12 +1243,15 @@ namespace Client.Models
 
                         case MagicType.BlowEarth:
                             if (Config.DrawEffects && Race != ObjectType.Monster)
-                                foreach (Point point in MagicLocations)
+                            {
+                                if (MagicLocations.Count > 0)
                                 {
+                                    Point finalPoint = MagicLocations[MagicLocations.Count - 1];
+
                                     Effects.Add(spell = new MirProjectile(1990, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour, CurrentLocation)
                                     {
                                         Blend = true,
-                                        MapTarget = point,
+                                        MapTarget = finalPoint,
                                         Skip = 0,
                                         Explode = true,
                                     });
@@ -1258,17 +1261,17 @@ namespace Client.Models
                                         spell = new MirEffect(2000, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 50, 80, Globals.WindColour)
                                         {
                                             Blend = true,
-                                            MapTarget = point
+                                            MapTarget = finalPoint
                                         };
                                         spell.Process();
                                         DXSoundManager.Play(SoundIndex.BlowEarthEnd);
                                     };
 
                                     spell.Process();
-                                }
 
-                            if (MagicLocations.Count > 0)
-                                DXSoundManager.Play(SoundIndex.BlowEarthTravel);
+                                    DXSoundManager.Play(SoundIndex.BlowEarthTravel);
+                                }
+                            }
                             break;
 
                         #endregion
@@ -3089,13 +3092,13 @@ namespace Client.Models
                         #region Dragon Rise
 
                         case MagicType.DragonRise:
-                            Effects.Add(new MirEffect(2180, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 20, 70, attackColour) //Element style?
+                            Effects.Add(new MirEffect(2185, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 20, 70, attackColour) //Element style?
                             {
                                 Blend = true,
                                 Target = this,
                                 Direction = action.Direction,
                                 DrawColour = attackColour,
-                                //StartTime = CEnvir.Now.AddMilliseconds(500)
+                                StartTime = CEnvir.Now.AddMilliseconds(200)
                             });
 
                             DXSoundManager.Play(SoundIndex.DragonRise);

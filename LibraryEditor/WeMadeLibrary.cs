@@ -75,8 +75,8 @@ namespace LibraryEditor
 
             if (!ShadowFile)
             {
-                string fname = _fileName + ".wil";
-                string shadowPath = fname.Replace(".wil", "_S.wil");
+                string fname = _fileName + _MainExtention;
+                string shadowPath = fname.Replace(_MainExtention, "_S" + _MainExtention);
 
                 shadowLibrary = null;
                 if (File.Exists(shadowPath))

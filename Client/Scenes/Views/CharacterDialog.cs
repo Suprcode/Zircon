@@ -12,7 +12,6 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -2552,11 +2551,6 @@ namespace Client.Scenes.Views
                     library.Draw(1160, DisplayArea.X + x, DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
 
                 int index = Gender == MirGender.Male ? 0 : 1;
-
-                if (Stats[Stat.NakedVariant] == 1)
-                {
-                    index += 10;
-                }
 
                 switch (Gender)
                 {

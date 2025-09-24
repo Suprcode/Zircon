@@ -855,9 +855,6 @@ namespace Library
         [StatDescription(Mode = StatType.None)]
         Fame,
 
-        [StatDescription(Mode = StatType.None)]
-        NakedVariant,
-
         [StatDescription(Title = "Throw Distance", Format = "{0}", Mode = StatType.Default, UsageHint = "1 to 4")]
         ThrowDistance = 200,
         [StatDescription(Title = "Auto Cast", Mode = StatType.Text)]
