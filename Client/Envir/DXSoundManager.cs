@@ -186,6 +186,7 @@ namespace Client.Envir
 
             [SoundIndex.FireWallStart] = new DXSound(SoundPath + @"M22-1.wav", SoundType.Magic),
             [SoundIndex.FireWallEnd] = new DXSound(SoundPath + @"M22-2.wav", SoundType.Magic),
+            [SoundIndex.FireWallEndShort] = new DXSound(SoundPath + @"M22-3.wav", SoundType.Magic),
 
             [SoundIndex.FireStormStart] = new DXSound(SoundPath + @"M23-1.wav", SoundType.Magic),
             [SoundIndex.FireStormEnd] = new DXSound(SoundPath + @"M23-3.wav", SoundType.Magic),

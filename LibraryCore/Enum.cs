@@ -2317,6 +2317,7 @@ namespace Library
 
         FireWallStart,
         FireWallEnd,
+        FireWallEndShort,
 
         ExpelUndeadStart,
         ExpelUndeadEnd,

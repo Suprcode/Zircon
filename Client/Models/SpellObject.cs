@@ -172,7 +172,7 @@ namespace Client.Models
             {
                 case SpellEffect.FireWall:
                     if (FrameIndex == 0)
-                        DXSoundManager.Play(SoundIndex.FireWallEnd);
+                        DXSoundManager.Play(SoundIndex.FireWallEndShort);
                     break;
             }
         }
