@@ -201,7 +201,7 @@ namespace Client.Envir
             [SoundIndex.BlowEarthEnd] = new DXSound(SoundPath + @"M73-3.wav", SoundType.Magic),
 
             [SoundIndex.ExpelUndeadStart] = new DXSound(SoundPath + @"M32-1.wav", SoundType.Magic),
-            [SoundIndex.ExpelUndeadStart] = new DXSound(SoundPath + @"M32-3.wav", SoundType.Magic),
+            [SoundIndex.ExpelUndeadEnd] = new DXSound(SoundPath + @"M32-3.wav", SoundType.Magic),
             [SoundIndex.MagicShieldStart] = new DXSound(SoundPath + @"M31-1.wav", SoundType.Magic),
 
             [SoundIndex.IceStormStart] = new DXSound(SoundPath + @"M33-1.wav", SoundType.Magic),

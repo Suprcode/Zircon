@@ -39,6 +39,7 @@ namespace Client.Models
         public float BlendRate = 0.7F;
         public bool UseOffSet = true;
         public bool Loop = false;
+        public int LoopCount = 0;
 
         public ParticleEmitter _particleEmitter;
 
@@ -189,8 +190,18 @@ namespace Client.Models
         {
             TimeSpan elapsed = CEnvir.Now - StartTime;
 
-            if (Loop)
+            if (!Loop)
+            {
+                LoopCount = 0;
+            }
+            else
+            {
+                // Calculate how many full loops have completed
+                LoopCount = (int)(elapsed.Ticks / TotalDuration.Ticks);
+
+                // Keep elapsed only within the current loop
                 elapsed = TimeSpan.FromTicks(elapsed.Ticks % TotalDuration.Ticks);
+            }
 
             if (Reversed)
             {

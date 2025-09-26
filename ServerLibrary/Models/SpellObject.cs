@@ -125,8 +125,6 @@ namespace Server.Models
                             SEnvir.Log($"[ERROR] {Effect} CurrentCell.Objects Null Loop.");
                             return;
                         }
-
-
                     }
                     break;
             }
@@ -248,6 +246,17 @@ namespace Server.Models
 
             Activate();
         }
+
+        public override void OnBeforeDespawned()
+        {
+            switch (Effect)
+            {
+                case SpellEffect.FireWall:
+                    CurrentMap.Broadcast(CurrentLocation, new S.MapEffect { Location = CurrentLocation, Effect = Library.Effect.FireWallSmoke });
+                    break;
+            }
+        }
+
         public override void OnDespawned()
         {
             base.OnDespawned();

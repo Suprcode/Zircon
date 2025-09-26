@@ -1095,6 +1095,8 @@ namespace Server.Models
             if (Node == null)
                 throw new InvalidOperationException("Node is null, Object already Despawned");
 
+            OnBeforeDespawned();
+
             CurrentMap = null;
             CurrentCell = null;
 
@@ -1134,6 +1136,12 @@ namespace Server.Models
 
             GroupMembers?.Clear();
         }
+
+        public virtual void OnBeforeDespawned()
+        {
+
+        }
+
         public virtual void OnDespawned()
         {
             for (int i = SpellList.Count - 1; i >= 0; i--)

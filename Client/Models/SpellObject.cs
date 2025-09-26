@@ -34,20 +34,19 @@ namespace Client.Models
             Power = info.Power;
 
             UpdateLibraries();
-            
+
             SetFrame(new ObjectAction(MirAction.Standing, Direction, CurrentLocation));
+
             switch (Effect)
             {
                 case SpellEffect.FireWall:
                 case SpellEffect.MonsterDeathCloud:
-                    FrameStart -= TimeSpan.FromMilliseconds(CEnvir.Random.Next(300));
+                    FrameStart -= TimeSpan.FromMilliseconds(CEnvir.Random.Next(750));
                     break;
                 case SpellEffect.Tempest:
                     FrameStart -= TimeSpan.FromMilliseconds(CEnvir.Random.Next(1350));
                     break;
-
             }
-
 
             GameScene.Game.MapControl.AddObject(this);
         }
@@ -61,11 +60,11 @@ namespace Client.Models
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Magic, out BodyLibrary);
                     Frames[MirAnimation.Standing] = new Frame(649, 1, 0, TimeSpan.FromDays(365));
                     Blended = true;
-                    BlendRate =0.3f;
+                    BlendRate = 0.3f;
                     break;
                 case SpellEffect.FireWall:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Magic, out BodyLibrary);
-                    Frames[MirAnimation.Standing] = new Frame(920, 3, 0, TimeSpan.FromMilliseconds(150));
+                    Frames[MirAnimation.Standing] = new Frame(920, 5, 0, TimeSpan.FromMilliseconds(150));
                     Blended = true;
                     LightColour = Globals.FireColour;
                     BlendRate = 0.55f;
@@ -118,7 +117,7 @@ namespace Client.Models
                     break;
                 case SpellEffect.Rubble:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out BodyLibrary);
-                    int index ;
+                    int index;
 
                     if (Power > 20)
                         index = 234;
@@ -128,7 +127,7 @@ namespace Client.Models
                         index = 232;
                     else if (Power > 5)
                         index = 231;
-                    else 
+                    else
                         index = 230;
 
                     Frames[MirAnimation.Standing] = new Frame(index, 1, 0, TimeSpan.FromMilliseconds(100));
@@ -156,13 +155,26 @@ namespace Client.Models
         {
             if (Blended)
                 BodyLibrary.DrawBlend(DrawFrame, DrawX, DrawY, DrawColour, true, BlendRate, ImageType.Image);
-            else 
+            else
                 BodyLibrary.Draw(DrawFrame, DrawX, DrawY, DrawColour, true, 1F, ImageType.Image);
         }
 
         public override bool MouseOver(Point p)
         {
             return false;
+        }
+
+        public override void FrameIndexChanged()
+        {
+            base.FrameIndexChanged();
+
+            switch (Effect)
+            {
+                case SpellEffect.FireWall:
+                    if (FrameIndex == 0)
+                        DXSoundManager.Play(SoundIndex.FireWallEnd);
+                    break;
+            }
         }
     }
 }

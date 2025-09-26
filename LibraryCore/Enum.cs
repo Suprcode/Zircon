@@ -1406,7 +1406,9 @@ namespace Library
 
         DemonExplosion,
         ParasiteExplode,
-        BurningFireExplode
+        BurningFireExplode,
+
+        FireWallSmoke
     }
 
     [Flags]
