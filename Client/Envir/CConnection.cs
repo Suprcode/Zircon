@@ -1627,32 +1627,18 @@ namespace Client.Envir
                     DXSoundManager.Play(SoundIndex.FireStormEnd);
                     break;
                 case Effect.FireWallSmoke:
-                    var eff1 = new MirEffect(220, 1, TimeSpan.FromMilliseconds(2500), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
+                    new MirEffect(220, 1, TimeSpan.FromMilliseconds(3500), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
                     {
                         MapTarget = p.Location,
                         Opacity = 0.8F,
-                        DrawType = DrawType.Floor,    
-                        Loop = true,
+                        DrawType = DrawType.Floor
                     };
-
-                    var eff2 = new MirEffect(2450 + CEnvir.Random.Next(5) * 10, 10, TimeSpan.FromMilliseconds(250), LibraryFile.Magic, 0, 0, Globals.NoneColour)
+                    new MirEffect(2450 + CEnvir.Random.Next(5) * 10, 10, TimeSpan.FromMilliseconds(250), LibraryFile.Magic, 0, 0, Globals.NoneColour)
                     {
                         Blend = true,
                         MapTarget = p.Location,
-                        DrawType = DrawType.Floor,
-                        Loop = true
+                        DrawType = DrawType.Floor
                     };
-                    eff2.FrameIndexAction = () =>
-                    {
-                        if (eff2.LoopCount > 1)
-                        {
-                            var loop = CEnvir.Random.Next(2) == 0;
-
-                            eff1.Loop = loop;
-                            eff2.Loop = loop;
-                        }
-                    };
-
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

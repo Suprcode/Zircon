@@ -711,6 +711,7 @@ namespace Client.Models
                         Direction = Direction,
                         Skip = 10,
                     });
+                    DXSoundManager.Play(SoundIndex.MiningHit);
                     break;
                 case MirAction.Spell:
                     if (!MagicCast) break;
@@ -1158,12 +1159,12 @@ namespace Client.Models
                             if (Config.DrawEffects && Race != ObjectType.Monster)
                                 foreach (Point point in MagicLocations)
                                 {
-                                    Effects.Add(new MirEffect(220, 1, TimeSpan.FromMilliseconds(2500), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
+                                    Effects.Add(new MirEffect(220, 1, TimeSpan.FromMilliseconds(3500), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
                                     {
                                         MapTarget = point,
                                         StartTime = CEnvir.Now.AddMilliseconds(500 + Functions.Distance(point, CurrentLocation) * 50),
                                         Opacity = 0.8F,
-                                        DrawType = DrawType.Floor,
+                                        DrawType = DrawType.Floor
                                     });
 
                                     Effects.Add(new MirEffect(2450 + CEnvir.Random.Next(5) * 10, 10, TimeSpan.FromMilliseconds(250), LibraryFile.Magic, 0, 0, Globals.NoneColour)
@@ -2597,7 +2598,7 @@ namespace Client.Models
                             if (Config.DrawEffects && Race != ObjectType.Monster)
                                 foreach (Point point in MagicLocations)
                                 {
-                                    Effects.Add(new MirEffect(220, 1, TimeSpan.FromMilliseconds(2500), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
+                                    Effects.Add(new MirEffect(220, 1, TimeSpan.FromMilliseconds(3000), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
                                     {
                                         MapTarget = point,
                                         StartTime = CEnvir.Now.AddMilliseconds(500 + Functions.Distance(point, CurrentLocation) * 50),
@@ -4549,7 +4550,7 @@ namespace Client.Models
                             if (Config.DrawEffects && Race != ObjectType.Monster)
                                 foreach (Point point in MagicLocations)
                                 {
-                                    Effects.Add(new MirEffect(220, 1, TimeSpan.FromMilliseconds(2500), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
+                                    Effects.Add(new MirEffect(220, 1, TimeSpan.FromMilliseconds(3000), LibraryFile.ProgUse, 0, 0, Globals.NoneColour)
                                     {
                                         MapTarget = point,
                                         StartTime = CEnvir.Now.AddMilliseconds(500 + Functions.Distance(point, location) * 50),

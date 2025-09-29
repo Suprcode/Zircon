@@ -2210,6 +2210,9 @@ namespace Library
         GlaiveAttack,
         ClawAttack,
 
+        MiningHit,
+        MiningStruck,
+
         GenericStruckPlayer,
         GenericStruckMonster,
 
@@ -2316,8 +2319,8 @@ namespace Library
         BlowEarthTravel,
 
         FireWallStart,
-        FireWallEnd,
-        FireWallEndShort,
+        FireWallDurationLong,
+        FireWallDuration,
 
         ExpelUndeadStart,
         ExpelUndeadEnd,
@@ -2341,6 +2344,8 @@ namespace Library
 
         ChainLightningStart,
         ChainLightningEnd,
+
+        TempestDuration,
 
         ParasiteTravel,
         ParasiteExplode,

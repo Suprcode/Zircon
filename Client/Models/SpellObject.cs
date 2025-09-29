@@ -4,6 +4,7 @@ using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Frame = Library.Frame;
 using S = Library.Network.ServerPackets;
 
@@ -44,11 +45,21 @@ namespace Client.Models
                     FrameStart -= TimeSpan.FromMilliseconds(CEnvir.Random.Next(750));
                     break;
                 case SpellEffect.Tempest:
-                    FrameStart -= TimeSpan.FromMilliseconds(CEnvir.Random.Next(1350));
+                    FrameStart -= TimeSpan.FromMilliseconds(CEnvir.Random.Next(1500));
                     break;
             }
 
             GameScene.Game.MapControl.AddObject(this);
+
+            switch (Effect)
+            {
+                case SpellEffect.FireWall:
+                    DXSoundManager.Play(SoundIndex.FireWallDuration);
+                    break;
+                case SpellEffect.Tempest:
+                    DXSoundManager.Play(SoundIndex.TempestDuration);
+                    break;
+            }
         }
 
         public void UpdateLibraries()
@@ -132,6 +143,7 @@ namespace Client.Models
 
                     Frames[MirAnimation.Standing] = new Frame(index, 1, 0, TimeSpan.FromMilliseconds(100));
 
+                    DXSoundManager.Play(SoundIndex.MiningStruck);
                     Light = 0;
                     break;
                 case SpellEffect.ZombieHole:
@@ -141,7 +153,6 @@ namespace Client.Models
                     Light = 0;
                     break;
             }
-
         }
 
         public override void SetAnimation(ObjectAction action)
@@ -164,17 +175,34 @@ namespace Client.Models
             return false;
         }
 
-        public override void FrameIndexChanged()
+        public override void Remove()
         {
-            base.FrameIndexChanged();
+            base.Remove();
 
             switch (Effect)
             {
                 case SpellEffect.FireWall:
-                    if (FrameIndex == 0)
-                        DXSoundManager.Play(SoundIndex.FireWallEndShort);
+                    if (!ExistingEffects(Effect))
+                    {
+                        DXSoundManager.Stop(SoundIndex.FireWallDuration);
+                    }
+                    break;
+                case SpellEffect.Tempest:
+                    if (!ExistingEffects(Effect))
+                    {
+                        DXSoundManager.Stop(SoundIndex.TempestDuration);
+                    }
                     break;
             }
+        }
+
+        private static bool ExistingEffects(SpellEffect effect)
+        {
+            bool nearby = GameScene.Game.MapControl.Objects.OfType<SpellObject>().Any(s =>
+                s.Effect == effect && !s.Dead &&
+                Functions.InRange(User.CurrentLocation, s.CurrentLocation, 20));
+
+            return nearby;
         }
     }
 }

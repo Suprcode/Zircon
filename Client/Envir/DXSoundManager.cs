@@ -69,6 +69,9 @@ namespace Client.Envir
             [SoundIndex.GlaiveAttack] = new DXSound(SoundPath + @"63.wav", SoundType.Player),
             [SoundIndex.ClawAttack] = new DXSound(SoundPath + @"64.wav", SoundType.Player),
 
+            [SoundIndex.MiningHit] = new DXSound(SoundPath + @"125.wav", SoundType.Player),
+            [SoundIndex.MiningStruck] = new DXSound(SoundPath + @"126.wav", SoundType.Player),
+
             [SoundIndex.MaleStruck] = new DXSound(SoundPath + @"138.wav", SoundType.Player),
             [SoundIndex.FemaleStruck] = new DXSound(SoundPath + @"139.wav", SoundType.Player),
             [SoundIndex.MaleDie] = new DXSound(SoundPath + @"144.wav", SoundType.Player),
@@ -185,8 +188,8 @@ namespace Client.Envir
             [SoundIndex.TeleportationStart] = new DXSound(SoundPath + @"M21-1.wav", SoundType.Magic),
 
             [SoundIndex.FireWallStart] = new DXSound(SoundPath + @"M22-1.wav", SoundType.Magic),
-            [SoundIndex.FireWallEnd] = new DXSound(SoundPath + @"M22-2.wav", SoundType.Magic),
-            [SoundIndex.FireWallEndShort] = new DXSound(SoundPath + @"M22-3.wav", SoundType.Magic),
+            [SoundIndex.FireWallDurationLong] = new DXSound(SoundPath + @"M22-2.wav", SoundType.Magic) { Loop = true },
+            [SoundIndex.FireWallDuration] = new DXSound(SoundPath + @"M22-3.wav", SoundType.Magic) { Loop = true },
 
             [SoundIndex.FireStormStart] = new DXSound(SoundPath + @"M23-1.wav", SoundType.Magic),
             [SoundIndex.FireStormEnd] = new DXSound(SoundPath + @"M23-3.wav", SoundType.Magic),
@@ -216,7 +219,9 @@ namespace Client.Envir
 
             [SoundIndex.ChainLightningStart] = new DXSound(SoundPath + @"M111-1.wav", SoundType.Magic),
             [SoundIndex.ChainLightningEnd] = new DXSound(SoundPath + @"M111-3.wav", SoundType.Magic),
-            
+
+            [SoundIndex.TempestDuration] = new DXSound(SoundPath + @"M114-3.wav", SoundType.Magic) { Loop = true },
+
             [SoundIndex.FrostBiteStart] = new DXSound(SoundPath + @"m135-2.wav", SoundType.Magic),
 
             [SoundIndex.ParasiteTravel] = new DXSound(SoundPath + @"m139-1.wav", SoundType.Magic),
