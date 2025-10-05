@@ -81,8 +81,7 @@ namespace Server.Models.Magics
 
             if (count > 0)
             {
-                greaterPoisonDust.Cooldown = SEnvir.Now.AddMilliseconds(greaterPoisonDust.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = greaterPoisonDust.Info.Index, Delay = greaterPoisonDust.Info.Delay });
+                MagicCooldown(greaterPoisonDust);
             }
 
             if (target == null)

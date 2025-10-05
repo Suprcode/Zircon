@@ -22,12 +22,7 @@ namespace Server.Models.Magics
         {
             if (Player.Buffs.Any(x => x.Type == BuffType.DarkConversion)) return true;
 
-            if (Magic.Cost > Player.CurrentMP)
-            {
-                return false;
-            }
-
-            return true;
+            return base.CheckCost();
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
@@ -71,7 +66,7 @@ namespace Server.Models.Magics
                 return;
             }
 
-            Player.ChangeMP(-Magic.Cost);
+            MagicConsume();
         }
 
         public override void MagicFinalise()

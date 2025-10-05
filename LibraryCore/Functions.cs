@@ -132,6 +132,7 @@ namespace Library
                     break;
                 case MagicType.HalfMoon:
                 case MagicType.DestructiveSurge:
+                case MagicType.OffensiveBlow:
                     animation = MirAnimation.Combat4;
                     break;
                 case MagicType.DragonRise:

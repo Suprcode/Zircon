@@ -81,8 +81,7 @@ namespace Server.Models.Magics
 
             if (count > 0)
             {
-                augmentEvilSlayer.Cooldown = SEnvir.Now.AddMilliseconds(augmentEvilSlayer.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentEvilSlayer.Info.Index, Delay = augmentEvilSlayer.Info.Delay });
+                MagicCooldown(augmentEvilSlayer);
             }
 
             if (target == null)

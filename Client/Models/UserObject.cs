@@ -260,7 +260,7 @@ namespace Client.Models
         }
         private bool _CanDestructiveSurge;
 
-        public bool CanFlamingSword, CanDragonRise, CanBladeStorm, CanDefensiveBlow;
+        public bool CanFlamingSword, CanDragonRise, CanBladeStorm, CanDefensiveBlow, CanOffensiveBlow;
 
         public bool CanFlameSplash
         {
@@ -585,6 +585,10 @@ namespace Client.Models
                         attackMagic = MagicType.DragonRise;
                     else if (CanFlamingSword)
                         attackMagic = MagicType.FlamingSword;
+                    else if (CanFlamingSword)
+                        attackMagic = MagicType.FlamingSword;
+                    else if (CanOffensiveBlow && GameScene.Game.MapControl.HasTarget(Functions.Move(CurrentLocation, action.Direction)))
+                        attackMagic = MagicType.OffensiveBlow;
 
                     action.Extra[1] = attackMagic;
                     break;

@@ -3054,7 +3054,7 @@ namespace Server.Models
             }
         }
 
-        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate)
+        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false)
         {
             BuffInfo info = base.BuffAdd(type, remainingTicks, stats, visible, pause, tickRate);
 

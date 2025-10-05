@@ -32,6 +32,7 @@ namespace Client.Envir.Translations
         public abstract string WeaponEnergyDragonRise { get; set; }
         public abstract string WeaponEnergyBladeStorm { get; set; }
         public abstract string WeaponEnergyDefensiveBlow { get; set; }
+        public abstract string WeaponEnergyOffensiveBlow { get; set; }
         public abstract string LevelIncreased { get; set; }
         public abstract string GainedExperience { get; set; }
         public abstract string LostExperience { get; set; }

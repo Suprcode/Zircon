@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using S = Library.Network.ServerPackets;
 
 namespace Server.Models
 {
@@ -70,6 +71,21 @@ namespace Server.Models
 
         public virtual bool CheckCost()
         {
+            if (Player.Superman)
+            {
+                return true;
+            }
+
+            if (Magic.Info.School == MagicSchool.Discipline)
+            {
+                if (Magic.Cost > Player.CurrentFP)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
             if (Magic.Cost > Player.CurrentMP)
             {
                 return false;
@@ -90,6 +106,11 @@ namespace Server.Models
 
         public virtual void MagicConsume()
         {
+            if (Player.Superman)
+            {
+                return;
+            }
+
             if (Magic.Info.School == MagicSchool.Discipline)
             {
                 Player.ChangeFP(-Magic.Cost);
@@ -306,6 +327,20 @@ namespace Server.Models
         public static List<MagicType> GetOrderedMagic(List<MagicType> types)
         {
             return null;
+        }
+
+        public void MagicCooldown(UserMagic magic = null, int? delayInMilliseconds = null)
+        {
+            if (Player.Superman)
+            {
+                return;
+            }
+
+            var cooldownMagic = magic ?? Magic;
+            var cooldownDelay = delayInMilliseconds ?? cooldownMagic.Info.Delay;
+
+            cooldownMagic.Cooldown = SEnvir.Now.AddMilliseconds(cooldownDelay);
+            Player.Enqueue(new S.MagicCooldown { InfoIndex = cooldownMagic.Info.Index, Delay = cooldownDelay });
         }
     }
 

@@ -90,8 +90,7 @@ namespace Server.Models.Magics
             if (SEnvir.Now <= Player.PvPTime.AddSeconds(30))
                 delay *= 10;
 
-            Magic.Cooldown = SEnvir.Now.AddMilliseconds(delay);
-            Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = delay });
+            MagicCooldown(null, delay);
 
             Player.LevelMagic(Magic);
         }

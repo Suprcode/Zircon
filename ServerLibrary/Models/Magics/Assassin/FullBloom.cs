@@ -51,8 +51,7 @@ namespace Server.Models.Magics
 
             if (Player.GetMagic(MagicType.FullBloom, out FullBloom fullBloom))
             {
-                fullBloom.Magic.Cooldown = SEnvir.Now.AddMilliseconds(fullBloom.Magic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = fullBloom.Magic.Info.Index, Delay = fullBloom.Magic.Info.Delay });
+                MagicCooldown(fullBloom.Magic, fullBloom.Magic.Info.Delay);
             }
             //if (Player.GetMagic(MagicType.WhiteLotus, out WhiteLotus whiteLotus))
             //{
@@ -61,13 +60,11 @@ namespace Server.Models.Magics
             //}
             if (Player.GetMagic(MagicType.RedLotus, out RedLotus redLotus))
             {
-                redLotus.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = redLotus.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                MagicCooldown(redLotus.Magic, attackDelay + attackDelay / 2);
             }
             if (Player.GetMagic(MagicType.SweetBrier, out SweetBrier sweetBrier))
             {
-                sweetBrier.Magic.Cooldown = SEnvir.Now.AddMilliseconds(attackDelay + attackDelay / 2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = sweetBrier.Magic.Info.Index, Delay = attackDelay + attackDelay / 2 });
+                MagicCooldown(sweetBrier.Magic, attackDelay + attackDelay / 2);
             }
         }
 

@@ -668,7 +668,6 @@ namespace Client.Models
 
             FrameIndex = frame;
             DrawFrame = FrameIndex + CurrentFrame.StartIndex + CurrentFrame.OffSet * (int)Direction;
-
         }
 
         public abstract void SetAnimation(ObjectAction action);
@@ -2807,6 +2806,8 @@ namespace Client.Models
             CurrentLocation = action.Location;
 
             EndMagicEffect(MagicEffect.Assault);
+            EndMagicEffect(MagicEffect.HundredFist);
+
             List<uint> targets;
 
             if (action.Action != MirAction.Standing)
@@ -2838,8 +2839,10 @@ namespace Client.Models
                             DXSoundManager.Play(SoundIndex.AssaultStart);
                             CreateMagicEffect(MagicEffect.Assault);
                             break;
+                        case MagicType.HundredFist:
+                            CreateMagicEffect(MagicEffect.HundredFist);
+                            break;
                     }
-
                     break;
                 case MirAction.Standing:
                     bool haselementalhurricane = VisibleBuffs.Contains(BuffType.ElementalHurricane);
@@ -4663,7 +4666,6 @@ namespace Client.Models
 
                             #endregion
 
-
                     }
 
 
@@ -4677,7 +4679,6 @@ namespace Client.Models
             {
                 switch (CurrentAction)
                 {
-                    //Die, Attack,..
                     case MirAction.Die:
                     case MirAction.Dead:
                         ActionQueue.Add(new ObjectAction(MirAction.Dead, Direction, CurrentLocation));
@@ -4691,8 +4692,6 @@ namespace Client.Models
             switch (ActionQueue[0].Action)
             {
                 case MirAction.Moving:
-                // case MirAction.DashL:
-                // case MirAction.DashR:
                 case MirAction.Pushed:
                     if (!GameScene.Game.MoveFrame) return;
                     break;
@@ -5507,9 +5506,20 @@ namespace Client.Models
                         });
                     }
                     break;
+                case MagicEffect.HundredFist:
+                    {
+                        effects.Add(new MirEffect(2100, 5, TimeSpan.FromMilliseconds(200), LibraryFile.MagicEx5, 35, 35, Globals.FireColour)
+                        {
+                            Blend = true,
+                            Target = this,
+                            Loop = true,
+                            Direction = Direction,
+                        });
+                    }
+                    break;
             }
 
-            if (effects.Any())
+            if (effects.Count != 0)
             {
                 foreach (var effect in effects)
                 {
@@ -5521,6 +5531,7 @@ namespace Client.Models
 
             return effects;
         }
+
         public void EndMagicEffect(MagicEffect magic)
         {
             if (!MagicEffects.TryGetValue(magic, out List<MirEffect> effects))

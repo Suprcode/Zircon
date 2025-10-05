@@ -18,13 +18,12 @@ namespace Server.Models.Magics
 
         public override void Toggle(bool canUse)
         {
-            if (Magic.Cost > Player.CurrentMP || SEnvir.Now < Magic.Cooldown || Player.Dead || (Player.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Player.Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
+            if (!CheckCost() || SEnvir.Now < Magic.Cooldown || Player.Dead || (Player.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Player.Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
             if (Player.Pets.All(x => x.MonsterInfo.Flag != MonsterFlag.InfernalSoldier || x.Dead))
                 return;
 
-            Player.ChangeMP(-Magic.Cost);
-            Magic.Cooldown = SEnvir.Now.AddMilliseconds(Magic.Info.Delay);
-            Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = Magic.Info.Delay });
+            MagicConsume();
+            MagicCooldown();
 
             MonsterObject pet = Player.Pets.FirstOrDefault(x => x.MonsterInfo.Flag == MonsterFlag.InfernalSoldier && !x.Dead);
 

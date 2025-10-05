@@ -840,8 +840,6 @@ namespace Client.Scenes.Views
             {
                 if (CEnvir.Now < MapObject.User.NextActionTime || MapObject.User.ActionQueue.Count != 0) return;
 
-                //  if (QueuedMagic.Action == MirAction.Magic && (Spell)QueuedMagic.Extra[1] == Magic.ShoulderDash && !GameScene.Game.MoveFrame) return;
-
                 MapObject.User.AttemptAction(User.MagicAction);
                 User.MagicAction = null;
                 Mining = false;
@@ -1092,6 +1090,7 @@ namespace Client.Scenes.Views
                 {
                     steps = 1;
                 }
+
                 direction = best;
                 break;
             }

@@ -69,14 +69,12 @@ namespace Server.Models.Magics
 
             if (Player.GetMagic(MagicType.Karma, out Karma karma))
             {
-                karma.Magic.Cooldown = SEnvir.Now.AddMilliseconds(karma.Magic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = karma.Magic.Info.Index, Delay = karma.Magic.Info.Delay });
+                MagicCooldown(karma.Magic);
             }
 
             if (Player.GetMagic(MagicType.SummonPuppet, out SummonPuppet summonPuppet))
             {
-                summonPuppet.Magic.Cooldown = SEnvir.Now.AddMilliseconds(summonPuppet.Magic.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = summonPuppet.Magic.Info.Index, Delay = summonPuppet.Magic.Info.Delay });
+                MagicCooldown(summonPuppet.Magic);
             }
         }
 

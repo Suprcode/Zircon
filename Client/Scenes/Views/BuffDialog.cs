@@ -444,8 +444,11 @@ namespace Client.Scenes.Views
                     text = $"Magic Weakness\n\n" +
                            $"Your Magic Resistance has been greatly reduced.\n";
                     break;
+                default:
+                    text = $"{buff.Type}\n";
+                    break;
             }
-            
+
             if (stats != null && stats.Count > 0)
             {
                 foreach (KeyValuePair<Stat, int> pair in stats.Values)
@@ -481,7 +484,8 @@ namespace Client.Scenes.Views
                     pair.Value.ForeColour = Color.IndianRed;
                     continue;
                 }
-                    if (pair.Key.RemainingTime == TimeSpan.MaxValue) continue;
+
+                if (pair.Key.RemainingTime == TimeSpan.MaxValue) continue;
 
                 if (pair.Key.RemainingTime.TotalSeconds >= 10)
                 {

@@ -919,7 +919,7 @@ namespace Client.Envir
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer)
             {
                 if (MapObject.User.CurrentLocation != p.Location || MapObject.User.Direction != p.Direction)
-                    GameScene.Game.Displacement(p.Direction, p.Location);
+                    GameScene.Game.Displacement(p.Direction, p.Location, true);
 
                 MapObject.User.ServerTime = DateTime.MinValue;
 
@@ -1108,6 +1108,9 @@ namespace Client.Envir
 
                 if (ob == MapObject.User)
                 {
+                    if (MapObject.User.CurrentLocation != p.Location || MapObject.User.Direction != p.Direction)
+                        GameScene.Game.Displacement(p.Direction, p.Location);
+
                     if (GameScene.Game.MapControl.FishingState != FishingState.None)
                         GameScene.Game.MapControl.FishingState = FishingState.Cancel;
 
@@ -1147,6 +1150,7 @@ namespace Client.Envir
                 return;
             }
         }
+
         public void Process(S.ObjectDash p)
         {
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer)
@@ -1156,15 +1160,18 @@ namespace Client.Envir
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                ob.StanceTime = CEnvir.Now.AddSeconds(3);
-                ob.ActionQueue.Add(new ObjectAction(MirAction.Standing, p.Direction, Functions.Move(p.Location, p.Direction, -p.Distance)));
+                if (p.Distance > 0)
+                {
+                    ob.StanceTime = CEnvir.Now.AddSeconds(3);
 
-                for (int i = 1; i <= p.Distance; i++)
-                    ob.ActionQueue.Add(new ObjectAction(MirAction.Moving, p.Direction, Functions.Move(p.Location, p.Direction, i - p.Distance), 1, p.Magic));
+                    for (int i = 1; i <= p.Distance; i++)
+                        ob.ActionQueue.Add(new ObjectAction(MirAction.Moving, p.Direction, Functions.Move(p.Location, p.Direction, i - p.Distance), 1, p.Magic));
+                }
 
                 return;
             }
         }
+
         public void Process(S.ObjectAttack p)
         {
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer && p.AttackMagic != MagicType.DanceOfSwallow)
@@ -1640,6 +1647,15 @@ namespace Client.Envir
                         DrawType = DrawType.Floor
                     };
                     break;
+                case Effect.HundredFistStruck:
+                    new MirEffect(2200, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
+                    {
+                        Blend = true,
+                        MapTarget = p.Location,
+                        Direction = p.Direction,
+                        Skip = 10
+                    };
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -1788,6 +1804,11 @@ namespace Client.Envir
                     GameScene.Game.User.CanDefensiveBlow = p.CanUse;
                     if (p.CanUse)
                         GameScene.Game.ReceiveChat(CEnvir.Language.WeaponEnergyDefensiveBlow, MessageType.Hint);
+                    break;
+                case MagicType.OffensiveBlow:
+                    GameScene.Game.User.CanOffensiveBlow = p.CanUse;
+                    if (p.CanUse)
+                        GameScene.Game.ReceiveChat(CEnvir.Language.WeaponEnergyOffensiveBlow, MessageType.Hint);
                     break;
                 case MagicType.FullBloom:
                 case MagicType.WhiteLotus:

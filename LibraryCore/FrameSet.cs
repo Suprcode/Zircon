@@ -70,7 +70,7 @@ namespace Library
                 [MirAnimation.Combat1] = new Frame(560, 5, 10, TimeSpan.FromMilliseconds(100)), //Proj Spell
                 [MirAnimation.Combat2] = new Frame(640, 5, 10, TimeSpan.FromMilliseconds(100)), //Target Spell
                 [MirAnimation.Combat3] = new Frame(720, 6, 10, TimeSpan.FromMilliseconds(100)), //Default Attack (WWT)
-                [MirAnimation.Combat4] = new Frame(800, 6, 10, TimeSpan.FromMilliseconds(100)), //Default 1 Handed (Sin)
+                [MirAnimation.Combat4] = new Frame(800, 6, 10, TimeSpan.FromMilliseconds(100)), //Default 1 Handed (Sin) / Backhand
                 [MirAnimation.Combat5] = new Frame(880, 10, 10, TimeSpan.FromMilliseconds(60)), //Lotus 1 Handed
                 [MirAnimation.Combat6] = new Frame(960, 10, 10, TimeSpan.FromMilliseconds(60)), // Blade Storm ??
                 [MirAnimation.Combat7] = new Frame(1040, 10, 10, TimeSpan.FromMilliseconds(100)), //Kick
@@ -971,13 +971,13 @@ namespace Library
             for (int i = 0; i < Delays.Length; i++)
                 Delays[i] = frame.Delays[i];
         }
+
         public int GetFrame(DateTime start, DateTime now, bool doubleSpeed)
         {
             TimeSpan enlapsed = now - start;
 
             if (doubleSpeed && !StaticSpeed)
                 enlapsed += enlapsed;
-
 
             if (Reversed)
             {

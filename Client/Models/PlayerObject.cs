@@ -1,5 +1,4 @@
-﻿
-using Client.Envir;
+﻿using Client.Envir;
 using Client.Models.Player;
 using Client.Scenes;
 using Library;
@@ -568,7 +567,6 @@ namespace Client.Models
             switch (action.Action)
             {
                 case MirAction.Standing:
-                    //if(VisibleBuffs.Contains(BuffType.Stealth))
                     animation = MirAnimation.Standing;
 
                     if (CEnvir.Now < StanceTime)
@@ -597,7 +595,7 @@ namespace Client.Models
                     if (Horse != HorseType.None)
                         animation = MirAnimation.HorseWalking;
 
-                    if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault)
+                    if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault || (MagicType)action.Extra[1] == MagicType.HundredFist)
                         animation = MirAnimation.Combat8;
                     else if (VisibleBuffs.Contains(BuffType.Cloak))
                         animation = VisibleBuffs.Contains(BuffType.GhostWalk) ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow;
@@ -827,7 +825,6 @@ namespace Client.Models
                     }
                     break;
             }
-
         }
 
         public override void DoNextAction()
@@ -922,6 +919,25 @@ namespace Client.Models
                             break;
                         case MirAnimation.FishingReel:
                             DXSoundManager.Play(SoundIndex.FishingReel);
+                            break;
+                    }
+                    break;
+                case MirAction.Attack:
+                    switch(MagicType)
+                    {
+                        case MagicType.OffensiveBlow:
+                            if (FrameIndex == 3)
+                            {
+                                Effects.Add(new MirEffect(2305, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 50, Globals.FireColour)
+                                {
+                                    Blend = true,
+                                    Target = this,
+                                    Direction = Direction,
+                                    Skip = 10
+                                });
+
+                                DXSoundManager.Play(SoundIndex.FlamingSword);
+                            }
                             break;
                     }
                     break;

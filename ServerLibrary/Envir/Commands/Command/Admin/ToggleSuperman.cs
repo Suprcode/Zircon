@@ -3,6 +3,9 @@ using Server.Models;
 
 namespace Server.Envir.Commands.Command.Admin
 {
+    /// <summary>
+    /// Toggles the player being able to receive damage or consume mana
+    /// </summary>
     class ToggleSuperman : AbstractCommand<IAdminCommand>
     {
         public override string VALUE => "SUPERMAN";

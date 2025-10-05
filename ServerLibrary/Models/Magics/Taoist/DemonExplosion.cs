@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Server.Models.Magics
 
         public DemonExplosion(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO - Leaves firewall on floor
+
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
@@ -67,6 +68,37 @@ namespace Server.Models.Magics
             foreach (MapObject target in targets)
             {
                 ActionList.Add(new DelayedAction(delay, ActionType.DelayedMagicDamage, new List<MagicType> { Type }, target, true, null, target.Race == ObjectType.Player ? damagePvP : damagePvE));
+            }
+
+            List<Cell> cells = pet.CurrentMap.GetCells(pet.CurrentLocation, 0, 3, false, true);
+
+            foreach (var cell in cells)
+            {
+                if (cell.Objects != null)
+                {
+                    for (int i = cell.Objects.Count - 1; i >= 0; i--)
+                    {
+                        if (cell.Objects[i].Race != ObjectType.Spell) continue;
+
+                        SpellObject spell = (SpellObject)cell.Objects[i];
+
+                        if (spell.Effect != SpellEffect.FireWall && spell.Effect != SpellEffect.Tempest) continue;
+
+                        spell.Despawn();
+                    }
+                }
+
+                SpellObject ob = new SpellObject
+                {
+                    DisplayLocation = cell.Location,
+                    TickCount = (Magic.Level + 2),
+                    TickFrequency = TimeSpan.FromSeconds(2),
+                    Owner = Player,
+                    Effect = SpellEffect.FireWall,
+                    Magic = Magic,
+                };
+
+                ob.Spawn(cell.Map, cell.Location);
             }
         }
 

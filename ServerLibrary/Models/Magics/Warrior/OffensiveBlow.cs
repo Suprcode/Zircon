@@ -4,28 +4,27 @@ using Server.Envir;
 using System;
 using S = Library.Network.ServerPackets;
 
-namespace Server.Models.Magics
+namespace Server.Models.Magics.Warrior
 {
-    [MagicType(MagicType.BladeStorm)]
-    public class BladeStorm : MagicObject
+    [MagicType(MagicType.OffensiveBlow)]
+    public class OffensiveBlow : MagicObject
     {
         protected override Element Element => Element.None;
         public override bool AttackSkill => true;
+        public bool CanOffensiveBlow { get; private set; }
+        public DateTime OffensiveBlowTime { get; private set; }
 
-        public bool CanBladeStorm { get; private set; }
-        public DateTime BladeStormTime {  get; private set; }
-
-        public BladeStorm(PlayerObject player, UserMagic magic) : base(player, magic)
+        public OffensiveBlow(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Needs sound
         }
 
         public override void Process()
         {
-            if (CanBladeStorm && SEnvir.Now >= BladeStormTime)
+            if (CanOffensiveBlow && SEnvir.Now >= OffensiveBlowTime)
             {
-                CanBladeStorm = false;
-                Player.Enqueue(new S.MagicToggle { Magic = MagicType.BladeStorm, CanUse = CanBladeStorm });
+                CanOffensiveBlow = false;
+                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = CanOffensiveBlow });
 
                 Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.ChargeExpire, Magic.Info.Name), MessageType.System);
             }
@@ -38,25 +37,15 @@ namespace Server.Models.Magics
             MagicConsume();
             MagicCooldown();
 
-            if (CanBladeStorm)
+            if (CanOffensiveBlow)
             {
                 Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.ChargeFail, Magic.Info.Name), MessageType.System);
             }
             else
             {
-                BladeStormTime = SEnvir.Now.AddSeconds(12);
-                CanBladeStorm = true;
-                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = CanBladeStorm });
-            }
-
-            if (Player.GetMagic(MagicType.FlamingSword, out FlamingSword flamingSword) && SEnvir.Now.AddSeconds(2) > flamingSword.Magic.Cooldown)
-            {
-                MagicCooldown(flamingSword.Magic, 2000);
-            }
-
-            if (Player.GetMagic(MagicType.DragonRise, out DragonRise dragonRise) && SEnvir.Now.AddSeconds(2) > dragonRise.Magic.Cooldown)
-            {
-                MagicCooldown(dragonRise.Magic, 2000);
+                OffensiveBlowTime = SEnvir.Now.AddSeconds(12);
+                CanOffensiveBlow = true;
+                Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = CanOffensiveBlow });
             }
         }
 
@@ -64,10 +53,10 @@ namespace Server.Models.Magics
         {
             var response = new AttackCast();
 
-            if (attackType != Type || !CanBladeStorm)
+            if (attackType != Type || !CanOffensiveBlow)
                 return response;
 
-            CanBladeStorm = false;
+            CanOffensiveBlow = false;
             Player.Enqueue(new S.MagicToggle { Magic = Type, CanUse = false });
 
             response.Cast = true;
@@ -81,6 +70,19 @@ namespace Server.Models.Magics
             power = power * Magic.GetPower() / 100;
 
             return power;
+        }
+
+        public override void AttackComplete(MapObject target)
+        {
+            if (target != null && TryPush(target, Magic.Level + 3))
+            {
+                base.AttackComplete(target);
+            }
+        }
+
+        private bool TryPush(MapObject ob, int distance)
+        {
+            return ob.Pushed(Direction, distance) != 0;
         }
     }
 }

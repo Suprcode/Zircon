@@ -84,8 +84,7 @@ namespace Server.Models.Magics
 
             if (count > 0)
             {
-                augmentResurrection.Cooldown = SEnvir.Now.AddMilliseconds(augmentResurrection.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentResurrection.Info.Index, Delay = augmentResurrection.Info.Delay });
+                MagicCooldown(augmentResurrection);
             }
 
             return response;
@@ -110,8 +109,7 @@ namespace Server.Models.Magics
             Player.Broadcast(new S.ObjectRevive { ObjectID = ob.ObjectID, Location = ob.CurrentLocation, Effect = false });
             Player.LevelMagic(Magic);
 
-            Magic.Cooldown = SEnvir.Now.AddSeconds(20);
-            Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = 20000 });
+            MagicCooldown(null, 20000);
 
             var augmentResurrection = GetAugmentedSkill(MagicType.AugmentResurrection);
 

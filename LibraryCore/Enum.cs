@@ -250,6 +250,7 @@ namespace Library
         ReflectDamage = 103,
         Invincibility = 104,
         DefensiveBlow = 105,
+        Dash = 106,
 
         //Wiz
         Renounce = 200,
@@ -617,6 +618,10 @@ namespace Library
         DefensiveBlow = 130,
         ElementalSwords = 131,
         Shuriken = 132,
+        HundredFist = 133,
+        OffensiveBlow = 134,
+        InfernoSword = 135,
+        FireSword = 136,
 
         FireBall = 201,
         LightningBall = 202,
@@ -1408,7 +1413,9 @@ namespace Library
         ParasiteExplode,
         BurningFireExplode,
 
-        FireWallSmoke
+        FireWallSmoke,
+
+        HundredFistStruck
     }
 
     [Flags]
@@ -1461,6 +1468,7 @@ namespace Library
         ReflectDamage,
         Assault,
         DefensiveBlow,
+        HundredFist,
 
         MagicShield,
         MagicShieldStruck,

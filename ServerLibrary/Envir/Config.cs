@@ -131,6 +131,9 @@ namespace Server.Envir
         public static int StrengthLossRate { get; set; } = 20;
         public static bool DropVisibleOtherPlayers { get; set; } = false;
         public static bool EnableFortune { get; set; } = true;
+        public static bool AdminStartInGamemasterMode { get; set; } = true;
+        public static bool AdminStartInObserverMode { get; set; } = true;
+        public static bool AdminStartInSupermanMode { get; set; } = true;
 
         [ConfigSection("Rates")]
         public static int ExperienceRate { get; set; } = 0;

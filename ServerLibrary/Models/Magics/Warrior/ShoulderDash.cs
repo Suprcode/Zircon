@@ -2,6 +2,7 @@
 using Server.DBModels;
 using Server.Envir;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using S = Library.Network.ServerPackets;
@@ -32,209 +33,242 @@ namespace Server.Models.Magics
                 return response;
             }
 
-            Player.Direction = direction;
-
-            int count = ShoulderDashEnd(Magic);
-
-            if (count == 0)
+            if (Player.Buffs.Any(x => x.Type == BuffType.Dash))
             {
-                Player.Connection.ReceiveChatWithObservers(con => con.Language.DashFailed, MessageType.System);
+                return response;
             }
 
-            Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = Magic.Info.Delay });
-            Magic.Cooldown = SEnvir.Now.AddMilliseconds(Magic.Info.Delay);
-            Player.ChangeMP(-Magic.Cost);
+            Player.Direction = direction;
+
+            int distance = Magic.GetPower();
+
+            Player.BuffAdd(BuffType.Dash, TimeSpan.FromMilliseconds(distance * 300), new(), false, false, TimeSpan.Zero, true);
+
+            ActionList.Add(new DelayedAction(SEnvir.Now, ActionType.DelayMagic, Type, distance, 0, null));
+
+            MagicConsume();
+            MagicCooldown();
 
             return response;
         }
 
-        private int ShoulderDashEnd(UserMagic magic)
+        public override void MagicComplete(params object[] data)
         {
-            int distance = magic.GetPower();
+            int distance = (int)data[1];
+            int travelled = (int)data[2];
+            MagicType? augment = (MagicType?)data[3];
 
-            int travelled = 0;
-            Cell cell;
             MapObject target = null;
 
-            for (int d = 1; d <= distance; d++)
+            int remainingDistance = distance - travelled;
+
+            if (remainingDistance <= 0)
             {
-                cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, d));
+                return;
+            }
 
-                if (cell == null) break;
+            if (!Player.Buffs.Any(x => x.Type == BuffType.Dash))
+            {
+                return;
+            }
 
-                if (cell.Objects == null)
+            Cell nextCell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, 1));
+            if (nextCell == null)
+            {
+                if (travelled == 0)
                 {
-                    travelled++;
-                    continue;
+                    FinalizeDash(false, Magic.Info.Magic);
+                    Player.Connection.ReceiveChatWithObservers(con => con.Language.DashFailed, MessageType.System);
                 }
 
-                bool blocked = false;
-                bool stacked = false;
-                MapObject stackedMob = null;
+                Player.BuffRemove(BuffType.Dash);
+                return;
+            }
 
-                for (int c = cell.Objects.Count - 1; c >= 0; c--)
+            bool blocked = false;
+            bool stacked = false;
+            MapObject stackedTarget = null;
+
+            if (nextCell.Objects != null)
+            {
+                for (int c = nextCell.Objects.Count - 1; c >= 0; c--)
                 {
-                    MapObject ob = cell.Objects[c];
+                    MapObject ob = nextCell.Objects[c];
                     if (!ob.Blocking) continue;
 
-                    if (!Player.CanAttackTarget(ob) || ob.Level >= Player.Level || SEnvir.Random.Next(16) >= 6 + magic.Level * 3 + Player.Level - ob.Level || ob.Buffs.Any(x => x.Type == BuffType.Endurance))
+                    if (!CanPushTarget(Magic, ob))
                     {
                         blocked = true;
                         break;
                     }
 
-                    if (ob.Race == ObjectType.Monster && !((MonsterObject)ob).MonsterInfo.CanPush)
+                    if (TryPush(ob))
                     {
-                        blocked = true;
+                        target = ob;
+                        Player.LevelMagic(Magic);
                         continue;
                     }
 
-                    if (ob.Pushed(Direction, 1) == 1)
-                    {
-                        if (target == null) target = ob;
-
-                        Player.LevelMagic(magic);
-                        continue;
-                    }
-
+                    // Could not push → stacking
                     stacked = true;
-                    stackedMob = ob;
+                    stackedTarget = ob;
                 }
+            }
 
-                if (blocked) break;
-
-
-                if (!stacked)
+            if (blocked)
+            {
+                if (travelled == 0)
                 {
-                    travelled++;
-                    continue;
+                    FinalizeDash(false, Magic.Info.Magic);
+                    Player.Connection.ReceiveChatWithObservers(con => con.Language.DashFailed, MessageType.System);
                 }
 
-                if (magic.Level < 3) break; // Cannot push 2 mobs
+                Player.BuffRemove(BuffType.Dash);
+                return;
+            }
 
-                cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, d + 1));
+            if (stacked)
+            {
+                if (Magic.Level < 3)
+                {
+                    Player.BuffRemove(BuffType.Dash);
+                    return; // cannot push 2 mobs
+                }
 
-                if (cell == null) break; // Cannot push anymore as there is a wall or couldn't push
+                Cell nextNextCell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, 2));
+                if (nextNextCell == null)
+                {
+                    Player.BuffRemove(BuffType.Dash);
+                    return;
+                }
 
-                //Failed to push first mob because of stacking AND its not a wall so must be mob in this cell
-                if (cell.Objects != null) // Could have dashed someone through door.
-                    for (int c = cell.Objects.Count - 1; c >= 0; c--)
+                bool blockedSecond = false;
+
+                if (nextNextCell.Objects != null)
+                {
+                    for (int c = nextNextCell.Objects.Count - 1; c >= 0; c--)
                     {
-                        MapObject ob = cell.Objects[c];
+                        MapObject ob = nextNextCell.Objects[c];
                         if (!ob.Blocking) continue;
 
-                        if (!Player.CanAttackTarget(ob) || ob.Level >= Player.Level || SEnvir.Random.Next(16) >= 6 + magic.Level * 3 + Player.Level - ob.Level || ob.Buffs.Any(x => x.Type == BuffType.Endurance))
+                        if (!CanPushTarget(Magic, ob))
                         {
-                            blocked = true;
+                            blockedSecond = true;
                             break;
                         }
 
-                        if (ob.Race == ObjectType.Monster && !((MonsterObject)ob).MonsterInfo.CanPush)
+                        if (TryPush(ob))
                         {
-                            blocked = true;
+                            target = ob;
+                            Player.LevelMagic(Magic);
                             continue;
                         }
 
-                        if (ob.Pushed(Direction, 1) == 1)
-                        {
-                            Player.LevelMagic(magic);
-                            continue;
-                        }
-
-                        blocked = true;
+                        blockedSecond = true;
                         break;
                     }
-
-                if (blocked) break; // Cannot push the two targets (either by level or wall)
-
-                //pushed 2nd space, Now need to push the first mob
-                //Should be 100% success to push stackedMob as it wasn't level nor is there a wall or mob in the way.
-                stackedMob.Pushed(Direction, 1); //put this here to avoid the level / chance check
-                Player.LevelMagic(magic);
-                //need to check first cell again
-                Point location = Functions.Move(CurrentLocation, Direction, d);
-                cell = CurrentMap.Cells[location.X, location.Y];
-
-                if (cell.Objects == null) //Might not be any more mobs on initial space after moving it
-                {
-                    travelled++;
-                    continue;
                 }
 
-                for (int c = cell.Objects.Count - 1; c >= 0; c--)
+                if (blockedSecond)
                 {
-                    MapObject ob = cell.Objects[c];
-                    if (!ob.Blocking) continue;
-
-                    if (!Player.CanAttackTarget(ob) || ob.Level >= Player.Level || SEnvir.Random.Next(16) >= 6 + magic.Level * 3 + Player.Level - ob.Level || ob.Buffs.Any(x => x.Type == BuffType.Endurance))
+                    if (travelled == 0)
                     {
-                        blocked = true;
-                        break;
+                        FinalizeDash(false, Magic.Info.Magic);
+                        Player.Connection.ReceiveChatWithObservers(con => con.Language.DashFailed, MessageType.System);
                     }
 
-                    if (ob.Race == ObjectType.Monster && !((MonsterObject)ob).MonsterInfo.CanPush)
-                    {
-                        blocked = true;
-                        continue;
-                    }
-
-                    if (ob.Pushed(Direction, 1) == 1)
-                    {
-                        Player.LevelMagic(magic);
-                        continue;
-                    }
-
-                    blocked = true;
-                    break;
+                    Player.BuffRemove(BuffType.Dash);
+                    return;
                 }
 
-                if (blocked) break;
-
-                travelled++;
+                // Push the stacked mob now that space is clear
+                stackedTarget.Pushed(Direction, 1);
+                Player.LevelMagic(Magic);
             }
 
-            MagicType type = magic.Info.Magic;
-            if (travelled > 0 && target != null)
+            augment ??= ApplyAugment([target, stackedTarget]);
+
+            ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(300), ActionType.DelayMagic, Type, distance, travelled + 1, augment));
+
+            FinalizeDash(true, augment ?? Magic.Info.Magic);
+        }
+
+        private bool CanPushTarget(UserMagic magic, MapObject ob)
+        {
+            if (!Player.CanAttackTarget(ob)) return false;
+            if (ob.Level >= Player.Level) return false;
+            if (SEnvir.Random.Next(16) >= 6 + magic.Level * 3 + Player.Level - ob.Level) return false;
+            if (ob.Buffs.Any(x => x.Type == BuffType.Endurance)) return false;
+
+            if (ob.Race == ObjectType.Monster && !((MonsterObject)ob).MonsterInfo.CanPush)
+                return false;
+
+            return true;
+        }
+
+        private bool TryPush(MapObject ob)
+        {
+            return ob.Pushed(Direction, 1) == 1;
+        }
+
+        private MagicType? ApplyAugment(List<MapObject> targets)
+        {
+            MagicType? type = null;
+
+            var assault = GetAugmentedSkill(MagicType.Assault);
+
+            if (assault != null && SEnvir.Now >= assault.Cooldown)
             {
-                var assault = GetAugmentedSkill(MagicType.Assault);
-
-                if (assault != null && SEnvir.Now >= assault.Cooldown)
+                foreach (var target in targets)
                 {
-                    target.ApplyPoison(new Poison
+                    if (target != null)
                     {
-                        Type = PoisonType.Paralysis,
-                        TickCount = 1,
-                        TickFrequency = TimeSpan.FromMilliseconds(travelled * 300 + assault.GetPower()),
-                        Owner = Player,
-                    });
+                        target.ApplyPoison(new Poison
+                        {
+                            Type = PoisonType.Paralysis,
+                            TickCount = 1,
+                            TickFrequency = TimeSpan.FromMilliseconds(300 + assault.GetPower()),
+                            Owner = Player,
+                        });
 
-                    target.ApplyPoison(new Poison
-                    {
-                        Type = PoisonType.Silenced,
-                        TickCount = 1,
-                        TickFrequency = TimeSpan.FromMilliseconds(travelled * 300 + assault.GetPower() * 2),
-                        Owner = Player,
-                    });
+                        target.ApplyPoison(new Poison
+                        {
+                            Type = PoisonType.Silenced,
+                            TickCount = 1,
+                            TickFrequency = TimeSpan.FromMilliseconds(300 + assault.GetPower() * 2),
+                            Owner = Player,
+                        });
 
-                    assault.Cooldown = SEnvir.Now.AddMilliseconds(assault.Info.Delay);
-                    Player.Enqueue(new S.MagicCooldown { InfoIndex = assault.Info.Index, Delay = assault.Info.Delay });
-                    type = assault.Info.Magic;
-                    Player.LevelMagic(assault);
+                        MagicCooldown(assault);
+                        type = assault.Info.Magic;
+                        Player.LevelMagic(assault);
+                    }
                 }
             }
 
-            cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, travelled));
+            return type;
+        }
 
+        private void FinalizeDash(bool travel, MagicType type)
+        {
+            int distance = travel ? 1 : 0;
+
+            Cell cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, distance));
             Player.CurrentCell = cell.GetMovement(Player);
 
             Player.RemoveAllObjects();
             Player.AddAllObjects();
 
-            Player.Broadcast(new S.ObjectDash { ObjectID = Player.ObjectID, Direction = Direction, Location = CurrentLocation, Distance = travelled, Magic = type });
+            Player.Broadcast(new S.ObjectDash
+            {
+                ObjectID = Player.ObjectID,
+                Direction = Direction,
+                Location = CurrentLocation,
+                Distance = distance,
+                Magic = type,
+            });
 
-            Player.ActionTime = SEnvir.Now.AddMilliseconds(300 * travelled);
-
-            return travelled;
+            Player.ActionTime = SEnvir.Now.AddMilliseconds(300);
         }
     }
 }

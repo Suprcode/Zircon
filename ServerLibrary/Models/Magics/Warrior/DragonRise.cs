@@ -1,4 +1,5 @@
 ﻿using Library;
+using Library.Network.ServerPackets;
 using Server.DBModels;
 using Server.Envir;
 using System;
@@ -33,11 +34,10 @@ namespace Server.Models.Magics
 
         public override void Toggle(bool canUse)
         {
-            if (Magic.Cost > Player.CurrentMP || SEnvir.Now < Magic.Cooldown || Player.Dead || (Player.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Player.Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
+            if (!CheckCost() || SEnvir.Now < Magic.Cooldown || Player.Dead || (Player.Poison & PoisonType.Paralysis) == PoisonType.Paralysis || (Player.Poison & PoisonType.Silenced) == PoisonType.Silenced) return;
 
-            Player.ChangeMP(-Magic.Cost);
-            Magic.Cooldown = SEnvir.Now.AddMilliseconds(Magic.Info.Delay);
-            Player.Enqueue(new S.MagicCooldown { InfoIndex = Magic.Info.Index, Delay = Magic.Info.Delay });
+            MagicConsume();
+            MagicCooldown();
 
             if (CanDragonRise)
             {
@@ -53,15 +53,13 @@ namespace Server.Models.Magics
             //Delay FlamingSword
             if (Player.GetMagic(MagicType.FlamingSword, out FlamingSword flamingSword) && SEnvir.Now.AddSeconds(2) > flamingSword.Magic.Cooldown)
             {
-                flamingSword.Magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = flamingSword.Magic.Info.Index, Delay = 2000 });
+                MagicCooldown(flamingSword.Magic, 2000);
             }
 
             //Delay BladeStorm
             if (Player.GetMagic(MagicType.BladeStorm, out BladeStorm bladeStorm) && SEnvir.Now.AddSeconds(2) > bladeStorm.Magic.Cooldown)
             {
-                bladeStorm.Magic.Cooldown = SEnvir.Now.AddSeconds(2);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = bladeStorm.Magic.Info.Index, Delay = 2000 });
+                MagicCooldown(bladeStorm.Magic, 2000);
             }
         }
 

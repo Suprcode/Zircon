@@ -39,6 +39,7 @@ namespace Server.Views
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             xtraTabControl1 = new DevExpress.XtraTab.XtraTabControl();
             xtraTabPage1 = new DevExpress.XtraTab.XtraTabPage();
+            SyncronizeLocalButton = new DevExpress.XtraEditors.SimpleButton();
             PacketBanTimeEdit = new DevExpress.XtraEditors.TimeSpanEdit();
             SyncronizeRemoteButton = new DevExpress.XtraEditors.SimpleButton();
             DatabaseEncryptionButton = new DevExpress.XtraEditors.SimpleButton();
@@ -236,7 +237,13 @@ namespace Server.Views
             labelControl55 = new DevExpress.XtraEditors.LabelControl();
             OpenDialog = new DevExpress.XtraEditors.XtraOpenFileDialog(components);
             FolderDialog = new DevExpress.XtraEditors.XtraFolderBrowserDialog(components);
-            SyncronizeLocalButton = new DevExpress.XtraEditors.SimpleButton();
+            labelControl92 = new DevExpress.XtraEditors.LabelControl();
+            labelControl93 = new DevExpress.XtraEditors.LabelControl();
+            labelControl94 = new DevExpress.XtraEditors.LabelControl();
+            labelControl95 = new DevExpress.XtraEditors.LabelControl();
+            AdminGamemasterStartEdit = new DevExpress.XtraEditors.CheckEdit();
+            AdminObserverStartEdit = new DevExpress.XtraEditors.CheckEdit();
+            AdminSupermanStartEdit = new DevExpress.XtraEditors.CheckEdit();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)xtraTabControl1).BeginInit();
             xtraTabControl1.SuspendLayout();
@@ -341,6 +348,9 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)GoldRateEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DropRateEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ExperienceRateEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AdminGamemasterStartEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AdminObserverStartEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AdminSupermanStartEdit.Properties).BeginInit();
             SuspendLayout();
             // 
             // ribbon
@@ -418,6 +428,14 @@ namespace Server.Views
             xtraTabPage1.Name = "xtraTabPage1";
             xtraTabPage1.Size = new System.Drawing.Size(749, 385);
             xtraTabPage1.Text = "Network";
+            // 
+            // SyncronizeLocalButton
+            // 
+            SyncronizeLocalButton.Location = new System.Drawing.Point(20, 229);
+            SyncronizeLocalButton.Name = "SyncronizeLocalButton";
+            SyncronizeLocalButton.Size = new System.Drawing.Size(200, 23);
+            SyncronizeLocalButton.TabIndex = 42;
+            SyncronizeLocalButton.Text = "Syncronize Local DB";
             // 
             // PacketBanTimeEdit
             // 
@@ -615,7 +633,7 @@ namespace Server.Views
             xtraTabPage2.Controls.Add(labelControl7);
             xtraTabPage2.Controls.Add(AllowNewAccountEdit);
             xtraTabPage2.Name = "xtraTabPage2";
-            xtraTabPage2.Size = new System.Drawing.Size(767, 395);
+            xtraTabPage2.Size = new System.Drawing.Size(749, 385);
             xtraTabPage2.Text = "Control";
             // 
             // labelControl16
@@ -947,7 +965,7 @@ namespace Server.Views
             xtraTabPage3.Controls.Add(labelControl4);
             xtraTabPage3.Controls.Add(CheckVersionEdit);
             xtraTabPage3.Name = "xtraTabPage3";
-            xtraTabPage3.Size = new System.Drawing.Size(767, 395);
+            xtraTabPage3.Size = new System.Drawing.Size(749, 385);
             xtraTabPage3.Text = "System";
             // 
             // RabbitEventEndEdit
@@ -1128,7 +1146,7 @@ namespace Server.Views
             xtraTabPage4.Controls.Add(MailServerEdit);
             xtraTabPage4.Controls.Add(labelControl26);
             xtraTabPage4.Name = "xtraTabPage4";
-            xtraTabPage4.Size = new System.Drawing.Size(767, 395);
+            xtraTabPage4.Size = new System.Drawing.Size(749, 385);
             xtraTabPage4.Text = "Mail";
             // 
             // MailDisplayNameEdit
@@ -1291,7 +1309,7 @@ namespace Server.Views
             xtraTabPage5.Controls.Add(WebPrefixEdit);
             xtraTabPage5.Controls.Add(labelControl42);
             xtraTabPage5.Name = "xtraTabPage5";
-            xtraTabPage5.Size = new System.Drawing.Size(767, 395);
+            xtraTabPage5.Size = new System.Drawing.Size(749, 385);
             xtraTabPage5.Text = "Web Server";
             // 
             // labelControl81
@@ -1549,6 +1567,13 @@ namespace Server.Views
             // 
             // xtraTabPage6
             // 
+            xtraTabPage6.Controls.Add(AdminSupermanStartEdit);
+            xtraTabPage6.Controls.Add(AdminObserverStartEdit);
+            xtraTabPage6.Controls.Add(AdminGamemasterStartEdit);
+            xtraTabPage6.Controls.Add(labelControl95);
+            xtraTabPage6.Controls.Add(labelControl94);
+            xtraTabPage6.Controls.Add(labelControl93);
+            xtraTabPage6.Controls.Add(labelControl92);
             xtraTabPage6.Controls.Add(labelControl91);
             xtraTabPage6.Controls.Add(EnableFortuneEdit);
             xtraTabPage6.Controls.Add(labelControl90);
@@ -1584,7 +1609,7 @@ namespace Server.Views
             xtraTabPage6.Controls.Add(MaxViewRangeEdit);
             xtraTabPage6.Controls.Add(labelControl23);
             xtraTabPage6.Name = "xtraTabPage6";
-            xtraTabPage6.Size = new System.Drawing.Size(767, 395);
+            xtraTabPage6.Size = new System.Drawing.Size(749, 385);
             xtraTabPage6.Text = "Players";
             // 
             // labelControl91
@@ -1933,7 +1958,7 @@ namespace Server.Views
             xtraTabPage7.Controls.Add(labelControl47);
             xtraTabPage7.Controls.Add(DeadDurationEdit);
             xtraTabPage7.Name = "xtraTabPage7";
-            xtraTabPage7.Size = new System.Drawing.Size(767, 395);
+            xtraTabPage7.Size = new System.Drawing.Size(749, 385);
             xtraTabPage7.Text = "Monsters";
             // 
             // LairRegionIndexEdit
@@ -2047,7 +2072,7 @@ namespace Server.Views
             xtraTabPage8.Controls.Add(labelControl48);
             xtraTabPage8.Controls.Add(DropDurationEdit);
             xtraTabPage8.Name = "xtraTabPage8";
-            xtraTabPage8.Size = new System.Drawing.Size(767, 395);
+            xtraTabPage8.Size = new System.Drawing.Size(749, 385);
             xtraTabPage8.Text = "Items";
             // 
             // StrengthLossRateEdit
@@ -2313,7 +2338,7 @@ namespace Server.Views
             xtraTabPage9.Controls.Add(ExperienceRateEdit);
             xtraTabPage9.Controls.Add(labelControl55);
             xtraTabPage9.Name = "xtraTabPage9";
-            xtraTabPage9.Size = new System.Drawing.Size(767, 395);
+            xtraTabPage9.Size = new System.Drawing.Size(749, 385);
             xtraTabPage9.Text = "Rates";
             // 
             // CompanionRateEdit
@@ -2430,13 +2455,64 @@ namespace Server.Views
             // 
             FolderDialog.SelectedPath = ".\\";
             // 
-            // SyncronizeLocalButton
+            // labelControl92
             // 
-            SyncronizeLocalButton.Location = new System.Drawing.Point(20, 229);
-            SyncronizeLocalButton.Name = "SyncronizeLocalButton";
-            SyncronizeLocalButton.Size = new System.Drawing.Size(200, 23);
-            SyncronizeLocalButton.TabIndex = 42;
-            SyncronizeLocalButton.Text = "Syncronize Local DB";
+            labelControl92.Location = new System.Drawing.Point(21, 243);
+            labelControl92.Name = "labelControl92";
+            labelControl92.Size = new System.Drawing.Size(90, 13);
+            labelControl92.TabIndex = 133;
+            labelControl92.Text = "Admin Start Modes";
+            // 
+            // labelControl93
+            // 
+            labelControl93.Location = new System.Drawing.Point(47, 262);
+            labelControl93.Name = "labelControl93";
+            labelControl93.Size = new System.Drawing.Size(64, 13);
+            labelControl93.TabIndex = 134;
+            labelControl93.Text = "Gamemaster:";
+            // 
+            // labelControl94
+            // 
+            labelControl94.Location = new System.Drawing.Point(62, 287);
+            labelControl94.Name = "labelControl94";
+            labelControl94.Size = new System.Drawing.Size(49, 13);
+            labelControl94.TabIndex = 135;
+            labelControl94.Text = "Observer:";
+            // 
+            // labelControl95
+            // 
+            labelControl95.Location = new System.Drawing.Point(59, 313);
+            labelControl95.Name = "labelControl95";
+            labelControl95.Size = new System.Drawing.Size(52, 13);
+            labelControl95.TabIndex = 136;
+            labelControl95.Text = "Superman:";
+            // 
+            // AdminGamemasterStartEdit
+            // 
+            AdminGamemasterStartEdit.Location = new System.Drawing.Point(117, 259);
+            AdminGamemasterStartEdit.MenuManager = ribbon;
+            AdminGamemasterStartEdit.Name = "AdminGamemasterStartEdit";
+            AdminGamemasterStartEdit.Properties.Caption = "";
+            AdminGamemasterStartEdit.Size = new System.Drawing.Size(100, 19);
+            AdminGamemasterStartEdit.TabIndex = 137;
+            // 
+            // AdminObserverStartEdit
+            // 
+            AdminObserverStartEdit.Location = new System.Drawing.Point(117, 284);
+            AdminObserverStartEdit.MenuManager = ribbon;
+            AdminObserverStartEdit.Name = "AdminObserverStartEdit";
+            AdminObserverStartEdit.Properties.Caption = "";
+            AdminObserverStartEdit.Size = new System.Drawing.Size(100, 19);
+            AdminObserverStartEdit.TabIndex = 138;
+            // 
+            // AdminSupermanStartEdit
+            // 
+            AdminSupermanStartEdit.Location = new System.Drawing.Point(117, 310);
+            AdminSupermanStartEdit.MenuManager = ribbon;
+            AdminSupermanStartEdit.Name = "AdminSupermanStartEdit";
+            AdminSupermanStartEdit.Properties.Caption = "";
+            AdminSupermanStartEdit.Size = new System.Drawing.Size(100, 19);
+            AdminSupermanStartEdit.TabIndex = 139;
             // 
             // ConfigView
             // 
@@ -2561,6 +2637,9 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)GoldRateEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)DropRateEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)ExperienceRateEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AdminGamemasterStartEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AdminObserverStartEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AdminSupermanStartEdit.Properties).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -2772,5 +2851,12 @@ namespace Server.Views
         private DevExpress.XtraEditors.LabelControl labelControl91;
         private DevExpress.XtraEditors.CheckEdit EnableFortuneEdit;
         private DevExpress.XtraEditors.SimpleButton SyncronizeLocalButton;
+        private DevExpress.XtraEditors.LabelControl labelControl95;
+        private DevExpress.XtraEditors.LabelControl labelControl94;
+        private DevExpress.XtraEditors.LabelControl labelControl93;
+        private DevExpress.XtraEditors.LabelControl labelControl92;
+        private DevExpress.XtraEditors.CheckEdit AdminSupermanStartEdit;
+        private DevExpress.XtraEditors.CheckEdit AdminObserverStartEdit;
+        private DevExpress.XtraEditors.CheckEdit AdminGamemasterStartEdit;
     }
 }

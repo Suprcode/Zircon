@@ -24,18 +24,16 @@ namespace Server.Models
         Move,
         Mount,
         Harvest,
+        Mining,
+        Fishing,
         Attack,
         Magic,
         RangeAttack,
         DelayAttack,
         DelayMagic,
         BroadCastPacket,
-        Spawn,
         Function,
         DelayedAttackDamage,
-        DelayedMagicDamage,
-        Mining,
-        DelayMining,
-        Fishing
+        DelayedMagicDamage
     }
 }

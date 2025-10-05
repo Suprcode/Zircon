@@ -33,6 +33,7 @@ namespace Client.Envir.Translations
         public override string WeaponEnergyDragonRise { get; set; } = "Energy builds up within your weapon, Dragon Rise is ready.";
         public override string WeaponEnergyBladeStorm { get; set; } = "Energy builds up within your weapon, Blade Storm is ready.";
         public override string WeaponEnergyDefensiveBlow { get; set; } = "Energy builds up within your weapon, Defensive Blow is ready.";
+        public override string WeaponEnergyOffensiveBlow { get; set; } = "Energy builds up within your weapon, Offensive Blow is ready.";
         public override string LevelIncreased { get; set; } = "Level Increased";
         public override string GainedExperience { get; set; } = "Experience Gained {0:#,##0.#}";
         public override string LostExperience { get; set; } = "Experience Lost {0:#,##0.#}.";

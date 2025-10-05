@@ -83,6 +83,10 @@ namespace Server.Models.Monsters
                 Attack();
         }
 
+        public override bool CanAttackTarget(MapObject ob)
+        {
+            return base.CanAttackTarget(ob);
+        }
 
         protected override void Attack()
         {
@@ -112,7 +116,6 @@ namespace Server.Models.Monsters
                                    Target,
                                    false));
             }
-
         }
     }
 }

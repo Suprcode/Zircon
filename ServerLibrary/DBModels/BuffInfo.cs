@@ -160,6 +160,21 @@ namespace Server.DBModels
         }
         private bool _Pause;
 
+        public bool Hidden
+        {
+            get { return _Hidden; }
+            set
+            {
+                if (_Hidden == value) return;
+
+                var oldValue = _Hidden;
+                _Hidden = value;
+
+                OnChanged(oldValue, value, "Hidden");
+            }
+        }
+        private bool _Hidden;
+
         protected override void OnDeleted()
         {
             Account = null;

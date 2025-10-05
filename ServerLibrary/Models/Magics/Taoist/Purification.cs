@@ -88,8 +88,7 @@ namespace Server.Models.Magics
 
             if (count > 0)
             {
-                augmentPurification.Cooldown = SEnvir.Now.AddMilliseconds(augmentPurification.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentPurification.Info.Index, Delay = augmentPurification.Info.Delay });
+                MagicCooldown(augmentPurification);
             }
 
             return response;

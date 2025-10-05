@@ -223,8 +223,9 @@ namespace Server.Models
 
             if (Character.Account.Admin || Character.Account.TempAdmin)
             {
-                GameMaster = true;
-                Observer = true;
+                GameMaster = Config.AdminStartInGamemasterMode;
+                Observer = Config.AdminStartInObserverMode;
+                Superman = Config.AdminStartInSupermanMode;
             }
 
             FiltersClass = Character.FiltersClass ?? "";
@@ -1871,8 +1872,7 @@ namespace Server.Models
 
             if (GetMagic(MagicType.CelestialLight, out CelestialLight celestialLight))
             {
-                celestialLight.Magic.Cooldown = SEnvir.Now.AddSeconds(6);
-                Enqueue(new S.MagicCooldown { InfoIndex = celestialLight.Magic.Info.Index, Delay = 6000 });
+                celestialLight.MagicCooldown(null, 6000);
             }
         }
 
@@ -8651,7 +8651,7 @@ namespace Server.Models
             return true;
         }
 
-        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate)
+        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false)
         {
             BuffInfo info = base.BuffAdd(type, remainingTicks, stats, visible, pause, tickRate);
 
@@ -8664,7 +8664,12 @@ namespace Server.Models
                     break;
             }
 
-            Enqueue(new S.BuffAdd { Buff = info.ToClientInfo() });
+            info.Hidden = hidden;
+
+            if (!hidden)
+            {
+                Enqueue(new S.BuffAdd { Buff = info.ToClientInfo() });
+            }
 
             switch (type)
             {
@@ -8701,7 +8706,10 @@ namespace Server.Models
 
             base.BuffRemove(info);
 
-            Enqueue(new S.BuffRemove { Index = info.Index });
+            if (!info.Hidden)
+            {
+                Enqueue(new S.BuffRemove { Index = info.Index });
+            }
 
             switch (info.Type)
             {
@@ -13450,8 +13458,7 @@ namespace Server.Models
 
             if (cast)
             {
-                Enqueue(new S.MagicCooldown { InfoIndex = magicObject.Magic.Info.Index, Delay = magicObject.Magic.Info.Delay });
-                magicObject.Magic.Cooldown = SEnvir.Now.AddMilliseconds(magicObject.Magic.Info.Delay);
+                magicObject.MagicCooldown();
             }
 
             Direction = ob == null || ob == this ? p.Direction : Functions.DirectionFromPoint(CurrentLocation, ob.CurrentLocation);
@@ -13749,10 +13756,9 @@ namespace Server.Models
 
             ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(delayTime), ActionType.DelayAttack, ob, new List<MagicType>() { MagicType.Shuriken }, true, 50));
 
-
             DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon);
-
         }
+
         public void Attack(MapObject ob, List<MagicType> types, bool primary, int extra)
         {
             if (ob?.Node == null || ob.Dead) return;
@@ -14365,12 +14371,15 @@ namespace Server.Models
                 {
                     StruckTime = SEnvir.Now;
 
-                    if (Config.EnableStruck)
+                    if (!Buffs.Any(x => x.Type == BuffType.Dash))
                     {
-                        if (StruckTime.AddMilliseconds(300) > ActionTime) ActionTime = StruckTime.AddMilliseconds(300);
-                    }
+                        if (Config.EnableStruck)
+                        {
+                            if (StruckTime.AddMilliseconds(300) > ActionTime) ActionTime = StruckTime.AddMilliseconds(300);
+                        }
 
-                    Broadcast(new S.ObjectStruck { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, AttackerID = attacker.ObjectID, Element = element });
+                        Broadcast(new S.ObjectStruck { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, AttackerID = attacker.ObjectID, Element = element });
+                    }
 
                     bool update = false;
                     for (int i = 0; i < Equipment.Length; i++)

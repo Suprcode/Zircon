@@ -62,7 +62,6 @@ namespace Server.Models
 
                             if (!monster.CanAttackTarget(ob)) continue;
 
-
                             monster.Attack(ob, 4000, Element.None);
                             monster.Attack(ob, 4000, Element.None);
                         }

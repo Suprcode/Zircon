@@ -147,6 +147,11 @@ namespace Server.Views
             EnableStruckEdit.EditValue = Config.EnableStruck;
             EnableHermitEdit.EditValue = Config.EnableHermit;
             EnableFortuneEdit.EditValue = Config.EnableFortune;
+            AdminGamemasterStartEdit.EditValue = Config.AdminStartInGamemasterMode;
+            AdminObserverStartEdit.EditValue = Config.AdminStartInObserverMode;
+            AdminSupermanStartEdit.EditValue = Config.AdminStartInSupermanMode;
+
+
 
             //Monsters
             DeadDurationEdit.EditValue = Config.DeadDuration;
@@ -261,6 +266,9 @@ namespace Server.Views
             Config.EnableStruck = (bool)EnableStruckEdit.EditValue;
             Config.EnableHermit = (bool)EnableHermitEdit.EditValue;
             Config.EnableFortune = (bool)EnableFortuneEdit.EditValue;
+            Config.AdminStartInGamemasterMode = (bool)AdminGamemasterStartEdit.EditValue;
+            Config.AdminStartInObserverMode = (bool)AdminObserverStartEdit.EditValue;
+            Config.AdminStartInSupermanMode = (bool)AdminSupermanStartEdit.EditValue;
 
             //Monsters
             Config.DeadDuration = (TimeSpan)DeadDurationEdit.EditValue;

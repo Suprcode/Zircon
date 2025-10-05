@@ -894,6 +894,7 @@ namespace Server.Models
                 MapObject ob = CurrentCell.Objects[i];
                 if (Dead) break;
                 if (ob.Race != ObjectType.Spell) continue;
+                if (ob == this) continue;
 
                 ((SpellObject)ob).ProcessSpell(this);
 
@@ -940,6 +941,8 @@ namespace Server.Models
 
             if (leaveEffect)
                 Broadcast(new S.ObjectEffect { ObjectID = ObjectID, Effect = Effect.TeleportOut });
+
+            BuffRemove(BuffType.Dash);
 
             CurrentCell = cell.GetMovement(this);
             RemoveAllObjects();
@@ -1391,7 +1394,7 @@ namespace Server.Models
             return result;
         }
 
-        public virtual BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate)
+        public virtual BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false)
         {
             BuffRemove(type);
 
@@ -1549,6 +1552,7 @@ namespace Server.Models
             if (info != null)
                 BuffRemove(info);
         }
+
         public virtual int Attacked(MapObject attacker, int power, Element element, bool canReflect = true, bool ignoreShield = false, bool canCrit = true, bool canStruck = true) { return 0; }
 
         public List<MapObject> GetTargets(Map map, Point location, int radius)
@@ -1680,6 +1684,7 @@ namespace Server.Models
             foreach (PlayerObject player in SeenByPlayers)
                 player.Enqueue(p);
         }
+
         public virtual int Pushed(MirDirection direction, int distance)
         {
             int count = 0;

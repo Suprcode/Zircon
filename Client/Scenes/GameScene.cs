@@ -2976,6 +2976,7 @@ namespace Client.Scenes
                 case MagicType.BladeStorm:
                 case MagicType.DemonicRecovery:
                 case MagicType.DefensiveBlow:
+                case MagicType.OffensiveBlow:
                     if (CEnvir.Now < magic.NextCast || magic.Cost > User.CurrentMP) return;
                     magic.NextCast = CEnvir.Now.AddSeconds(0.5D); //Act as an anti spam
                     CEnvir.Enqueue(new C.MagicToggle { Magic = magic.Info.Magic });
@@ -3130,6 +3131,15 @@ namespace Client.Scenes
                     CEnvir.Enqueue(new C.Magic { Direction = direction, Action = MirAction.Spell, Type = magic.Info.Magic });
                     return;
 
+                case MagicType.HundredFist:
+                    if (CEnvir.Now < User.ServerTime) return;
+                    if ((User.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip) return;
+
+                    User.ServerTime = CEnvir.Now.AddSeconds(5);
+                    User.NextMagicTime = CEnvir.Now + Globals.MagicDelay;
+                    CEnvir.Enqueue(new C.Magic { Direction = direction, Action = MirAction.Spell, Type = magic.Info.Magic });
+                    return;
+
                 case MagicType.DanceOfSwallow:
                     if (CEnvir.Now < User.ServerTime) return;
                     if (CanAttackTarget(MouseObject))
@@ -3205,7 +3215,6 @@ namespace Client.Scenes
                     if (CanAttackTarget(MouseObject))
                         target = MouseObject;
                     break;
-
                 case MagicType.MagicCombustion:
                     if (!CanAttackTarget(MouseObject) || MouseObject.Race != ObjectType.Player) return;
 
@@ -3478,13 +3487,17 @@ namespace Client.Scenes
                 MagicLabel.Draw();
         }
 
-        public void Displacement(MirDirection direction, Point location)
+        public void Displacement(MirDirection direction, Point location, bool clearQueue = false)
         {
-            //if (MapObject.User.Direction == direction && MapObject.User.CurrentLocation == location) return;
-
             MapObject.User.ServerTime = DateTime.MinValue;
             MapObject.User.SetAction(new ObjectAction(MirAction.Standing, direction, location));
             MapObject.User.NextActionTime = CEnvir.Now.AddMilliseconds(300);
+
+            if (clearQueue)
+            {
+                // Queue might contain actions at an old location (causing desync), so clear it out
+                MapObject.User.ActionQueue.Clear();
+            }
         }
 
         public void FillItems(List<ClientUserItem> items)

@@ -79,8 +79,7 @@ namespace Server.Models.Magics
 
             if (count > 0)
             {
-                augmentNeutralize.Cooldown = SEnvir.Now.AddMilliseconds(augmentNeutralize.Info.Delay);
-                Player.Enqueue(new S.MagicCooldown { InfoIndex = augmentNeutralize.Info.Index, Delay = augmentNeutralize.Info.Delay });
+                MagicCooldown(augmentNeutralize);
             }
 
             if (target == null)
