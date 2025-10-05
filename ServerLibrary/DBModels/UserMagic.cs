@@ -1,8 +1,8 @@
-﻿using System;
-using Library;
+﻿using Library;
 using Library.SystemModels;
 using MirDB;
 using Server.Envir;
+using System;
 
 namespace Server.DBModels
 {
@@ -163,7 +163,7 @@ namespace Server.DBModels
         private UserDiscipline _Discipline;
 
         public DateTime Cooldown;
-        
+
         [IgnoreProperty]
         public int Cost => Info.BaseCost + Level * Info.LevelCost / 3;
 
@@ -193,7 +193,7 @@ namespace Server.DBModels
             {
                 Index = Index,
                 InfoIndex = Info.Index,
-              
+
                 Set1Key = Set1Key,
                 Set2Key = Set2Key,
                 Set3Key = Set3Key,

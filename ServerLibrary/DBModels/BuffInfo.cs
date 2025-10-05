@@ -1,6 +1,6 @@
-﻿using System;
-using Library;
+﻿using Library;
 using MirDB;
+using System;
 
 namespace Server.DBModels
 {
@@ -38,7 +38,7 @@ namespace Server.DBModels
             }
         }
         private AccountInfo _Account;
-        
+
         public BuffType Type
         {
             get { return _Type; }
@@ -53,7 +53,7 @@ namespace Server.DBModels
             }
         }
         private BuffType _Type;
-        
+
         public Stats Stats
         {
             get { return _Stats; }
@@ -128,7 +128,7 @@ namespace Server.DBModels
             }
         }
         private int _ItemIndex;
-        
+
 
         public bool Visible
         {

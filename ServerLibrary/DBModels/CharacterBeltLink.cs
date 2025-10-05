@@ -21,7 +21,7 @@ namespace Server.DBModels
             }
         }
         private CharacterInfo _Character;
-        
+
         public int Slot
         {
             get { return _Slot; }
@@ -51,7 +51,7 @@ namespace Server.DBModels
             }
         }
         private int _LinkInfoIndex;
-        
+
 
         public int LinkItemIndex
         {

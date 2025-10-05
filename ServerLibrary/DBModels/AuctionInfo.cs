@@ -52,7 +52,7 @@ namespace Server.DBModels
             }
         }
         private CharacterInfo _Character;
-        
+
         public int Price
         {
             get { return _Price; }

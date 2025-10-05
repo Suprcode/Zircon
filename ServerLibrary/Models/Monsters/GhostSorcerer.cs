@@ -1,7 +1,7 @@
-﻿using System;
-using System.Drawing;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
+using System.Drawing;
 
 namespace Server.Models.Monsters
 {
@@ -33,7 +33,7 @@ namespace Server.Models.Monsters
 
             LineAttack(AttackRange);
         }
-        
+
         private void LineAttack(int distance)
         {
             for (int i = 1; i <= distance; i++)

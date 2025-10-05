@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public  class JinchonDevil : SpittingSpider
+    public class JinchonDevil : SpittingSpider
     {
         public DateTime CastTime;
         public TimeSpan CastDelay = TimeSpan.FromSeconds(15);

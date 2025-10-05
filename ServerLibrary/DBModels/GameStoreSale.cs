@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library.SystemModels;
+﻿using Library.SystemModels;
 using MirDB;
 using Server.Envir;
+using System;
 
 namespace Server.DBModels
 {
     [UserObject]
-    public sealed class GameStoreSale: DBObject
+    public sealed class GameStoreSale : DBObject
     {
         public ItemInfo Item
         {

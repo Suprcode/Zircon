@@ -2493,9 +2493,9 @@ namespace Client.Models
                             }
 
                             //if (AttackTargets.Count > 0)
-                                //  DXSoundManager.Play(SoundIndex.Chain);
+                            //  DXSoundManager.Play(SoundIndex.Chain);
 
-                                break;
+                            break;
 
                         #endregion
 
@@ -2791,7 +2791,7 @@ namespace Client.Models
 
                             break;
 
-                        #endregion
+                            #endregion
 
                     }
 
@@ -2999,7 +2999,7 @@ namespace Client.Models
                     AttackElement = (Element)action.Extra[2];
 
                     attackColour = Functions.GetElementColour(AttackElement);
-                    
+
                     switch (MagicType)
                     {
                         case MagicType.None:
@@ -3186,7 +3186,7 @@ namespace Client.Models
                             DXSoundManager.Play(SoundIndex.CalamityOfFullMoon);
                             break;
 
-                        #endregion
+                            #endregion
 
                     }
                     break;
@@ -3823,7 +3823,7 @@ namespace Client.Models
                             //{
                             //    Blend = true,
                             //    Target = this,
-                                
+
                             //});
                             DXSoundManager.Play(SoundIndex.TornadoStart);
                             break;
@@ -4148,7 +4148,7 @@ namespace Client.Models
                                 Blend = true,
                                 Target = this,
                             });
-                            
+
                             DXSoundManager.Play(SoundIndex.SummonSkeletonStart);
                             break;
 
@@ -4415,8 +4415,8 @@ namespace Client.Models
                             Effects.Add(spell = new MirEffect(2200, 8, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx4, 60, 60, Globals.NoneColour)
                             {
                                 Blend = true,
-                                MapTarget = CurrentLocation              
-                            }) ;
+                                MapTarget = CurrentLocation
+                            });
                             DXSoundManager.Play(SoundIndex.TheNewBeginning);
                             break;
 

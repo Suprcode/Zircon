@@ -1,8 +1,8 @@
-﻿using System;
-using Library;
+﻿using Library;
 using Library.SystemModels;
 using MirDB;
 using Server.Envir;
+using System;
 
 namespace Server.DBModels
 {
@@ -39,7 +39,7 @@ namespace Server.DBModels
             }
         }
         private ItemInfo _Item;
-        
+
 
         public long DropCount
         {
@@ -70,7 +70,7 @@ namespace Server.DBModels
             }
         }
         private decimal _DropProgress;
-        
+
         public DateTime CheckTime
         {
             get { return _CheckTime; }

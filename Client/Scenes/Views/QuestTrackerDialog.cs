@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 //Cleaned
 namespace Client.Scenes.Views
@@ -31,7 +31,7 @@ namespace Client.Scenes.Views
             ScrollBar.HideWhenNoScroll = true;
 
             TextPanel.Location = new Point(0, ResizeBuffer);
-            TextPanel.Size = new Size(Size.Width - ScrollBar.Size.Width - 1 - ResizeBuffer , Size.Height - ResizeBuffer * 2);
+            TextPanel.Size = new Size(Size.Width - ScrollBar.Size.Width - 1 - ResizeBuffer, Size.Height - ResizeBuffer * 2);
 
             ScrollBar.VisibleSize = TextPanel.Size.Height;
             ScrollBar.Location = new Point(Size.Width - ScrollBar.Size.Width - ResizeBuffer, ResizeBuffer);
@@ -125,7 +125,7 @@ namespace Client.Scenes.Views
                     IsControl = false,
                     Location = new Point(15, Lines.Count * 15)
                 };
-                
+
 
                 DXAnimatedControl QuestIcon = new DXAnimatedControl
                 {
@@ -235,13 +235,13 @@ namespace Client.Scenes.Views
                     }
                 }
             }
-            
+
 
             Visible = Lines.Count > 0;
             UpdateScrollBar();
         }
         #endregion
-        
+
         #region IDisposable
 
         protected override void Dispose(bool disposing)

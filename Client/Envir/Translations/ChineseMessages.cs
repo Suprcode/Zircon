@@ -128,7 +128,7 @@ namespace Client.Envir.Translations
         public override string CommonControlColourPickerGreenLabel { get; set; } = "绿色:";
         public override string CommonControlColourPickerBlueLabel { get; set; } = "蓝色:";
         public override string CommonControlColourPickerColourLabel { get; set; } = "颜色:";
-        public override string CommonControlColourPickerNoneLabel { get; set; } = "无";  
+        public override string CommonControlColourPickerNoneLabel { get; set; } = "无";
         public override string CommonControlColourPickerEmptyLabel { get; set; } = "无颜色";
         public override string CommonControlConfigWindowTitle { get; set; } = "配置";
         public override string CommonControlConfigWindowGraphicsTabLabel { get; set; } = "图形";

@@ -863,7 +863,7 @@ namespace Server.Envir
                 }
 
                 map.HasSafeZone = true;
-   
+
                 HashSet<Point> edges = new HashSet<Point>();
 
                 foreach (Point point in info.Region.PointList)
@@ -1187,7 +1187,7 @@ namespace Server.Envir
                         {
                             EventTimerTime = Now.AddMinutes(1);
 
-                            foreach(var timer in EventTimer.Timers)
+                            foreach (var timer in EventTimer.Timers)
                             {
                                 if (!timer.Started) continue;
 
@@ -1210,7 +1210,7 @@ namespace Server.Envir
 
                                 if (instance.Value[instanceSequence] == null) continue;
 
-                                foreach (KeyValuePair<MapInfo, Map> pair in instance.Value[instanceSequence]) 
+                                foreach (KeyValuePair<MapInfo, Map> pair in instance.Value[instanceSequence])
                                 {
                                     pair.Value.Process();
 

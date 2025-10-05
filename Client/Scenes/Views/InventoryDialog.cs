@@ -436,11 +436,11 @@ namespace Client.Scenes.Views
             else
             {
                 //Sell all
-                foreach(DXItemCell itemCell in Grid.Grid)
+                foreach (DXItemCell itemCell in Grid.Grid)
                 {
                     if (itemCell.Item == null) continue;
                     if ((itemCell.Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) continue;
-                    
+
                     if (SellableItemTypes.Count > 0 && !SellableItemTypes.Contains(itemCell.Item.Info.ItemType)) continue;
 
                     links.Add(new CellLinkInfo { Count = itemCell.Item.Count, GridType = GridType.Inventory, Slot = itemCell.Slot });

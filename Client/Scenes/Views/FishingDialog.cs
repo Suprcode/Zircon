@@ -675,7 +675,7 @@ namespace Client.Scenes.Views
                     AutoCastCheckBox = null;
                 }
             }
-}
+        }
 
         #endregion
 

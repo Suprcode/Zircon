@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -18,7 +18,7 @@ namespace Server.Models.Monsters
         {
             return CurrentMap == Target.CurrentMap && Functions.InRange(CurrentLocation, Target.CurrentLocation, Globals.MagicRange);
         }
-        
+
         protected override void Attack()
         {
             Broadcast(new S.ObjectAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
@@ -26,11 +26,11 @@ namespace Server.Models.Monsters
             UpdateAttackTime();
 
             List<MapObject> targets = GetTargets(CurrentMap, CurrentLocation, Globals.MagicRange);
-            
+
             foreach (MapObject ob in targets)
             {
                 ActionList.Add(new DelayedAction(
-                    SEnvir.Now.AddMilliseconds(500 + Functions.Distance(ob.CurrentLocation, CurrentLocation)*48),
+                    SEnvir.Now.AddMilliseconds(500 + Functions.Distance(ob.CurrentLocation, CurrentLocation) * 48),
                     ActionType.DelayAttack,
                     ob,
                     GetDC(),
@@ -41,7 +41,7 @@ namespace Server.Models.Monsters
         public override int Attack(MapObject ob, int power, Element element)
         {
             int result = base.Attack(ob, power, element);
-            
+
             if (result <= 0) return result;
 
             if (SEnvir.Random.Next(5) == 0)

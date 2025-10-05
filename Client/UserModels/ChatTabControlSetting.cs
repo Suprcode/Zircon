@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MirDB;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
 
 namespace Client.UserModels
 {
@@ -25,7 +20,7 @@ namespace Client.UserModels
             }
         }
         private Size _Resolution;
-        
+
         public Point Location
         {
             get { return _Location; }
@@ -70,8 +65,8 @@ namespace Client.UserModels
             }
         }
         private ChatTabPageSetting _SelectedPage;
-        
-        
+
+
         [Association("Controls", true)]
         public DBBindingList<ChatTabPageSetting> Controls { get; set; }
     }

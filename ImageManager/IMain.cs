@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using DevExpress.XtraEditors;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DevExpress.XtraEditors;
 
 namespace ImageManager
 {
@@ -63,7 +58,7 @@ namespace ImageManager
 
         private async void ConvertLibrariesButton_Click(object sender, EventArgs e)
         {
-            DirectoryInfo directory = new DirectoryInfo((string) SelectedFolderButtonEdit.EditValue);
+            DirectoryInfo directory = new DirectoryInfo((string)SelectedFolderButtonEdit.EditValue);
 
             if (!directory.Exists) return;
 
@@ -159,8 +154,8 @@ namespace ImageManager
                         {
                             lib.Images[index] = new Mir3Image
                             {
-                                Width = (short) image.Width,
-                                Height = (short) image.Height,
+                                Width = (short)image.Width,
+                                Height = (short)image.Height,
                                 OffSetX = x,
                                 OffSetY = y,
                                 Data = MImage.GetBytes(image)
@@ -188,17 +183,17 @@ namespace ImageManager
         //WTLLibrary lib = new WTLLibrary(@"C:\Zircon Server\Data Works\Test\WM-Hum.wtl");
         private void simpleButton1_Click(object sender, EventArgs e)
         {
-          /*  DirectoryInfo dInfo = new DirectoryInfo(@"C:\Zircon Server\Data Works\Inventory");
-            FileInfo[] files = dInfo.GetFiles("*.BMP");
+            /*  DirectoryInfo dInfo = new DirectoryInfo(@"C:\Zircon Server\Data Works\Inventory");
+              FileInfo[] files = dInfo.GetFiles("*.BMP");
 
-            foreach (FileInfo file in files)
-            {
-                Bitmap image = new Bitmap(file.FullName);
-                
-                image.Save(Path.ChangeExtension(file.FullName, @".png"), ImageFormat.Png);
+              foreach (FileInfo file in files)
+              {
+                  Bitmap image = new Bitmap(file.FullName);
 
-                image.Dispose();
-            }*/
+                  image.Save(Path.ChangeExtension(file.FullName, @".png"), ImageFormat.Png);
+
+                  image.Dispose();
+              }*/
 
             DirectoryInfo dInfo = new DirectoryInfo(@"C:\Zircon Server\Data Works\Game\MiniMap");
             FileInfo[] files = dInfo.GetFiles("*.BMP");
@@ -228,4 +223,3 @@ namespace ImageManager
         }
     }
 }
- 

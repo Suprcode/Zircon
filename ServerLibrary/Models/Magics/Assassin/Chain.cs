@@ -155,7 +155,7 @@ namespace Server.Models.Magics
 
                 return cell;
             }
-            
+
             if (p.Extra1 != null) //Leader with followers
             {
                 var followers = ((List<MonsterObject>)p.Extra1);
@@ -260,7 +260,7 @@ namespace Server.Models.Magics
             var chainOfFire = GetAugmentedSkill(MagicType.ChainOfFire);
 
             if (chainOfFire != null && chainOfFire.Level >= 3)
-            {  
+            {
                 if (p.Extra == null) //Leader
                 {
                     var delay = SEnvir.Now.AddMilliseconds(800);

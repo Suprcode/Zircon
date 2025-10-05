@@ -1,9 +1,5 @@
-﻿using System;
-using Library;
-using Library.SystemModels;
-using Server.DBModels;
+﻿using Library;
 using Server.Envir;
-using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
@@ -11,12 +7,12 @@ namespace Server.Models.Monsters
     {
         public int MaxStage = 7;
         public int Stage;
-        
+
         public ZumaKing()
         {
             AvoidFireWall = false;
         }
-        
+
 
         protected override void OnSpawned()
         {
@@ -38,12 +34,12 @@ namespace Server.Models.Monsters
 
             if (Dead) return;
 
-            if (CurrentHP*MaxStage/Stats[Stat.Health] >= Stage || Stage <= 0) return;
+            if (CurrentHP * MaxStage / Stats[Stat.Health] >= Stage || Stage <= 0) return;
 
             Stage--;
             SpawnMinions(4, 8, Target);
         }
-        
+
         public override void ProcessTarget()
         {
             if (Target == null) return;

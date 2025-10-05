@@ -1,9 +1,9 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using Client.Envir;
+﻿using Client.Envir;
 using Client.Scenes.Views;
 using Library;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 //Cleaned
 namespace Client.Controls
@@ -14,7 +14,7 @@ namespace Client.Controls
         public DXControl ClickControl;
         public DateTime ClickTime;
         public MouseButtons Buttons;
-        
+
         public sealed override Size Size
         {
             get => base.Size;
@@ -192,11 +192,11 @@ namespace Client.Controls
 
             foreach (DXControl control in Controls)
                 control.CheckIsVisible();
-            
+
         }
 
         #endregion
-        
+
         #region IDisposable
         protected override void Dispose(bool disposing)
         {

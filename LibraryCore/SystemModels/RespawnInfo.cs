@@ -52,7 +52,7 @@ namespace Library.SystemModels
             }
         }
         private bool _EventSpawn;
-           
+
         public int Delay
         {
             get { return _Delay; }
@@ -67,7 +67,7 @@ namespace Library.SystemModels
             }
         }
         private int _Delay;
-        
+
         public int Count
         {
             get { return _Count; }

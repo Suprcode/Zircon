@@ -29,7 +29,7 @@ namespace Client.Scenes.Views
             TitleLabel.Visible = false;
             CloseButton.Visible = false;
             Opacity = 0.6F;
-            
+
             Size = new Size(30, 30);
         }
 
@@ -64,7 +64,7 @@ namespace Client.Scenes.Views
                         break;
                 }
             }
-            
+
             if (permStats.Count > 0)
                 buffs.Add(new ClientBuffInfo { Index = 0, Stats = permStats, Type = BuffType.ItemBuffPermanent, RemainingTime = TimeSpan.MaxValue });
 
@@ -255,9 +255,9 @@ namespace Client.Scenes.Views
             }
 
             for (int i = 0; i < buffs.Count; i++)
-                Icons[buffs[i]].Location = new Point(3 + (i%6)*27, 3 + (i/6)*27);
+                Icons[buffs[i]].Location = new Point(3 + (i % 6) * 27, 3 + (i / 6) * 27);
 
-            Size = new Size(3 + Math.Min(6, Math.Max(1, Icons.Count))*27, 3 + Math.Max(1, 1 +  (Icons.Count - 1)/6) * 27);    
+            Size = new Size(3 + Math.Min(6, Math.Max(1, Icons.Count)) * 27, 3 + Math.Max(1, 1 + (Icons.Count - 1) / 6) * 27);
         }
 
         private string GetBuffHint(ClientBuffInfo buff)
@@ -492,7 +492,7 @@ namespace Client.Scenes.Views
                     pair.Value.ForeColour = Color.White;
                     continue;
                 }
-                
+
                 float rate = pair.Key.RemainingTime.Milliseconds / (float)1000;
 
                 pair.Value.ForeColour = Functions.Lerp(Color.White, Color.CadetBlue, rate);

@@ -1,5 +1,5 @@
-﻿using System;
-using Client.Envir;
+﻿using Client.Envir;
+using System;
 
 //Cleaned
 namespace Client.Controls
@@ -179,7 +179,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region IDisposable
         protected override void Dispose(bool disposing)
         {

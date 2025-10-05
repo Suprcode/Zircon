@@ -184,7 +184,7 @@ namespace Library.SystemModels
             }
         }
         private int _LevelCost;
-        
+
 
         public int NeedLevel1
         {
@@ -306,6 +306,6 @@ namespace Library.SystemModels
             }
         }
         private string _Description;
-        
+
     }
 }

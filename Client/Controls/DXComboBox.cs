@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Library;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Library;
 
 //Cleaned
 namespace Client.Controls
@@ -125,7 +125,7 @@ namespace Client.Controls
         public DXButton DownArrow;
         public DXLabel SelectedLabel;
         public DXListBox ListBox;
-        
+
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
             base.OnSizeChanged(oValue, nValue);
@@ -134,7 +134,7 @@ namespace Client.Controls
 
             SelectedLabel.Size = new Size(Size.Width - 3 - DownArrow.Size.Height, NormalHeight);
 
-            DownArrow.Location = new Point(Size.Width - DownArrow.Size.Width, (NormalHeight - DownArrow.Size.Height)/2);
+            DownArrow.Location = new Point(Size.Width - DownArrow.Size.Width, (NormalHeight - DownArrow.Size.Height) / 2);
 
             ListBox.Location = new Point(DisplayArea.Location.X + SelectedLabel.Location.X, DisplayArea.Location.Y + NormalHeight + 2);
             ListBox.BringToFront();
@@ -163,7 +163,7 @@ namespace Client.Controls
 
             SelectedLabel = new DXLabel
             {
-                Location =  new Point(0,-1),
+                Location = new Point(0, -1),
                 AutoSize = false,
                 Parent = this,
                 ForeColour = Color.White,
@@ -174,8 +174,8 @@ namespace Client.Controls
             {
                 Parent = ActiveScene,
                 BackColour = Color.Black,
-                Sort =true,
-                ScrollBar = {Change = 15}
+                Sort = true,
+                ScrollBar = { Change = 15 }
             };
             ListBox.selectedItemChanged += (o, e) =>
             {

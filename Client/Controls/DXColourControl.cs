@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Client.Envir;
+using Client.UserModels;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Client.Envir;
-using Client.UserModels;
 
 //Cleaned
 namespace Client.Controls
@@ -96,7 +96,7 @@ namespace Client.Controls
     public sealed class DXColourPicker : DXWindow
     {
         #region Properties
-        
+
         #region SelectedColour
 
         public Color SelectedColour
@@ -331,7 +331,7 @@ namespace Client.Controls
         {
             if (Updating) return;
 
-            SelectedColour = Color.FromArgb((int) RedBox.Value, (int) GreenBox.Value, (int) BlueBox.Value);
+            SelectedColour = Color.FromArgb((int)RedBox.Value, (int)GreenBox.Value, (int)BlueBox.Value);
         }
 
         private void EmptyButton_MouseClick(object sender, MouseEventArgs e)

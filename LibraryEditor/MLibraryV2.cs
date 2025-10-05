@@ -165,9 +165,9 @@ namespace LibraryEditor
                 {
                     MImage image = Images[i];
                     if (image.HasMask)
-                        lib.Images[i+offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                     else
-                        lib.Images[i+offset] = new Mir3Library.Mir3Image(image.Image, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                 });
                 lib.AddBlanks(newImages);
             }
@@ -198,7 +198,7 @@ namespace LibraryEditor
                 _stream.Seek(IndexList[index] + 12, SeekOrigin.Begin);
                 mi.CreateTexture(_reader);
             }
-        }                   
+        }
 
         public sealed class MImage
         {
@@ -337,7 +337,7 @@ namespace LibraryEditor
 
                         MaskImage.UnlockBits(data);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         File.AppendAllText(@".\Error.txt",
                                        string.Format("[{0}] {1}{2}", DateTime.Now, ex, Environment.NewLine));

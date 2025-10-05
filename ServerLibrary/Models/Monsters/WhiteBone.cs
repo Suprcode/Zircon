@@ -38,7 +38,7 @@ namespace Server.Models.Monsters
 
             base.ProcessAction(action);
         }
-        
+
         public void Appear()
         {
             Visible = true;

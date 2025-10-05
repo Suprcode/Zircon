@@ -126,7 +126,7 @@ namespace Library.SystemModels
             }
         }
         private ItemInfo _Item;
-        
+
         public MonsterInfo Monster
         {
             get => _Monster;

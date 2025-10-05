@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Server.Envir;
 
 namespace Server.Models.Monsters
@@ -30,7 +25,7 @@ namespace Server.Models.Monsters
 
             if (CurrentLocation == Target.CurrentLocation)
             {
-                MirDirection direction = (MirDirection) SEnvir.Random.Next(8);
+                MirDirection direction = (MirDirection)SEnvir.Random.Next(8);
                 int rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
 
                 for (int d = 0; d < 8; d++)

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Drawing;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
+using System.Drawing;
 
 namespace Server.Models.Monsters
 {
@@ -11,7 +11,7 @@ namespace Server.Models.Monsters
         public override bool CanAttack => false;
 
         public DateTime DespawnTime;
-        
+
 
         public NetherworldGate()
         {

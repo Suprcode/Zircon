@@ -3,7 +3,7 @@ using Server.Models;
 
 namespace Server.Envir.Commands.Command
 {
-    public abstract class AbstractParameterizedCommand<CommandType> : IParameterizedCommand 
+    public abstract class AbstractParameterizedCommand<CommandType> : IParameterizedCommand
         where CommandType : ICommand
     {
         public abstract string VALUE { get; }

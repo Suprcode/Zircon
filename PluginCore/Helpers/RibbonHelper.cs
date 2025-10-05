@@ -1,9 +1,6 @@
-﻿using System;
-using System.Drawing;
-using System.Text;
-
-using DevExpress.XtraBars;
+﻿using DevExpress.XtraBars;
 using DevExpress.XtraBars.Ribbon;
+using System.Drawing;
 
 namespace PluginCore.Helpers
 {

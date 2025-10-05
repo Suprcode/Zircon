@@ -12,7 +12,7 @@ namespace Server.Models.Monsters
             Direction = MirDirection.Up;
             Passive = true;
         }
-        
+
         public override void ProcessRoam()
         {
         }

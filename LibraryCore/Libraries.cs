@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Library
 {
@@ -131,7 +127,7 @@ namespace Library
             [LibraryFile.M_Weapon14] = @"Data\M-Weapon14.Zl",
             [LibraryFile.M_Weapon15] = @"Data\M-Weapon15.Zl",
             [LibraryFile.M_Weapon16] = @"Data\M-Weapon16.Zl",
-            
+
             [LibraryFile.WM_Weapon1] = @"Data\WM-Weapon1.Zl",
             [LibraryFile.WM_Weapon2] = @"Data\WM-Weapon2.Zl",
             [LibraryFile.WM_Weapon3] = @"Data\WM-Weapon3.Zl",
@@ -184,7 +180,7 @@ namespace Library
             [LibraryFile.M_Helmet3] = @"Data\M-Helmet3.Zl",
             [LibraryFile.M_Helmet4] = @"Data\M-Helmet4.Zl",
             [LibraryFile.M_Helmet5] = @"Data\M-Helmet5.Zl",
-            
+
             [LibraryFile.M_Helmet11] = @"Data\M-Helmet11.Zl",
             [LibraryFile.M_Helmet12] = @"Data\M-Helmet12.Zl",
             [LibraryFile.M_Helmet13] = @"Data\M-Helmet13.Zl",
@@ -300,7 +296,7 @@ namespace Library
             [LibraryFile.Mon_54] = @"Data\Mon-54.Zl",
             [LibraryFile.Mon_55] = @"Data\Mon-55.Zl",
             [LibraryFile.Mon_56] = @"Data\Mon-56.Zl",
-            
+
             [LibraryFile.Magic] = @"Data\Magic.Zl",
             [LibraryFile.MagicEx] = @"Data\MagicEx.Zl",
             [LibraryFile.MagicEx2] = @"Data\MagicEx2.Zl",
@@ -748,7 +744,7 @@ namespace Library
         Mon_55,
         Mon_56,
 
-        Magic, 
+        Magic,
         MagicEx,
         MagicEx2,
         MagicEx3,

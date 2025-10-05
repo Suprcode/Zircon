@@ -1,15 +1,10 @@
-﻿using Library_Editor;
-using ManagedSquish;
+﻿using ManagedSquish;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace LibraryEditor

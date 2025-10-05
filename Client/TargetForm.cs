@@ -25,9 +25,9 @@ namespace Client
             AutoScaleDimensions = new SizeF(96F, 96F);
 
             ClientSize = new Size(1024, 768);
-            
+
             Icon = Properties.Resources.Zircon;
-            
+
             FormBorderStyle = (Config.FullScreen || Config.Borderless) ? FormBorderStyle.None : FormBorderStyle.FixedSingle;
 
             MaximizeBox = false;
@@ -148,7 +148,7 @@ namespace Client
                     DXManager.ToggleFullScreen();
                     return;
                 }
-                
+
                 DXControl.ActiveScene?.OnKeyDown(e);
                 e.Handled = true;
             }
@@ -165,7 +165,7 @@ namespace Client
             CEnvir.Ctrl = e.Control;
 
             if (e.KeyCode == Keys.Pause || e.KeyCode == Keys.PrintScreen)
-               CreateScreenShot();
+                CreateScreenShot();
 
             try
             {

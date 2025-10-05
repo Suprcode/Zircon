@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -29,7 +29,7 @@ namespace Server.Models.Monsters
             {
                 if (CurrentLocation == Target.CurrentLocation)
                 {
-                    direction = (MirDirection) SEnvir.Random.Next(8);
+                    direction = (MirDirection)SEnvir.Random.Next(8);
                     rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
 
                     for (int d = 0; d < 8; d++)
@@ -72,7 +72,7 @@ namespace Server.Models.Monsters
 
             if (SEnvir.Random.Next(FearRate) == 0)
                 FearTime = SEnvir.Now.AddSeconds(FearDuration + SEnvir.Random.Next(4));
-            
+
             ActionList.Add(new DelayedAction(
                                SEnvir.Now.AddMilliseconds(400 + Functions.Distance(CurrentLocation, Target.CurrentLocation) * Globals.ProjectileSpeed),
                                ActionType.DelayAttack,

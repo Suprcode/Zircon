@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using MirDB;
+using System;
 
 namespace Server.DBModels
 {
@@ -55,7 +51,7 @@ namespace Server.DBModels
             }
         }
         private string _CastleName;
-        
+
 
         public string CharacterName
         {
@@ -116,7 +112,7 @@ namespace Server.DBModels
             }
         }
         private MirClass _Class;
-        
+
 
 
         public int BossDamageTaken
@@ -178,7 +174,7 @@ namespace Server.DBModels
             }
         }
         private int _BossKillCount;
-        
+
         public int PvPDamageTaken
         {
             get { return _PvPDamageTaken; }

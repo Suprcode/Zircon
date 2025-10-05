@@ -24,7 +24,7 @@ namespace Server.Models.Magics
             {
                 Ob = null
             };
- 
+
             if (!Player.UseAmulet(25, 0))
             {
                 response.Cast = false;

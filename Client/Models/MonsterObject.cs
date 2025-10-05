@@ -17,7 +17,7 @@ namespace Client.Models
         public override bool Blocking => base.Blocking && CompanionObject == null && !(MonsterInfo.Flag == MonsterFlag.CastleDefense && Direction == (MirDirection)7);
 
         public MonsterInfo MonsterInfo;
-        
+
         public MirLibrary BodyLibrary;
         public int BodyOffSet = 1000;
         public int BodyShape;
@@ -74,7 +74,7 @@ namespace Client.Models
             Light = Stats[Stat.Light];
 
             Name = MonsterInfo.MonsterName;
-            
+
             Direction = MirDirection.DownLeft;
 
             UpdateLibraries();
@@ -104,7 +104,7 @@ namespace Client.Models
 
             CurrentLocation = info.Location;
             Direction = info.Direction;
-            
+
             Dead = info.Dead;
             Skeleton = info.Skeleton;
 
@@ -123,9 +123,9 @@ namespace Client.Models
             int frameStartDelay = CEnvir.Random.Next(5) * 100;
 
             SetFrame(new ObjectAction(!Dead ? MirAction.Standing : MirAction.Dead, MirDirection.Up, CurrentLocation), frameStartDelay);
-            
+
             GameScene.Game.MapControl.AddObject(this);
-            
+
             UpdateQuests();
         }
         public void UpdateLibraries()
@@ -277,7 +277,7 @@ namespace Client.Models
                     AttackSound = SoundIndex.SpittingSpiderAttack;
                     StruckSound = SoundIndex.SpittingSpiderStruck;
                     DieSound = SoundIndex.SpittingSpiderDie;
-                    
+
                     break;
                 case MonsterImage.Scarecrow:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_5, out BodyLibrary);
@@ -364,7 +364,7 @@ namespace Client.Models
                     AttackSound = SoundIndex.CaveMaggotAttack;
                     StruckSound = SoundIndex.CaveMaggotStruck;
                     DieSound = SoundIndex.CaveMaggotDie;
-                    
+
                     break;
                 case MonsterImage.GhostSorcerer:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_5, out BodyLibrary);
@@ -644,7 +644,7 @@ namespace Client.Models
                     BodyShape = 5;
                     AttackSound = SoundIndex.LarvaAttack;
                     StruckSound = SoundIndex.LarvaStruck;
-                    
+
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Larva)
                         Frames[frame.Key] = frame.Value;
                     break;
@@ -795,7 +795,7 @@ namespace Client.Models
                     AttackSound = SoundIndex.NumaMageAttack;
                     StruckSound = SoundIndex.NumaMageStruck;
                     DieSound = SoundIndex.NumaMageDie;
-                    
+
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.NumaMage)
                         Frames[frame.Key] = frame.Value;
                     break;
@@ -851,7 +851,7 @@ namespace Client.Models
                     StruckSound = SoundIndex.RagingLizardStruck;
                     DieSound = SoundIndex.RagingLizardDie;
                     break;
-                    
+
                 case MonsterImage.SawToothLizard:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_20, out BodyLibrary);
                     BodyShape = 2;
@@ -1078,7 +1078,7 @@ namespace Client.Models
                     StruckSound = SoundIndex.RazorTuskStruck;
                     DieSound = SoundIndex.RazorTuskDie;
                     break;
-                    
+
 
                 case MonsterImage.PinkGoddess:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_17, out BodyLibrary);
@@ -1221,7 +1221,7 @@ namespace Client.Models
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_2, out BodyLibrary);
                     BodyShape = 0;
                     AttackSound = SoundIndex.ChaosKnightAttack;
-                  //  StruckSound = SoundIndex.ChaosKnightStruck;
+                    //  StruckSound = SoundIndex.ChaosKnightStruck;
                     DieSound = SoundIndex.ChaosKnightDie;
 
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.BanyaGuard)
@@ -1237,7 +1237,7 @@ namespace Client.Models
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.PachonTheChaosBringer)
                         Frames[frame.Key] = frame.Value;
                     break;
-                    
+
                 case MonsterImage.NumaCavalry:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_19, out BodyLibrary);
                     BodyShape = 0;
@@ -1285,7 +1285,7 @@ namespace Client.Models
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.BanyaGuard)
                         Frames[frame.Key] = frame.Value;
                     break;
-                    
+
                 case MonsterImage.IcyRanger:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_21, out BodyLibrary);
                     BodyShape = 0;
@@ -1822,9 +1822,9 @@ namespace Client.Models
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_9, out BodyLibrary);
                     BodyShape = 0;
 
-                     AttackSound = SoundIndex.ClawSerpentAttack;
-                     StruckSound = SoundIndex.ClawSerpentStruck;
-                     DieSound = SoundIndex.ClawSerpentDie;
+                    AttackSound = SoundIndex.ClawSerpentAttack;
+                    StruckSound = SoundIndex.ClawSerpentStruck;
+                    DieSound = SoundIndex.ClawSerpentDie;
                     break;
                 case MonsterImage.Salamander:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_28, out BodyLibrary);
@@ -1863,7 +1863,7 @@ namespace Client.Models
                     BodyShape = 9;
 
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SDMob8)
-                        Frames[frame.Key] = frame.Value; 
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.SDMob9:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_32, out BodyLibrary);
@@ -1898,37 +1898,37 @@ namespace Client.Models
                 case MonsterImage.CrystalGolem:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_40, out BodyLibrary);
                     BodyShape = 0;
-                     
 
-                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SDMob15)
-                         Frames[frame.Key] = frame.Value;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SDMob15)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.DustDevil:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_41, out BodyLibrary);
                     BodyShape = 1;
 
 
-                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SDMob16)
-                         Frames[frame.Key] = frame.Value;
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SDMob16)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.TwinTailScorpion:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_41, out BodyLibrary);
                     BodyShape = 2;
 
 
-                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SDMob17)
-                         Frames[frame.Key] = frame.Value;
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SDMob17)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.BloodyMole:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_41, out BodyLibrary);
                     BodyShape = 3;
-                    
+
 
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.SDMob18)
                         Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.SDMob19:
-                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_44, out BodyLibrary); 
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_44, out BodyLibrary);
                     BodyShape = 3;
 
 
@@ -2006,7 +2006,7 @@ namespace Client.Models
                 case MonsterImage.NewMob1:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_47, out BodyLibrary);
                     BodyShape = 0;
-                    
+
                     break;
                 case MonsterImage.NewMob2:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_47, out BodyLibrary);
@@ -2135,7 +2135,7 @@ namespace Client.Models
                     //Fuckjed up Mob
 
                     break;
-                    case MonsterImage.Terracotta1:
+                case MonsterImage.Terracotta1:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_42, out BodyLibrary);
                     BodyShape = 4;
                     AttackSound = SoundIndex.Terracotta1Attack;
@@ -2368,13 +2368,13 @@ namespace Client.Models
                 case MirAction.Standing:
                     switch (Image)
                     {
-                            case MonsterImage.ZumaGuardian:
-                            case MonsterImage.ZumaFanatic:
-                            case MonsterImage.ZumaKing:
+                        case MonsterImage.ZumaGuardian:
+                        case MonsterImage.ZumaFanatic:
+                        case MonsterImage.ZumaKing:
                             animation = !Extra ? MirAnimation.StoneStanding : MirAnimation.Standing;
                             break;
                         default:
-                                animation = MirAnimation.Standing;
+                            animation = MirAnimation.Standing;
 
                             if (VisibleBuffs.Contains(BuffType.DragonRepulse))
                                 animation = MirAnimation.DragonRepulseMiddle;
@@ -2397,7 +2397,7 @@ namespace Client.Models
                     break;
                 case MirAction.Spell:
                     type = (MagicType)action.Extra[0];
-                    
+
                     animation = MirAnimation.Combat3;
 
                     if (type == MagicType.DragonRepulse)
@@ -2933,13 +2933,13 @@ namespace Client.Models
                     foreach (MapObject target in AttackTargets)
                     {
                         MirProjectile eff;
-                        Point p = new Point(target.CurrentLocation.X +4, target.CurrentLocation.Y - 10);
+                        Point p = new Point(target.CurrentLocation.X + 4, target.CurrentLocation.Y - 10);
                         Effects.Add(eff = new MirProjectile(130, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MonMagicEx6, 0, 0, Globals.NoneColour, p)
                         {
                             MapTarget = target.CurrentLocation,
                             Skip = 0,
                             Explode = true,
-                            Blend =  true,
+                            Blend = true,
                         });
 
                         eff.CompleteAction = () =>
@@ -2987,9 +2987,9 @@ namespace Client.Models
             switch (Image)
             {
                 case MonsterImage.LobsterLord:
-                        return BodyLibrary.VisiblePixel(BodyFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true) ||
-                               BodyLibrary.VisiblePixel(BodyFrame + 1000, new Point(p.X - DrawX, p.Y - DrawY), false, true) ||
-                               BodyLibrary.VisiblePixel(BodyFrame + 2000, new Point(p.X - DrawX, p.Y - DrawY), false, true);
+                    return BodyLibrary.VisiblePixel(BodyFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true) ||
+                           BodyLibrary.VisiblePixel(BodyFrame + 1000, new Point(p.X - DrawX, p.Y - DrawY), false, true) ||
+                           BodyLibrary.VisiblePixel(BodyFrame + 2000, new Point(p.X - DrawX, p.Y - DrawY), false, true);
                 default:
                     return BodyLibrary.VisiblePixel(BodyFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true);
             }
@@ -3065,7 +3065,7 @@ namespace Client.Models
                     break;
                 case MonsterImage.ZumaFanatic:
                 case MonsterImage.ZumaGuardian:
-                    switch (CurrentAction) 
+                    switch (CurrentAction)
                     {
                         case MirAction.Show:
                             Extra = true;

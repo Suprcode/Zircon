@@ -68,7 +68,7 @@ namespace Server.Models.Magics
                     Player.LevelMagic(Magic);
                     break;
                 }
-            } 
+            }
         }
     }
 }

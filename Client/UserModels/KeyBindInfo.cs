@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MirDB;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using MirDB;
 
 namespace Client.UserModels
 {
@@ -26,7 +21,7 @@ namespace Client.UserModels
             }
         }
         private string _Category;
-        
+
         public KeyBindAction Action
         {
             get { return _Action; }
@@ -101,7 +96,7 @@ namespace Client.UserModels
             }
         }
         private Keys _Key1;
-        
+
 
         public bool Control2
         {

@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Library;
-using Sentry;
+﻿using Library;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Drawing;
+using System.IO;
+using System.Threading;
 
 namespace Client.Envir
 {
@@ -178,7 +172,7 @@ namespace Client.Envir
                                 Matrix m = Matrix.Scaling(1F, 0.5f, 0);
 
                                 m.M21 = -0.50F;
-                                DXManager.Sprite.Transform = m*Matrix.Translation(x + image.Height/2, y, 0);
+                                DXManager.Sprite.Transform = m * Matrix.Translation(x + image.Height / 2, y, 0);
 
                                 DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
                                 if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
@@ -228,7 +222,7 @@ namespace Client.Envir
             if (!CheckImage(index)) return;
 
             MirImage image = Images[index];
-            
+
             Texture texture;
 
             Matrix scaling, rotationZ, translation;
@@ -334,7 +328,7 @@ namespace Client.Envir
             DXManager.Sprite.Transform = Matrix.Identity;
 
             CEnvir.DPSCounter++;
-            
+
             DXManager.SetOpacity(oldOpacity);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
@@ -427,15 +421,15 @@ namespace Client.Envir
                     break;
                 case ImageType.Shadow:
                     return;
-               /*     if (!image.ShadowValid) image.CreateShadow(_BReader);
-                    texture = image.Shadow;
+                /*     if (!image.ShadowValid) image.CreateShadow(_BReader);
+                     texture = image.Shadow;
 
-                    if (useOffSet)
-                    {
-                        x += image.ShadowOffSetX;
-                        y += image.ShadowOffSetY;
-                    }
-                    break;*/
+                     if (useOffSet)
+                     {
+                         x += image.ShadowOffSetX;
+                         y += image.ShadowOffSetY;
+                     }
+                     break;*/
                 case ImageType.Overlay:
                     if (!image.OverlayValid) image.CreateOverlay(_BReader);
                     texture = image.Overlay;
@@ -464,7 +458,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
-        
+
 
         #region IDisposable Support
 
@@ -637,7 +631,7 @@ namespace Client.Envir
         public unsafe bool VisiblePixel(Point p, bool acurrate)
         {
             if (p.X < 0 || p.Y < 0 || !ImageValid || ImageData == null) return false;
-            
+
             int w = Width + (4 - Width % 4) % 4;
             int h = Height + (4 - Height % 4) % 4;
 
@@ -657,7 +651,7 @@ namespace Client.Envir
             x = p.X % 4;
             y = p.Y % 4;
             x *= 2;
-            
+
             return (ImageData[index + 4 + y] & 1 << x) >> x != 1 || (ImageData[index + 4 + y] & 1 << x + 1) >> x + 1 != 1;
         }
 
@@ -683,7 +677,7 @@ namespace Client.Envir
             ImageValid = false;
             ShadowValid = false;
             OverlayValid = false;
-            
+
             ExpireTime = DateTime.MinValue;
 
             DXManager.TextureList.Remove(this);

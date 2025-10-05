@@ -183,7 +183,7 @@ namespace Server.Models.Magics.Warrior
 
         private void FinalizeDash(bool travel)
         {
-            int distance = travel? 1 : 0;
+            int distance = travel ? 1 : 0;
 
             // Move to last travelled cell
             Cell cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, distance));

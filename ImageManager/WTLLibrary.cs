@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ManagedSquish;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
-using ManagedSquish;
 
 namespace ImageManager
 {
@@ -19,7 +19,7 @@ namespace ImageManager
         private FileStream _fStream;
         private int[] _indexList;
         private bool _initialized;
-        
+
         public WTLLibrary(string filename)
         {
             _fileName = filename;
@@ -41,8 +41,8 @@ namespace ImageManager
             for (int i = 0; i < _count; i++)
                 _indexList[i] = _bReader.ReadInt32();
 
-             for (int i = 0; i < Images.Length; i++)
-               CheckImage(i);
+            for (int i = 0; i < Images.Length; i++)
+                CheckImage(i);
         }
         public void Close()
         {
@@ -152,7 +152,7 @@ namespace ImageManager
         public readonly short TShadowX;
         public readonly short TShadowY;
         public readonly short TWidth;
-        
+
         public Bitmap Texture;
 
         public short OHeight;
@@ -280,7 +280,7 @@ namespace ImageManager
 
             var pixels = (byte*)textureData.Scan0;
             int cap = OWidth * OHeight * 4;
-            
+
             int offset = 0, blockOffSet = 0;
 
             while (blockOffSet < fBytes.Length)
@@ -512,7 +512,7 @@ namespace ImageManager
                 ShadowOffSetX = TShadowX,
                 ShadowOffSetY = TShadowY
             };
-            
+
             if (shadowLibrary != null && shadowLibrary.HasImage(index))
             {
                 MImage sImage = shadowLibrary.Images[index];
@@ -566,7 +566,7 @@ namespace ImageManager
 
             temp.UnlockBits(tempdata);
             image.UnlockBits(imagedata);
-            
+
             BitmapData data = temp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
             byte[] pixels = new byte[temp.Width * temp.Height * 4];

@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Scenes;
 using Library;
 using Library.SystemModels;
-using  S = Library.Network.ServerPackets;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using S = Library.Network.ServerPackets;
 
 namespace Client.Models
 {
     public sealed class ItemObject : MapObject
     {
-        public override ObjectType Race  => ObjectType.Item;
+        public override ObjectType Race => ObjectType.Item;
 
         public DXLabel FocusLabel;
 
@@ -131,7 +129,7 @@ namespace Client.Models
 
             Size size = BodyLibrary.GetSize(drawIndex);
 
-            BodyLibrary.Draw(drawIndex, DrawX + (CellWidth - size.Width)/2, DrawY + (CellHeight - size.Height)/2, DrawColour, false, 1F, ImageType.Image);
+            BodyLibrary.Draw(drawIndex, DrawX + (CellWidth - size.Width) / 2, DrawY + (CellHeight - size.Height) / 2, DrawColour, false, 1F, ImageType.Image);
 
         }
 

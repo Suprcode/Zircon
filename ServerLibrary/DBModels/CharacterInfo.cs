@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using Library;
+﻿using Library;
 using Library.SystemModels;
 using MirDB;
 using Server.Models;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Server.DBModels
 {
@@ -26,7 +26,7 @@ namespace Server.DBModels
             }
         }
         private AccountInfo _Account;
-        
+
         public string CharacterName
         {
             get { return _CharacterName; }
@@ -148,7 +148,7 @@ namespace Server.DBModels
             }
         }
         private Color _ArmourColour;
-        
+
         public DateTime LastLogin
         {
             get { return _LastLogin; }
@@ -223,7 +223,7 @@ namespace Server.DBModels
             }
         }
         private Point _CurrentLocation;
-        
+
         public MapInfo CurrentMap
         {
             get { return _CurrentMap; }
@@ -268,7 +268,7 @@ namespace Server.DBModels
             }
         }
         private MirDirection _Direction;
-        
+
         public SafeZoneInfo BindPoint
         {
             get { return _BindPoint; }
@@ -388,7 +388,7 @@ namespace Server.DBModels
             }
         }
         private bool _CanFlameSplash;
-        
+
         public Stats LastStats
         {
             get { return _LastStats; }
@@ -463,7 +463,7 @@ namespace Server.DBModels
             }
         }
         private PetMode _PetMode;
-        
+
         public bool Observable
         {
             get { return _Observable; }
@@ -538,7 +538,7 @@ namespace Server.DBModels
             }
         }
         private DateTime _GroupRecallTime;
-        
+
         public bool HideHelmet
         {
             get { return _HideHelmet; }
@@ -568,7 +568,7 @@ namespace Server.DBModels
             }
         }
         private bool _CanDeathDrop;
-        
+
         public int Rebirth
         {
             get => _Rebirth;
@@ -613,7 +613,7 @@ namespace Server.DBModels
             }
         }
         private DateTime _NextDeathDropChange;
-              
+
         [Association("Companion")]
         public UserCompanion Companion
         {
@@ -660,7 +660,7 @@ namespace Server.DBModels
 
         [Association("Buffs", true)]
         public DBBindingList<BuffInfo> Buffs { get; set; }
-        
+
         [Association("Refines", true)]
         public DBBindingList<RefineInfo> Refines { get; set; }
 
@@ -749,8 +749,8 @@ namespace Server.DBModels
         }
         private string _FiltersItemType = "";
 
-        public Dictionary<RequiredClass, int> CurrentRank = new ();
-        public Dictionary<RequiredClass, int> RankChange = new ();
+        public Dictionary<RequiredClass, int> CurrentRank = new();
+        public Dictionary<RequiredClass, int> RankChange = new();
 
         protected override void OnLoaded()
         {
@@ -773,7 +773,7 @@ namespace Server.DBModels
             Account = null;
             Companion = null;
             Partner = null;
-            
+
             base.OnDeleted();
         }
 

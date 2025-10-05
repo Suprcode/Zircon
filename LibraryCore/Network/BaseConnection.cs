@@ -292,7 +292,7 @@ namespace Library.Network
 
 
                 if (!Monitor) continue;
-                
+
                 DiagnosticValue value;
                 Type type = p.GetType();
 
@@ -301,7 +301,7 @@ namespace Library.Network
 
                 value.Count++;
                 value.TotalSize += p.Length;
-                
+
                 if (p.Length > value.LargestSize)
                     value.LargestSize = p.Length;
             }
@@ -314,7 +314,7 @@ namespace Library.Network
             if (p == null) return;
 
             DateTime start = Time.Now;
-            
+
             MethodInfo info;
             if (!PacketMethods.TryGetValue(p.PacketType, out info))
                 PacketMethods[p.PacketType] = info = GetType().GetMethod("Process", new[] { p.PacketType });

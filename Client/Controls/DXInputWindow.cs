@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Client.Envir;
+using Client.UserModels;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Client.Envir;
-using Client.UserModels;
 
 //Cleaned
 namespace Client.Controls
@@ -23,7 +23,7 @@ namespace Client.Controls
 
         #endregion
 
-        public DXInputWindow( string message, string caption)
+        public DXInputWindow(string message, string caption)
         {
             HasFooter = true;
 
@@ -39,7 +39,7 @@ namespace Client.Controls
                 Location = new Point(10, 35),
                 Parent = this,
                 Text = message,
-                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak |TextFormatFlags.HorizontalCenter
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak | TextFormatFlags.HorizontalCenter
             };
             Label.Size = new Size(300, DXLabel.GetHeight(Label, 300).Height);
 

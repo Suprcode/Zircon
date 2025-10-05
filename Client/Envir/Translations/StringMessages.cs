@@ -222,7 +222,7 @@ namespace Client.Envir.Translations
         public abstract string LoginDialogChangePasswordButtonLabel { get; set; }
         public abstract string LoginDialogRememberCheckBoxLabel { get; set; }
         public abstract string LoginDialogForgotPasswordLabel { get; set; }
-        
+
         public abstract string NewAccountDialogTitle { get; set; }
         public abstract string NewAccountDialogCreateButtonLabel { get; set; }
         public abstract string NewAccountDialogEMailLabel { get; set; }
@@ -510,9 +510,9 @@ namespace Client.Envir.Translations
         public abstract string GuildDialogManageTabTreasuryLabel { get; set; }
         public abstract string GuildDialogManageTabTreasuryChangeButtonLabel { get; set; }
         public abstract string GuildDialogManageTabTreasuryTaxConfirmMessage { get; set; }
-       
+
         public abstract string GuildDialogManageTabMembershipMembersIncreaseButtonLabel { get; set; }
-        
+
         public abstract string GuildDialogManageTabUpgradeStorageLabel { get; set; }
         public abstract string GuildDialogManageTabUpgradeStorageIncreaseButtonLabel { get; set; }
         public abstract string GuildDialogManageTabUpgradeStorageConfirmMessage { get; set; }

@@ -1,9 +1,8 @@
-﻿using System.Drawing;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
-using Client.UserModels;
 using Library;
+using System.Drawing;
 using C = Library.Network.ClientPackets;
 
 //Cleaned

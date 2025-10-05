@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Library.SystemModels;
 using Server.Envir;
+using System;
+using System.Drawing;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -22,7 +18,7 @@ namespace Server.Models.Monsters
             switch (action.Type)
             {
                 case ActionType.DelayAttack:
-                    Attack((MapObject) action.Data[0]);
+                    Attack((MapObject)action.Data[0]);
                     return;
             }
 
@@ -52,7 +48,7 @@ namespace Server.Models.Monsters
             MapDropRate *= 10;
             MapGoldRate *= 30;
         }
-        
+
         public override bool ShouldAttackTarget(MapObject ob)
         {
             return CanAttackTarget(ob);
@@ -68,9 +64,9 @@ namespace Server.Models.Monsters
                     return base.CanAttackTarget(ob);
 
                 case ObjectType.Monster:
-                    MonsterObject mob = (MonsterObject) ob;
+                    MonsterObject mob = (MonsterObject)ob;
 
-                    return !mob.MonsterInfo.IsBoss ;
+                    return !mob.MonsterInfo.IsBoss;
                 default:
                     return false;
             }
@@ -87,8 +83,8 @@ namespace Server.Models.Monsters
             Point targetBack = Functions.Move(Target.CurrentLocation, Target.Direction, -1);
 
 
-            Broadcast(new S.ObjectAttack {ObjectID = ObjectID, Direction = Target.Direction, Location = targetBack});
-            Broadcast(new S.ObjectTurn {ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation});
+            Broadcast(new S.ObjectAttack { ObjectID = ObjectID, Direction = Target.Direction, Location = targetBack });
+            Broadcast(new S.ObjectTurn { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
 
 
             UpdateAttackTime();
@@ -108,7 +104,7 @@ namespace Server.Models.Monsters
             MonsterObject mob = null;
             if (ob.Race == ObjectType.Monster)
             {
-                mob = (MonsterObject) ob;
+                mob = (MonsterObject)ob;
                 if (mob.PetOwner == null)
                 {
                     mob.EXPOwner = null;

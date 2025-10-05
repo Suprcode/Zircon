@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -51,7 +47,7 @@ namespace Server.Models.Monsters
         public override void ProcessTarget()
         {
             if (Target == null) return;
-            
+
             if (!InAttackRange())
             {
                 if (CurrentLocation == Target.CurrentLocation)
@@ -73,13 +69,13 @@ namespace Server.Models.Monsters
             }
 
             if (CanAttack)
-            Attack();
+                Attack();
         }
 
         protected override void Attack()
         {
             Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
-            S.ObjectRangeAttack packet = new S.ObjectRangeAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation};
+            S.ObjectRangeAttack packet = new S.ObjectRangeAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation };
 
             Broadcast(packet);
 
@@ -102,8 +98,8 @@ namespace Server.Models.Monsters
                         AttackElement));
                 }
             }
-            
-            
+
+
         }
     }
 }

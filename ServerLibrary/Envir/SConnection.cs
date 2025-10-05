@@ -188,7 +188,7 @@ namespace Server.Envir
                 SEnvir.Log($"{IPAddress} Disconnected, Large Packet");
                 return;
             }
-            
+
             if (ReceiveList.Count > Config.MaxPacket)
             {
                 TryDisconnect();

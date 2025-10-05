@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using Client.Envir;
+﻿using Client.Envir;
 using Library;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 //Cleaned
 namespace Client.Controls
@@ -78,7 +78,7 @@ namespace Client.Controls
 
         public static DXLabel DebugLabel, HintLabel, PingLabel;
         protected static MirLibrary InterfaceLibrary;
-        
+
         static DXControl()
         {
             DebugLabel = new DXLabel
@@ -136,7 +136,7 @@ namespace Client.Controls
         #endregion
 
         #region Properties
-        
+
         protected internal List<DXControl> Controls { get; private set; } = new List<DXControl>();
 
         #region AllowDragOut
@@ -162,7 +162,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region AllowResize
 
         public bool AllowResize
@@ -409,7 +409,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Enabled
 
         public bool Enabled
@@ -434,7 +434,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region ForeColour
 
         public Color ForeColour
@@ -588,7 +588,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Movable
 
         public bool Movable
@@ -684,7 +684,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Parent
 
         public DXControl Parent
@@ -740,7 +740,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Size
 
         public virtual Size Size
@@ -841,7 +841,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Text
 
         public string Text
@@ -1009,7 +1009,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         public const int ResizeBuffer = 9;
         protected internal Point MovePoint;
         private Point ResizePoint;
@@ -1035,11 +1035,11 @@ namespace Client.Controls
 
             Surface previous = DXManager.CurrentSurface;
             DXManager.SetSurface(ControlSurface);
-            
+
             DXManager.Device.Clear(ClearFlags.Target, BackColour, 0, 0);
 
             OnClearTexture();
-            
+
             DXManager.SetSurface(previous);
             TextureValid = true;
 
@@ -1158,7 +1158,7 @@ namespace Client.Controls
 
         public virtual void OnSorted()
         {
-            
+
         }
         public void BringToFront()
         {
@@ -1240,7 +1240,7 @@ namespace Client.Controls
 
             MouseLeave?.Invoke(this, EventArgs.Empty);
         }
-        
+
         public virtual void OnMouseMove(MouseEventArgs e)
         {
             if (!IsEnabled)
@@ -1258,7 +1258,7 @@ namespace Client.Controls
 
                 Point nLocation = Location;
                 Size nSize = Size;
-                
+
 
                 if (ResizeUp)
                 {
@@ -1268,10 +1268,10 @@ namespace Client.Controls
 
                     nSize = new Size(nSize.Width, nSize.Height - (nLocation.Y - Location.Y));
 
-                    if (nSize.Height < ResizeBuffer*2)
+                    if (nSize.Height < ResizeBuffer * 2)
                     {
-                        nLocation.Y = Location.Y + Size.Height - ResizeBuffer*2;
-                        nSize.Height = ResizeBuffer*2;
+                        nLocation.Y = Location.Y + Size.Height - ResizeBuffer * 2;
+                        nSize.Height = ResizeBuffer * 2;
                     }
                     ResizePoint = new Point(ResizePoint.X, ResizePoint.Y + (nLocation.Y - Location.Y));
                 }
@@ -1282,8 +1282,8 @@ namespace Client.Controls
                     if (nSize.Height + nLocation.Y >= ActiveScene.Size.Height)
                         nSize.Height = ActiveScene.Size.Height - nLocation.Y;
 
-                    if (nSize.Height < ResizeBuffer*2)
-                        nSize.Height = ResizeBuffer*2;
+                    if (nSize.Height < ResizeBuffer * 2)
+                        nSize.Height = ResizeBuffer * 2;
 
                     ResizePoint = new Point(ResizePoint.X, ResizePoint.Y + (nSize.Height - Size.Height));
                 }
@@ -1291,7 +1291,7 @@ namespace Client.Controls
                 if (ResizeLeft)
                 {
                     nLocation = new Point(nLocation.X + tempPoint.X, nLocation.Y);
-                    
+
                     if (DisplayArea.X + tempPoint.X < 0) nLocation.X += DisplayArea.X - tempPoint.X;
 
 
@@ -1307,14 +1307,14 @@ namespace Client.Controls
                 }
                 else if (ResizeRight)
                 {
-                    nSize = new Size(nSize.Width + tempPoint.X, nSize.Height );
+                    nSize = new Size(nSize.Width + tempPoint.X, nSize.Height);
 
                     if (nSize.Width + nLocation.X >= ActiveScene.Size.Width)
                         nSize.Width = ActiveScene.Size.Width - nLocation.X;
 
                     if (nSize.Width < ResizeBuffer * 2)
                         nSize.Width = ResizeBuffer * 2;
-                    ResizePoint = new Point(ResizePoint.X + (nSize.Width - Size.Width), ResizePoint.Y );
+                    ResizePoint = new Point(ResizePoint.X + (nSize.Width - Size.Width), ResizePoint.Y);
                 }
 
                 Size oldSize = nSize;
@@ -1332,12 +1332,12 @@ namespace Client.Controls
 
                 if (ResizeLeft)
                 {
-                    nLocation = new Point(nLocation.X - nSize.Width + oldSize.Width, nLocation.Y );
+                    nLocation = new Point(nLocation.X - nSize.Width + oldSize.Width, nLocation.Y);
                     ResizePoint = new Point(ResizePoint.X - nSize.Width + oldSize.Width, ResizePoint.Y);
                 }
                 else if (ResizeRight)
                 {
-                    ResizePoint = new Point(ResizePoint.X + nSize.Width - oldSize.Width, ResizePoint.Y );
+                    ResizePoint = new Point(ResizePoint.X + nSize.Width - oldSize.Width, ResizePoint.Y);
                 }
                 Location = nLocation;
                 Size = nSize;
@@ -1382,7 +1382,7 @@ namespace Client.Controls
                 }
                 else if (top || bottom)
                     Cursor.Current = Cursors.SizeNS;
-                
+
             }
 
             if (IsMoving)
@@ -1425,7 +1425,7 @@ namespace Client.Controls
 
                 if (Tag is Size)
                 {
-                    Size clipSize = (Size) Tag;
+                    Size clipSize = (Size)Tag;
                     Point change = new Point(tempPoint.X - Location.X, tempPoint.Y - Location.Y);
 
                     if (DisplayArea.X + change.X < ActiveScene.Location.X) tempPoint.X -= DisplayArea.X + change.X - ActiveScene.Location.X;
@@ -1441,12 +1441,12 @@ namespace Client.Controls
 
 
             if (!IsMoving && !IsResizing && !left && !right && !top && !bottom)
-            for (int i = Controls.Count - 1; i >= 0; i--)
-                if (Controls[i].IsMouseOver(e.Location))
-                {
-                    Controls[i].OnMouseMove(e);
-                    return;
-                }
+                for (int i = Controls.Count - 1; i >= 0; i--)
+                    if (Controls[i].IsMouseOver(e.Location))
+                    {
+                        Controls[i].OnMouseMove(e);
+                        return;
+                    }
 
             MouseControl = this;
 
@@ -1652,7 +1652,7 @@ namespace Client.Controls
             DrawBorder();
             OnAfterDraw();
         }
-        
+
         protected virtual void OnBeforeDraw()
         {
             BeforeDraw?.Invoke(this, EventArgs.Empty);
@@ -1668,7 +1668,7 @@ namespace Client.Controls
         protected virtual void DrawBorder()
         {
             if (!Border || BorderInformation == null) return;
-            
+
             if (DXManager.Line.Width != BorderSize)
                 DXManager.Line.Width = BorderSize;
 
@@ -1710,7 +1710,7 @@ namespace Client.Controls
             PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
 
             DXManager.SetOpacity(oldOpacity);
-            
+
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
 
@@ -1718,7 +1718,7 @@ namespace Client.Controls
         {
             Rectangle bounds = ActiveScene.DisplayArea;
             Rectangle textureArea = Rectangle.Intersect(bounds, displayArea);
-            
+
             if (!control.IsMoving || !control.AllowDragOut)
                 while (parent != null)
                 {
@@ -1742,7 +1742,7 @@ namespace Client.Controls
                 }
 
             if (textureArea.IsEmpty) return;
-            
+
             textureArea.Location = new Point(textureArea.X - displayArea.X, textureArea.Y - displayArea.Y);
 
             float fX = displayArea.X + textureArea.Location.X + offX;

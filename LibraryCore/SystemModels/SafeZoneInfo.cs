@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MirDB;
+using System.Collections.Generic;
 using System.Drawing;
-using MirDB;
 
 namespace Library.SystemModels
 {
@@ -21,7 +21,7 @@ namespace Library.SystemModels
             }
         }
         private MapRegion _Region;
-        
+
         public MapRegion BindRegion
         {
             get { return _BindRegion; }
@@ -36,7 +36,7 @@ namespace Library.SystemModels
             }
         }
         private MapRegion _BindRegion;
-        
+
         public RequiredClass StartClass
         {
             get { return _StartClass; }

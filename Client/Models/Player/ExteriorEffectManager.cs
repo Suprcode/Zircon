@@ -137,7 +137,8 @@ namespace Client.Models.Player
                     return true;
                 default:
                     break;
-            };
+            }
+            ;
 
             // never draw in front
             switch (effect)
@@ -212,9 +213,9 @@ namespace Client.Models.Player
         private static void DrawExteriorEffect(PlayerObject player, ExteriorEffect effect, bool behind)
         {
             if (behind)
-            { 
+            {
                 if (!DrawExteriorEffectBehind(player.Direction, effect))
-                    return; 
+                    return;
             }
             else
             {
@@ -271,7 +272,7 @@ namespace Client.Models.Player
             else if (effect >= ExteriorEffect.A_LionWings)
             {
                 if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_FullEx1, out MirLibrary library)) return;
-                switch(effect)
+                switch (effect)
                 {
                     case ExteriorEffect.A_LionWings:
                         library.DrawBlend(DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
@@ -318,7 +319,7 @@ namespace Client.Models.Player
                         library.DrawBlend(20000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                 }
-            } 
+            }
             else //EquipEffect_Part
             {
                 if (!CEnvir.LibraryList.TryGetValue(LibraryFile.EquipEffect_Part, out MirLibrary library)) return;
@@ -470,7 +471,7 @@ namespace Client.Models.Player
                 return initialDrawX;
             }
 
-            switch(effect)
+            switch (effect)
             {
                 case ExteriorEffect.A_WhiteAura:
                 case ExteriorEffect.A_BlueAura:

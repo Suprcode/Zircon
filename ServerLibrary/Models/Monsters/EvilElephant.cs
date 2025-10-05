@@ -1,6 +1,6 @@
-﻿using System;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -29,7 +29,7 @@ namespace Server.Models.Monsters
             }
 
             if (Attack(ob, GetDC(), AttackElement) <= 0) return;
-                
+
             ob.ApplyPoison(new Poison
             {
                 Value = GetSC(),

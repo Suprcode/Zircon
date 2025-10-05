@@ -12,8 +12,8 @@ namespace Client.Models.Particles
     {
         public class LightningParticle : ParticleType
         {
-            public override TimeSpan SpawnFrequency 
-            { 
+            public override TimeSpan SpawnFrequency
+            {
                 get => TimeSpan.FromMilliseconds(random.Next(1000, 5000));
             }
 

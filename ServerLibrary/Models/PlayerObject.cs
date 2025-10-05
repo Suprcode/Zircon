@@ -145,7 +145,7 @@ namespace Server.Models
         public HashSet<MonsterObject> TaggedMonsters = new HashSet<MonsterObject>();
         public HashSet<MapObject> NearByObjects = new HashSet<MapObject>();
 
-        public UserItem[] 
+        public UserItem[]
             Inventory = new UserItem[Globals.InventorySize],
             Equipment = new UserItem[Globals.EquipmentSize],
             Storage = new UserItem[1000],
@@ -196,7 +196,7 @@ namespace Server.Models
                     PartsStorage[item.Slot - Globals.PartsStorageOffset] = item;
                     continue;
                 }
-                
+
                 Storage[item.Slot] = item;
             }
 
@@ -380,7 +380,7 @@ namespace Server.Models
                 case ActionType.DelayAttack:
                     Attack((MapObject)action.Data[0], (List<MagicType>)action.Data[1], (bool)action.Data[2], (int)action.Data[3]);
                     return;
-                case ActionType.DelayMagic:            
+                case ActionType.DelayMagic:
                     {
                         type = (MagicType)action.Data[0];
 
@@ -406,7 +406,7 @@ namespace Server.Models
                         if (!CanAttackTarget(ob)) return;
 
                         MagicAttack((List<MagicType>)action.Data[0], ob, (bool)action.Data[2], (Stats)action.Data[3], (int)action.Data[4]);
-                    }                 
+                    }
                     return;
                 case ActionType.Mount:
                     PacketWaiting = false;
@@ -704,7 +704,7 @@ namespace Server.Models
                         {
                             CultureInfo cul = CultureInfo.CurrentCulture;
 
-                            if (quest.Completed && 
+                            if (quest.Completed &&
                                 cul.Calendar.GetWeekOfYear(quest.DateCompleted.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday) != cul.Calendar.GetWeekOfYear(DateTime.UtcNow.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
                             {
                                 Character.Quests.RemoveAt(i);
@@ -2288,10 +2288,10 @@ namespace Server.Models
             Stats[Stat.DropRate] += 20 * Stats[Stat.Rebirth];
             Stats[Stat.GoldRate] += 20 * Stats[Stat.Rebirth];
 
-            Enqueue(new S.StatsUpdate 
-            { 
-                Stats = Stats, 
-                HermitStats = Config.EnableHermit ? Character.HermitStats : new Stats(), 
+            Enqueue(new S.StatsUpdate
+            {
+                Stats = Stats,
+                HermitStats = Config.EnableHermit ? Character.HermitStats : new Stats(),
                 HermitPoints = Math.Max(0, Level - 39 - Character.SpentPoints)
             });
 
@@ -3419,7 +3419,8 @@ namespace Server.Models
             {
                 Enqueue(new S.MailDelete { Index = index, ObserverPacket = true });
                 return;
-            };
+            }
+            ;
 
             if (mail.Items.Count > 0)
             {
@@ -4702,7 +4703,7 @@ namespace Server.Models
             foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
                 member.Account.Connection?.Player?.Enqueue(update);
         }
-        
+
         public void GuildToggleCastleGates()
         {
             if (Character.Account.GuildMember == null) return;
@@ -6050,7 +6051,7 @@ namespace Server.Models
                                 }
                             }
                             break;
-                        case 19: 
+                        case 19:
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6687,7 +6688,7 @@ namespace Server.Models
                         Connection.ReceiveChatWithObservers(con => con.Language.StorageSafeZone, MessageType.System);
                         return;
                     }
-                    
+
                     if (fromItem.Info.ItemEffect != ItemEffect.ItemPart) return;
 
                     toArray = PartsStorage;
@@ -7162,7 +7163,7 @@ namespace Server.Models
                 items.Add(item);
 
                 if (item.Info.StackSize <= 1) continue;
-                if (item.Count == item.Info.StackSize) continue; 
+                if (item.Count == item.Info.StackSize) continue;
 
                 var count = item.Count;
 
@@ -12835,7 +12836,7 @@ namespace Server.Models
                                     if (item.UserTask == null) continue;
 
                                     if (!item.UserTask.Completed &&
-                                        ((item.UserTask.Quest.Character != null && item.UserTask.Quest.Character == Character) || 
+                                        ((item.UserTask.Quest.Character != null && item.UserTask.Quest.Character == Character) ||
                                         (item.UserTask.Quest.Account != null && item.UserTask.Quest.Account == Character.Account))) continue;
 
                                     items.Remove(item);
@@ -13363,7 +13364,7 @@ namespace Server.Models
 
             if (Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
             {
-                element = Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();             
+                element = Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();
             }
 
             if (AttackLocation(Functions.Move(CurrentLocation, Direction), magics, true))
@@ -13741,7 +13742,7 @@ namespace Server.Models
 
             if (Equipment[(int)EquipmentSlot.Amulet]?.Info.ItemType == ItemType.DarkStone)
             {
-                element = Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();      
+                element = Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();
             }
 
             Broadcast(new S.ObjectRangeAttack
@@ -15307,7 +15308,7 @@ namespace Server.Models
         }
 
         public void SendShapeUpdate()
-        {     
+        {
             S.PlayerUpdate p = new S.PlayerUpdate
             {
                 ObjectID = ObjectID,
@@ -15984,11 +15985,11 @@ namespace Server.Models
             item.AddStat(Stat.Counter1, -1, StatSource.Added);
             item.StatsChanged();
 
-            Enqueue(new S.ItemStatsRefreshed 
-            { 
-                GridType = GridType.Inventory, 
-                Slot = p.Slot, 
-                NewStats = new Stats(item.Stats, true) 
+            Enqueue(new S.ItemStatsRefreshed
+            {
+                GridType = GridType.Inventory,
+                Slot = p.Slot,
+                NewStats = new Stats(item.Stats, true)
             });
 
             LootBoxUpdate(item, p.Slot);
@@ -16011,11 +16012,11 @@ namespace Server.Models
             item.AddStat(Stat.Counter2, 1, StatSource.Added);
             item.StatsChanged();
 
-            Enqueue(new S.ItemStatsRefreshed 
-            { 
-                GridType = GridType.Inventory, 
-                Slot = p.Slot, 
-                NewStats = new Stats(item.Stats, true) 
+            Enqueue(new S.ItemStatsRefreshed
+            {
+                GridType = GridType.Inventory,
+                Slot = p.Slot,
+                NewStats = new Stats(item.Stats, true)
             });
 
             LootBoxUpdate(item, p.Slot);

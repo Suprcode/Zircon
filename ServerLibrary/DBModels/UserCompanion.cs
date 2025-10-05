@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Library.SystemModels;
 using MirDB;
+using System.Linq;
 
 namespace Server.DBModels
 {
@@ -27,7 +23,7 @@ namespace Server.DBModels
             }
         }
         private AccountInfo _Account;
-        
+
         [Association("Companion")]
         public CharacterInfo Character
         {
@@ -58,8 +54,8 @@ namespace Server.DBModels
             }
         }
         private CompanionInfo _Info;
-        
-        
+
+
         public string Name
         {
             get { return _Name; }
@@ -74,7 +70,7 @@ namespace Server.DBModels
             }
         }
         private string _Name;
-        
+
         public int Level
         {
             get { return _Level; }
@@ -149,7 +145,7 @@ namespace Server.DBModels
             }
         }
         private Stats _Level5;
-        
+
         public Stats Level7
         {
             get { return _Level7; }
@@ -194,7 +190,7 @@ namespace Server.DBModels
             }
         }
         private Stats _Level11;
-        
+
         public Stats Level13
         {
             get { return _Level13; }

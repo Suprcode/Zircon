@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
-using Server.Envir;
+﻿using Server.Envir;
+using System;
 
 namespace Server.Models.Monsters
 {
@@ -21,7 +16,7 @@ namespace Server.Models.Monsters
             if (SEnvir.Now >= SlaveTime)
             {
                 SlaveTime = SEnvir.Now.AddSeconds(20);
-                
+
                 SpawnMinions(10 - MinionList.Count, 0, Target);
             }
         }

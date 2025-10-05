@@ -354,7 +354,7 @@ namespace Library.SystemModels
             }
         }
         private bool _CanDeathDrop;
-        
+
         public string Description
         {
             get { return _Description; }

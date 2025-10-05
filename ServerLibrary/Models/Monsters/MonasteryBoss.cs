@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
-using Server.Envir;
+﻿using Library;
 
 namespace Server.Models.Monsters
 {

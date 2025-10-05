@@ -58,7 +58,7 @@ namespace Library
             int count = reader.ReadInt32();
 
             for (int i = 0; i < count; i++)
-                Values[(Stat) reader.ReadInt32()] = reader.ReadInt32();
+                Values[(Stat)reader.ReadInt32()] = reader.ReadInt32();
         }
         public void Add(Stats stats, bool addElements = true)
         {
@@ -184,7 +184,7 @@ namespace Library
                     }
 
                     value = ei ? $"E. Adv" : $"E. Dis";
-         
+
                     return value;
                 default: return null;
             }
@@ -216,7 +216,7 @@ namespace Library
                 case StatType.Max:
                     return description.Title + ": " + string.Format(description.Format, this[description.MinStat], this[stat]);
                 case StatType.Percent:
-                    return description.Title + ": " + string.Format(description.Format, this[stat]/100D);
+                    return description.Title + ": " + string.Format(description.Format, this[stat] / 100D);
                 case StatType.Text:
                     return description.Title;
                 case StatType.Time:
@@ -293,7 +293,7 @@ namespace Library
 
                         if (!ei && list[1] != stat) return null; //Impossible to be false and have less than 2 stats.
                     }
-                    
+
 
                     value = ei ? $"E. Adv: " : $"E. Dis: ";
 
@@ -368,8 +368,8 @@ namespace Library
 
         public bool HasElementalWeakness()
         {
-            return 
-                this[Stat.FireResistance] <= 0 && this[Stat.IceResistance] <= 0 && this[Stat.LightningResistance] <= 0 && this[Stat.WindResistance] <= 0 && 
+            return
+                this[Stat.FireResistance] <= 0 && this[Stat.IceResistance] <= 0 && this[Stat.LightningResistance] <= 0 && this[Stat.WindResistance] <= 0 &&
                 this[Stat.HolyResistance] <= 0 && this[Stat.DarkResistance] <= 0 &&
                 this[Stat.PhantomResistance] <= 0 && this[Stat.PhysicalResistance] <= 0;
         }
@@ -560,12 +560,12 @@ namespace Library
         LightningAttack,
         [StatDescription(Title = "Lightning", Format = "{0:+#0;-#0;#0}", Mode = StatType.ElementResistance)]
         LightningResistance,
-        
+
         [StatDescription(Title = "Wind", Format = "{0:+#0;-#0;#0}", Mode = StatType.AttackElement)]
         WindAttack,
         [StatDescription(Title = "Wind", Format = "{0:+#0;-#0;#0}", Mode = StatType.ElementResistance)]
         WindResistance,
-        
+
         [StatDescription(Title = "Holy", Format = "{0:+#0;-#0;#0}", Mode = StatType.AttackElement)]
         HolyAttack,
         [StatDescription(Title = "Holy", Format = "{0:+#0;-#0;#0}", Mode = StatType.ElementResistance)]

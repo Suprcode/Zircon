@@ -158,14 +158,14 @@ namespace Server.DBModels
             return new ClientUserQuest
             {
                 Index = Index,
-                QuestIndex =  QuestInfo.Index,
+                QuestIndex = QuestInfo.Index,
                 Completed = Completed,
                 SelectedReward = SelectedReward,
                 Track = Track,
                 DateTaken = DateTaken,
                 DateCompleted = DateCompleted,
 
-                Tasks = Tasks.Select(x=> x.ToClientInfo()).ToList(),
+                Tasks = Tasks.Select(x => x.ToClientInfo()).ToList(),
             };
         }
 
@@ -211,7 +211,7 @@ namespace Server.DBModels
             }
         }
         private QuestTask _Task;
-        
+
         public long Amount
         {
             get { return _Amount; }

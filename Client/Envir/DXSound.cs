@@ -1,10 +1,9 @@
-﻿using SlimDX.DirectSound;
+﻿using NAudio.Wave;
+using SlimDX.DirectSound;
 using SlimDX.Multimedia;
-using NAudio;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using NAudio.Wave;
 using WaveFormat = SlimDX.Multimedia.WaveFormat;
 using WaveStream = SlimDX.Multimedia.WaveStream;
 

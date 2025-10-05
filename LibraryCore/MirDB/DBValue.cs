@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Library;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using Library;
 
 namespace MirDB
 {
@@ -112,54 +112,54 @@ namespace MirDB
 
             TypeWrite = new Dictionary<Type, Action<object, BinaryWriter>>
             {
-                [typeof(Boolean)] = (v, w) => w.Write((bool) v),
-                [typeof(Byte)] = (v, w) => w.Write((Byte) v),
+                [typeof(Boolean)] = (v, w) => w.Write((bool)v),
+                [typeof(Byte)] = (v, w) => w.Write((Byte)v),
                 [typeof(Byte[])] = (v, w) =>
                 {
-                    w.Write(((Byte[]) v).Length);
-                    w.Write((Byte[]) v);
+                    w.Write(((Byte[])v).Length);
+                    w.Write((Byte[])v);
                 },
-                [typeof(Char)] = (v, w) => w.Write((Char) v),
-                [typeof(Color)] = (v, w) => w.Write(((Color) v).ToArgb()),
-                [typeof(DateTime)] = (v, w) => w.Write(((DateTime) v).ToBinary()),
-                [typeof(Decimal)] = (v, w) => w.Write((Decimal) v),
-                [typeof(Double)] = (v, w) => w.Write((Double) v),
-                [typeof(Int16)] = (v, w) => w.Write((Int16) v),
-                [typeof(Int32)] = (v, w) => w.Write((Int32) v),
+                [typeof(Char)] = (v, w) => w.Write((Char)v),
+                [typeof(Color)] = (v, w) => w.Write(((Color)v).ToArgb()),
+                [typeof(DateTime)] = (v, w) => w.Write(((DateTime)v).ToBinary()),
+                [typeof(Decimal)] = (v, w) => w.Write((Decimal)v),
+                [typeof(Double)] = (v, w) => w.Write((Double)v),
+                [typeof(Int16)] = (v, w) => w.Write((Int16)v),
+                [typeof(Int32)] = (v, w) => w.Write((Int32)v),
                 [typeof(Int32[])] = (v, w) =>
                 {
                     w.Write(v != null);
                     if (v == null) return;
-                    Int32[] values = (Int32[]) v;
+                    Int32[] values = (Int32[])v;
 
                     w.Write(values.Length);
 
                     foreach (Int32 value in values)
                         w.Write(value);
                 },
-                [typeof(Int64)] = (v, w) => w.Write((Int64) v),
+                [typeof(Int64)] = (v, w) => w.Write((Int64)v),
                 [typeof(Point)] = (v, w) =>
                 {
-                    w.Write(((Point) v).X);
-                    w.Write(((Point) v).Y);
+                    w.Write(((Point)v).X);
+                    w.Write(((Point)v).Y);
                 },
-                [typeof(SByte)] = (v, w) => w.Write((SByte) v),
-                [typeof(Single)] = (v, w) => w.Write((Single) v),
+                [typeof(SByte)] = (v, w) => w.Write((SByte)v),
+                [typeof(Single)] = (v, w) => w.Write((Single)v),
                 [typeof(Size)] = (v, w) =>
                 {
-                    w.Write(((Size) v).Width);
-                    w.Write(((Size) v).Height);
+                    w.Write(((Size)v).Width);
+                    w.Write(((Size)v).Height);
                 },
-                [typeof(String)] = (v, w) => w.Write((String) v ?? string.Empty),
-                [typeof(TimeSpan)] = (v, w) => w.Write(((TimeSpan) v).Ticks),
-                [typeof(UInt16)] = (v, w) => w.Write((UInt16) v),
-                [typeof(UInt32)] = (v, w) => w.Write((UInt32) v),
-                [typeof(UInt64)] = (v, w) => w.Write((UInt64) v),
+                [typeof(String)] = (v, w) => w.Write((String)v ?? string.Empty),
+                [typeof(TimeSpan)] = (v, w) => w.Write(((TimeSpan)v).Ticks),
+                [typeof(UInt16)] = (v, w) => w.Write((UInt16)v),
+                [typeof(UInt32)] = (v, w) => w.Write((UInt32)v),
+                [typeof(UInt64)] = (v, w) => w.Write((UInt64)v),
                 [typeof(Point[])] = (v, w) =>
                 {
                     w.Write(v != null);
                     if (v == null) return;
-                    Point[] points = (Point[]) v;
+                    Point[] points = (Point[])v;
 
                     w.Write(points.Length);
 
@@ -181,12 +181,12 @@ namespace MirDB
                     w.Write(v != null);
                     if (v == null) return;
 
-                    BitArray array = (BitArray) v;
+                    BitArray array = (BitArray)v;
 
 
-                    byte[] bytes = new byte[(int) Math.Ceiling(array.Length/8d)];
+                    byte[] bytes = new byte[(int)Math.Ceiling(array.Length / 8d)];
                     array.CopyTo(bytes, 0);
-                    
+
                     w.Write(bytes.Length);
                     w.Write(bytes);
                 },

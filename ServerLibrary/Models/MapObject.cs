@@ -26,8 +26,8 @@ namespace Server.Models
         public virtual string Name { get; set; }
 
         public virtual string Caption { get; set; }
-       
-    
+
+
         public virtual int Level { get; set; }
 
         public Cell PreviousCell { get; private set; }
@@ -222,7 +222,7 @@ namespace Server.Models
 
                 if (SEnvir.Now < poison.TickTime) continue;
 
-                if (poison.TickCount-- <= 0) 
+                if (poison.TickCount-- <= 0)
                     PoisonList.RemoveAt(i);
 
                 poison.TickTime = SEnvir.Now + poison.TickFrequency;
@@ -269,7 +269,7 @@ namespace Server.Models
                         damage += poison.Value;
                         break;
                     case PoisonType.Containment:
-                        damage += poison.Value; 
+                        damage += poison.Value;
                         break;
                     case PoisonType.Chain:
                         damage += Chain.PoisonTick(this);
@@ -291,7 +291,7 @@ namespace Server.Models
                         if (!poison.CanKill)
                             damage = Math.Min(CurrentHP - 1, damage);
                     }
-                        
+
                     if (damage > 0)
                     {
                         #region Conquest Stats
@@ -1208,7 +1208,7 @@ namespace Server.Models
                 }
             }
 
-            if (bestCell == null || layers >= Config.DropLayers) 
+            if (bestCell == null || layers >= Config.DropLayers)
                 return null;
 
             return bestCell;

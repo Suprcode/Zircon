@@ -142,9 +142,9 @@ namespace Server.Views
             {
                 Size = DXPanel.ClientSize,
             };
-            
+
             DXPanel.MouseWheel += DXPanel_MouseWheel;
-            
+
             UpdateScrollBars();
         }
 
@@ -158,7 +158,7 @@ namespace Server.Views
             Manager.ResetDevice();
             Map.Size = DXPanel.ClientSize;
 
-            
+
             UpdateScrollBars();
         }
 
@@ -211,7 +211,7 @@ namespace Server.Views
             }
         }
 
-       
+
         public void UpdateScrollBars()
         {
             if (Map.Width == 0 || Map.Height == 0)
@@ -322,12 +322,12 @@ namespace Server.Views
             BitArray bitRegion = null;
             Point[] pointRegion = null;
 
-            if (Map.Selection.Count*8*8 > Map.Width*Map.Height)
+            if (Map.Selection.Count * 8 * 8 > Map.Width * Map.Height)
             {
-                bitRegion = new BitArray(Map.Width*Map.Height);
+                bitRegion = new BitArray(Map.Width * Map.Height);
 
                 foreach (Point point in Map.Selection)
-                    bitRegion[point.Y*Map.Width + point.X] = true;
+                    bitRegion[point.Y * Map.Width + point.X] = true;
             }
             else
             {
@@ -354,7 +354,7 @@ namespace Server.Views
             Map.AttributeSelection = !Map.AttributeSelection;
         }
     }
-    
+
 
 }
 
@@ -383,7 +383,7 @@ namespace Server.Views.DirectX
         public float BlendRate { get; private set; } = 1F;
 
         public bool DeviceLost { get; set; }
-        
+
         public List<MirImage> TextureList { get; } = new List<MirImage>();
 
         public Texture AttributeTexture;
@@ -397,7 +397,7 @@ namespace Server.Views.DirectX
             Graphics = Graphics.FromHwnd(IntPtr.Zero);
             ConfigureGraphics(Graphics);
 
-            
+
             foreach (KeyValuePair<LibraryFile, string> pair in Libraries.LibraryList)
             {
                 if (!File.Exists(Path.Combine(Config.ClientPath, pair.Value))) continue;
@@ -578,7 +578,7 @@ namespace Server.Views.DirectX
             DeviceLost = true;
 
             if (Parameters == null || Target.ClientSize.Width == 0 || Target.ClientSize.Height == 0) return;
-            
+
             Parameters.BackBufferWidth = Target.ClientSize.Width;
             Parameters.BackBufferHeight = Target.ClientSize.Height;
 
@@ -1148,7 +1148,7 @@ namespace Server.Views.DirectX
         #endregion
 
     }
-    
+
     public sealed class MirImage : IDisposable
     {
         public int Version;
@@ -1467,7 +1467,7 @@ namespace Server.Views.DirectX
     public class MapControl : IDisposable
     {
         public DXManager Manager;
-        
+
         public MapControl(DXManager manager)
         {
             Manager = manager;
@@ -1527,7 +1527,7 @@ namespace Server.Views.DirectX
         }
 
         #endregion
-        
+
         #region StartY
 
         public int StartY
@@ -1631,8 +1631,8 @@ namespace Server.Views.DirectX
         #endregion
 
         public HashSet<Point> Selection = new HashSet<Point>();
-        
-        
+
+
         //Zoom to handle
         public const int BaseCellWidth = 48;
         public const int BaseCellHeight = 32;
@@ -1767,7 +1767,7 @@ namespace Server.Views.DirectX
 
         #endregion
 
-        
+
 
 
         #region Texture
@@ -1838,7 +1838,7 @@ namespace Server.Views.DirectX
         public void Draw()
         {
             if (Size.Width <= 0 || Size.Height <= 0) return;
-            
+
             DrawControl();
         }
         protected virtual void DrawControl()
@@ -1862,24 +1862,24 @@ namespace Server.Views.DirectX
         public void DrawFloor()
         {
             int minX = Math.Max(0, StartX - 1);
-            int maxX = Math.Min(Width - 1, StartX + (int) Math.Ceiling(Size.Width/CellWidth));
+            int maxX = Math.Min(Width - 1, StartX + (int)Math.Ceiling(Size.Width / CellWidth));
 
             int minY = Math.Max(0, StartY - 1);
-            int maxY = Math.Min(Height - 1, StartY + (int) Math.Ceiling(Size.Height/CellHeight));
+            int maxY = Math.Min(Height - 1, StartY + (int)Math.Ceiling(Size.Height / CellHeight));
 
             Matrix scale = Matrix.Scaling(Zoom, Zoom, 1);
 
             for (int y = minY; y <= maxY; y++)
             {
-                if (y%2 != 0) continue;
+                if (y % 2 != 0) continue;
 
-                float drawY = (y - StartY)*BaseCellHeight;
+                float drawY = (y - StartY) * BaseCellHeight;
 
                 for (int x = minX; x <= maxX; x++)
                 {
-                    if (x%2 != 0) continue;
+                    if (x % 2 != 0) continue;
 
-                    float drawX = (x - StartX)*BaseCellWidth;
+                    float drawX = (x - StartX) * BaseCellWidth;
 
                     Cell tile = Cells[x, y];
 
@@ -1898,11 +1898,11 @@ namespace Server.Views.DirectX
 
             for (int y = minY; y <= maxY; y++)
             {
-                float drawY = (y - StartY + 1)*BaseCellHeight;
+                float drawY = (y - StartY + 1) * BaseCellHeight;
 
                 for (int x = minX; x <= maxX; x++)
                 {
-                    float drawX = (x - StartX)*BaseCellWidth;
+                    float drawX = (x - StartX) * BaseCellWidth;
 
                     Cell cell = Cells[x, y];
 
@@ -1918,10 +1918,10 @@ namespace Server.Views.DirectX
 
                         Size s = library.GetSize(index);
 
-                        if ((s.Width == CellWidth && s.Height == CellHeight) || (s.Width == CellWidth*2 && s.Height == CellHeight*2))
+                        if ((s.Width == CellWidth && s.Height == CellHeight) || (s.Width == CellWidth * 2 && s.Height == CellHeight * 2))
                         {
                             Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY - BaseCellHeight, 0), scale);
-                            
+
                             library.Draw(index, 0, 0, Color.White, false, 1F, ImageType.Image);
                         }
                     }
@@ -1936,24 +1936,24 @@ namespace Server.Views.DirectX
 
                         Size s = library.GetSize(index);
 
-                        if ((s.Width == CellWidth && s.Height == CellHeight) || (s.Width == CellWidth*2 && s.Height == CellHeight*2))
+                        if ((s.Width == CellWidth && s.Height == CellHeight) || (s.Width == CellWidth * 2 && s.Height == CellHeight * 2))
                         {
                             Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY - BaseCellHeight, 0), scale);
-                            
+
                             library.Draw(index, 0, 0, Color.White, false, 1F, ImageType.Image);
                         }
                     }
                 }
             }
 
-            maxY = Math.Min(Height - 1, StartY + 20 + (int)Math.Ceiling(Size.Height / CellHeight) );
+            maxY = Math.Min(Height - 1, StartY + 20 + (int)Math.Ceiling(Size.Height / CellHeight));
             for (int y = minY; y <= maxY; y++)
             {
-                float drawY = (y - StartY + 1)*BaseCellHeight;
+                float drawY = (y - StartY + 1) * BaseCellHeight;
 
                 for (int x = minX; x <= maxX; x++)
                 {
-                    float drawX = (x - StartX)*BaseCellWidth;
+                    float drawX = (x - StartX) * BaseCellWidth;
 
                     Cell cell = Cells[x, y];
 
@@ -1967,16 +1967,16 @@ namespace Server.Views.DirectX
                         bool blend = false;
                         if (cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255)
                         {
-                            index += Animation%(cell.MiddleAnimationFrame & 0x4F);
+                            index += Animation % (cell.MiddleAnimationFrame & 0x4F);
                             blend = (cell.MiddleAnimationFrame & 0x50) > 0;
                         }
 
                         Size s = library.GetSize(index);
 
-                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth*2 || s.Height != CellHeight*2))
+                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
                         {
                             Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY - s.Height, 0), scale);
-                            
+
                             if (!blend)
                                 library.Draw(index, 0, 0, Color.White, false, 1F, ImageType.Image);
                             else
@@ -1992,17 +1992,17 @@ namespace Server.Views.DirectX
                         bool blend = false;
                         if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
                         {
-                            index += Animation%(cell.FrontAnimationFrame & 0x4F);
+                            index += Animation % (cell.FrontAnimationFrame & 0x4F);
                             blend = (cell.MiddleAnimationFrame & 0x50) > 0;
                         }
 
                         Size s = library.GetSize(index);
 
 
-                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth*2 || s.Height != CellHeight*2))
+                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
                         {
                             Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY - s.Height, 0), scale);
-                            
+
                             if (!blend)
                                 library.Draw(index, 0, 0, Color.White, false, 1F, ImageType.Image);
                             else
@@ -2014,7 +2014,7 @@ namespace Server.Views.DirectX
 
             //Invalid Tile = 59
             //Selected Tile = 58
-            
+
 
             maxY = Math.Min(Height - 1, StartY + (int)Math.Ceiling(Size.Height / CellHeight));
 
@@ -2022,11 +2022,11 @@ namespace Server.Views.DirectX
             Manager.SetOpacity(0.35F);
             for (int y = minY; y <= maxY; y++)
             {
-                float drawY = (y - StartY )*BaseCellHeight;
+                float drawY = (y - StartY) * BaseCellHeight;
 
                 for (int x = minX; x <= maxX; x++)
                 {
-                    float drawX = (x - StartX)*BaseCellWidth;
+                    float drawX = (x - StartX) * BaseCellWidth;
 
                     Cell tile = Cells[x, y];
 
@@ -2250,7 +2250,7 @@ namespace Server.Views.DirectX
                         while (todoList.Count > 0)
                         {
                             Point p = todoList.Dequeue();
-                            
+
                             for (int i = 0; i < 8; i++)
                             {
                                 Point nPoint = Functions.Move(p, (MirDirection)i);
@@ -2296,7 +2296,7 @@ namespace Server.Views.DirectX
                             Selection.Add(p);
                         }
                     }
-                    
+
                     break;
             }
             TextureValid = false;
@@ -2304,7 +2304,7 @@ namespace Server.Views.DirectX
         public void MouseMove(MouseEventArgs e)
         {
             MouseLocation = new Point(Math.Min(Width, Math.Max(0, (int)(e.X / CellWidth) + StartX)), Math.Min(Height, Math.Max(0, (int)(e.Y / CellHeight) + StartY)));
-            
+
             switch (e.Button)
             {
                 case MouseButtons.Left:

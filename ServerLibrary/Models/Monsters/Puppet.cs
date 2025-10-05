@@ -14,7 +14,7 @@ namespace Server.Models.Monsters
 
         public override bool CanMove => false;
         public override bool CanAttack => false;
-        
+
         public Stats DarkStoneStats;
 
         public DateTime ExplodeTime = SEnvir.Now.AddSeconds(5);
@@ -22,7 +22,7 @@ namespace Server.Models.Monsters
         public override void Process()
         {
             base.Process();
-            
+
             if (Player?.Node == null)
             {
                 Despawn();
@@ -65,7 +65,7 @@ namespace Server.Models.Monsters
         public override void Activate()
         {
             if (Activated) return;
-            
+
             Activated = true;
             SEnvir.ActiveObjects.Add(this);
         }
@@ -124,7 +124,7 @@ namespace Server.Models.Monsters
         {
             if (Player?.Node == null) return null;
 
-            S.ObjectPlayer packet = (S.ObjectPlayer) Player.GetInfoPacket(null);
+            S.ObjectPlayer packet = (S.ObjectPlayer)Player.GetInfoPacket(null);
 
             packet.ObjectID = ObjectID;
             packet.Location = CurrentLocation;

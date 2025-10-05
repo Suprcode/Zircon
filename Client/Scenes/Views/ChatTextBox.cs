@@ -42,7 +42,7 @@ namespace Client.Scenes.Views
         #endregion
 
         public string LastPM;
-        
+
         public DXTextBox TextBox;
         public DXButton OptionsButton;
         public DXButton ChatModeButton;
@@ -94,7 +94,7 @@ namespace Client.Scenes.Views
                 Label = { Text = Mode.ToString() },
                 Parent = this,
             };
-            ChatModeButton.MouseClick += (o, e) => Mode = (ChatMode) (((int) (Mode) + 1)%7);
+            ChatModeButton.MouseClick += (o, e) => Mode = (ChatMode)(((int)(Mode) + 1) % 7);
 
             OptionsButton = new DXButton
             {
@@ -310,7 +310,7 @@ namespace Client.Scenes.Views
 
                     TextBox = null;
                 }
-                
+
                 if (OptionsButton != null)
                 {
                     if (!OptionsButton.IsDisposed)
@@ -318,7 +318,7 @@ namespace Client.Scenes.Views
 
                     OptionsButton = null;
                 }
-                
+
                 if (ChatModeButton != null)
                 {
                     if (!ChatModeButton.IsDisposed)
@@ -349,5 +349,5 @@ namespace Client.Scenes.Views
         public string Text { get; set; }
         public DateTime ReceivedTime { get; set; }
         public MessageType Type { get; set; }
-    } 
+    }
 }

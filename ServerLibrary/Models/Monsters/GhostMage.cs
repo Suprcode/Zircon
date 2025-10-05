@@ -19,7 +19,7 @@ namespace Server.Models.Monsters
         {
             Visible = false;
         }
-        
+
         public override void Process()
         {
             base.Process();
@@ -29,7 +29,7 @@ namespace Server.Models.Monsters
             if (SEnvir.Now <= VisibleTime) return;
 
             VisibleTime = SEnvir.Now.AddSeconds(3);
-            
+
             bool visible = Target != null && Functions.InRange(Target.CurrentLocation, CurrentLocation, 5);
 
             if (!visible) return;

@@ -903,7 +903,7 @@ namespace Client.Envir
                     {
                         player.LightColour = Globals.PlayerLightColour;
                     }
-                    else 
+                    else
                     {
                         player.LightColour = Globals.NoneColour;
                     }
@@ -1115,7 +1115,7 @@ namespace Client.Envir
                         GameScene.Game.MapControl.FishingState = FishingState.Cancel;
 
                     GameScene.Game.CanRun = false;
-                    
+
                     if (GameScene.Game.StruckEnabled)
                     {
                         MapObject.User.NextRunTime = CEnvir.Now.AddMilliseconds(600);
@@ -1607,7 +1607,7 @@ namespace Client.Envir
                         MapTarget = p.Location,
                         Blend = true,
                     };
-                    
+
                     DXSoundManager.Play(SoundIndex.CursedDollEnd);
                     break;
                 case Effect.UndeadSoul:
@@ -4042,7 +4042,7 @@ namespace Client.Envir
                 {
                     DXSoundManager.Play(SoundIndex.QuestComplete);
                 }
-            
+
                 GameScene.Game.QuestChanged(p.Quest);
                 return;
             }
@@ -4227,7 +4227,7 @@ namespace Client.Envir
                 Location = p.CurrentLocation,
 
                 Name = p.Name,
-        
+
                 Health = p.Health,
                 MaxHealth = p.MaxHealth,
                 Dead = p.Dead,

@@ -1,12 +1,8 @@
-﻿using System;
+﻿using MirDB;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using MirDB;
 
 namespace Library.SystemModels
 {
@@ -115,7 +111,7 @@ namespace Library.SystemModels
 
         public HashSet<Point> GetPoints(int width)
         {
-            HashSet<Point> points = new HashSet<Point>(); 
+            HashSet<Point> points = new HashSet<Point>();
 
             if (BitRegion != null)
             {
@@ -135,7 +131,7 @@ namespace Library.SystemModels
         }
         public void CreatePoints(int width)
         {
-            PointList  = new List<Point>();
+            PointList = new List<Point>();
 
             if (BitRegion != null)
             {

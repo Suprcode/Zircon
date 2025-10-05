@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Client.Envir;
+using Client.UserModels;
+using Library;
+using SlimDX.Direct3D9;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Client.Envir;
-using Client.UserModels;
-using Library;
-using SlimDX.Direct3D9;
 using Font = System.Drawing.Font;
 
 //Cleaned
@@ -43,7 +43,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region HasTitle
 
         public bool HasTitle
@@ -167,7 +167,7 @@ namespace Client.Controls
         public override void OnVisibleChanged(bool oValue, bool nValue)
         {
             base.OnVisibleChanged(oValue, nValue);
-            
+
             if (IsVisible)
                 BringToFront();
 
@@ -178,7 +178,7 @@ namespace Client.Controls
         public WindowSetting Settings;
 
         #endregion
-        
+
         protected DXWindow()
         {
             Windows.Add(this);
@@ -273,7 +273,7 @@ namespace Client.Controls
 
             WindowValid = false;
         }
-        
+
         public override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -361,7 +361,7 @@ namespace Client.Controls
         protected void DrawWindow()
         {
             if (InterfaceLibrary == null) return;
-            
+
             if (!WindowValid)
             {
                 Surface oldSurface = DXManager.CurrentSurface;
@@ -382,7 +382,7 @@ namespace Client.Controls
 
             DXManager.SetOpacity(oldOpacity);
         }
-        
+
         private void DrawEdges()
         {
             Size s;

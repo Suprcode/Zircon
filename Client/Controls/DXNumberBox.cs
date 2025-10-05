@@ -1,5 +1,5 @@
-﻿using System.Drawing;
-using Library;
+﻿using Library;
+using System.Drawing;
 
 //Cleaned
 namespace Client.Controls
@@ -40,7 +40,7 @@ namespace Client.Controls
                 Parent = this,
                 TextBox = { Text = "0" }
             };
-            
+
             ValueTextBox.TextBox.KeyPress += (o, e) =>
             {
                 if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))

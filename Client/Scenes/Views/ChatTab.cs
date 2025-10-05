@@ -80,14 +80,14 @@ namespace Client.Scenes.Views
             if (ScrollBar == null || TextPanel == null) return;
 
             TextPanel.Location = new Point(ResizeBuffer, ResizeBuffer);
-            TextPanel.Size = new Size(Size.Width - ScrollBar.Size.Width - 1 - ResizeBuffer*2, Size.Height - ResizeBuffer*2);
+            TextPanel.Size = new Size(Size.Width - ScrollBar.Size.Width - 1 - ResizeBuffer * 2, Size.Height - ResizeBuffer * 2);
 
             ScrollBar.VisibleSize = TextPanel.Size.Height;
             ScrollBar.Location = new Point(Size.Width - ScrollBar.Size.Width - ResizeBuffer, ResizeBuffer);
-            ScrollBar.Size = new Size(14, Size.Height - ResizeBuffer*2);
+            ScrollBar.Size = new Size(14, Size.Height - ResizeBuffer * 2);
 
             if (!IsResizing)
-                ResizeChat();           
+                ResizeChat();
         }
 
         public override void OnIsResizingChanged(bool oValue, bool nValue)
@@ -130,7 +130,7 @@ namespace Client.Scenes.Views
                 Size = new Size(14, Size.Height),
                 VisibleSize = Size.Height
             };
-            ScrollBar.Location = new Point(Size.Width - ScrollBar.Size.Width - ResizeBuffer , 0);
+            ScrollBar.Location = new Point(Size.Width - ScrollBar.Size.Width - ResizeBuffer, 0);
             ScrollBar.ValueChanged += (o, e) => UpdateItems();
 
             TextPanel = new DXControl
@@ -139,7 +139,7 @@ namespace Client.Scenes.Views
                 PassThrough = true,
                 Location = new Point(ResizeBuffer, ResizeBuffer),
                 Size = new Size(Size.Width - ScrollBar.Size.Width - 1 - ResizeBuffer * 2, Size.Height - ResizeBuffer * 2),
-                
+
             };
 
             AlertIcon = new DXImageControl
@@ -199,7 +199,7 @@ namespace Client.Scenes.Views
             DXTabControl tab = TabButton.Parent as DXTabControl;
 
             if (tab.SelectedTab == this && !GameScene.Game.ChatOptionsBox.Visible &&
-                GameScene.Game.ChatTextBox.TextBox != DXTextBox.ActiveTextBox && 
+                GameScene.Game.ChatTextBox.TextBox != DXTextBox.ActiveTextBox &&
                 Panel.FadeOutCheckBox.Checked && Panel.TransparentCheckBox.Checked)
             {
                 var newest = History.LastOrDefault();

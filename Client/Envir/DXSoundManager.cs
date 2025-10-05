@@ -135,13 +135,13 @@ namespace Client.Envir
             [SoundIndex.DefianceStart] = new DXSound(SoundPath + @"M106-3.wav", SoundType.Magic),
 
             [SoundIndex.ReflectDamageStart] = new DXSound(SoundPath + @"M126-0.wav", SoundType.Magic),
-            
+
             [SoundIndex.InvincibilityStart] = new DXSound(SoundPath + @"M137-2.wav", SoundType.Magic),
-            
+
             [SoundIndex.AssaultStart] = new DXSound(SoundPath + @"M109-1.wav", SoundType.Magic),
 
             [SoundIndex.SwiftBladeEnd] = new DXSound(SoundPath + @"M131-2.wav", SoundType.Magic),
-            
+
             [SoundIndex.ElementalSwordStart] = new DXSound(SoundPath + @"cs252-1.wav", SoundType.Magic),
             [SoundIndex.ElementalSwordEnd] = new DXSound(SoundPath + @"cs252-2.wav", SoundType.Magic),
 
@@ -305,14 +305,14 @@ namespace Client.Envir
             [SoundIndex.SweetBrier] = new DXSound(SoundPath + @"as_168.wav", SoundType.Magic),
             [SoundIndex.SweetBrierMale] = new DXSound(SoundPath + @"as_168-m.wav", SoundType.Magic),
             [SoundIndex.SweetBrierFemale] = new DXSound(SoundPath + @"as_168-f.wav", SoundType.Magic),
-            
+
             [SoundIndex.CalamityOfFullMoon] = new DXSound(SoundPath + @"as_171.wav", SoundType.Magic),
             [SoundIndex.WaningMoon] = new DXSound(SoundPath + @"as_176.wav", SoundType.Magic),
 
             [SoundIndex.Karma] = new DXSound(SoundPath + @"as_172.wav", SoundType.Magic),
             [SoundIndex.TheNewBeginning] = new DXSound(SoundPath + @"as_174.wav", SoundType.Magic),
             [SoundIndex.Concentration] = new DXSound(SoundPath + @"M134-2.wav", SoundType.Magic),
-            
+
             [SoundIndex.SummonPuppet] = new DXSound(SoundPath + @"as_164-1.wav", SoundType.Magic),
 
             [SoundIndex.WraithGripStart] = new DXSound(SoundPath + @"as_159-1.wav", SoundType.Magic),
@@ -898,7 +898,7 @@ namespace Client.Envir
             [SoundIndex.EscortCommanderAttack] = new DXSound(SoundPath + @"381-2.wav", SoundType.Monster),
             [SoundIndex.EscortCommanderStruck] = new DXSound(SoundPath + @"381-4.wav", SoundType.Monster),
             [SoundIndex.EscortCommanderDie] = new DXSound(SoundPath + @"381-5.wav", SoundType.Monster),
-            
+
             [SoundIndex.FieryDancerAttack] = new DXSound(SoundPath + @"383-2.wav", SoundType.Monster),
             [SoundIndex.FieryDancerStruck] = new DXSound(SoundPath + @"383-4.wav", SoundType.Monster),
             [SoundIndex.FieryDancerDie] = new DXSound(SoundPath + @"383-5.wav", SoundType.Monster),
@@ -955,7 +955,7 @@ namespace Client.Envir
             [SoundIndex.SamaFireGuardianAttack] = new DXSound(SoundPath + @"400-2.wav", SoundType.Monster),
             [SoundIndex.SamaFireGuardianStruck] = new DXSound(SoundPath + @"400-4.wav", SoundType.Monster),
             [SoundIndex.SamaFireGuardianDie] = new DXSound(SoundPath + @"400-5.wav", SoundType.Monster),
-            
+
             [SoundIndex.SamaIceGuardianAttack] = new DXSound(SoundPath + @"398-2.wav", SoundType.Monster),
             [SoundIndex.SamaIceGuardianStruck] = new DXSound(SoundPath + @"398-4.wav", SoundType.Monster),
             [SoundIndex.SamaIceGuardianDie] = new DXSound(SoundPath + @"398-5.wav", SoundType.Monster),
@@ -1112,7 +1112,7 @@ namespace Client.Envir
         }
     }
 
-    
+
     public enum SoundType
     {
         None,

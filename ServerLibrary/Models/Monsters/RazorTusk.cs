@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -68,7 +67,7 @@ namespace Server.Models.Monsters
         protected override void Attack()
         {
             Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
-            
+
             UpdateAttackTime();
 
             if (Functions.InRange(CurrentLocation, Target.CurrentLocation, 1))

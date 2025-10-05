@@ -751,7 +751,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.LoginDialogOptionButtonLabel, ForeColour = Color.FromArgb(255, 227, 165) },
                 };
                 OptionButton.MouseClick += OptionButton_MouseClick;
-                
+
                 NewAccountButton = new DXButton
                 {
                     Parent = this,

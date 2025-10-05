@@ -28,7 +28,7 @@ namespace Server.Models.Monsters
 
             Stage = MaxStage;
         }
-        
+
         public override void Process()
         {
             base.Process();
@@ -46,7 +46,7 @@ namespace Server.Models.Monsters
 
             SpawnMinions(MinSpawn, RandomSpawn, Target);
         }
-        
+
 
         public override void ProcessTarget()
         {

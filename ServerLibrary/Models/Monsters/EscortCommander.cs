@@ -1,10 +1,9 @@
 ﻿using Library;
 using Server.Envir;
-using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public  class EscortCommander : MonsterObject
+    public class EscortCommander : MonsterObject
     {
         public override void ProcessTarget()
         {

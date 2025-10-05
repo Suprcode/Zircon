@@ -1,8 +1,6 @@
 ﻿using Client.Envir;
-using Client.Scenes;
 using Library;
 using SlimDX;
-using SlimDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -34,7 +32,7 @@ namespace Client.Models.Particles
                 float scaleRate = 0F;
 
                 Vector2 position = emitterLocation;
-                Vector2 velocity = new (1F, 0f);
+                Vector2 velocity = new(1F, 0f);
 
                 //Position of next particle is left of the current one to create a repeating image
                 if (Particles.Count > 0)

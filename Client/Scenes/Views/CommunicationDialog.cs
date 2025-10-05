@@ -65,7 +65,7 @@ namespace Client.Scenes.Views
             SendButton.Enabled = CanSend;
         }
         #endregion
-        
+
         #region SendAttempted
 
         public bool SendAttempted
@@ -88,7 +88,7 @@ namespace Client.Scenes.Views
             SendAttemptedChanged?.Invoke(this, EventArgs.Empty);
             SendButton.Enabled = CanSend;
         }
-       
+
         #endregion
 
         #region ReadMail
@@ -141,7 +141,7 @@ namespace Client.Scenes.Views
 
             ReadMailChanged?.Invoke(this, EventArgs.Empty);
         }
-        
+
         #endregion
 
         #region OnlineState
@@ -951,7 +951,7 @@ namespace Client.Scenes.Views
                     CEnvir.Enqueue(new C.BlockAdd { Name = window.Value });
                 };
             };
-            
+
             BlockRemoveButton = new DXButton
             {
                 Label = { Text = CEnvir.Language.CommunicationDialogBlockedTabRemoveButtonLabel },
@@ -1620,7 +1620,7 @@ namespace Client.Scenes.Views
 
                     ReadDateBox = null;
                 }
-                
+
                 if (ReadMessageContainer != null)
                 {
                     if (!ReadMessageContainer.IsDisposed)
@@ -1642,7 +1642,7 @@ namespace Client.Scenes.Views
                         ReadMessageScrollBar.Dispose();
 
                     ReadMessageScrollBar = null;
-                }   
+                }
 
                 if (ReadReplyButton != null)
                 {
@@ -1716,7 +1716,7 @@ namespace Client.Scenes.Views
         public DXLabel StatusLabel { get; protected set; }
 
         //Needed as default value still needs setting the first time
-        private bool _StateSet = false; 
+        private bool _StateSet = false;
 
         #region OnlineState
 
@@ -1774,7 +1774,7 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty;
             }
         }
-        
+
         public void UpdateStateLabel()
         {
             StatusLabel.Text = $"({OnlineState})";

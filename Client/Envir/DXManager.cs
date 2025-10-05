@@ -36,7 +36,7 @@ namespace Client.Envir
         public static BlendMode BlendMode { get; private set; } = BlendMode.NORMAL;
 
         public static bool DeviceLost { get; set; }
-        
+
         public static List<DXControl> ControlList { get; } = new List<DXControl>();
         public static List<MirImage> TextureList { get; } = new List<MirImage>();
         public static List<DXSound> SoundList { get; } = new List<DXSound>();
@@ -176,11 +176,11 @@ namespace Client.Envir
 
             DataRectangle rect = PoisonTexture.LockRectangle(0, LockFlags.Discard);
 
-            int* data = (int*) rect.Data.DataPointer;
+            int* data = (int*)rect.Data.DataPointer;
 
             for (int y = 0; y < 6; y++)
                 for (int x = 0; x < 6; x++)
-                    data[y*6 + x] = x == 0 || y == 0 || x == 5 || y == 5 ? -16777216 : -1;
+                    data[y * 6 + x] = x == 0 || y == 0 || x == 5 || y == 5 ? -16777216 : -1;
 
             ScratchTexture = new Texture(Device, Parameters.BackBufferWidth, Parameters.BackBufferHeight, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
             ScratchSurface = ScratchTexture.GetSurfaceLevel(0);
@@ -201,7 +201,7 @@ namespace Client.Envir
                 {
                     graphics.Clear(Color.FromArgb(0, 0, 0, 0));
                     brush.SurroundColors = new[] { Color.FromArgb(0, 0, 0, 0) };
-                    brush.CenterColor = Color.FromArgb(255,200,200,200);
+                    brush.CenterColor = Color.FromArgb(255, 200, 200, 200);
                     graphics.FillPath(brush, path);
                     graphics.Save();
                 }
@@ -289,7 +289,7 @@ namespace Client.Envir
 
             for (int i = ControlList.Count - 1; i >= 0; i--)
                 ControlList[i].DisposeTexture();
-            
+
             for (int i = TextureList.Count - 1; i >= 0; i--)
                 TextureList[i].DisposeTexture();
         }
@@ -308,7 +308,7 @@ namespace Client.Envir
 
                 TextureList[i].DisposeTexture();
             }
-            
+
             for (int i = SoundList.Count - 1; i >= 0; i--)
             {
                 if (CEnvir.Now < SoundList[i].ExpireTime) continue;
@@ -367,7 +367,7 @@ namespace Client.Envir
                 Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte)(255 * opacity), (byte)(255 * opacity),
                     (byte)(255 * opacity), (byte)(255 * opacity)).ToArgb());
             }
-            
+
             Opacity = opacity;
             Sprite.Flush();
         }
@@ -418,13 +418,13 @@ namespace Client.Envir
                         break;
                 }
 
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte) (255*rate), (byte) (255*rate), (byte) (255*rate), (byte) (255*rate)).ToArgb());
+                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
             }
             else
             {
                 Sprite.Begin(SpriteFlags.AlphaBlend);
             }
-            
+
             Device.SetRenderTarget(0, CurrentSurface);
         }
         public static void SetColour(int colour)
@@ -513,7 +513,7 @@ namespace Client.Envir
             {
             }
         }
-        
+
         public static void ToggleFullScreen()
         {
             if (CEnvir.Target == null) return;
@@ -532,7 +532,7 @@ namespace Client.Envir
         public static void SetResolution(Size size)
         {
             if (CEnvir.Target.ClientSize == size) return;
-            
+
             Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
             Device.Present();
 

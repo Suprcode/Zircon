@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using Client.Controls;
-using Client.Envir;
+﻿using Client.Controls;
 using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 //Cleaned
 namespace Client.Scenes.Views
 {
     public sealed class MiniMapDialog : DXWindow
-    { 
+    {
         #region Properties
 
         public Rectangle Area;
@@ -45,7 +44,7 @@ namespace Client.Scenes.Views
             base.OnClientAreaChanged(oValue, nValue);
 
             Area = ClientArea;
-            Area.Inflate(6,6);
+            Area.Inflate(6, 6);
 
             if (Panel == null) return;
 
@@ -83,7 +82,7 @@ namespace Client.Scenes.Views
                 Parent = Panel,
                 LibraryFile = LibraryFile.MiniMap,
                 Movable = true,
-                IgnoreMoveBounds =  true,
+                IgnoreMoveBounds = true,
             };
             GameScene.Game.MapControl.MapInfoChanged += MapControl_MapInfoChanged;
             Image.Moving += Image_Moving;
@@ -122,9 +121,9 @@ namespace Client.Scenes.Views
                 AllowResize = true;
             }
 
-            ScaleX = Image.Size.Width/(float) GameScene.Game.MapControl.Width;
-            ScaleY = Image.Size.Height/(float) GameScene.Game.MapControl.Height;
-            
+            ScaleX = Image.Size.Width / (float)GameScene.Game.MapControl.Width;
+            ScaleY = Image.Size.Height / (float)GameScene.Game.MapControl.Height;
+
             foreach (NPCInfo ob in Globals.NPCInfoList.Binding)
                 Update(ob);
 
@@ -272,14 +271,14 @@ namespace Client.Scenes.Views
 
                 if (ob.MonsterInfo.AI < 0)
                 {
-                    colour =  Color.LightBlue;
+                    colour = Color.LightBlue;
                 }
                 else
                 {
                     colour = Color.Red;
 
                     if (GameScene.Game.HasQuest(ob.MonsterInfo, GameScene.Game.MapControl.MapInfo))
-                        colour = Color.Orange; 
+                        colour = Color.Orange;
                 }
 
                 if (ob.MonsterInfo.Flag == MonsterFlag.CastleObjective || ob.MonsterInfo.Flag == MonsterFlag.CastleDefense)
@@ -307,7 +306,7 @@ namespace Client.Scenes.Views
 
                     colour = Color.White;
 
-                } 
+                }
 
                 if (!string.IsNullOrEmpty(ob.PetOwner))
                 {
@@ -319,7 +318,7 @@ namespace Client.Scenes.Views
             {
                 colour = Color.DarkBlue;
             }
-            else 
+            else
             {
                 if (MapObject.User.ObjectID == ob.ObjectID)
                 {
@@ -342,7 +341,7 @@ namespace Client.Scenes.Views
                     colour = Color.DeepSkyBlue;
                 }
             }
-            
+
             control.Hint = name;
             control.BackColour = colour;
             control.Size = size;
@@ -411,7 +410,7 @@ namespace Client.Scenes.Views
             control.Dispose();
             MapInfoObjects.Remove(ob);
         }
-        
+
         public override void Draw()
         {
             if (!IsVisible || Size.Width == 0 || Size.Height == 0) return;
@@ -426,7 +425,7 @@ namespace Client.Scenes.Views
             OnAfterDraw();
         }
         #endregion
-        
+
         #region IDisposable
 
         protected override void Dispose(bool disposing)

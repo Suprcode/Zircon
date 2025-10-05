@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
+﻿using MirDB;
 
 namespace Library.SystemModels
 {
@@ -54,7 +49,7 @@ namespace Library.SystemModels
             }
         }
         private int _HuntGoldPrice;
-        
+
         public string Filter
         {
             get { return _Filter; }

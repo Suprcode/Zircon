@@ -17,7 +17,7 @@ namespace MirDB
             Parent = parent;
             Property = property;
             Link = property.GetCustomAttribute<AssociationAttribute>();
-            
+
             RaiseListChangedEvents = Session.GetCollection(property.PropertyType.GetGenericArguments()[0]).RaisePropertyChanges;
         }
 

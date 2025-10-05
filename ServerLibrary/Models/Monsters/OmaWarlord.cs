@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -19,7 +15,7 @@ namespace Server.Models.Monsters
             if (result < 0 || Dead || !CanTeleport || CurrentHP > Stats[Stat.Health] / 2) return result;
 
             CanTeleport = false;
-            
+
             TeleportNearby(7, 12);
 
             return result;

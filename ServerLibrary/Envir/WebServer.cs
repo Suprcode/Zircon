@@ -1,19 +1,15 @@
 ﻿using Library;
+using MirDB;
 using Server.DBModels;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using G = Library.Network.GeneralPackets;
-using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
-using System.Net.Http;
-using MirDB;
-using System.IO.Compression;
 
 namespace Server.Envir
 {

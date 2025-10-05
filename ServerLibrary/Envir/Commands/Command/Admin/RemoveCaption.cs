@@ -1,5 +1,4 @@
-﻿using Server.DBModels;
-using Server.Envir.Commands.Exceptions;
+﻿using Server.Envir.Commands.Exceptions;
 using Server.Models;
 using System.Linq;
 
@@ -31,7 +30,7 @@ namespace Server.Envir.Commands.Command.Admin
 
             if (isPlayerActive)
             {
-               SEnvir.Players.FirstOrDefault(x => x.Name == characterName)?.SendChangeUpdate();
+                SEnvir.Players.FirstOrDefault(x => x.Name == characterName)?.SendChangeUpdate();
             }
 
         }

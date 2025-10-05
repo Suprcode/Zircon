@@ -1,6 +1,5 @@
 ﻿using Library;
 using Server.Envir;
-using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
@@ -23,7 +22,7 @@ namespace Server.Models.Monsters
 
                 if (CurrentLocation == Target.CurrentLocation)
                 {
-                    MirDirection direction = (MirDirection) SEnvir.Random.Next(8);
+                    MirDirection direction = (MirDirection)SEnvir.Random.Next(8);
                     int rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
 
                     for (int d = 0; d < 8; d++)
@@ -51,7 +50,7 @@ namespace Server.Models.Monsters
         {
             switch (SEnvir.Random.Next(3))
             {
-                case 0: 
+                case 0:
                     MassLightningBall();
                     break;
                 default:

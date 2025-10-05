@@ -1,6 +1,5 @@
 ﻿using Library;
 using Server.DBModels;
-using System.Collections.Generic;
 
 namespace Server.Models.Magics
 {

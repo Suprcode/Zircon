@@ -1,7 +1,7 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
-using Client.Envir;
+﻿using Client.Envir;
 using Client.UserModels;
+using System.Drawing;
+using System.Windows.Forms;
 
 //Cleaned
 namespace Client.Controls
@@ -157,7 +157,7 @@ namespace Client.Controls
 
             return box;
         }
-        
+
         public override void OnKeyPress(KeyPressEventArgs e)
         {
             base.OnKeyPress(e);

@@ -49,7 +49,7 @@ namespace Server.Views
                 };
 
                 lookupEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Index", "Index"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Description", "Description"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Size", "Size") });
-                
+
                 e.RepositoryItem = lookupEdit;
             }
         }

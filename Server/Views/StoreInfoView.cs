@@ -1,6 +1,6 @@
-﻿using System;
-using DevExpress.XtraBars;
+﻿using DevExpress.XtraBars;
 using Library.SystemModels;
+using System;
 
 namespace Server.Views
 {
@@ -17,7 +17,7 @@ namespace Server.Views
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            
+
             SMain.SetUpView(StoreInfoGridView);
         }
 

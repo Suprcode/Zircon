@@ -1,11 +1,8 @@
 ﻿using Library;
 using Library.Network;
 using Server.Envir;
-using Server.Models.Magics;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters

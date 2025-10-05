@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace ImageManager
 {
@@ -17,7 +12,7 @@ namespace ImageManager
             //|Header Size|Count|T|Header|F|F|T|Header|F|T|Header...|Image|Image|Im...
 
             int headerSize = 4 + Images.Length;
-            
+
             foreach (Mir3Image image in Images)
             {
                 if (image?.Data == null) continue;
@@ -55,13 +50,13 @@ namespace ImageManager
                 foreach (Mir3Image image in Images)
                 {
                     if (image?.Data == null) continue;
-                    
+
                     if (image.Data != null)
                         writer.Write(image.Data);
-                    
+
                     if (image.ShadowData != null)
                         writer.Write(image.ShadowData);
-                    
+
                     if (image.OverLayData != null)
                         writer.Write(image.OverLayData);
                 }
@@ -69,7 +64,7 @@ namespace ImageManager
                 File.WriteAllBytes(path, buffer.ToArray());
             }
         }
-           
+
     }
 
     public sealed class Mir3Image
@@ -91,7 +86,7 @@ namespace ImageManager
         public short OverlayWidth;
         public short OverlayHeight;
 
-        
+
         public byte[] Data { get; set; }
 
         public byte[] ShadowData { get; set; }

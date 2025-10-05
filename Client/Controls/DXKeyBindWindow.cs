@@ -422,7 +422,7 @@ namespace Client.Controls
 
     public class KeyBindTree : DXControl
     {
-        
+
         #region Properties
 
         #region SelectedEntry
@@ -906,7 +906,7 @@ namespace Client.Controls
 
                 _KeyBindInfo = null;
                 KeyBindInfoChanged = null;
-                
+
                 if (Actionlabel != null)
                 {
                     if (!Actionlabel.IsDisposed)

@@ -1,7 +1,5 @@
-﻿using System;
+﻿using Server.Envir;
 using System.Collections.Generic;
-using Library;
-using Server.Envir;
 
 namespace Server.Models.Monsters
 {

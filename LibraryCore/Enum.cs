@@ -220,7 +220,7 @@ namespace Library
         HuntGold = 2,
 
         Observable = 3,
-        Brown  = 4,
+        Brown = 4,
         PKPoint = 5,
         PvPCurse = 6,
         Redemption = 7,
@@ -277,7 +277,7 @@ namespace Library
 
         //Ass
         PoisonousCloud = 400,
-        FullBloom = 401, 
+        FullBloom = 401,
         WhiteLotus = 402,
         RedLotus = 403,
         Cloak = 404,
@@ -495,7 +495,7 @@ namespace Library
         FishingWait,
         FishingReel
     }
-    
+
 
     public enum MessageAction
     {
@@ -567,7 +567,7 @@ namespace Library
 
         Discipline = 20
     }
-    
+
     public enum Element : byte
     {
         None,
@@ -1326,7 +1326,7 @@ namespace Library
         CastleFlag = 1000
     }
 
-   
+
     public enum MapIcon
     {
         None,
@@ -1588,7 +1588,7 @@ namespace Library
         S_PenanceThurible = 51,
         S_CensorshipThurible = 52,
         S_PetrichorThurible = 53,
-        
+
         //EquipEffect_Full [100~119]
         A_FireDragonWings = 100,
         A_SmallYellowWings = 101,
@@ -1725,7 +1725,7 @@ namespace Library
     public enum UserItemFlags
     {
         None = 0,
-        
+
         Locked = 1,
         Bound = 2,
         Worthless = 4,
@@ -1736,7 +1736,7 @@ namespace Library
         Marriage = 128,
         NonRefinable = 256
     }
-    
+
     public enum HorseType : byte
     {
         None = 0,
@@ -1747,7 +1747,7 @@ namespace Library
         WhiteUnicorn = 5,
         RedUnicorn = 6
     }
-    
+
     public enum OnlineState : byte
     {
         Online,
@@ -2019,7 +2019,7 @@ namespace Library
         KeyExpired,
         Success
     }
-    
+
 
     public enum ActivationResult : byte
     {

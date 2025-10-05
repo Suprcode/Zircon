@@ -1,6 +1,4 @@
 ﻿using MirDB;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Library.SystemModels
@@ -319,8 +317,8 @@ namespace Library.SystemModels
                 OnChanged(oldValue, value, "Type");
             }
         }
-        private PlayerEventTriggerType _Type; 
-        
+        private PlayerEventTriggerType _Type;
+
         public int Value
         {
             get { return _Value; }

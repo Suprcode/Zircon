@@ -7,8 +7,8 @@ using System.Drawing;
 
 namespace Client.Models
 {
-    public  class MirProjectile : MirEffect
-   {
+    public class MirProjectile : MirEffect
+    {
         public Point Origin { get; set; }
         public int Speed { get; set; }
         public bool Explode { get; set; }
@@ -110,7 +110,7 @@ namespace Client.Models
         {
             TimeSpan enlapsed = CEnvir.Now - StartTime;
 
-            enlapsed = TimeSpan.FromTicks(enlapsed.Ticks%TotalDuration.Ticks);
+            enlapsed = TimeSpan.FromTicks(enlapsed.Ticks % TotalDuration.Ticks);
 
             for (int i = 0; i < Delays.Length; i++)
             {

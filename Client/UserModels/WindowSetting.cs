@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MirDB;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
 
 namespace Client.UserModels
 {
@@ -85,7 +80,7 @@ namespace Client.UserModels
             }
         }
         private Size _Size;
-        
+
         public int Extra
         {
             get { return _Extra; }

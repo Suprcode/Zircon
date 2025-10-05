@@ -345,7 +345,7 @@ namespace Server
                 var identities = new List<string>();
 
                 FindAllIdentities(parentProperty, typeof(T), identityProperties, entity, identities);
-         
+
                 return identityValues.SequenceEqual(identities);
             });
         }
@@ -436,7 +436,7 @@ namespace Server
                     if (childObject == null)
                     {
                         // property hasn't been set so we can't compare against it
-                        continue; 
+                        continue;
                     }
 
                     FindAllIdentities(property, property.PropertyType, GetIdentityProperties(property.PropertyType), childObject, identities);
@@ -483,7 +483,7 @@ namespace Server
                     converter = value;
                 }
             }
-            
+
             if (converter == null)
             {
                 Type converterType = typeof(DBObjectConverter<>).MakeGenericType(typeToConvert);

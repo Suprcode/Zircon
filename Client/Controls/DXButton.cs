@@ -1,10 +1,10 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using Client.Envir;
+﻿using Client.Envir;
 using Library;
 using SlimDX;
 using SlimDX.Direct3D9;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Client.Controls
 {
@@ -244,7 +244,7 @@ namespace Client.Controls
         }
 
         #region Methods
-        
+
         protected internal override void UpdateDisplayArea()
         {
             Rectangle area = new Rectangle(Location, Size);
@@ -263,7 +263,7 @@ namespace Client.Controls
             if (Library == null)
             {
                 DXManager.SetOpacity(Opacity);
-                
+
                 Surface oldSurface = DXManager.CurrentSurface;
                 DXManager.SetSurface(DXManager.ScratchSurface);
                 DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
@@ -323,7 +323,7 @@ namespace Client.Controls
                 DXManager.SetOpacity(Opacity);
 
             PresentTexture(texture, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0);
-            
+
             if (Blend)
                 DXManager.SetBlend(oldBlend, oldRate, BlendMode);
             else

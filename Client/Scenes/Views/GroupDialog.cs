@@ -58,7 +58,7 @@ namespace Client.Scenes.Views
         public DXTab MemberTab;
 
         public List<ClientPlayerInfo> Members = new List<ClientPlayerInfo>();
-        
+
         public List<DXLabel> Labels = new List<DXLabel>();
 
         #region SelectedLabel
@@ -300,7 +300,7 @@ namespace Client.Scenes.Views
 
         private void GroupDialog_VisibleChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         #region Methods
@@ -320,7 +320,7 @@ namespace Client.Scenes.Views
                 DXLabel label = new DXLabel
                 {
                     Parent = MemberTab,
-                    Location = new Point(10 + 100*(i%2), 5 + 20*(i/2)),
+                    Location = new Point(10 + 100 * (i % 2), 5 + 20 * (i / 2)),
                     Text = member.Name,
                     ForeColour = Color.White
                 };
@@ -389,7 +389,7 @@ namespace Client.Scenes.Views
 
                     AllowGroupBox = null;
                 }
-                
+
                 if (AddButton != null)
                 {
                     if (!AddButton.IsDisposed)

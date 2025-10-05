@@ -1,11 +1,11 @@
-﻿using System;
-using System.Drawing;
-using System.Linq;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using System;
+using System.Drawing;
+using System.Linq;
 using C = Library.Network.ClientPackets;
 
 //Cleaned

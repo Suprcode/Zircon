@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
-using Client.Models;
 using Client.UserModels;
 using Library;
-using C = Library.Network.ClientPackets;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Client.Scenes.Views
 {

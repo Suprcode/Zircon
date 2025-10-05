@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Server.Envir;
+﻿using Server.Envir;
 
 namespace Server.Models.Monsters
 {
@@ -14,7 +9,7 @@ namespace Server.Models.Monsters
         public override void Die()
         {
             base.Die();
-            
+
             if (SEnvir.Random.Next(SpawnChance) > 0) return;
 
             SpawnMinions(20, 10, null);

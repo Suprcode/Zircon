@@ -47,7 +47,7 @@ namespace Server.Models
         }
         public virtual bool HasMassacre => false;
 
-        public MagicObject(PlayerObject player, UserMagic magic) 
+        public MagicObject(PlayerObject player, UserMagic magic)
         {
             Player = player;
             Magic = magic;
@@ -145,7 +145,7 @@ namespace Server.Models
 
         public virtual void RefreshToggle()
         {
-            
+
         }
 
         public virtual void Toggle(bool canUse)
@@ -371,12 +371,12 @@ namespace Server.Models
         /// <summary>
         /// List of locations spell has locked on to
         /// </summary>
-        public List<Point> Locations = new ();
+        public List<Point> Locations = new();
 
         /// <summary>
         /// List of targets spell has locked on to
         /// </summary>
-        public List<uint> Targets = new ();
+        public List<uint> Targets = new();
 
         /// <summary>
         /// Targetted object for the spell. Will be used to automatically update players direction to face target

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using Client.Envir;
+﻿using Client.Envir;
 using Client.UserModels;
 using Library;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 //Cleaned
 namespace Client.Controls
@@ -37,11 +37,11 @@ namespace Client.Controls
             MessageBoxList.Add(this);
             Modal = true;
 
-            Location = new Point((ActiveScene.DisplayArea.Width - DisplayArea.Width)/2, (ActiveScene.DisplayArea.Height - DisplayArea.Height)/2);
+            Location = new Point((ActiveScene.DisplayArea.Width - DisplayArea.Width) / 2, (ActiveScene.DisplayArea.Height - DisplayArea.Height) / 2);
 
             ConfirmButton = new DXButton
             {
-                Location = new Point(Size.Width/2 + 10, Size.Height - 43),
+                Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommonControlConfirm }
@@ -52,7 +52,7 @@ namespace Client.Controls
             {
                 Parent = this,
                 MaxValue = item.Count,
-                Change = Math.Max(1, item.Count/5),
+                Change = Math.Max(1, item.Count / 5),
             };
 
             AmountBox.ValueTextBox.ValueChanged += (o, e) =>
@@ -77,7 +77,7 @@ namespace Client.Controls
 
             ItemCell = new DXItemCell
             {
-                Location = new Point(ClientArea.Location.X + (ClientArea.Width - DXItemCell.CellWidth - AmountBox.Size.Width - 5)/2, ClientArea.Location.Y + 5),
+                Location = new Point(ClientArea.Location.X + (ClientArea.Width - DXItemCell.CellWidth - AmountBox.Size.Width - 5) / 2, ClientArea.Location.Y + 5),
                 Parent = this,
                 FixedBorder = true,
                 Border = true,
@@ -87,7 +87,7 @@ namespace Client.Controls
                 ReadOnly = true,
             };
 
-            AmountBox.Location = new Point(ItemCell.Location.X + ItemCell.Size.Width + 10, ItemCell.Location.Y + (ItemCell.Size.Height - AmountBox.Size.Height)/2);
+            AmountBox.Location = new Point(ItemCell.Location.X + ItemCell.Size.Width + 10, ItemCell.Location.Y + (ItemCell.Size.Height - AmountBox.Size.Height) / 2);
 
             AmountBox.Value = 1;
             AmountBox.ValueTextBox.KeepFocus = true;
@@ -100,12 +100,12 @@ namespace Client.Controls
         {
             switch (e.KeyChar)
             {
-                case (char) Keys.Enter:
+                case (char)Keys.Enter:
                     e.Handled = true;
                     ConfirmButton.InvokeMouseClick();
                     DXTextBox.ActiveTextBox = null;
                     break;
-                case (char) Keys.Escape:
+                case (char)Keys.Escape:
                     e.Handled = true;
                     CloseButton.InvokeMouseClick();
                     DXTextBox.ActiveTextBox = null;

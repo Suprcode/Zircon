@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
-using Library;
+﻿using Library;
 using Library.Network;
-using S = Library.Network.ServerPackets;
 using Server.DBModels;
 using Server.Envir;
 using Server.Models.Monsters;
+using System;
+using S = Library.Network.ServerPackets;
 
 namespace Server.Models
 {
@@ -160,8 +159,8 @@ namespace Server.Models
             if (!Config.DropVisibleOtherPlayers)
             {
                 if (Account != null && ob.Character.Account != Account) return false;
-                if (Item.UserTask != null && 
-                    ((Item.UserTask.Quest.Character != null && Item.UserTask.Quest.Character != ob.Character) || 
+                if (Item.UserTask != null &&
+                    ((Item.UserTask.Quest.Character != null && Item.UserTask.Quest.Character != ob.Character) ||
                     (Item.UserTask.Quest.Account != null && Item.UserTask.Quest.Account != ob.Character.Account))) return false;
             }
 

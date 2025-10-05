@@ -45,7 +45,7 @@ namespace Server.Models.Monsters
         {
             return 0;
         }
-        
+
         public override bool ShouldAttackTarget(MapObject ob)
         {
             return CanAttackTarget(ob);
@@ -53,7 +53,7 @@ namespace Server.Models.Monsters
         public override bool CanAttackTarget(MapObject ob)
         {
             if (ob?.Node == null || ob.Dead || !ob.Visible || ob is Guard || ob is CastleLord) return false;
-            
+
             switch (ob.Race)
             {
                 case ObjectType.Player:
@@ -104,7 +104,7 @@ namespace Server.Models.Monsters
 
             if (ob.Race == ObjectType.Monster)
             {
-                MonsterObject mob = (MonsterObject) ob;
+                MonsterObject mob = (MonsterObject)ob;
                 mob.EXPOwner = null;
                 power = ob.CurrentHP;
             }

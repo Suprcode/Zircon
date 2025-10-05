@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
+using Client.Envir.Translations;
 using Client.Models;
 using Client.Scenes;
 using Client.Scenes.Views;
@@ -16,15 +8,18 @@ using Library;
 using Library.Network;
 using Library.SystemModels;
 using MirDB;
-using SlimDX.Direct3D9;
-using System.IO.IsolatedStorage;
-using System.Security;
-using System.Security.Policy;
-using System.Security.Permissions;
-using System.Security.Cryptography.X509Certificates;
-using Client.Envir.Translations;
 using Sentry;
+using SlimDX.Direct3D9;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Client.Envir
 {

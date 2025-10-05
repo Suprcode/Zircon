@@ -37,7 +37,7 @@ namespace Server.Models.Magics
         public override void MagicComplete(params object[] data)
         {
             Cell cell = (Cell)data[1];
-            var direction = (MirDirection)data[2]; 
+            var direction = (MirDirection)data[2];
 
             if (cell?.Objects == null) return;
 

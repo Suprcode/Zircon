@@ -3,7 +3,6 @@ using Server.DBModels;
 using Server.Envir;
 using System.Drawing;
 using System.Linq;
-using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
 {

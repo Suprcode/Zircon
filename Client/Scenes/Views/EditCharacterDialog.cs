@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -164,7 +160,7 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-        
+
         #region Change
 
         public ChangeType Change
@@ -233,8 +229,8 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-        
-        
+
+
         public DXLabel SelectedClassLabel, SelectedGenderLabel, HairTypeLabel, HairColourLabel, ArmourColourLabel, CharacterNameHelpLabel, CharacterNameTextBoxLabel;
         public DXTextBox CharacterNameTextBox;
         public DXNumberBox HairNumberBox;

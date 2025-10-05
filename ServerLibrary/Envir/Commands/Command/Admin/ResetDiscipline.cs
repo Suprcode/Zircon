@@ -1,7 +1,7 @@
-﻿using S = Library.Network.ServerPackets;
-using Server.DBModels;
+﻿using Server.DBModels;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
+using S = Library.Network.ServerPackets;
 
 namespace Server.Envir.Commands.Command.Admin
 {

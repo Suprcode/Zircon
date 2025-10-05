@@ -923,7 +923,7 @@ namespace Client.Models
                     }
                     break;
                 case MirAction.Attack:
-                    switch(MagicType)
+                    switch (MagicType)
                     {
                         case MagicType.OffensiveBlow:
                             if (FrameIndex == 3)

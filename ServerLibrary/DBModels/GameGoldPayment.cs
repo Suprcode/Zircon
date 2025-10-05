@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
+﻿using MirDB;
 
 namespace Server.DBModels
 {
@@ -69,7 +64,7 @@ namespace Server.DBModels
             }
         }
         private string _PaymentDate;
-        
+
         [Association("Payments")]
         public AccountInfo Account
         {
@@ -175,7 +170,7 @@ namespace Server.DBModels
             }
         }
         private string _Payer_EMail;
-        
+
 
         public string Payer_ID
         {
@@ -256,7 +251,7 @@ namespace Server.DBModels
         protected override void OnDeleted()
         {
             Account = null;
-            
+
             base.OnDeleted();
         }
 

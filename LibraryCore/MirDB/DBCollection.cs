@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Library.MirDB;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using Library.MirDB;
 
 namespace MirDB
 {
@@ -94,7 +94,7 @@ namespace MirDB
         internal override void Load(byte[] data, DBMapping mapping)
         {
             VersionValid = mapping.IsMatch(Mapping);
-            
+
             using (MemoryStream mStream = new MemoryStream(data))
             using (BinaryReader reader = new BinaryReader(mStream))
             {

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
 {
-    public  class IcySpiritWarrior : MonsterObject
+    public class IcySpiritWarrior : MonsterObject
     {
         public int AttackRange = 8;
 

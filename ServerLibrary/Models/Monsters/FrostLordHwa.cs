@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
 
 namespace Server.Models.Monsters
 {
@@ -130,7 +126,7 @@ namespace Server.Models.Monsters
                     TeleportTime = SEnvir.Now.AddSeconds(5);
                 }
             }
-            
+
 
             if (Target.Race == ObjectType.Monster)
             {

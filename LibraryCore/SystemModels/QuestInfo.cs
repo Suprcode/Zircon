@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
+﻿using MirDB;
 
 namespace Library.SystemModels
 {
@@ -54,7 +49,7 @@ namespace Library.SystemModels
             }
         }
         private string _AcceptText;
-        
+
         public string ProgressText
         {
             get { return _ProgressText; }
@@ -99,7 +94,7 @@ namespace Library.SystemModels
             }
         }
         private string _ArchiveText;
-              
+
         [Association("Requirements", true)]
         public DBBindingList<QuestRequirement> Requirements { get; set; }
 
@@ -306,7 +301,7 @@ namespace Library.SystemModels
             }
         }
         private QuestRequirementType _Requirement;
-        
+
         public int IntParameter1
         {
             get { return _IntParameter1; }
@@ -351,7 +346,7 @@ namespace Library.SystemModels
             }
         }
         private RequiredClass _Class;
-        
+
     }
 
     public sealed class QuestTask : DBObject
@@ -386,7 +381,7 @@ namespace Library.SystemModels
             }
         }
         private QuestTaskType _Task;
-        
+
         public ItemInfo ItemParameter
         {
             get { return _ItemParameter; }
@@ -431,7 +426,7 @@ namespace Library.SystemModels
             }
         }
         private string _MobDescription;
-        
+
         public int Amount
         {
             get { return _Amount; }
@@ -500,7 +495,7 @@ namespace Library.SystemModels
             }
         }
         private MapInfo _Map;
-        
+
         public int Chance
         {
             get { return _Chance; }

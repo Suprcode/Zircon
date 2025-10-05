@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using Library;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -13,10 +10,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Library;
 
 namespace Launcher
 {
@@ -119,7 +114,7 @@ namespace Launcher
                 if (File.Exists(Program.PatcherFileName))
                     File.Delete(Program.PatcherFileName);
             }
-            catch (Exception) {}
+            catch (Exception) { }
 
             RepairButton.Enabled = true;
             StartGameButton.Enabled = true;
@@ -127,45 +122,45 @@ namespace Launcher
         private void CreateSizeLabel()
         {
             const decimal KB = 1024;
-            const decimal MB = KB*1024;
-            const decimal GB = MB*1024;
+            const decimal MB = KB * 1024;
+            const decimal GB = MB * 1024;
 
             long progress = TotalProgress + CurrentProgress;
 
             StringBuilder text = new StringBuilder();
 
             if (progress > GB)
-                text.Append($"{progress/GB:#,##0.0}GB");
+                text.Append($"{progress / GB:#,##0.0}GB");
             else if (progress > MB)
-                text.Append($"{progress/MB:#,##0.0}MB");
+                text.Append($"{progress / MB:#,##0.0}MB");
             else if (progress > KB)
-                text.Append($"{progress/KB:#,##0}KB");
+                text.Append($"{progress / KB:#,##0}KB");
             else
                 text.Append($"{progress:#,##0}B");
 
             if (TotalDownload > GB)
-                text.Append($" / {TotalDownload/GB:#,##0.0}GB");
+                text.Append($" / {TotalDownload / GB:#,##0.0}GB");
             else if (TotalDownload > MB)
-                text.Append($" / {TotalDownload/MB:#,##0.0}MB");
+                text.Append($" / {TotalDownload / MB:#,##0.0}MB");
             else if (TotalDownload > KB)
-                text.Append($" / {TotalDownload/KB:#,##0}KB");
+                text.Append($" / {TotalDownload / KB:#,##0}KB");
             else
                 text.Append($" / {TotalDownload:#,##0}B");
 
             DownloadSizeLabel.Text = text.ToString();
 
             if (TotalDownload > 0)
-                TotalProgressBar.EditValue = Math.Max(0, Math.Min(100, (int) (progress*100/TotalDownload)));
+                TotalProgressBar.EditValue = Math.Max(0, Math.Min(100, (int)(progress * 100 / TotalDownload)));
 
-            long speed = (progress - LastDownloadProcess)*TimeSpan.TicksPerSecond/(Time.Now.Ticks - LastSpeedCheck.Ticks); //May cause errors?
+            long speed = (progress - LastDownloadProcess) * TimeSpan.TicksPerSecond / (Time.Now.Ticks - LastSpeedCheck.Ticks); //May cause errors?
             LastDownloadProcess = progress;
 
             if (speed > GB)
-                DownloadSpeedLabel.Text = $"{speed/GB:#,##0.0}GBps";
+                DownloadSpeedLabel.Text = $"{speed / GB:#,##0.0}GBps";
             else if (speed > MB)
-                DownloadSpeedLabel.Text = $"{speed/MB:#,##0.0}MBps";
+                DownloadSpeedLabel.Text = $"{speed / MB:#,##0.0}MBps";
             else if (speed > KB)
-                DownloadSpeedLabel.Text = $"{speed/KB:#,##0}KBps";
+                DownloadSpeedLabel.Text = $"{speed / KB:#,##0}KBps";
             else
                 DownloadSpeedLabel.Text = $"{speed:#,##0}Bps";
 
@@ -392,8 +387,8 @@ namespace Launcher
                     NeedUpdate = true;
                 }
 
-               
-                 if (File.Exists(toPath)) File.Delete(toPath);
+
+                if (File.Exists(toPath)) File.Delete(toPath);
 
                 await Decompress($"{ClientPath}Patch\\{webFileName}", toPath);
             }

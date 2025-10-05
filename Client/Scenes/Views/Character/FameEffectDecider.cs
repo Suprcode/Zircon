@@ -1,6 +1,5 @@
 ﻿using Client.Envir;
 using Library;
-using System;
 
 namespace Client.Scenes.Views.Character
 {

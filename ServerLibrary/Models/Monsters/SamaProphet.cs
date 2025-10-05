@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System;
 
 namespace Server.Models.Monsters
 {
@@ -43,7 +39,7 @@ namespace Server.Models.Monsters
                 if (mob.MonsterInfo.Flag != MonsterFlag.SamaSorcerer) continue;
 
                 if (Functions.InRange(mob.CurrentLocation, CurrentLocation, MonsterInfo.ViewRange - 3)) continue;
-                
+
                 mob.Teleport(CurrentMap, CurrentMap.GetRandomLocation(Functions.Move(CurrentLocation, MirDirection.DownLeft, 2), 1));
                 break;
             }
@@ -71,7 +67,7 @@ namespace Server.Models.Monsters
             {
                 if (ob.Race != ObjectType.Monster) continue;
 
-                MonsterObject mob = (MonsterObject) ob;
+                MonsterObject mob = (MonsterObject)ob;
 
                 if (mob.MonsterInfo.Flag == MonsterFlag.BloodStone || mob.MonsterInfo.Flag == MonsterFlag.SamaSorcerer) return 0;
             }

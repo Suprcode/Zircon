@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
+﻿using MirDB;
 
 namespace Library.SystemModels
 {
@@ -40,7 +35,7 @@ namespace Library.SystemModels
             }
         }
         private Stat _StatType;
-        
+
         public int MaxAmount
         {
             get { return _MaxAmount; }

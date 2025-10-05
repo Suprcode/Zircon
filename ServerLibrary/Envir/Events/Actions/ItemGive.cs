@@ -57,7 +57,7 @@ namespace Server.Envir.Events.Actions
             if (!player.CanGainItems(false, check)) return;
 
             var userItem = SEnvir.CreateFreshItem(check);
-      
+
             foreach (var stat in stats.Values)
             {
                 userItem.AddStat(stat.Key, stat.Value, StatSource.Enhancement);

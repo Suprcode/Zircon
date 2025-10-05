@@ -1,11 +1,10 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
-using Client.Envir;
-using Client.Envir.Translations;
+﻿using Client.Envir;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
+using System.Drawing;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 //Cleaned
@@ -31,8 +30,8 @@ namespace Client.Controls
 
         //Game 
         public DXTab GameTab;
-        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox, 
-            EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox, 
+        private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
+            EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox,
             DrawParticlesCheckBox, DrawWeatherCheckBox;
         public DXCheckBox DisplayHelmetCheckBox, HideChatBarCheckBox;
 
@@ -77,7 +76,7 @@ namespace Client.Controls
             IPAddressTextBox.TextBox.Text = Config.IPAddress;
             PortBox.ValueTextBox.TextBox.Text = Config.Port.ToString();
 
-            ItemNameCheckBox.Checked= Config.ShowItemNames;
+            ItemNameCheckBox.Checked = Config.ShowItemNames;
             MonsterNameCheckBox.Checked = Config.ShowMonsterNames;
             PlayerNameCheckBox.Checked = Config.ShowPlayerNames;
             UserHealthCheckBox.Checked = Config.ShowUserHealth;
@@ -185,11 +184,11 @@ namespace Client.Controls
 
             KeyBindWindow = new DXKeyBindWindow
             {
-                Visible =  false
+                Visible = false
             };
 
             #region Graphics
-            
+
             FullScreenCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabFullScreenLabel },
@@ -509,7 +508,7 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabKeyBindButtonLabel }
             };
             KeyBindButton.MouseClick += (o, e) => KeyBindWindow.Visible = !KeyBindWindow.Visible;
-            
+
             #endregion
 
             #region Network
@@ -940,7 +939,7 @@ namespace Client.Controls
 
             if (LanguageComboBox.SelectedItem is string && Config.Language != (string)LanguageComboBox.SelectedItem)
             {
-                Config.Language = (string) LanguageComboBox.SelectedItem;
+                Config.Language = (string)LanguageComboBox.SelectedItem;
 
                 CEnvir.LoadLanguage();
 
@@ -969,14 +968,14 @@ namespace Client.Controls
 
                 DXSoundManager.UpdateFlags();
             }
-            
+
 
             bool volumeChanged = false;
 
 
             if (Config.SystemVolume != SystemVolumeBox.Value)
             {
-                Config.SystemVolume = (int) SystemVolumeBox.Value;
+                Config.SystemVolume = (int)SystemVolumeBox.Value;
                 volumeChanged = true;
             }
 
@@ -1046,25 +1045,25 @@ namespace Client.Controls
                 Config.GMWhisperInTextForeColour = GMWhisperInForeColourBox.BackColour;
                 coloursChanged = true;
             }
-            
+
             if (Config.WhisperInTextForeColour != WhisperInForeColourBox.BackColour)
             {
                 Config.WhisperInTextForeColour = WhisperInForeColourBox.BackColour;
                 coloursChanged = true;
             }
-            
+
             if (Config.WhisperOutTextForeColour != WhisperOutForeColourBox.BackColour)
             {
                 Config.WhisperOutTextForeColour = WhisperOutForeColourBox.BackColour;
                 coloursChanged = true;
             }
-            
+
             if (Config.GroupTextForeColour != GroupForeColourBox.BackColour)
             {
                 Config.GroupTextForeColour = GroupForeColourBox.BackColour;
                 coloursChanged = true;
             }
-            
+
             if (Config.GuildTextForeColour != GuildForeColourBox.BackColour)
             {
                 Config.GuildTextForeColour = GuildForeColourBox.BackColour;
@@ -1309,7 +1308,7 @@ namespace Client.Controls
 
                     LanguageComboBox = null;
                 }
-                
+
                 #endregion
 
                 #region Sound
@@ -1477,7 +1476,7 @@ namespace Client.Controls
 
                     RightClickDeTargetCheckBox = null;
                 }
-                
+
                 if (MonsterBoxVisibleCheckBox != null)
                 {
                     if (!MonsterBoxVisibleCheckBox.IsDisposed)
@@ -1493,7 +1492,7 @@ namespace Client.Controls
 
                     LogChatCheckBox = null;
                 }
-                
+
                 if (KeyBindButton != null)
                 {
                     if (!KeyBindButton.IsDisposed)
@@ -1511,7 +1510,7 @@ namespace Client.Controls
 
                     NetworkTab = null;
                 }
-                
+
                 if (UseNetworkConfigCheckBox != null)
                 {
                     if (!UseNetworkConfigCheckBox.IsDisposed)

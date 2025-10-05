@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Client.Envir;
+using SlimDX;
+using SlimDX.Direct3D9;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using Client.Envir;
-using SlimDX;
-using SlimDX.Direct3D9;
 using Font = System.Drawing.Font;
 
 //Cleaned
@@ -17,7 +17,7 @@ namespace Client.Controls
         {
             if (string.IsNullOrEmpty(text))
                 return Size.Empty;
-            
+
             Size tempSize = TextRenderer.MeasureText(DXManager.Graphics, text, font);
 
             if (outline && tempSize.Width > 0 && tempSize.Height > 0)
@@ -72,7 +72,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region DrawFormat
 
         public TextFormatFlags DrawFormat
@@ -98,7 +98,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Font
 
         public Font Font
@@ -257,7 +257,7 @@ namespace Client.Controls
             AutoSize = true;
             Font = new Font(Config.FontName, CEnvir.FontSize(8F));
             DrawFormat = TextFormatFlags.WordBreak;
-            
+
             Outline = true;
             ForeColour = Color.FromArgb(198, 166, 99);
             OutlineColour = Color.Black;
@@ -283,10 +283,10 @@ namespace Client.Controls
                 ControlTexture = new Texture(DXManager.Device, TextureSize.Width, TextureSize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                 DXManager.ControlList.Add(this);
             }
-            
+
             DataRectangle rect = ControlTexture.LockRectangle(0, LockFlags.Discard);
 
-            using (Bitmap image = new Bitmap(width, height, width*4, PixelFormat.Format32bppArgb, rect.Data.DataPointer))
+            using (Bitmap image = new Bitmap(width, height, width * 4, PixelFormat.Format32bppArgb, rect.Data.DataPointer))
             using (Graphics graphics = Graphics.FromImage(image))
             {
                 DXManager.ConfigureGraphics(graphics);
@@ -312,7 +312,7 @@ namespace Client.Controls
             }
             ControlTexture.UnlockRectangle(0);
             rect.Data.Dispose();
-            
+
             TextureValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }

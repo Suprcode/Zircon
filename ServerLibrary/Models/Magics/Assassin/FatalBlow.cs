@@ -1,6 +1,5 @@
 ﻿using Library;
 using Server.DBModels;
-using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
 {
@@ -39,7 +38,7 @@ namespace Server.Models.Magics
 
         public override void AttackComplete(MapObject target)
         {
-            
+
         }
     }
 }

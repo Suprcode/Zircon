@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
+﻿using MirDB;
 
 namespace Client.UserModels
 {
@@ -26,7 +20,7 @@ namespace Client.UserModels
             }
         }
         private ChatTabControlSetting _Parent;
-        
+
         public string Name
         {
             get { return _Name; }
@@ -222,7 +216,7 @@ namespace Client.UserModels
             }
         }
         private bool _GlobalChat;
-        
+
         public bool ObserverChat
         {
             get { return _ObserverChat; }

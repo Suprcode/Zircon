@@ -65,7 +65,7 @@ namespace Server.Models.Magics
         {
             if (Player.Buffs.Any(x => x.Type == BuffType.Renounce))
             {
-               Player.LevelMagic(Magic);
+                Player.LevelMagic(Magic);
             }
         }
     }

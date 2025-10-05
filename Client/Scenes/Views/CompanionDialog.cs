@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -114,7 +114,7 @@ namespace Client.Scenes.Views
         #region Settings
 
         public WindowSetting Settings;
-        public  WindowType Type => WindowType.CompanionBox;
+        public WindowType Type => WindowType.CompanionBox;
 
         public void LoadSettings()
         {
@@ -361,7 +361,7 @@ namespace Client.Scenes.Views
                 Size = new Size(152, 17),
                 Location = new Point(73, 178)
             };
-            
+
             LevelLabelTitle = new DXLabel
             {
                 Parent = CompanionTab,

@@ -14,7 +14,7 @@ using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
-    public sealed  class BigMapDialog : DXWindow
+    public sealed class BigMapDialog : DXWindow
     {
         #region Properties
 
@@ -62,7 +62,7 @@ namespace Client.Scenes.Views
             Image.Movable = imageLargerThanPanel;
             Image.IgnoreMoveBounds = imageLargerThanPanel;
 
-            var locationX = (Image.Size.Width - Panel.Size.Width) / 2; 
+            var locationX = (Image.Size.Width - Panel.Size.Width) / 2;
             var locationY = (Image.Size.Height - Panel.Size.Height) / 2;
 
             Image.Location = new Point(-locationX, -locationY);
@@ -129,17 +129,17 @@ namespace Client.Scenes.Views
             using (BinaryReader reader = new BinaryReader(stream))
             {
                 stream.Seek(22, SeekOrigin.Begin);
-                
+
                 return new Size(reader.ReadInt16(), reader.ReadInt16());
             }
         }
 
         #endregion
-        
+
         public Rectangle Area;
         public DXImageControl Image;
         public DXControl Panel;
-        
+
         public static float ScaleX, ScaleY;
 
         public Dictionary<object, DXControl> MapInfoObjects = new Dictionary<object, DXControl>();
@@ -215,7 +215,7 @@ namespace Client.Scenes.Views
             {
                 int x = (int)((e.Location.X - Image.DisplayArea.X) / ScaleX);
                 int y = (int)((e.Location.Y - Image.DisplayArea.Y) / ScaleY);
-               
+
                 CEnvir.Enqueue(new C.TeleportRing { Location = new Point(x, y), Index = SelectedInfo.Index });
             }
         }
@@ -251,9 +251,9 @@ namespace Client.Scenes.Views
             }
             else if ((CurrentQuest)control.Tag == ob.CurrentQuest) return;
 
-                control.Dispose();
-                MapInfoObjects.Remove(ob);
-            if (ob.Region?.Map != SelectedInfo)  return;
+            control.Dispose();
+            MapInfoObjects.Remove(ob);
+            if (ob.Region?.Map != SelectedInfo) return;
 
             control = GameScene.Game.GetNPCControl(ob);
             control.Parent = Image;
@@ -317,8 +317,8 @@ namespace Client.Scenes.Views
                     maxY = point.Y;
             }
 
-            int x = (minX + maxX)/2;
-            int y = (minY + maxY)/2;
+            int x = (minX + maxX) / 2;
+            int y = (minY + maxY) / 2;
 
 
             DXImageControl control;
@@ -326,8 +326,8 @@ namespace Client.Scenes.Views
             {
                 LibraryFile = LibraryFile.MiniMapIcon,
                 Parent = Image,
-                Opacity =  Opacity,
-                ImageOpacity =  Opacity,
+                Opacity = Opacity,
+                ImageOpacity = Opacity,
                 Hint = ob.DestinationRegion.Map.PlayerDescription
             };
             control.OpacityChanged += (o, e) => control.ImageOpacity = control.Opacity;
@@ -343,7 +343,7 @@ namespace Client.Scenes.Views
 
                 SelectedInfo = ob.DestinationRegion.Map;
             };
-            control.Location = new Point((int) (ScaleX*x) - control.Size.Width/2, (int) (ScaleY*y) - control.Size.Height/2);
+            control.Location = new Point((int)(ScaleX * x) - control.Size.Width / 2, (int)(ScaleY * y) - control.Size.Height / 2);
         }
         public void Update(ClientObjectData ob)
         {
@@ -361,7 +361,7 @@ namespace Client.Scenes.Views
                 {
                     DrawTexture = true,
                     Parent = Image,
-                    Opacity =  Opacity,
+                    Opacity = Opacity,
                 };
             }
             else if (ob.MapIndex != SelectedInfo.Index || (ob.MonsterInfo != null && ob.Dead) || (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common))
@@ -370,7 +370,7 @@ namespace Client.Scenes.Views
                 MapInfoObjects.Remove(ob);
                 return;
             }
-            
+
             Size size = new Size(3, 3);
             Color colour = Color.White;
             string name = ob.Name;
@@ -440,7 +440,7 @@ namespace Client.Scenes.Views
                 {
                     colour = Color.Blue;
                 }
-                else if (GameScene.Game.Partner != null && GameScene.Game.Partner.ObjectID == ob.ObjectID) 
+                else if (GameScene.Game.Partner != null && GameScene.Game.Partner.ObjectID == ob.ObjectID)
                 {
                     colour = Color.DeepPink;
                 }
@@ -453,7 +453,7 @@ namespace Client.Scenes.Views
             control.Hint = name;
             control.BackColour = colour;
             control.Size = size;
-            control.Location = new Point((int) (ScaleX*ob.Location.X) - size.Width/2, (int) (ScaleY*ob.Location.Y) - size.Height/2);
+            control.Location = new Point((int)(ScaleX * ob.Location.X) - size.Width / 2, (int)(ScaleY * ob.Location.Y) - size.Height / 2);
         }
 
         public void Remove(object ob)
@@ -465,7 +465,7 @@ namespace Client.Scenes.Views
             control.Dispose();
             MapInfoObjects.Remove(ob);
         }
-        
+
         #endregion
 
         #region IDisposable
@@ -502,7 +502,7 @@ namespace Client.Scenes.Views
 
                     Image = null;
                 }
-                
+
                 if (Panel != null)
                 {
                     if (!Panel.IsDisposed)

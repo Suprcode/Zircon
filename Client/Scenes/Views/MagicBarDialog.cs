@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
-using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace Client.Scenes.Views
 {
@@ -57,7 +53,7 @@ namespace Client.Scenes.Views
         public override WindowType Type => WindowType.MagicBarBox;
         public override bool CustomSize => false;
         public override bool AutomaticVisibility => true;
-        
+
 
         public MagicBarDialog()
         {
@@ -384,7 +380,7 @@ namespace Client.Scenes.Views
                 Opacity = 0.6F,
                 Visible = false
             };
-            
+
             int count = 1;
             foreach (KeyValuePair<SpellKey, DXImageControl> pair in Icons)
             {
@@ -436,7 +432,7 @@ namespace Client.Scenes.Views
                 Location = new Point(ClientArea.X + 460, ClientArea.Y + UpButton.Size.Height - 1),
                 ForeColour = Color.White,
             };
-            
+
             DownButton = new DXButton
             {
                 Parent = this,
@@ -478,7 +474,7 @@ namespace Client.Scenes.Views
                 }
                 else
                 {
-                    pair.Value.Index =  -1;
+                    pair.Value.Index = -1;
                     Cooldowns[pair.Key].Visible = false;
 
                 }
@@ -541,7 +537,7 @@ namespace Client.Scenes.Views
             foreach (KeyValuePair<SpellKey, DXImageControl> pair in Icons)
             {
                 MagicInfo info = pair.Value.Tag as MagicInfo;
-                
+
                 if (info == null)
                 {
                     Cooldowns[pair.Key].Visible = false;
@@ -582,7 +578,8 @@ namespace Client.Scenes.Views
                 if (remaining.TotalSeconds > 5)
                     Cooldowns[pair.Key].ForeColour = Color.Gold;
                 else
-                    Cooldowns[pair.Key].ForeColour = Color.Red;}
+                    Cooldowns[pair.Key].ForeColour = Color.Red;
+            }
 
         }
     }

@@ -7,7 +7,7 @@ namespace Server.Models.Magics
     public class DragonWave : MagicObject
     {
         protected override Element Element => Element.None;
-        
+
 
         public DragonWave(PlayerObject player, UserMagic magic) : base(player, magic)
         {

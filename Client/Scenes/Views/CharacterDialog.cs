@@ -659,7 +659,7 @@ namespace Client.Scenes.Views
             {
                 Parent = StatsTabControl,
                 TabButton =
-                { 
+                {
                     Label =
                     {
                         Text = CEnvir.Language.CharacterCharacterTabStatsAttackTabLabel
@@ -675,7 +675,7 @@ namespace Client.Scenes.Views
             {
                 Parent = StatsTabControl,
                 TabButton =
-                { 
+                {
                     Label =
                     {
                         Text = CEnvir.Language.CharacterCharacterTabStatsDefenseTabLabel
@@ -690,7 +690,7 @@ namespace Client.Scenes.Views
             {
                 Parent = StatsTabControl,
                 TabButton =
-                { 
+                {
                     Label =
                     {
                         Text = CEnvir.Language.CharacterCharacterTabStatsWeightTabLabel
@@ -705,10 +705,10 @@ namespace Client.Scenes.Views
             {
                 Parent = StatsTabControl,
                 TabButton =
-                { 
+                {
                     Label =
                     {
-                        Text = CEnvir.Language.CharacterCharacterTabStatsOtherTabLabel            
+                        Text = CEnvir.Language.CharacterCharacterTabStatsOtherTabLabel
                     },
                     Hint = CEnvir.Language.CharacterCharacterTabStatsOtherTabHint
                 },
@@ -720,10 +720,10 @@ namespace Client.Scenes.Views
             {
                 Parent = StatsTabControl,
                 TabButton =
-                { 
+                {
                     Label =
                     {
-                        Text = CEnvir.Language.CharacterCharacterTabStatsElementAttackTabLabel    
+                        Text = CEnvir.Language.CharacterCharacterTabStatsElementAttackTabLabel
                     },
                     Hint = CEnvir.Language.CharacterCharacterTabStatsElementAttackTabHint
                 },
@@ -735,10 +735,10 @@ namespace Client.Scenes.Views
             {
                 Parent = StatsTabControl,
                 TabButton =
-                { 
+                {
                     Label =
                     {
-                        Text = CEnvir.Language.CharacterCharacterTabStatsElementAdvantageTabLabel    
+                        Text = CEnvir.Language.CharacterCharacterTabStatsElementAdvantageTabLabel
                     },
                     Hint = CEnvir.Language.CharacterCharacterTabStatsElementAdvantageTabHint
                 },
@@ -749,11 +749,11 @@ namespace Client.Scenes.Views
             StatsElementDisadvantageTab = new DXTab
             {
                 Parent = StatsTabControl,
-                TabButton = 
-                { 
-                    Label = 
-                    { 
-                        Text = CEnvir.Language.CharacterCharacterTabStatsElementDisadvantageTabLabel                
+                TabButton =
+                {
+                    Label =
+                    {
+                        Text = CEnvir.Language.CharacterCharacterTabStatsElementDisadvantageTabLabel
                     },
                     Hint = CEnvir.Language.CharacterCharacterTabStatsElementDisadvantageTabHint
                 },

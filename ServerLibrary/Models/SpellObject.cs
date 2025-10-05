@@ -45,7 +45,7 @@ namespace Server.Models
             }
 
             if (SEnvir.Now < TickTime) return;
-            
+
             if (TickCount-- <= 0)
             {
                 switch (Effect)
@@ -80,7 +80,7 @@ namespace Server.Models
             switch (Effect)
             {
                 case SpellEffect.TrapOctagon:
-                    
+
                     for (int i = Targets.Count - 1; i >= 0; i--)
                     {
                         MapObject ob = Targets[i];
@@ -138,7 +138,7 @@ namespace Server.Models
                 case SpellEffect.PoisonousCloud:
                     if (!Owner.CanHelpTarget(ob)) return;
 
-                    BuffInfo buff = ob.Buffs.FirstOrDefault(x=> x.Type == BuffType.PoisonousCloud);
+                    BuffInfo buff = ob.Buffs.FirstOrDefault(x => x.Type == BuffType.PoisonousCloud);
                     TimeSpan remaining = TickTime - SEnvir.Now;
 
                     if (buff != null)
@@ -240,7 +240,7 @@ namespace Server.Models
             base.OnSpawned();
 
             Owner?.SpellList.Add(this);
-            
+
             AddAllObjects();
 
             Activate();
@@ -266,7 +266,7 @@ namespace Server.Models
         public override void CleanUp()
         {
             base.CleanUp();
-            
+
             Owner = null;
             Magic = null;
 

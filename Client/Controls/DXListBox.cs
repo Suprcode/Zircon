@@ -192,7 +192,7 @@ namespace Client.Controls
         {
             ItemChanged?.Invoke(this, EventArgs.Empty);
         }
-        
+
         #endregion
 
         #region Selected
@@ -296,7 +296,7 @@ namespace Client.Controls
 
             Location = new Point(0, y);
         }
-        
+
 
         public virtual void UpdateColours()
         {

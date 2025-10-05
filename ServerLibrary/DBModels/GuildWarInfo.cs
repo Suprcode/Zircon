@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MirDB;
+﻿using MirDB;
+using System;
 
 namespace Server.DBModels
 {
@@ -40,7 +36,7 @@ namespace Server.DBModels
             }
         }
         private GuildInfo _Guild2;
-        
+
         public TimeSpan Duration
         {
             get { return _Duration; }

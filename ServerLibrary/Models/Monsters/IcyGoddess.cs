@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Server.Envir;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -20,7 +16,7 @@ namespace Server.Models.Monsters
 
             return Functions.InRange(CurrentLocation, Target.CurrentLocation, AttackRange);
         }
-        
+
         public override void ProcessTarget()
         {
             if (Target == null) return;

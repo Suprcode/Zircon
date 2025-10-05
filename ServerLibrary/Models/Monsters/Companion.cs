@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using S = Library.Network.ServerPackets;
-using C = Library.Network.ClientPackets;
 
 namespace Server.Models.Monsters
 {
@@ -122,7 +119,7 @@ namespace Server.Models.Monsters
 
             Stats[Stat.CompanionBagWeight] += LevelInfo.InventoryWeight;
             Stats[Stat.CompanionInventory] += LevelInfo.InventorySpace;
-            
+
             RefreshWeight();
         }
 
@@ -268,7 +265,7 @@ namespace Server.Models.Monsters
             item.Auction = null;
             item.Companion = null;
             item.Guild = null;
-            
+
 
             item.Flags &= ~UserItemFlags.Locked;
         }
@@ -299,7 +296,7 @@ namespace Server.Models.Monsters
         {
             if (UserCompanion.Hunger > 0) return;
 
-            UserItem item = Equipment[(int) CompanionSlot.Food];
+            UserItem item = Equipment[(int)CompanionSlot.Food];
 
             if (item == null || !CanUseItem(item.Info)) return;
 
@@ -388,7 +385,7 @@ namespace Server.Models.Monsters
                 Level13 = UserCompanion.Level13,
                 Level15 = UserCompanion.Level15
             });
-            
+
         }
         public Stats GetSkill(int level)
         {
@@ -414,7 +411,7 @@ namespace Server.Models.Monsters
 
                 if (value >= 0) continue;
 
-                lvStats[info.StatType] = SEnvir.Random.Next( info.MaxAmount) + 1;
+                lvStats[info.StatType] = SEnvir.Random.Next(info.MaxAmount) + 1;
 
                 break;
             }
@@ -426,7 +423,7 @@ namespace Server.Models.Monsters
         protected override void MoveTo(Point target)
         {
             if (!CanMove || CurrentLocation == target) return;
-            
+
             MirDirection direction = Functions.DirectionFromPoint(CurrentLocation, target);
 
             int rotation = SEnvir.Random.Next(2) == 0 ? 1 : -1;
@@ -480,7 +477,7 @@ namespace Server.Models.Monsters
                 itemType = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).ItemType;
                 itemRarity = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).Rarity;
                 itemClass = SEnvir.ItemInfoList.Binding.First(x => x.Index == check.Item.Stats[Stat.ItemIndex]).RequiredClass;
-            } 
+            }
             else
             {
                 itemType = check.Info.ItemType;
@@ -717,7 +714,7 @@ namespace Server.Models.Monsters
                 Direction = Direction,
 
                 PetOwner = CompanionOwner.Name,
-                
+
                 Poison = Poison,
 
                 Buffs = Buffs.Where(x => x.Visible).Select(x => x.Type).ToList(),

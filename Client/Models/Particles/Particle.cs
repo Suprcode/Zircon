@@ -1,14 +1,7 @@
 ﻿using Client.Envir;
-using Client.Scenes;
-using Library;
-using Newtonsoft.Json.Linq;
 using SlimDX;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Client.Models.Particles
 {
@@ -190,7 +183,7 @@ namespace Client.Models.Particles
                         {
                             Remove = true;
                         }
-                    } 
+                    }
                     else
                     {
                         Remove = true;

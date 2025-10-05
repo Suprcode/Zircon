@@ -25,7 +25,7 @@ namespace Server.DBModels
             }
         }
         private string _EMailAddress;
-        
+
         public byte[] Password
         {
             get { return _Password; }
@@ -116,7 +116,7 @@ namespace Server.DBModels
             }
         }
         private AccountInfo _Referral;
-        
+
         public string CreationIP
         {
             get { return _CreationIP; }
@@ -131,7 +131,7 @@ namespace Server.DBModels
             }
         }
         private string _CreationIP;
-        
+
         public DateTime CreationDate
         {
             get { return _CreationDate; }
@@ -206,7 +206,7 @@ namespace Server.DBModels
             }
         }
         private DateTime _ActivationTime;
-        
+
         public bool Activated
         {
             get { return _Activated; }
@@ -395,7 +395,7 @@ namespace Server.DBModels
             }
         }
         private bool _AllowGroupRecall;
-        
+
 
 
         [Association("Member")]
@@ -413,7 +413,7 @@ namespace Server.DBModels
             }
         }
         private GuildMemberInfo _GuildMember;
-        
+
         public DateTime GlobalShoutExpiry
         {
             get { return _GlobalTime; }
@@ -518,7 +518,7 @@ namespace Server.DBModels
             }
         }
         private bool _ItemBot;
-        
+
 
         public DateTime GuildTime
         {
@@ -549,7 +549,7 @@ namespace Server.DBModels
             }
         }
         private bool _Observer;
-        
+
         public bool TempAdmin;
 
         [Association("Currencies")]
@@ -569,10 +569,10 @@ namespace Server.DBModels
 
         [Association("Auctions")]
         public DBBindingList<AuctionInfo> Auctions { get; set; }
-        
+
         [Association("Mail")]
         public DBBindingList<MailInfo> Mail { get; set; }
-        
+
         [Association("UserDrops")]
         public DBBindingList<UserDrop> UserDrops { get; set; }
 
@@ -614,7 +614,7 @@ namespace Server.DBModels
             }
         }
         private CharacterInfo _LastCharacter;
-        
+
 
         public int WrongPasswordCount;
         public SConnection Connection;

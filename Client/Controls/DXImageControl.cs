@@ -1,8 +1,7 @@
-﻿using System;
-using System.Drawing;
-using Client.Envir;
+﻿using Client.Envir;
 using Library;
-using SlimDX;
+using System;
+using System.Drawing;
 
 //Cleaned
 namespace Client.Controls
@@ -82,7 +81,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region FixedSize
 
         public bool FixedSize
@@ -159,7 +158,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Index
 
         public int Index
@@ -278,7 +277,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         public DXImageControl()
         {
             DrawImage = true;

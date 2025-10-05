@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Library;
+using SlimDX;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Client.Envir;
-using Library;
-using SlimDX;
 
 //Cleaned
 namespace Client.Controls
@@ -30,7 +29,7 @@ namespace Client.Controls
         private int _Value;
         public event EventHandler<EventArgs> ValueChanged;
         public void OnValueChanged(int oValue, int nValue)
-        {          
+        {
             if (Value != Math.Max(MinValue, Math.Min(MaxValue - VisibleSize, Value)))
             {
                 Value = Math.Max(MinValue, Math.Min(MaxValue - VisibleSize, Value));
@@ -228,7 +227,7 @@ namespace Client.Controls
             PositionBar.Enabled = MaxValue - MinValue > VisibleSize;
 
             if (MaxValue - MinValue - VisibleSize != 0)
-                PositionBar.Location = new Point(UpButton.Location.X, 16 + (int) (ScrollHeight*(Value/(float) (MaxValue - MinValue - VisibleSize))));
+                PositionBar.Location = new Point(UpButton.Location.X, 16 + (int)(ScrollHeight * (Value / (float)(MaxValue - MinValue - VisibleSize))));
 
             if (HideWhenNoScroll)
                 Visible = UpButton.Enabled || DownButton.Enabled;
@@ -236,7 +235,7 @@ namespace Client.Controls
 
         public void DoMouseWheel(object sender, MouseEventArgs e)
         {
-            Value -= e.Delta/SystemInformation.MouseWheelScrollDelta * Change;
+            Value -= e.Delta / SystemInformation.MouseWheelScrollDelta * Change;
         }
 
         protected internal override void UpdateBorderInformation()
@@ -261,18 +260,18 @@ namespace Client.Controls
 
         private void PositionBar_Moving(object sender, MouseEventArgs e)
         {
-            Value = (int) Math.Round((PositionBar.Location.Y - 16)*(MaxValue - MinValue - VisibleSize)/(float) ScrollHeight);
+            Value = (int)Math.Round((PositionBar.Location.Y - 16) * (MaxValue - MinValue - VisibleSize) / (float)ScrollHeight);
 
             if (MaxValue - MinValue - VisibleSize == 0) return;
 
-            PositionBar.Location = new Point(UpButton.Location.X, 16 + (int) (ScrollHeight*(Value/(float) (MaxValue - MinValue - VisibleSize))));
+            PositionBar.Location = new Point(UpButton.Location.X, 16 + (int)(ScrollHeight * (Value / (float)(MaxValue - MinValue - VisibleSize))));
         }
 
         public override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
 
-            Value = (int) Math.Round((e.Location.Y - DisplayArea.Top - 32)*(MaxValue - MinValue - VisibleSize)/(float) ScrollHeight);
+            Value = (int)Math.Round((e.Location.Y - DisplayArea.Top - 32) * (MaxValue - MinValue - VisibleSize) / (float)ScrollHeight);
         }
         public override void OnMouseWheel(MouseEventArgs e)
         {

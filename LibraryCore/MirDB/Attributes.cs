@@ -22,7 +22,7 @@ namespace MirDB
     {
 
     }
-    
+
     [AttributeUsage(AttributeTargets.Property)]
     public class AssociationAttribute : Attribute
     {

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using Client.Envir;
+﻿using Client.Envir;
 using Library;
 using SlimDX;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 //Cleaned
 namespace Client.Controls
@@ -270,7 +270,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         public DXItemGrid()
         {
             DrawTexture = true;
@@ -318,8 +318,8 @@ namespace Client.Controls
             for (int y = 0; y < GridSize.Height; y++)
                 for (int x = 0; x < GridSize.Width; x++)
                 {
-                    DXItemCell cell = Grid[y*GridSize.Width + x];
-                    
+                    DXItemCell cell = Grid[y * GridSize.Width + x];
+
                     if (y < ScrollValue || y >= ScrollValue + VisibleHeight)
                     {
                         cell.Visible = false;
@@ -342,21 +342,21 @@ namespace Client.Controls
 
             for (int i = 0; i <= GridSize.Width; i++)
             {
-                DXManager.Line.Draw(new[] { 
-                    new Vector2(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), 0), 
-                    new Vector2(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), Size.Height) 
+                DXManager.Line.Draw(new[] {
+                    new Vector2(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), 0),
+                    new Vector2(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), Size.Height)
                 }, BorderColour);
             }
 
             for (int i = 0; i <= Math.Min(GridSize.Height, VisibleHeight); i++)
             {
-                DXManager.Line.Draw(new[] { 
-                    new Vector2(0, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i)), 
+                DXManager.Line.Draw(new[] {
+                    new Vector2(0, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i)),
                     new Vector2(Size.Width, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i))
                 }, BorderColour);
             }
         }
-        
+
         protected internal override void UpdateBorderInformation()
         {
             BorderInformation = null;

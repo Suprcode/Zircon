@@ -35,7 +35,7 @@ namespace Client.Scenes.Views
         private readonly DXControl PageTextContainer;
         private DXLabel PageText;
 
-        private List<DXLabel> Buttons = new ();
+        private List<DXLabel> Buttons = new();
         private bool Opened;
 
         private string CurrentPageSay;
@@ -123,7 +123,7 @@ namespace Client.Scenes.Views
                     GameScene.Game.CharacterBox.Location = new Point(Size.Width, 0);
 
                 GameScene.Game.StorageBox.Location = new Point(Math.Max(0, GameScene.Game.InventoryBox.Location.X - GameScene.Game.StorageBox.Size.Width), GameScene.Game.InventoryBox.Location.Y);
-                
+
                 BringToFront();
             }
             else if (GameScene.Game.CharacterBox.Location.X == Size.Width)
@@ -331,7 +331,7 @@ namespace Client.Scenes.Views
                     {
                         ShowQuestList();
                     }
-                break;
+                    break;
                 case NPCDialogType.Repair:
                     GameScene.Game.NPCRepairBox.Visible = true;
                     GameScene.Game.NPCRepairBox.Location = new Point(0, Size.Height);
@@ -370,7 +370,7 @@ namespace Client.Scenes.Views
                 case NPCDialogType.AccessoryRefineUpgrade:
                     GameScene.Game.NPCAccessoryUpgradeBox.Visible = true;
                     GameScene.Game.NPCAccessoryUpgradeBox.Location = new Point(0, Size.Height);
-                    break; 
+                    break;
                 case NPCDialogType.AccessoryRefineLevel:
                     GameScene.Game.NPCAccessoryLevelBox.Visible = true;
                     GameScene.Game.NPCAccessoryLevelBox.Location = new Point(Size.Width - GameScene.Game.NPCAccessoryLevelBox.Size.Width, Size.Height);
@@ -412,7 +412,7 @@ namespace Client.Scenes.Views
                 break;
             }
         }
-        
+
         private void ProcessText(string page)
         {
             foreach (DXLabel label in Buttons)
@@ -809,7 +809,7 @@ namespace Client.Scenes.Views
             Movable = false;
 
 
-            SetClientSize(new Size(227, 7*43 + 1));
+            SetClientSize(new Size(227, 7 * 43 + 1));
 
             ClientPanel = new DXControl
             {
@@ -845,7 +845,7 @@ namespace Client.Scenes.Views
                 Label = { Text = "Use Guild Funds:" },
                 Enabled = false,
             };
-            GuildCheckBox.Location = new Point( 200, BuyButton.Location.Y + (BuyButton.Size.Height - GuildCheckBox.Size.Height) /2);
+            GuildCheckBox.Location = new Point(200, BuyButton.Location.Y + (BuyButton.Size.Height - GuildCheckBox.Size.Height) / 2);
         }
 
         #region Methods
@@ -873,8 +873,8 @@ namespace Client.Scenes.Views
                 cell.MouseDoubleClick += (o, e) => Buy();
             }
 
-            ScrollBar.MaxValue = goods.Count*43 - 2;
-            SetClientSize(new Size(ClientArea.Width, Math.Min(ScrollBar.MaxValue, 7*43 - 3) + 1));
+            ScrollBar.MaxValue = goods.Count * 43 - 2;
+            SetClientSize(new Size(ClientArea.Width, Math.Min(ScrollBar.MaxValue, 7 * 43 - 3) + 1));
             ScrollBar.VisibleSize = ClientArea.Height;
             ScrollBar.Size = new Size(ScrollBar.Size.Width, ClientArea.Height - 2);
 
@@ -943,7 +943,7 @@ namespace Client.Scenes.Views
                     return;
                 }
 
-                ClientUserItem item = new ClientUserItem(SelectedCell.Good.Item, (int) Math.Min(int.MaxValue, maxCount));
+                ClientUserItem item = new ClientUserItem(SelectedCell.Good.Item, (int)Math.Min(int.MaxValue, maxCount));
 
                 DXItemAmountWindow window = new DXItemAmountWindow("Buy Item", item);
                 window.ConfirmButton.MouseClick += (o, e) =>
@@ -1062,8 +1062,8 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> GoodChanged;
         public void OnGoodChanged(NPCGood oValue, NPCGood nValue)
         {
-            ItemCell.Item = new ClientUserItem(Good.Item, 1) { Flags = UserItemFlags.Locked  };
-            
+            ItemCell.Item = new ClientUserItem(Good.Item, 1) { Flags = UserItemFlags.Locked };
+
             switch (Good.Item.ItemType)
             {
                 case ItemType.Weapon:
@@ -1085,11 +1085,11 @@ namespace Client.Scenes.Views
                     RequirementLabel.Text = string.Empty;
                     break;
                 case ItemType.Meat:
-                    RequirementLabel.Text = $"Quality: {Good.Item.Durability/1000}";
+                    RequirementLabel.Text = $"Quality: {Good.Item.Durability / 1000}";
                     RequirementLabel.ForeColour = Color.Wheat;
                     break;
                 case ItemType.Ore:
-                    RequirementLabel.Text = $"Purity: {Good.Item.Durability/1000}";
+                    RequirementLabel.Text = $"Purity: {Good.Item.Durability / 1000}";
                     RequirementLabel.ForeColour = Color.Wheat;
                     break;
                 case ItemType.Consumable:
@@ -1209,7 +1209,7 @@ namespace Client.Scenes.Views
             ItemCell = new DXItemCell
             {
                 Parent = this,
-                Location = new Point((Size.Height - DXItemCell.CellHeight)/2, (Size.Height - DXItemCell.CellHeight)/2),
+                Location = new Point((Size.Height - DXItemCell.CellHeight) / 2, (Size.Height - DXItemCell.CellHeight) / 2),
                 FixedBorder = true,
                 Border = true,
                 ReadOnly = true,
@@ -1221,7 +1221,7 @@ namespace Client.Scenes.Views
             ItemNameLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(ItemCell.Location.X*2 + ItemCell.Size.Width, ItemCell.Location.Y),
+                Location = new Point(ItemCell.Location.X * 2 + ItemCell.Size.Width, ItemCell.Location.Y),
                 ForeColour = Color.White,
                 Outline = true,
                 OutlineColour = Color.Black,
@@ -1234,7 +1234,7 @@ namespace Client.Scenes.Views
                 Text = "Requirement",
                 IsControl = false,
             };
-            RequirementLabel.Location = new Point(ItemCell.Location.X*2 + ItemCell.Size.Width, ItemCell.Location.Y + ItemCell.Size.Height - RequirementLabel.Size.Height);
+            RequirementLabel.Location = new Point(ItemCell.Location.X * 2 + ItemCell.Size.Width, ItemCell.Location.Y + ItemCell.Size.Height - RequirementLabel.Size.Height);
 
             CurrencyIcon = new DXImageControl
             {
@@ -1660,7 +1660,7 @@ namespace Client.Scenes.Views
 
                     GuildStorageButton = null;
                 }
-                
+
                 if (SpecialCheckBox != null)
                 {
                     if (!SpecialCheckBox.IsDisposed)
@@ -1819,7 +1819,7 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-        
+
         public DXItemGrid BlackIronGrid, AccessoryGrid, SpecialGrid;
 
         public DXCheckBox DurabilityCheckBox, DCCheckBox, SPCheckBox, FireCheckBox, IceCheckBox, LightningCheckBox, WindCheckBox, HolyCheckBox, DarkCheckBox, PhantomCheckBox;
@@ -1885,7 +1885,7 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Underline)
             };
 
-            AccessoryGrid =  new DXItemGrid
+            AccessoryGrid = new DXItemGrid
             {
                 GridSize = new Size(3, 1),
                 Parent = this,
@@ -1902,7 +1902,7 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Underline)
             };
 
-            SpecialGrid =  new DXItemGrid
+            SpecialGrid = new DXItemGrid
             {
                 GridSize = new Size(1, 1),
                 Parent = this,
@@ -1913,7 +1913,7 @@ namespace Client.Scenes.Views
 
 
             SetClientSize(new Size(491, SpecialGrid.Location.Y + SpecialGrid.Size.Height - ClientArea.Y + 2));
-            
+
             DCCheckBox = new DXCheckBox
             {
                 Parent = this,
@@ -2052,7 +2052,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Size = new Size(80, DXComboBox.DefaultNormalHeight),
             };
-            RefineQualityBox.SelectedItemChanged += (o, e) => RefineQuality = (RefineQuality?) RefineQualityBox.SelectedItem ?? RefineQuality.Quick;
+            RefineQualityBox.SelectedItemChanged += (o, e) => RefineQuality = (RefineQuality?)RefineQualityBox.SelectedItem ?? RefineQuality.Quick;
             RefineQualityBox.Location = new Point(ClientArea.Right - RefineQualityBox.Size.Width - 160, BlackIronGrid.Location.Y);
 
 
@@ -2069,13 +2069,13 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = "Quality:",
             };
-            label.Location = new Point(RefineQualityBox.Location.X - label.Size.Width - 5, RefineQualityBox.Location.Y + (RefineQualityBox.Size.Height - label.Size.Height)/2);
+            label.Location = new Point(RefineQualityBox.Location.X - label.Size.Width - 5, RefineQualityBox.Location.Y + (RefineQualityBox.Size.Height - label.Size.Height) / 2);
 
 
             DurationLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(RefineQualityBox.Location.X  + RefineQualityBox.Size.Width  + 5, RefineQualityBox.Location.Y + (RefineQualityBox.Size.Height - label.Size.Height) / 2)
+                Location = new Point(RefineQualityBox.Location.X + RefineQualityBox.Size.Width + 5, RefineQualityBox.Location.Y + (RefineQualityBox.Size.Height - label.Size.Height) / 2)
             };
 
             RefineQualityBox.ListBox.SelectItem(RefineQuality.Quick);
@@ -2317,7 +2317,7 @@ namespace Client.Scenes.Views
 
             RetrieveButton = new DXButton
             {
-                Location = new Point((Size.Width - 80)/2, Size.Height - 43),
+                Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
                 Parent = this,
                 Label = { Text = "Retrieve" },
@@ -2348,12 +2348,12 @@ namespace Client.Scenes.Views
             }
 
 
-            ScrollBar.MaxValue = Refines.Count*43 - 2;
-            SetClientSize(new Size(ClientArea.Width, Math.Min(Math.Max(3 * 43 - 2, ScrollBar.MaxValue), 7*43 - 3) + 1));
+            ScrollBar.MaxValue = Refines.Count * 43 - 2;
+            SetClientSize(new Size(ClientArea.Width, Math.Min(Math.Max(3 * 43 - 2, ScrollBar.MaxValue), 7 * 43 - 3) + 1));
             ScrollBar.VisibleSize = ClientArea.Height;
             ScrollBar.Size = new Size(ScrollBar.Size.Width, ClientArea.Height - 2);
 
-            RetrieveButton.Location = new Point((Size.Width - 80)/2, Size.Height - 43);
+            RetrieveButton.Location = new Point((Size.Width - 80) / 2, Size.Height - 43);
             ScrollBar.Value = 0;
             UpdateLocations();
         }
@@ -2535,7 +2535,7 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-        
+
         #region Selected
 
         public bool Selected
@@ -2564,7 +2564,7 @@ namespace Client.Scenes.Views
         #endregion
 
         public DXItemCell ItemCell;
-        
+
         public DXLabel ItemNameLabel, RefineTypeLabel, ChanceLabel, MaxChanceLabel, RetrieveTimeLabel;
 
         #endregion
@@ -2615,7 +2615,7 @@ namespace Client.Scenes.Views
                 Text = "None",
                 IsControl = false,
                 ForeColour = Color.White,
-                Location = new Point(RefineTypeLabel.Location.X  + RefineTypeLabel.Size.Width, RefineTypeLabel.Location.Y)
+                Location = new Point(RefineTypeLabel.Location.X + RefineTypeLabel.Size.Width, RefineTypeLabel.Location.Y)
             };
 
             ChanceLabel = new DXLabel
@@ -2624,7 +2624,7 @@ namespace Client.Scenes.Views
                 Text = "Success Chance:",
                 IsControl = false,
             };
-            ChanceLabel.Location = new Point(300 - ChanceLabel.Size.Width, ItemNameLabel.Location.Y );
+            ChanceLabel.Location = new Point(300 - ChanceLabel.Size.Width, ItemNameLabel.Location.Y);
 
             ChanceLabel = new DXLabel
             {
@@ -2651,7 +2651,7 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White,
                 Location = new Point(MaxChanceLabel.Location.X + MaxChanceLabel.Size.Width, MaxChanceLabel.Location.Y)
             };
-            
+
 
             RetrieveTimeLabel = new DXLabel
             {
@@ -2708,7 +2708,7 @@ namespace Client.Scenes.Views
 
                     ItemCell = null;
                 }
-                
+
                 if (ItemNameLabel != null)
                 {
                     if (!ItemNameLabel.IsDisposed)
@@ -3145,7 +3145,7 @@ namespace Client.Scenes.Views
             }
 
             SelectedQuest.Selected = true;
-            
+
             int standard = 0, choice = 0;
             HasChoice = false;
 
@@ -3185,7 +3185,7 @@ namespace Client.Scenes.Views
                 if (reward.Choice)
                 {
                     if (choice >= ChoiceGrid.Grid.Length) continue;
-                    
+
                     HasChoice = true;
 
                     ChoiceGrid.Grid[choice].Item = item;
@@ -3257,7 +3257,7 @@ namespace Client.Scenes.Views
                 nValue.FixedBorderColour = true;
                 nValue.BorderColour = Color.Lime;
             }
-            
+
             SelectedCellChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -3536,7 +3536,7 @@ namespace Client.Scenes.Views
                     return;
                 }
 
-                CEnvir.Enqueue(new C.QuestComplete { Index = SelectedQuest.QuestInfo.Index, ChoiceIndex = ((QuestReward) SelectedCell?.Tag)?.Index ?? 0 });
+                CEnvir.Enqueue(new C.QuestComplete { Index = SelectedQuest.QuestInfo.Index, ChoiceIndex = ((QuestReward)SelectedCell?.Tag)?.Index ?? 0 });
             };
         }
 
@@ -3588,7 +3588,7 @@ namespace Client.Scenes.Views
 
                     TasksLabel = null;
                 }
-                
+
                 if (DescriptionContainer != null)
                 {
                     if (!DescriptionContainer.IsDisposed)
@@ -3811,7 +3811,7 @@ namespace Client.Scenes.Views
         public DXLabel QuestNameLabel;
 
         #endregion
-        
+
         public NPCQuestRow()
         {
             DrawTexture = true;
@@ -3823,7 +3823,7 @@ namespace Client.Scenes.Views
             QuestIcon = new DXAnimatedControl
             {
                 Parent = this,
-                Location = new Point(2,2),
+                Location = new Point(2, 2),
                 Loop = true,
                 LibraryFile = LibraryFile.QuestIcon,
                 BaseIndex = 2,
@@ -3927,8 +3927,8 @@ namespace Client.Scenes.Views
             SelectedCompanionInfoChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        
-        
+
+
 
         #endregion
 
@@ -4006,7 +4006,7 @@ namespace Client.Scenes.Views
         }
         private bool _CompanionNameValid;
         public event EventHandler<EventArgs> CompanionNameValidChanged;
-        public  void OnCompanionNameValidChanged(bool oValue, bool nValue)
+        public void OnCompanionNameValidChanged(bool oValue, bool nValue)
         {
             RefreshUnlockButton();
             CompanionNameValidChanged?.Invoke(this, EventArgs.Empty);
@@ -4026,7 +4026,7 @@ namespace Client.Scenes.Views
         public NPCAdoptCompanionDialog()
         {
             TitleLabel.Text = "Adopt Companion";
-            
+
             Movable = false;
 
             SetClientSize(new Size(275, 130));
@@ -4044,17 +4044,17 @@ namespace Client.Scenes.Views
 
             NameLabel.SizeChanged += (o, e) =>
             {
-                NameLabel.Location = new Point(CompanionDisplayPoint.X  + 25 - NameLabel.Size.Width / 2, CompanionDisplayPoint.Y + 30);
+                NameLabel.Location = new Point(CompanionDisplayPoint.X + 25 - NameLabel.Size.Width / 2, CompanionDisplayPoint.Y + 30);
             };
 
             IndexLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(CompanionDisplayPoint.X , 200),
+                Location = new Point(CompanionDisplayPoint.X, 200),
             };
             IndexLabel.SizeChanged += (o, e) =>
             {
-                IndexLabel.Location = new Point(CompanionDisplayPoint.X  + 25 - IndexLabel.Size.Width / 2, CompanionDisplayPoint.Y + 55);
+                IndexLabel.Location = new Point(CompanionDisplayPoint.X + 25 - IndexLabel.Size.Width / 2, CompanionDisplayPoint.Y + 55);
             };
             LeftButton = new DXButton
             {
@@ -4083,7 +4083,7 @@ namespace Client.Scenes.Views
             PriceLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(160 , CompanionDisplayPoint.Y),
+                Location = new Point(160, CompanionDisplayPoint.Y),
                 ForeColour = Color.White,
             };
 
@@ -4100,7 +4100,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = "Name:"
             };
-            label.Location = new Point(CompanionNameTextBox.Location.X - label.Size.Width, CompanionNameTextBox.Location.Y + (CompanionNameTextBox.Size.Height - label.Size.Height)/2);
+            label.Location = new Point(CompanionNameTextBox.Location.X - label.Size.Width, CompanionNameTextBox.Location.Y + (CompanionNameTextBox.Size.Height - label.Size.Height) / 2);
 
             AdoptButton = new DXButton
             {
@@ -4112,7 +4112,7 @@ namespace Client.Scenes.Views
             };
             AdoptButton.MouseClick += AdoptButton_MouseClick;
 
-                UnlockButton = new DXButton
+            UnlockButton = new DXButton
             {
                 Parent = this,
                 Location = new Point(ClientArea.Right - 80, ClientArea.Y),
@@ -4226,8 +4226,8 @@ namespace Client.Scenes.Views
 
                 _CompanionNameValid = false;
                 CompanionNameValidChanged = null;
-                    
-                
+
+
                 if (NameLabel != null)
                 {
                     if (!NameLabel.IsDisposed)
@@ -4267,7 +4267,7 @@ namespace Client.Scenes.Views
 
                     RightButton = null;
                 }
-                
+
                 if (AdoptButton != null)
                 {
                     if (!AdoptButton.IsDisposed)
@@ -4330,7 +4330,7 @@ namespace Client.Scenes.Views
                 Rows[i] = new NPCCompanionStorageRow
                 {
                     Parent = this,
-                    Location = new Point(ClientArea.X, ClientArea.Y + i*88),
+                    Location = new Point(ClientArea.X, ClientArea.Y + i * 88),
                 };
             }
 
@@ -4338,7 +4338,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Location = new Point(ClientArea.Right - 15, ClientArea.Y + 1),
-                Size = new Size(14, Rows.Length * 87 -1),
+                Size = new Size(14, Rows.Length * 87 - 1),
                 VisibleSize = Rows.Length,
                 Change = 1,
             };
@@ -4371,7 +4371,7 @@ namespace Client.Scenes.Views
             {
                 Companions.Clear();
                 Companions = null;
-                
+
                 if (Rows != null)
                 {
                     for (int i = 0; i < Rows.Length; i++)
@@ -4459,7 +4459,7 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-        
+
         #region Selected
 
         public bool Selected
@@ -4510,7 +4510,7 @@ namespace Client.Scenes.Views
             NameLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(85,5)
+                Location = new Point(85, 5)
 
             };
 
@@ -4584,7 +4584,7 @@ namespace Client.Scenes.Views
             CompanionDisplay.DrawBody(x, y);
         }
 
-        
+
         #endregion
 
         #region IDisposable
@@ -4597,7 +4597,7 @@ namespace Client.Scenes.Views
             {
                 _UserCompanion = null;
                 UserCompanionChanged = null;
-                
+
                 _Selected = false;
                 SelectedChanged = null;
 
@@ -4679,7 +4679,7 @@ namespace Client.Scenes.Views
             RingGrid = new DXItemGrid
             {
                 Parent = this,
-                Location = new Point(ClientArea.X + (ClientArea.Width - 36)/2, label.Size.Height + label.Location.Y + 5),
+                Location = new Point(ClientArea.X + (ClientArea.Width - 36) / 2, label.Size.Height + label.Location.Y + 5),
                 GridSize = new Size(1, 1),
                 Linked = true,
                 GridType = GridType.WeddingRing,
@@ -4691,22 +4691,22 @@ namespace Client.Scenes.Views
             BindButton = new DXButton
             {
                 Size = new Size(50, SmallButtonHeight),
-                Location = new Point((ClientArea.Width - 50)/2 + ClientArea.X, ClientArea.Bottom - SmallButtonHeight),
+                Location = new Point((ClientArea.Width - 50) / 2 + ClientArea.X, ClientArea.Bottom - SmallButtonHeight),
                 Label = { Text = "Bind" },
                 Parent = this,
                 ButtonType = ButtonType.SmallButton,
-                Enabled =  false,
+                Enabled = false,
             };
             BindButton.MouseClick += (o, e) =>
             {
                 if (RingGrid.Grid[0].Item == null || RingGrid.Grid[0].Item.Info.ItemType != ItemType.Ring) return;
 
-                CEnvir.Enqueue(new C.MarriageMakeRing {  Slot = RingGrid.Grid[0].Link.Slot });
+                CEnvir.Enqueue(new C.MarriageMakeRing { Slot = RingGrid.Grid[0].Link.Slot });
 
                 RingGrid.Grid[0].Link = null;
             };
         }
-        
+
         #region Methods
 
         public void Draw(DXItemCell cell, int index)
@@ -4721,7 +4721,7 @@ namespace Client.Scenes.Views
 
             InterfaceLibrary.Draw(index, x, y, Color.White, false, 0.2F, ImageType.Image);
         }
-        
+
         #endregion
 
         #region IDisposable
@@ -4757,12 +4757,12 @@ namespace Client.Scenes.Views
     public sealed class NPCRefinementStoneDialog : DXWindow
     {
         #region Properties
-        
+
         public DXItemGrid IronOreGrid, GoldOreGrid, DiamondGrid, SilverOreGrid, CrystalGrid;
         public DXNumberTextBox GoldBox;
-        
+
         public DXButton SubmitButton;
-        
+
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
             base.OnIsVisibleChanged(oValue, nValue);
@@ -4923,13 +4923,13 @@ namespace Client.Scenes.Views
             }
 
             GoldBox.ValueChanged += (o, e) => UpdateButton();
-            
+
             SubmitButton = new DXButton
             {
                 Label = { Text = "Submit" },
                 Size = new Size(80, SmallButtonHeight),
                 Parent = this,
-                Enabled =false,
+                Enabled = false,
                 ButtonType = ButtonType.SmallButton,
                 Location = new Point(GoldBox.Location.X + GoldBox.Size.Width - 78, GoldBox.Location.Y + GoldBox.Size.Height + 5),
             };
@@ -5156,7 +5156,7 @@ namespace Client.Scenes.Views
             if (!IsVisible)
                 Grid.ClearLinks();
         }
-        
+
         public override WindowType Type => WindowType.None;
         public override bool CustomSize => false;
         public override bool AutomaticVisibility => false;
@@ -5416,12 +5416,12 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-        
+
         public DXItemGrid Fragment1Grid, Fragment2Grid, Fragment3Grid, RefinementStoneGrid, SpecialGrid;
 
         public DXCheckBox DCCheckBox, SPCheckBox, FireCheckBox, IceCheckBox, LightningCheckBox, WindCheckBox, HolyCheckBox, DarkCheckBox, PhantomCheckBox;
         public DXButton SubmitButton, EvaluateButton;
-        
+
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
             base.OnIsVisibleChanged(oValue, nValue);
@@ -5451,7 +5451,7 @@ namespace Client.Scenes.Views
         public NPCMasterRefineDialog()
         {
             TitleLabel.Text = "Master Refine";
-            
+
 
             SetClientSize(new Size(491, 130));
 
@@ -5703,12 +5703,12 @@ namespace Client.Scenes.Views
                     GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedRefinementStone, MessageType.System);
                     return;
                 }
-                
-               DXMessageBox box = new DXMessageBox("Are you sure you want to pay for an evaluation?", "Evaluation", DXMessageBoxButtons.YesNo);
+
+                DXMessageBox box = new DXMessageBox("Are you sure you want to pay for an evaluation?", "Evaluation", DXMessageBoxButtons.YesNo);
 
                 box.YesButton.MouseClick += (o1, e1) => CEnvir.Enqueue(new C.NPCMasterRefineEvaluate { RefineType = RefineType, Fragment1s = frag1, Fragment2s = frag2, Fragment3s = frag3, Stones = stone, Specials = special });
             };
-            
+
             label = new DXLabel
             {
                 Text = $"Cost: {Globals.MasterRefineEvaluateCost:#,##0}",
@@ -5822,7 +5822,7 @@ namespace Client.Scenes.Views
             {
                 _RefineType = 0;
                 RefineTypeChanged = null;
-                
+
                 if (Fragment1Grid != null)
                 {
                     if (!Fragment1Grid.IsDisposed)
@@ -6125,9 +6125,9 @@ namespace Client.Scenes.Views
             if (IsVisible)
                 GameScene.Game.InventoryBox.Visible = true;
 
-            if (!IsVisible)            
+            if (!IsVisible)
                 TargetCell.ClearLinks();
-            
+
         }
 
 
@@ -6356,7 +6356,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.SmallButton,
                 Enabled = false,
             };
-            SubmitButton.Location = new Point(ClientArea.Left + 40, ClientArea.Bottom - SubmitButton.Size.Height- 5);
+            SubmitButton.Location = new Point(ClientArea.Left + 40, ClientArea.Bottom - SubmitButton.Size.Height - 5);
             SubmitButton.MouseClick += (o, e) =>
             {
                 if (GameScene.Game.Observer) return;
@@ -6369,7 +6369,7 @@ namespace Client.Scenes.Views
                 CellLinkInfo targetLink = new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot };
                 cell.Link.Locked = true;
                 cell.Link = null;
-                
+
                 CEnvir.Enqueue(new C.NPCAccessoryUpgrade { Target = targetLink, RefineType = RefineType });
 
             };
@@ -6395,7 +6395,7 @@ namespace Client.Scenes.Views
 
                     TargetCell = null;
                 }
-                
+
 
                 if (DCCheckBox != null)
                 {
@@ -6659,7 +6659,7 @@ namespace Client.Scenes.Views
 
                 ;
                 List<CellLinkInfo> links = new List<CellLinkInfo>();
-                
+
                 DXItemCell target = TargetCell.Grid[0];
 
                 if (target.Link == null) return;
@@ -6689,7 +6689,7 @@ namespace Client.Scenes.Views
             foreach (DXItemCell cell in Grid.Grid)
             {
                 if (cell.Link?.Item == null) continue;
-                
+
                 count++;
             }
 
@@ -6746,7 +6746,7 @@ namespace Client.Scenes.Views
 
         public DXItemGrid AccessoryGrid;
         public DXButton ResetButton;
-        
+
         public override WindowType Type => WindowType.None;
         public override bool CustomSize => false;
         public override bool AutomaticVisibility => false;
@@ -6824,7 +6824,7 @@ namespace Client.Scenes.Views
                     default:
                         return;
                 }
-                
+
 
                 CellLinkInfo targetLink = new CellLinkInfo { Count = AccessoryGrid.Grid[0].LinkedCount, GridType = AccessoryGrid.Grid[0].Link.GridType, Slot = AccessoryGrid.Grid[0].Link.Slot };
 
@@ -6839,7 +6839,8 @@ namespace Client.Scenes.Views
 
         public void Draw(DXItemCell cell, int index)
         {
-            if (InterfaceLibrary == null) return;    }
+            if (InterfaceLibrary == null) return;
+        }
 
         #endregion
 
@@ -6896,8 +6897,8 @@ namespace Client.Scenes.Views
         private DXLabel ClassLabel;
 
         private DXButton AttemptButton;
-        
-        
+
+
         #region RequiredClass
 
         public RequiredClass RequiredClass
@@ -7211,7 +7212,7 @@ namespace Client.Scenes.Views
 
             #endregion
 
-           
+
 
             AttemptButton = new DXButton
             {
@@ -7236,7 +7237,7 @@ namespace Client.Scenes.Views
                 };
 
                 TemplateCell.Grid[0].Link.Locked = true;
-                TemplateCell.Grid[0].Link = null; 
+                TemplateCell.Grid[0].Link = null;
 
                 if (YellowCell.Grid[0].Link != null)
                 {
@@ -7434,7 +7435,7 @@ namespace Client.Scenes.Views
         public DXCheckBox FireCheckBox, IceCheckBox, LightningCheckBox, WindCheckBox, HolyCheckBox, DarkCheckBox, PhantomCheckBox,
                           DCCheckBox, SPCheckBox, HealthCheckBox, ManaCheckBox,
                           ACCheckBox, MRCheckBox, AccuracyCheckBox, AgilityCheckBox;
-        
+
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {

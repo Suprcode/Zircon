@@ -156,7 +156,7 @@ namespace Library.SystemModels
             }
         }
         private bool _CanTame;
-        
+
 
         public int AttackDelay
         {

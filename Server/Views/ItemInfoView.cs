@@ -1,8 +1,7 @@
-﻿using System;
-using DevExpress.XtraBars;
-
+﻿using DevExpress.XtraBars;
 using Library;
 using Library.SystemModels;
+using System;
 
 namespace Server.Views
 {

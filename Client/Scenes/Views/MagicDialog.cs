@@ -1,18 +1,16 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Envir;
+using Client.Models;
+using Client.UserModels;
+using Library;
+using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Client.Controls;
-using Client.Envir;
-using Client.Models;
-using Client.UserModels;
-using Library;
-using Library.Network.ClientPackets;
-using Library.SystemModels;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -210,7 +208,7 @@ namespace Client.Scenes.Views
                     SchoolTabs[magic.School] = tab = new MagicTab(magic.School);
                     tab.MouseWheel += tab.ScrollBar.DoMouseWheel;
                     tab.PassThrough = false;
-                }                   
+                }
 
                 MagicCell cell = new MagicCell
                 {
@@ -301,7 +299,7 @@ namespace Client.Scenes.Views
                     SchoolTabs.Clear();
                     SchoolTabs = null;
                 }
-                
+
                 if (Magics != null)
                 {
                     foreach (KeyValuePair<MagicInfo, MagicCell> pair in Magics)
@@ -348,7 +346,7 @@ namespace Client.Scenes.Views
             ScrollBar.VisibleSize = Size.Height;
             UpdateLocations();
         }
-        
+
         #endregion
 
         public MagicTab(MagicSchool school)
@@ -595,8 +593,8 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
                 IsControl = false,
                 ForeColour = Color.Aquamarine,
-                AutoSize =  false,
-                Size = new Size(36,36),
+                AutoSize = false,
+                Size = new Size(36, 36),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter
             };
             KeyLabel.SizeChanged += (o, e) => KeyLabel.Location = new Point(Image.Size.Width - KeyLabel.Size.Width, Image.Size.Height - KeyLabel.Size.Height);
@@ -737,7 +735,7 @@ namespace Client.Scenes.Views
                     default:
                         continue;
                 }
-                
+
                 e.Handled = true;
             }
 
@@ -801,7 +799,7 @@ namespace Client.Scenes.Views
                 }
 
             }
-            
+
             CEnvir.Enqueue(new C.MagicKey { Magic = magic.Info.Magic, Set1Key = magic.Set1Key, Set2Key = magic.Set2Key, Set3Key = magic.Set3Key, Set4Key = magic.Set4Key });
             Refresh();
             GameScene.Game.MagicBarBox.UpdateIcons();
@@ -859,7 +857,7 @@ namespace Client.Scenes.Views
 
             PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
         }
-        
+
         public void Refresh()
         {
             if (MapObject.User == null) return;

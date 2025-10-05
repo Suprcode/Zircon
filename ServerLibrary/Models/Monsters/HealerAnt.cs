@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Library;
+using Server.Envir;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Library;
-using Server.Envir;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -53,7 +53,7 @@ namespace Server.Models.Monsters
             Broadcast(new S.ObjectRangeAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Targets = new List<uint> { Target.ObjectID } });
 
             UpdateAttackTime();
-            
+
             ActionList.Add(new DelayedAction(
                                SEnvir.Now.AddMilliseconds(400 + Functions.Distance(CurrentLocation, Target.CurrentLocation) * Globals.ProjectileSpeed),
                                ActionType.DelayAttack,

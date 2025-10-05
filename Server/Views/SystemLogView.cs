@@ -1,7 +1,7 @@
-﻿using System;
-using System.ComponentModel;
-using DevExpress.XtraBars;
+﻿using DevExpress.XtraBars;
 using Server.Envir;
+using System;
+using System.ComponentModel;
 
 namespace Server.Views
 {
@@ -34,7 +34,7 @@ namespace Server.Views
         private void ClearLogsButton_ItemClick(object sender, ItemClickEventArgs e)
         {
             Logs.Clear();
-                ClearLogsButton.Enabled = false;
+            ClearLogsButton.Enabled = false;
         }
     }
 }

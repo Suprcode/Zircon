@@ -107,7 +107,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(15, 260),
                 Label = { Text = "" },
-                LibraryFile = LibraryFile.GameInter2,    
+                LibraryFile = LibraryFile.GameInter2,
                 Index = 2926,
                 PressedIndex = 2925,
                 HoverIndex = 2927,
@@ -325,7 +325,7 @@ namespace Client.Scenes.Views
                             return;
                         }
 
-                        CEnvir.Enqueue(new C.LootBoxReveal { Slot = SelectedLootBox.Slot,  Choice = SelectedIndex });
+                        CEnvir.Enqueue(new C.LootBoxReveal { Slot = SelectedLootBox.Slot, Choice = SelectedIndex });
                     };
                 }
                 else

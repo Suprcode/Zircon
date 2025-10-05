@@ -41,7 +41,7 @@ namespace Server.Models.Monsters
             Castle = castle;
             GateInfo = gateInfo;
 
-            if (castle == null ||  gateInfo == null)
+            if (castle == null || gateInfo == null)
             {
                 return false;
             }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Library.SystemModels;
 using Server.Envir;
+using System;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters

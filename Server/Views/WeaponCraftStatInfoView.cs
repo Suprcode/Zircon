@@ -1,7 +1,7 @@
-﻿using System;
-using DevExpress.XtraBars;
+﻿using DevExpress.XtraBars;
 using Library;
 using Library.SystemModels;
+using System;
 
 namespace Server.Views
 {
@@ -12,7 +12,7 @@ namespace Server.Views
             InitializeComponent();
 
             ItemInfoStatGridControl.DataSource = SMain.Session.GetCollection<WeaponCraftStatInfo>().Binding;
-            
+
             StatImageComboBox.Items.AddEnum<Stat>();
         }
 

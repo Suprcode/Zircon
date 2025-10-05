@@ -4,11 +4,14 @@ using Server.Envir.Commands.Command.Player;
 using Server.Envir.Commands.Exceptions;
 using Server.Models;
 
-namespace Server.Envir.Commands.Player {
-    abstract class AbstractToggleCompanion : AbstractCommand<IPlayerCommand> {
+namespace Server.Envir.Commands.Player
+{
+    abstract class AbstractToggleCompanion : AbstractCommand<IPlayerCommand>
+    {
         public override string VALUE => "ENABLELEVEL{0}";
 
-        public override void Action(PlayerObject player) {
+        public override void Action(PlayerObject player)
+        {
             int level = int.Parse(VALUE.Substring(11));
             bool result = ToggleCompanionLockFor(player, level);
 
@@ -19,8 +22,10 @@ namespace Server.Envir.Commands.Player {
                 , level), MessageType.System);
         }
 
-        public bool ToggleCompanionLockFor(PlayerObject p, int level) {
-            switch (level) {
+        public bool ToggleCompanionLockFor(PlayerObject p, int level)
+        {
+            switch (level)
+            {
                 case 3:
                     return p.CompanionLevelLock3 = !p.CompanionLevelLock3;
                 case 5:

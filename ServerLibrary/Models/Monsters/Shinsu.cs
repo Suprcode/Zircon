@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using Library.Network;
 using Server.Envir;
+using System;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -78,7 +74,7 @@ namespace Server.Models.Monsters
 
         public override Packet GetInfoPacket(PlayerObject ob)
         {
-            S.ObjectMonster packet = (S.ObjectMonster) base.GetInfoPacket(ob);
+            S.ObjectMonster packet = (S.ObjectMonster)base.GetInfoPacket(ob);
 
             packet.Extra = Mode;
 

@@ -62,7 +62,7 @@ namespace Client.Models
             set
             {
                 if (_DrawY == value) return;
-                
+
                 _DrawY = value;
                 GameScene.Game.MapControl.TextureValid = false;
             }
@@ -75,7 +75,7 @@ namespace Client.Models
             set
             {
                 if (_DrawFrame == value) return;
-                
+
                 _DrawFrame = value;
                 GameScene.Game.MapControl.TextureValid = false;
                 FrameAction?.Invoke();
@@ -89,11 +89,11 @@ namespace Client.Models
 
         public int Skip { get; set; }
         public MirDirection Direction { get; set; }
-        
+
         public Color[] LightColours;
         public int StartLight, EndLight;
 
-        public float FrameLight 
+        public float FrameLight
         {
             get
             {
@@ -129,7 +129,7 @@ namespace Client.Models
                 return temp;
             }
         }
-        
+
         public MirEffect(int startIndex, int frameCount, TimeSpan frameDelay, LibraryFile file, int startLight, int endLight, Color lightColour)
         {
             StartIndex = startIndex;
@@ -157,8 +157,8 @@ namespace Client.Models
         public virtual void Process()
         {
             if (CEnvir.Now < StartTime) return;
-            
-            
+
+
             if (Target != null)
             {
                 DrawX = Target.DrawX + AdditionalOffSet.X;
@@ -185,7 +185,7 @@ namespace Client.Models
             FrameIndex = frame;
             DrawFrame = FrameIndex + StartIndex + (int)Direction * Skip;
         }
-    
+
         protected virtual int GetFrame()
         {
             TimeSpan elapsed = CEnvir.Now - StartTime;
@@ -230,7 +230,7 @@ namespace Client.Models
         public virtual void Draw()
         {
             if (CEnvir.Now < StartTime || Library == null) return;
-            
+
             if (Blend)
                 Library.DrawBlend(DrawFrame, DrawX, DrawY, DrawColour, UseOffSet, BlendRate, ImageType.Image);
             else

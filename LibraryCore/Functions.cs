@@ -3,9 +3,7 @@ using MirDB;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Library
 {
@@ -121,7 +119,7 @@ namespace Library
         public static MirAnimation GetAttackAnimation(MirClass @class, int weaponShape, MagicType magicType)
         {
             MirAnimation animation;
-     
+
             switch (magicType)
             {
                 case MagicType.Slaying:

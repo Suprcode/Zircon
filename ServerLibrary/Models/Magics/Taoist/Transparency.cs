@@ -5,8 +5,6 @@ using System;
 using System.Drawing;
 using System.Linq;
 
-using S = Library.Network.ServerPackets;
-
 namespace Server.Models.Magics
 {
     [MagicType(MagicType.Transparency)]
@@ -72,7 +70,7 @@ namespace Server.Models.Magics
 
         public override void MagicFinalise()
         {
-            
+
         }
     }
 }

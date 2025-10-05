@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Client.Envir;
+using SlimDX;
+using SlimDX.Direct3D9;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Client.Envir;
-using SlimDX;
-using SlimDX.Direct3D9;
 using Font = System.Drawing.Font;
 
 //Cleaned
@@ -65,7 +65,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Font
 
         public Font Font
@@ -141,7 +141,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         #region Password
 
         public bool Password
@@ -311,7 +311,7 @@ namespace Client.Controls
             TextureValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
-        
+
         public virtual void OnActivated()
         {
             if (TextBox.Visible != Editable)
@@ -364,7 +364,7 @@ namespace Client.Controls
         {
             base.OnMouseDown(e);
 
-            if (!TextBox.Visible ) return;
+            if (!TextBox.Visible) return;
 
             int location = (e.X - DisplayArea.X) | (e.Y - DisplayArea.Y) << 16;
 
@@ -456,7 +456,7 @@ namespace Client.Controls
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
         #endregion
-        
+
         #region IDisposable
         protected override void Dispose(bool disposing)
         {
@@ -487,7 +487,7 @@ namespace Client.Controls
                 FontChanged = null;
                 KeepFocusChanged = null;
                 MaxLengthChanged = null;
-                PasswordChanged = null; 
+                PasswordChanged = null;
                 ReadOnlyChanged = null;
                 TextBoxChanged = null;
             }
@@ -501,7 +501,7 @@ namespace Client.Controls
             #region Properties
             public DXTextBox Owner;
             #endregion
-            
+
             public MirTextBox(DXTextBox owner)
             {
                 Owner = owner;

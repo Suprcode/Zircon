@@ -17,7 +17,7 @@ namespace Server.Models.Monsters
         {
             if (Target.CurrentMap != CurrentMap) return false;
             if (Target.CurrentLocation == CurrentLocation) return false;
-            
+
             if (SEnvir.Now > RangeTime && (CanPvPRange || Target.Race != ObjectType.Player))
                 return Functions.InRange(CurrentLocation, Target.CurrentLocation, AttackRange);
 

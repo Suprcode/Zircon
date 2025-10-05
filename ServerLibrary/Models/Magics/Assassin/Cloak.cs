@@ -112,7 +112,7 @@ namespace Server.Models.Magics
 
         public override void MagicFinalise()
         {
-            
+
         }
     }
 }

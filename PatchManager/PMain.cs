@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -11,8 +7,6 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using Library;
 using WinSCP;
 
 namespace PatchManager
@@ -335,7 +329,7 @@ namespace PatchManager
                 Speed = e.CPS;
 
                 TotalProgress = (long)(e.OverallProgress * TotalUpload);
-                TotalProgressPercent  = (long)(e.OverallProgress * 100);
+                TotalProgressPercent = (long)(e.OverallProgress * 100);
             };
 
             session.FileTransferred += (o, e) =>

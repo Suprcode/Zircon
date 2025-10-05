@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Library;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Library;
 
 //Cleaned
 namespace Client.Controls
@@ -62,7 +62,7 @@ namespace Client.Controls
 
         public DXLabel Label { get; private set; }
         public DXImageControl Box { get; private set; }
-        
+
         public override void OnDisplayAreaChanged(Rectangle oValue, Rectangle nValue)
         {
             base.OnDisplayAreaChanged(oValue, nValue);
@@ -71,7 +71,7 @@ namespace Client.Controls
         }
 
         #endregion
-        
+
         public DXCheckBox()
         {
             Label = new DXLabel

@@ -1,8 +1,8 @@
-﻿using System;
-using DevExpress.XtraBars;
+﻿using DevExpress.XtraBars;
 using DevExpress.XtraBars.Ribbon;
 using Library;
 using Library.SystemModels;
+using System;
 
 namespace Server.Views
 {
@@ -12,7 +12,7 @@ namespace Server.Views
         {
             InitializeComponent();
 
-            NPCPageGridControl.DataSource = SMain.Session.GetCollection<NPCPage>().Binding; 
+            NPCPageGridControl.DataSource = SMain.Session.GetCollection<NPCPage>().Binding;
 
             PageLookUpEdit.DataSource = SMain.Session.GetCollection<NPCPage>().Binding;
             ItemInfoLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;

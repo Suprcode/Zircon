@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Server.Envir.Commands.Handler
 {
-    public abstract class AbstractCommandHandler<CommandType> : IValidatingCommandHandler 
+    public abstract class AbstractCommandHandler<CommandType> : IValidatingCommandHandler
         where CommandType : ICommand
     {
 

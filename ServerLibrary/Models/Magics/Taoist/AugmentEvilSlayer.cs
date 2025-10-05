@@ -7,7 +7,7 @@ namespace Server.Models.Magics
     public class AugmentEvilSlayer : MagicObject
     {
         protected override Element Element => Element.None;
-        
+
         public AugmentEvilSlayer(PlayerObject player, UserMagic magic) : base(player, magic)
         {
             //Custom Skill

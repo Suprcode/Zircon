@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
-using Library.SystemModels;
+﻿using Library;
 using Server.Envir;
+using System.Collections.Generic;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -49,7 +44,7 @@ namespace Server.Models.Monsters
                                    GetDC(),
                                    element));
             }
-            
+
             foreach (MapObject target in targets)
             {
                 if (target.Dead || target.Race != ObjectType.Player) continue;

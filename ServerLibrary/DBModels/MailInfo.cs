@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Library;
+﻿using Library;
 using MirDB;
 using Server.Envir;
+using System;
+using System.Linq;
 
 namespace Server.DBModels
 {
@@ -42,7 +39,7 @@ namespace Server.DBModels
             }
         }
         private string _Sender;
-        
+
 
         public DateTime Date
         {
@@ -118,8 +115,8 @@ namespace Server.DBModels
             }
         }
         private bool _HasItem;
-        
-        
+
+
         [Association("Mail")]
         public DBBindingList<UserItem> Items { get; set; }
 

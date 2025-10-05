@@ -1,13 +1,10 @@
 ﻿using Client.Controls;
 using Client.Envir;
-using Client.Properties;
 using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using S = Library.Network.ServerPackets;
 
 namespace Client.Scenes.Views
@@ -26,7 +23,7 @@ namespace Client.Scenes.Views
         private readonly DXImageControl _colon = null;
         private readonly int _libraryOffset = 6580;
 
-        private readonly List<ClientTimer> ActiveTimers = new ();
+        private readonly List<ClientTimer> ActiveTimers = new();
         private ClientTimer CurrentTimer = null;
 
         public TimerDialog()

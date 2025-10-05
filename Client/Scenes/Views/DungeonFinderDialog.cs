@@ -1,18 +1,16 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Envir;
+using Client.Models;
+using Client.UserModels;
+using Library;
+using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
-using Client.Controls;
-using Client.Envir;
-using Client.Models;
-using Client.UserModels;
-using Library;
-using Library.Network.ServerPackets;
-using Library.SystemModels;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views

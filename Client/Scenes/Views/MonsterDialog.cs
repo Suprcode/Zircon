@@ -1,11 +1,11 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using Client.Controls;
+﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 //Cleaned
 namespace Client.Scenes.Views
@@ -75,7 +75,7 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-        
+
         public DXImageControl AttackIcon;
 
         public DXLabel LevelLabel, NameLabel, HealthLabel, ACLabel, MRLabel, DCLabel;
@@ -116,8 +116,8 @@ namespace Client.Scenes.Views
             LevelLabel = new DXLabel
             {
                 AutoSize = false,
-                Size = new Size(30,18),
-                Location = new Point(0,0),
+                Size = new Size(30, 18),
+                Location = new Point(0, 0),
                 Border = true,
                 Parent = panel,
                 ForeColour = Color.White,
@@ -198,7 +198,7 @@ namespace Client.Scenes.Views
                 MirImage image = lib.CreateImage(5430, ImageType.Image);
 
                 if (image == null) return;
-                
+
                 PresentTexture(image.Image, this, new Rectangle(panel.DisplayArea.X, panel.DisplayArea.Y + 2, (int)(image.Width * percent), image.Height), Color.White, panel);
             };
 
@@ -213,7 +213,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Opacity = 0.6F,
                 DrawTexture = true,
-                PassThrough =  true,
+                PassThrough = true,
             };
 
             AttackIcon = new DXImageControl
@@ -221,7 +221,7 @@ namespace Client.Scenes.Views
                 Parent = panel2,
                 LibraryFile = LibraryFile.GameInter,
                 Opacity = 0.7F,
-                Location =  new Point(5,0),
+                Location = new Point(5, 0),
                 IsControl = false
 
             };
@@ -482,7 +482,7 @@ namespace Client.Scenes.Views
             else if (stats[stat] < 0)
                 label.ForeColour = Color.IndianRed;
         }
-        
+
         public void RefreshHealth()
         {
             ClientObjectData data;
@@ -790,7 +790,7 @@ namespace Client.Scenes.Views
 
                 _Expanded = false;
                 ExpandedChanged = null;
-                
+
                 if (AttackIcon != null)
                 {
                     if (!AttackIcon.IsDisposed)

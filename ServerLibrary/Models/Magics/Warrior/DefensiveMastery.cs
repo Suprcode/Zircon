@@ -1,5 +1,4 @@
 ﻿using Library;
-using Library.Network.ClientPackets;
 using Server.DBModels;
 
 namespace Server.Models.Magics

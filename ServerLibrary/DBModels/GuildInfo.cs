@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Security.Principal;
 using S = Library.Network.ServerPackets;
 
 namespace Server.DBModels
@@ -43,7 +42,7 @@ namespace Server.DBModels
             }
         }
         private int _MemberLimit;
-        
+
         public int StorageSize
         {
             get { return _StorageSize; }
@@ -208,8 +207,8 @@ namespace Server.DBModels
             }
         }
         private bool _StarterGuild;
-        
-        
+
+
 
         [Association("Conquest", true)]
         public UserConquest Conquest
@@ -280,12 +279,12 @@ namespace Server.DBModels
         [Association("Items", true)]
         public DBBindingList<UserItem> Items { get; set; }
 
-        
+
         public ClientGuildInfo ToClientInfo()
         {
             return new ClientGuildInfo
             {
-                GuildName =  GuildName,
+                GuildName = GuildName,
 
                 DailyGrowth = DailyGrowth,
                 GuildFunds = GuildFunds,
@@ -294,7 +293,7 @@ namespace Server.DBModels
 
                 MemberLimit = MemberLimit,
                 StorageLimit = StorageSize,
-                
+
                 Notice = GuildNotice,
 
                 DefaultPermission = DefaultPermission,
@@ -310,7 +309,7 @@ namespace Server.DBModels
                 Storage = Items.Select(x => x.ToClientInfo()).ToList(),
             };
         }
-        
+
         protected override void OnLoaded()
         {
             base.OnLoaded();

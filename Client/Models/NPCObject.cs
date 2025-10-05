@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Client.Controls;
+using Client.Envir;
+using Client.Scenes;
+using Library;
+using Library.SystemModels;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Client.Controls;
-using Client.Envir;
-using Client.Scenes;
-using Client.Scenes.Views;
-using Library;
-using Library.SystemModels;
 using S = Library.Network.ServerPackets;
 
 namespace Client.Models
@@ -83,7 +80,7 @@ namespace Client.Models
 
             UpdateQuests();
         }
-        
+
         public override void SetAnimation(ObjectAction action)
         {
             CurrentAnimation = MirAnimation.Standing;
@@ -177,7 +174,7 @@ namespace Client.Models
         public override void DrawBlend()
         {
             if (BodyLibrary == null) return;
-            
+
             DXManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
             DrawBody();
             DXManager.SetBlend(false);

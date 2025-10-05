@@ -11,9 +11,9 @@ namespace Server.Models.Monsters
         protected override void OnSpawned()
         {
             base.OnSpawned();
-            
+
             ActionTime = SEnvir.Now.AddSeconds(2);
-            
+
             Broadcast(new S.ObjectShow { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
         }
 
@@ -27,7 +27,7 @@ namespace Server.Models.Monsters
         {
 
             if (!Functions.InRange(CurrentLocation, attacker.CurrentLocation, 10)) return 0;
-               
+
             return base.Attacked(attacker, power, element, canReflect, ignoreShield, canCrit);
         }
 
@@ -38,7 +38,7 @@ namespace Server.Models.Monsters
             ProcessRegen();
 
             if (!CanAttack) return;
-            
+
             List<MapObject> rightTargets = GetTargets(CurrentMap, Functions.Move(CurrentLocation, MirDirection.Right, 5), 5);
             List<MapObject> leftTargets = GetTargets(CurrentMap, Functions.Move(CurrentLocation, MirDirection.Down, 5), 5);
             List<MapObject> middleTargets = GetTargets(CurrentMap, Functions.Move(CurrentLocation, MirDirection.DownRight, 5), Config.MaxViewRange);
@@ -54,9 +54,9 @@ namespace Server.Models.Monsters
                 Wave(allTargerts);
                 return;
             }
-            
+
             int total = rightTargets.Count + leftTargets.Count + middleTargets.Count;
-            
+
             int value = SEnvir.Random.Next(total);
 
             if ((value -= rightTargets.Count) < 0)
@@ -141,7 +141,7 @@ namespace Server.Models.Monsters
             foreach (MapObject ob in targets)
             {
                 int damage = GetDC();
-                
+
                 if (ob.Race == ObjectType.Player)
                 {
                     switch (((PlayerObject)ob).Class)

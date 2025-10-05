@@ -119,7 +119,7 @@ namespace Client.Controls
                 if (vol > MaxValue)
                     vol = MaxValue;
 
-                Value = (long) vol;
+                Value = (long)vol;
 
                 TextBox.Text = Value.ToString("#,##0", Thread.CurrentThread.CurrentCulture.NumberFormat);
             }

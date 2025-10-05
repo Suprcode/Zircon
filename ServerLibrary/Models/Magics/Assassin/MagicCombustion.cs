@@ -1,8 +1,5 @@
 ﻿using Library;
 using Server.DBModels;
-using Server.Envir;
-using Server.Envir.Commands.Command.Admin;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace Server.Models.Magics

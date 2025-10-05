@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using Library;
+﻿using Library;
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir;
-using static System.Collections.Specialized.BitVector32;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -114,7 +112,7 @@ namespace Server.Models
                         ob.GoldChanged();
                         break;
                     case NPCActionType.ChangeElement:
-                        UserItem weapon = ob.Equipment[(int) EquipmentSlot.Weapon];
+                        UserItem weapon = ob.Equipment[(int)EquipmentSlot.Weapon];
 
                         S.ItemStatsChanged changedResult = new S.ItemStatsChanged { GridType = GridType.Equipment, Slot = (int)EquipmentSlot.Weapon, NewStats = new Stats() };
                         changedResult.NewStats[Stat.WeaponElement] = action.IntParameter1 - weapon.Stats[Stat.WeaponElement];
@@ -126,7 +124,7 @@ namespace Server.Models
                         ob.Enqueue(changedResult);
                         break;
                     case NPCActionType.ChangeHorse:
-                        ob.Character.Account.Horse = (HorseType) action.IntParameter1;
+                        ob.Character.Account.Horse = (HorseType)action.IntParameter1;
 
                         ob.RemoveMount();
 
@@ -137,8 +135,8 @@ namespace Server.Models
                     case NPCActionType.GiveGold:
 
                         long gold = ob.Gold.Amount + action.IntParameter1;
-                        
-                        ob.Gold.Amount = (long) gold;
+
+                        ob.Gold.Amount = (long)gold;
                         ob.GoldChanged();
 
                         break;
@@ -365,7 +363,8 @@ namespace Server.Models
 
                             var item = SEnvir.GameNPCList.Binding.FirstOrDefault(x => x.Category == category && x.TypeValue == value1);
 
-                            if (item != null) {
+                            if (item != null)
+                            {
                                 values.Add(new ClientNPCValues { ID = value.ValueID, Value = item.IntValue1.ToString() });
                             }
                         }
@@ -392,7 +391,8 @@ namespace Server.Models
                                     continue;
                             }
 
-                            if (!string.IsNullOrEmpty(value2)) {
+                            if (!string.IsNullOrEmpty(value2))
+                            {
                                 values.Add(new ClientNPCValues { ID = value.ValueID, Value = value2 });
                             }
                         }
@@ -570,7 +570,7 @@ namespace Server.Models
                     case NPCCheckType.WeddingRing:
                         if (check.Operator == Operator.Equal)
                         {
-                            if (ob.Equipment[(int) EquipmentSlot.RingL] == null || (ob.Equipment[(int) EquipmentSlot.RingL].Flags & UserItemFlags.Marriage) != UserItemFlags.Marriage) return false;
+                            if (ob.Equipment[(int)EquipmentSlot.RingL] == null || (ob.Equipment[(int)EquipmentSlot.RingL].Flags & UserItemFlags.Marriage) != UserItemFlags.Marriage) return false;
                         }
                         else
                         {
@@ -617,7 +617,7 @@ namespace Server.Models
                     case NPCCheckType.RollResult:
                         {
                             if (!ob.NPCVals.TryGetValue("ROLLRESULT", out object val)) return false;
-                            if (!Compare(check.Operator, (int)val, check.IntParameter1))  return false;
+                            if (!Compare(check.Operator, (int)val, check.IntParameter1)) return false;
                         }
                         break;
                     case NPCCheckType.CheckDataList:
@@ -665,7 +665,7 @@ namespace Server.Models
 
                             var userCurrency = ob.GetCurrency(currency);
 
-                            if (nextFame == null ||nextFame.Cost > userCurrency.Amount) return false;
+                            if (nextFame == null || nextFame.Cost > userCurrency.Amount) return false;
                         }
                         break;
                 }
@@ -725,7 +725,7 @@ namespace Server.Models
 
                 NPCIndex = NPCInfo.Index,
 
-                CurrentLocation =  CurrentLocation,
+                CurrentLocation = CurrentLocation,
 
                 Direction = Direction,
             };
