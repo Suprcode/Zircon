@@ -2466,6 +2466,12 @@ namespace Library
         RagingWindStart,
 
         ChainofFireExplode,
+
+        HundredFist,
+        OffensiveBlow,
+        InfernoSword,
+        FireSword,
+
         #endregion
 
         #region Monsters

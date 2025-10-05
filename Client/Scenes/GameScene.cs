@@ -260,8 +260,6 @@ namespace Client.Scenes
 
         #endregion
 
-
-
         #region NPCID
 
         public uint NPCID

@@ -1167,6 +1167,10 @@ namespace Client.Envir
                     for (int i = 1; i <= p.Distance; i++)
                         ob.ActionQueue.Add(new ObjectAction(MirAction.Moving, p.Direction, Functions.Move(p.Location, p.Direction, i - p.Distance), 1, p.Magic));
                 }
+                else if(ob == MapObject.User)
+                {
+                    GameScene.Game.CanRun = false;
+                }
 
                 return;
             }
@@ -1655,6 +1659,8 @@ namespace Client.Envir
                         Direction = p.Direction,
                         Skip = 10
                     };
+
+                    DXSoundManager.Play(SoundIndex.HundredFist);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

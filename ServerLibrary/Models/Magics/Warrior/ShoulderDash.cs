@@ -62,13 +62,9 @@ namespace Server.Models.Magics
 
             int remainingDistance = distance - travelled;
 
-            if (remainingDistance <= 0)
+            if (remainingDistance <= 0 || !Player.Buffs.Any(x => x.Type == BuffType.Dash))
             {
-                return;
-            }
-
-            if (!Player.Buffs.Any(x => x.Type == BuffType.Dash))
-            {
+                FinalizeDash(false, Magic.Info.Magic);
                 return;
             }
 

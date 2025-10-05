@@ -936,7 +936,7 @@ namespace Client.Models
                                     Skip = 10
                                 });
 
-                                DXSoundManager.Play(SoundIndex.FlamingSword);
+                                DXSoundManager.Play(SoundIndex.OffensiveBlow);
                             }
                             break;
                     }
