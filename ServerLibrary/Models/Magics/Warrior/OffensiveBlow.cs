@@ -16,7 +16,7 @@ namespace Server.Models.Magics.Warrior
 
         public OffensiveBlow(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO - Needs sound
+
         }
 
         public override void Process()
@@ -76,6 +76,22 @@ namespace Server.Models.Magics.Warrior
         {
             if (target != null && TryPush(target, Magic.Level + 3))
             {
+                target.ApplyPoison(new Poison
+                {
+                    Type = PoisonType.Paralysis,
+                    TickCount = 1,
+                    TickFrequency = TimeSpan.FromSeconds(3),
+                    Owner = Player,
+                });
+
+                target.ApplyPoison(new Poison
+                {
+                    Type = PoisonType.Silenced,
+                    TickCount = 1,
+                    TickFrequency = TimeSpan.FromSeconds(3),
+                    Owner = Player,
+                });
+
                 base.AttackComplete(target);
             }
         }

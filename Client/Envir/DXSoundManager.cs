@@ -330,7 +330,7 @@ namespace Client.Envir
 
             [SoundIndex.HundredFist] = new DXSound(SoundPath + @"37380.wav", SoundType.Magic),
             [SoundIndex.OffensiveBlow] = new DXSound(SoundPath + @"37400.wav", SoundType.Magic),
-            [SoundIndex.InfernoSword] = new DXSound(SoundPath + @"40300.wav", SoundType.Magic),
+            [SoundIndex.TaecheonSword] = new DXSound(SoundPath + @"40300.wav", SoundType.Magic),
             [SoundIndex.FireSword] = new DXSound(SoundPath + @"40310.wav", SoundType.Magic),
 
             #endregion

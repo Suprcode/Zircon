@@ -224,6 +224,7 @@ namespace Library
                     return MirAnimation.Combat1;
 
                 case MagicType.Interchange:
+                case MagicType.TaecheonSword:
 
                 case MagicType.Repulsion:
                 case MagicType.ElectricShock:
@@ -286,6 +287,9 @@ namespace Library
                 case MagicType.ThunderKick:
                 case MagicType.CombatKick:
                     return MirAnimation.Combat7;
+
+                case MagicType.HundredFist:
+                    return MirAnimation.Combat8;
 
                 case MagicType.Cloak:
                 case MagicType.WraithGrip:
@@ -439,6 +443,27 @@ namespace Library
 
             return source.Y < dest.Y ? MirDirection.Down : MirDirection.Up;
         }
+
+        public static bool IsStraightEightDirection(Point source, Point dest)
+        {
+            int dx = dest.X - source.X;
+            int dy = dest.Y - source.Y;
+
+            // Same point (no direction)
+            if (dx == 0 && dy == 0)
+                return false;
+
+            // Cardinal directions
+            if (dx == 0 || dy == 0)
+                return true;
+
+            // Diagonal directions
+            if (Math.Abs(dx) == Math.Abs(dy))
+                return true;
+
+            return false;
+        }
+
         public static double Distance(PointF p1, PointF p2)
         {
             double x = p2.X - p1.X;

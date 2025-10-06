@@ -620,7 +620,7 @@ namespace Library
         Shuriken = 132,
         HundredFist = 133,
         OffensiveBlow = 134,
-        InfernoSword = 135,
+        TaecheonSword = 135,
         FireSword = 136,
 
         FireBall = 201,
@@ -1415,6 +1415,7 @@ namespace Library
 
         FireWallSmoke,
 
+        HundredFist,
         HundredFistStruck
     }
 
@@ -2469,7 +2470,7 @@ namespace Library
 
         HundredFist,
         OffensiveBlow,
-        InfernoSword,
+        TaecheonSword,
         FireSword,
 
         #endregion

@@ -1,7 +1,7 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
-using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using S = Library.Network.ServerPackets;
@@ -11,21 +11,33 @@ namespace Server.Models.Magics.Warrior
     [MagicType(MagicType.HundredFist)]
     public class HundredFist : MagicObject
     {
-        public override bool UpdateCombatTime => false;
         protected override Element Element => Element.None;
 
         public HundredFist(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO - Needs sound
+
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
         {
             var response = new MagicCast
             {
-                Ob = target,
-                Return = true
+                Cast = true,
+                Ob = target
             };
+
+            if (!Player.CanAttackTarget(target))
+            {
+                response.Ob = null;
+                return response;
+            }
+
+            if (!Functions.IsStraightEightDirection(Player.CurrentLocation, target.CurrentLocation))
+            {
+                Player.Connection.ReceiveChatWithObservers(con => con.Language.DashFailed, MessageType.System);
+                response.Ob = null;
+                return response;
+            }
 
             //TODO - change to CanMove check?
             if ((Player.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip)
@@ -33,15 +45,13 @@ namespace Server.Models.Magics.Warrior
                 return response;
             }
 
-            Player.Direction = direction;
+            var newDirection = Functions.DirectionFromPoint(Player.CurrentLocation, target.CurrentLocation);
 
-            int distance = Magic.GetPower();
+            response.Direction = newDirection;
 
-            var buffTime = TimeSpan.FromMilliseconds((distance + 1) * 300);
+            CurrentMap.Broadcast(new S.MapEffect { Location = Player.CurrentLocation, Direction = newDirection, Effect = Effect.HundredFist });
 
-            Player.BuffAdd(BuffType.Dash, buffTime, new(), false, false, TimeSpan.Zero, true);
-
-            ActionList.Add(new DelayedAction(SEnvir.Now, ActionType.DelayMagic, Type, distance, 0, false));
+            ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(300), ActionType.DelayMagic, Type, target, newDirection));
 
             MagicConsume();
             MagicCooldown();
@@ -51,66 +61,45 @@ namespace Server.Models.Magics.Warrior
 
         public override void MagicComplete(params object[] data)
         {
-            int distance = (int)data[1];
-            int travelled = (int)data[2];
-            bool foundObject = (bool)data[3];
+            MapObject target = (MapObject)data[1];
+            MirDirection dir = (MirDirection)data[2];
 
-            if (!foundObject)
-            {
-                FreeRun(distance, travelled);
-            }
-            else
-            {
-                TargetPush(travelled);
-            }
-        }
+            if (target == null || target.Dead) return;
 
-        private void FreeRun(int distance, int travelled)
-        {
-            var remaining = distance - travelled;
+            var oppositeDirection = Functions.ShiftDirection(dir, 4);
+            var nextToTarget = Functions.Move(target.CurrentLocation, oppositeDirection, 1);
 
-            if (remaining < 0)
-            {
-                return;
-            }
+            var travelled = Functions.Distance(Player.CurrentLocation, nextToTarget);
 
-            if (!Player.Buffs.Any(x => x.Type == BuffType.Dash))
+            Cell cell = CurrentMap.GetCell(nextToTarget);
+
+            if (cell == null) return;
+
+            Player.CurrentCell = cell.GetMovement(Player);
+            Player.Direction = dir;
+
+            Player.RemoveAllObjects();
+            Player.AddAllObjects();
+
+            Player.Broadcast(new S.ObjectTurn
             {
-                return;
-            }
+                ObjectID = Player.ObjectID,
+                Direction = Player.Direction,
+                Location = Player.CurrentLocation,
+            });
 
             Cell nextCell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, 1));
-            if (nextCell == null)
-            {
-                return;
-            }
 
-            if (nextCell.Objects == null)
-            {
-                if (remaining <= 0)
-                {
-                    return;
-                }
+            if (nextCell == null) return;
 
-                ++travelled;
+            CurrentMap.Broadcast(new S.MapEffect { Location = nextCell.Location, Direction = oppositeDirection, Effect = Effect.HundredFistStruck });
 
-                var delay = SEnvir.Now.AddMilliseconds(300);
+            TargetPush(travelled, nextCell);
 
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, distance, travelled, false));
-
-                FinalizeDash(true);
-            }
-            else
-            {
-                Player.BuffRemove(BuffType.Dash);
-
-                ActionList.Add(new DelayedAction(SEnvir.Now, ActionType.DelayMagic, Type, distance, travelled, true));
-
-                FinalizeDash(false);
-            }
+            Player.ActionTime = SEnvir.Now.AddMilliseconds(300);
         }
 
-        private void TargetPush(int travelled)
+        private void TargetPush(int travelled, Cell nextCell)
         {
             var pushDistance = travelled * 2;
 
@@ -119,16 +108,6 @@ namespace Server.Models.Magics.Warrior
                 Player.Connection.ReceiveChatWithObservers(con => con.Language.DashFailed, MessageType.System);
                 return;
             }
-
-            Cell nextCell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, 1));
-            if (nextCell == null)
-            {
-                return;
-            }
-
-            int pushCount = 0;
-
-            MapObject target = null;
 
             if (nextCell.Objects != null)
             {
@@ -142,25 +121,27 @@ namespace Server.Models.Magics.Warrior
                         break;
                     }
 
-                    if (TryPush(ob, pushDistance))
+                    var pushed = TryPush(ob, pushDistance);
+
+                    // Pushed against another object causes damage
+                    if (pushed > 0 && pushed < pushDistance)
                     {
-                        var newDir = Functions.ShiftDirection(Player.Direction, 4);
-                        var newloc = Functions.Move(nextCell.Location, Direction, 1);
+                        var damage = Player.MagicAttack(new List<MagicType> { Type }, ob, extra: pushed);
 
-                        CurrentMap.Broadcast(nextCell.Location, new S.MapEffect { Location = newloc, Direction = newDir, Effect = Effect.HundredFistStruck });
-
-                        target = ob;
-                        pushCount++;
-                        Player.LevelMagic(Magic);
-                        continue;
+                        if (damage > 0)
+                        {
+                            Player.LevelMagic(Magic);
+                        }
                     }
                 }
-
-                if (pushCount == 0)
-                {
-                    //Player.Connection.ReceiveChatWithObservers(con => con.Language.DashFailed, MessageType.System);
-                }
             }
+        }
+
+        public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
+        {
+            power += Magic.GetPower() + (Player.GetDC() * extra);
+
+            return power;
         }
 
         private bool CanPushTarget(UserMagic magic, MapObject ob)
@@ -176,32 +157,9 @@ namespace Server.Models.Magics.Warrior
             return true;
         }
 
-        private bool TryPush(MapObject ob, int distance)
+        private int TryPush(MapObject ob, int distance)
         {
-            return ob.Pushed(Direction, distance) != 0;
-        }
-
-        private void FinalizeDash(bool travel)
-        {
-            int distance = travel ? 1 : 0;
-
-            // Move to last travelled cell
-            Cell cell = CurrentMap.GetCell(Functions.Move(CurrentLocation, Direction, distance));
-            Player.CurrentCell = cell.GetMovement(Player);
-
-            Player.RemoveAllObjects();
-            Player.AddAllObjects();
-
-            Player.Broadcast(new S.ObjectDash
-            {
-                ObjectID = Player.ObjectID,
-                Direction = Direction,
-                Location = CurrentLocation,
-                Distance = distance,
-                Magic = Magic.Info.Magic
-            });
-
-            Player.ActionTime = SEnvir.Now.AddMilliseconds(300);
+            return ob.Pushed(Direction, distance);
         }
     }
 }

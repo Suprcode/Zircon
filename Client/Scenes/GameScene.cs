@@ -3129,15 +3129,6 @@ namespace Client.Scenes
                     CEnvir.Enqueue(new C.Magic { Direction = direction, Action = MirAction.Spell, Type = magic.Info.Magic });
                     return;
 
-                case MagicType.HundredFist:
-                    if (CEnvir.Now < User.ServerTime) return;
-                    if ((User.Poison & PoisonType.WraithGrip) == PoisonType.WraithGrip) return;
-
-                    User.ServerTime = CEnvir.Now.AddSeconds(5);
-                    User.NextMagicTime = CEnvir.Now + Globals.MagicDelay;
-                    CEnvir.Enqueue(new C.Magic { Direction = direction, Action = MirAction.Spell, Type = magic.Info.Magic });
-                    return;
-
                 case MagicType.DanceOfSwallow:
                     if (CEnvir.Now < User.ServerTime) return;
                     if (CanAttackTarget(MouseObject))
@@ -3163,6 +3154,7 @@ namespace Client.Scenes
                     return;
 
                 case MagicType.ElementalSwords:
+                case MagicType.TaecheonSword:
 
                 case MagicType.FireBall:
                 case MagicType.IceBolt:
@@ -3202,6 +3194,23 @@ namespace Client.Scenes
                             MapObject.MagicObject = null;
                     }
                     break;
+                case MagicType.HundredFist:
+                    if (CanAttackTarget(MagicObject))
+                        target = MagicObject;
+                    if (CanAttackTarget(MouseObject))
+                    {
+                        target = MouseObject;
+
+                        if (MouseObject.Race == ObjectType.Monster && ((MonsterObject)MouseObject).MonsterInfo.AI >= 0)
+                            MapObject.MagicObject = target;
+                        else
+                            MapObject.MagicObject = null;
+                    }
+                    if (target == null || !Functions.IsStraightEightDirection(User.CurrentLocation, target.CurrentLocation))
+                        return;
+
+                    break;
+
                 case MagicType.WraithGrip:
                 case MagicType.HellFire:
                 case MagicType.Abyss:

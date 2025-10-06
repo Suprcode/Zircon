@@ -1651,8 +1651,8 @@ namespace Client.Envir
                         DrawType = DrawType.Floor
                     };
                     break;
-                case Effect.HundredFistStruck:
-                    new MirEffect(2200, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
+                case Effect.HundredFist:
+                    new MirEffect(2100, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
                     {
                         Blend = true,
                         MapTarget = p.Location,
@@ -1661,6 +1661,15 @@ namespace Client.Envir
                     };
 
                     DXSoundManager.Play(SoundIndex.HundredFist);
+                    break;
+                case Effect.HundredFistStruck:
+                    new MirEffect(2200, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
+                    {
+                        Blend = true,
+                        MapTarget = p.Location,
+                        Direction = p.Direction,
+                        Skip = 10
+                    };
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

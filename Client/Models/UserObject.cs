@@ -185,7 +185,7 @@ namespace Client.Models
 
         public int BagWeight, WearWeight, HandWeight;
         public float ShakeScreenCount;
-        public Point ShakeScreenOffset;
+        public Point _PreviousShakeScreenOffset, ShakeScreenOffset;
 
         public bool InSafeZone
         {
@@ -686,12 +686,7 @@ namespace Client.Models
                     DrawColour = Color.CornflowerBlue;
             }
 
-            ShakeScreenOffset = new Point(0, (int)(Math.Sin(ShakeScreenCount) * 10));
-            if (ShakeScreenCount > 0)
-            {
-                ShakeScreenCount -= 1F;
-                GameScene.Game.MapControl.FLayer.TextureValid = false;
-            }
+            ProcessScreenShake();
 
             TimeSpan ticks = CEnvir.Now - BuffTime;
             BuffTime = CEnvir.Now;
@@ -700,6 +695,19 @@ namespace Client.Models
             {
                 if (buff.Pause || buff.RemainingTime == TimeSpan.MaxValue) continue;
                 buff.RemainingTime = Functions.Max(TimeSpan.Zero, buff.RemainingTime - ticks);
+            }
+        }
+
+        private void ProcessScreenShake()
+        {
+            _PreviousShakeScreenOffset = ShakeScreenOffset;
+            ShakeScreenOffset = new Point(0, (int)(Math.Sin(ShakeScreenCount) * 10));
+            if (_PreviousShakeScreenOffset != ShakeScreenOffset)
+            {
+                if (ShakeScreenCount > 0)
+                    ShakeScreenCount -= 1F;
+
+                GameScene.Game.MapControl.FLayer.TextureValid = false;
             }
         }
 

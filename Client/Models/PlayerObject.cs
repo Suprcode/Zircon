@@ -595,7 +595,7 @@ namespace Client.Models
                     if (Horse != HorseType.None)
                         animation = MirAnimation.HorseWalking;
 
-                    if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault || (MagicType)action.Extra[1] == MagicType.HundredFist)
+                    if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault)
                         animation = MirAnimation.Combat8;
                     else if (VisibleBuffs.Contains(BuffType.Cloak))
                         animation = VisibleBuffs.Contains(BuffType.GhostWalk) ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow;

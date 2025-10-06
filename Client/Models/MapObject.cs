@@ -345,7 +345,7 @@ namespace Client.Models
             DrawX *= MapControl.CellWidth;
             DrawY *= MapControl.CellHeight;
 
-            if (this != User)
+            //if (this != User)
             {
                 DrawX += MovingOffSet.X - User.MovingOffSet.X - User.ShakeScreenOffset.X;
                 DrawY += MovingOffSet.Y - User.MovingOffSet.Y - User.ShakeScreenOffset.Y;
@@ -777,6 +777,30 @@ namespace Client.Models
                             //if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
                             //    DXSoundManager.Play(SoundIndex.ElementalSwordsEnd);
 
+                            break;
+
+                        #endregion
+
+                        #region Taecheon Sword
+
+                        case MagicType.TaecheonSword:
+                            foreach (Point point in MagicLocations)
+                            {
+                                spell = new MirEffect(5000, 31, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 50, Globals.FireColour)
+                                {
+                                    Blend = true,
+                                    MapTarget = point
+                                };
+                                spell.FrameIndexAction = () =>
+                                {
+                                    if (spell.FrameIndex == 6)
+                                        GameScene.Game.User.ShakeScreenCount = 20F;
+                                };
+                                spell.Process();
+                            }
+
+                            if (MagicLocations.Count > 0)
+                                DXSoundManager.Play(SoundIndex.TaecheonSword);
                             break;
 
                         #endregion
@@ -3210,7 +3234,6 @@ namespace Client.Models
                     Point location;
                     switch (MagicType)
                     {
-
                         #region Warrior
 
                         #region Interchange
