@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using S = Library.Network.ServerPackets;
 
 
@@ -174,8 +175,7 @@ namespace Server.Models
                     break;
                 case SpellEffect.Tempest:
                     {
-                        PlayerObject player = Owner as PlayerObject;
-                        if (player == null || !player.CanAttackTarget(ob)) return;
+                        if (Owner is not PlayerObject player || !player.CanAttackTarget(ob)) return;
 
                         int damage = player.MagicAttack(new List<MagicType> { MagicType.Tempest }, ob, true);
 
@@ -188,6 +188,20 @@ namespace Server.Models
                                 spell.TickCount--;
                             }
                         }
+                    }
+                    break;
+                case SpellEffect.IceAura:
+                    {
+                        if (Owner is not PlayerObject player || !player.CanAttackTarget(ob)) return;
+
+                        ob.ApplyPoison(new Poison
+                        {
+                            Owner = player,
+                            Value = (3 + Magic.Level) * 2,
+                            TickCount = TickCount,
+                            TickFrequency = TickFrequency,
+                            Type = PoisonType.Paralysis,
+                        });
                     }
                     break;
                 case SpellEffect.DarkSoulPrison:
@@ -252,6 +266,9 @@ namespace Server.Models
             {
                 case SpellEffect.FireWall:
                     CurrentMap.Broadcast(CurrentLocation, new S.MapEffect { Location = CurrentLocation, Effect = Library.Effect.FireWallSmoke });
+                    break;
+                case SpellEffect.IceAura:
+                    CurrentMap.Broadcast(CurrentLocation, new S.MapEffect { Location = CurrentLocation, Effect = Library.Effect.IceAuraEnd });
                     break;
             }
         }

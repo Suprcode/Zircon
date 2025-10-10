@@ -659,12 +659,16 @@ namespace Library
         Burning = 234,
         Shocked = 235,
         LightningStrike = 236,
-        MirrorImage = 237,//NOT CODED
+        MirrorImage = 237,
         IceRain = 238,
         FrostBite = 239,
         Asteroid = 240,
         Storm = 241,//NOT CODED
         Tornado = 242,//NOT CODED
+        IceAura = 243,
+        IceDragon = 244,
+        IceBreaker = 245,
+        FrozenDragon = 246,
 
         Heal = 300,
         SpiritSword = 301,
@@ -1416,7 +1420,9 @@ namespace Library
         FireWallSmoke,
 
         HundredFist,
-        HundredFistStruck
+        HundredFistStruck,
+
+        IceAuraEnd
     }
 
     [Flags]
@@ -1449,6 +1455,7 @@ namespace Library
 
         FireWall,
         Tempest,
+        IceAura,
 
         TrapOctagon,
         DarkSoulPrison,
@@ -2470,8 +2477,16 @@ namespace Library
 
         HundredFist,
         OffensiveBlow,
+
+        IceAuraTravel,
+        IceDragonTravel,
+        IceDragonBreak,
+
         TaecheonSword,
         FireSword,
+
+        IceBreaker,
+        FrozenDragon,
 
         #endregion
 

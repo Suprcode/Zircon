@@ -1,18 +1,19 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Server.Models.Magics.Warrior
+namespace Server.Models.Magics.Wizard
 {
-    [MagicType(MagicType.TaecheonSword)]
-    public class TaecheonSword : MagicObject
+    [MagicType(MagicType.FrozenDragon)]
+    public class FrozenDragon : MagicObject
     {
-        protected override Element Element => Element.Fire;
+        protected override Element Element => Element.Ice;
+        protected override int Slow => 2;
+        protected override int SlowLevel => 5;
 
-        public TaecheonSword(PlayerObject player, UserMagic magic) : base(player, magic)
+        public FrozenDragon(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
         }
@@ -25,14 +26,19 @@ namespace Server.Models.Magics.Warrior
             };
 
             response.Locations.Add(Player.CurrentLocation);
+
             var cells = CurrentMap.GetCells(Player.CurrentLocation, 0, 2);
 
-            var delay = SEnvir.Now.AddMilliseconds(1500);
-
-            foreach (Cell cell in cells) 
+            for (int i = 1; i <= 2; i++)
             {
-                var distanceFromCentre = Functions.Distance(location, cell.Location);
-                ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell, distanceFromCentre));
+                foreach (Cell cell in cells)
+                {
+                    var distance = Functions.Distance(Player.CurrentLocation, cell.Location);
+
+                    var delay = SEnvir.Now.AddMilliseconds(500 + (500 * distance * i));
+
+                    Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
+                }
             }
 
             return response;
@@ -41,7 +47,6 @@ namespace Server.Models.Magics.Warrior
         public override void MagicComplete(params object[] data)
         {
             Cell cell = (Cell)data[1];
-            int distanceFromCentre = (int)data[2];
 
             if (cell?.Objects == null) return;
 
@@ -51,15 +56,13 @@ namespace Server.Models.Magics.Warrior
                 MapObject ob = cell.Objects[i];
                 if (!Player.CanAttackTarget(ob)) continue;
 
-                var damage = Player.MagicAttack(new List<MagicType> { Type }, ob, extra: distanceFromCentre);
+                Player.MagicAttack(new List<MagicType> { Type }, ob);
             }
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
-            var multiplier = Math.Max(0, 4 - extra);
-
-            power += Magic.GetPower() + (Player.GetDC() * multiplier);
+            power += Magic.GetPower() + Player.GetMC();
 
             return power;
         }

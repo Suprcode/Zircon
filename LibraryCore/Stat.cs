@@ -230,7 +230,14 @@ namespace Library
                     if (this[Stat.MinMC] != this[Stat.MinSC] || this[Stat.MaxMC] != this[Stat.MaxSC])
                         return description.Title + ": " + string.Format(description.Format, this[description.MinStat], this[stat]);
 
-                    if (stat != Stat.MaxSC) return null;
+                    if (this[Stat.MaxSC] != 0)
+                    {
+                        if (stat != Stat.MaxSC) return null;
+                    }
+                    else
+                    {
+                        if (stat != Stat.MinSC) return null;
+                    }
 
                     return "Spell Power: " + string.Format(description.Format, this[description.MinStat], this[stat]);
                 case StatType.AttackElement:

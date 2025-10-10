@@ -3154,7 +3154,6 @@ namespace Client.Scenes
                     return;
 
                 case MagicType.ElementalSwords:
-                case MagicType.TaecheonSword:
 
                 case MagicType.FireBall:
                 case MagicType.IceBolt:
@@ -3170,6 +3169,7 @@ namespace Client.Scenes
                 case MagicType.ExpelUndead:
                 case MagicType.LightningStrike:
                 case MagicType.IceRain:
+                case MagicType.IceDragon:
 
                 case MagicType.PoisonDust:
                 case MagicType.ExplosiveTalisman:
@@ -3305,6 +3305,8 @@ namespace Client.Scenes
                     break;
                 case MagicType.SeismicSlam:
                 case MagicType.CrushingWave:
+                case MagicType.TaecheonSword:
+                case MagicType.FireSword:
 
                 case MagicType.Repulsion:
                 case MagicType.ScortchedEarth:
@@ -3316,6 +3318,9 @@ namespace Client.Scenes
                 case MagicType.ThunderStrike:
                 case MagicType.MirrorImage:
                 case MagicType.ElementalHurricane:
+                case MagicType.IceAura:
+                case MagicType.IceBreaker:
+                case MagicType.FrozenDragon:
 
                 case MagicType.Invisibility:
                 case MagicType.CombatKick:

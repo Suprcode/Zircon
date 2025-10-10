@@ -805,6 +805,24 @@ namespace Client.Models
 
                         #endregion
 
+                        #region Fire Sword
+
+                        case MagicType.FireSword:
+                            foreach (Point point in MagicLocations)
+                            {
+                                spell = new MirEffect(5100, 39, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 35, Globals.FireColour)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                };
+                                spell.Process();
+                            }
+
+                            DXSoundManager.Play(SoundIndex.FireSword);
+                            break;
+
+                        #endregion
+
                         #endregion
 
                         #region Wizard
@@ -1468,8 +1486,6 @@ namespace Client.Models
 
                         #endregion
 
-                        //Mirror Image
-
                         #region Lightning Strike
 
                         case MagicType.LightningStrike:
@@ -1544,6 +1560,131 @@ namespace Client.Models
                                 delay += 200;
                             }
 
+                            break;
+
+                        #endregion
+
+                        #region Ice Aura
+
+                        case MagicType.IceAura:
+                            foreach (Point point in MagicLocations)
+                            {
+                                Effects.Add(spell = new MirProjectile(2500, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 35, 35, Globals.IceColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                    Has16Directions = false
+                                });
+                                spell.Process();
+                            }
+
+                            DXSoundManager.Play(SoundIndex.IceAuraTravel);
+
+                            break;
+
+                        #endregion
+
+                        #region Ice Dragon
+
+                        case MagicType.IceDragon:
+
+                            foreach (Point point in MagicLocations)
+                            {
+                                MirProjectile spellEffect;
+                                Effects.Add(spell = new MirProjectile(2800, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 35, 35, Globals.IceColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                    Direction = Direction,
+                                    Skip = 10,
+                                    Has16Directions = false
+                                });
+                                Effects.Add(spellEffect = new MirProjectile(2900, 6, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 35, 35, Globals.IceColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                    Direction = Direction,
+                                    Skip = 10,
+                                    Has16Directions = false
+                                });
+                                spell.Process();
+                                spellEffect.Process();
+                            }
+
+                            foreach (MapObject attackTarget in AttackTargets)
+                            {
+                                MirProjectile spellEffect;
+                                Effects.Add(spell = new MirProjectile(2800, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx5, 35, 35, Globals.IceColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Skip = 10,
+                                    Has16Directions = false,
+                                });
+                                spell.Process();
+                                Effects.Add(spellEffect = new MirProjectile(2900, 6, TimeSpan.FromMilliseconds(150), LibraryFile.MagicEx5, 35, 35, Globals.IceColour, CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Direction = Direction,
+                                    Skip = 10,
+                                    Has16Directions = false
+                                });
+                                spellEffect.Process();
+
+                                spell.CompleteAction += () =>
+                                {
+                                    attackTarget.Effects.Add(spell = new MirEffect(3000, 12, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 35, Globals.IceColour)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget,
+                                    });
+                                    spell.Process();
+
+                                    DXSoundManager.Play(SoundIndex.IceDragonBreak);
+                                };
+                                spell.Process();
+                            }
+
+                            if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
+                                DXSoundManager.Play(SoundIndex.IceDragonTravel);
+
+                            break;
+
+                        #endregion
+
+                        #region Ice Breaker
+
+                        case MagicType.IceBreaker:
+                            foreach (Point point in MagicLocations)
+                            {
+                                spell = new MirEffect(5200, 37, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 35, Globals.IceColour)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                };
+                                spell.Process();
+                            }
+
+                            DXSoundManager.Play(SoundIndex.IceBreaker);
+                            break;
+
+                        #endregion
+
+                        #region Frozen Dragon
+
+                        case MagicType.FrozenDragon:
+                            foreach (Point point in MagicLocations)
+                            {
+                                spell = new MirEffect(5300, 41, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 35, Globals.IceColour)
+                                {
+                                    Blend = true,
+                                    MapTarget = point,
+                                };
+                                spell.Process();
+                            }
+
+                            DXSoundManager.Play(SoundIndex.FrozenDragon);
                             break;
 
                         #endregion
@@ -2506,14 +2647,31 @@ namespace Client.Models
 
                         case MagicType.Chain:
 
+                            MapObject primaryTarget = null;
+                            if (AttackTargets.Count > 1)
+                            {
+                                primaryTarget = AttackTargets[0];
+                            }
+
                             foreach (MapObject attackTarget in AttackTargets)
                             {
                                 spell = new MirEffect(20, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 50, 50, Globals.NoneColour)
                                 {
                                     Blend = true,
-                                    Target = attackTarget,
+                                    Target = attackTarget
                                 };
                                 spell.Process();
+
+                                if (primaryTarget != null && attackTarget != primaryTarget)
+                                {
+                                    var chain = new MirChainEffect(primaryTarget, attackTarget, LibraryFile.MagicEx7, 80)
+                                    {
+                                        Blend = true,
+                                        Target = attackTarget,
+                                        StartTime = CEnvir.Now.AddMilliseconds(700)
+                                    };
+                                    chain.Process();
+                                }
                             }
 
                             //if (AttackTargets.Count > 0)
@@ -3415,9 +3573,11 @@ namespace Client.Models
 
                         #endregion
 
-                        #region Ice Bolt
+                        #region Ice Bolt & IceBolt & Ice Dragon
 
                         case MagicType.IceBolt:
+                        case MagicType.IceAura:
+                        case MagicType.IceDragon:
                             Effects.Add(spell = new MirEffect(2620, 6, TimeSpan.FromMilliseconds(80), LibraryFile.Magic, 10, 35, Globals.IceColour)
                             {
                                 Blend = true,
@@ -5458,12 +5618,20 @@ namespace Client.Models
                     break;
                 case MagicEffect.Chain:
                     {
-                        effects.Add(new MirEffect(27, 4, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 40, 40, Globals.NoneColour)
+                        MirEffect chain = null;
+
+                        effects.Add(chain = new MirEffect(27, 4, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx7, 40, 40, Globals.NoneColour)
                         {
                             Blend = true,
                             Target = this,
                             Loop = true,
                         });
+
+                        foreach (MirChainEffect chainEffect in GameScene.Game.MapControl.Effects.OfType<MirChainEffect>().Where(x => x.Target == this))
+                        {
+                            chainEffect.SetOwner(chain);
+                            effects.Add(chainEffect);
+                        }
                     }
                     break;
                 case MagicEffect.Hemorrhage:

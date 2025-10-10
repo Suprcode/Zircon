@@ -1671,6 +1671,14 @@ namespace Client.Envir
                         Skip = 10
                     };
                     break;
+                case Effect.IceAuraEnd:
+                    new MirEffect(2700, 11, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 0, 0, Globals.NoneColour)
+                    {
+                        Blend = true,
+                        MapTarget = p.Location
+                    };
+                    DXSoundManager.Play(SoundIndex.GreaterIceBoltEnd);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -1878,6 +1886,8 @@ namespace Client.Envir
             MapObject.User.Level = p.Level;
             MapObject.User.Experience = p.Experience;
             MapObject.User.MaxExperience = p.MaxExperience;
+
+            GameScene.Game.CharacterBox.UpdateDiscipline();
 
             GameScene.Game.ReceiveChat(CEnvir.Language.LevelIncreased, MessageType.System);
         }

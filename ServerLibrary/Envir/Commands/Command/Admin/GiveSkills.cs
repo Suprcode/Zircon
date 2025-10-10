@@ -24,7 +24,7 @@ namespace Server.Envir.Commands.Command.Admin
             UserMagic uMagic;
             foreach (MagicInfo mInfo in SEnvir.MagicInfoList.Binding)
             {
-                if (mInfo.NeedLevel1 > player.Level || mInfo.Class != player.Class || mInfo.School == MagicSchool.None)
+                if (mInfo.NeedLevel1 > player.Level || mInfo.Class != player.Class || mInfo.School == MagicSchool.None || mInfo.School == MagicSchool.Discipline)
                     continue;
 
                 if (!player.GetMagic(mInfo.Magic, out MagicObject magicObject))

@@ -212,6 +212,13 @@ namespace Server.Models
             return delay;
         }
 
+        protected DateTime GetDelayFromDistance(int start, Cell cell)
+        {
+            var delay = SEnvir.Now.AddMilliseconds(start + Functions.Distance(Player.CurrentLocation, cell.Location) * 48);
+
+            return delay;
+        }
+
         public virtual int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
             return power;

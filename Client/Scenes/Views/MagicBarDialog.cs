@@ -47,13 +47,13 @@ namespace Client.Scenes.Views
         public DXButton UpButton, DownButton;
         public DXLabel SetLabel;
 
+        Dictionary<SpellKey, DXImageControl> IconBorders = new Dictionary<SpellKey, DXImageControl>();
         Dictionary<SpellKey, DXImageControl> Icons = new Dictionary<SpellKey, DXImageControl>();
         Dictionary<SpellKey, DXLabel> Cooldowns = new Dictionary<SpellKey, DXLabel>();
 
         public override WindowType Type => WindowType.MagicBarBox;
         public override bool CustomSize => false;
         public override bool AutomaticVisibility => true;
-
 
         public MagicBarDialog()
         {
@@ -66,327 +66,61 @@ namespace Client.Scenes.Views
             CloseButton.Visible = false;
             Opacity = 0.6F;
 
+            int iconSpacing = Config.ShowMagicBarFrames ? 49 : 37;
+            int rowSpacing = iconSpacing + 5;
+            int groupSpacing = 5;
 
-            SetClientSize(new Size(37 * 12 + 15 + 25, 37));
+            SetClientSize(new Size(iconSpacing * 12 + 15 + 25, iconSpacing - 2));
 
-            int x = ClientArea.X;
-            Icons[SpellKey.Spell01] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell02] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 37, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell03] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 74, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell04] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 111, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
+            // Define how many icons per row
+            const int IconsPerRow = 12;
 
-            x += 5;
-            Icons[SpellKey.Spell05] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 148, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell06] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 185, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell07] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 222, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell08] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 259, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
+            int startX = ClientArea.X;
+            int startY = ClientArea.Y;
 
-            x += 5;
-            Icons[SpellKey.Spell09] = new DXImageControl
+            for (int i = 0; i < 24; i++)
             {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 296, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell10] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 333, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell11] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 370, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
-            Icons[SpellKey.Spell12] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 407, ClientArea.Y),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F
-            };
+                SpellKey key = (SpellKey)Enum.Parse(typeof(SpellKey), $"Spell{(i + 1):00}");
 
-            x = ClientArea.X;
-            Icons[SpellKey.Spell13] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell14] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 37, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell15] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 74, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell16] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 111, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
+                int row = i / IconsPerRow;
 
-            x += 5;
-            Icons[SpellKey.Spell17] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 148, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell18] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 185, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell19] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 222, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell20] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 259, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            x += 5;
+                int col = i % IconsPerRow;
 
-            Icons[SpellKey.Spell21] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 296, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell22] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 333, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell23] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 370, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
-            Icons[SpellKey.Spell24] = new DXImageControl
-            {
-                Parent = this,
-                LibraryFile = LibraryFile.MagicIcon,
-                Location = new Point(x + 407, ClientArea.Y + 37 + 5),
-                DrawTexture = true,
-                BackColour = Color.FromArgb(20, 20, 20),
-                Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
-                Size = new Size(36, 36),
-                Opacity = 0.6F,
-                Visible = false
-            };
+                int xOffset = col * iconSpacing + (col / 4) * groupSpacing;
 
+                int yOffset = row * rowSpacing;
+
+                bool isVisible = i < 12;
+
+                IconBorders[key] = new DXImageControl
+                {
+                    Parent = this,
+                    LibraryFile = LibraryFile.GameInter2,
+                    Location = new Point(startX + xOffset, startY + yOffset),
+                    Size = Config.ShowMagicBarFrames ? new Size(48, 46) : new Size(36, 36),
+                    Visible = isVisible,
+                    BackColour = Color.FromArgb(20, 20, 20),
+                    Border = true,
+                    BorderColour = Color.FromArgb(198, 166, 99),
+                };
+
+                Icons[key] = new DXImageControl
+                {
+                    Parent = IconBorders[key],
+                    LibraryFile = LibraryFile.MagicIcon,
+                    Location = Config.ShowMagicBarFrames ? new Point(6, 5) : new Point(0, 0),
+                    DrawTexture = true,
+                    Border = false,
+                    Size = new Size(36, 36),
+                    Opacity = 0.6F,
+                    Visible = true
+                };
+            }
             int count = 1;
             foreach (KeyValuePair<SpellKey, DXImageControl> pair in Icons)
             {
                 pair.Value.MouseEnter += (o, e) => GameScene.Game.MouseMagic = ((DXImageControl)o).Tag as MagicInfo;
                 pair.Value.MouseLeave += (o, e) => GameScene.Game.MouseMagic = null;
-
 
                 DXLabel label = new DXLabel
                 {
@@ -395,17 +129,16 @@ namespace Client.Scenes.Views
                     Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Italic),
                     IsControl = false,
                 };
-                label.Location = new Point(37 - label.Size.Width, 37 - label.Size.Height);
+                label.Location = new Point(34 - label.Size.Width, 34 - label.Size.Height);
 
                 Cooldowns[pair.Key] = new DXLabel
                 {
-
                     AutoSize = false,
                     BackColour = Color.FromArgb(125, 50, 50, 50),
                     Parent = pair.Value,
                     Location = new Point(1, 1),
                     IsControl = false,
-                    Size = new Size(36, 36),
+                    Size = new Size(34, 34),
                     DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                     ForeColour = Color.Gold,
                     Outline = true,
@@ -471,61 +204,73 @@ namespace Client.Scenes.Views
                 {
                     maxKey = pair.Key;
                     pair.Value.Index = magic.Info.Icon;
+                    IconBorders[pair.Key].Index = Config.ShowMagicBarFrames ? UpdateBorder(magic.Info.School) : -1;
                 }
                 else
                 {
                     pair.Value.Index = -1;
                     Cooldowns[pair.Key].Visible = false;
+                    IconBorders[pair.Key].Index = Config.ShowMagicBarFrames ? UpdateBorder(MagicSchool.None) : -1;
 
                 }
-                pair.Value.Index = magic?.Info.Icon ?? -1;
 
+                pair.Value.Index = magic?.Info.Icon ?? -1;
             }
 
             SetLabel.Text = SpellSet.ToString();
 
             if (maxKey >= SpellKey.Spell13)
             {
-                SetClientSize(new Size(37 * 12 + 15 + 20, 37 * 2 + 5));
+                if (Config.ShowMagicBarFrames)
+                {
+                    SetClientSize(new Size(49 * 12 + 15 + 20, 46 * 2 + 5 + 3));
+                }
+                else
+                {
+                    SetClientSize(new Size(37 * 12 + 15 + 20, 37 * 2 + 5));
+                }
 
-                Icons[SpellKey.Spell13].Visible = true;
-                Icons[SpellKey.Spell14].Visible = true;
-                Icons[SpellKey.Spell15].Visible = true;
-                Icons[SpellKey.Spell16].Visible = true;
-                Icons[SpellKey.Spell17].Visible = true;
-                Icons[SpellKey.Spell18].Visible = true;
-                Icons[SpellKey.Spell19].Visible = true;
-                Icons[SpellKey.Spell20].Visible = true;
-                Icons[SpellKey.Spell21].Visible = true;
-                Icons[SpellKey.Spell22].Visible = true;
-                Icons[SpellKey.Spell23].Visible = true;
-                Icons[SpellKey.Spell24].Visible = true;
-
-                UpButton.Location = new Point(ClientArea.X + 461, ClientArea.Y + 20);
-                SetLabel.Location = new Point(ClientArea.X + 460, ClientArea.Y + UpButton.Size.Height - 1 + 20);
-                DownButton.Location = new Point(ClientArea.X + 461, ClientArea.X + 37 - UpButton.Size.Height + 20);
+                IconBorders[SpellKey.Spell13].Visible = true;
+                IconBorders[SpellKey.Spell14].Visible = true;
+                IconBorders[SpellKey.Spell15].Visible = true;
+                IconBorders[SpellKey.Spell16].Visible = true;
+                IconBorders[SpellKey.Spell17].Visible = true;
+                IconBorders[SpellKey.Spell18].Visible = true;
+                IconBorders[SpellKey.Spell19].Visible = true;
+                IconBorders[SpellKey.Spell20].Visible = true;
+                IconBorders[SpellKey.Spell21].Visible = true;
+                IconBorders[SpellKey.Spell22].Visible = true;
+                IconBorders[SpellKey.Spell23].Visible = true;
+                IconBorders[SpellKey.Spell24].Visible = true;
             }
             else
             {
-                SetClientSize(new Size(37 * 12 + 15 + 20, 37));
+                if (Config.ShowMagicBarFrames)
+                {
+                    SetClientSize(new Size(49 * 12 + 15 + 20, 46));
+                }
+                else
+                {
+                    SetClientSize(new Size(37 * 12 + 15 + 20, 37));
+                }
 
-                Icons[SpellKey.Spell13].Visible = false;
-                Icons[SpellKey.Spell14].Visible = false;
-                Icons[SpellKey.Spell15].Visible = false;
-                Icons[SpellKey.Spell16].Visible = false;
-                Icons[SpellKey.Spell17].Visible = false;
-                Icons[SpellKey.Spell18].Visible = false;
-                Icons[SpellKey.Spell19].Visible = false;
-                Icons[SpellKey.Spell20].Visible = false;
-                Icons[SpellKey.Spell21].Visible = false;
-                Icons[SpellKey.Spell22].Visible = false;
-                Icons[SpellKey.Spell23].Visible = false;
-                Icons[SpellKey.Spell24].Visible = false;
-
-                UpButton.Location = new Point(ClientArea.X + 461, ClientArea.Y);
-                SetLabel.Location = new Point(ClientArea.X + 460, ClientArea.Y + UpButton.Size.Height - 1);
-                DownButton.Location = new Point(ClientArea.X + 461, ClientArea.X + 37 - UpButton.Size.Height);
+                IconBorders[SpellKey.Spell13].Visible = false;
+                IconBorders[SpellKey.Spell14].Visible = false;
+                IconBorders[SpellKey.Spell15].Visible = false;
+                IconBorders[SpellKey.Spell16].Visible = false;
+                IconBorders[SpellKey.Spell17].Visible = false;
+                IconBorders[SpellKey.Spell18].Visible = false;
+                IconBorders[SpellKey.Spell19].Visible = false;
+                IconBorders[SpellKey.Spell20].Visible = false;
+                IconBorders[SpellKey.Spell21].Visible = false;
+                IconBorders[SpellKey.Spell22].Visible = false;
+                IconBorders[SpellKey.Spell23].Visible = false;
+                IconBorders[SpellKey.Spell24].Visible = false;
             }
+
+            SetLabel.Location = new Point(ClientArea.Right - 16, ClientArea.Height / 2);
+            UpButton.Location = new Point(ClientArea.Right - 15, SetLabel.Location.Y - 9);
+            DownButton.Location = new Point(ClientArea.Right - 15, SetLabel.Location.Y + 15);
         }
 
         public override void Process()
@@ -581,6 +326,67 @@ namespace Client.Scenes.Views
                     Cooldowns[pair.Key].ForeColour = Color.Red;
             }
 
+        }
+
+        private static int UpdateBorder(MagicSchool school)
+        {
+            int index = -1;
+
+            switch (school)
+            {
+                case MagicSchool.Passive:
+                    index = 860;
+                    break;
+                case MagicSchool.Active:
+                    index = 861;
+                    break;
+                case MagicSchool.Toggle:
+                    index = 862;
+                    break;
+                case MagicSchool.Fire:
+                    index = 870;
+                    break;
+                case MagicSchool.Ice:
+                    index = 871;
+                    break;
+                case MagicSchool.Lightning:
+                    index = 872;
+                    break;
+                case MagicSchool.Wind:
+                    index = 873;
+                    break;
+                case MagicSchool.Phantom:
+                    index = 874;
+                    break;
+                case MagicSchool.Holy:
+                    index = 880;
+                    break;
+                case MagicSchool.Dark:
+                    index = 881;
+                    break;
+                case MagicSchool.Physical:
+                    index = 883;
+                    break;
+                case MagicSchool.Atrocity:
+                    index = 890;
+                    break;
+                case MagicSchool.Kill:
+                    index = 891;
+                    break;
+                case MagicSchool.Assassination:
+                    index = 892;
+                    break;
+                case MagicSchool.Discipline:
+                    index = 815;
+                    break;
+                case MagicSchool.Horse:
+                    index = 815;
+                    break;
+                case MagicSchool.None:
+                    break;
+            }
+
+            return index;
         }
     }
 }

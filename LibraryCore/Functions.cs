@@ -202,6 +202,8 @@ namespace Library
                 case MagicType.FrozenEarth:
                 case MagicType.MeteorShower:
                 case MagicType.LightningStrike:
+                case MagicType.IceAura:
+                case MagicType.IceDragon:
 
                 case MagicType.ExplosiveTalisman:
                 case MagicType.EvilSlayer:
@@ -225,6 +227,7 @@ namespace Library
 
                 case MagicType.Interchange:
                 case MagicType.TaecheonSword:
+                case MagicType.FireSword:
 
                 case MagicType.Repulsion:
                 case MagicType.ElectricShock:
@@ -252,6 +255,8 @@ namespace Library
                 case MagicType.SuperiorMagicShield:
                 case MagicType.IceRain:
                 case MagicType.Tornado:
+                case MagicType.IceBreaker:
+                case MagicType.FrozenDragon:
 
                 case MagicType.Heal:
                 case MagicType.PoisonDust:

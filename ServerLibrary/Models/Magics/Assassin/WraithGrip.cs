@@ -75,9 +75,7 @@ namespace Server.Models.Magics
             {
                 ob.ApplyPoison(new Poison
                 {
-                    Value = power,
                     Type = PoisonType.Paralysis,
-
                     Owner = Player,
                     TickCount = ob.Race == ObjectType.Player ? duration * 3 / 10 : duration,
                     TickFrequency = TimeSpan.FromSeconds(1),

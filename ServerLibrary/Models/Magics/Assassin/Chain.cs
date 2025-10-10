@@ -19,6 +19,8 @@ namespace Server.Models.Magics
         public Chain(PlayerObject player, UserMagic magic) : base(player, magic)
         {
             //https://www.youtube.com/watch?v=wKunzoVgrKU&t=676s
+
+            //TODO - Needs sound
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

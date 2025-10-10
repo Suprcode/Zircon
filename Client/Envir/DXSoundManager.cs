@@ -330,8 +330,14 @@ namespace Client.Envir
 
             [SoundIndex.HundredFist] = new DXSound(SoundPath + @"37380.wav", SoundType.Magic),
             [SoundIndex.OffensiveBlow] = new DXSound(SoundPath + @"37400.wav", SoundType.Magic),
+            [SoundIndex.IceAuraTravel] = new DXSound(SoundPath + @"37410.wav", SoundType.Magic),
+            [SoundIndex.IceDragonTravel] = new DXSound(SoundPath + @"37440.wav", SoundType.Magic),
+            [SoundIndex.IceDragonBreak] = new DXSound(SoundPath + @"37450.wav", SoundType.Magic),
+
             [SoundIndex.TaecheonSword] = new DXSound(SoundPath + @"40300.wav", SoundType.Magic),
             [SoundIndex.FireSword] = new DXSound(SoundPath + @"40310.wav", SoundType.Magic),
+            [SoundIndex.IceBreaker] = new DXSound(SoundPath + @"40320.wav", SoundType.Magic),
+            [SoundIndex.FrozenDragon] = new DXSound(SoundPath + @"40330.wav", SoundType.Magic),
 
             #endregion
 
