@@ -3153,8 +3153,6 @@ namespace Client.Scenes
                     CEnvir.Enqueue(new C.Magic { Action = MirAction.Spell, Type = magic.Info.Magic, Target = target.ObjectID });
                     return;
 
-                case MagicType.ElementalSwords:
-
                 case MagicType.FireBall:
                 case MagicType.IceBolt:
                 case MagicType.LightningBall:
@@ -3179,8 +3177,12 @@ namespace Client.Scenes
                 case MagicType.Parasite:
                 case MagicType.Neutralize:
                 case MagicType.SearingLight:
+                case MagicType.BindingTalisman:
+                case MagicType.BrainStorm:
 
                 case MagicType.Hemorrhage:
+                case MagicType.FlamingDaggers:
+                case MagicType.Shredding:
                     if (CanAttackTarget(MagicObject))
                         target = MagicObject;
 
@@ -3303,8 +3305,10 @@ namespace Client.Scenes
                     break;
                 case MagicType.JudgementOfHeaven:
                     break;
+
                 case MagicType.SeismicSlam:
                 case MagicType.CrushingWave:
+                case MagicType.ElementalSwords:
                 case MagicType.TaecheonSword:
                 case MagicType.FireSword:
 
@@ -3332,6 +3336,8 @@ namespace Client.Scenes
                 case MagicType.SummonDemonicCreature:
                 case MagicType.DemonExplosion:
                 case MagicType.DarkSoulPrison:
+                case MagicType.HeavenlySky:
+                case MagicType.PoisonCloud:
 
                 case MagicType.PoisonousCloud:
                 case MagicType.Cloak:
@@ -3344,6 +3350,8 @@ namespace Client.Scenes
                 case MagicType.RagingWind:
                 case MagicType.Concentration:
                 case MagicType.Containment:
+                case MagicType.FourWheels:
+                case MagicType.CrescentMoon:
                     break;
 
                 case MagicType.SwiftBlade:
@@ -3409,6 +3417,8 @@ namespace Client.Scenes
                 case MagicType.ImprovedExplosiveTalisman:
                 case MagicType.PoisonDust:
                 case MagicType.Neutralize:
+                case MagicType.BindingTalisman:
+                case MagicType.BrainStorm:
                     targetLocation = MapControl.MapLocation;
                     break;
                 default:

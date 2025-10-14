@@ -83,7 +83,7 @@ namespace Server.Models
         public DateTime ActionTime, MoveTime, RegenTime, AttackTime, MagicTime, CellTime, StruckTime, BuffTime, ShockTime, DisplayHPMPTime, ItemReviveTime;
         public List<DelayedAction> ActionList;
 
-        public virtual bool CanMove => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= MoveTime && SEnvir.Now > ShockTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && (Poison & PoisonType.WraithGrip) != PoisonType.WraithGrip && (Poison & PoisonType.Containment) != PoisonType.Containment && Buffs.All(x => x.Type != BuffType.DragonRepulse);
+        public virtual bool CanMove => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= MoveTime && SEnvir.Now > ShockTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && (Poison & PoisonType.WraithGrip) != PoisonType.WraithGrip && (Poison & PoisonType.Containment) != PoisonType.Containment && (Poison & PoisonType.Binding) != PoisonType.Binding && Buffs.All(x => x.Type != BuffType.DragonRepulse);
         public virtual bool CanAttack => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= AttackTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && (Poison & PoisonType.Fear) != PoisonType.Fear && Buffs.All(x => x.Type != BuffType.DragonRepulse);
         public virtual bool CanCast => !Dead && SEnvir.Now >= ActionTime && SEnvir.Now >= MagicTime && (Poison & PoisonType.Paralysis) != PoisonType.Paralysis && (Poison & PoisonType.Fear) != PoisonType.Fear && (Poison & PoisonType.Silenced) != PoisonType.Silenced && Buffs.All(x => x.Type != BuffType.DragonRepulse);
 
@@ -277,6 +277,9 @@ namespace Server.Models
                     case PoisonType.Hemorrhage:
                         damage += poison.Value;
                         break;
+                    case PoisonType.Binding:
+                        damage += poison.Value;
+                        break;
                 }
 
                 if (Stats[Stat.Invincibility] > 0)
@@ -369,7 +372,7 @@ namespace Server.Models
                     if (Dead) break;
 
                     RegenTime = SEnvir.Now + RegenDelay;
-                    ShockTime = DateTime.MinValue;
+                    ShockTime = SEnvir.Now;
                 }
 
                 if (explode)
@@ -1848,7 +1851,7 @@ namespace Server.Models
         public TimeSpan TickFrequency;
         public int TickCount;
         public DateTime TickTime;
-        public object Extra, Extra1;
+        public object Extra, Extra1, Extra2;
         public bool CanKill;
     }
 }

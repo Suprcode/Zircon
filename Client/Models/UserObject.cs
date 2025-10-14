@@ -756,7 +756,6 @@ namespace Client.Models
             GameScene.Game.MapControl.FLayer.TextureValid = false;
         }
 
-
         public override void NameChanged()
         {
             base.NameChanged();
@@ -772,7 +771,9 @@ namespace Client.Models
         public void AddBuff(ClientBuffInfo buff)
         {
             Buffs.Add(buff);
-            VisibleBuffs.Add(buff.Type);
+
+            if (!VisibleBuffs.Contains(buff.Type))
+                VisibleBuffs.Add(buff.Type);
 
             if (buff.Type == BuffType.SuperiorMagicShield)
             {

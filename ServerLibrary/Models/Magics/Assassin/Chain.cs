@@ -99,8 +99,16 @@ namespace Server.Models.Magics
 
             var chainOfFire = GetAugmentedSkill(MagicType.ChainOfFire);
 
+            bool canSlow = false;
+
             if (chainOfFire != null)
             {
+                //If augment level 0+ - targets are slowed
+
+                canSlow = true;
+
+                //If augment level 2+ - constantly damage all those chained
+
                 if (chainOfFire.Level >= 2)
                 {
                     damage = Player.GetElementPower(target.Race, Stat.FireAttack) * 2;
@@ -119,7 +127,8 @@ namespace Server.Models.Magics
                 TickFrequency = TimeSpan.FromSeconds(1),
                 Value = damage,
                 Extra = leader,
-                Extra1 = followers
+                Extra1 = followers,
+                Extra2 = canSlow
             });
         }
 
@@ -229,9 +238,9 @@ namespace Server.Models.Magics
 
             if (p.Extra1 != null) //Leader with followers
             {
-                //If augment level 1+ - siphon damage from leader to followers, split it up evenly
-
                 var chainOfFire = GetAugmentedSkill(MagicType.ChainOfFire);
+
+                //If augment level 1+ - siphon damage from leader to followers, split it up evenly
 
                 if (chainOfFire != null && chainOfFire.Level >= 1)
                 {
@@ -260,6 +269,8 @@ namespace Server.Models.Magics
             if (p == null) return;
 
             var chainOfFire = GetAugmentedSkill(MagicType.ChainOfFire);
+
+            //If augment level 3+ - explode on leader death to damage all those near
 
             if (chainOfFire != null && chainOfFire.Level >= 3)
             {

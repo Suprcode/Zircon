@@ -284,7 +284,10 @@ namespace Client.Models
             Poison = info.Poison;
 
             foreach (BuffType type in info.Buffs)
-                VisibleBuffs.Add(type);
+            {
+                if (!VisibleBuffs.Contains(type))
+                    VisibleBuffs.Add(type);
+            }
 
             Title = info.GuildName;
 

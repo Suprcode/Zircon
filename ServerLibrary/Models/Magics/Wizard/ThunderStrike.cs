@@ -20,7 +20,7 @@ namespace Server.Models.Magics
         {
             var shocked = GetAugmentedSkill(MagicType.Shocked);
 
-            if (shocked != null && SEnvir.Random.Next(4) <= shocked.Level)
+            if (shocked != null && SEnvir.Random.Next(Globals.MagicMaxLevel) <= shocked.Level)
             {
                 return shocked.GetPower();
             }
@@ -37,7 +37,7 @@ namespace Server.Models.Magics
 
             int range = 3;
 
-            if (Magic.Level >= 4)
+            if (Magic.Level > 3)
             {
                 range = 6;
             }

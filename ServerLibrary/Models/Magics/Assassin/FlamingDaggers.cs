@@ -1,31 +1,20 @@
 ﻿using Library;
 using Server.DBModels;
-using Server.Envir;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Server.Models.Magics
+namespace Server.Models.Magics.Assassin
 {
-    [MagicType(MagicType.LightningBall)]
-    public class LightningBall : MagicObject
+    [MagicType(MagicType.FlamingDaggers)]
+    public class FlamingDaggers : MagicObject
     {
-        protected override Element Element => Element.Lightning;
+        protected override Element Element => Element.Fire;
+        protected override int Burn => 10;
+        protected override int BurnLevel => 2;
 
-        public LightningBall(PlayerObject player, UserMagic magic) : base(player, magic)
+        public FlamingDaggers(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
-        }
-
-        public override int GetShock(int shock, Stats stats = null)
-        {
-            var shocked = GetAugmentedSkill(MagicType.Shocked);
-
-            if (shocked != null && SEnvir.Random.Next(Globals.MagicMaxLevel) <= shocked.Level)
-            {
-                return shocked.GetPower();
-            }
-
-            return base.GetShock(shock, stats);
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
@@ -38,13 +27,12 @@ namespace Server.Models.Magics
             if (!Player.CanAttackTarget(target))
             {
                 response.Ob = null;
-                response.Locations.Add(location);
                 return response;
             }
 
             response.Targets.Add(target.ObjectID);
 
-            var delay = GetDelayFromDistance(500, target);
+            var delay = GetDelayFromDistance(1000, target);
 
             ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, target));
 
@@ -55,12 +43,12 @@ namespace Server.Models.Magics
         {
             MapObject target = (MapObject)data[1];
 
-            Player.MagicAttack(new List<MagicType> { Type }, target);
+            var damage = Player.MagicAttack(new List<MagicType> { Type }, target);
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
-            power += Magic.GetPower() + Player.GetMC();
+            power += Magic.GetPower() + Player.GetSP();
 
             return power;
         }

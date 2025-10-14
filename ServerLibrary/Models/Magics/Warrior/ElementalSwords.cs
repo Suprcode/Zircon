@@ -1,8 +1,10 @@
 ﻿using Library;
 using Server.DBModels;
 using Server.Envir;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Magics
 {
@@ -11,10 +13,15 @@ namespace Server.Models.Magics
     {
         protected override Element Element => Element.None;
 
+        private int SwordCount = 0;
+        private DateTime SwordTime = DateTime.MaxValue;
+
         public ElementalSwords(PlayerObject player, UserMagic magic) : base(player, magic)
         {
             //TODO - Redo anim
             //Magic Ex10 - 0
+            //Swords appear over head, throws at enemy if they attack
+            //https://www.youtube.com/watch?v=l8m9JipWIaA&t=1836s
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
@@ -24,37 +31,60 @@ namespace Server.Models.Magics
                 Ob = null
             };
 
-            var realTargets = new HashSet<MapObject>();
-
-            if (Player.CanAttackTarget(target))
+            if (SwordCount > 0)
             {
-                realTargets.Add(target);
+                response.Cast = false;
+                return response;
             }
 
-            var possibleTargets = Player.GetTargets(Player.CurrentMap, location, 3);
+            SwordCount = 5;
+            SwordTime = SEnvir.Now.AddSeconds(5);
 
-            while (realTargets.Count < 1 + Magic.Level)
-            {
-                if (possibleTargets.Count == 0) break;
-
-                MapObject ob = possibleTargets[SEnvir.Random.Next(possibleTargets.Count)];
-
-                possibleTargets.Remove(ob);
-
-                if (!Functions.InRange(Player.CurrentLocation, ob.CurrentLocation, Globals.MagicRange)) continue;
-
-                realTargets.Add(ob);
-            }
-
-            foreach (MapObject ob in realTargets)
-            {
-                var delay = GetDelayFromDistance(500, ob);
-
-                response.Targets.Add(ob.ObjectID);
-                Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, ob));
-            }
+            Player.BuffAdd(BuffType.ElementalSwords, TimeSpan.MaxValue, new Stats { [Stat.ElementalSwords] = SwordCount }, true, false, TimeSpan.Zero);
 
             return response;
+        }
+
+        public override void Process()
+        {
+            base.Process();
+
+            if (SwordCount == 0 || SEnvir.Now < SwordTime) return;
+
+            List<MapObject> targets = [];
+
+            foreach (var ob in Player.GetTargets(Player.CurrentMap, Player.CurrentLocation, 5))
+            {
+                if (!Player.CanAttackTarget(ob)) continue;
+
+                if (ob is MonsterObject monsterObject && monsterObject.Target != Player) continue;
+
+                targets.Add(ob);
+            }
+
+            if (targets.Count == 0) return;
+
+            var target = targets[SEnvir.Random.Next(targets.Count)];
+
+            SwordCount--;
+            SwordTime = SEnvir.Now.AddSeconds(5);
+
+            Player.BuffAdd(BuffType.ElementalSwords, TimeSpan.MaxValue, new Stats { [Stat.ElementalSwords] = SwordCount }, true, false, TimeSpan.Zero);
+
+            var delay = SEnvir.Now.AddMilliseconds(500 + Functions.Distance(CurrentLocation, target.CurrentLocation) * 48);
+
+            var dir = Functions.DirectionFromPoint(CurrentLocation, target.CurrentLocation);
+
+            Player.Broadcast(new S.ObjectProjectile
+            {
+                ObjectID = Player.ObjectID,
+                Direction = dir,
+                CurrentLocation = Player.CurrentLocation,
+                Type = Type,
+                Targets = [target.ObjectID]
+            });
+
+            Player.ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, target, target.CurrentLocation));
         }
 
         public override void MagicComplete(params object[] data)

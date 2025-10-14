@@ -4,28 +4,16 @@ using Server.Envir;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Server.Models.Magics
+namespace Server.Models.Magics.Assassin
 {
-    [MagicType(MagicType.LightningWave)]
-    public class LightningWave : MagicObject
+    [MagicType(MagicType.FourWheels)]
+    public class FourWheels : MagicObject
     {
-        protected override Element Element => Element.Lightning;
+        protected override Element Element => Element.None;
 
-        public LightningWave(PlayerObject player, UserMagic magic) : base(player, magic)
+        public FourWheels(PlayerObject player, UserMagic magic) : base(player, magic)
         {
 
-        }
-
-        public override int GetShock(int shock, Stats stats = null)
-        {
-            var shocked = GetAugmentedSkill(MagicType.Shocked);
-
-            if (shocked != null && SEnvir.Random.Next(Globals.MagicMaxLevel) <= shocked.Level)
-            {
-                return shocked.GetPower();
-            }
-
-            return base.GetShock(shock, stats);
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)
@@ -35,20 +23,14 @@ namespace Server.Models.Magics
                 Ob = null
             };
 
-            if (!Functions.InRange(CurrentLocation, location, Globals.MagicRange))
-            {
-                response.Cast = false;
-                return response;
-            }
+            response.Locations.Add(Player.CurrentLocation);
+            var cells = CurrentMap.GetCells(Player.CurrentLocation, 0, 2);
 
-            response.Locations.Add(location);
-
-            var cells = CurrentMap.GetCells(location, 0, 1);
-
-            var delay = SEnvir.Now.AddMilliseconds(500);
+            var delay = SEnvir.Now.AddMilliseconds(1500);
 
             foreach (Cell cell in cells)
             {
+                //TODO - Create an attack grid for better delays?
                 ActionList.Add(new DelayedAction(delay, ActionType.DelayMagic, Type, cell));
             }
 
@@ -67,13 +49,13 @@ namespace Server.Models.Magics
                 MapObject ob = cell.Objects[i];
                 if (!Player.CanAttackTarget(ob)) continue;
 
-                Player.MagicAttack(new List<MagicType> { Type }, ob);
+                var damage = Player.MagicAttack(new List<MagicType> { Type }, ob);
             }
         }
 
         public override int ModifyPowerAdditionner(bool primary, int power, MapObject ob, Stats stats = null, int extra = 0)
         {
-            power += Magic.GetPower() + Player.GetMC();
+            power += Magic.GetPower() * Player.GetSP();
 
             return power;
         }

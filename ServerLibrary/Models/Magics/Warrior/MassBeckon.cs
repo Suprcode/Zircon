@@ -43,7 +43,7 @@ namespace Server.Models.Magics
                 if (!Player.CanAttackTarget(ob)) continue;
                 if (ob.Level - 10 > Player.Level || !((MonsterObject)ob).MonsterInfo.CanPush) continue;
 
-                if (SEnvir.Random.Next(9) > 2 + Magic.Level * 2) continue;
+                if (SEnvir.Random.Next(Globals.MagicMaxLevel + 5) > 2 + Magic.Level * 2) continue;
 
                 if (!ob.Teleport(CurrentMap, CurrentMap.GetRandomLocation(CurrentLocation, 3))) continue;
 

@@ -118,7 +118,6 @@ namespace Server.Models
         public override bool CanMove => base.CanMove && (Poison & PoisonType.Silenced) != PoisonType.Silenced && MoveDelay > 0 && (PetOwner == null || PetOwner.PetMode == PetMode.Both || PetOwner.PetMode == PetMode.Move || PetOwner.PetMode == PetMode.PvP);
         public override bool CanAttack => base.CanAttack && (Poison & PoisonType.Silenced) != PoisonType.Silenced && AttackDelay > 0 && (PetOwner == null || PetOwner.PetMode == PetMode.Both || PetOwner.PetMode == PetMode.Attack || PetOwner.PetMode == PetMode.PvP);
 
-
         public static MonsterObject GetMonster(MonsterInfo monsterInfo)
         {
             switch (monsterInfo.AI)
@@ -2320,16 +2319,18 @@ namespace Server.Models
                 ActionTime += TimeSpan.FromMilliseconds(poison.Value * 100);
             }
 
+            poison = PoisonList.FirstOrDefault(x => x.Type == PoisonType.Chain);
+
+            if (poison?.Extra2 is bool canSlow && canSlow)
+            {
+                AttackTime += TimeSpan.FromMilliseconds(100);
+                ActionTime += TimeSpan.FromMilliseconds(100);
+            }
+
             if ((Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
             {
                 AttackTime += TimeSpan.FromMilliseconds(AttackDelay);
                 ActionTime += TimeSpan.FromMilliseconds(Math.Min(MoveDelay, AttackDelay - 100));
-            }
-
-            if ((Poison & PoisonType.Chain) == PoisonType.Chain)
-            {
-                AttackTime += TimeSpan.FromMilliseconds(100);
-                ActionTime += TimeSpan.FromMilliseconds(100);
             }
         }
 

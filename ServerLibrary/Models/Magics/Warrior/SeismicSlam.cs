@@ -15,7 +15,8 @@ namespace Server.Models.Magics
 
         public SeismicSlam(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-
+            //TODO - Should charge up. MagicEx5 4800
+            //https://www.youtube.com/shorts/JewMVBMfYI8
         }
 
         public override MagicCast MagicCast(MapObject target, Point location, MirDirection direction)

@@ -142,8 +142,10 @@ namespace Client.Envir
 
             [SoundIndex.SwiftBladeEnd] = new DXSound(SoundPath + @"M131-2.wav", SoundType.Magic),
 
-            [SoundIndex.ElementalSwordStart] = new DXSound(SoundPath + @"cs252-1.wav", SoundType.Magic),
-            [SoundIndex.ElementalSwordEnd] = new DXSound(SoundPath + @"cs252-2.wav", SoundType.Magic),
+            [SoundIndex.SeismicSlam] = new DXSound(SoundPath + @"m140-1.wav", SoundType.Magic),
+
+            [SoundIndex.ElementalSwordsStart] = new DXSound(SoundPath + @"cs252-1.wav", SoundType.Magic),
+            [SoundIndex.ElementalSwordsEnd] = new DXSound(SoundPath + @"cs252-2.wav", SoundType.Magic),
 
             [SoundIndex.FireBallStart] = new DXSound(SoundPath + @"M1-1.wav", SoundType.Magic),
             [SoundIndex.FireBallTravel] = new DXSound(SoundPath + @"M1-2.wav", SoundType.Magic),
@@ -333,11 +335,19 @@ namespace Client.Envir
             [SoundIndex.IceAuraTravel] = new DXSound(SoundPath + @"37410.wav", SoundType.Magic),
             [SoundIndex.IceDragonTravel] = new DXSound(SoundPath + @"37440.wav", SoundType.Magic),
             [SoundIndex.IceDragonBreak] = new DXSound(SoundPath + @"37450.wav", SoundType.Magic),
+            [SoundIndex.BindingTalisman] = new DXSound(SoundPath + @"37460.wav", SoundType.Magic),
+            [SoundIndex.BrainStorm] = new DXSound(SoundPath + @"37470.wav", SoundType.Magic),
+            [SoundIndex.FlamingDaggers] = new DXSound(SoundPath + @"37510.wav", SoundType.Magic),
+            [SoundIndex.Shredding] = new DXSound(SoundPath + @"37520.wav", SoundType.Magic),
 
             [SoundIndex.TaecheonSword] = new DXSound(SoundPath + @"40300.wav", SoundType.Magic),
             [SoundIndex.FireSword] = new DXSound(SoundPath + @"40310.wav", SoundType.Magic),
             [SoundIndex.IceBreaker] = new DXSound(SoundPath + @"40320.wav", SoundType.Magic),
             [SoundIndex.FrozenDragon] = new DXSound(SoundPath + @"40330.wav", SoundType.Magic),
+            [SoundIndex.HeavenlySky] = new DXSound(SoundPath + @"40340.wav", SoundType.Magic),
+            [SoundIndex.PoisonCloud] = new DXSound(SoundPath + @"40350.wav", SoundType.Magic),
+            [SoundIndex.FourWheels] = new DXSound(SoundPath + @"40360.wav", SoundType.Magic),
+            [SoundIndex.CrescentMoon] = new DXSound(SoundPath + @"40370.wav", SoundType.Magic),
 
             #endregion
 

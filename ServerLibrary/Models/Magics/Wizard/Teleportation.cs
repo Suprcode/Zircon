@@ -38,7 +38,7 @@ namespace Server.Models.Magics
                 return;
             }
 
-            if (SEnvir.Random.Next(9) > 2 + Magic.Level * 2) return;
+            if (SEnvir.Random.Next(Globals.MagicMaxLevel + 5) > 2 + Magic.Level * 2) return;
             /*
             if (CurrentMap.Info.SkillDelay > 0)
             {

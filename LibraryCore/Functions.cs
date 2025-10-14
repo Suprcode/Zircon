@@ -188,7 +188,6 @@ namespace Library
             {
                 case MagicType.Beckon:
                 case MagicType.MassBeckon:
-                case MagicType.ElementalSwords:
 
                 case MagicType.FireBall:
                 case MagicType.IceBolt:
@@ -221,11 +220,16 @@ namespace Library
                 case MagicType.CorpseExploder:
                 case MagicType.SoulResonance:
                 case MagicType.SearingLight:
+                case MagicType.BindingTalisman:
+                case MagicType.BrainStorm:
 
                 case MagicType.Hemorrhage:
+                case MagicType.FlamingDaggers:
+                case MagicType.Shredding:
                     return MirAnimation.Combat1;
 
                 case MagicType.Interchange:
+                case MagicType.ElementalSwords:
                 case MagicType.TaecheonSword:
                 case MagicType.FireSword:
 
@@ -276,6 +280,8 @@ namespace Library
                 case MagicType.CursedDoll:
                 case MagicType.DarkSoulPrison:
                 case MagicType.SummonDead:
+                case MagicType.HeavenlySky:
+                case MagicType.PoisonCloud:
                     return MirAnimation.Combat2;
 
                 case MagicType.ElementalHurricane:
@@ -284,6 +290,8 @@ namespace Library
                 case MagicType.PoisonousCloud:
                 case MagicType.SummonPuppet:
                 case MagicType.Containment:
+                case MagicType.FourWheels:
+                case MagicType.CrescentMoon:
                     return MirAnimation.Combat14;
 
                 case MagicType.DragonRepulse:

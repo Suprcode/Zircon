@@ -251,6 +251,7 @@ namespace Library
         Invincibility = 104,
         DefensiveBlow = 105,
         Dash = 106,
+        ElementalSwords = 107,
 
         //Wiz
         Renounce = 200,
@@ -717,6 +718,10 @@ namespace Library
         AugmentCelestialLight = 344,
         CorpseExploder = 345,
         SummonDead = 346,
+        BindingTalisman = 347,
+        BrainStorm = 348,
+        HeavenlySky = 349,
+        PoisonCloud = 350,
 
         WillowDance = 401,
         VineTreeDance = 402,
@@ -771,6 +776,10 @@ namespace Library
         Hemorrhage = 451,
         BurningFire = 452,
         ChainOfFire = 453,
+        FlamingDaggers = 454,
+        Shredding = 455,
+        FourWheels = 456,
+        CrescentMoon = 457,
 
         MonsterScortchedEarth = 501,
         MonsterIceStorm = 502,
@@ -1445,6 +1454,7 @@ namespace Library
         Containment = 1 << 12,  //Tick damage, stops movement, displays effect
         Chain = 1 << 13,        //Tick damage, limits movement, displays effect
         Hemorrhage = 1 << 14,   //Tick damage, stops recovery, displays effect
+        Binding = 1 << 15,      //Tick damage, stops movement, displays effect
     }
 
     public enum SpellEffect
@@ -1475,6 +1485,7 @@ namespace Library
     {
         ReflectDamage,
         Assault,
+        ElementalSwords,
         DefensiveBlow,
         HundredFist,
 
@@ -1501,6 +1512,7 @@ namespace Library
         Containment,
         Chain,
         Hemorrhage,
+        Binding,
 
         Ranking,
         Developer,
@@ -2283,8 +2295,10 @@ namespace Library
 
         SwiftBladeEnd,
 
-        ElementalSwordStart,
-        ElementalSwordEnd,
+        SeismicSlam,
+
+        ElementalSwordsStart,
+        ElementalSwordsEnd,
 
         FireBallStart,
         FireBallTravel,
@@ -2481,12 +2495,19 @@ namespace Library
         IceAuraTravel,
         IceDragonTravel,
         IceDragonBreak,
+        BindingTalisman,
+        BrainStorm,
+        FlamingDaggers,
+        Shredding,
 
         TaecheonSword,
         FireSword,
-
         IceBreaker,
         FrozenDragon,
+        HeavenlySky,
+        PoisonCloud,
+        FourWheels,
+        CrescentMoon,
 
         #endregion
 

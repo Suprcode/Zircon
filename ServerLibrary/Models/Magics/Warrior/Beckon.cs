@@ -55,7 +55,7 @@ namespace Server.Models.Magics
                          return;
                      }*/
 
-                    if (SEnvir.Random.Next(10) > 4 + Magic.Level) return;
+                    if (SEnvir.Random.Next(Globals.MagicMaxLevel + 6) > 4 + Magic.Level) return;
 
                     break;
                 case ObjectType.Monster:
@@ -64,10 +64,10 @@ namespace Server.Models.Magics
                     MonsterObject mob = (MonsterObject)ob;
                     if (mob.MonsterInfo.IsBoss || !mob.MonsterInfo.CanPush) return;
 
-                    if (SEnvir.Random.Next(9) > 2 + Magic.Level * 2) return;
+                    if (SEnvir.Random.Next(Globals.MagicMaxLevel + 5) > 2 + Magic.Level * 2) return;
                     break;
                 case ObjectType.Item:
-                    if (SEnvir.Random.Next(9) > 2 + Magic.Level * 2) return;
+                    if (SEnvir.Random.Next(Globals.MagicMaxLevel + 5) > 2 + Magic.Level * 2) return;
                     break;
                 default:
                     return;

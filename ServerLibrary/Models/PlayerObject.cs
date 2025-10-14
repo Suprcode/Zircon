@@ -946,6 +946,7 @@ namespace Server.Models
             BuffRemove(BuffType.Veteran);
             BuffRemove(BuffType.ElementalHurricane);
             BuffRemove(BuffType.SuperiorMagicShield);
+            BuffRemove(BuffType.ElementalSwords);
 
             SEnvir.EventLogs.RemoveAll(x => x.PlayerIndex == Character.Index);
 
@@ -3208,7 +3209,7 @@ namespace Server.Models
                 else
                     userQuest.Character = Character;
 
-                userQuest.DateTaken = DateTime.UtcNow;
+                userQuest.DateTaken = SEnvir.Now;
 
                 Enqueue(new S.QuestChanged { Quest = userQuest.ToClientInfo() });
                 break;
@@ -3342,7 +3343,7 @@ namespace Server.Models
 
                 userQuest.Track = false;
                 userQuest.Completed = true;
-                userQuest.DateCompleted = DateTime.UtcNow;
+                userQuest.DateCompleted = SEnvir.Now;
 
                 if (hasChosen)
                     userQuest.SelectedReward = p.ChoiceIndex;
@@ -5776,6 +5777,7 @@ namespace Server.Models
                                     case PoisonType.Abyss:
                                     case PoisonType.Burn:
                                     case PoisonType.Containment:
+                                    case PoisonType.Binding:
                                         work = true;
                                         PoisonList.Remove(pois);
                                         break;
@@ -8694,6 +8696,7 @@ namespace Server.Models
                 case BuffType.Castle:
                 case BuffType.ElementalHurricane:
                 case BuffType.SuperiorMagicShield:
+                case BuffType.ElementalSwords:
                     info.IsTemporary = true;
                     break;
             }
@@ -14115,7 +14118,7 @@ namespace Server.Models
                 {
                     Owner = this,
                     Type = PoisonType.Burn,
-                    Value = (damage * burnLevel) / 10,
+                    Value = damage * burnLevel / 10,
                     TickFrequency = TimeSpan.FromSeconds(2),
                     TickCount = burn,
                 });

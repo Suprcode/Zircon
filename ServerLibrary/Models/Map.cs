@@ -97,7 +97,7 @@ namespace Server.Models
 
             CreateCellRegions();
 
-            LastPlayer = DateTime.UtcNow;
+            LastPlayer = SEnvir.Now;
         }
 
         private void CreateGuards()
@@ -218,9 +218,9 @@ namespace Server.Models
 
         public void Process()
         {
-            if (LastPlayer.AddMinutes(1) < DateTime.UtcNow && Players.Any())
+            if (LastPlayer.AddMinutes(1) < SEnvir.Now && Players.Any())
             {
-                LastPlayer = DateTime.UtcNow;
+                LastPlayer = SEnvir.Now;
             }
         }
 

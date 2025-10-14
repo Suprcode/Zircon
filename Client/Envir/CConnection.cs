@@ -1347,6 +1347,33 @@ namespace Client.Envir
                             DXSoundManager.Play(SoundIndex.GreaterFireBallTravel);
                     }
                     break;
+                case MagicType.ElementalSwords:
+                    {
+                        foreach (MapObject attackTarget in targets)
+                        {
+                            source.Effects.Add(spell = new MirEffect(300, 5, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx10, 0, 0, Globals.NoneColour)
+                            {
+                                MapTarget = p.CurrentLocation,
+                                Skip = 10,
+                                Direction = p.Direction,
+                                Blend = true,    
+                            });
+
+                            spell.CompleteAction = () =>
+                            {
+                                source.Effects.Add(spell = new MirProjectile(0, 3, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx10, 0, 0, Globals.NoneColour, source.CurrentLocation)
+                                {
+                                    Blend = true,
+                                    Target = attackTarget,
+                                    Has16Directions = true
+                                });
+                                spell.Process();
+                            };
+                            spell.Process();
+                            DXSoundManager.Play(SoundIndex.ElementalSwordsEnd);
+                        }
+                    }
+                    break;
             }
         }
 
@@ -1689,10 +1716,14 @@ namespace Client.Envir
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                ob.VisibleBuffs.Add(p.Type);
+                if (!ob.VisibleBuffs.Contains(p.Type))
+                    ob.VisibleBuffs.Add(p.Type);
 
                 if (p.Type == BuffType.SuperiorMagicShield)
                     ob.EndMagicEffect(MagicEffect.MagicShield);
+
+                if (p.Type == BuffType.ElementalSwords)
+                    ob.EndMagicEffect(MagicEffect.ElementalSwords);
 
                 return;
             }

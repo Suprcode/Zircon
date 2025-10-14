@@ -193,7 +193,7 @@ namespace Server.Models.Magics
         {
             if (!Player.CanAttackTarget(ob)) return false;
             if (ob.Level >= Player.Level) return false;
-            if (SEnvir.Random.Next(16) >= 6 + magic.Level * 3 + Player.Level - ob.Level) return false;
+            if (SEnvir.Random.Next(Globals.MagicMaxLevel + 12) >= 6 + magic.Level * 3 + Player.Level - ob.Level) return false;
             if (ob.Buffs.Any(x => x.Type == BuffType.Endurance)) return false;
 
             if (ob.Race == ObjectType.Monster && !((MonsterObject)ob).MonsterInfo.CanPush)

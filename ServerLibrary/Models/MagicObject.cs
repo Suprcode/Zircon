@@ -391,7 +391,7 @@ namespace Server.Models
         public MapObject Ob = null;
 
         /// <summary>
-        /// has the spell been cast, sends cooldown to the client
+        /// Has the spell been cast, sends cooldown to the client
         /// </summary>
         public bool Cast = true;
 
