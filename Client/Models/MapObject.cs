@@ -5689,40 +5689,40 @@ namespace Client.Models
                     }
                     break;
                 case MagicEffect.ElementalSwords:
-
-                    if (Stats[Stat.ElementalSwords] > 0)
                     {
-                        for (int i = 0; i < Stats[Stat.ElementalSwords]; i++)
+                        if (Stats != null && Stats[Stat.ElementalSwords] > 0)
                         {
-                            bool startAnim = false;
-
-                            if (Stats[Stat.ElementalSwords] == 5) 
+                            for (int i = 0; i < Stats[Stat.ElementalSwords]; i++)
                             {
-                                startAnim = true;
-                            }
+                                bool startAnim = false;
 
-                            if (startAnim)
-                            {
-                                effects.Add(new MirEffect(200 + (i * 20), 16, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx10, 0, 0, Globals.NoneColour)
+                                if (Stats[Stat.ElementalSwords] == 5)
+                                {
+                                    startAnim = true;
+                                }
+
+                                if (startAnim)
+                                {
+                                    effects.Add(new MirEffect(200 + (i * 20), 16, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx10, 0, 0, Globals.NoneColour)
+                                    {
+                                        Blend = true,
+                                        Target = this,
+                                        AdditionalOffSet = new Point(0, -50),
+                                    });
+                                }
+
+                                effects.Add(new MirEffect(200 + (i * 20), 1, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx10, 0, 0, Globals.NoneColour)
                                 {
                                     Blend = true,
                                     Target = this,
+                                    Loop = true,
                                     AdditionalOffSet = new Point(0, -50),
+                                    StartTime = startAnim ? CEnvir.Now.AddMilliseconds(16) : CEnvir.Now
                                 });
+                                DXSoundManager.Play(SoundIndex.ElementalSwordsStart);
                             }
-
-                            effects.Add(new MirEffect(200 + (i * 20), 1, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx10, 0, 0, Globals.NoneColour)
-                            {
-                                Blend = true,
-                                Target = this,
-                                Loop = true,
-                                AdditionalOffSet = new Point(0, -50),
-                                StartTime = startAnim ? CEnvir.Now.AddMilliseconds(16) : CEnvir.Now
-                            });
-                            DXSoundManager.Play(SoundIndex.ElementalSwordsStart);
                         }
                     }
-
                     break;
                 case MagicEffect.DefensiveBlow:
                     {
