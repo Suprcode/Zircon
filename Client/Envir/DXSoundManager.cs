@@ -328,6 +328,7 @@ namespace Client.Envir
 
             [SoundIndex.CorpseExploderEnd] = new DXSound(SoundPath + @"m125-2.wav", SoundType.Magic),
 
+            [SoundIndex.Hemorrhage] = new DXSound(SoundPath + @"43621.wav", SoundType.Magic),
             [SoundIndex.ChainofFireExplode] = new DXSound(SoundPath + @"cs261-1.wav", SoundType.Magic),
 
             [SoundIndex.HundredFist] = new DXSound(SoundPath + @"37380.wav", SoundType.Magic),

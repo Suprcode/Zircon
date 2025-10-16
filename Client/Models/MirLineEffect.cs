@@ -7,12 +7,12 @@ using System.Drawing;
 
 namespace Client.Models
 {
-    public class MirChainEffect : MirEffect
+    public class MirLineEffect : MirEffect
     {
         // Simulation parameters
-        private const float LinkLength = 25f;       // Desired length per chain link
-        private const float Gravity = 0.25f;        // Downward force applied per tick
-        private const float SpringStrength = 0.1f;  // Pulling force between links
+        private const float LinkLength = 30f;       // Desired length per chain link
+        private const float Gravity = 0.05f;        // Downward force applied per tick
+        private const float SpringStrength = 0.15f;  // Pulling force between links
         private const float Damping = 0.9f;         // Velocity damping to stabilize motion
 
         private readonly MapObject _source;
@@ -25,7 +25,7 @@ namespace Client.Models
         private int _linkCount = 6;     // Starts with a default value; adjusts dynamically
         private bool _initialized;
 
-        public MirChainEffect(MapObject source, MapObject target, LibraryFile library, int startIndex)
+        public MirLineEffect(MapObject source, MapObject target, LibraryFile library, int startIndex)
             : base(startIndex, 1, TimeSpan.FromMilliseconds(100), library, 0, 0, Color.White)
         {
             _source = source;
@@ -114,18 +114,37 @@ namespace Client.Models
 
                 float angle = (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2;
 
-                Library.DrawBlend(
-                    StartIndex,    // Texture index
-                    1f,            // Scale
-                    DrawColour,    // Tint color
-                    mid.X,         // X position
-                    mid.Y,         // Y position
-                    angle,         // Rotation
-                    Opacity,       // Transparency
-                    ImageType.Image,
-                    false,
-                    0
-                );
+                if (Blend)
+                {
+                    Library.DrawBlend(
+                                        StartIndex,    // Texture index
+                                        1f,            // Scale
+                                        DrawColour,    // Tint color
+                                        mid.X,         // X position
+                                        mid.Y,         // Y position
+                                        angle,         // Rotation
+                                        Opacity,       // Transparency
+                                        ImageType.Image,
+                                        false,
+                                        0
+                                    );
+                }
+                else
+                {
+                    Library.Draw(
+                                        StartIndex,    // Texture index
+                                        1f,            // Scale
+                                        DrawColour,    // Tint color
+                                        mid.X,         // X position
+                                        mid.Y,         // Y position
+                                        angle,         // Rotation
+                                        Opacity,       // Transparency
+                                        ImageType.Image,
+                                        false,
+                                        0
+                                    );
+                }
+                
             }
         }
 
@@ -182,6 +201,13 @@ namespace Client.Models
             public static Vector2 operator +(Vector2 a, Vector2 b) => new(a.X + b.X, a.Y + b.Y);
             public static Vector2 operator -(Vector2 a, Vector2 b) => new(a.X - b.X, a.Y - b.Y);
             public static Vector2 operator *(Vector2 a, float scalar) => new(a.X * scalar, a.Y * scalar);
+        }
+    }
+
+    public class MirChainEffect : MirLineEffect
+    {
+        public MirChainEffect(MapObject source, MapObject target) : base(source, target, LibraryFile.MagicEx7, 80)
+        {
         }
     }
 }

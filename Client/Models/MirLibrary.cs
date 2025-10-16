@@ -333,7 +333,68 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
-        public void DrawBlend(int index, float size, Color4 colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+
+        public void Draw(int index, float sizeX, float sizeY, Color4 colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+        {
+            if (!CheckImage(index)) return;
+
+            MirImage image = Images[index];
+
+            Texture texture;
+
+            switch (type)
+            {
+                case ImageType.Image:
+                    if (!image.ImageValid) image.CreateImage(_BReader);
+                    texture = image.Image;
+                    if (useOffSet)
+                    {
+                        x += image.OffSetX;
+                        y += image.OffSetY;
+                    }
+                    break;
+                case ImageType.Shadow:
+                    return;
+                /*     if (!image.ShadowValid) image.CreateShadow(_BReader);
+                     texture = image.Shadow;
+
+                     if (useOffSet)
+                     {
+                         x += image.ShadowOffSetX;
+                         y += image.ShadowOffSetY;
+                     }
+                     break;*/
+                case ImageType.Overlay:
+                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
+                    texture = image.Overlay;
+
+                    if (useOffSet)
+                    {
+                        x += image.OffSetX;
+                        y += image.OffSetY;
+                    }
+                    break;
+                default:
+                    return;
+            }
+            if (texture == null) return;
+
+            var scaling = Matrix.Scaling(sizeX, sizeY, 0f);
+            var rotationZ = Matrix.RotationZ(angle);
+            var translation = Matrix.Translation(x + (image.Width / 2), y + (image.Height / 2), 0);
+
+            DXManager.Sprite.Transform = scaling * rotationZ * translation;
+
+            DXManager.Sprite.Draw(texture, Vector3.Zero, new Vector3((image.Width / 2) * -1, (image.Height / 2) * -1, 0), colour);
+
+            DXManager.Sprite.Transform = Matrix.Identity;
+
+            CEnvir.DPSCounter++;
+
+            image.ExpireTime = Time.Now + Config.CacheDuration;
+        }
+
+        public void DrawBlend(int index, float sizeX, float sizeY, Color4 colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
 
@@ -384,7 +445,7 @@ namespace Client.Envir
 
             DXManager.SetBlend(true, opacity);
 
-            var scaling = Matrix.Scaling(size, size, 0f);
+            var scaling = Matrix.Scaling(sizeX, sizeY, 0f);
             var rotationZ = Matrix.RotationZ(angle);
             var translation = Matrix.Translation(x + (image.Width / 2), y + (image.Height / 2), 0);
 

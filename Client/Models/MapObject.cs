@@ -2721,7 +2721,7 @@ namespace Client.Models
                             }
 
                             if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
-                                DXSoundManager.Play(SoundIndex.IceBoltStart);
+                                DXSoundManager.Play(SoundIndex.Hemorrhage);
 
                             break;
 
@@ -2748,7 +2748,7 @@ namespace Client.Models
 
                                 if (primaryTarget != null && attackTarget != primaryTarget)
                                 {
-                                    var chain = new MirChainEffect(primaryTarget, attackTarget, LibraryFile.MagicEx7, 80)
+                                    var chain = new MirChainEffect(primaryTarget, attackTarget)
                                     {
                                         Blend = true,
                                         Target = attackTarget,

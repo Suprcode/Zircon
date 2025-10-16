@@ -2487,6 +2487,7 @@ namespace Library
         EvasionStart,
         RagingWindStart,
 
+        Hemorrhage,
         ChainofFireExplode,
 
         HundredFist,
