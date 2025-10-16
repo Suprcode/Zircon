@@ -136,7 +136,7 @@ namespace LibraryEditor
                 Parallel.For(0, Images.Length, options, i =>
                 {
                     WTLImage image = Images[i];
-                    WTLImage shadowimage = shadowLibrary != null ? shadowLibrary.Images[i] : null;
+                    WTLImage shadowimage = shadowLibrary != null && i < shadowLibrary.Images.Length ? shadowLibrary.Images[i] : null;
 
                     if (shadowimage != null && shadowimage.Length > 0)
                         library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.X, ShadowOffSetY = shadowimage.Y, ShadowType = shadowimage.Shadow };
@@ -173,7 +173,7 @@ namespace LibraryEditor
                 Parallel.For(0, Images.Length, options, i =>
                 {
                     WTLImage image = Images[i];
-                    WTLImage shadowimage = shadowLibrary != null ? shadowLibrary.Images[i] : null;
+                    WTLImage shadowimage = shadowLibrary != null && i < shadowLibrary.Images.Length ? shadowLibrary.Images[i] : null;
 
                     if (shadowimage != null)
                         lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };

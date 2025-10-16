@@ -623,6 +623,7 @@ namespace Library
         OffensiveBlow = 134,
         TaecheonSword = 135,
         FireSword = 136,
+        FlameArt = 137, //NOT CODED
 
         FireBall = 201,
         LightningBall = 202,
@@ -670,6 +671,7 @@ namespace Library
         IceDragon = 244,
         IceBreaker = 245,
         FrozenDragon = 246,
+        UnityWithNature = 247, //NOT CODED
 
         Heal = 300,
         SpiritSword = 301,
@@ -722,6 +724,7 @@ namespace Library
         BrainStorm = 348,
         HeavenlySky = 349,
         PoisonCloud = 350,
+        SupremeHealing = 351, //NOT CODED
 
         WillowDance = 401,
         VineTreeDance = 402,
@@ -780,6 +783,7 @@ namespace Library
         Shredding = 455,
         FourWheels = 456,
         CrescentMoon = 457,
+        ManaBurn = 458, //NOT CODED
 
         MonsterScortchedEarth = 501,
         MonsterIceStorm = 502,
@@ -1298,6 +1302,16 @@ namespace Library
         //Mon51
 
         //Mon52
+        WildBrownHorse = 520,
+        WildWhiteHorse = 521,
+        WildBlackHorse = 522,
+        //NF_Blank523 = 523,
+        WildRedHorse = 524,
+        //NF_Blank525 = 525,
+        //NF_Blank526 = 526,
+        //NF_Blank527 = 527,
+        //NF_Blank528 = 528,
+        //NF_Blank529 = 529,
 
         //MonMagicEx25
         SeaHorseCavalry = 530,

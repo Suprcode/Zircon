@@ -86,8 +86,8 @@ namespace Client.Models
             for (int i = 1; i < _linkCount - 1; i++)
             {
                 // Apply gravity
-                var vel = _velocities[i]; 
-                vel.Y += Gravity; 
+                var vel = _velocities[i];
+                vel.Y += Gravity;
                 _velocities[i] = vel;
 
                 // Pull toward the midpoint between neighbors
@@ -114,37 +114,23 @@ namespace Client.Models
 
                 float angle = (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2;
 
+                // Use actual distance to compute scale
+                float dist = MathF.Sqrt(MathF.Pow(p2.X - p1.X, 2) + MathF.Pow(p2.Y - p1.Y, 2));
+                float stretchY = dist / LinkLength; // vertical stretch
+                float stretchX = 1f;                // no horizontal stretch
+
                 if (Blend)
                 {
-                    Library.DrawBlend(
-                                        StartIndex,    // Texture index
-                                        1f,            // Scale
-                                        DrawColour,    // Tint color
-                                        mid.X,         // X position
-                                        mid.Y,         // Y position
-                                        angle,         // Rotation
-                                        Opacity,       // Transparency
-                                        ImageType.Image,
-                                        false,
-                                        0
-                                    );
+                    Library.DrawBlend(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y,
+                       (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2,
+                       Opacity, ImageType.Image, false, 0);
                 }
                 else
                 {
-                    Library.Draw(
-                                        StartIndex,    // Texture index
-                                        1f,            // Scale
-                                        DrawColour,    // Tint color
-                                        mid.X,         // X position
-                                        mid.Y,         // Y position
-                                        angle,         // Rotation
-                                        Opacity,       // Transparency
-                                        ImageType.Image,
-                                        false,
-                                        0
-                                    );
+                    Library.Draw(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y,
+                      (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2,
+                      Opacity, ImageType.Image, false, 0);
                 }
-                
             }
         }
 
