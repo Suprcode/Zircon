@@ -2198,19 +2198,19 @@ namespace Client.Models
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.TerracottaBoss)
                         Frames[frame.Key] = frame.Value;
                     break;
-                case MonsterImage.BrownHorse:
+                case MonsterImage.WildBrownHorse:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_52, out BodyLibrary);
                     BodyShape = 0;
                     break;
-                case MonsterImage.WhiteHorse:
+                case MonsterImage.WildWhiteHorse:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_52, out BodyLibrary);
                     BodyShape = 1;
                     break;
-                case MonsterImage.BlackHorse:
+                case MonsterImage.WildBlackHorse:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_52, out BodyLibrary);
                     BodyShape = 2;
                     break;
-                case MonsterImage.RedHorse:
+                case MonsterImage.WildRedHorse:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_52, out BodyLibrary);
                     BodyShape = 4;
                     break;
