@@ -441,7 +441,8 @@ namespace Library
         Hide,
         Mount,
         Mining,
-        Fishing
+        Fishing,
+        Taming
     }
 
     public enum MirAnimation : byte
@@ -494,7 +495,10 @@ namespace Library
 
         FishingCast,
         FishingWait,
-        FishingReel
+        FishingReel,
+
+        TamingCast,
+        TamingWait
     }
 
 
@@ -809,6 +813,9 @@ namespace Library
 
         PinkFireBall = 530,
         GreenSludgeBall = 540,
+
+        RushingMount = 700,
+        AscendingMount = 701,
     }
 
     public enum MagicProperty
@@ -1298,6 +1305,16 @@ namespace Library
         //Mon51
 
         //Mon52
+        BrownHorse = 520,
+        WhiteHorse = 521,
+        BlackHorse = 522,
+        //NF_Blank523 = 523,
+        RedHorse = 524,
+        //NF_Blank525 = 525,
+        //NF_Blank526 = 526,
+        //NF_Blank527 = 527,
+        //NF_Blank528 = 528,
+        //NF_Blank529 = 529,
 
         //MonMagicEx25
         SeaHorseCavalry = 530,
@@ -1981,6 +1998,13 @@ namespace Library
         None,
         Cast,
         Reel,
+        Cancel
+    }
+
+    public enum TamingState : byte
+    {
+        None,
+        Cast,
         Cancel
     }
 

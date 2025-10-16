@@ -213,7 +213,7 @@ namespace Client.Models.Particles
                 drawY -= (UseMovingOffset ? MapObject.User.MovingOffSet.Y : 0) + ((MapObject.User.CurrentLocation.Y - UserLocationOnCreation.Y) * MapObject.CellHeight);
             }
 
-            Library.DrawBlend(TextureIndex, Scale, Color, drawX, drawY, Angle, Opacity, ImageType.Image, false, 0);
+            Library.DrawBlend(TextureIndex, Scale, Scale, Color, drawX, drawY, Angle, Opacity, ImageType.Image, false, 0);
         }
 
         #region IDisposable

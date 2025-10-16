@@ -369,6 +369,10 @@ namespace Server.Models
                     PacketWaiting = false;
                     FishingCast((FishingState)action.Data[0], (MirDirection)action.Data[1], (Point)action.Data[2], (bool)action.Data[3]);
                     break;
+                case ActionType.Taming:
+                    PacketWaiting = false;
+                    Taming((TamingState)action.Data[0], (MirDirection)action.Data[1], (uint)action.Data[2]);
+                    break;
                 case ActionType.Attack:
                     PacketWaiting = false;
                     Attack((MirDirection)action.Data[0], (MagicType)action.Data[1]);
@@ -12947,6 +12951,7 @@ namespace Server.Models
 
             Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
         }
+
         public void FishingCast(FishingState state, MirDirection castDirection, Point floatLocation, bool caught = false)
         {
             if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
@@ -13195,6 +13200,55 @@ namespace Server.Models
 
             PauseBuffs();
         }
+
+        public void Taming(TamingState state, MirDirection direction, uint tamingObjectID)
+        {
+            if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
+            {
+                if (!PacketWaiting)
+                {
+                    ActionList.Add(new DelayedAction(ActionTime, ActionType.Taming, state, direction, tamingObjectID));
+                    PacketWaiting = true;
+                }
+                else
+                    Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
+
+                return;
+            }
+
+            MapObject ob = VisibleObjects.FirstOrDefault(x => x.ObjectID == tamingObjectID);
+            IsTaming = false;
+
+            MonsterObject mob = ob as MonsterObject;
+
+            if (mob == null || mob.MonsterInfo.AI != 135)
+            {
+                mob = null;
+                state = TamingState.Cancel;
+            }
+            else
+            {
+                IsTaming = true;
+            }
+
+            TamingTarget = mob;
+
+            Direction = direction;
+
+            ActionTime = SEnvir.Now + Globals.AttackTime;
+            AttackTime = SEnvir.Now.AddMilliseconds(Globals.AttackDelay);
+
+            Broadcast(new S.ObjectTaming
+            {
+                ObjectID = ObjectID,
+                State = state,
+                Direction = Direction,
+                TamingObjectID = TamingTarget?.ObjectID ?? tamingObjectID
+            });
+        }
+
+        private bool IsTaming = false;
+        private MonsterObject TamingTarget = null;
 
         public void Move(MirDirection direction, int distance)
         {

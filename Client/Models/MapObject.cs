@@ -4,6 +4,7 @@ using Client.Models.Particles;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
+using Library.Network.ClientPackets;
 using Library.SystemModels;
 using SlimDX;
 using SlimDX.Direct3D9;
@@ -86,6 +87,10 @@ namespace Client.Models
         public FishingState FishingState;
         public bool FishFound;
         public Point FloatLocation;
+
+        public TamingState TamingState;
+        public MapObject TamingObject;
+        public uint TamingObjectID;
 
         public Point CurrentLocation
         {
@@ -706,6 +711,9 @@ namespace Client.Models
                     break;
                 case MirAction.Fishing:
                     Interupt = CurrentAnimation == MirAnimation.FishingWait;
+                    break;
+                case MirAction.Taming:
+                    Interupt = CurrentAnimation == MirAnimation.TamingWait;
                     break;
                 default:
                     Interupt = false;
@@ -2748,7 +2756,7 @@ namespace Client.Models
 
                                 if (primaryTarget != null && attackTarget != primaryTarget)
                                 {
-                                    var chain = new MirChainEffect(primaryTarget, attackTarget, LibraryFile.MagicEx7, 80)
+                                    var chain = new MirChainEffect(primaryTarget, attackTarget)
                                     {
                                         Blend = true,
                                         Target = attackTarget,
@@ -3200,6 +3208,10 @@ namespace Client.Models
                     break;
                 case MirAction.Mining:
                     MiningEffect = (bool)action.Extra[0];
+                    break;
+                case MirAction.Taming:
+                    TamingState = (TamingState)action.Extra[0];
+                    TamingObjectID = (uint)action.Extra[1];
                     break;
                 case MirAction.Moving:
                     MoveDistance = (int)action.Extra[0];
@@ -5909,7 +5921,7 @@ namespace Client.Models
                             Loop = true,
                         });
 
-                        foreach (MirChainEffect chainEffect in GameScene.Game.MapControl.Effects.OfType<MirChainEffect>().Where(x => x.Target == this))
+                        foreach (MirLineEffect chainEffect in GameScene.Game.MapControl.Effects.OfType<MirLineEffect>().Where(x => x.Target == this))
                         {
                             chainEffect.SetOwner(chain);
                             effects.Add(chainEffect);
