@@ -378,9 +378,10 @@ namespace Client.Scenes.Views
             if (ob.MonsterInfo != null)
             {
                 name = $"{ob.MonsterInfo.MonsterName}";
+
                 if (ob.MonsterInfo.AI < 0)
                 {
-                    colour = Color.LightBlue;
+                    colour = Color.Red;
                 }
                 else
                 {
@@ -414,12 +415,22 @@ namespace Client.Scenes.Views
                         control.Controls[0].BackColour = colour;
 
                     colour = Color.White;
+
                 }
 
                 if (!string.IsNullOrEmpty(ob.PetOwner))
                 {
                     name += $" ({ob.PetOwner})";
-                    control.DrawTexture = false;
+
+                    if (ob.PetOwner == GameScene.Game.User.Name)
+                    {
+                        colour = Color.Orange;
+                        size = new Size(4, 4);
+                    }
+                    else
+                    {
+                        colour = Color.Red;
+                    }
                 }
             }
             else if (ob.ItemInfo != null)
@@ -430,7 +441,21 @@ namespace Client.Scenes.Views
             {
                 if (MapObject.User.ObjectID == ob.ObjectID)
                 {
-                    colour = Color.Cyan;
+                    size = new Size(3, 3);
+
+                    if (control.ProcessAction == null)
+                    {
+                        control.ProcessAction = () =>
+                        {
+                            bool isVisibleSecond = CEnvir.Now.Millisecond < 500;
+
+                            control.Border = true;
+                            control.BackColour = Color.Transparent;
+                            control.BorderColour = isVisibleSecond ? Color.Lime : Color.Transparent;
+                        };
+                    }
+
+                    colour = Color.Transparent;
                 }
                 else if (GameScene.Game.Observer)
                 {
@@ -438,7 +463,8 @@ namespace Client.Scenes.Views
                 }
                 else if (GameScene.Game.GroupBox.Members.Any(x => x.ObjectID == ob.ObjectID))
                 {
-                    colour = Color.Blue;
+                    colour = Color.Lime;
+                    size = new Size(4, 4);
                 }
                 else if (GameScene.Game.Partner != null && GameScene.Game.Partner.ObjectID == ob.ObjectID)
                 {

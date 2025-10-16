@@ -4375,7 +4375,7 @@ namespace Client.Scenes
                 Size = new Size(3, 3),
                 DrawTexture = true,
                 Hint = npc.NPCName,
-                BackColour = Color.Lime
+                BackColour = Color.Yellow
             };
         }
 

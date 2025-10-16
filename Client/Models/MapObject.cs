@@ -2729,7 +2729,7 @@ namespace Client.Models
                             }
 
                             if (MagicLocations.Count > 0 || AttackTargets.Count > 0)
-                                DXSoundManager.Play(SoundIndex.IceBoltStart);
+                                DXSoundManager.Play(SoundIndex.Hemorrhage);
 
                             break;
 

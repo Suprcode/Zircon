@@ -246,7 +246,12 @@ namespace Server.Envir
         {
             string key = context.Request.QueryString[ActivationKey];
 
-            if (string.IsNullOrEmpty(key)) return;
+            if (string.IsNullOrEmpty(key))
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.Close();
+                return;
+            }
 
             AccountInfo account = null;
             for (int i = 0; i < SEnvir.AccountInfoList.Count; i++)
@@ -272,7 +277,12 @@ namespace Server.Envir
         {
             string key = context.Request.QueryString[ResetKey];
 
-            if (string.IsNullOrEmpty(key)) return;
+            if (string.IsNullOrEmpty(key))
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.Close();
+                return;
+            }
 
             AccountInfo account = null;
             for (int i = 0; i < SEnvir.AccountInfoList.Count; i++)
@@ -297,6 +307,13 @@ namespace Server.Envir
         private static void DeleteAccount(HttpListenerContext context)
         {
             string key = context.Request.QueryString[DeleteKey];
+
+            if (string.IsNullOrEmpty(key))
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.Close();
+                return;
+            }
 
             AccountInfo account = null;
             for (int i = 0; i < SEnvir.AccountInfoList.Count; i++)

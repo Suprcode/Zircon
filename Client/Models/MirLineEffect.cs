@@ -86,8 +86,8 @@ namespace Client.Models
             for (int i = 1; i < _linkCount - 1; i++)
             {
                 // Apply gravity
-                var vel = _velocities[i]; 
-                vel.Y += Gravity; 
+                var vel = _velocities[i];
+                vel.Y += Gravity;
                 _velocities[i] = vel;
 
                 // Pull toward the midpoint between neighbors

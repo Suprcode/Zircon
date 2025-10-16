@@ -333,6 +333,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
+
         public void Draw(int index, float sizeX, float sizeY, Color4 colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
@@ -392,6 +393,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
+
         public void DrawBlend(int index, float sizeX, float sizeY, Color4 colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
