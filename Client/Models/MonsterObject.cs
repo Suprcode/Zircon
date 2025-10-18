@@ -114,10 +114,12 @@ namespace Client.Models
 
             Poison = info.Poison;
 
-            foreach (BuffType type in info.Buffs)
+            foreach (BuffType type in info.Buffs.Keys)
             {
-                if (!VisibleBuffs.Contains(type))
-                    VisibleBuffs.Add(type);
+                if (!VisibleBuffs.ContainsKey(type))
+                    VisibleBuffs[type] = 0;
+
+                VisibleBuffs[type] = info.Buffs[type];
             }
 
             UpdateLibraries();
@@ -2198,6 +2200,22 @@ namespace Client.Models
                     foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.TerracottaBoss)
                         Frames[frame.Key] = frame.Value;
                     break;
+                case MonsterImage.WildBrownHorse:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_52, out BodyLibrary);
+                    BodyShape = 0;
+                    break;
+                case MonsterImage.WildWhiteHorse:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_52, out BodyLibrary);
+                    BodyShape = 1;
+                    break;
+                case MonsterImage.WildBlackHorse:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_52, out BodyLibrary);
+                    BodyShape = 2;
+                    break;
+                case MonsterImage.WildRedHorse:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_52, out BodyLibrary);
+                    BodyShape = 4;
+                    break;
                 case MonsterImage.SeaHorseCavalry:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_53, out BodyLibrary);
                     BodyShape = 0;
@@ -2379,7 +2397,7 @@ namespace Client.Models
                         default:
                             animation = MirAnimation.Standing;
 
-                            if (VisibleBuffs.Contains(BuffType.DragonRepulse))
+                            if (VisibleBuffs.ContainsKey(BuffType.DragonRepulse))
                                 animation = MirAnimation.DragonRepulseMiddle;
                             else if (CurrentAnimation == MirAnimation.DragonRepulseMiddle)
                                 animation = MirAnimation.DragonRepulseEnd;

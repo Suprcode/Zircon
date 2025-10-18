@@ -8654,9 +8654,9 @@ namespace Server.Models
             return true;
         }
 
-        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false)
+        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false, int extra = 0)
         {
-            BuffInfo info = base.BuffAdd(type, remainingTicks, stats, visible, pause, tickRate);
+            BuffInfo info = base.BuffAdd(type, remainingTicks, stats, visible, pause, tickRate, hidden, extra);
 
             info.Character = Character;
 
@@ -15279,7 +15279,7 @@ namespace Server.Models
 
                 Poison = Poison,
 
-                Buffs = Character.Buffs.Where(x => x.Visible).Select(x => x.Type).ToList(),
+                Buffs = Character.Buffs.Where(x => x.Visible).Select(x => new KeyValuePair<BuffType, int>(x.Type, x.Extra)).ToDictionary(),
 
                 Horse = Horse,
 

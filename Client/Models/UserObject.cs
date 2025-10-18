@@ -772,8 +772,10 @@ namespace Client.Models
         {
             Buffs.Add(buff);
 
-            if (!VisibleBuffs.Contains(buff.Type))
-                VisibleBuffs.Add(buff.Type);
+            if (!VisibleBuffs.ContainsKey(buff.Type))
+                VisibleBuffs[buff.Type] = 0;
+
+            VisibleBuffs[buff.Type] = buff.Extra;
 
             if (buff.Type == BuffType.SuperiorMagicShield)
             {

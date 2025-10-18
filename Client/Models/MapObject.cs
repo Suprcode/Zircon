@@ -199,7 +199,7 @@ namespace Client.Models
         public List<DamageInfo> DamageList = new List<DamageInfo>();
         public List<MirEffect> Effects = new List<MirEffect>();
 
-        public List<BuffType> VisibleBuffs = new List<BuffType>();
+        public Dictionary<BuffType, int> VisibleBuffs = [];
         public PoisonType Poison;
 
         public int MoveDistance;
@@ -365,7 +365,7 @@ namespace Client.Models
             if ((Poison & PoisonType.Paralysis) == PoisonType.Paralysis)
                 DrawColour = Color.DimGray;
 
-            if (Stats?[Stat.ClearRing] > 0 || VisibleBuffs.Contains(BuffType.Invisibility) || VisibleBuffs.Contains(BuffType.Cloak) || VisibleBuffs.Contains(BuffType.Transparency))
+            if (Stats?[Stat.ClearRing] > 0 || VisibleBuffs.ContainsKey(BuffType.Invisibility) || VisibleBuffs.ContainsKey(BuffType.Cloak) || VisibleBuffs.ContainsKey(BuffType.Transparency))
                 Opacity = 0.5f;
             else
                 Opacity = 1f;
@@ -461,7 +461,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.Neutralize);
             }
 
-            if (VisibleBuffs.Contains(BuffType.MagicShield))
+            if (VisibleBuffs.ContainsKey(BuffType.MagicShield))
             {
                 CreateMagicEffect(MagicEffect.MagicShield);
             }
@@ -470,7 +470,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.MagicShield);
             }
 
-            if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+            if (VisibleBuffs.ContainsKey(BuffType.SuperiorMagicShield))
             {
                 CreateMagicEffect(MagicEffect.SuperiorMagicShield);
             }
@@ -479,7 +479,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.SuperiorMagicShield);
             }
 
-            if (VisibleBuffs.Contains(BuffType.Developer))
+            if (VisibleBuffs.ContainsKey(BuffType.Developer))
             {
                 EndMagicEffect(MagicEffect.Ranking);
 
@@ -489,7 +489,7 @@ namespace Client.Models
             {
                 EndMagicEffect(MagicEffect.Developer);
 
-                if (VisibleBuffs.Contains(BuffType.Ranking))
+                if (VisibleBuffs.ContainsKey(BuffType.Ranking))
                 {
                     CreateMagicEffect(MagicEffect.Ranking);
                 }
@@ -499,7 +499,7 @@ namespace Client.Models
                 }
             }
 
-            if (VisibleBuffs.Contains(BuffType.ReflectDamage))
+            if (VisibleBuffs.ContainsKey(BuffType.ReflectDamage))
             {
                 CreateMagicEffect(MagicEffect.ReflectDamage);
             }
@@ -508,7 +508,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.ReflectDamage);
             }
 
-            if (VisibleBuffs.Contains(BuffType.LifeSteal))
+            if (VisibleBuffs.ContainsKey(BuffType.LifeSteal))
             {
                 CreateMagicEffect(MagicEffect.LifeSteal);
             }
@@ -517,7 +517,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.LifeSteal);
             }
 
-            if (VisibleBuffs.Contains(BuffType.CelestialLight))
+            if (VisibleBuffs.ContainsKey(BuffType.CelestialLight))
             {
                 CreateMagicEffect(MagicEffect.CelestialLight);
             }
@@ -526,7 +526,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.CelestialLight);
             }
 
-            if (VisibleBuffs.Contains(BuffType.FrostBite))
+            if (VisibleBuffs.ContainsKey(BuffType.FrostBite))
             {
                 CreateMagicEffect(MagicEffect.FrostBite);
             }
@@ -535,7 +535,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.FrostBite);
             }
 
-            if (VisibleBuffs.Contains(BuffType.ElementalSwords))
+            if (VisibleBuffs.ContainsKey(BuffType.ElementalSwords))
             {
                 CreateMagicEffect(MagicEffect.ElementalSwords);
             }
@@ -544,7 +544,7 @@ namespace Client.Models
                 EndMagicEffect(MagicEffect.ElementalSwords);
             }
 
-            if (VisibleBuffs.Contains(BuffType.DefensiveBlow))
+            if (VisibleBuffs.ContainsKey(BuffType.DefensiveBlow))
             {
                 CreateMagicEffect(MagicEffect.DefensiveBlow);
             }
@@ -1961,7 +1961,7 @@ namespace Client.Models
 
                                 spell.CompleteAction = () =>
                                 {
-                                    spell = new MirEffect(1870, 7, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 20, 80, Globals.NoneColour)
+                                    spell = new MirEffect(1870, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx, 20, 80, Globals.NoneColour)
                                     {
                                         Blend = true,
                                         MapTarget = point,
@@ -3217,10 +3217,10 @@ namespace Client.Models
                     }
                     break;
                 case MirAction.Standing:
-                    bool haselementalhurricane = VisibleBuffs.Contains(BuffType.ElementalHurricane);
-                    bool hasdragonrepulse = VisibleBuffs.Contains(BuffType.DragonRepulse);
+                    bool haselementalhurricane = VisibleBuffs.ContainsKey(BuffType.ElementalHurricane);
+                    bool hasdragonrepulse = VisibleBuffs.ContainsKey(BuffType.DragonRepulse);
 
-                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                    if (VisibleBuffs.ContainsKey(BuffType.ElementalHurricane))
                     {
                         var effects = CreateMagicEffect(MagicEffect.ElementalHurricane);
 
@@ -3293,13 +3293,13 @@ namespace Client.Models
 
                     if (GameScene.Game.StruckEnabled)
                     {
-                        if (VisibleBuffs.Contains(BuffType.MagicShield))
+                        if (VisibleBuffs.ContainsKey(BuffType.MagicShield))
                             CreateMagicEffect(MagicEffect.MagicShieldStruck);
 
-                        if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+                        if (VisibleBuffs.ContainsKey(BuffType.SuperiorMagicShield))
                             CreateMagicEffect(MagicEffect.SuperiorMagicShieldStruck);
 
-                        if (VisibleBuffs.Contains(BuffType.CelestialLight))
+                        if (VisibleBuffs.ContainsKey(BuffType.CelestialLight))
                             CreateMagicEffect(MagicEffect.CelestialLightStruck);
 
                         AttackerID = (uint)action.Extra[0];
@@ -5193,13 +5193,13 @@ namespace Client.Models
 
             PlayStruckSound();
 
-            if (VisibleBuffs.Contains(BuffType.MagicShield))
+            if (VisibleBuffs.ContainsKey(BuffType.MagicShield))
                 CreateMagicEffect(MagicEffect.MagicShieldStruck);
 
-            if (VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+            if (VisibleBuffs.ContainsKey(BuffType.SuperiorMagicShield))
                 CreateMagicEffect(MagicEffect.SuperiorMagicShieldStruck);
 
-            if (VisibleBuffs.Contains(BuffType.CelestialLight))
+            if (VisibleBuffs.ContainsKey(BuffType.CelestialLight))
                 CreateMagicEffect(MagicEffect.CelestialLightStruck);
 
             var color = Functions.GetElementColour(element);
@@ -5476,7 +5476,7 @@ namespace Client.Models
             if (CEnvir.Now < DrawHealthTime)
                 y -= 20;
 
-            if (this == User && User.VisibleBuffs.Contains(BuffType.SuperiorMagicShield))
+            if (this == User && User.VisibleBuffs.ContainsKey(BuffType.SuperiorMagicShield))
                 y -= 10;
 
             if (Dead)
@@ -5690,13 +5690,15 @@ namespace Client.Models
                     break;
                 case MagicEffect.ElementalSwords:
                     {
-                        if (Stats != null && Stats[Stat.ElementalSwords] > 0)
+                        if (VisibleBuffs.ContainsKey(BuffType.ElementalSwords))
                         {
-                            for (int i = 0; i < Stats[Stat.ElementalSwords]; i++)
+                            var swordCount = VisibleBuffs[BuffType.ElementalSwords];
+
+                            for (int i = 0; i < swordCount; i++)
                             {
                                 bool startAnim = false;
 
-                                if (Stats[Stat.ElementalSwords] == 5)
+                                if (swordCount == 5)
                                 {
                                     startAnim = true;
                                 }

@@ -1716,8 +1716,10 @@ namespace Client.Envir
             {
                 if (ob.ObjectID != p.ObjectID) continue;
 
-                if (!ob.VisibleBuffs.Contains(p.Type))
-                    ob.VisibleBuffs.Add(p.Type);
+                if (!ob.VisibleBuffs.ContainsKey(p.Type))
+                    ob.VisibleBuffs[p.Type] = 0;
+
+                ob.VisibleBuffs[p.Type] = p.Extra;
 
                 if (p.Type == BuffType.SuperiorMagicShield)
                     ob.EndMagicEffect(MagicEffect.MagicShield);

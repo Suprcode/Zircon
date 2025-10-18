@@ -251,6 +251,7 @@ namespace Library.Network.ServerPackets
     {
         public uint ObjectID { get; set; }
         public BuffType Type { get; set; }
+        public int Extra { get;set; }
     }
     public sealed class ObjectBuffRemove : Packet
     {
@@ -296,7 +297,7 @@ namespace Library.Network.ServerPackets
         public bool Dead { get; set; }
         public PoisonType Poison { get; set; }
 
-        public List<BuffType> Buffs { get; set; }
+        public Dictionary<BuffType, int> Buffs { get; set; }
 
         public HorseType Horse { get; set; }
 
@@ -330,7 +331,7 @@ namespace Library.Network.ServerPackets
         public bool HalloweenEvent { get; set; }
         public bool ChristmasEvent { get; set; }
 
-        public List<BuffType> Buffs { get; set; }
+        public Dictionary<BuffType, int> Buffs { get; set; }
         public bool Extra { get; set; }
 
         public int Extra1 { get; set; }

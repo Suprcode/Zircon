@@ -3055,7 +3055,7 @@ namespace Server.Models
             }
         }
 
-        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false)
+        public override BuffInfo BuffAdd(BuffType type, TimeSpan remainingTicks, Stats stats, bool visible, bool pause, TimeSpan tickRate, bool hidden = false, int extra = 0)
         {
             BuffInfo info = base.BuffAdd(type, remainingTicks, stats, visible, pause, tickRate);
 
@@ -3107,7 +3107,7 @@ namespace Server.Models
                 HalloweenEvent = HalloweenEventMob,
                 ChristmasEvent = ChristmasEventMob,
 
-                Buffs = Buffs.Where(x => x.Visible).Select(x => x.Type).ToList()
+                Buffs = Buffs.Where(x => x.Visible).Select(x => new KeyValuePair<BuffType, int>(x.Type, x.Extra)).ToDictionary()
             };
         }
         public override Packet GetDataPacket(PlayerObject ob)

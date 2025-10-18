@@ -283,10 +283,12 @@ namespace Client.Models
 
             Poison = info.Poison;
 
-            foreach (BuffType type in info.Buffs)
+            foreach (BuffType type in info.Buffs.Keys)
             {
-                if (!VisibleBuffs.Contains(type))
-                    VisibleBuffs.Add(type);
+                if (!VisibleBuffs.ContainsKey(type))
+                    VisibleBuffs[type] = 0;
+
+                VisibleBuffs[type] = info.Buffs[type];
             }
 
             Title = info.GuildName;
@@ -575,18 +577,18 @@ namespace Client.Models
                     if (CEnvir.Now < StanceTime)
                         animation = MirAnimation.Stance;
 
-                    if (VisibleBuffs.Contains(BuffType.Cloak))
+                    if (VisibleBuffs.ContainsKey(BuffType.Cloak))
                         animation = MirAnimation.CreepStanding;
 
                     if (Horse != HorseType.None)
                         animation = MirAnimation.HorseStanding;
 
-                    if (VisibleBuffs.Contains(BuffType.DragonRepulse))
+                    if (VisibleBuffs.ContainsKey(BuffType.DragonRepulse))
                         animation = MirAnimation.DragonRepulseMiddle;
                     else if (CurrentAnimation == MirAnimation.DragonRepulseMiddle)
                         animation = MirAnimation.DragonRepulseEnd;
 
-                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                    if (VisibleBuffs.ContainsKey(BuffType.ElementalHurricane))
                         animation = MirAnimation.ChannellingMiddle;
 
                     break;
@@ -600,8 +602,8 @@ namespace Client.Models
 
                     if ((MagicType)action.Extra[1] == MagicType.ShoulderDash || (MagicType)action.Extra[1] == MagicType.Assault)
                         animation = MirAnimation.Combat8;
-                    else if (VisibleBuffs.Contains(BuffType.Cloak))
-                        animation = VisibleBuffs.Contains(BuffType.GhostWalk) ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow;
+                    else if (VisibleBuffs.ContainsKey(BuffType.Cloak))
+                        animation = VisibleBuffs.ContainsKey(BuffType.GhostWalk) ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow;
                     else if ((int)action.Extra[0] >= 2)
                     {
                         animation = MirAnimation.Running;
@@ -638,7 +640,7 @@ namespace Client.Models
                     if (type == MagicType.PoisonousCloud)
                         DrawWeapon = false;
 
-                    if (VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                    if (VisibleBuffs.ContainsKey(BuffType.ElementalHurricane))
                         animation = MirAnimation.ChannellingEnd;
 
                     break;

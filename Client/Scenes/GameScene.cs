@@ -3033,7 +3033,7 @@ namespace Client.Scenes
             switch (magic.Info.Magic)
             {
                 case MagicType.Cloak:
-                    if (User.VisibleBuffs.Contains(BuffType.Cloak)) break;
+                    if (User.VisibleBuffs.ContainsKey(BuffType.Cloak)) break;
                     if (CEnvir.Now < User.CombatTime.AddSeconds(10))
                     {
                         if (CEnvir.Now >= OutputTime)
@@ -3055,7 +3055,7 @@ namespace Client.Scenes
                     }
                     break;
                 case MagicType.DarkConversion:
-                    if (User.VisibleBuffs.Contains(BuffType.DarkConversion)) break;
+                    if (User.VisibleBuffs.ContainsKey(BuffType.DarkConversion)) break;
 
                     if (magic.Cost > User.CurrentMP)
                     {
@@ -3089,7 +3089,7 @@ namespace Client.Scenes
                     break;
                 case MagicType.ElementalHurricane:
                     int cost = magic.Cost;
-                    if (MapObject.User.VisibleBuffs.Contains(BuffType.ElementalHurricane))
+                    if (MapObject.User.VisibleBuffs.ContainsKey(BuffType.ElementalHurricane))
                         cost = 0;
 
                     if (cost > User.CurrentMP)
@@ -3265,7 +3265,7 @@ namespace Client.Scenes
                     break;
 
                 case MagicType.Rake:
-                    if (!User.VisibleBuffs.Contains(BuffType.Cloak)) return;
+                    if (!User.VisibleBuffs.ContainsKey(BuffType.Cloak)) return;
                     break;
 
                 case MagicType.Chain:

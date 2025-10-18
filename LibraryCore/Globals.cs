@@ -829,6 +829,7 @@ namespace Library
         public Stats Stats { get; set; }
         public bool Pause { get; set; }
         public int ItemIndex { get; set; }
+        public int Extra { get; set; }
     }
 
     public class ClientRefineInfo

@@ -717,7 +717,7 @@ namespace Server.Models.Monsters
 
                 Poison = Poison,
 
-                Buffs = Buffs.Where(x => x.Visible).Select(x => x.Type).ToList(),
+                Buffs = Buffs.Where(x => x.Visible).Select(x => new KeyValuePair<BuffType, int>(x.Type, x.Extra)).ToDictionary(),
 
                 CompanionObject = new ClientCompanionObject
                 {
