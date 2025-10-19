@@ -45,13 +45,12 @@ namespace Server.Models.Monsters
                 SetHP(0);
                 return;
             }
-
         }
         protected override bool InAttackRange()
         {
             if (Target.CurrentMap != CurrentMap) return false;
 
-            return Target.CurrentLocation != CurrentLocation && Functions.InRange(CurrentLocation, Target.CurrentLocation, 1);
+            return Target.CurrentLocation != CurrentLocation && Functions.InRange(CurrentLocation, Target.CurrentLocation, MonsterInfo.ViewRange);
         }
 
         public override void ProcessTarget()

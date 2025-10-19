@@ -1432,6 +1432,12 @@ namespace Client.Envir
                             BlendRate = 0.6F
                         });
 
+                        if (ob.ObjectID == GameScene.Game.User.ObjectID)
+                        {
+                            GameScene.Game.BigMapBox.PlayLocatorAnim(ob.ObjectID);
+                            GameScene.Game.MiniMapBox.PlayLocatorAnim(ob.ObjectID);
+                        }
+
                         DXSoundManager.Play(SoundIndex.TeleportIn);
                         break;
                     case Effect.ThunderBolt:

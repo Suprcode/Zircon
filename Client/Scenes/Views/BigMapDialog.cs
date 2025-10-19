@@ -153,13 +153,14 @@ namespace Client.Scenes.Views
             Panel.Location = ClientArea.Location;
             Panel.Size = ClientArea.Size;
         }
+
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
             base.OnIsVisibleChanged(oValue, nValue);
 
             SelectedInfo = IsVisible ? GameScene.Game.MapControl.MapInfo : null;
-
         }
+
         public override void OnOpacityChanged(float oValue, float nValue)
         {
             base.OnOpacityChanged(oValue, nValue);
@@ -176,7 +177,6 @@ namespace Client.Scenes.Views
                 Image.ImageOpacity = Opacity;
             }
         }
-
 
         public override WindowType Type => WindowType.None;
         public override bool CustomSize => false;
@@ -238,9 +238,7 @@ namespace Client.Scenes.Views
         {
             if (SelectedInfo == null) return;
 
-            DXControl control;
-
-            if (!MapInfoObjects.TryGetValue(ob, out control))
+            if (!MapInfoObjects.TryGetValue(ob, out DXControl control))
             {
                 if (ob.Region?.Map != SelectedInfo) return;
 
@@ -283,9 +281,9 @@ namespace Client.Scenes.Views
             int x = (minX + maxX) / 2;
             int y = (minY + maxY) / 2;
 
-
             control.Location = new Point((int)(ScaleX * x) - control.Size.Width / 2, (int)(ScaleY * y) - control.Size.Height / 2);
         }
+
         public void Update(MovementInfo ob)
         {
             if (ob.SourceRegion == null || ob.SourceRegion.Map != SelectedInfo) return;
@@ -345,30 +343,36 @@ namespace Client.Scenes.Views
             };
             control.Location = new Point((int)(ScaleX * x) - control.Size.Width / 2, (int)(ScaleY * y) - control.Size.Height / 2);
         }
+
         public void Update(ClientObjectData ob)
         {
             if (SelectedInfo == null) return;
 
-            DXControl control;
-
-            if (!MapInfoObjects.TryGetValue(ob, out control))
+            if (!MapInfoObjects.TryGetValue(ob, out DXControl existing))
             {
                 if (ob.MapIndex != SelectedInfo.Index) return;
                 if (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common) return;
                 if (ob.MonsterInfo != null && (ob.Dead || ob.MonsterInfo.Image == MonsterImage.None)) return;
 
-                MapInfoObjects[ob] = control = new DXControl
-                {
-                    DrawTexture = true,
-                    Parent = Image,
-                    Opacity = Opacity,
-                };
+                DXMapInfoControl created = CreateMapInfoObject();
+                MapInfoObjects[ob] = created;
+                existing = created;
             }
             else if (ob.MapIndex != SelectedInfo.Index || (ob.MonsterInfo != null && ob.Dead) || (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common))
             {
-                control.Dispose();
+                existing.Dispose();
                 MapInfoObjects.Remove(ob);
                 return;
+            }
+
+            DXMapInfoControl control = existing as DXMapInfoControl;
+            if (control == null)
+            {
+                existing.Dispose();
+
+                DXMapInfoControl created = CreateMapInfoObject();
+                MapInfoObjects[ob] = created;
+                control = created;
             }
 
             Size size = new Size(3, 3);
@@ -442,20 +446,28 @@ namespace Client.Scenes.Views
                 if (MapObject.User.ObjectID == ob.ObjectID)
                 {
                     size = new Size(3, 3);
+                    control.BorderColour = Color.Lime;
+                    colour = Color.Transparent;
 
                     if (control.ProcessAction == null)
                     {
                         control.ProcessAction = () =>
                         {
-                            bool isVisibleSecond = CEnvir.Now.Millisecond < 500;
+                            if (!control.IsBorderAnimationActive)
+                            {
+                                bool isVisibleSecond = CEnvir.Now.Millisecond < 500;
 
-                            control.Border = true;
-                            control.BackColour = Color.Transparent;
-                            control.BorderColour = isVisibleSecond ? Color.Lime : Color.Transparent;
+                                control.Border = true;
+                                control.BorderSize = 1f;
+                                control.BorderColour = isVisibleSecond ? Color.Lime : Color.Transparent;
+                            }
+                            else
+                            {
+                                //control.BackColour = Color.Transparent;
+                                control.BorderSize = 3f;
+                            }
                         };
                     }
-
-                    colour = Color.Transparent;
                 }
                 else if (GameScene.Game.Observer)
                 {
@@ -480,6 +492,27 @@ namespace Client.Scenes.Views
             control.BackColour = colour;
             control.Size = size;
             control.Location = new Point((int)(ScaleX * ob.Location.X) - size.Width / 2, (int)(ScaleY * ob.Location.Y) - size.Height / 2);
+        }
+
+        public void PlayLocatorAnim(uint objectID)
+        {
+            if (MapInfoObjects.Keys.OfType<ClientObjectData>().FirstOrDefault(x => x.ObjectID == objectID) is not { } ob)
+                return;
+
+            if (!MapInfoObjects.TryGetValue(ob, out var control))
+                return;
+
+            if (control is DXMapInfoControl mapInfoObject)
+                mapInfoObject.PlayBorderAnimation();
+        }
+
+        private DXMapInfoControl CreateMapInfoObject()
+        {
+            return new DXMapInfoControl
+            {
+                Parent = Image,
+                Opacity = Opacity,
+            };
         }
 
         public void Remove(object ob)
@@ -519,7 +552,6 @@ namespace Client.Scenes.Views
 
                 MapInfoObjects.Clear();
                 MapInfoObjects = null;
-
 
                 if (Image != null)
                 {

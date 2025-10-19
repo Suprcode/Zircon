@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-//Cleaned
 namespace Client.Scenes.Views
 {
     public sealed class MiniMapDialog : DXWindow
@@ -237,29 +236,33 @@ namespace Client.Scenes.Views
         public void Update(ClientObjectData ob)
         {
             if (GameScene.Game.MapControl.MapInfo == null) return;
-            DXControl control;
 
-            if (!MapInfoObjects.TryGetValue(ob, out control))
+            if (!MapInfoObjects.TryGetValue(ob, out DXControl existing))
             {
                 if (ob.MapIndex != GameScene.Game.MapControl.MapInfo.Index) return;
                 if (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common) return;
                 if (ob.MonsterInfo != null && (ob.Dead || ob.MonsterInfo.Image == MonsterImage.None)) return;
 
-                MapInfoObjects[ob] = control = new DXControl
-                {
-                    DrawTexture = true,
-                    Parent = Image,
-                    Opacity = Opacity,
-                    //MonsterInfo.AI < 0 ? Color.FromArgb(150, 200, 255) : Color.Red,
-                };
-
+                DXMapInfoControl created = CreateMapInfoObject();
+                MapInfoObjects[ob] = created;
+                existing = created;
 
             }
             else if (ob.MapIndex != GameScene.Game.MapControl.MapInfo.Index || (ob.MonsterInfo != null && ob.Dead) || (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common))
             {
-                control.Dispose();
+                existing.Dispose();
                 MapInfoObjects.Remove(ob);
                 return;
+            }
+
+            DXMapInfoControl control = existing as DXMapInfoControl;
+            if (control == null)
+            {
+                existing.Dispose();
+
+                DXMapInfoControl created = CreateMapInfoObject();
+                MapInfoObjects[ob] = created;
+                control = created;
             }
 
             Size size = new Size(3, 3);
@@ -333,20 +336,27 @@ namespace Client.Scenes.Views
                 if (MapObject.User.ObjectID == ob.ObjectID)
                 {
                     size = new Size(3, 3);
+                    control.BorderColour = Color.Lime;
+                    colour = Color.Transparent;
 
                     if (control.ProcessAction == null)
                     {
                         control.ProcessAction = () =>
                         {
-                            bool isVisibleSecond = CEnvir.Now.Millisecond < 500;
+                            if (!control.IsBorderAnimationActive)
+                            {
+                                bool isVisibleSecond = CEnvir.Now.Millisecond < 500;
 
-                            control.Border = true;
-                            control.BackColour = Color.Transparent;
-                            control.BorderColour = isVisibleSecond ? Color.Lime : Color.Transparent;
+                                control.Border = true;
+                                control.BorderSize = 1f;
+                                control.BorderColour = isVisibleSecond ? Color.Lime : Color.Transparent;
+                            }
+                            else
+                            {
+                                control.BorderSize = 3f;
+                            }
                         };
                     }
-
-                    colour = Color.Transparent;
                 }
                 else if (GameScene.Game.Observer)
                 {
@@ -424,6 +434,30 @@ namespace Client.Scenes.Views
             }
 
             Image.Location = new Point(x, y);
+        }
+
+        public void PlayLocatorAnim(uint objectID)
+        {
+            if (MapInfoObjects.Keys
+                .OfType<ClientObjectData>()
+                .FirstOrDefault(info => info.ObjectID == objectID)
+                is not { } ob)
+                return;
+
+            if (!MapInfoObjects.TryGetValue(ob, out var control))
+                return;
+
+            if (control is DXMapInfoControl mapInfoObject)
+                mapInfoObject.PlayBorderAnimation();
+        }
+
+        private DXMapInfoControl CreateMapInfoObject()
+        {
+            return new DXMapInfoControl
+            {
+                Parent = Image,
+                Opacity = Opacity,
+            };
         }
 
         public void Remove(object ob)

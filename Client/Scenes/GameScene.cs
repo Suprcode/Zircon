@@ -4370,7 +4370,7 @@ namespace Client.Scenes
                 return image;
             }
 
-            return new DXControl
+            return new DXMapInfoControl
             {
                 Size = new Size(3, 3),
                 DrawTexture = true,

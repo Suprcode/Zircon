@@ -613,6 +613,12 @@ namespace Library
             return (int)(angle / 22.5F);
         }
 
+        /// <summary>
+        /// Converts a TimeSpan into a human-readable string (e.g., "2 Hours 30 Minutes").
+        /// </summary>
+        /// <param name="time">The TimeSpan to convert.</param>
+        /// <param name="details">If true, includes smaller time units (e.g., "2 Hours 30 Minutes").</param>
+        /// <param name="small">If true, uses short labels (e.g., "2 Hrs" instead of "2 Hours").</param>
         public static string ToString(TimeSpan time, bool details, bool small = false)
         {
             string textD = null;
@@ -620,32 +626,38 @@ namespace Library
             string textM = null;
             string textS = null;
 
+            // Days
             if (time.Days >= 2) textD = $"{time.Days} {(small ? "Ds" : "Days")}";
-            else if (time.Days >= 1) textD = $"{time.Days} {(small ? "D" : "Day")}";
+            else if (time.Days == 1) textD = $"{time.Days} {(small ? "D" : "Day")}";
 
+            // Hours
             if (time.Hours >= 2) textH = $"{time.Hours} {(small ? "Hrs" : "Hours")}";
-            else if (time.Hours >= 1) textH = $"{time.Hours} {(small ? "H" : "Hour")}";
+            else if (time.Hours == 1) textH = $"{time.Hours} {(small ? "H" : "Hour")}";
 
+            // Minutes
             if (time.Minutes >= 2) textM = $"{time.Minutes} {(small ? "Mins" : "Minutes")}";
-            else if (time.Minutes >= 1) textM = $"{time.Minutes} {(small ? "Min" : "Minute")}";
+            else if (time.Minutes == 1) textM = $"{time.Minutes} {(small ? "Min" : "Minute")}";
 
+            // Seconds
             if (time.Seconds >= 2) textS = $"{time.Seconds} {(small ? "Secs" : "Seconds")}";
-            else if (time.Seconds >= 1) textS = $"{time.Seconds} {(small ? "Sec" : "Second")}";
-            else if (time.TotalSeconds > 0) textS = "less than a second";
+            else if (time.Seconds == 1) textS = $"{time.Seconds} {(small ? "Sec" : "Second")}";
+            else if (time.TotalSeconds > 0 && time.TotalSeconds < 1)
+                textS = "less than a second";
 
+            // Return the appropriate level of detail
             if (!details)
-                return textD ?? textH ?? textM ?? textS;
+                return textD ?? textH ?? textM ?? textS ?? "0 Seconds";
 
             if (textD != null)
-                return textD + " " + (textH ?? textM ?? textS);
+                return textD + " " + (textH ?? textM ?? textS ?? string.Empty);
 
             if (textH != null)
-                return textH + " " + (textM ?? textS);
+                return textH + " " + (textM ?? textS ?? string.Empty);
 
             if (textM != null)
-                return textM + " " + textS;
+                return textM + " " + (textS ?? string.Empty);
 
-            return textS ?? string.Empty;
+            return textS ?? "0 Seconds";
         }
 
         public static string RandomString(Random Random, int length)
