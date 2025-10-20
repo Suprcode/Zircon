@@ -1092,6 +1092,22 @@ namespace Client.Scenes.Views
                 CompanionDisplay = null;
                 CompanionDisplayPoint = Point.Empty;
 
+                if (TabControl != null)
+                {
+                    if (!TabControl.IsDisposed)
+                        TabControl.Dispose();
+
+                    TabControl = null;
+                }
+
+                if (CompanionTab != null)
+                {
+                    if (!CompanionTab.IsDisposed)
+                        CompanionTab.Dispose();
+
+                    CompanionTab = null;
+                }
+
                 if (CloseButton != null)
                 {
                     if (!CloseButton.IsDisposed)

@@ -128,6 +128,14 @@ namespace Client.Scenes.Views
 
                     ExitButton = null;
                 }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
             }
 
         }

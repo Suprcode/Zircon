@@ -73,5 +73,28 @@ namespace Client.Scenes.Views
             }
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            if (DropFiltersMap != null)
+            {
+                foreach (KeyValuePair<int, DXTextBox> pair in DropFiltersMap)
+                {
+                    DXTextBox textBox = pair.Value;
+
+                    if (textBox == null) continue;
+                    if (textBox.IsDisposed) continue;
+
+                    textBox.Dispose();
+                }
+
+                DropFiltersMap.Clear();
+                DropFiltersMap = null;
+            }
+        }
+
     }
 }

@@ -702,6 +702,14 @@ namespace Client.Scenes.Views
                     TrashButton = null;
                 }
 
+                if (SellButton != null)
+                {
+                    if (!SellButton.IsDisposed)
+                        SellButton.Dispose();
+
+                    SellButton = null;
+                }
+
                 if (PrimaryCurrencyTitle != null)
                 {
                     if (!PrimaryCurrencyTitle.IsDisposed)

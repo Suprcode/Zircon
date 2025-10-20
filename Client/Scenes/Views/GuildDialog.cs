@@ -1958,6 +1958,14 @@ namespace Client.Scenes.Views
                     CreateTab = null;
                 }
 
+                if (CreatePanel != null)
+                {
+                    if (!CreatePanel.IsDisposed)
+                        CreatePanel.Dispose();
+
+                    CreatePanel = null;
+                }
+
                 if (TreasuryPanel != null)
                 {
                     if (!TreasuryPanel.IsDisposed)
@@ -2299,6 +2307,22 @@ namespace Client.Scenes.Views
                     WarTab = null;
                 }
 
+                if (WarPanel != null)
+                {
+                    if (!WarPanel.IsDisposed)
+                        WarPanel.Dispose();
+
+                    WarPanel = null;
+                }
+
+                if (StartWarButton != null)
+                {
+                    if (!StartWarButton.IsDisposed)
+                        StartWarButton.Dispose();
+
+                    StartWarButton = null;
+                }
+
                 #endregion
 
                 #region StyleTab
@@ -2385,6 +2409,14 @@ namespace Client.Scenes.Views
                         CastleTab.Dispose();
 
                     CastleTab = null;
+                }
+
+                if (CastlePanel != null)
+                {
+                    if (!CastlePanel.IsDisposed)
+                        CastlePanel.Dispose();
+
+                    CastlePanel = null;
                 }
 
                 if (ToggleGates != null)
@@ -3200,5 +3232,60 @@ namespace Client.Scenes.Views
             else
                 CastleDateLabel.Text = Functions.ToString(Castle.WarDate - CEnvir.Now, true);
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                CastleChanged = null;
+                _Castle = null;
+
+                if (CastleNameLabel != null)
+                {
+                    if (!CastleNameLabel.IsDisposed)
+                        CastleNameLabel.Dispose();
+
+                    CastleNameLabel = null;
+                }
+
+                if (CastleOwnerLabel != null)
+                {
+                    if (!CastleOwnerLabel.IsDisposed)
+                        CastleOwnerLabel.Dispose();
+
+                    CastleOwnerLabel = null;
+                }
+
+                if (CastleDateLabel != null)
+                {
+                    if (!CastleDateLabel.IsDisposed)
+                        CastleDateLabel.Dispose();
+
+                    CastleDateLabel = null;
+                }
+
+                if (ItemLabel != null)
+                {
+                    if (!ItemLabel.IsDisposed)
+                        ItemLabel.Dispose();
+
+                    ItemLabel = null;
+                }
+
+                if (RequestButton != null)
+                {
+                    if (!RequestButton.IsDisposed)
+                        RequestButton.Dispose();
+
+                    RequestButton = null;
+                }
+            }
+        }
+
+        #endregion
     }
 }

@@ -151,6 +151,14 @@ namespace Client.Scenes.Views
 
                     CaptionText = null;
                 }
+
+                if (ClientPanel != null)
+                {
+                    if (!ClientPanel.IsDisposed)
+                        ClientPanel.Dispose();
+
+                    ClientPanel = null;
+                }
             }
 
         }
