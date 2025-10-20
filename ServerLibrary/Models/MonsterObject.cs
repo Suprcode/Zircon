@@ -1029,6 +1029,8 @@ namespace Server.Models
                 cell = PetOwner.CurrentCell;
 
             Teleport(PetOwner.CurrentMap, cell.Location);
+
+            Target = null;
         }
         public virtual void ProcessRegen()
         {
