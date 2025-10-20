@@ -304,11 +304,18 @@ namespace Client.Envir
 
                 DXManager.Clear(ClearFlags.Target, Color.Black, 1, 0);
                 DXManager.BeginFrame();
-                DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
 
-                DXControl.ActiveScene?.Draw();
+                if (DXManager.Sprite != null)
+                {
+                    DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
+                    DXControl.ActiveScene?.Draw();
+                    DXManager.Sprite.End();
+                }
+                else
+                {
+                    DXControl.ActiveScene?.Draw();
+                }
 
-                DXManager.Sprite.End();
                 DXManager.EndFrame();
 
                 DXManager.Present();

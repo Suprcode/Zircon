@@ -59,7 +59,8 @@ namespace Client
             DXManager.Create();
             DXSoundManager.Create();
 
-            DXControl.ActiveScene = new LoginScene(Config.ExtendedLogin ? Config.GameSize : Config.IntroSceneSize);
+            if (DXManager.Device != null)
+                DXControl.ActiveScene = new LoginScene(Config.ExtendedLogin ? Config.GameSize : Config.IntroSceneSize);
 
             MessagePump.Run(CEnvir.Target, CEnvir.GameLoop);
 

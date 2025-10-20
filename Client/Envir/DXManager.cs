@@ -71,13 +71,16 @@ namespace Client.Envir
                 {
                     _ColourPallete = null;
 
-                    if (PalleteData != null)
+                    if (PalleteData != null && Device != null)
                     {
                         _ColourPallete = Core.CreateTexture(200, 149, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-                        DataRectangle rect = _ColourPallete.LockRectangle(0, LockFlags.Discard);
-                        rect.Data.Write(PalleteData, 0, PalleteData.Length);
-                        _ColourPallete.UnlockRectangle(0);
-                        rect.Data.Dispose();
+                        if (_ColourPallete != null)
+                        {
+                            DataRectangle rect = _ColourPallete.LockRectangle(0, LockFlags.Discard);
+                            rect.Data.Write(PalleteData, 0, PalleteData.Length);
+                            _ColourPallete.UnlockRectangle(0);
+                            rect.Data.Dispose();
+                        }
                     }
                 }
 
@@ -94,6 +97,9 @@ namespace Client.Envir
         {
             get
             {
+                if (Device == null)
+                    return null;
+
                 if (_LightTexture == null || _LightTexture.Disposed)
                     CreateLight();
 
@@ -106,8 +112,17 @@ namespace Client.Envir
         {
             get
             {
+                if (Device == null)
+                    return null;
+
                 if (_LightSurface == null || _LightSurface.Disposed)
-                    _LightSurface = LightTexture.GetSurfaceLevel(0);
+                {
+                    Texture light = LightTexture;
+                    if (light == null)
+                        return null;
+
+                    _LightSurface = light.GetSurfaceLevel(0);
+                }
 
                 return _LightSurface;
             }
@@ -153,10 +168,9 @@ namespace Client.Envir
 
             if (string.Equals(normalized, "DX11", StringComparison.OrdinalIgnoreCase))
             {
-                warning = $"DirectX 11 renderer is not yet supported. Falling back to {DefaultRendererId}.";
-                ActiveRenderer = DefaultRendererId;
-                _core = new DX9RendererCore();
-                return false;
+                ActiveRenderer = "DX11";
+                _core = new DX11RendererCore();
+                return true;
             }
 
             warning = string.Format("Renderer '{0}' is not recognized. Falling back to {1}.", normalized, DefaultRendererId);
@@ -185,6 +199,10 @@ namespace Client.Envir
 
                 Core.InitializeDevice(Parameters, CEnvir.Target.Handle);
 
+                Size backBuffer = new Size(Parameters.BackBufferWidth, Parameters.BackBufferHeight);
+                if (!ValidResolutions.Contains(backBuffer))
+                    ValidResolutions.Add(backBuffer);
+
                 foreach (DisplayMode mode in Core.GetDisplayModes(Format.X8R8G8B8))
                 {
                     Size s = new Size(mode.Width, mode.Height);
@@ -195,9 +213,11 @@ namespace Client.Envir
                 }
                 ValidResolutions.Sort((s1, s2) => (s1.Width * s1.Height).CompareTo(s2.Width * s2.Height));
 
-                LoadTextures();
-
-                Device.SetDialogBoxMode(true);
+                if (Device != null)
+                {
+                    LoadTextures();
+                    Device.SetDialogBoxMode(true);
+                }
 
                 const string path = @".\Data\Pallete.png";
 
@@ -269,7 +289,13 @@ namespace Client.Envir
 
         private static void CreateLight()
         {
+            if (Device == null)
+                return;
+
             Texture light = Core.CreateTexture(LightWidth, LightHeight, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+
+            if (light == null)
+                return;
 
             DataRectangle rect = light.LockRectangle(0, LockFlags.Discard);
 
@@ -411,6 +437,9 @@ namespace Client.Envir
 
         public static void SetSurface(Surface surface)
         {
+            if (Device == null || Sprite == null)
+                return;
+
             if (CurrentSurface == surface) return;
 
             Sprite.Flush();
@@ -419,6 +448,9 @@ namespace Client.Envir
         }
         public static void SetOpacity(float opacity)
         {
+            if (Device == null || Sprite == null)
+                return;
+
             if (Opacity == opacity)
                 return;
 
@@ -446,6 +478,9 @@ namespace Client.Envir
         }
         public static void SetBlend(bool value, float rate = 1F, BlendMode mode = BlendMode.NORMAL)
         {
+            if (Device == null || Sprite == null)
+                return;
+
             if (Blending == value && BlendRate == rate && BlendMode == mode) return;
 
             Blending = value;
@@ -502,6 +537,9 @@ namespace Client.Envir
         }
         public static void SetColour(int colour)
         {
+            if (Device == null || Sprite == null)
+                return;
+
             Sprite.Flush();
 
             if (colour == 0)
@@ -533,12 +571,20 @@ namespace Client.Envir
             Parameters.PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate;
 
             Core.ResetDevice(Parameters);
-            LoadTextures();
+
+            if (Device != null)
+                LoadTextures();
         }
         public static void AttemptReset()
         {
             try
             {
+                if (_core is DX11RendererCore)
+                {
+                    DeviceLost = false;
+                    return;
+                }
+
                 Result result = Core.TestCooperativeLevel();
 
                 if (result.Code == ResultCode.DeviceLost.Code) return;
@@ -562,7 +608,8 @@ namespace Client.Envir
         {
             try
             {
-                Sprite.End();
+                if (Sprite != null)
+                    Sprite.End();
             }
             catch
             {
@@ -570,7 +617,7 @@ namespace Client.Envir
 
             try
             {
-                Device.EndScene();
+                Device?.EndScene();
             }
             catch
             {
@@ -578,9 +625,12 @@ namespace Client.Envir
 
             try
             {
-                MainSurface = Device.GetBackBuffer(0, 0);
-                CurrentSurface = MainSurface;
-                Device.SetRenderTarget(0, MainSurface);
+                if (Device != null)
+                {
+                    MainSurface = Device.GetBackBuffer(0, 0);
+                    CurrentSurface = MainSurface;
+                    Device.SetRenderTarget(0, MainSurface);
+                }
             }
             catch
             {
