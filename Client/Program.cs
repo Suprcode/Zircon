@@ -50,6 +50,12 @@ namespace Client
 
             CEnvir.Target = new TargetForm();
 
+            string rendererWarning;
+            DXManager.TrySetRenderer(Config.Renderer, out rendererWarning);
+
+            if (!string.IsNullOrEmpty(rendererWarning))
+                MessageBox.Show(rendererWarning, "Renderer Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
             DXManager.Create();
             DXSoundManager.Create();
 

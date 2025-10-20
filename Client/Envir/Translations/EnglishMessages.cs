@@ -136,6 +136,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowNetworkTabLabel { get; set; } = "Network";
         public override string CommonControlConfigWindowColoursTabLabel { get; set; } = "Colours";
         public override string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; } = "Full Screen:";
+        public override string CommonControlConfigWindowGraphicsTabRendererLabel { get; set; } = "Renderer:";
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "Game Size:";
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync:";
         public override string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; } = "Limit FPS:";
