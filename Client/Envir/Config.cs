@@ -28,6 +28,7 @@ namespace Client.Envir
         public static bool VSync { get; set; }
         public static bool LimitFPS { get; set; }
         public static bool ExtendedLogin { get; set; }
+        public static bool UseDirectX11 { get; set; }
         public static Size GameSize { get; set; } = IntroSceneSize;
         public static TimeSpan CacheDuration { get; set; } = TimeSpan.FromMinutes(30);
         public static string FontName { get; set; } = "MS Sans Serif";

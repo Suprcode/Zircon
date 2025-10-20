@@ -923,7 +923,7 @@ namespace Client.Controls
         {
             if (Config.FullScreen != FullScreenCheckBox.Checked)
             {
-                DXManager.ToggleFullScreen();
+                RenderManager.ToggleFullScreen();
             }
 
             if (GameSizeComboBox.SelectedItem is Size && Config.GameSize != (Size)GameSizeComboBox.SelectedItem)
@@ -933,7 +933,7 @@ namespace Client.Controls
                 if (ActiveScene is GameScene)
                 {
                     ActiveScene.Size = Config.GameSize;
-                    DXManager.SetResolution(ActiveScene.Size);
+                    RenderManager.SetResolution(ActiveScene.Size);
                 }
             }
 
@@ -951,7 +951,7 @@ namespace Client.Controls
             if (Config.VSync != VSyncCheckBox.Checked)
             {
                 Config.VSync = VSyncCheckBox.Checked;
-                DXManager.ResetDevice();
+                RenderManager.ResetDevice();
             }
 
             Config.LimitFPS = LimitFPSCheckBox.Checked;

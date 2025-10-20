@@ -49,7 +49,7 @@ namespace Client.Controls
 
             Size = size;
 
-            DXManager.SetResolution(size);
+            RenderManager.SetResolution(size);
 
             if (!Config.FullScreen)
                 CEnvir.Target.Center();

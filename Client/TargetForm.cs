@@ -145,7 +145,7 @@ namespace Client
             {
                 if (e.Alt && e.KeyCode == Keys.Enter)
                 {
-                    DXManager.ToggleFullScreen();
+                    RenderManager.ToggleFullScreen();
                     return;
                 }
 

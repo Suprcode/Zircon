@@ -159,7 +159,7 @@ namespace Client.Envir
                 FPSCounter = 0;
                 DPSCount = DPSCounter;
                 DPSCounter = 0;
-                DXManager.MemoryClear();
+                RenderManager.MemoryClear();
             }
 
             Connection?.Process();
@@ -295,34 +295,25 @@ namespace Client.Envir
                     return;
                 }
 
-                if (DXManager.DeviceLost)
+                if (RenderManager.DeviceLost)
                 {
-                    DXManager.AttemptReset();
+                    RenderManager.AttemptReset();
                     Thread.Sleep(1);
                     return;
                 }
 
-                DXManager.Device.Clear(ClearFlags.Target, Color.Black, 1, 0);
-                DXManager.Device.BeginScene();
-                DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
-
-                DXControl.ActiveScene?.Draw();
-
-                DXManager.Sprite.End();
-                DXManager.Device.EndScene();
-
-                DXManager.Device.Present();
+                RenderManager.Render(() => DXControl.ActiveScene?.Draw());
                 FPSCounter++;
             }
             catch (Direct3D9Exception)
             {
-                DXManager.DeviceLost = true;
+                RenderManager.MarkDeviceLost();
             }
             catch (Exception ex)
             {
                 SaveException(ex);
 
-                DXManager.AttemptRecovery();
+                RenderManager.AttemptRecovery();
             }
         }
 
