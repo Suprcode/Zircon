@@ -205,6 +205,8 @@ namespace Client.Scenes.Views
 
                 if (!SchoolTabs.TryGetValue(magic.School, out MagicTab tab))
                 {
+                    if (magic.School == MagicSchool.Discipline) continue;
+
                     SchoolTabs[magic.School] = tab = new MagicTab(magic.School);
                     tab.MouseWheel += tab.ScrollBar.DoMouseWheel;
                     tab.PassThrough = false;
