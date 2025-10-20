@@ -345,8 +345,8 @@ namespace Client.Scenes.Views
                         bool blend = false;
                         if (cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255)
                         {
-                            index += Animation % (cell.MiddleAnimationFrame & 0x4F);
-                            blend = (cell.MiddleAnimationFrame & 0x50) > 0;
+                            blend = cell.MiddleAnimationBlend;
+                            index += Animation % cell.MiddleAnimationCount;
                         }
 
                         Size s = library.GetSize(index);
@@ -358,9 +358,11 @@ namespace Client.Scenes.Views
                             else
                                 library.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
                         }
+                        else
+                        {
+                            library.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                        }
                     }
-
-
 
                     if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc && CEnvir.LibraryList.TryGetValue(file, out library))
                     {
@@ -369,8 +371,8 @@ namespace Client.Scenes.Views
                         bool blend = false;
                         if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
                         {
-                            index += Animation % (cell.FrontAnimationFrame & 0x7F);
-                            blend = (cell.FrontAnimationFrame & 0x80) > 0;
+                            blend = cell.FrontAnimationBlend;
+                            index += Animation % cell.FrontAnimationCount;
                         }
 
                         Size s = library.GetSize(index);
@@ -1697,15 +1699,27 @@ namespace Client.Scenes.Views
         public int FrontFile;
         public int FrontImage;
 
-        public int FrontAnimationFrame;
-        public int FrontAnimationTick;
+        public int FrontAnimationFrame { get; set; }
+        public int FrontAnimationTick { get; set; }
+        public int FrontAnimationCount => FrontAnimationFrame & FrontFrameMask;
+        public bool FrontAnimationBlend => (FrontAnimationFrame & FrontBlendBit) != 0;
 
-        public int MiddleAnimationFrame;
-        public int MiddleAnimationTick;
+        public int MiddleAnimationFrame { get; set; }
+        public int MiddleAnimationTick { get; set; }
+        public int MiddleAnimationCount => MiddleAnimationFrame & MiddleFrameMask;
+        public bool MiddleAnimationBlend => (MiddleAnimationFrame & MiddleBlendBit) != 0;
 
         public int Light;
 
         public bool Flag;
+
+        // --- FRONT ANIMATION ENCODING ---
+        public const int FrontFrameMask = 0x0F; // lower 4 bits = frame count
+        public const int FrontBlendBit = 0x80;  // bit 7 = blend flag
+
+        // --- MIDDLE ANIMATION ENCODING ---
+        public const int MiddleFrameMask = 0x0F; // lower 4 bits = frame count
+        public const int MiddleBlendBit = 0x80;  // bit 7 = blend flag
 
         public List<MapObject> Objects;
 

@@ -2132,7 +2132,6 @@ namespace Server.Views.DirectX
 
                             byte value = reader.ReadByte();
                             Cells[x, y].FrontAnimationFrame = value == 255 ? 0 : value;
-                            Cells[x, y].FrontAnimationFrame &= 0x8F; //Probably a Blend Flag
 
                             Cells[x, y].FrontFile = reader.ReadByte();
                             Cells[x, y].MiddleFile = reader.ReadByte();
