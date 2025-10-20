@@ -1,4 +1,5 @@
 ﻿using Client.Controls;
+using Client.Rendering;
 using SlimDX;
 using SlimDX.Direct3D9;
 using System;
@@ -21,8 +22,10 @@ namespace Client.Envir
         public static List<Size> ValidResolutions = new List<Size>();
         private static Size MinimumResolution = new Size(1024, 768);
 
+        public static IRendererCore Core { get; } = new DX9RendererCore();
+
         public static PresentParameters Parameters { get; private set; }
-        public static Device Device { get; private set; }
+        public static Device Device => Core.Device;
         public static Sprite Sprite { get; private set; }
         public static Line Line { get; private set; }
 
@@ -56,7 +59,7 @@ namespace Client.Envir
 
                     if (PalleteData != null)
                     {
-                        _ColourPallete = new Texture(Device, 200, 149, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+                        _ColourPallete = Core.CreateTexture(200, 149, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                         DataRectangle rect = _ColourPallete.LockRectangle(0, LockFlags.Discard);
                         rect.Data.Write(PalleteData, 0, PalleteData.Length);
                         _ColourPallete.UnlockRectangle(0);
@@ -120,14 +123,9 @@ namespace Client.Envir
                     PresentFlags = PresentFlags.LockableBackBuffer,
                 };
 
-                Direct3D direct3D = new Direct3D();
+                Core.InitializeDevice(Parameters, CEnvir.Target.Handle);
 
-                Device = new Device(direct3D, direct3D.Adapters.DefaultAdapter.Adapter, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
-
-                AdapterInformation adapterInfo = direct3D.Adapters.DefaultAdapter;
-                var modes = adapterInfo.GetDisplayModes(Format.X8R8G8B8);
-
-                foreach (DisplayMode mode in modes)
+                foreach (DisplayMode mode in Core.GetDisplayModes(Format.X8R8G8B8))
                 {
                     Size s = new Size(mode.Width, mode.Height);
                     if (s.Width < MinimumResolution.Width || s.Height < MinimumResolution.Height) continue;
@@ -165,14 +163,17 @@ namespace Client.Envir
 
         private static unsafe void LoadTextures()
         {
-            Sprite = new Sprite(Device);
-            Line = new Line(Device) { Width = 1F };
+            Sprite = Core.CreateSprite();
+            Line = Core.CreateLine();
 
-            MainSurface = Device.GetBackBuffer(0, 0);
+            if (Line != null)
+                Line.Width = 1F;
+
+            MainSurface = Core.GetBackBuffer(0, 0);
             CurrentSurface = MainSurface;
             Device.SetRenderTarget(0, MainSurface);
 
-            PoisonTexture = new Texture(Device, 6, 6, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+            PoisonTexture = Core.CreateTexture(6, 6, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 
             DataRectangle rect = PoisonTexture.LockRectangle(0, LockFlags.Discard);
 
@@ -182,13 +183,33 @@ namespace Client.Envir
                 for (int x = 0; x < 6; x++)
                     data[y * 6 + x] = x == 0 || y == 0 || x == 5 || y == 5 ? -16777216 : -1;
 
-            ScratchTexture = new Texture(Device, Parameters.BackBufferWidth, Parameters.BackBufferHeight, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
+            ScratchTexture = Core.CreateRenderTarget(Parameters.BackBufferWidth, Parameters.BackBufferHeight, Format.A8R8G8B8);
             ScratchSurface = ScratchTexture.GetSurfaceLevel(0);
+        }
+
+        public static void BeginFrame()
+        {
+            Core.BeginFrame();
+        }
+
+        public static void EndFrame()
+        {
+            Core.EndFrame();
+        }
+
+        public static void Present()
+        {
+            Core.Present();
+        }
+
+        public static void Clear(ClearFlags flags, Color colour, float z, int stencil)
+        {
+            Core.Clear(flags, colour, z, stencil);
         }
 
         private static void CreateLight()
         {
-            Texture light = new Texture(Device, LightWidth, LightHeight, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+            Texture light = Core.CreateTexture(LightWidth, LightHeight, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 
             DataRectangle rect = light.LockRectangle(0, LockFlags.Discard);
 
@@ -320,20 +341,7 @@ namespace Client.Envir
         public static void Unload()
         {
             CleanUp();
-
-            if (Device != null)
-            {
-                if (Device.Direct3D != null)
-                {
-                    if (!Device.Direct3D.Disposed)
-                        Device.Direct3D.Dispose();
-                }
-
-                if (!Device.Disposed)
-                    Device.Dispose();
-
-                Device = null;
-            }
+            Core.Dispose();
         }
 
         public static void SetSurface(Surface surface)
@@ -459,14 +467,14 @@ namespace Client.Envir
             Parameters.BackBufferHeight = CEnvir.Target.ClientSize.Height;
             Parameters.PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate;
 
-            Device.Reset(Parameters);
+            Core.ResetDevice(Parameters);
             LoadTextures();
         }
         public static void AttemptReset()
         {
             try
             {
-                Result result = Device.TestCooperativeLevel();
+                Result result = Core.TestCooperativeLevel();
 
                 if (result.Code == ResultCode.DeviceLost.Code) return;
 
@@ -533,8 +541,8 @@ namespace Client.Envir
         {
             if (CEnvir.Target.ClientSize == size) return;
 
-            Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
-            Device.Present();
+            Clear(ClearFlags.Target, Color.Black, 0, 0);
+            Present();
 
             CEnvir.Target.ClientSize = size;
             CEnvir.Target.MaximizeBox = false;
