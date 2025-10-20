@@ -22,7 +22,21 @@ namespace Client.Envir
         public static List<Size> ValidResolutions = new List<Size>();
         private static Size MinimumResolution = new Size(1024, 768);
 
-        public static IRendererCore Core { get; } = new DX9RendererCore();
+        private const string DefaultRendererId = "DX9";
+
+        private static IRendererCore _core;
+
+        public static string RequestedRenderer { get; private set; } = DefaultRendererId;
+        public static string ActiveRenderer { get; private set; } = DefaultRendererId;
+
+        public static IRendererCore Core
+        {
+            get
+            {
+                EnsureRendererCore();
+                return _core;
+            }
+        }
 
         public static PresentParameters Parameters { get; private set; }
         public static Device Device => Core.Device;
@@ -108,10 +122,56 @@ namespace Client.Envir
         }
 
 
+        private static void EnsureRendererCore()
+        {
+            if (_core != null) return;
+
+            TrySetRenderer(Config.Renderer, out _);
+        }
+
+        public static bool TrySetRenderer(string rendererId, out string warning)
+        {
+            warning = null;
+
+            string normalized = string.IsNullOrWhiteSpace(rendererId) ? DefaultRendererId : rendererId.Trim();
+            normalized = normalized.ToUpperInvariant();
+
+            RequestedRenderer = normalized;
+
+            if (_core != null)
+            {
+                _core.Dispose();
+                _core = null;
+            }
+
+            if (string.Equals(normalized, "DX9", StringComparison.OrdinalIgnoreCase))
+            {
+                ActiveRenderer = DefaultRendererId;
+                _core = new DX9RendererCore();
+                return true;
+            }
+
+            if (string.Equals(normalized, "DX11", StringComparison.OrdinalIgnoreCase))
+            {
+                warning = $"DirectX 11 renderer is not yet supported. Falling back to {DefaultRendererId}.";
+                ActiveRenderer = DefaultRendererId;
+                _core = new DX9RendererCore();
+                return false;
+            }
+
+            warning = string.Format("Renderer '{0}' is not recognized. Falling back to {1}.", normalized, DefaultRendererId);
+            ActiveRenderer = DefaultRendererId;
+            _core = new DX9RendererCore();
+            return false;
+        }
+
+
         public static void Create()
         {
             try
             {
+                EnsureRendererCore();
+
                 Parameters = new PresentParameters
                 {
                     Windowed = !Config.FullScreen,
@@ -341,7 +401,12 @@ namespace Client.Envir
         public static void Unload()
         {
             CleanUp();
-            Core.Dispose();
+
+            if (_core == null) return;
+
+            _core.Dispose();
+            _core = null;
+            ActiveRenderer = DefaultRendererId;
         }
 
         public static void SetSurface(Surface surface)

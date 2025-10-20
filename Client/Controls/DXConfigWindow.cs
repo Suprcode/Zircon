@@ -3,6 +3,7 @@ using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
@@ -21,7 +22,7 @@ namespace Client.Controls
         //Grpahics
         public DXTab GraphicsTab;
         public DXCheckBox FullScreenCheckBox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
-        private DXComboBox GameSizeComboBox, LanguageComboBox;
+        private DXComboBox RendererComboBox, GameSizeComboBox, LanguageComboBox;
 
         //Sound
         public DXTab SoundTab;
@@ -58,6 +59,21 @@ namespace Client.Controls
             if (!IsVisible) return;
 
             FullScreenCheckBox.Checked = Config.FullScreen;
+
+            string rendererValue = Config.Renderer ?? "DX9";
+            string rendererSelection = "DX9";
+
+            foreach (DXControl control in RendererComboBox.ListBox.Controls)
+            {
+                if (control is DXListBoxItem item && item.Item is string option &&
+                    string.Equals(option, rendererValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    rendererSelection = option;
+                    break;
+                }
+            }
+
+            RendererComboBox.ListBox.SelectItem(rendererSelection);
             GameSizeComboBox.ListBox.SelectItem(Config.GameSize);
             VSyncCheckBox.Checked = Config.VSync;
             LimitFPSCheckBox.Checked = Config.LimitFPS;
@@ -199,16 +215,39 @@ namespace Client.Controls
 
             DXLabel label = new DXLabel
             {
-                Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabGameSizeLabel,
+                Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabRendererLabel,
                 Outline = true,
                 Parent = GraphicsTab,
             };
             label.Location = new Point(104 - label.Size.Width, 35);
 
-            GameSizeComboBox = new DXComboBox
+            RendererComboBox = new DXComboBox
             {
                 Parent = GraphicsTab,
                 Location = new Point(104, 35),
+                Size = new Size(100, DXComboBox.DefaultNormalHeight),
+            };
+
+            foreach (string rendererOption in new[] { "DX9", "DX11" })
+                new DXListBoxItem
+                {
+                    Parent = RendererComboBox.ListBox,
+                    Label = { Text = rendererOption },
+                    Item = rendererOption
+                };
+
+            label = new DXLabel
+            {
+                Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabGameSizeLabel,
+                Outline = true,
+                Parent = GraphicsTab,
+            };
+            label.Location = new Point(104 - label.Size.Width, 60);
+
+            GameSizeComboBox = new DXComboBox
+            {
+                Parent = GraphicsTab,
+                Location = new Point(104, 60),
                 Size = new Size(100, DXComboBox.DefaultNormalHeight),
             };
 
@@ -225,35 +264,35 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabVSyncLabel },
                 Parent = GraphicsTab,
             };
-            VSyncCheckBox.Location = new Point(120 - VSyncCheckBox.Size.Width, 60);
+            VSyncCheckBox.Location = new Point(120 - VSyncCheckBox.Size.Width, 85);
 
             LimitFPSCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabLimitFPSLabel },
                 Parent = GraphicsTab,
             };
-            LimitFPSCheckBox.Location = new Point(120 - LimitFPSCheckBox.Size.Width, 80);
+            LimitFPSCheckBox.Location = new Point(120 - LimitFPSCheckBox.Size.Width, 105);
 
             SmoothMoveCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabSmoothMoveLabel },
                 Parent = GraphicsTab,
             };
-            SmoothMoveCheckBox.Location = new Point(120 - SmoothMoveCheckBox.Size.Width, 100);
+            SmoothMoveCheckBox.Location = new Point(120 - SmoothMoveCheckBox.Size.Width, 125);
 
             ClipMouseCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabClipMouseLabel },
                 Parent = GraphicsTab,
             };
-            ClipMouseCheckBox.Location = new Point(120 - ClipMouseCheckBox.Size.Width, 120);
+            ClipMouseCheckBox.Location = new Point(120 - ClipMouseCheckBox.Size.Width, 145);
 
             DebugLabelCheckBox = new DXCheckBox
             {
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabDebugLabelLabel },
                 Parent = GraphicsTab,
             };
-            DebugLabelCheckBox.Location = new Point(120 - DebugLabelCheckBox.Size.Width, 140);
+            DebugLabelCheckBox.Location = new Point(120 - DebugLabelCheckBox.Size.Width, 165);
 
             label = new DXLabel
             {
@@ -261,12 +300,12 @@ namespace Client.Controls
                 Outline = true,
                 Parent = GraphicsTab,
             };
-            label.Location = new Point(104 - label.Size.Width, 160);
+            label.Location = new Point(104 - label.Size.Width, 185);
 
             LanguageComboBox = new DXComboBox
             {
                 Parent = GraphicsTab,
-                Location = new Point(104, 160),
+                Location = new Point(104, 185),
                 Size = new Size(100, DXComboBox.DefaultNormalHeight),
             };
 
@@ -924,6 +963,12 @@ namespace Client.Controls
             if (Config.FullScreen != FullScreenCheckBox.Checked)
             {
                 DXManager.ToggleFullScreen();
+            }
+
+            if (RendererComboBox.SelectedItem is string selectedRenderer &&
+                !string.Equals(Config.Renderer, selectedRenderer, StringComparison.OrdinalIgnoreCase))
+            {
+                Config.Renderer = selectedRenderer;
             }
 
             if (GameSizeComboBox.SelectedItem is Size && Config.GameSize != (Size)GameSizeComboBox.SelectedItem)
