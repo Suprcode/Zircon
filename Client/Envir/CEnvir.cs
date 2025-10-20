@@ -302,16 +302,16 @@ namespace Client.Envir
                     return;
                 }
 
-                DXManager.Device.Clear(ClearFlags.Target, Color.Black, 1, 0);
-                DXManager.Device.BeginScene();
+                DXManager.Clear(ClearFlags.Target, Color.Black, 1, 0);
+                DXManager.BeginFrame();
                 DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
 
                 DXControl.ActiveScene?.Draw();
 
                 DXManager.Sprite.End();
-                DXManager.Device.EndScene();
+                DXManager.EndFrame();
 
-                DXManager.Device.Present();
+                DXManager.Present();
                 FPSCounter++;
             }
             catch (Direct3D9Exception)
