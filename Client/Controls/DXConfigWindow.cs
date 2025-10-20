@@ -1545,6 +1545,14 @@ namespace Client.Controls
                     ColourTab = null;
                 }
 
+                if (ResetColoursButton != null)
+                {
+                    if (!ResetColoursButton.IsDisposed)
+                        ResetColoursButton.Dispose();
+
+                    ResetColoursButton = null;
+                }
+
                 if (LocalForeColourBox != null)
                 {
                     if (!LocalForeColourBox.IsDisposed)

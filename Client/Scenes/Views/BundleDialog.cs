@@ -264,6 +264,12 @@ namespace Client.Scenes.Views
 
                     ConfirmButton = null;
                 }
+
+                if (SelectedBundle != null)
+                {
+                    SelectedBundle.Locked = false;
+                    SelectedBundle = null;
+                }
             }
         }
 

@@ -413,6 +413,12 @@ namespace Client.Scenes.Views
 
                     ConfirmChoiceButton = null;
                 }
+
+                if (SelectedLootBox != null)
+                {
+                    SelectedLootBox.Locked = false;
+                    SelectedLootBox = null;
+                }
             }
         }
 

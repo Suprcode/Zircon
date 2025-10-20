@@ -550,5 +550,44 @@ namespace Client.Scenes.Views
                 index++;
             }
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            if (Labels != null)
+            {
+                foreach (DXLabel label in Labels)
+                {
+                    if (label == null) continue;
+                    if (label.IsDisposed) continue;
+
+                    label.Dispose();
+                }
+
+                Labels.Clear();
+                Labels = null;
+            }
+
+            if (HealthBars != null)
+            {
+                foreach (DXControl healthBar in HealthBars)
+                {
+                    if (healthBar == null) continue;
+                    if (healthBar.IsDisposed) continue;
+
+                    healthBar.Dispose();
+                }
+
+                HealthBars.Clear();
+                HealthBars = null;
+            }
+        }
+
+        #endregion
     }
 }

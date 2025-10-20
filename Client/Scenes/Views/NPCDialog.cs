@@ -640,6 +640,12 @@ namespace Client.Scenes.Views
             {
                 Page = null;
 
+                if (PageTextContainer != null)
+                {
+                    if (!PageTextContainer.IsDisposed)
+                        PageTextContainer.Dispose();
+                }
+
                 if (PageText != null)
                 {
                     if (!PageText.IsDisposed)
@@ -7286,6 +7292,108 @@ namespace Client.Scenes.Views
             };
         }
 
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            _RequiredClass = RequiredClass.None;
+            RequiredClassChanged = null;
+
+            if (ClassComboBox != null)
+            {
+                if (!ClassComboBox.IsDisposed)
+                    ClassComboBox.Dispose();
+
+                ClassComboBox = null;
+            }
+
+            if (PreviewImageBox != null)
+            {
+                if (!PreviewImageBox.IsDisposed)
+                    PreviewImageBox.Dispose();
+
+                PreviewImageBox = null;
+            }
+
+            if (TemplateCell != null)
+            {
+                if (!TemplateCell.IsDisposed)
+                    TemplateCell.Dispose();
+
+                TemplateCell = null;
+            }
+
+            if (YellowCell != null)
+            {
+                if (!YellowCell.IsDisposed)
+                    YellowCell.Dispose();
+
+                YellowCell = null;
+            }
+
+            if (BlueCell != null)
+            {
+                if (!BlueCell.IsDisposed)
+                    BlueCell.Dispose();
+
+                BlueCell = null;
+            }
+
+            if (RedCell != null)
+            {
+                if (!RedCell.IsDisposed)
+                    RedCell.Dispose();
+
+                RedCell = null;
+            }
+
+            if (PurpleCell != null)
+            {
+                if (!PurpleCell.IsDisposed)
+                    PurpleCell.Dispose();
+
+                PurpleCell = null;
+            }
+
+            if (GreenCell != null)
+            {
+                if (!GreenCell.IsDisposed)
+                    GreenCell.Dispose();
+
+                GreenCell = null;
+            }
+
+            if (GreyCell != null)
+            {
+                if (!GreyCell.IsDisposed)
+                    GreyCell.Dispose();
+
+                GreyCell = null;
+            }
+
+            if (ClassLabel != null)
+            {
+                if (!ClassLabel.IsDisposed)
+                    ClassLabel.Dispose();
+
+                ClassLabel = null;
+            }
+
+            if (AttemptButton != null)
+            {
+                if (!AttemptButton.IsDisposed)
+                    AttemptButton.Dispose();
+
+                AttemptButton = null;
+            }
+        }
+
+        #endregion
+
     }
 
     public sealed class NPCAccessoryRefineDialog : DXWindow
@@ -8077,5 +8185,23 @@ namespace Client.Scenes.Views
 
             CEnvir.Enqueue(new C.NPCRollResult());
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (_animation != null && !_animation.IsDisposed)
+                    _animation.Dispose();
+
+                if (_image != null && !_image.IsDisposed)
+                    _image.Dispose();
+            }
+        }
+
+        #endregion
     }
 }

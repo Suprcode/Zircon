@@ -2028,6 +2028,14 @@ namespace Client.Scenes.Views
                     StoreBuyPriceBox = null;
                 }
 
+                if (StoreBuyPriceLabel != null)
+                {
+                    if (!StoreBuyPriceLabel.IsDisposed)
+                        StoreBuyPriceLabel.Dispose();
+
+                    StoreBuyPriceLabel = null;
+                }
+
                 if (GameGoldBox != null)
                 {
                     if (!GameGoldBox.IsDisposed)

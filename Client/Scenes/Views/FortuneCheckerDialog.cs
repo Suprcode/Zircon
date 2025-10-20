@@ -200,6 +200,67 @@ namespace Client.Scenes.Views
             }
 
         }
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (ItemNameBox != null)
+                {
+                    if (!ItemNameBox.IsDisposed)
+                        ItemNameBox.Dispose();
+
+                    ItemNameBox = null;
+                }
+
+                if (ItemTypeBox != null)
+                {
+                    if (!ItemTypeBox.IsDisposed)
+                        ItemTypeBox.Dispose();
+
+                    ItemTypeBox = null;
+                }
+
+                if (SearchScrollBar != null)
+                {
+                    if (!SearchScrollBar.IsDisposed)
+                        SearchScrollBar.Dispose();
+
+                    SearchScrollBar = null;
+                }
+
+                if (SearchButton != null)
+                {
+                    if (!SearchButton.IsDisposed)
+                        SearchButton.Dispose();
+
+                    SearchButton = null;
+                }
+
+                if (SearchRows != null)
+                {
+                    for (int i = 0; i < SearchRows.Length; i++)
+                    {
+                        if (SearchRows[i] == null) continue;
+
+                        if (!SearchRows[i].IsDisposed)
+                            SearchRows[i].Dispose();
+
+                        SearchRows[i] = null;
+                    }
+
+                    SearchRows = null;
+                }
+
+                SearchResults?.Clear();
+                SearchResults = null;
+            }
+        }
+
+        #endregion
         private void SearchScrollBar_ValueChanged(object sender, EventArgs e)
         {
             RefreshList();
@@ -486,6 +547,14 @@ namespace Client.Scenes.Views
                         ProgressLabel.Dispose();
 
                     ProgressLabel = null;
+                }
+
+                if (CheckButton != null)
+                {
+                    if (!CheckButton.IsDisposed)
+                        CheckButton.Dispose();
+
+                    CheckButton = null;
                 }
 
             }

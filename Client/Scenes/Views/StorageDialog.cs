@@ -490,6 +490,14 @@ namespace Client.Scenes.Views
                     ItemNameTextBox = null;
                 }
 
+                if (ItemTypeComboBox != null)
+                {
+                    if (!ItemTypeComboBox.IsDisposed)
+                        ItemTypeComboBox.Dispose();
+
+                    ItemTypeComboBox = null;
+                }
+
                 if (CloseButton != null)
                 {
                     if (!CloseButton.IsDisposed)
