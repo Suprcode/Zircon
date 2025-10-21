@@ -151,7 +151,7 @@ namespace Client.Envir
                 {
                     using (Bitmap pallete = new Bitmap(path))
                     {
-                        BitmapData data = pallete.LockBits(new Rectangle(Point.Empty, pallete.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                        BitmapData data = pallete.LockBits(new System.Drawing.Rectangle(System.Drawing.Point.Empty, pallete.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
                         PalleteData = new byte[pallete.Width * pallete.Height * 4];
                         Marshal.Copy(data.Scan0, PalleteData, 0, PalleteData.Length);
@@ -200,12 +200,12 @@ namespace Client.Envir
             using (Graphics graphics = Graphics.FromImage(image))
             using (GraphicsPath path = new GraphicsPath())
             {
-                path.AddEllipse(new Rectangle(0, 0, LightWidth, LightHeight));
+                path.AddEllipse(new System.Drawing.Rectangle(0, 0, LightWidth, LightHeight));
                 using (PathGradientBrush brush = new PathGradientBrush(path))
                 {
-                    graphics.Clear(Color.FromArgb(0, 0, 0, 0));
-                    brush.SurroundColors = new[] { Color.FromArgb(0, 0, 0, 0) };
-                    brush.CenterColor = Color.FromArgb(255, 200, 200, 200);
+                    graphics.Clear(System.Drawing.Color.FromArgb(0, 0, 0, 0));
+                    brush.SurroundColors = new[] { System.Drawing.Color.FromArgb(0, 0, 0, 0) };
+                    brush.CenterColor = System.Drawing.Color.FromArgb(255, 200, 200, 200);
                     graphics.FillPath(brush, path);
                     graphics.Save();
                 }
@@ -360,14 +360,14 @@ namespace Client.Envir
                 Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
                 Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
                 Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.One);
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb(255, 255, 255, 255).ToArgb());
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb(255, 255, 255, 255).ToArgb());
             }
             else
             {
                 Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
                 Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseBlendFactor);
                 Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.SourceAlpha);
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte)(255 * opacity), (byte)(255 * opacity),
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb((byte)(255 * opacity), (byte)(255 * opacity),
                     (byte)(255 * opacity), (byte)(255 * opacity)).ToArgb());
             }
 
@@ -421,7 +421,7 @@ namespace Client.Envir
                         break;
                 }
 
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
             }
             else
             {
@@ -542,7 +542,7 @@ namespace Client.Envir
         {
             if (CEnvir.Target.ClientSize == size) return;
 
-            Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
+            Device.Clear(ClearFlags.Target, System.Drawing.Color.Black, 0, 0);
             Device.Present();
 
             CEnvir.Target.ClientSize = size;
