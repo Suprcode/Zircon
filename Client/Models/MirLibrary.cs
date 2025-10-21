@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Threading;
 using Client.Extensions;
 using Matrix = SharpDX.Matrix;
+using DataRectangle = SharpDX.DataRectangle;
 
 namespace Client.Envir
 {

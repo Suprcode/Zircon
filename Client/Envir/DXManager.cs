@@ -1,4 +1,5 @@
 ﻿using Client.Controls;
+using Client.Extensions;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,10 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Blend = SharpDX.Direct3D9.Blend;
+using DataRectangle = SharpDX.DataRectangle;
+using Result = SharpDX.Result;
+using ResultCode = SharpDX.ResultCode;
+using System.Numerics;
 
 namespace Client.Envir
 {
