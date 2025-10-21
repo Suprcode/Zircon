@@ -1,7 +1,7 @@
 ﻿using Client.Envir;
 using Client.Scenes;
 using Library;
-using SlimDX;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

@@ -1,6 +1,6 @@
 ﻿using Library;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX;
+using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.IO;
@@ -718,13 +718,13 @@ namespace Client.Envir
 
         public unsafe void DisposeTexture()
         {
-            if (Image != null && !Image.Disposed)
+            if (Image != null && !Image.IsDisposed)
                 Image.Dispose();
 
-            if (Shadow != null && !Shadow.Disposed)
+            if (Shadow != null && !Shadow.IsDisposed)
                 Shadow.Dispose();
 
-            if (Overlay != null && !Overlay.Disposed)
+            if (Overlay != null && !Overlay.IsDisposed)
                 Overlay.Dispose();
 
             ImageData = null;
@@ -755,16 +755,16 @@ namespace Client.Envir
 
             Image = new Texture(DXManager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Image.LockRectangle(0, LockFlags.Discard);
-            ImageData = (byte*)rect.Data.DataPointer;
+            ImageData = (byte*)rect.DataPointer;
 
             lock (reader)
             {
                 reader.BaseStream.Seek(Position, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(ImageDataSize), 0, ImageDataSize);
+                byte[] buffer = reader.ReadBytes(ImageDataSize);
+                Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Image.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             ImageValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;
@@ -784,16 +784,16 @@ namespace Client.Envir
 
             Shadow = new Texture(DXManager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Shadow.LockRectangle(0, LockFlags.Discard);
-            ShadowData = (byte*)rect.Data.DataPointer;
+            ShadowData = (byte*)rect.DataPointer;
 
             lock (reader)
             {
                 reader.BaseStream.Seek(Position + ImageDataSize, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(ShadowDataSize), 0, ShadowDataSize);
+                byte[] buffer = reader.ReadBytes(ShadowDataSize);
+                Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Shadow.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             ShadowValid = true;
         }
@@ -811,16 +811,16 @@ namespace Client.Envir
 
             Overlay = new Texture(DXManager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Overlay.LockRectangle(0, LockFlags.Discard);
-            OverlayData = (byte*)rect.Data.DataPointer;
+            OverlayData = (byte*)rect.DataPointer;
 
             lock (reader)
             {
                 reader.BaseStream.Seek(Position + ImageDataSize + ShadowDataSize, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(OverlayDataSize), 0, OverlayDataSize);
+                byte[] buffer = reader.ReadBytes(OverlayDataSize);
+                Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Overlay.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             OverlayValid = true;
         }

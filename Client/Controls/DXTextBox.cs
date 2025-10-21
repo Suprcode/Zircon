@@ -1,6 +1,6 @@
 ﻿using Client.Envir;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX;
+using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -302,11 +302,10 @@ namespace Client.Controls
 
             DataRectangle rect = ControlTexture.LockRectangle(0, LockFlags.Discard);
 
-            using (Bitmap image = new Bitmap(DisplayArea.Width, DisplayArea.Height, rect.Pitch, PixelFormat.Format32bppArgb, rect.Data.DataPointer))
+            using (Bitmap image = new Bitmap(DisplayArea.Width, DisplayArea.Height, rect.Pitch, PixelFormat.Format32bppArgb, rect.DataPointer))
                 TextBox.DrawToBitmap(image, new Rectangle(Point.Empty, Size.Round(DisplayArea.Size)));
 
             ControlTexture.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             TextureValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;

@@ -1,7 +1,7 @@
 ﻿using Client.Envir;
 using Library;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -1052,7 +1052,7 @@ namespace Client.Controls
         {
             if (ControlTexture != null)
             {
-                if (!ControlTexture.Disposed)
+                if (!ControlTexture.IsDisposed)
                     ControlTexture.Dispose();
 
                 ControlTexture = null;
@@ -1060,7 +1060,7 @@ namespace Client.Controls
 
             if (ControlSurface != null)
             {
-                if (!ControlSurface.Disposed)
+                if (!ControlSurface.IsDisposed)
                     ControlSurface.Dispose();
 
                 ControlSurface = null;

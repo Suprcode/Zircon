@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using SlimDX;
+using SharpDX;
 using System;
 using System.Drawing;
 

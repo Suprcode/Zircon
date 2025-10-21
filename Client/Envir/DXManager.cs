@@ -1,6 +1,6 @@
 ﻿using Client.Controls;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +10,7 @@ using System.Drawing.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Blend = SlimDX.Direct3D9.Blend;
+using Blend = SharpDX.Direct3D9.Blend;
 
 namespace Client.Envir
 {
@@ -50,7 +50,7 @@ namespace Client.Envir
         {
             get
             {
-                if (_ColourPallete == null || _ColourPallete.Disposed)
+                if (_ColourPallete == null || _ColourPallete.IsDisposed)
                 {
                     _ColourPallete = null;
 
@@ -58,9 +58,8 @@ namespace Client.Envir
                     {
                         _ColourPallete = new Texture(Device, 200, 149, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                         DataRectangle rect = _ColourPallete.LockRectangle(0, LockFlags.Discard);
-                        rect.Data.Write(PalleteData, 0, PalleteData.Length);
+                        Utilities.Write(rect.DataPointer, PalleteData, 0, PalleteData.Length);
                         _ColourPallete.UnlockRectangle(0);
-                        rect.Data.Dispose();
                     }
                 }
 
@@ -77,7 +76,7 @@ namespace Client.Envir
         {
             get
             {
-                if (_LightTexture == null || _LightTexture.Disposed)
+                if (_LightTexture == null || _LightTexture.IsDisposed)
                     CreateLight();
 
                 return _LightTexture;
@@ -89,7 +88,7 @@ namespace Client.Envir
         {
             get
             {
-                if (_LightSurface == null || _LightSurface.Disposed)
+                if (_LightSurface == null || _LightSurface.IsDisposed)
                     _LightSurface = LightTexture.GetSurfaceLevel(0);
 
                 return _LightSurface;
@@ -122,7 +121,7 @@ namespace Client.Envir
 
                 Direct3D direct3D = new Direct3D();
 
-                Device = new Device(direct3D, direct3D.Adapters.DefaultAdapter.Adapter, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
+                Device = new Device(direct3D, 0, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
 
                 AdapterInformation adapterInfo = direct3D.Adapters.DefaultAdapter;
                 var modes = adapterInfo.GetDisplayModes(Format.X8R8G8B8);
@@ -156,7 +155,7 @@ namespace Client.Envir
                     }
                 }
             }
-            catch (Direct3DX9NotFoundException ex)
+            catch (Direct3D9NotFoundException ex)
             {
                 CEnvir.SaveException(ex);
                 throw;
@@ -176,7 +175,7 @@ namespace Client.Envir
 
             DataRectangle rect = PoisonTexture.LockRectangle(0, LockFlags.Discard);
 
-            int* data = (int*)rect.Data.DataPointer;
+            int* data = (int*)rect.DataPointer;
 
             for (int y = 0; y < 6; y++)
                 for (int x = 0; x < 6; x++)
@@ -192,7 +191,7 @@ namespace Client.Envir
 
             DataRectangle rect = light.LockRectangle(0, LockFlags.Discard);
 
-            using (Bitmap image = new Bitmap(LightWidth, LightHeight, LightWidth * 4, PixelFormat.Format32bppArgb, rect.Data.DataPointer))
+            using (Bitmap image = new Bitmap(LightWidth, LightHeight, LightWidth * 4, PixelFormat.Format32bppArgb, rect.DataPointer))
             using (Graphics graphics = Graphics.FromImage(image))
             using (GraphicsPath path = new GraphicsPath())
             {
@@ -208,7 +207,6 @@ namespace Client.Envir
             }
 
             light.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             _LightTexture = light;
         }
@@ -217,7 +215,7 @@ namespace Client.Envir
         {
             if (Sprite != null)
             {
-                if (!Sprite.Disposed)
+                if (!Sprite.IsDisposed)
                     Sprite.Dispose();
 
                 Sprite = null;
@@ -225,7 +223,7 @@ namespace Client.Envir
 
             if (Line != null)
             {
-                if (!Line.Disposed)
+                if (!Line.IsDisposed)
                     Line.Dispose();
 
                 Line = null;
@@ -233,7 +231,7 @@ namespace Client.Envir
 
             if (CurrentSurface != null)
             {
-                if (!CurrentSurface.Disposed)
+                if (!CurrentSurface.IsDisposed)
                     CurrentSurface.Dispose();
 
                 CurrentSurface = null;
@@ -241,7 +239,7 @@ namespace Client.Envir
 
             if (_ColourPallete != null)
             {
-                if (!_ColourPallete.Disposed)
+                if (!_ColourPallete.IsDisposed)
                     _ColourPallete.Dispose();
 
                 _ColourPallete = null;
@@ -249,7 +247,7 @@ namespace Client.Envir
 
             if (ScratchTexture != null)
             {
-                if (!ScratchTexture.Disposed)
+                if (!ScratchTexture.IsDisposed)
                     ScratchTexture.Dispose();
 
                 ScratchTexture = null;
@@ -257,7 +255,7 @@ namespace Client.Envir
 
             if (ScratchSurface != null)
             {
-                if (!ScratchSurface.Disposed)
+                if (!ScratchSurface.IsDisposed)
                     ScratchSurface.Dispose();
 
                 ScratchSurface = null;
@@ -265,7 +263,7 @@ namespace Client.Envir
 
             if (PoisonTexture != null)
             {
-                if (!PoisonTexture.Disposed)
+                if (!PoisonTexture.IsDisposed)
                     PoisonTexture.Dispose();
 
                 PoisonTexture = null;
@@ -273,7 +271,7 @@ namespace Client.Envir
 
             if (_LightTexture != null)
             {
-                if (!_LightTexture.Disposed)
+                if (!_LightTexture.IsDisposed)
                     _LightTexture.Dispose();
 
                 _LightTexture = null;
@@ -281,7 +279,7 @@ namespace Client.Envir
 
             if (_LightSurface != null)
             {
-                if (!_LightSurface.Disposed)
+                if (!_LightSurface.IsDisposed)
                     _LightSurface.Dispose();
 
                 _LightSurface = null;
@@ -325,11 +323,11 @@ namespace Client.Envir
             {
                 if (Device.Direct3D != null)
                 {
-                    if (!Device.Direct3D.Disposed)
+                    if (!Device.Direct3D.IsDisposed)
                         Device.Direct3D.Dispose();
                 }
 
-                if (!Device.Disposed)
+                if (!Device.IsDisposed)
                     Device.Dispose();
 
                 Device = null;

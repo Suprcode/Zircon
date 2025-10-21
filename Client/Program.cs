@@ -3,7 +3,7 @@ using Client.Envir;
 using Client.Scenes;
 using Library;
 using Sentry;
-using SlimDX.Windows;
+using SharpDX.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;

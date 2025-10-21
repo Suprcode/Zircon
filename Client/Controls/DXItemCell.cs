@@ -5,7 +5,7 @@ using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
-using SlimDX;
+using SharpDX;
 using System;
 using System.Drawing;
 using System.Linq;

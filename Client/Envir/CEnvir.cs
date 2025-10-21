@@ -9,7 +9,7 @@ using Library.Network;
 using Library.SystemModels;
 using MirDB;
 using Sentry;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 ﻿using Client.Envir;
 using Client.UserModels;
 using Library;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -243,7 +243,7 @@ namespace Client.Controls
 
             if (WindowTexture != null)
             {
-                if (!WindowTexture.Disposed)
+                if (!WindowTexture.IsDisposed)
                     WindowTexture.Dispose();
 
                 WindowTexture = null;
@@ -251,7 +251,7 @@ namespace Client.Controls
 
             if (WindowSurface != null)
             {
-                if (!WindowSurface.Disposed)
+                if (!WindowSurface.IsDisposed)
                     WindowSurface.Dispose();
 
                 WindowSurface = null;
@@ -553,7 +553,7 @@ namespace Client.Controls
 
                 if (WindowTexture != null)
                 {
-                    if (!WindowTexture.Disposed)
+                    if (!WindowTexture.IsDisposed)
                         WindowTexture.Dispose();
 
                     WindowTexture = null;
@@ -561,7 +561,7 @@ namespace Client.Controls
 
                 if (WindowSurface != null)
                 {
-                    if (!WindowSurface.Disposed)
+                    if (!WindowSurface.IsDisposed)
                         WindowSurface.Dispose();
 
                     WindowSurface = null;

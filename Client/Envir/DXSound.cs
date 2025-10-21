@@ -1,11 +1,10 @@
 ﻿using NAudio.Wave;
-using SlimDX.DirectSound;
-using SlimDX.Multimedia;
+using SharpDX;
+using SharpDX.DirectSound;
+using SharpDX.Multimedia;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using WaveFormat = SlimDX.Multimedia.WaveFormat;
-using WaveStream = SlimDX.Multimedia.WaveStream;
 
 namespace Client.Envir
 {
@@ -42,33 +41,21 @@ namespace Client.Envir
                     return;
                 }
 
-                if (Path.GetExtension(FileName) == ".mp3")
+                if (string.Equals(Path.GetExtension(FileName), ".mp3", StringComparison.OrdinalIgnoreCase))
                 {
                     using (var mp3 = new Mp3FileReader(FileName))
                     {
-                        var format = mp3.WaveFormat.AsStandardWaveFormat();
-                        Format = new WaveFormat()
-                        {
-                            AverageBytesPerSecond = format.AverageBytesPerSecond,
-                            BitsPerSample = (short)format.BitsPerSample,
-                            BlockAlignment = (short)format.BlockAlign,
-                            Channels = (short)format.Channels,
-                            SamplesPerSecond = format.SampleRate,
-                            FormatTag = (WaveFormatTag)Enum.Parse(typeof(WaveFormatTag), format.Encoding.ToString())
-                        };
-                        RawData = new byte[mp3.Length];
-                        mp3.Read(RawData, 0, RawData.Length);
+                        Format = ConvertWaveFormat(mp3.WaveFormat); 
+
+                        RawData = ReadAllBytes(mp3);
                     }
                 }
                 else
                 {
-                    using (WaveStream wStream = new WaveStream(FileName))
+                    using (var waveReader = new WaveFileReader(FileName))
                     {
-                        Format = wStream.Format;
-                        RawData = new byte[wStream.Length];
-
-                        wStream.Position = 44;
-                        wStream.Read(RawData, 0, RawData.Length);
+                        Format = ConvertWaveFormat(waveReader.WaveFormat);
+                        RawData = ReadAllBytes(waveReader);
                     }
                 }
                 DXManager.SoundList.Add(this);
@@ -94,7 +81,7 @@ namespace Client.Envir
 
             for (int i = BufferList.Count - 1; i >= 0; i--)
             {
-                if (BufferList[i].Disposed)
+                if (BufferList[i].IsDisposed)
                 {
                     BufferList.RemoveAt(i);
                     continue;
@@ -131,7 +118,7 @@ namespace Client.Envir
 
             for (int i = BufferList.Count - 1; i >= 0; i--)
             {
-                if (BufferList[i].Disposed)
+                if (BufferList[i].IsDisposed)
                 {
                     BufferList.RemoveAt(i);
                     continue;
@@ -151,13 +138,22 @@ namespace Client.Envir
                 flags |= BufferFlags.GlobalFocus;
             }
 
-            BufferList.Add(buff = new SecondarySoundBuffer(DXSoundManager.Device, new SoundBufferDescription { Format = Format, SizeInBytes = RawData.Length, Flags = flags })
+            var description = new SoundBufferDescription
+            {
+                Format = Format,
+                BufferBytes = RawData.Length,
+                Flags = flags
+            };
+
+            BufferList.Add(buff = new SecondarySoundBuffer(DXSoundManager.Device, description)
             {
                 Volume = Volume
             });
 
-
-            buff.Write(RawData, 0, LockFlags.EntireBuffer);
+            using (var dataStream = DataStream.Create(RawData, true, false))
+            {
+                buff.Write(dataStream, RawData.Length, LockFlags.EntireBuffer);
+            }
 
             return buff;
         }
@@ -167,7 +163,7 @@ namespace Client.Envir
 
             for (int i = BufferList.Count - 1; i >= 0; i--)
             {
-                if (!BufferList[i].Disposed)
+                if (!BufferList[i].IsDisposed)
                 {
                     BufferList[i].Dispose();
                 }
@@ -185,7 +181,7 @@ namespace Client.Envir
 
             for (int i = BufferList.Count - 1; i >= 0; i--)
             {
-                if (BufferList[i].Disposed)
+                if (BufferList[i].IsDisposed)
                 {
                     BufferList.RemoveAt(i);
                     continue;
@@ -208,7 +204,7 @@ namespace Client.Envir
                     buffer.Play(0, Loop ? PlayFlags.Looping : PlayFlags.None);
                 }
 
-                if (!BufferList[0].Disposed)
+                if (!BufferList[0].IsDisposed)
                 {
                     BufferList[0].Dispose();
                 }
@@ -216,6 +212,31 @@ namespace Client.Envir
                 BufferList.RemoveAt(0);
             }
 
+        }
+
+        private static WaveFormat ConvertWaveFormat(global::NAudio.Wave.WaveFormat sourceFormat)
+        {
+            if (!Enum.TryParse(sourceFormat.Encoding.ToString(), out WaveFormatEncoding encoding))
+                encoding = WaveFormatEncoding.Pcm;
+
+            return WaveFormat.CreateCustomFormat(
+                encoding,
+                sourceFormat.SampleRate,
+                sourceFormat.Channels,
+                sourceFormat.AverageBytesPerSecond,
+                sourceFormat.BlockAlign,
+                sourceFormat.BitsPerSample);
+        }
+
+        private static byte[] ReadAllBytes(WaveStream stream)
+        {
+            stream.Position = 0;
+
+            using (var memory = new MemoryStream())
+            {
+                stream.CopyTo(memory);
+                return memory.ToArray();
+            }
         }
     }
 }
