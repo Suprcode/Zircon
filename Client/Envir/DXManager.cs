@@ -1,5 +1,4 @@
 ﻿using Client.Controls;
-using SharpDX;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
@@ -58,7 +57,7 @@ namespace Client.Envir
                     {
                         _ColourPallete = new Texture(Device, 200, 149, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                         DataRectangle rect = _ColourPallete.LockRectangle(0, LockFlags.Discard);
-                        Utilities.Write(rect.DataPointer, PalleteData, 0, PalleteData.Length);
+                        SharpDX.Utilities.Write(rect.DataPointer, PalleteData, 0, PalleteData.Length);
                         _ColourPallete.UnlockRectangle(0);
                     }
                 }

@@ -1,9 +1,9 @@
 using System;
 using System.Drawing;
 using System.Numerics;
-using SharpDX;
 using SharpDX.Direct3D9;
 using SharpDX.Mathematics.Interop;
+using ColorBGRA = SharpDX.ColorBGRA;
 
 namespace Client.Extensions;
 

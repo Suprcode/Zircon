@@ -1,5 +1,4 @@
 ﻿using Library;
-using SharpDX;
 using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
@@ -764,7 +763,7 @@ namespace Client.Envir
             {
                 reader.BaseStream.Seek(Position, SeekOrigin.Begin);
                 byte[] buffer = reader.ReadBytes(ImageDataSize);
-                Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
+                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Image.UnlockRectangle(0);
@@ -793,7 +792,7 @@ namespace Client.Envir
             {
                 reader.BaseStream.Seek(Position + ImageDataSize, SeekOrigin.Begin);
                 byte[] buffer = reader.ReadBytes(ShadowDataSize);
-                Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
+                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Shadow.UnlockRectangle(0);
@@ -820,7 +819,7 @@ namespace Client.Envir
             {
                 reader.BaseStream.Seek(Position + ImageDataSize + ShadowDataSize, SeekOrigin.Begin);
                 byte[] buffer = reader.ReadBytes(OverlayDataSize);
-                Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
+                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Overlay.UnlockRectangle(0);

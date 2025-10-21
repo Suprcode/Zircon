@@ -1,7 +1,5 @@
 ﻿using Client.Envir;
 using Library;
-using SharpDX;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

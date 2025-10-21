@@ -1,5 +1,4 @@
 ﻿using Library;
-using SharpDX;
 using System;
 using System.Drawing;
 using System.Numerics;

@@ -5,7 +5,6 @@ using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
 using Library.SystemModels;
-using SharpDX;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;

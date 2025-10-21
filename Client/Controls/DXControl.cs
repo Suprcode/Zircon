@@ -1,7 +1,6 @@
 ﻿using Client.Envir;
 using Client.Extensions;
 using Library;
-using SharpDX;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;

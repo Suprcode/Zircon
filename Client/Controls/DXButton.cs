@@ -1,7 +1,6 @@
 ﻿using Client.Envir;
 using Library;
-using SharpDX;
-using SharpDX.Direct3D9;
+using Texture = SharpDX.Direct3D9.Texture;
 using System;
 using System.Drawing;
 using System.Windows.Forms;

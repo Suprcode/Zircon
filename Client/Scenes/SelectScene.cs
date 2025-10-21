@@ -2,7 +2,6 @@
 using Client.Envir;
 using Client.UserModels;
 using Library;
-using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

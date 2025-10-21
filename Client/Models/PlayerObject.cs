@@ -2,7 +2,6 @@
 using Client.Models.Player;
 using Client.Scenes;
 using Library;
-using SharpDX;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
