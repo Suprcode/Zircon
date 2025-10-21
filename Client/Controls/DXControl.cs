@@ -6,6 +6,7 @@ using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using System.Windows.Forms;
 
 //Cleaned

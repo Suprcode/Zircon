@@ -1,10 +1,10 @@
 ﻿using Client.Envir;
 using Client.Scenes;
 using Library;
-using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 
 namespace Client.Models.Particles
 {

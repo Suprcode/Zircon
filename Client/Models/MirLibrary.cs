@@ -4,6 +4,7 @@ using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Threading;
 using Client.Extensions;
 

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Frame = Library.Frame;
 using S = Library.Network.ServerPackets;
 using Client.Extensions;
