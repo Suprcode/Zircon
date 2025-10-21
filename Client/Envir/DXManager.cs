@@ -454,14 +454,20 @@ namespace Client.Envir
 
             DeviceLost = true;
 
-            if (Parameters == null || CEnvir.Target.ClientSize.Width == 0 || CEnvir.Target.ClientSize.Height == 0) return;
+            if (CEnvir.Target.ClientSize.Width == 0 || CEnvir.Target.ClientSize.Height == 0) return;
 
-            Parameters.Windowed = !Config.FullScreen;
-            Parameters.BackBufferWidth = CEnvir.Target.ClientSize.Width;
-            Parameters.BackBufferHeight = CEnvir.Target.ClientSize.Height;
-            Parameters.PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate;
+            PresentParameters parameters = Parameters;
 
-            Device.Reset(Parameters);
+            if (parameters.BackBufferWidth == 0 || parameters.BackBufferHeight == 0)
+                return;
+
+            parameters.Windowed = !Config.FullScreen;
+            parameters.BackBufferWidth = CEnvir.Target.ClientSize.Width;
+            parameters.BackBufferHeight = CEnvir.Target.ClientSize.Height;
+            parameters.PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate;
+
+            Device.Reset(parameters);
+            Parameters = parameters;
             LoadTextures();
         }
         public static void AttemptReset()

@@ -141,7 +141,7 @@ namespace Client.Controls
         {
             if (width <= 0 || height <= 0) return;
 
-            Rectangle rectangle = new(x, y, width, height);
+            SharpDX.Rectangle rectangle = new SharpDX.Rectangle(x, y, x + width, y + height);
             DXManager.Device.ColorFill(DXManager.ScratchSurface, rectangle, colour.ToColorBGRA());
         }
 
