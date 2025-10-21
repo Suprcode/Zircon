@@ -15,6 +15,7 @@ using System.Numerics;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 using Client.Extensions;
+using Matrix = SharpDX.Matrix;
 
 //Cleaned
 namespace Client.Scenes.Views

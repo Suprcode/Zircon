@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
+using Matrix = SharpDX.Matrix;
 using C = Library.Network.ClientPackets;
 
 //Cleaned

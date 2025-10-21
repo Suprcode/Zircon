@@ -7,6 +7,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading;
 using Client.Extensions;
+using Matrix = SharpDX.Matrix;
 
 namespace Client.Envir
 {

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
+using Matrix = SharpDX.Matrix;
 
 //Cleaned
 namespace Client.Controls

@@ -12,6 +12,7 @@ using System.Numerics;
 using Frame = Library.Frame;
 using S = Library.Network.ServerPackets;
 using Client.Extensions;
+using Matrix = SharpDX.Matrix;
 
 namespace Client.Models
 {
