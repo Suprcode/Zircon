@@ -142,7 +142,7 @@ namespace Client.Envir
             return image.VisiblePixel(location, accurate);
         }
 
-        public void Draw(int index, float x, float y, Color4 colour, Rectangle area, float opacity, ImageType type, byte shadow = 0)
+        public void Draw(int index, float x, float y, Color colour, Rectangle area, float opacity, ImageType type, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
 
@@ -219,7 +219,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
-        public void Draw(int index, float x, float y, Color4 colour, bool useOffSet, float opacity, ImageType type, float scale = 1F)
+        public void Draw(int index, float x, float y, Color colour, bool useOffSet, float opacity, ImageType type, float scale = 1F)
         {
             if (!CheckImage(index)) return;
 
@@ -336,7 +336,7 @@ namespace Client.Envir
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
-        public void Draw(int index, float sizeX, float sizeY, Color4 colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+        public void Draw(int index, float sizeX, float sizeY, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
 
@@ -396,7 +396,7 @@ namespace Client.Envir
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
-        public void DrawBlend(int index, float sizeX, float sizeY, Color4 colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+        public void DrawBlend(int index, float sizeX, float sizeY, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
 
@@ -463,7 +463,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
-        public void DrawBlend(int index, float x, float y, Color4 colour, bool useOffSet, float rate, ImageType type, byte shadow = 0)
+        public void DrawBlend(int index, float x, float y, Color colour, bool useOffSet, float rate, ImageType type, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
 

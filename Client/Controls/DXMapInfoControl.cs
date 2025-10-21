@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -141,7 +142,7 @@ namespace Client.Controls
             if (width <= 0 || height <= 0) return;
 
             Rectangle rectangle = new(x, y, width, height);
-            DXManager.Device.ColorFill(DXManager.ScratchSurface, rectangle, new Color4(colour));
+            DXManager.Device.ColorFill(DXManager.ScratchSurface, rectangle, colour.ToColorBGRA());
         }
 
         private Color GetLayerColour(int layer)

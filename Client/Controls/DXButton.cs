@@ -1,9 +1,11 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using Library;
 using Texture = SharpDX.Direct3D9.Texture;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Color4 = SharpDX.Color4;
 
 namespace Client.Controls
 {
