@@ -421,11 +421,11 @@ namespace Server.Views.DirectX
 
             Direct3D direct3D = new Direct3D();
 
-            Device = new Device(direct3D, direct3D.Adapters.DefaultAdapter.Adapter, DeviceType.Hardware, Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
+            Device = new Device(direct3D, direct3D.Adapters[0].Adapter, DeviceType.Hardware, Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
 
             LoadTextures();
 
-            Device.SetDialogBoxMode(true);
+            direct3D.SetDialogBoxMode(true);
         }
 
         private unsafe void LoadTextures()

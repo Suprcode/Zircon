@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Extensions;
+using SharpDX;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
@@ -127,7 +128,7 @@ namespace Client.Envir
 
                 Device = new Device(direct3D, 0, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
 
-                AdapterInformation adapterInfo = direct3D.Adapters.DefaultAdapter;
+                AdapterInformation adapterInfo = direct3D.Adapters[0];
                 var modes = adapterInfo.GetDisplayModes(Format.X8R8G8B8);
 
                 foreach (DisplayMode mode in modes)
@@ -142,7 +143,7 @@ namespace Client.Envir
 
                 LoadTextures();
 
-                Device.SetDialogBoxMode(true);
+                direct3D.SetDialogBoxMode(true);
 
                 const string path = @".\Data\Pallete.png";
 
@@ -159,7 +160,7 @@ namespace Client.Envir
                     }
                 }
             }
-            catch (Direct3D9NotFoundException ex)
+            catch (SharpDXException ex) when (ex.ResultCode == ResultCode.NotAvailable)
             {
                 CEnvir.SaveException(ex);
                 throw;
