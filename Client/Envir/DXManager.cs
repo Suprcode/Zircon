@@ -542,7 +542,7 @@ namespace Client.Envir
         {
             if (CEnvir.Target.ClientSize == size) return;
 
-            Device.Clear(ClearFlags.Target, System.Drawing.Color.Black, 0, 0);
+            Device.Clear(ClearFlags.Target, SharpDX.ColorBGRA.Black, 0f, 0);
             Device.Present();
 
             CEnvir.Target.ClientSize = size;

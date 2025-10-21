@@ -1038,7 +1038,7 @@ namespace Client.Controls
             Surface previous = DXManager.CurrentSurface;
             DXManager.SetSurface(ControlSurface);
 
-            DXManager.Device.Clear(ClearFlags.Target, BackColour, 0, 0);
+            DXManager.Device.Clear(ClearFlags.Target, BackColour.ToColorBGRA(), 0f, 0);
 
             OnClearTexture();
 
@@ -1677,7 +1677,7 @@ namespace Client.Controls
             Surface old = DXManager.CurrentSurface;
             DXManager.SetSurface(DXManager.ScratchSurface);
 
-            DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
+            DXManager.Device.Clear(ClearFlags.Target, new SharpDX.ColorBGRA(0, 0, 0, 0), 0f, 0);
 
             DXManager.Line.Draw(BorderInformation, BorderColour);
 

@@ -302,7 +302,7 @@ namespace Client.Envir
                     return;
                 }
 
-                DXManager.Device.Clear(ClearFlags.Target, Color.Black, 1, 0);
+                DXManager.Device.Clear(ClearFlags.Target, SharpDX.ColorBGRA.Black, 1f, 0);
                 DXManager.Device.BeginScene();
                 DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
 
