@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using SharpDX.Direct3D9;
 using SharpDX.Mathematics.Interop;
@@ -48,6 +49,29 @@ public static class SharpDXExtensions
     public static void Draw(this Line line, Vector2[] vertexList, Color4 color)
     {
         line.DrawInternal(vertexList, color.ToColorBGRA());
+    }
+
+    public static void Clear(this Device device, ClearFlags flags, Color color, float z, int stencil)
+    {
+        ArgumentNullException.ThrowIfNull(device);
+
+        device.Clear(flags, color.ToColorBGRA(), z, stencil);
+    }
+
+    public static void Clear(this Device device, ClearFlags flags, int color, float z, int stencil)
+    {
+        ArgumentNullException.ThrowIfNull(device);
+
+        device.Clear(flags, Color.FromArgb(color).ToColorBGRA(), z, stencil);
+    }
+
+    public static void Clear(this Device device, ClearFlags flags, Color color, float z, int stencil, Rectangle[] rectangles)
+    {
+        ArgumentNullException.ThrowIfNull(device);
+
+        RawRectangle[]? rawRectangles = rectangles?.Select(rectangle => new RawRectangle(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom)).ToArray();
+
+        device.Clear(flags, color.ToColorBGRA(), z, stencil, rawRectangles);
     }
 
     private static void DrawInternal(this Sprite sprite, Texture texture, Rectangle? sourceRectangle, Vector3? center, Vector3? position, ColorBGRA color)
