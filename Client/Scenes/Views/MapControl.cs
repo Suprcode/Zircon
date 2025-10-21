@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
+using Client.Extensions;
 
 //Cleaned
 namespace Client.Scenes.Views

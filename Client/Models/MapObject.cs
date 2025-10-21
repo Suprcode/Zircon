@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Frame = Library.Frame;
+using Client.Extensions;
 
 namespace Client.Models
 {

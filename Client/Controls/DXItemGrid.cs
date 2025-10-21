@@ -4,6 +4,7 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Client.Extensions;
 
 //Cleaned
 namespace Client.Controls

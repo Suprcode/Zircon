@@ -3,6 +3,7 @@ using SharpDX;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Client.Extensions;
 
 //Cleaned
 namespace Client.Controls

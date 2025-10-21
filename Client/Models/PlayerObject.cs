@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Linq;
 using Frame = Library.Frame;
 using S = Library.Network.ServerPackets;
+using Client.Extensions;
 
 namespace Client.Models
 {
