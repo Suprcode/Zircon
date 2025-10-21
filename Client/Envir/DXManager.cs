@@ -14,7 +14,7 @@ using System.Windows.Forms;
 using Blend = SharpDX.Direct3D9.Blend;
 using DataRectangle = SharpDX.DataRectangle;
 using Result = SharpDX.Result;
-using ResultCode = SharpDX.ResultCode;
+using D3DResultCode = SharpDX.Direct3D9.ResultCode;
 using System.Numerics;
 
 namespace Client.Envir
@@ -160,7 +160,7 @@ namespace Client.Envir
                     }
                 }
             }
-            catch (SharpDXException ex) when (ex.ResultCode == ResultCode.NotAvailable)
+            catch (SharpDXException ex)
             {
                 CEnvir.SaveException(ex);
                 throw;
@@ -477,15 +477,15 @@ namespace Client.Envir
             {
                 Result result = Device.TestCooperativeLevel();
 
-                if (result.Code == ResultCode.DeviceLost.Code) return;
+                if (result.Code == D3DResultCode.DeviceLost.Code) return;
 
-                if (result.Code == ResultCode.DeviceNotReset.Code)
+                if (result.Code == D3DResultCode.DeviceNotReset.Code)
                 {
                     ResetDevice();
                     return;
                 }
 
-                if (result.Code != ResultCode.Success.Code) return;
+                if (result.Code != D3DResultCode.Success.Code) return;
 
                 DeviceLost = false;
             }
