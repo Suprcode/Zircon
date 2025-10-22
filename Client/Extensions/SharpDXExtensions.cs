@@ -6,7 +6,6 @@ using SharpDX.Direct3D9;
 using SharpDX.Mathematics.Interop;
 using ColorBGRA = SharpDX.ColorBGRA;
 using Color4 = SharpDX.Color4;
-using DXRectangle = SharpDX.Rectangle;
 
 namespace Client.Extensions;
 
@@ -80,7 +79,7 @@ public static class SharpDXExtensions
         ArgumentNullException.ThrowIfNull(sprite);
         ArgumentNullException.ThrowIfNull(texture);
 
-        DXRectangle? rawRectangle = sourceRectangle.HasValue ? ToSharpDXRectangle(sourceRectangle.Value) : null;
+        RawRectangle? rawRectangle = sourceRectangle.HasValue ? ToSharpDXRectangle(sourceRectangle.Value) : null;
         RawVector3? rawCenter = center.HasValue ? ToSharpDXVector3(center.Value) : null;
         RawVector3? rawPosition = position.HasValue ? ToSharpDXVector3(position.Value) : null;
 
@@ -101,7 +100,7 @@ public static class SharpDXExtensions
         line.Draw(raw, color);
     }
 
-    private static DXRectangle ToSharpDXRectangle(Rectangle rectangle) => new(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
+    private static RawRectangle ToSharpDXRectangle(Rectangle rectangle) => new(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
 
     private static RawVector3 ToSharpDXVector3(Vector3 vector) => new(vector.X, vector.Y, vector.Z);
 }
