@@ -13,15 +13,15 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Windows.Forms;
-using System.Numerics;
 using Blend = SharpDX.Direct3D9.Blend;
 using Color4 = SharpDX.Color4;
+using D3DResultCode = SharpDX.Direct3D9.ResultCode;
 using DataRectangle = SharpDX.DataRectangle;
 using Matrix = SharpDX.Matrix;
 using Result = SharpDX.Result;
-using D3DResultCode = SharpDX.Direct3D9.ResultCode;
 
 namespace Server.Views
 {
@@ -204,9 +204,16 @@ namespace Server.Views
                 Manager.Device.Present();
 
             }
-            catch (SharpDX.SharpDXException)
+            catch (SharpDX.SharpDXException ex)
             {
-                Manager.DeviceLost = true;
+                if (ex.ResultCode == D3DResultCode.DeviceLost)
+                {
+                    Manager.DeviceLost = true;
+                }
+                else
+                {
+                    Manager.AttemptRecovery();
+                }
             }
             catch (Exception ex)
             {

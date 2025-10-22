@@ -126,15 +126,15 @@ public static class SharpDXColorExtensions
 
     public static RawColorBGRA ToColorBGRA(this Color color)
     {
-        return new RawColorBGRA(color.R, color.G, color.B, color.A);
+        return new RawColorBGRA(color.B, color.G, color.R, color.A);
     }
 
     public static RawColorBGRA ToColorBGRA(this Color4 color)
     {
         return new RawColorBGRA(
-            ToByte(color.Red),
-            ToByte(color.Green),
             ToByte(color.Blue),
+            ToByte(color.Green),
+            ToByte(color.Red),
             ToByte(color.Alpha));
     }
 
