@@ -1,5 +1,5 @@
 ﻿using Library;
-using SlimDX.DirectSound;
+using SharpDX.DirectSound;
 using System;
 using System.Collections.Generic;
 
@@ -1124,7 +1124,7 @@ namespace Client.Envir
 
             if (Device != null)
             {
-                if (!Device.Disposed)
+                if (!Device.IsDisposed)
                     Device.Dispose();
 
                 Device = null;

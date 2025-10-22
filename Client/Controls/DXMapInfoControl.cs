@@ -1,9 +1,9 @@
 ﻿using Client.Envir;
-using SlimDX;
-using SlimDX.Direct3D9;
+using Client.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using SharpDX.Direct3D9;
 
 namespace Client.Controls
 {
@@ -99,7 +99,7 @@ namespace Client.Controls
                     Color layerColour = GetLayerColour(layer);
 
                     DXManager.SetSurface(DXManager.ScratchSurface);
-                    DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
+                    DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
                     DrawBorderLayerToScratch(inflation, strokeWidth, layerColour);
                     DXManager.SetSurface(oldSurface);
 
@@ -142,8 +142,8 @@ namespace Client.Controls
         {
             if (width <= 0 || height <= 0) return;
 
-            Rectangle rectangle = new(x, y, width, height);
-            DXManager.Device.ColorFill(DXManager.ScratchSurface, rectangle, new Color4(colour));
+            SharpDX.Rectangle rectangle = new SharpDX.Rectangle(x, y, x + width, y + height);
+            DXManager.Device.ColorFill(DXManager.ScratchSurface, rectangle, colour.ToColorBGRA());
         }
 
         private Color GetLayerColour(int layer)

@@ -1,11 +1,13 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using Library;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using System.Windows.Forms;
+using Matrix = SharpDX.Matrix;
 
 //Cleaned
 namespace Client.Controls
@@ -1036,7 +1038,7 @@ namespace Client.Controls
             Surface previous = DXManager.CurrentSurface;
             DXManager.SetSurface(ControlSurface);
 
-            DXManager.Device.Clear(ClearFlags.Target, BackColour, 0, 0);
+            DXManager.Device.Clear(ClearFlags.Target, BackColour, 0f, 0);
 
             OnClearTexture();
 
@@ -1052,7 +1054,7 @@ namespace Client.Controls
         {
             if (ControlTexture != null)
             {
-                if (!ControlTexture.Disposed)
+                if (!ControlTexture.IsDisposed)
                     ControlTexture.Dispose();
 
                 ControlTexture = null;
@@ -1060,7 +1062,7 @@ namespace Client.Controls
 
             if (ControlSurface != null)
             {
-                if (!ControlSurface.Disposed)
+                if (!ControlSurface.IsDisposed)
                     ControlSurface.Dispose();
 
                 ControlSurface = null;
@@ -1675,7 +1677,7 @@ namespace Client.Controls
             Surface old = DXManager.CurrentSurface;
             DXManager.SetSurface(DXManager.ScratchSurface);
 
-            DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
+            DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
 
             DXManager.Line.Draw(BorderInformation, BorderColour);
 

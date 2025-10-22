@@ -1,4 +1,5 @@
 ﻿using Client.Controls;
+using Client.Extensions;
 using Client.Envir.Translations;
 using Client.Models;
 using Client.Scenes;
@@ -9,7 +10,7 @@ using Library.Network;
 using Library.SystemModels;
 using MirDB;
 using Sentry;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -302,7 +303,7 @@ namespace Client.Envir
                     return;
                 }
 
-                DXManager.Device.Clear(ClearFlags.Target, Color.Black, 1, 0);
+                DXManager.Device.Clear(ClearFlags.Target, System.Drawing.Color.Black, 1f, 0);
                 DXManager.Device.BeginScene();
                 DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
 
@@ -314,7 +315,7 @@ namespace Client.Envir
                 DXManager.Device.Present();
                 FPSCounter++;
             }
-            catch (Direct3D9Exception)
+            catch (SharpDX.SharpDXException)
             {
                 DXManager.DeviceLost = true;
             }

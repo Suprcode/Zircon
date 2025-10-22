@@ -3,7 +3,7 @@ using Client.Envir;
 using Client.Scenes;
 using Library;
 using Sentry;
-using SlimDX.Windows;
+using SharpDX.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,7 +55,7 @@ namespace Client
 
             DXControl.ActiveScene = new LoginScene(Config.ExtendedLogin ? Config.GameSize : Config.IntroSceneSize);
 
-            MessagePump.Run(CEnvir.Target, CEnvir.GameLoop);
+            RenderLoop.Run(CEnvir.Target, CEnvir.GameLoop);
 
             CEnvir.Session?.Save(true);
             CEnvir.Unload();

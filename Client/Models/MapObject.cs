@@ -5,14 +5,15 @@ using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
 using Library.SystemModels;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using Frame = Library.Frame;
+using Client.Extensions;
 
 namespace Client.Models
 {

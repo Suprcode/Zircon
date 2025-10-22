@@ -1,6 +1,7 @@
 ﻿using Client.Controls;
-using SlimDX;
-using SlimDX.Direct3D9;
+using Client.Extensions;
+using SharpDX;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +11,11 @@ using System.Drawing.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Blend = SlimDX.Direct3D9.Blend;
+using Blend = SharpDX.Direct3D9.Blend;
+using DataRectangle = SharpDX.DataRectangle;
+using Result = SharpDX.Result;
+using D3DResultCode = SharpDX.Direct3D9.ResultCode;
+using System.Numerics;
 
 namespace Client.Envir
 {
@@ -50,7 +55,7 @@ namespace Client.Envir
         {
             get
             {
-                if (_ColourPallete == null || _ColourPallete.Disposed)
+                if (_ColourPallete == null || _ColourPallete.IsDisposed)
                 {
                     _ColourPallete = null;
 
@@ -58,9 +63,8 @@ namespace Client.Envir
                     {
                         _ColourPallete = new Texture(Device, 200, 149, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
                         DataRectangle rect = _ColourPallete.LockRectangle(0, LockFlags.Discard);
-                        rect.Data.Write(PalleteData, 0, PalleteData.Length);
+                        SharpDX.Utilities.Write(rect.DataPointer, PalleteData, 0, PalleteData.Length);
                         _ColourPallete.UnlockRectangle(0);
-                        rect.Data.Dispose();
                     }
                 }
 
@@ -77,7 +81,7 @@ namespace Client.Envir
         {
             get
             {
-                if (_LightTexture == null || _LightTexture.Disposed)
+                if (_LightTexture == null || _LightTexture.IsDisposed)
                     CreateLight();
 
                 return _LightTexture;
@@ -89,7 +93,7 @@ namespace Client.Envir
         {
             get
             {
-                if (_LightSurface == null || _LightSurface.Disposed)
+                if (_LightSurface == null || _LightSurface.IsDisposed)
                     _LightSurface = LightTexture.GetSurfaceLevel(0);
 
                 return _LightSurface;
@@ -122,9 +126,9 @@ namespace Client.Envir
 
                 Direct3D direct3D = new Direct3D();
 
-                Device = new Device(direct3D, direct3D.Adapters.DefaultAdapter.Adapter, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
+                Device = new Device(direct3D, 0, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
 
-                AdapterInformation adapterInfo = direct3D.Adapters.DefaultAdapter;
+                AdapterInformation adapterInfo = direct3D.Adapters[0];
                 var modes = adapterInfo.GetDisplayModes(Format.X8R8G8B8);
 
                 foreach (DisplayMode mode in modes)
@@ -139,15 +143,13 @@ namespace Client.Envir
 
                 LoadTextures();
 
-                Device.SetDialogBoxMode(true);
-
                 const string path = @".\Data\Pallete.png";
 
                 if (File.Exists(path))
                 {
                     using (Bitmap pallete = new Bitmap(path))
                     {
-                        BitmapData data = pallete.LockBits(new Rectangle(Point.Empty, pallete.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                        BitmapData data = pallete.LockBits(new System.Drawing.Rectangle(System.Drawing.Point.Empty, pallete.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
                         PalleteData = new byte[pallete.Width * pallete.Height * 4];
                         Marshal.Copy(data.Scan0, PalleteData, 0, PalleteData.Length);
@@ -156,7 +158,7 @@ namespace Client.Envir
                     }
                 }
             }
-            catch (Direct3DX9NotFoundException ex)
+            catch (SharpDXException ex)
             {
                 CEnvir.SaveException(ex);
                 throw;
@@ -176,7 +178,7 @@ namespace Client.Envir
 
             DataRectangle rect = PoisonTexture.LockRectangle(0, LockFlags.Discard);
 
-            int* data = (int*)rect.Data.DataPointer;
+            int* data = (int*)rect.DataPointer;
 
             for (int y = 0; y < 6; y++)
                 for (int x = 0; x < 6; x++)
@@ -192,23 +194,22 @@ namespace Client.Envir
 
             DataRectangle rect = light.LockRectangle(0, LockFlags.Discard);
 
-            using (Bitmap image = new Bitmap(LightWidth, LightHeight, LightWidth * 4, PixelFormat.Format32bppArgb, rect.Data.DataPointer))
+            using (Bitmap image = new Bitmap(LightWidth, LightHeight, LightWidth * 4, PixelFormat.Format32bppArgb, rect.DataPointer))
             using (Graphics graphics = Graphics.FromImage(image))
             using (GraphicsPath path = new GraphicsPath())
             {
-                path.AddEllipse(new Rectangle(0, 0, LightWidth, LightHeight));
+                path.AddEllipse(new System.Drawing.Rectangle(0, 0, LightWidth, LightHeight));
                 using (PathGradientBrush brush = new PathGradientBrush(path))
                 {
-                    graphics.Clear(Color.FromArgb(0, 0, 0, 0));
-                    brush.SurroundColors = new[] { Color.FromArgb(0, 0, 0, 0) };
-                    brush.CenterColor = Color.FromArgb(255, 200, 200, 200);
+                    graphics.Clear(System.Drawing.Color.FromArgb(0, 0, 0, 0));
+                    brush.SurroundColors = new[] { System.Drawing.Color.FromArgb(0, 0, 0, 0) };
+                    brush.CenterColor = System.Drawing.Color.FromArgb(255, 200, 200, 200);
                     graphics.FillPath(brush, path);
                     graphics.Save();
                 }
             }
 
             light.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             _LightTexture = light;
         }
@@ -217,7 +218,7 @@ namespace Client.Envir
         {
             if (Sprite != null)
             {
-                if (!Sprite.Disposed)
+                if (!Sprite.IsDisposed)
                     Sprite.Dispose();
 
                 Sprite = null;
@@ -225,7 +226,7 @@ namespace Client.Envir
 
             if (Line != null)
             {
-                if (!Line.Disposed)
+                if (!Line.IsDisposed)
                     Line.Dispose();
 
                 Line = null;
@@ -233,7 +234,7 @@ namespace Client.Envir
 
             if (CurrentSurface != null)
             {
-                if (!CurrentSurface.Disposed)
+                if (!CurrentSurface.IsDisposed)
                     CurrentSurface.Dispose();
 
                 CurrentSurface = null;
@@ -241,7 +242,7 @@ namespace Client.Envir
 
             if (_ColourPallete != null)
             {
-                if (!_ColourPallete.Disposed)
+                if (!_ColourPallete.IsDisposed)
                     _ColourPallete.Dispose();
 
                 _ColourPallete = null;
@@ -249,7 +250,7 @@ namespace Client.Envir
 
             if (ScratchTexture != null)
             {
-                if (!ScratchTexture.Disposed)
+                if (!ScratchTexture.IsDisposed)
                     ScratchTexture.Dispose();
 
                 ScratchTexture = null;
@@ -257,7 +258,7 @@ namespace Client.Envir
 
             if (ScratchSurface != null)
             {
-                if (!ScratchSurface.Disposed)
+                if (!ScratchSurface.IsDisposed)
                     ScratchSurface.Dispose();
 
                 ScratchSurface = null;
@@ -265,7 +266,7 @@ namespace Client.Envir
 
             if (PoisonTexture != null)
             {
-                if (!PoisonTexture.Disposed)
+                if (!PoisonTexture.IsDisposed)
                     PoisonTexture.Dispose();
 
                 PoisonTexture = null;
@@ -273,7 +274,7 @@ namespace Client.Envir
 
             if (_LightTexture != null)
             {
-                if (!_LightTexture.Disposed)
+                if (!_LightTexture.IsDisposed)
                     _LightTexture.Dispose();
 
                 _LightTexture = null;
@@ -281,7 +282,7 @@ namespace Client.Envir
 
             if (_LightSurface != null)
             {
-                if (!_LightSurface.Disposed)
+                if (!_LightSurface.IsDisposed)
                     _LightSurface.Dispose();
 
                 _LightSurface = null;
@@ -325,11 +326,11 @@ namespace Client.Envir
             {
                 if (Device.Direct3D != null)
                 {
-                    if (!Device.Direct3D.Disposed)
+                    if (!Device.Direct3D.IsDisposed)
                         Device.Direct3D.Dispose();
                 }
 
-                if (!Device.Disposed)
+                if (!Device.IsDisposed)
                     Device.Dispose();
 
                 Device = null;
@@ -357,14 +358,14 @@ namespace Client.Envir
                 Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
                 Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
                 Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.One);
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb(255, 255, 255, 255).ToArgb());
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb(255, 255, 255, 255).ToArgb());
             }
             else
             {
                 Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
                 Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseBlendFactor);
                 Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.SourceAlpha);
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte)(255 * opacity), (byte)(255 * opacity),
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb((byte)(255 * opacity), (byte)(255 * opacity),
                     (byte)(255 * opacity), (byte)(255 * opacity)).ToArgb());
             }
 
@@ -418,7 +419,7 @@ namespace Client.Envir
                         break;
                 }
 
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
             }
             else
             {
@@ -452,14 +453,20 @@ namespace Client.Envir
 
             DeviceLost = true;
 
-            if (Parameters == null || CEnvir.Target.ClientSize.Width == 0 || CEnvir.Target.ClientSize.Height == 0) return;
+            if (CEnvir.Target.ClientSize.Width == 0 || CEnvir.Target.ClientSize.Height == 0) return;
 
-            Parameters.Windowed = !Config.FullScreen;
-            Parameters.BackBufferWidth = CEnvir.Target.ClientSize.Width;
-            Parameters.BackBufferHeight = CEnvir.Target.ClientSize.Height;
-            Parameters.PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate;
+            PresentParameters parameters = Parameters;
 
-            Device.Reset(Parameters);
+            if (parameters.BackBufferWidth == 0 || parameters.BackBufferHeight == 0)
+                return;
+
+            parameters.Windowed = !Config.FullScreen;
+            parameters.BackBufferWidth = CEnvir.Target.ClientSize.Width;
+            parameters.BackBufferHeight = CEnvir.Target.ClientSize.Height;
+            parameters.PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate;
+
+            Device.Reset(parameters);
+            Parameters = parameters;
             LoadTextures();
         }
         public static void AttemptReset()
@@ -468,15 +475,15 @@ namespace Client.Envir
             {
                 Result result = Device.TestCooperativeLevel();
 
-                if (result.Code == ResultCode.DeviceLost.Code) return;
+                if (result.Code == D3DResultCode.DeviceLost.Code) return;
 
-                if (result.Code == ResultCode.DeviceNotReset.Code)
+                if (result.Code == D3DResultCode.DeviceNotReset.Code)
                 {
                     ResetDevice();
                     return;
                 }
 
-                if (result.Code != ResultCode.Success.Code) return;
+                if (result.Code != D3DResultCode.Success.Code) return;
 
                 DeviceLost = false;
             }
@@ -533,7 +540,7 @@ namespace Client.Envir
         {
             if (CEnvir.Target.ClientSize == size) return;
 
-            Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
+            Device.Clear(ClearFlags.Target, System.Drawing.Color.Black, 0f, 0);
             Device.Present();
 
             CEnvir.Target.ClientSize = size;
