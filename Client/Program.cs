@@ -55,7 +55,7 @@ namespace Client
 
             DXControl.ActiveScene = new LoginScene(Config.ExtendedLogin ? Config.GameSize : Config.IntroSceneSize);
 
-            MessagePump.Run(CEnvir.Target, CEnvir.GameLoop);
+            RenderLoop.Run(CEnvir.Target, CEnvir.GameLoop);
 
             CEnvir.Session?.Save(true);
             CEnvir.Unload();

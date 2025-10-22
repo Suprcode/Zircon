@@ -5,7 +5,7 @@ using Texture = SharpDX.Direct3D9.Texture;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Color4 = SharpDX.Color4;
+using SharpDX.Direct3D9;
 
 namespace Client.Controls
 {
@@ -232,7 +232,7 @@ namespace Client.Controls
             ForeColour = Color.White;
             Sound = SoundIndex.ButtonA;
             CanBePressed = true;
-            ForeColour = new Color4(0.85F, 0.85F, 0.85F).ToColor();
+            ForeColour = Color.FromArgb(217, 217, 217);
 
             Label = new DXLabel
             {
@@ -363,9 +363,9 @@ namespace Client.Controls
         public void UpdateForeColour()
         {
             if (!IsEnabled)
-                ForeColour = new Color4(0.2F, 0.2F, 0.2F).ToColor();
+                ForeColour = Color.FromArgb(51, 51, 51);
             else
-                ForeColour = MouseControl == this || Pressed ? new Color4(1F, 1F, 1F).ToColor() : new Color4(0.85F, 0.85F, 0.85F).ToColor();
+                ForeColour = MouseControl == this || Pressed ? Color.White : Color.FromArgb(217, 217, 217);
         }
 
         private void DrawDefault()

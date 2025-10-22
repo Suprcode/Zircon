@@ -315,7 +315,7 @@ namespace Client.Envir
                 DXManager.Device.Present();
                 FPSCounter++;
             }
-            catch (Direct3D9Exception)
+            catch (SharpDX.SharpDXException)
             {
                 DXManager.DeviceLost = true;
             }
