@@ -3,6 +3,7 @@ using Client.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using SharpDX.Direct3D9;
 
 namespace Client.Controls
 {

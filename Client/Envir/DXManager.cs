@@ -143,8 +143,6 @@ namespace Client.Envir
 
                 LoadTextures();
 
-                Device.SetDialogBoxMode(true);
-
                 const string path = @".\Data\Pallete.png";
 
                 if (File.Exists(path))

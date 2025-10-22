@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using Client.UserModels;
 using Library;
 using SharpDX.Direct3D9;

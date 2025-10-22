@@ -122,7 +122,7 @@ namespace Client.Envir
                     BufferList.RemoveAt(i);
                     continue;
                 }
-                BufferList[i].SetCurrentPosition(0);
+                BufferList[i].CurrentPosition = 0;
                 BufferList[i].Stop();
             }
         }
@@ -193,7 +193,7 @@ namespace Client.Envir
             {
                 SecondarySoundBuffer buffer = CreateBuffer();
 
-                buffer.SetCurrentPosition(GetCurrentPlayPosition(BufferList[0]));
+                buffer.CurrentPosition = GetCurrentPlayPosition(BufferList[0]);
 
                 if (IsBufferPlaying(BufferList[0]))
                 {
