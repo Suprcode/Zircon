@@ -1,10 +1,9 @@
-﻿using NAudio.Wave;
-using SharpDX;
-using SharpDX.DirectSound;
-using SharpDX.Multimedia;
+﻿using SharpDX.DirectSound;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using NAudioWave = NAudio.Wave;
+using SharpDXMultimedia = SharpDX.Multimedia;
 
 namespace Client.Envir
 {
@@ -14,7 +13,7 @@ namespace Client.Envir
 
         public List<SecondarySoundBuffer> BufferList = new List<SecondarySoundBuffer>();
 
-        private WaveFormat Format;
+        private SharpDXMultimedia.WaveFormat Format;
         private byte[] RawData;
 
 
@@ -43,7 +42,7 @@ namespace Client.Envir
 
                 if (string.Equals(Path.GetExtension(FileName), ".mp3", StringComparison.OrdinalIgnoreCase))
                 {
-                    using (var mp3 = new Mp3FileReader(FileName))
+                    using (var mp3 = new NAudioWave.Mp3FileReader(FileName))
                     {
                         Format = ConvertWaveFormat(mp3.WaveFormat); 
 
@@ -52,7 +51,7 @@ namespace Client.Envir
                 }
                 else
                 {
-                    using (var waveReader = new WaveFileReader(FileName))
+                    using (var waveReader = new NAudioWave.WaveFileReader(FileName))
                     {
                         Format = ConvertWaveFormat(waveReader.WaveFormat);
                         RawData = ReadAllBytes(waveReader);
@@ -69,7 +68,7 @@ namespace Client.Envir
 
             if (Loop)
             {
-                if ((BufferList[0].Status & BufferStatus.Playing) != BufferStatus.Playing)
+                if (!IsBufferPlaying(BufferList[0]))
                 {
                     BufferList[0].Play(0, PlayFlags.Looping);
                 }
@@ -87,7 +86,7 @@ namespace Client.Envir
                     continue;
                 }
 
-                if (BufferList[i].Status == BufferStatus.Playing)
+                if (IsBufferPlaying(BufferList[i]))
                 {
                     continue;
                 }
@@ -123,7 +122,7 @@ namespace Client.Envir
                     BufferList.RemoveAt(i);
                     continue;
                 }
-                BufferList[i].CurrentPlayPosition = 0;
+                BufferList[i].SetCurrentPosition(0);
                 BufferList[i].Stop();
             }
         }
@@ -150,10 +149,7 @@ namespace Client.Envir
                 Volume = Volume
             });
 
-            using (var dataStream = DataStream.Create(RawData, true, false))
-            {
-                buff.Write(dataStream, RawData.Length, LockFlags.EntireBuffer);
-            }
+            buff.Write(RawData, 0, LockFlags.EntireBuffer);
 
             return buff;
         }
@@ -197,9 +193,9 @@ namespace Client.Envir
             {
                 SecondarySoundBuffer buffer = CreateBuffer();
 
-                buffer.CurrentPlayPosition = BufferList[0].CurrentPlayPosition;
+                buffer.SetCurrentPosition(GetCurrentPlayPosition(BufferList[0]));
 
-                if ((BufferList[0].Status & BufferStatus.Playing) == BufferStatus.Playing)
+                if (IsBufferPlaying(BufferList[0]))
                 {
                     buffer.Play(0, Loop ? PlayFlags.Looping : PlayFlags.None);
                 }
@@ -214,12 +210,23 @@ namespace Client.Envir
 
         }
 
-        private static WaveFormat ConvertWaveFormat(global::NAudio.Wave.WaveFormat sourceFormat)
+        private static bool IsBufferPlaying(SecondarySoundBuffer buffer)
         {
-            if (!Enum.TryParse(sourceFormat.Encoding.ToString(), out WaveFormatEncoding encoding))
-                encoding = WaveFormatEncoding.Pcm;
+            return ((BufferStatus)buffer.Status).HasFlag(BufferStatus.Playing);
+        }
 
-            return WaveFormat.CreateCustomFormat(
+        private static int GetCurrentPlayPosition(SecondarySoundBuffer buffer)
+        {
+            buffer.GetCurrentPosition(out int playCursor, out _);
+            return playCursor;
+        }
+
+        private static SharpDXMultimedia.WaveFormat ConvertWaveFormat(global::NAudio.Wave.WaveFormat sourceFormat)
+        {
+            if (!Enum.TryParse(sourceFormat.Encoding.ToString(), out SharpDXMultimedia.WaveFormatEncoding encoding))
+                encoding = SharpDXMultimedia.WaveFormatEncoding.Pcm;
+
+            return SharpDXMultimedia.WaveFormat.CreateCustomFormat(
                 encoding,
                 sourceFormat.SampleRate,
                 sourceFormat.Channels,
@@ -228,7 +235,7 @@ namespace Client.Envir
                 sourceFormat.BitsPerSample);
         }
 
-        private static byte[] ReadAllBytes(WaveStream stream)
+        private static byte[] ReadAllBytes(NAudioWave.WaveStream stream)
         {
             stream.Position = 0;
 
