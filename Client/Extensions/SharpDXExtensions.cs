@@ -4,7 +4,6 @@ using System.Linq;
 using System.Numerics;
 using SharpDX.Direct3D9;
 using SharpDX.Mathematics.Interop;
-using ColorBGRA = SharpDX.ColorBGRA;
 using Color4 = SharpDX.Color4;
 
 namespace Client.Extensions;
@@ -74,7 +73,7 @@ public static class SharpDXExtensions
         device.Clear(flags, color.ToColorBGRA(), z, stencil, rawRectangles);
     }
 
-    private static void DrawInternal(this Sprite sprite, Texture texture, Rectangle? sourceRectangle, Vector3? center, Vector3? position, ColorBGRA color)
+    private static void DrawInternal(this Sprite sprite, Texture texture, Rectangle? sourceRectangle, Vector3? center, Vector3? position, RawColorBGRA color)
     {
         ArgumentNullException.ThrowIfNull(sprite);
         ArgumentNullException.ThrowIfNull(texture);
@@ -83,10 +82,10 @@ public static class SharpDXExtensions
         RawVector3? rawCenter = center.HasValue ? ToSharpDXVector3(center.Value) : null;
         RawVector3? rawPosition = position.HasValue ? ToSharpDXVector3(position.Value) : null;
 
-        sprite.Draw(texture, rawRectangle, rawCenter, rawPosition, color);
+        sprite.Draw(texture, color, rawRectangle, rawCenter, rawPosition);
     }
 
-    private static void DrawInternal(this Line line, Vector2[] vertexList, ColorBGRA color)
+    private static void DrawInternal(this Line line, Vector2[] vertexList, RawColorBGRA color)
     {
         ArgumentNullException.ThrowIfNull(line);
         ArgumentNullException.ThrowIfNull(vertexList);
@@ -125,14 +124,14 @@ public static class SharpDXColorExtensions
             ToByte(color.Blue));
     }
 
-    public static ColorBGRA ToColorBGRA(this Color color)
+    public static RawColorBGRA ToColorBGRA(this Color color)
     {
-        return new ColorBGRA(color.R, color.G, color.B, color.A);
+        return new RawColorBGRA(color.R, color.G, color.B, color.A);
     }
 
-    public static ColorBGRA ToColorBGRA(this Color4 color)
+    public static RawColorBGRA ToColorBGRA(this Color4 color)
     {
-        return new ColorBGRA(
+        return new RawColorBGRA(
             ToByte(color.Red),
             ToByte(color.Green),
             ToByte(color.Blue),
