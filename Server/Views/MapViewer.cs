@@ -669,7 +669,7 @@ namespace Server.Views.DirectX
             {
                 IsDisposed = true;
 
-                Parameters = null;
+                Parameters = default;
                 if (Sprite != null)
                 {
                     if (!Sprite.IsDisposed)
