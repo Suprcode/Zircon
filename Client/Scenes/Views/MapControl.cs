@@ -1512,7 +1512,7 @@ namespace Client.Scenes.Views
 
                 if (MapObject.User.Dead)
                 {
-                    DXManager.Device.Clear(ClearFlags.Target, Color.IndianRed.ToColorBGRA(), 0f, 0);
+                    DXManager.Device.Clear(ClearFlags.Target, Color.IndianRed, 0f, 0);
                     return;
                 }
 
@@ -1529,7 +1529,7 @@ namespace Client.Scenes.Views
 
                 if ((MapObject.User.Poison & PoisonType.Abyss) == PoisonType.Abyss)
                 {
-                    DXManager.Device.Clear(ClearFlags.Target, Color.Black.ToColorBGRA(), 0f, 0);
+                    DXManager.Device.Clear(ClearFlags.Target, Color.Black, 0f, 0);
 
                     float scale = baseSize + 4 * lightScale;
 

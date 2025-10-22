@@ -1,4 +1,5 @@
 ﻿using Client.Controls;
+using Client.Extensions;
 using Client.Envir.Translations;
 using Client.Models;
 using Client.Scenes;
@@ -302,7 +303,7 @@ namespace Client.Envir
                     return;
                 }
 
-                DXManager.Device.Clear(ClearFlags.Target, SharpDX.ColorBGRA.Black, 1f, 0);
+                DXManager.Device.Clear(ClearFlags.Target, System.Drawing.Color.Black, 1f, 0);
                 DXManager.Device.BeginScene();
                 DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
 

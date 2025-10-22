@@ -366,7 +366,7 @@ namespace Client.Controls
             {
                 Surface oldSurface = DXManager.CurrentSurface;
                 DXManager.SetSurface(WindowSurface);
-                DXManager.Device.Clear(ClearFlags.Target, new SharpDX.ColorBGRA(0, 0, 0, 0), 0f, 0);
+                DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
 
                 DrawEdges();
 

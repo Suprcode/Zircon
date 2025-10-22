@@ -425,7 +425,7 @@ namespace Server.Views.DirectX
 
             LoadTextures();
 
-            direct3D.SetDialogBoxMode(true);
+            Device.SetDialogBoxMode(true);
         }
 
         private unsafe void LoadTextures()

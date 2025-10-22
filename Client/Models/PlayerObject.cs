@@ -980,7 +980,7 @@ namespace Client.Models
         {
             Surface oldSurface = DXManager.CurrentSurface;
             DXManager.SetSurface(DXManager.ScratchSurface);
-            DXManager.Device.Clear(ClearFlags.Target, new SharpDX.ColorBGRA(0, 0, 0, 0), 0f, 0);
+            DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
             DXManager.Sprite.Flush();
 
             int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;

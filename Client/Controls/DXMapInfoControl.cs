@@ -98,7 +98,7 @@ namespace Client.Controls
                     Color layerColour = GetLayerColour(layer);
 
                     DXManager.SetSurface(DXManager.ScratchSurface);
-                    DXManager.Device.Clear(ClearFlags.Target, new SharpDX.ColorBGRA(0, 0, 0, 0), 0f, 0);
+                    DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
                     DrawBorderLayerToScratch(inflation, strokeWidth, layerColour);
                     DXManager.SetSurface(oldSurface);
 
