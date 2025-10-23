@@ -811,6 +811,11 @@ namespace Client.Models
                     StruckSound = SoundIndex.NumaEliteStruck;
                     DieSound = SoundIndex.NumaEliteDie;
                     break;
+                case MonsterImage.Phantom:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_2, out BodyLibrary);
+                    BodyShape = 8;
+                    //TODO - Add sounds
+                    break;
                 case MonsterImage.SandShark:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_10, out BodyLibrary);
                     BodyShape = 4;
