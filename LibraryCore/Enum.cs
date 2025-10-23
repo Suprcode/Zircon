@@ -850,7 +850,7 @@ namespace Library
         //NF_StoneBuilding25 = 25,
         //NF_StoneBuilding26 = 26,
         NumaElite = 27,
-        //NF_Phantom = 28,
+        Phantom = 28,
         CrimsonNecromancer = 29,
 
         Chicken = 30,

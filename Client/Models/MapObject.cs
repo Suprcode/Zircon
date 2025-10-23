@@ -1299,7 +1299,7 @@ namespace Client.Models
                         case MagicType.ExpelUndead:
                             foreach (MapObject attackTarget in AttackTargets)
                             {
-                                spell = new MirEffect(140, 5, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 50, 80, Globals.PhantomColour)
+                                spell = new MirEffect(140, 10, TimeSpan.FromMilliseconds(100), LibraryFile.Magic, 50, 80, Globals.PhantomColour)
                                 {
                                     Blend = true,
                                     Target = attackTarget,
