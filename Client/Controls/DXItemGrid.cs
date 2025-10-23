@@ -1,9 +1,10 @@
 ﻿using Client.Envir;
 using Library;
-using SlimDX;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
+using Client.Extensions;
 
 //Cleaned
 namespace Client.Controls

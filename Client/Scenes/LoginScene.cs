@@ -3,7 +3,7 @@ using Client.Envir;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.Net.Sockets;

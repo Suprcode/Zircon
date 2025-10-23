@@ -1,9 +1,9 @@
 ﻿using Library;
 using Library.SystemModels;
 using Server.Envir;
+using Server.Extensions;
 using Server.Views.DirectX;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,10 +13,15 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Windows.Forms;
-using Blend = SlimDX.Direct3D9.Blend;
-using Matrix = SlimDX.Matrix;
+using Blend = SharpDX.Direct3D9.Blend;
+using Color4 = SharpDX.Color4;
+using D3DResultCode = SharpDX.Direct3D9.ResultCode;
+using DataRectangle = SharpDX.DataRectangle;
+using Matrix = SharpDX.Matrix;
+using Result = SharpDX.Result;
 
 namespace Server.Views
 {
@@ -199,9 +204,16 @@ namespace Server.Views
                 Manager.Device.Present();
 
             }
-            catch (Direct3D9Exception)
+            catch (SharpDX.SharpDXException ex)
             {
-                Manager.DeviceLost = true;
+                if (ex.ResultCode == D3DResultCode.DeviceLost)
+                {
+                    Manager.DeviceLost = true;
+                }
+                else
+                {
+                    Manager.AttemptRecovery();
+                }
             }
             catch (Exception ex)
             {
@@ -421,11 +433,9 @@ namespace Server.Views.DirectX
 
             Direct3D direct3D = new Direct3D();
 
-            Device = new Device(direct3D, direct3D.Adapters.DefaultAdapter.Adapter, DeviceType.Hardware, Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
+            Device = new Device(direct3D, 0, DeviceType.Hardware, Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
 
             LoadTextures();
-
-            Device.SetDialogBoxMode(true);
         }
 
         private unsafe void LoadTextures()
@@ -441,18 +451,20 @@ namespace Server.Views.DirectX
 
             DataRectangle rect = AttributeTexture.LockRectangle(0, LockFlags.Discard);
 
-            int* data = (int*)rect.Data.DataPointer;
+            int* data = (int*)rect.DataPointer;
 
             for (int y = 0; y < 32; y++)
                 for (int x = 0; x < 48; x++)
                     data[y * 48 + x] = -1;
+
+            AttributeTexture.UnlockRectangle(0);
 
         }
         private void CleanUp()
         {
             if (Sprite != null)
             {
-                if (!Sprite.Disposed)
+                if (!Sprite.IsDisposed)
                     Sprite.Dispose();
 
                 Sprite = null;
@@ -460,7 +472,7 @@ namespace Server.Views.DirectX
 
             if (Line != null)
             {
-                if (!Line.Disposed)
+                if (!Line.IsDisposed)
                     Line.Dispose();
 
                 Line = null;
@@ -468,7 +480,7 @@ namespace Server.Views.DirectX
 
             if (CurrentSurface != null)
             {
-                if (!CurrentSurface.Disposed)
+                if (!CurrentSurface.IsDisposed)
                     CurrentSurface.Dispose();
 
                 CurrentSurface = null;
@@ -476,7 +488,7 @@ namespace Server.Views.DirectX
 
             if (AttributeTexture != null)
             {
-                if (!AttributeTexture.Disposed)
+                if (!AttributeTexture.IsDisposed)
                     AttributeTexture.Dispose();
 
                 AttributeTexture = null;
@@ -512,14 +524,14 @@ namespace Server.Views.DirectX
                 Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
                 Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
                 Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.One);
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb(255, 255, 255, 255).ToArgb());
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb(255, 255, 255, 255).ToArgb());
             }
             else
             {
                 Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
                 Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseBlendFactor);
                 Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.SourceAlpha);
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte)(255 * opacity), (byte)(255 * opacity),
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb((byte)(255 * opacity), (byte)(255 * opacity),
                     (byte)(255 * opacity), (byte)(255 * opacity)).ToArgb());
             }
 
@@ -542,7 +554,7 @@ namespace Server.Views.DirectX
 
                 Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
                 Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
-                Device.SetRenderState(RenderState.BlendFactor, Color.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
+                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
             }
             else
             {
@@ -577,12 +589,18 @@ namespace Server.Views.DirectX
 
             DeviceLost = true;
 
-            if (Parameters == null || Target.ClientSize.Width == 0 || Target.ClientSize.Height == 0) return;
+            if (Target.ClientSize.Width == 0 || Target.ClientSize.Height == 0) return;
 
-            Parameters.BackBufferWidth = Target.ClientSize.Width;
-            Parameters.BackBufferHeight = Target.ClientSize.Height;
+            PresentParameters parameters = Parameters;
 
-            Device.Reset(Parameters);
+            if (parameters.BackBufferWidth == 0 || parameters.BackBufferHeight == 0)
+                return;
+
+            parameters.BackBufferWidth = Target.ClientSize.Width;
+            parameters.BackBufferHeight = Target.ClientSize.Height;
+
+            Device.Reset(parameters);
+            Parameters = parameters;
             LoadTextures();
         }
         public void AttemptReset()
@@ -591,15 +609,15 @@ namespace Server.Views.DirectX
             {
                 Result result = Device.TestCooperativeLevel();
 
-                if (result.Code == ResultCode.DeviceLost.Code) return;
+                if (result.Code == D3DResultCode.DeviceLost.Code) return;
 
-                if (result.Code == ResultCode.DeviceNotReset.Code)
+                if (result.Code == D3DResultCode.DeviceNotReset.Code)
                 {
                     ResetDevice();
                     return;
                 }
 
-                if (result.Code != ResultCode.Success.Code) return;
+                if (result.Code != D3DResultCode.Success.Code) return;
 
                 DeviceLost = false;
             }
@@ -658,10 +676,10 @@ namespace Server.Views.DirectX
             {
                 IsDisposed = true;
 
-                Parameters = null;
+                Parameters = default;
                 if (Sprite != null)
                 {
-                    if (!Sprite.Disposed)
+                    if (!Sprite.IsDisposed)
                         Sprite.Dispose();
 
                     Sprite = null;
@@ -669,7 +687,7 @@ namespace Server.Views.DirectX
 
                 if (Line != null)
                 {
-                    if (!Line.Disposed)
+                    if (!Line.IsDisposed)
                         Line.Dispose();
 
                     Line = null;
@@ -677,7 +695,7 @@ namespace Server.Views.DirectX
 
                 if (CurrentSurface != null)
                 {
-                    if (!CurrentSurface.Disposed)
+                    if (!CurrentSurface.IsDisposed)
                         CurrentSurface.Dispose();
 
                     CurrentSurface = null;
@@ -685,7 +703,7 @@ namespace Server.Views.DirectX
 
                 if (MainSurface != null)
                 {
-                    if (!MainSurface.Disposed)
+                    if (!MainSurface.IsDisposed)
                         MainSurface.Dispose();
 
                     MainSurface = null;
@@ -693,14 +711,14 @@ namespace Server.Views.DirectX
 
                 if (Device != null)
                 {
-                    if (!Device.Disposed)
+                    if (!Device.IsDisposed)
                         Device.Dispose();
 
                     Device = null;
                 }
                 if (AttributeTexture != null)
                 {
-                    if (!AttributeTexture.Disposed)
+                    if (!AttributeTexture.IsDisposed)
                         AttributeTexture.Dispose();
 
                     AttributeTexture = null;
@@ -876,6 +894,11 @@ namespace Server.Views.DirectX
             return image.VisiblePixel(location, accurate);
         }
 
+        public void Draw(int index, float x, float y, Color colour, Rectangle area, float opacity, ImageType type, byte shadow = 0)
+        {
+            Draw(index, x, y, colour.ToColor4(), area, opacity, type, shadow);
+        }
+
         public void Draw(int index, float x, float y, Color4 colour, Rectangle area, float opacity, ImageType type, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
@@ -955,6 +978,11 @@ namespace Server.Views.DirectX
 
             image.ExpireTime = SEnvir.Now.AddMinutes(10);
         }
+        public void Draw(int index, float x, float y, Color colour, bool useOffSet, float opacity, ImageType type)
+        {
+            Draw(index, x, y, colour.ToColor4(), useOffSet, opacity, type);
+        }
+
         public void Draw(int index, float x, float y, Color4 colour, bool useOffSet, float opacity, ImageType type)
         {
             if (!CheckImage(index)) return;
@@ -1053,6 +1081,11 @@ namespace Server.Views.DirectX
 
             image.ExpireTime = SEnvir.Now.AddMinutes(10);
         }
+        public void DrawBlend(int index, float x, float y, Color colour, bool useOffSet, float rate, ImageType type, byte shadow = 0)
+        {
+            DrawBlend(index, x, y, colour.ToColor4(), useOffSet, rate, type, shadow);
+        }
+
         public void DrawBlend(int index, float x, float y, Color4 colour, bool useOffSet, float rate, ImageType type, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
@@ -1306,13 +1339,13 @@ namespace Server.Views.DirectX
 
         public unsafe void DisposeTexture()
         {
-            if (Image != null && !Image.Disposed)
+            if (Image != null && !Image.IsDisposed)
                 Image.Dispose();
 
-            if (Shadow != null && !Shadow.Disposed)
+            if (Shadow != null && !Shadow.IsDisposed)
                 Shadow.Dispose();
 
-            if (Overlay != null && !Overlay.Disposed)
+            if (Overlay != null && !Overlay.IsDisposed)
                 Overlay.Dispose();
 
             ImageData = null;
@@ -1343,16 +1376,16 @@ namespace Server.Views.DirectX
 
             Image = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Image.LockRectangle(0, LockFlags.Discard);
-            ImageData = (byte*)rect.Data.DataPointer;
+            ImageData = (byte*)rect.DataPointer;
 
             lock (reader)
             {
                 reader.BaseStream.Seek(Position, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(ImageDataSize), 0, ImageDataSize);
+                byte[] buffer = reader.ReadBytes(ImageDataSize);
+                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Image.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             ImageValid = true;
             ExpireTime = SEnvir.Now.AddMinutes(30);
@@ -1372,16 +1405,16 @@ namespace Server.Views.DirectX
 
             Shadow = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Shadow.LockRectangle(0, LockFlags.Discard);
-            ShadowData = (byte*)rect.Data.DataPointer;
+            ShadowData = (byte*)rect.DataPointer;
 
             lock (reader)
             {
                 reader.BaseStream.Seek(Position + ImageDataSize, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(ShadowDataSize), 0, ShadowDataSize);
+                byte[] buffer = reader.ReadBytes(ShadowDataSize);
+                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Shadow.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             ShadowValid = true;
         }
@@ -1399,16 +1432,16 @@ namespace Server.Views.DirectX
 
             Overlay = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
             DataRectangle rect = Overlay.LockRectangle(0, LockFlags.Discard);
-            OverlayData = (byte*)rect.Data.DataPointer;
+            OverlayData = (byte*)rect.DataPointer;
 
             lock (reader)
             {
                 reader.BaseStream.Seek(Position + ImageDataSize + ShadowDataSize, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(OverlayDataSize), 0, OverlayDataSize);
+                byte[] buffer = reader.ReadBytes(OverlayDataSize);
+                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
             }
 
             Overlay.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             OverlayValid = true;
         }
@@ -1810,7 +1843,7 @@ namespace Server.Views.DirectX
         {
             if (ControlTexture != null)
             {
-                if (!ControlTexture.Disposed)
+                if (!ControlTexture.IsDisposed)
                     ControlTexture.Dispose();
 
                 ControlTexture = null;
@@ -1818,7 +1851,7 @@ namespace Server.Views.DirectX
 
             if (ControlSurface != null)
             {
-                if (!ControlSurface.Disposed)
+                if (!ControlSurface.IsDisposed)
                     ControlSurface.Dispose();
 
                 ControlSurface = null;
@@ -2169,7 +2202,7 @@ namespace Server.Views.DirectX
 
                 if (ControlTexture != null)
                 {
-                    if (!ControlTexture.Disposed)
+                    if (!ControlTexture.IsDisposed)
                         ControlTexture.Dispose();
 
                     ControlTexture = null;
@@ -2177,7 +2210,7 @@ namespace Server.Views.DirectX
 
                 if (ControlSurface != null)
                 {
-                    if (!ControlSurface.Disposed)
+                    if (!ControlSurface.IsDisposed)
                         ControlSurface.Dispose();
 
                     ControlSurface = null;

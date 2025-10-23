@@ -3,7 +3,7 @@ using Client.Envir;
 using Client.Models;
 using Client.Scenes;
 using Library;
-using SlimDX.Windows;
+using SharpDX.Windows;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;

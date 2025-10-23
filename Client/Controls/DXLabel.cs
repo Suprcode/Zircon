@@ -1,11 +1,11 @@
 ﻿using Client.Envir;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using Font = System.Drawing.Font;
+using DataRectangle = SharpDX.DataRectangle;
 
 //Cleaned
 namespace Client.Controls
@@ -286,7 +286,7 @@ namespace Client.Controls
 
             DataRectangle rect = ControlTexture.LockRectangle(0, LockFlags.Discard);
 
-            using (Bitmap image = new Bitmap(width, height, width * 4, PixelFormat.Format32bppArgb, rect.Data.DataPointer))
+            using (Bitmap image = new Bitmap(width, height, width * 4, PixelFormat.Format32bppArgb, rect.DataPointer))
             using (Graphics graphics = Graphics.FromImage(image))
             {
                 DXManager.ConfigureGraphics(graphics);
@@ -311,7 +311,6 @@ namespace Client.Controls
                 }
             }
             ControlTexture.UnlockRectangle(0);
-            rect.Data.Dispose();
 
             TextureValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;

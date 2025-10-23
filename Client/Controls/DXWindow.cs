@@ -1,7 +1,8 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using Client.UserModels;
 using Library;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -243,7 +244,7 @@ namespace Client.Controls
 
             if (WindowTexture != null)
             {
-                if (!WindowTexture.Disposed)
+                if (!WindowTexture.IsDisposed)
                     WindowTexture.Dispose();
 
                 WindowTexture = null;
@@ -251,7 +252,7 @@ namespace Client.Controls
 
             if (WindowSurface != null)
             {
-                if (!WindowSurface.Disposed)
+                if (!WindowSurface.IsDisposed)
                     WindowSurface.Dispose();
 
                 WindowSurface = null;
@@ -366,7 +367,7 @@ namespace Client.Controls
             {
                 Surface oldSurface = DXManager.CurrentSurface;
                 DXManager.SetSurface(WindowSurface);
-                DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
+                DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
 
                 DrawEdges();
 
@@ -553,7 +554,7 @@ namespace Client.Controls
 
                 if (WindowTexture != null)
                 {
-                    if (!WindowTexture.Disposed)
+                    if (!WindowTexture.IsDisposed)
                         WindowTexture.Dispose();
 
                     WindowTexture = null;
@@ -561,7 +562,7 @@ namespace Client.Controls
 
                 if (WindowSurface != null)
                 {
-                    if (!WindowSurface.Disposed)
+                    if (!WindowSurface.IsDisposed)
                         WindowSurface.Dispose();
 
                     WindowSurface = null;

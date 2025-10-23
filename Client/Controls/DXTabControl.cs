@@ -1,10 +1,11 @@
 ﻿using Client.Envir;
 using Library;
-using SlimDX;
-using SlimDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
+using Client.Extensions;
+using SharpDX.Direct3D9;
 
 namespace Client.Controls
 {
@@ -616,7 +617,7 @@ namespace Client.Controls
 
             Surface oldSurface = DXManager.CurrentSurface;
             DXManager.SetSurface(DXManager.ScratchSurface);
-            DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
+            DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
 
             DrawEdges();
 

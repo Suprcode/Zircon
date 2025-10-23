@@ -5,12 +5,13 @@ using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
-using SlimDX;
 using System;
 using System.Drawing;
+using System.Numerics;
 using System.Linq;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
+using Client.Extensions;
 
 namespace Client.Controls
 {

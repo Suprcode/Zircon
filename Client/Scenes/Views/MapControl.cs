@@ -4,15 +4,17 @@ using Client.Models;
 using Client.Models.Particles;
 using Library;
 using Library.SystemModels;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
+using Client.Extensions;
+using Matrix = SharpDX.Matrix;
 
 //Cleaned
 namespace Client.Scenes.Views
@@ -1510,7 +1512,7 @@ namespace Client.Scenes.Views
 
                 if (MapObject.User.Dead)
                 {
-                    DXManager.Device.Clear(ClearFlags.Target, Color.IndianRed, 0, 0);
+                    DXManager.Device.Clear(ClearFlags.Target, Color.IndianRed, 0f, 0);
                     return;
                 }
 
@@ -1527,7 +1529,7 @@ namespace Client.Scenes.Views
 
                 if ((MapObject.User.Poison & PoisonType.Abyss) == PoisonType.Abyss)
                 {
-                    DXManager.Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
+                    DXManager.Device.Clear(ClearFlags.Target, Color.Black, 0f, 0);
 
                     float scale = baseSize + 4 * lightScale;
 

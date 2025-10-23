@@ -2,14 +2,16 @@
 using Client.Models.Player;
 using Client.Scenes;
 using Library;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Frame = Library.Frame;
 using S = Library.Network.ServerPackets;
+using Client.Extensions;
+using Matrix = SharpDX.Matrix;
 
 namespace Client.Models
 {
@@ -978,7 +980,7 @@ namespace Client.Models
         {
             Surface oldSurface = DXManager.CurrentSurface;
             DXManager.SetSurface(DXManager.ScratchSurface);
-            DXManager.Device.Clear(ClearFlags.Target, 0, 0, 0);
+            DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
             DXManager.Sprite.Flush();
 
             int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;
