@@ -1176,6 +1176,17 @@ namespace Client.Envir
             }
         }
 
+        public void Process(S.ObjectIdle p)
+        {
+            foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+            {
+                if (ob.ObjectID != p.ObjectID) continue;
+
+                ob.ActionQueue.Add(new ObjectAction(MirAction.Idle, p.Direction, p.Location, p.Type));
+                return;
+            }
+        }
+
         public void Process(S.ObjectAttack p)
         {
             if (MapObject.User.ObjectID == p.ObjectID && !GameScene.Game.Observer && p.AttackMagic != MagicType.DanceOfSwallow)
@@ -2671,7 +2682,10 @@ namespace Client.Envir
         {
             if (GameScene.Game == null) return;
 
-            GameScene.Game.ReceiveChat(p.Text, p.Type, p.LinkedItems);
+            if (!p.OverheadOnly)
+            {
+                GameScene.Game.ReceiveChat(p.Text, p.Type, p.LinkedItems);
+            }
 
             if (p.Type != MessageType.Normal || p.ObjectID <= 0) return;
 
@@ -4267,8 +4281,6 @@ namespace Client.Envir
         }
         public void Process(S.MarriageOnlineChanged p)
         {
-
-
             ClientObjectData data;
 
             GameScene.Game.DataDictionary.TryGetValue(GameScene.Game.Partner.ObjectID > 0 ? GameScene.Game.Partner.ObjectID : p.ObjectID, out data);
@@ -4364,11 +4376,21 @@ namespace Client.Envir
 
             if (!GameScene.Game.DataDictionary.TryGetValue(p.ObjectID, out data)) return;
 
+            bool playLocatorAnim = false;
+
+            if (GameScene.Game.User.ObjectID == p.ObjectID)
+            {
+                if (data.MapIndex != p.MapIndex)
+                {
+                    playLocatorAnim = true;
+                }
+            }
+
             data.Location = p.CurrentLocation;
             data.MapIndex = p.MapIndex;
 
             GameScene.Game.BigMapBox.Update(data);
-            GameScene.Game.MiniMapBox.Update(data);
+            GameScene.Game.MiniMapBox.Update(data, playLocatorAnim);
         }
         public void Process(S.DataObjectHealthMana p)
         {

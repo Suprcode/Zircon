@@ -5295,6 +5295,7 @@ namespace Client.Models
                 Outline = true,
                 OutlineColour = Color.Black,
                 ForeColour = colour,
+                BackColour = Color.FromArgb(40, 0, 0, 0),
                 Text = cleanedText,
                 IsVisible = true,
                 DrawFormat = TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis,

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -22,7 +23,6 @@ namespace Server.Models.Monsters
         public PlayerObject CompanionOwner;
 
         public CompanionLevelInfo LevelInfo;
-
 
         public UserItem[] Inventory;
         public UserItem[] Equipment;
@@ -168,7 +168,6 @@ namespace Server.Models.Monsters
             Broadcast(new S.CompanionShapeUpdate { ObjectID = ObjectID, HeadShape = HeadShape, BackShape = BackShape });
         }
 
-
         public void Recall()
         {
             Cell cell = CompanionOwner.CurrentMap.GetCell(Functions.Move(CompanionOwner.CurrentLocation, CompanionOwner.Direction, -1));
@@ -231,8 +230,73 @@ namespace Server.Models.Monsters
         {
             if (TargetItem != null) return;
 
-            MoveTo(Functions.Move(CompanionOwner.CurrentLocation, CompanionOwner.Direction, -1));
+            if (!Functions.InRange(CurrentLocation, CompanionOwner.CurrentLocation, 7))
+                MoveToTarget = true;
+
+            if (MoveToTarget)
+            {
+                MoveTo(Functions.Move(CompanionOwner.CurrentLocation, CompanionOwner.Direction, -1));
+
+                if (Functions.InRange(CurrentLocation, CompanionOwner.CurrentLocation, 1))
+                    MoveToTarget = false;
+            }
+            else
+                if (SEnvir.Random.Next(100) >= 60) ProcessIdle();
         }
+
+        private bool MoveToTarget = false;
+
+        private DateTime IdleTime = SEnvir.Now.AddSeconds(10);
+        private readonly TimeSpan IdleDelay = TimeSpan.FromSeconds(30);
+        private void ProcessIdle()
+        {
+            if (SEnvir.Now < IdleTime) return;
+
+            IdleTime = SEnvir.Now.Add(IdleDelay);
+
+            UpdateAttackTime();
+
+            //TODO
+            Broadcast(new S.Chat
+            {
+                Text = "Test",
+                Type = MessageType.Normal,
+                ObjectID = ObjectID,
+                OverheadOnly = true,
+            });
+
+            int maxIdleAnim;
+            switch (MonsterInfo.Image)
+            {
+                case MonsterImage.Companion_Sheep:
+                    maxIdleAnim = 2;
+                    break;
+                case MonsterImage.Companion_TuskLord:
+                case MonsterImage.Companion_SkeletonLord:
+                case MonsterImage.Companion_BanyoLordGuzak:
+                case MonsterImage.Companion_Rabbit:
+                case MonsterImage.Companion_Dog:
+                    maxIdleAnim = 3;
+                    break;
+                default:
+                case MonsterImage.Companion_Griffin:
+                case MonsterImage.Companion_Dragon:
+                case MonsterImage.Companion_Donkey:
+                case MonsterImage.Companion_Panda:
+                case MonsterImage.Companion_Dino:
+                case MonsterImage.Companion_Jinchon:
+                    maxIdleAnim = 4;
+                    break;
+                case MonsterImage.Companion_Pig:
+                    maxIdleAnim = 6;
+                    break;
+            }
+
+            var idleType = SEnvir.Random.Next(1, maxIdleAnim + 1);
+
+            Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = idleType });
+        }
+
         public override void ProcessTarget()
         {
             if (TargetItem == null) return;
@@ -451,7 +515,6 @@ namespace Server.Models.Monsters
 
             RemoveAllObjects();
             AddAllObjects();
-
 
             Broadcast(new S.ObjectMove { ObjectID = ObjectID, Direction = direction, Location = CurrentLocation, Distance = 1 });
             return true;
@@ -683,7 +746,6 @@ namespace Server.Models.Monsters
 
             foreach (UserQuest quest in changedQuests)
                 CompanionOwner.Enqueue(new S.QuestChanged { Quest = quest.ToClientInfo() });
-
 
             RefreshStats();
         }

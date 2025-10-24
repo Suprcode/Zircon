@@ -387,7 +387,7 @@ namespace Client.Scenes.Views
             {
                 if (library == null) return;
 
-                if (Info == null) return;
+                if (Info == null || GameScene.Game.Companion == null) return;
 
                 float percent = Math.Min(1, Math.Max(0, GameScene.Game.Companion.Experience / (float)Info.MaxExperience));
 
@@ -438,7 +438,7 @@ namespace Client.Scenes.Views
             {
                 if (library == null) return;
 
-                if (Info == null) return;
+                if (Info == null || GameScene.Game.Companion == null) return;
 
                 float percent = Math.Min(1, Math.Max(0, GameScene.Game.Companion.Hunger / (float)Info.MaxHunger));
 
@@ -690,7 +690,7 @@ namespace Client.Scenes.Views
             {
                 if (library == null) return;
 
-                if (Info == null) return;
+                if (Info == null || GameScene.Game.Companion == null) return;
 
                 float percent = Math.Min(1, Math.Max(0, BagWeight / (float)MaxBagWeight));
 
