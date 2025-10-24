@@ -22,6 +22,7 @@ namespace Server.Views
             base.OnLoad(e);
 
             SMain.SetUpView(CompanionInfoGridView);
+            SMain.SetUpView(CompanionSpeechGridView);
             SMain.SetUpView(CompanionLevelInfoGridView);
             SMain.SetUpView(CompanionSkillInfoGridView);
         }

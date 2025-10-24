@@ -68,6 +68,7 @@
     <Compile Include="SystemModels\CastleInfo.cs" />
     <Compile Include="SystemModels\EventInfo.cs" />
     <Compile Include="SystemModels\CompanionInfo.cs" />
+    <Compile Include="SystemModels\CompanionSpeech.cs" />
     <Compile Include="SystemModels\CompanionLevelInfo.cs" />
     <Compile Include="SystemModels\CompanionSkillInfo.cs" />
     <Compile Include="SystemModels\DropInfo.cs" />

@@ -28,12 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CompanionInfoView));
             this.ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.SaveButton = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.CompanionInfoGridControl = new DevExpress.XtraGrid.GridControl();
+            this.CompanionSpeechGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.gridColumn14 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.CompanionInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.MonsterInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
@@ -64,6 +67,7 @@
             this.ExportButton = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CompanionSpeechGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoLookUpEdit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tabPane1)).BeginInit();
@@ -124,25 +128,52 @@
             // CompanionInfoGridControl
             // 
             this.CompanionInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            gridLevelNode1.LevelTemplate = this.CompanionSpeechGridView;
+            gridLevelNode1.RelationName = "CompanionSpeeches";
+            this.CompanionInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode1});
             this.CompanionInfoGridControl.Location = new System.Drawing.Point(0, 0);
             this.CompanionInfoGridControl.MainView = this.CompanionInfoGridView;
             this.CompanionInfoGridControl.MenuManager = this.ribbon;
             this.CompanionInfoGridControl.Name = "CompanionInfoGridControl";
             this.CompanionInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.MonsterInfoLookUpEdit});
+            this.CompanionInfoGridControl.ShowOnlyPredefinedDetails = true;
             this.CompanionInfoGridControl.Size = new System.Drawing.Size(972, 371);
             this.CompanionInfoGridControl.TabIndex = 2;
             this.CompanionInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.CompanionSpeechGridView,
             this.CompanionInfoGridView});
-            // 
+            //
+            // CompanionSpeechGridView
+            //
+            this.CompanionSpeechGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.gridColumn14});
+            this.CompanionSpeechGridView.GridControl = this.CompanionInfoGridControl;
+            this.CompanionSpeechGridView.Name = "CompanionSpeechGridView";
+            this.CompanionSpeechGridView.OptionsView.EnableAppearanceEvenRow = true;
+            this.CompanionSpeechGridView.OptionsView.EnableAppearanceOddRow = true;
+            this.CompanionSpeechGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            this.CompanionSpeechGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            this.CompanionSpeechGridView.OptionsView.ShowGroupPanel = false;
+            //
+            // gridColumn14
+            //
+            this.gridColumn14.Caption = "Speech";
+            this.gridColumn14.FieldName = "Speech";
+            this.gridColumn14.Name = "gridColumn14";
+            this.gridColumn14.Visible = true;
+            this.gridColumn14.VisibleIndex = 0;
+            //
             // CompanionInfoGridView
-            // 
+            //
             this.CompanionInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.gridColumn1,
             this.gridColumn3,
             this.gridColumn4});
             this.CompanionInfoGridView.GridControl = this.CompanionInfoGridControl;
             this.CompanionInfoGridView.Name = "CompanionInfoGridView";
+            this.CompanionInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
             this.CompanionInfoGridView.OptionsView.EnableAppearanceEvenRow = true;
             this.CompanionInfoGridView.OptionsView.EnableAppearanceOddRow = true;
             this.CompanionInfoGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
@@ -427,6 +458,7 @@
             this.Text = "Companion Info";
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CompanionSpeechGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CompanionInfoGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MonsterInfoLookUpEdit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tabPane1)).EndInit();
@@ -452,6 +484,8 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup1;
         private DevExpress.XtraBars.BarButtonItem SaveButton;
         private DevExpress.XtraGrid.GridControl CompanionInfoGridControl;
+        private DevExpress.XtraGrid.Views.Grid.GridView CompanionSpeechGridView;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn14;
         private DevExpress.XtraGrid.Views.Grid.GridView CompanionInfoGridView;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
