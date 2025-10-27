@@ -3927,7 +3927,7 @@ namespace Client.Scenes.Views
         {
             CompanionDisplay = null;
 
-            if (SelectedCompanionInfo?.MonsterInfo == null) return;
+            if (SelectedCompanionInfo?.MonsterInfo == null || SelectedCompanionInfo.Currency == null) return;
 
             CompanionDisplay = new MonsterObject(SelectedCompanionInfo);
 
@@ -4011,7 +4011,7 @@ namespace Client.Scenes.Views
 
         #endregion
 
-        public bool CanAdopt => GameScene.Game.User != null && SelectedCompanionInfo != null && SelectedCompanionInfo.Price <= GameScene.Game.User.GetCurrency(SelectedCompanionInfo.Currency).Amount && !AdoptAttempted && !UnlockButton.Visible;
+        public bool CanAdopt => GameScene.Game.User != null && SelectedCompanionInfo != null && SelectedCompanionInfo.Currency != null && SelectedCompanionInfo.Price <= GameScene.Game.User.GetCurrency(SelectedCompanionInfo.Currency).Amount && !AdoptAttempted && !UnlockButton.Visible;
 
         #endregion
 

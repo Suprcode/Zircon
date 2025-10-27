@@ -2644,6 +2644,8 @@ namespace Server.Models
 
             bool result = false;
 
+            bool companionAutoCollect = owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null;
+
             List<UserItem> drops = null;
             foreach (DropInfo drop in MonsterInfo.Drops)
             {
@@ -2753,7 +2755,7 @@ namespace Server.Models
 
                     ob.Spawn(CurrentMap, cell.Location);
 
-                    if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
+                    if (companionAutoCollect)
                     {
                         ItemCheck check = new ItemCheck(ob.Item, ob.Item.Count, ob.Item.Flags,
                             ob.Item.ExpireTime);
@@ -2776,7 +2778,11 @@ namespace Server.Models
                 while (amount > 0)
                 {
                     UserItem item = SEnvir.CreateDropItem(drop.Item);
-                    item.Count = Math.Min(drop.Item.StackSize, amount);
+                    if (companionAutoCollect && drop.Item == SEnvir.GoldInfo)
+                        item.Count = amount;
+                    else
+                        item.Count = Math.Min(drop.Item.StackSize, amount);
+
                     amount -= item.Count;
 
                     item.IsTemporary = true; //REMOVE ON Gain
@@ -2822,7 +2828,7 @@ namespace Server.Models
 
                     ob.Spawn(CurrentMap, cell.Location);
 
-                    if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
+                    if (companionAutoCollect)
                     {
                         long goldAmount = 0;
 
@@ -2929,7 +2935,7 @@ namespace Server.Models
 
                             userTask.Objects.Add(ob);
 
-                            if (owner.Stats[Stat.CompanionCollection] > 0 && owner.Companion != null)
+                            if (companionAutoCollect)
                             {
                                 long goldAmount = 0;
 
