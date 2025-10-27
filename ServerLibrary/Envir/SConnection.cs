@@ -1195,6 +1195,12 @@ namespace Server.Envir
 
             Player.CompanionRetrieve(p.Index);
         }
+        public void Process(C.CompanionRelease p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.CompanionRelease(p.Index);
+        }
 
         public void Process(C.CompanionStore p)
         {

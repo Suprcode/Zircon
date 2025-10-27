@@ -20,6 +20,23 @@ namespace Library.SystemModels
         }
         private CompanionInfo _Companion;
 
+        [IsIdentity]
+        public CompanionAction Action
+        {
+            get { return _Action; }
+            set
+            {
+                if (_Action == value) return;
+
+                var oldValue = _Speech;
+                _Action = value;
+
+                OnChanged(oldValue, value, nameof(Action));
+            }
+        }
+        private CompanionAction _Action;
+
+        [IsIdentity]
         public string Speech
         {
             get { return _Speech; }

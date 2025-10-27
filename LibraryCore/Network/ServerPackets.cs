@@ -1114,6 +1114,10 @@ namespace Library.Network.ServerPackets
     {
         public int Index { get; set; }
     }
+    public sealed class CompanionRelease : Packet
+    {
+        public int Index { get; set; }
+    }
     public sealed class CompanionStore : Packet
     {
     }

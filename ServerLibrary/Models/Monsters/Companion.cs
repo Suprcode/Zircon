@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -175,7 +174,7 @@ namespace Server.Models.Monsters
             if (cell == null || cell.Movements != null)
                 cell = CompanionOwner.CurrentCell;
 
-            Teleport(CompanionOwner.CurrentMap, cell.Location);
+            Teleport(CompanionOwner.CurrentMap, cell.Location, false, false);
         }
 
         public override void ProcessSearch()
@@ -196,7 +195,6 @@ namespace Server.Models.Monsters
 
                 if (distance > bestDistance) continue;
 
-
                 ItemObject item = (ItemObject)ob;
 
                 if (item.Account != CompanionOwner.Character.Account || !item.MonsterDrop) continue;
@@ -209,7 +207,6 @@ namespace Server.Models.Monsters
                 ItemCheck check = new ItemCheck(item.Item, item.Item.Count - amount, item.Item.Flags, item.Item.ExpireTime);
 
                 if (!CanGainItems(true, check)) continue;
-
 
                 if (distance != bestDistance) closest.Clear();
 
@@ -228,73 +225,149 @@ namespace Server.Models.Monsters
         }
         public override void ProcessRoam()
         {
+            // If the companion has a target, roaming logic is skipped
             if (TargetItem != null) return;
 
+            // Check if the companion is too far from its owner
             if (!Functions.InRange(CurrentLocation, CompanionOwner.CurrentLocation, 7))
-                MoveToTarget = true;
+                _moveToOwner = true;
 
-            if (MoveToTarget)
+            if (_moveToOwner)
             {
+                // Move one step closer to the owner, slightly behind their direction
                 MoveTo(Functions.Move(CompanionOwner.CurrentLocation, CompanionOwner.Direction, -1));
 
+                // 40% chance to perform a moving chat
+                if (SEnvir.Random.Next(100) >= 60)
+                {
+                    TryChat(CompanionAction.Moving);
+                }
+
+                // Stop moving when close enough to the owner
                 if (Functions.InRange(CurrentLocation, CompanionOwner.CurrentLocation, 1))
-                    MoveToTarget = false;
+                    _moveToOwner = false;
+
+                _nextIdleTime = SEnvir.Now.Add(_idleDelay);
             }
-            else
-                if (SEnvir.Random.Next(100) >= 60) ProcessIdle();
+            else if (SEnvir.Random.Next(100) >= 60)
+            {
+                // 40% chance to perform an idle animation
+                ProcessIdle();
+            }
+            else if (SEnvir.Random.Next(100) >= 60)
+            {
+                // 40% chance to perform a chat
+                TryChat(CompanionAction.Idle);
+            }
         }
 
-        private bool MoveToTarget = false;
+        private bool _moveToOwner;
+        private DateTime _nextChatTime = SEnvir.Now.AddSeconds(10);
+        private DateTime _nextIdleTime = SEnvir.Now.AddSeconds(10);
+        private readonly TimeSpan _idleDelay = TimeSpan.FromSeconds(30);
+        private readonly TimeSpan _chatDelay = TimeSpan.FromSeconds(30);
 
-        private DateTime IdleTime = SEnvir.Now.AddSeconds(10);
-        private readonly TimeSpan IdleDelay = TimeSpan.FromSeconds(30);
+        /// <summary>
+        /// Handles idle behavior when the companion is not moving or attacking.
+        /// </summary>
         private void ProcessIdle()
         {
-            if (SEnvir.Now < IdleTime) return;
+            // Skip if not yet time for next idle action
+            if (SEnvir.Now < _nextIdleTime) return;
 
-            IdleTime = SEnvir.Now.Add(IdleDelay);
+            _nextIdleTime = SEnvir.Now.Add(_idleDelay);
 
-            UpdateAttackTime();
-
-            //TODO
-            Broadcast(new S.Chat
+            switch(MonsterInfo.Image)
             {
-                Text = "Test",
-                Type = MessageType.Normal,
-                ObjectID = ObjectID,
-                OverheadOnly = true,
-            });
+                case MonsterImage.Companion_Pig:
+                    {
+                        int actionDelay = 600;
+                        switch(SEnvir.Random.Next(4))
+                        {
+                            case 0: //roll
+                                Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = 1 });
+                                Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = 2 });
+                                Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = 3 });
+                                actionDelay = 1700;
+                                break;
+                            case 1: //handstand
+                                Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = 4 });
+                                Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = 5 });
+                                Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = 6 });
+                                actionDelay = 1700;
+                                break;
+                            case 2: //jump
+                                Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = 7 });
+                                break;
+                            case 3: //pickup
+                                Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = 8 });
+                                break;
+                        }
 
-            int maxIdleAnim;
-            switch (MonsterInfo.Image)
-            {
-                case MonsterImage.Companion_Sheep:
-                    maxIdleAnim = 2;
-                    break;
-                case MonsterImage.Companion_TuskLord:
-                case MonsterImage.Companion_SkeletonLord:
-                case MonsterImage.Companion_BanyoLordGuzak:
-                case MonsterImage.Companion_Rabbit:
-                case MonsterImage.Companion_Dog:
-                    maxIdleAnim = 3;
+                        AttackTime = SEnvir.Now.AddMilliseconds(AttackDelay);
+                        ActionTime = SEnvir.Now.AddMilliseconds(actionDelay);
+                    }
                     break;
                 default:
-                case MonsterImage.Companion_Griffin:
-                case MonsterImage.Companion_Dragon:
-                case MonsterImage.Companion_Donkey:
-                case MonsterImage.Companion_Panda:
-                case MonsterImage.Companion_Dino:
-                case MonsterImage.Companion_Jinchon:
-                    maxIdleAnim = 4;
-                    break;
-                case MonsterImage.Companion_Pig:
-                    maxIdleAnim = 6;
+                    {
+                        // Determine how many idle animations are available for this companion type
+                        int maxIdleAnimations = MonsterInfo.Image switch
+                        {
+                            MonsterImage.Companion_Sheep => 2,
+                            MonsterImage.Companion_TuskLord or
+                            MonsterImage.Companion_SkeletonLord or
+                            MonsterImage.Companion_BanyoLordGuzak or
+                            MonsterImage.Companion_Rabbit or
+                            MonsterImage.Companion_Dog => 3,
+                            _ => 4 // Default for other types
+                        };
+
+                        int idleType = SEnvir.Random.Next(1, maxIdleAnimations + 1);
+
+                        Broadcast(new S.ObjectIdle
+                        {
+                            ObjectID = ObjectID,
+                            Direction = Direction,
+                            Location = CurrentLocation,
+                            Type = idleType
+                        });
+
+                        AttackTime = SEnvir.Now.AddMilliseconds(AttackDelay);
+                        ActionTime = SEnvir.Now.AddMilliseconds(600);
+                    }
                     break;
             }
+        }
 
-            var idleType = SEnvir.Random.Next(1, maxIdleAnim + 1);
+        /// <summary>
+        /// Tries to make the companion say one of its random predefined lines.
+        /// Returns true if a message was sent.
+        /// </summary>
+        public bool TryChat(CompanionAction action)
+        {            
+            // Skip if not yet time for next chat action
+            if (SEnvir.Now < _nextChatTime) return false;
 
-            Broadcast(new S.ObjectIdle { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Type = idleType });
+            _nextChatTime = SEnvir.Now.Add(_chatDelay);
+
+            var matchingSpeeches = UserCompanion.Info.CompanionSpeeches
+                .Where(x => x.Action == action);
+
+            var speechesArray = matchingSpeeches as CompanionSpeech[] ?? [.. matchingSpeeches];
+            if (speechesArray.Length == 0)
+                return false;
+
+            var randomSpeech = speechesArray[SEnvir.Random.Next(speechesArray.Length)];
+
+            Broadcast(new S.Chat
+            {
+                Text = randomSpeech.Speech,
+                Type = MessageType.Normal,
+                ObjectID = ObjectID,
+                OverheadOnly = true
+            });
+
+            return true;
         }
 
         public override void ProcessTarget()
@@ -306,6 +379,14 @@ namespace Server.Models.Monsters
             if (TargetItem.CurrentLocation != CurrentLocation) return;
 
             TargetItem.PickUpItem(this);
+
+            // 40% chance to perform a pickup chat
+            if (SEnvir.Random.Next(100) >= 60)
+            {
+                TryChat(CompanionAction.Pickup);
+            }
+
+            _nextIdleTime = SEnvir.Now.Add(_idleDelay);
         }
 
         public override void Activate()
@@ -362,8 +443,14 @@ namespace Server.Models.Monsters
 
             UserItem item = Equipment[(int)CompanionSlot.Food];
 
-            if (item == null || !CanUseItem(item.Info)) return;
+            if (item == null || !CanUseItem(item.Info))
+            {
+                TryChat(CompanionAction.Hunger);
 
+                return;
+            }
+
+            TryChat(CompanionAction.Eating);
 
             UserCompanion.Hunger = Math.Min(LevelInfo.MaxHunger, item.Info.Stats[Stat.CompanionHunger]);
 

@@ -155,12 +155,14 @@ namespace Library
                 [MirAnimation.Standing] = new Frame(0, 6, 10, TimeSpan.FromMilliseconds(200)),
                 [MirAnimation.Walking] = new Frame(80, 8, 10, TimeSpan.FromMilliseconds(100)),
                 [MirAnimation.Pushed] = new Frame(80, 8, 10, TimeSpan.FromMilliseconds(50)) { Reversed = true, StaticSpeed = true },
-                [MirAnimation.Combat1] = new Frame(160, 6, 10, TimeSpan.FromMilliseconds(100)),
-                [MirAnimation.Combat2] = new Frame(240, 5, 10, TimeSpan.FromMilliseconds(100)),
-                [MirAnimation.Combat3] = new Frame(320, 6, 10, TimeSpan.FromMilliseconds(100)),
-                [MirAnimation.Combat4] = new Frame(400, 6, 10, TimeSpan.FromMilliseconds(100)),
-                [MirAnimation.Combat5] = new Frame(480, 7, 10, TimeSpan.FromMilliseconds(100)),
-                [MirAnimation.Combat6] = new Frame(560, 3, 10, TimeSpan.FromMilliseconds(100)), //pickup?
+                [MirAnimation.Combat1] = new Frame(160, 6, 10, TimeSpan.FromMilliseconds(100)), //roll left
+                [MirAnimation.Combat2] = new Frame(240, 5, 10, TimeSpan.FromMilliseconds(100)), //on back
+                [MirAnimation.Combat3] = new Frame(160, 6, 10, TimeSpan.FromMilliseconds(100)) { Reversed = true }, //roll back
+                [MirAnimation.Combat4] = new Frame(320, 6, 10, TimeSpan.FromMilliseconds(100)), //handstand up
+                [MirAnimation.Combat5] = new Frame(400, 5, 10, TimeSpan.FromMilliseconds(100)), //handstand wait
+                [MirAnimation.Combat6] = new Frame(320, 6, 10, TimeSpan.FromMilliseconds(100)) { Reversed = true }, //handstand down
+                [MirAnimation.Combat7] = new Frame(480, 7, 10, TimeSpan.FromMilliseconds(100)), //jump
+                [MirAnimation.Combat8] = new Frame(560, 3, 10, TimeSpan.FromMilliseconds(100)), //pickup
             };
 
             Companion_TuskLord = new Dictionary<MirAnimation, Frame>

@@ -604,6 +604,11 @@ namespace Library.Network.ClientPackets
     {
         public int Index { get; set; }
     }
+
+    public sealed class CompanionRelease : Packet
+    {
+        public int Index { get; set; }
+    }
     public sealed class CompanionStore : Packet
     {
         public int Index { get; set; }

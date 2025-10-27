@@ -4001,7 +4001,7 @@ namespace Client.Scenes
         }
         public void CompanionChanged()
         {
-            NPCCompanionStorageBox.UpdateScrollBar();
+            NPCCompanionStorageBox.Refresh();
 
             CompanionBox.CompanionChanged();
         }

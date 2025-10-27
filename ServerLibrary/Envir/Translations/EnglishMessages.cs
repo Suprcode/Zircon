@@ -111,12 +111,14 @@ namespace Server.Envir.Translations
 
         public override string CompanionAppearanceAlready { get; set; } = "The {0} appearance is already available.";
         public override string CompanionNeedTicket { get; set; } = "You need to have a Companion ticket to unlock a new appearance.";
+        public override string CompanionNeedItem { get; set; } = "You need to have a {0} to unlock a new appearance.";
         public override string CompanionSkillEnabled { get; set; } = "Companion Skill level {0} Enabled.";
         public override string CompanionSkillDisabled { get; set; } = "Companion Skill level {0} Disabled.";
         public override string CompanionAppearanceLocked { get; set; } = "The {0} appearance is not available to you.";
-        public override string CompanionNeedGold { get; set; } = "You cannot afford to adopt this companion.";
+        public override string CompanionNeedCurrency { get; set; } = "You cannot afford to adopt this companion.";
         public override string CompanionBadName { get; set; } = "The name given for your new companion is not acceptable.";
-        public override string CompanionRetrieveFailed { get; set; } = "Able able to retrieve {0} because it is currently with {1}.";
+        public override string CompanionRetrieveFailed { get; set; } = "Unable to retrieve {0} because it is currently with {1}.";
+        public override string CompanionReleaseFailed { get; set; } = "Unable to release {0} because it is currently with {1}.";
         public override string QuestSelectReward { get; set; } = "You must select a reward";
         public override string QuestNeedSpace { get; set; } = "Unable to complete quest, Not enough space in your inventory.";
 

@@ -4,12 +4,15 @@ using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using static System.ComponentModel.Design.ObjectSelectorEditor;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 using Font = System.Drawing.Font;
 using S = Library.Network.ServerPackets;
@@ -354,10 +357,11 @@ namespace Client.Scenes.Views
                     GameScene.Game.NPCRefineRetrieveBox.RefreshList();
                     break;
                 case NPCDialogType.CompanionManage:
-                    GameScene.Game.NPCCompanionStorageBox.Visible = true;
-                    GameScene.Game.NPCCompanionStorageBox.Location = new Point(0, Size.Height);
+                    GameScene.Game.NPCCompanionStorageBox.Visible = GameScene.Game.NPCCompanionStorageBox.Companions.Count > 0;
+                    GameScene.Game.NPCCompanionStorageBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCAdoptCompanionBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCAdoptCompanionBox.Size.Height) / 2);
+                    GameScene.Game.NPCCompanionStorageBox.SelectedIndex = 0;
                     GameScene.Game.NPCAdoptCompanionBox.Visible = true;
-                    GameScene.Game.NPCAdoptCompanionBox.Location = new Point(GameScene.Game.NPCCompanionStorageBox.Size.Width, Size.Height);
+                    GameScene.Game.NPCAdoptCompanionBox.Location = new Point(0, Size.Height);
                     break;
                 case NPCDialogType.WeddingRing:
                     GameScene.Game.NPCWeddingRingBox.Visible = true;
@@ -3887,17 +3891,18 @@ namespace Client.Scenes.Views
         #endregion
     }
 
-    public sealed class NPCAdoptCompanionDialog : DXWindow
+    public sealed class NPCAdoptCompanionDialog : DXImageControl
     {
         #region Properties
 
         public MonsterObject CompanionDisplay;
         public Point CompanionDisplayPoint;
 
-        public DXLabel NameLabel, IndexLabel, PriceLabel;
-        public DXButton LeftButton, RightButton, AdoptButton, UnlockButton;
+        public DXLabel TitleLabel;
+        public DXButton CloseButton;
 
-        public DXTextBox CompanionNameTextBox;
+        public DXLabel NameLabel, DescriptionLabel, PriceLabel, PriceCurrencyLabel;
+        public DXButton LeftButton, RightButton, AdoptButton, UnlockButton;
 
         public List<CompanionInfo> AvailableCompanions = new List<CompanionInfo>();
 
@@ -3929,12 +3934,25 @@ namespace Client.Scenes.Views
             RefreshUnlockButton();
 
             PriceLabel.Text = SelectedCompanionInfo.Price.ToString("#,##0");
+            PriceCurrencyLabel.Text = SelectedCompanionInfo.Currency.Abbreviation;
             NameLabel.Text = SelectedCompanionInfo.MonsterInfo.MonsterName;
+            DescriptionLabel.Text = SelectedCompanionInfo.Description;
             SelectedCompanionInfoChanged?.Invoke(this, EventArgs.Empty);
+
+            switch (SelectedCompanionInfo.Currency.Type)
+            {
+                case CurrencyType.Gold:
+                    PriceCurrencyLabel.ForeColour = Color.Goldenrod;
+                    break;
+                case CurrencyType.GameGold:
+                    PriceCurrencyLabel.ForeColour = Color.DarkOrange;
+                    break;
+                default:
+                    PriceCurrencyLabel.ForeColour = Color.CornflowerBlue;
+                    break;
+
+            }
         }
-
-
-
 
         #endregion
 
@@ -3958,8 +3976,6 @@ namespace Client.Scenes.Views
             if (SelectedIndex >= Globals.CompanionInfoList.Count) return;
 
             SelectedCompanionInfo = Globals.CompanionInfoList[SelectedIndex];
-
-            IndexLabel.Text = $"{SelectedIndex + 1} of {Globals.CompanionInfoList.Count}";
 
             LeftButton.Enabled = SelectedIndex > 0;
 
@@ -3995,125 +4011,127 @@ namespace Client.Scenes.Views
 
         #endregion
 
-        #region CompanionNameValid
-
-        public bool CompanionNameValid
-        {
-            get => _CompanionNameValid;
-            set
-            {
-                if (_CompanionNameValid == value) return;
-
-                bool oldValue = _CompanionNameValid;
-                _CompanionNameValid = value;
-
-                OnCompanionNameValidChanged(oldValue, value);
-            }
-        }
-        private bool _CompanionNameValid;
-        public event EventHandler<EventArgs> CompanionNameValidChanged;
-        public void OnCompanionNameValidChanged(bool oValue, bool nValue)
-        {
-            RefreshUnlockButton();
-            CompanionNameValidChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
-        public bool CanAdopt => GameScene.Game.User != null && SelectedCompanionInfo != null && SelectedCompanionInfo.Price <= GameScene.Game.User.Gold.Amount && !AdoptAttempted && !UnlockButton.Visible && CompanionNameValid;
-
-
-        public override WindowType Type => WindowType.None;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => false;
+        public bool CanAdopt => GameScene.Game.User != null && SelectedCompanionInfo != null && SelectedCompanionInfo.Price <= GameScene.Game.User.GetCurrency(SelectedCompanionInfo.Currency).Amount && !AdoptAttempted && !UnlockButton.Visible;
 
         #endregion
 
         public NPCAdoptCompanionDialog()
         {
-            TitleLabel.Text = "Adopt Companion";
-
+            LibraryFile = LibraryFile.Interface;
+            Index = 146;
             Movable = false;
 
-            SetClientSize(new Size(275, 130));
-            CompanionDisplayPoint = new Point(40, 95);
-
-            NameLabel = new DXLabel
+            CloseButton = new DXButton
             {
                 Parent = this,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+                Hint = CEnvir.Language.CommonControlClose,
+                HintPosition = HintPosition.TopLeft
+            };
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
+            CloseButton.MouseClick += (o, e) => Visible = false;
+
+            TitleLabel = new DXLabel
+            {
+                Text = "Adopt Companion",
+                Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Color.FromArgb(198, 166, 99),
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
             };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
+
+            CompanionDisplayPoint = new Point(105, 130);
+
+            NameLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false
+            };
 
             NameLabel.SizeChanged += (o, e) =>
             {
-                NameLabel.Location = new Point(CompanionDisplayPoint.X + 25 - NameLabel.Size.Width / 2, CompanionDisplayPoint.Y + 30);
+                NameLabel.Location = new Point(145 - NameLabel.Size.Width / 2, 192);
             };
 
-            IndexLabel = new DXLabel
+            DescriptionLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(CompanionDisplayPoint.X, 200),
+                ForeColour = Color.White,
+                IsControl = false,
+                Location = new Point(30, 242),
+                AutoSize = false,
+                Size = new Size(195, 63)
             };
-            IndexLabel.SizeChanged += (o, e) =>
-            {
-                IndexLabel.Location = new Point(CompanionDisplayPoint.X + 25 - IndexLabel.Size.Width / 2, CompanionDisplayPoint.Y + 55);
-            };
+
             LeftButton = new DXButton
             {
                 Parent = this,
                 LibraryFile = LibraryFile.GameInter,
-                Index = 32,
-                Location = new Point(CompanionDisplayPoint.X - 20, CompanionDisplayPoint.Y + 55)
+                Index = 4112,
+                Location = new Point(20, 135)
             };
             LeftButton.MouseClick += (o, e) => SelectedIndex--;
             RightButton = new DXButton
             {
                 Parent = this,
                 LibraryFile = LibraryFile.GameInter,
-                Index = 37,
-                Location = new Point(CompanionDisplayPoint.X + 60, CompanionDisplayPoint.Y + 55)
+                Index = 4117,
+                Location = new Point(200, 135)
             };
             RightButton.MouseClick += (o, e) => SelectedIndex++;
 
             DXLabel label = new DXLabel
             {
                 Parent = this,
-                Text = "Price:"
+                Text = "Name"
             };
-            label.Location = new Point(160 - label.Size.Width, CompanionDisplayPoint.Y);
-
-            PriceLabel = new DXLabel
-            {
-                Parent = this,
-                Location = new Point(160, CompanionDisplayPoint.Y),
-                ForeColour = Color.White,
-            };
-
-            CompanionNameTextBox = new DXTextBox
-            {
-                Parent = this,
-                Location = new Point(160, CompanionDisplayPoint.Y + 25),
-                Size = new Size(120, 20)
-            };
-            CompanionNameTextBox.TextBox.TextChanged += TextBox_TextChanged;
+            label.Location = new Point(70 - label.Size.Width, 190);
 
             label = new DXLabel
             {
                 Parent = this,
-                Text = "Name:"
+                Text = "Price"
             };
-            label.Location = new Point(CompanionNameTextBox.Location.X - label.Size.Width, CompanionNameTextBox.Location.Y + (CompanionNameTextBox.Size.Height - label.Size.Height) / 2);
+            label.Location = new Point(70 - label.Size.Width, 214);
+
+            PriceLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+            };
+
+            PriceLabel.SizeChanged += (o, e) =>
+            {
+                PriceLabel.Location = new Point(145 - PriceLabel.Size.Width / 2, 214);
+            };
+
+            PriceCurrencyLabel = new DXLabel
+            {
+                AutoSize = false,
+                ForeColour = Color.Goldenrod,
+                DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.Right,
+                Parent = this,
+                Location = new Point(130, 211),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
+                Text = "",
+                Size = new Size(97, 20)
+            };
+            PriceCurrencyLabel.SizeChanged += (o, e) =>
+            {
+                PriceCurrencyLabel.Location = new Point(150 - PriceCurrencyLabel.Size.Width / 2, 211);
+            };
 
             AdoptButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(CompanionNameTextBox.Location.X, CompanionNameTextBox.Location.Y + 27),
-                Size = new Size(120, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
+                Location = new Point(30, Size.Height - 42),
+                Size = new Size(80, DefaultHeight),
+                ButtonType = ButtonType.Default,
                 Label = { Text = "Adopt" }
             };
             AdoptButton.MouseClick += AdoptButton_MouseClick;
@@ -4121,9 +4139,9 @@ namespace Client.Scenes.Views
             UnlockButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(ClientArea.Right - 80, ClientArea.Y),
-                Size = new Size(80, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
+                Location = new Point(Size.Width - 80 - 30, Size.Height - 42),
+                Size = new Size(80, DefaultHeight),
+                ButtonType = ButtonType.Default,
                 Label = { Text = "Unlock" }
             };
 
@@ -4133,32 +4151,43 @@ namespace Client.Scenes.Views
         }
 
         #region Methods
-        private void TextBox_TextChanged(object sender, EventArgs e)
-        {
-            CompanionNameValid = Globals.CharacterReg.IsMatch(CompanionNameTextBox.TextBox.Text);
-
-            if (string.IsNullOrEmpty(CompanionNameTextBox.TextBox.Text))
-                CompanionNameTextBox.BorderColour = Color.FromArgb(198, 166, 99);
-            else
-                CompanionNameTextBox.BorderColour = CompanionNameValid ? Color.Green : Color.Red;
-        }
 
         private void AdoptButton_MouseClick(object sender, MouseEventArgs e)
         {
-            AdoptAttempted = true;
+            DXInputWindow window = new DXInputWindow("Name your companion", "Companion Name")
+            {
+                ConfirmButton = { Enabled = false },
+                Modal = true
+            };
+            window.ValueTextBox.TextBox.TextChanged += (o1, e1) =>
+            {
+                window.ConfirmButton.Enabled = Globals.CharacterReg.IsMatch(window.ValueTextBox.TextBox.Text);
+            };
+            window.ConfirmButton.MouseClick += (o1, e1) =>
+            {
+                AdoptAttempted = true;
 
-            CEnvir.Enqueue(new C.CompanionAdopt { Index = SelectedCompanionInfo.Index, Name = CompanionNameTextBox.TextBox.Text });
+                CEnvir.Enqueue(new C.CompanionAdopt { Index = SelectedCompanionInfo.Index, Name = window.Value });
+            };
         }
         private void UnlockButton_MouseClick(object sender, MouseEventArgs e)
         {
-            if (GameScene.Game.Inventory.All(x => x == null || x.Info.ItemEffect != ItemEffect.CompanionTicket))
+            ItemInfo item = SelectedCompanionInfo.UnlockItem;
+
+            item ??= Globals.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.CompanionTicket);
+
+            if (item == null) 
+            { 
+                return; 
+            }
+
+            if (GameScene.Game.Inventory.All(x => x == null || x.Info != item))
             {
-                GameScene.Game.ReceiveChat(CEnvir.Language.CompanionNeedTicket, MessageType.System);
+                GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.CompanionNeedItem, item.ItemName), MessageType.System);
                 return;
             }
 
-            DXMessageBox box = new DXMessageBox($"Are you sure you want to use a Companion Ticket?\n\n" + $"" + $"This will unlock the {SelectedCompanionInfo.MonsterInfo.MonsterName} appearance for new companions", "Unlock Appearance", DXMessageBoxButtons.YesNo);
-
+            DXMessageBox box = new DXMessageBox($"Are you sure you want to use a {item.ItemName}?\n\n" + $"" + $"This will unlock the {SelectedCompanionInfo.MonsterInfo.MonsterName} appearance for new companions", "Unlock Appearance", DXMessageBoxButtons.YesNo);
 
             box.YesButton.MouseClick += (o1, e1) =>
             {
@@ -4197,11 +4226,10 @@ namespace Client.Scenes.Views
 
         public void RefreshUnlockButton()
         {
-
             UnlockButton.Visible = !SelectedCompanionInfo.Available && !AvailableCompanions.Contains(SelectedCompanionInfo);
 
             if (GameScene.Game.User == null || SelectedCompanionInfo == null || SelectedCompanionInfo.Price <= GameScene.Game.User.Gold.Amount)
-                PriceLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                PriceLabel.ForeColour = Color.White;
             else
                 PriceLabel.ForeColour = Color.Red;
 
@@ -4230,10 +4258,6 @@ namespace Client.Scenes.Views
                 _AdoptAttempted = false;
                 AdoptAttemptedChanged = null;
 
-                _CompanionNameValid = false;
-                CompanionNameValidChanged = null;
-
-
                 if (NameLabel != null)
                 {
                     if (!NameLabel.IsDisposed)
@@ -4242,12 +4266,28 @@ namespace Client.Scenes.Views
                     NameLabel = null;
                 }
 
-                if (IndexLabel != null)
+                if (TitleLabel != null)
                 {
-                    if (!IndexLabel.IsDisposed)
-                        IndexLabel.Dispose();
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
 
-                    IndexLabel = null;
+                    TitleLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                if (DescriptionLabel != null)
+                {
+                    if (!DescriptionLabel.IsDisposed)
+                        DescriptionLabel.Dispose();
+
+                    DescriptionLabel = null;
                 }
 
                 if (PriceLabel != null)
@@ -4256,6 +4296,14 @@ namespace Client.Scenes.Views
                         PriceLabel.Dispose();
 
                     PriceLabel = null;
+                }
+
+                if (PriceCurrencyLabel != null)
+                {
+                    if (!PriceCurrencyLabel.IsDisposed)
+                        PriceCurrencyLabel.Dispose();
+
+                    PriceCurrencyLabel = null;
                 }
 
                 if (LeftButton != null)
@@ -4290,277 +4338,363 @@ namespace Client.Scenes.Views
                     UnlockButton = null;
                 }
 
-                if (CompanionNameTextBox != null)
-                {
-                    if (!CompanionNameTextBox.IsDisposed)
-                        CompanionNameTextBox.Dispose();
-
-                    CompanionNameTextBox = null;
-                }
             }
-
         }
 
         #endregion
     }
 
-    public sealed class NPCCompanionStorageDialog : DXWindow
+    public sealed class NPCCompanionStorageDialog : DXImageControl
     {
-        #region Properties
-
-        private DXVScrollBar ScrollBar;
-
-        public NPCCompanionStorageRow[] Rows;
+        public MonsterObject CompanionDisplay;
+        public Point CompanionDisplayPoint;
 
         public List<ClientUserCompanion> Companions = new List<ClientUserCompanion>();
 
+        #region Properties
 
-        public override WindowType Type => WindowType.None;
-        public override bool CustomSize => false;
-        public override bool AutomaticVisibility => false;
+        public DXLabel NameTitleLabel, LevelTitleLabel, ExpTitleLabel, HungerTitleLabel;
+        public DXLabel TitleLabel, NameLabel, LevelLabel, ExpLabel, HungerLabel, IndexLabel;
+
+        public DXButton CloseButton, LeftButton, RightButton, StoreButton, RetrieveButton, ReleaseButton;
+
+        public DXControl ExperienceBar, HungerBar;
+
+        #endregion
+
+        #region SelectedUserCompanion
+
+        public ClientUserCompanion SelectedUserCompanion
+        {
+            get => _SelectedUserCompanion;
+            set
+            {
+                if (_SelectedUserCompanion == value) return;
+
+                ClientUserCompanion oldValue = _SelectedUserCompanion;
+                _SelectedUserCompanion = value;
+
+                OnSelectedUserCompanionChanged(oldValue, value);
+            }
+        }
+        private ClientUserCompanion _SelectedUserCompanion;
+        public event EventHandler<EventArgs> SelectedUserCompanionChanged;
+        public void OnSelectedUserCompanionChanged(ClientUserCompanion oValue, ClientUserCompanion nValue)
+        {
+            CompanionDisplay = null;
+
+            if (SelectedUserCompanion?.CompanionInfo.MonsterInfo == null) return;
+
+            CompanionDisplay = new MonsterObject(SelectedUserCompanion.CompanionInfo);
+
+            NameLabel.Text = SelectedUserCompanion.Name;
+            LevelLabel.Text = $"Lv. {SelectedUserCompanion.Level}";
+
+            var info = Globals.CompanionLevelInfoList.Binding.First(x => x.Level == SelectedUserCompanion.Level);
+
+            ExpLabel.Text = info.MaxExperience > 0 ? $"{SelectedUserCompanion.Experience / (decimal)info.MaxExperience:p2}" : "100%";
+
+            HungerLabel.Text = $"{SelectedUserCompanion.Hunger} of {info.MaxHunger}";
+
+            SelectedUserCompanionChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region SelectedIndex
+
+        public int SelectedIndex
+        {
+            get => _SelectedIndex;
+            set
+            {
+                int oldValue = _SelectedIndex;
+                _SelectedIndex = value;
+
+                OnSelectedIndexChanged(oldValue, value);
+            }
+        }
+        private int _SelectedIndex = -1;
+        public event EventHandler<EventArgs> SelectedIndexChanged;
+        public void OnSelectedIndexChanged(int oValue, int nValue)
+        {
+            if (SelectedIndex >= Companions.Count) return;
+
+            SelectedUserCompanion = Companions[SelectedIndex];
+
+            IndexLabel.Text = $"{SelectedIndex + 1} of {Companions.Count}";
+
+            LeftButton.Enabled = SelectedIndex > 0;
+            RightButton.Enabled = SelectedIndex < Companions.Count - 1;
+
+            if (SelectedUserCompanion == GameScene.Game.Companion)
+            {
+                StoreButton.Visible = true;
+                RetrieveButton.Visible = false;
+                ReleaseButton.Enabled = true;
+            }
+            else
+            {
+                StoreButton.Visible = false;
+                RetrieveButton.Visible = true;
+
+                if (!string.IsNullOrEmpty(SelectedUserCompanion.CharacterName))
+                {
+                    ReleaseButton.Enabled = false;
+                    RetrieveButton.Enabled = false;
+                    RetrieveButton.Hint = $"The Companion is currently with {SelectedUserCompanion.CharacterName}.";
+                }
+                else
+                {
+                    ReleaseButton.Enabled = true;
+                    RetrieveButton.Enabled = true;
+                    RetrieveButton.Hint = null;
+                }
+            }
+
+            SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+        }
 
         #endregion
 
         public NPCCompanionStorageDialog()
         {
-            TitleLabel.Text = "Storage";
+            LibraryFile = LibraryFile.Interface;
+            Index = 147;
 
-            Movable = false;
+            Movable = true;
 
-            SetClientSize(new Size(198, 349));
-
-            Rows = new NPCCompanionStorageRow[4];
-
-            for (int i = 0; i < Rows.Length; i++)
-            {
-                Rows[i] = new NPCCompanionStorageRow
-                {
-                    Parent = this,
-                    Location = new Point(ClientArea.X, ClientArea.Y + i * 88),
-                };
-            }
-
-            ScrollBar = new DXVScrollBar
+            CloseButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(ClientArea.Right - 15, ClientArea.Y + 1),
-                Size = new Size(14, Rows.Length * 87 - 1),
-                VisibleSize = Rows.Length,
-                Change = 1,
+                Index = 15,
+                LibraryFile = LibraryFile.Interface,
+                Hint = CEnvir.Language.CommonControlClose,
+                HintPosition = HintPosition.TopLeft
             };
-            ScrollBar.ValueChanged += (o, e) => UpdateScrollBar();
-        }
+            CloseButton.Location = new Point(DisplayArea.Width - CloseButton.Size.Width - 3, 3);
+            CloseButton.MouseClick += (o, e) => Visible = false;
 
-        #region Methods
-
-        public void UpdateScrollBar()
-        {
-            ScrollBar.MaxValue = Companions.Count;
-
-            for (int i = 0; i < Rows.Length; i++)
+            TitleLabel = new DXLabel
             {
-                Rows[i].UserCompanion = i + ScrollBar.Value >= Companions.Count ? null : Companions[i + ScrollBar.Value];
-            }
+                Text = "Companion Storage",
+                Parent = this,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((DisplayArea.Width - TitleLabel.Size.Width) / 2, 8);
 
+            CompanionDisplayPoint = new Point(55, 90);
 
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (disposing)
+            NameTitleLabel = new DXLabel
             {
-                Companions.Clear();
-                Companions = null;
+                Parent = this,
+                Text = "Name"
+            };
+            NameTitleLabel.Location = new Point(190 - NameTitleLabel.Size.Width, 52);
 
-                if (Rows != null)
-                {
-                    for (int i = 0; i < Rows.Length; i++)
-                    {
-                        if (Rows[i] != null)
-                        {
-                            if (!Rows[i].IsDisposed)
-                                Rows[i].Dispose();
-
-                            Rows[i] = null;
-                        }
-
-                    }
-
-                    Rows = null;
-                }
-
-                if (ScrollBar != null)
-                {
-                    if (!ScrollBar.IsDisposed)
-                        ScrollBar.Dispose();
-
-                    ScrollBar = null;
-                }
-            }
-
-        }
-
-        #endregion
-    }
-
-    public sealed class NPCCompanionStorageRow : DXControl
-    {
-        #region Properties
-        #region UserCompanion
-
-        public ClientUserCompanion UserCompanion
-        {
-            get => _UserCompanion;
-            set
+            LevelTitleLabel = new DXLabel
             {
-                ClientUserCompanion oldValue = _UserCompanion;
-                _UserCompanion = value;
+                Parent = this,
+                Text = "Level"
+            };
+            LevelTitleLabel.Location = new Point(190 - LevelTitleLabel.Size.Width, 74);
 
-                OnUserCompanionChanged(oldValue, value);
-            }
-        }
-        private ClientUserCompanion _UserCompanion;
-        public event EventHandler<EventArgs> UserCompanionChanged;
-        public void OnUserCompanionChanged(ClientUserCompanion oValue, ClientUserCompanion nValue)
-        {
-            UserCompanionChanged?.Invoke(this, EventArgs.Empty);
-
-            if (UserCompanion == null)
+            ExpTitleLabel = new DXLabel
             {
-                Visible = false;
-                return;
-            }
+                Parent = this,
+                Text = "Exp"
+            };
+            ExpTitleLabel.Location = new Point(190 - ExpTitleLabel.Size.Width, 96);
 
-            Visible = true;
-
-            CompanionDisplay = new MonsterObject(UserCompanion.CompanionInfo);
-
-            NameLabel.Text = UserCompanion.Name;
-            LevelLabel.Text = $"Level {UserCompanion.Level}";
-
-            if (UserCompanion == GameScene.Game.Companion)
-                Selected = true;
-            else
+            HungerTitleLabel = new DXLabel
             {
-                Selected = false;
+                Parent = this,
+                Text = "Hunger"
+            };
+            HungerTitleLabel.Location = new Point(190 - HungerTitleLabel.Size.Width, 118);
 
-                if (!string.IsNullOrEmpty(UserCompanion.CharacterName))
-                {
-                    RetrieveButton.Enabled = false;
-                    RetrieveButton.Hint = $"The Companion is currently with {UserCompanion.CharacterName}.";
-                }
-                else
-                {
-                    RetrieveButton.Enabled = true;
-                    RetrieveButton.Hint = null;
-                }
+            CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary library);
 
-            }
-        }
-
-        #endregion
-
-        #region Selected
-
-        public bool Selected
-        {
-            get => _Selected;
-            set
+            ExperienceBar = new DXControl
             {
-                if (_Selected == value) return;
+                Parent = this,
+                Location = new Point(196, 98),
+                Size = library.GetSize(4310),
+            };
+            ExperienceBar.BeforeDraw += (o, e) =>
+            {
+                if (library == null) return;
 
-                bool oldValue = _Selected;
-                _Selected = value;
+                if (SelectedUserCompanion == null) return;
 
-                OnSelectedChanged(oldValue, value);
-            }
-        }
-        private bool _Selected;
-        public event EventHandler<EventArgs> SelectedChanged;
-        public void OnSelectedChanged(bool oValue, bool nValue)
-        {
-            Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+                var info = Globals.CompanionLevelInfoList.Binding.First(x => x.Level == SelectedUserCompanion.Level);
 
-            RetrieveButton.Visible = !Selected;
-            StoreButton.Visible = Selected;
+                if (info == null) return;
 
+                float percent = Math.Min(1, Math.Max(0, SelectedUserCompanion.Experience / (float)info.MaxExperience));
 
-            SelectedChanged?.Invoke(this, EventArgs.Empty);
-        }
+                if (percent == 0) return;
 
-        #endregion
+                MirImage image = library.CreateImage(4310, ImageType.Image);
 
-        public MonsterObject CompanionDisplay;
-        public Point CompanionDisplayPoint;
-        public DXLabel NameLabel, LevelLabel;
-        public DXButton StoreButton, RetrieveButton;
+                if (image == null) return;
 
-        #endregion
+                PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X, ExperienceBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
+            };
 
-        public NPCCompanionStorageRow()
-        {
-            DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            HungerBar = new DXControl
+            {
+                Parent = this,
+                Location = new Point(196, 120),
+                Size = library.GetSize(4311),
+            };
 
-            BorderColour = Color.FromArgb(198, 166, 99);
-            Size = new Size(180, 85);
-            CompanionDisplayPoint = new Point(10, 45);
+            HungerBar.BeforeDraw += (o, e) =>
+            {
+                if (library == null) return;
+
+                if (SelectedUserCompanion == null) return;
+
+                var info = Globals.CompanionLevelInfoList.Binding.First(x => x.Level == SelectedUserCompanion.Level);
+
+                if (info == null) return;
+
+                float percent = Math.Min(1, Math.Max(0, SelectedUserCompanion.Hunger / (float)info.MaxHunger));
+
+                if (percent == 0) return;
+
+                MirImage image = library.CreateImage(4311, ImageType.Image);
+
+                if (image == null) return;
+
+                PresentTexture(image.Image, this, new Rectangle(HungerBar.DisplayArea.X, HungerBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HungerBar);
+            };
 
             NameLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(85, 5)
-
+                ForeColour = Color.White,
+                IsControl = false
+            };
+            NameLabel.SizeChanged += (o, e) =>
+            {
+                NameLabel.Location = new Point(270 - NameLabel.Size.Width / 2, 52);
             };
 
             LevelLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(85, 30)
+                ForeColour = Color.White,
+                IsControl = false
             };
+            LevelLabel.SizeChanged += (o, e) =>
+            {
+                LevelLabel.Location = new Point(270 - LevelLabel.Size.Width / 2, 74);
+            };
+
+            ExpLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false
+            };
+            ExpLabel.SizeChanged += (o, e) =>
+            {
+                ExpLabel.Location = new Point(270 - ExpLabel.Size.Width / 2, 96);
+            };
+
+            HungerLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false
+            };
+            HungerLabel.SizeChanged += (o, e) =>
+            {
+                HungerLabel.Location = new Point(270 - HungerLabel.Size.Width / 2, 118);
+            };
+
+            IndexLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.White,
+                IsControl = false
+            };
+
+            IndexLabel.SizeChanged += (o, e) =>
+            {
+                IndexLabel.Location = new Point(185 - IndexLabel.Size.Width / 2, 156);
+            };
+
+            LeftButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 4211,
+                Location = new Point(105, 157)
+            };
+            LeftButton.MouseClick += (o, e) => SelectedIndex--;
+            RightButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 4216,
+                Location = new Point(245, 157)
+            };
+            RightButton.MouseClick += (o, e) => SelectedIndex++;
 
             StoreButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(85, 60),
-                Size = new Size(80, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
+                Location = new Point(30, Size.Height - 42),
+                Size = new Size(80, DefaultHeight),
+                ButtonType = ButtonType.Default,
                 Label = { Text = "Store" },
-                Visible = false
             };
             StoreButton.MouseClick += StoreButton_MouseClick;
-
 
             RetrieveButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(85, 60),
-                Size = new Size(80, SmallButtonHeight),
-                ButtonType = ButtonType.SmallButton,
-                Label = { Text = "Retrieve" }
+                Size = new Size(80, DefaultHeight),
+                ButtonType = ButtonType.Default,
+                Label = { Text = "Retrieve" },
+                Location = new Point(30, Size.Height - 42),
+                Visible = false
             };
             RetrieveButton.MouseClick += RetrieveButton_MouseClick;
 
-
+            ReleaseButton = new DXButton
+            {
+                Parent = this,
+                Size = new Size(80, DefaultHeight),
+                ButtonType = ButtonType.Default,
+                Label = { Text = "Release" },
+                Location = new Point(30 + 80 + 35, Size.Height - 42)
+            };
+            ReleaseButton.MouseClick += ReleaseButton_MouseClick;
         }
 
         #region Methods
 
-        private void StoreButton_MouseClick(object sender, MouseEventArgs e)
+        public void Refresh()
         {
-            CEnvir.Enqueue(new C.CompanionStore { Index = UserCompanion.Index });
-        }
+            if (Companions.Count == 0) return;
 
-        private void RetrieveButton_MouseClick(object sender, MouseEventArgs e)
-        {
-            CEnvir.Enqueue(new C.CompanionRetrieve { Index = UserCompanion.Index });
+            if (GameScene.Game.Companion != null)
+            {
+                var index = Companions.IndexOf(GameScene.Game.Companion);
+
+                SelectedIndex = index;
+            }
+            else
+            {
+                SelectedIndex = 0;
+            }
         }
 
         public override void Process()
@@ -4590,6 +4724,25 @@ namespace Client.Scenes.Views
             CompanionDisplay.DrawBody(x, y);
         }
 
+        private void StoreButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            CEnvir.Enqueue(new C.CompanionStore { Index = SelectedUserCompanion.Index });
+        }
+
+        private void RetrieveButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            CEnvir.Enqueue(new C.CompanionRetrieve { Index = SelectedUserCompanion.Index });
+        }
+
+        private void ReleaseButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            DXMessageBox window = new DXMessageBox("Are you sure you wish to release your companion?", "Confirm Release", DXMessageBoxButtons.YesNo);
+
+            window.YesButton.MouseClick += (o1, e1) =>
+            {
+                CEnvir.Enqueue(new C.CompanionRelease { Index = SelectedUserCompanion.Index });
+            };
+        }
 
         #endregion
 
@@ -4601,14 +4754,57 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
-                _UserCompanion = null;
-                UserCompanionChanged = null;
-
-                _Selected = false;
-                SelectedChanged = null;
-
                 CompanionDisplay = null;
                 CompanionDisplayPoint = Point.Empty;
+
+                Companions?.Clear();
+                Companions = null;
+
+                _SelectedUserCompanion = null;
+                SelectedUserCompanionChanged = null;
+
+                _SelectedIndex = -1;
+                SelectedIndexChanged = null;
+
+                if (NameTitleLabel != null)
+                {
+                    if (!NameTitleLabel.IsDisposed)
+                        NameTitleLabel.Dispose();
+
+                    NameTitleLabel = null;
+                }
+
+                if (LevelTitleLabel != null)
+                {
+                    if (!LevelTitleLabel.IsDisposed)
+                        LevelTitleLabel.Dispose();
+
+                    LevelTitleLabel = null;
+                }
+
+                if (ExpTitleLabel != null)
+                {
+                    if (!ExpTitleLabel.IsDisposed)
+                        ExpTitleLabel.Dispose();
+
+                    ExpTitleLabel = null;
+                }
+
+                if (HungerTitleLabel != null)
+                {
+                    if (!HungerTitleLabel.IsDisposed)
+                        HungerTitleLabel.Dispose();
+
+                    HungerTitleLabel = null;
+                }
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
 
                 if (NameLabel != null)
                 {
@@ -4626,6 +4822,54 @@ namespace Client.Scenes.Views
                     LevelLabel = null;
                 }
 
+                if (ExpLabel != null)
+                {
+                    if (!ExpLabel.IsDisposed)
+                        ExpLabel.Dispose();
+
+                    ExpLabel = null;
+                }
+
+                if (HungerLabel != null)
+                {
+                    if (!HungerLabel.IsDisposed)
+                        HungerLabel.Dispose();
+
+                    HungerLabel = null;
+                }
+
+                if (IndexLabel != null)
+                {
+                    if (!IndexLabel.IsDisposed)
+                        IndexLabel.Dispose();
+
+                    IndexLabel = null;
+                }
+
+                if (CloseButton != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
+                if (LeftButton != null)
+                {
+                    if (!LeftButton.IsDisposed)
+                        LeftButton.Dispose();
+
+                    LeftButton = null;
+                }
+
+                if (RightButton != null)
+                {
+                    if (!RightButton.IsDisposed)
+                        RightButton.Dispose();
+
+                    RightButton = null;
+                }
+
                 if (StoreButton != null)
                 {
                     if (!StoreButton.IsDisposed)
@@ -4641,8 +4885,31 @@ namespace Client.Scenes.Views
 
                     RetrieveButton = null;
                 }
-            }
 
+                if (ReleaseButton != null)
+                {
+                    if (!ReleaseButton.IsDisposed)
+                        ReleaseButton.Dispose();
+
+                    ReleaseButton = null;
+                }
+
+                if (ExperienceBar != null)
+                {
+                    if (!ExperienceBar.IsDisposed)
+                        ExperienceBar.Dispose();
+
+                    ExperienceBar = null;
+                }
+
+                if (HungerBar != null)
+                {
+                    if (!HungerBar.IsDisposed)
+                        HungerBar.Dispose();
+
+                    HungerBar = null;
+                }
+            }
         }
 
         #endregion
@@ -5463,7 +5730,7 @@ namespace Client.Scenes.Views
 
             DXLabel label = new DXLabel
             {
-                Text = "Fragement I",
+                Text = "Fragment I",
                 Location = ClientArea.Location,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Underline)
@@ -5480,7 +5747,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Fragement II",
+                Text = "Fragment II",
                 Location = new Point(label.Size.Width + 5 + label.Location.X, label.Location.Y),
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Underline)
@@ -5497,7 +5764,7 @@ namespace Client.Scenes.Views
 
             label = new DXLabel
             {
-                Text = "Fragement III",
+                Text = "Fragment III",
                 Location = new Point(label.Size.Width + 5 + label.Location.X, label.Location.Y),
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Underline)

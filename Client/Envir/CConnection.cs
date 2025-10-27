@@ -762,7 +762,7 @@ namespace Client.Envir
                         GameScene.Game.NPCAdoptCompanionBox.RefreshUnlockButton();
 
                         GameScene.Game.NPCCompanionStorageBox.Companions = p.StartInformation.Companions;
-                        GameScene.Game.NPCCompanionStorageBox.UpdateScrollBar();
+                        GameScene.Game.NPCCompanionStorageBox.Refresh();
 
                         GameScene.Game.Companion = GameScene.Game.NPCCompanionStorageBox.Companions.FirstOrDefault(x => x.Index == p.StartInformation.Companion);
 
@@ -3487,7 +3487,7 @@ namespace Client.Envir
             GameScene.Game.NPCAdoptCompanionBox.RefreshUnlockButton();
 
             GameScene.Game.NPCCompanionStorageBox.Companions = p.StartInformation.Companions;
-            GameScene.Game.NPCCompanionStorageBox.UpdateScrollBar();
+            GameScene.Game.NPCCompanionStorageBox.Refresh();
 
             GameScene.Game.Companion = GameScene.Game.NPCCompanionStorageBox.Companions.FirstOrDefault(x => x.Index == p.StartInformation.Companion);
 
@@ -4160,8 +4160,7 @@ namespace Client.Envir
             if (p.UserCompanion == null) return;
 
             GameScene.Game.NPCCompanionStorageBox.Companions.Add(p.UserCompanion);
-            GameScene.Game.NPCCompanionStorageBox.UpdateScrollBar();
-            GameScene.Game.NPCAdoptCompanionBox.CompanionNameTextBox.TextBox.Text = string.Empty;
+            GameScene.Game.NPCCompanionStorageBox.Refresh();
         }
         public void Process(S.CompanionStore p)
         {
@@ -4173,6 +4172,16 @@ namespace Client.Envir
         public void Process(S.CompanionRetrieve p)
         {
             GameScene.Game.Companion = GameScene.Game.NPCCompanionStorageBox.Companions.FirstOrDefault(x => x.Index == p.Index);
+        }
+        public void Process(S.CompanionRelease p)
+        {
+            var companion = GameScene.Game.NPCCompanionStorageBox.Companions.FirstOrDefault(x => x.Index == p.Index);
+
+            if (companion != null)
+                GameScene.Game.NPCCompanionStorageBox.Companions.Remove(companion);
+
+            GameScene.Game.Companion = null;
+            GameScene.Game.NPCCompanionStorageBox.Refresh();
         }
         public void Process(S.CompanionWeightUpdate p)
         {

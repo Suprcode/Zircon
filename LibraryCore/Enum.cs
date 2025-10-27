@@ -121,6 +121,16 @@ namespace Library
         Food = 3,
     }
 
+    public enum CompanionAction
+    {
+        None = 0,
+        Moving = 1,
+        Pickup = 2,
+        Hunger = 3,
+        Eating = 4,
+        Idle = 5
+    }
+
     [Flags]
     public enum DaysOfWeek
     {
@@ -497,7 +507,6 @@ namespace Library
         FishingWait,
         FishingReel
     }
-
 
     public enum MessageAction
     {

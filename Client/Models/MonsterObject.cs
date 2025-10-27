@@ -2537,6 +2537,8 @@ namespace Client.Models
                             4 => MirAnimation.Combat4,
                             5 => MirAnimation.Combat5,
                             6 => MirAnimation.Combat6,
+                            7 => MirAnimation.Combat7,
+                            8 => MirAnimation.Combat8,
                             _ => MirAnimation.Standing,
                         };
                     }

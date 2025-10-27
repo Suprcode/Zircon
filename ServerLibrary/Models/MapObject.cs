@@ -435,7 +435,9 @@ namespace Server.Models
                         player = (PlayerObject)this;
 
                         if (!player.InSafeZone || player.Companion.UserCompanion.Level < 15)
+                        {
                             player.Companion.UserCompanion.Hunger--;
+                        }
 
                         if (player.Companion.LevelInfo.MaxExperience > 0)
                         {
