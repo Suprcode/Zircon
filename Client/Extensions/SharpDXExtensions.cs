@@ -68,7 +68,7 @@ public static class SharpDXExtensions
     {
         ArgumentNullException.ThrowIfNull(device);
 
-        RawRectangle[]? rawRectangles = rectangles?.Select(rectangle => new RawRectangle(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom)).ToArray();
+        RawRectangle[] rawRectangles = rectangles?.Select(rectangle => new RawRectangle(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom)).ToArray();
 
         device.Clear(flags, color.ToColorBGRA(), z, stencil, rawRectangles);
     }

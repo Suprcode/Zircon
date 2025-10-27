@@ -233,7 +233,7 @@ namespace Client.Scenes.Views
             control.Location = new Point((int)(ScaleX * x) - control.Size.Width / 2, (int)(ScaleY * y) - control.Size.Height / 2);
         }
 
-        public void Update(ClientObjectData ob)
+        public void Update(ClientObjectData ob, bool playLocatorAnim = false)
         {
             if (GameScene.Game.MapControl.MapInfo == null) return;
 
@@ -255,8 +255,7 @@ namespace Client.Scenes.Views
                 return;
             }
 
-            DXMapInfoControl control = existing as DXMapInfoControl;
-            if (control == null)
+            if (existing is not DXMapInfoControl control)
             {
                 existing.Dispose();
 
@@ -387,6 +386,11 @@ namespace Client.Scenes.Views
             Image.Location = new Point(-control.Location.X + Area.Width / 2, -control.Location.Y + Area.Height / 2);
 
             ClipMap();
+
+            if (playLocatorAnim)
+            {
+                GameScene.Game.MiniMapBox.PlayLocatorAnim(ob.ObjectID);
+            }
         }
 
         public void UpdateMapPosition()

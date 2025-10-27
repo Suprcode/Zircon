@@ -121,6 +121,16 @@ namespace Library
         Food = 3,
     }
 
+    public enum CompanionAction
+    {
+        None = 0,
+        Moving = 1,
+        Pickup = 2,
+        Hunger = 3,
+        Eating = 4,
+        Idle = 5
+    }
+
     [Flags]
     public enum DaysOfWeek
     {
@@ -441,7 +451,8 @@ namespace Library
         Hide,
         Mount,
         Mining,
-        Fishing
+        Fishing,
+        Idle
     }
 
     public enum MirAnimation : byte
@@ -496,7 +507,6 @@ namespace Library
         FishingWait,
         FishingReel
     }
-
 
     public enum MessageAction
     {
@@ -950,9 +960,9 @@ namespace Library
         ArachnidGazer = 116,
         RedMoonGuardian = 117,
         RedMoonProtector = 118,
-        //NF_RedMoonRedProtector = 119,
+        RedMoonRedProtector = 119,
 
-        //NF_RedMoonGrayProtector = 120,
+        RedMoonGrayProtector = 120,
         VenomousArachnid = 121,
         DarkArachnid = 122,
         ForestGuard = 123,
@@ -1165,6 +1175,7 @@ namespace Library
 
         //Mon33
 
+        //Mon34
         Companion_Pig = 340,
         Companion_TuskLord = 341,
         Companion_SkeletonLord = 342,
@@ -1343,6 +1354,9 @@ namespace Library
         Tornado = 566,
 
         //Mon57
+        Companion_Dog = 570,
+        Companion_Jinchon = 571,
+        Companion_Dino = 572,
 
         //Mon58
 

@@ -153,6 +153,14 @@ namespace Library.Network.ServerPackets
         public MirDirection Direction { get; set; }
         public Point Location { get; set; }
     }
+    public sealed class ObjectIdle : Packet
+    {
+        public uint ObjectID { get; set; }
+        public MirDirection Direction { get; set; }
+        public Point Location { get; set; }
+        public int Type { get; set; }
+    }
+
     public sealed class ObjectAttack : Packet
     {
         public uint ObjectID { get; set; }
@@ -610,6 +618,7 @@ namespace Library.Network.ServerPackets
         public string Text { get; set; }
         public MessageType Type { get; set; }
         public List<ClientUserItem> LinkedItems { get; set; }
+        public bool OverheadOnly { get; set; }
     }
 
     public sealed class NPCResponse : Packet
@@ -1105,6 +1114,10 @@ namespace Library.Network.ServerPackets
     {
         public int Index { get; set; }
     }
+    public sealed class CompanionRelease : Packet
+    {
+        public int Index { get; set; }
+    }
     public sealed class CompanionStore : Packet
     {
     }
@@ -1140,7 +1153,6 @@ namespace Library.Network.ServerPackets
         public Stats Level13 { get; set; }
         public Stats Level15 { get; set; }
     }
-
 
     public sealed class MarriageInvite : Packet
     {

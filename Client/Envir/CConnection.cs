@@ -762,7 +762,7 @@ namespace Client.Envir
                         GameScene.Game.NPCAdoptCompanionBox.RefreshUnlockButton();
 
                         GameScene.Game.NPCCompanionStorageBox.Companions = p.StartInformation.Companions;
-                        GameScene.Game.NPCCompanionStorageBox.UpdateScrollBar();
+                        GameScene.Game.NPCCompanionStorageBox.Refresh();
 
                         GameScene.Game.Companion = GameScene.Game.NPCCompanionStorageBox.Companions.FirstOrDefault(x => x.Index == p.StartInformation.Companion);
 
@@ -1172,6 +1172,17 @@ namespace Client.Envir
                     GameScene.Game.CanRun = false;
                 }
 
+                return;
+            }
+        }
+
+        public void Process(S.ObjectIdle p)
+        {
+            foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+            {
+                if (ob.ObjectID != p.ObjectID) continue;
+
+                ob.ActionQueue.Add(new ObjectAction(MirAction.Idle, p.Direction, p.Location, p.Type));
                 return;
             }
         }
@@ -2671,7 +2682,10 @@ namespace Client.Envir
         {
             if (GameScene.Game == null) return;
 
-            GameScene.Game.ReceiveChat(p.Text, p.Type, p.LinkedItems);
+            if (!p.OverheadOnly)
+            {
+                GameScene.Game.ReceiveChat(p.Text, p.Type, p.LinkedItems);
+            }
 
             if (p.Type != MessageType.Normal || p.ObjectID <= 0) return;
 
@@ -3473,7 +3487,7 @@ namespace Client.Envir
             GameScene.Game.NPCAdoptCompanionBox.RefreshUnlockButton();
 
             GameScene.Game.NPCCompanionStorageBox.Companions = p.StartInformation.Companions;
-            GameScene.Game.NPCCompanionStorageBox.UpdateScrollBar();
+            GameScene.Game.NPCCompanionStorageBox.Refresh();
 
             GameScene.Game.Companion = GameScene.Game.NPCCompanionStorageBox.Companions.FirstOrDefault(x => x.Index == p.StartInformation.Companion);
 
@@ -4146,8 +4160,7 @@ namespace Client.Envir
             if (p.UserCompanion == null) return;
 
             GameScene.Game.NPCCompanionStorageBox.Companions.Add(p.UserCompanion);
-            GameScene.Game.NPCCompanionStorageBox.UpdateScrollBar();
-            GameScene.Game.NPCAdoptCompanionBox.CompanionNameTextBox.TextBox.Text = string.Empty;
+            GameScene.Game.NPCCompanionStorageBox.Refresh();
         }
         public void Process(S.CompanionStore p)
         {
@@ -4159,6 +4172,16 @@ namespace Client.Envir
         public void Process(S.CompanionRetrieve p)
         {
             GameScene.Game.Companion = GameScene.Game.NPCCompanionStorageBox.Companions.FirstOrDefault(x => x.Index == p.Index);
+        }
+        public void Process(S.CompanionRelease p)
+        {
+            var companion = GameScene.Game.NPCCompanionStorageBox.Companions.FirstOrDefault(x => x.Index == p.Index);
+
+            if (companion != null)
+                GameScene.Game.NPCCompanionStorageBox.Companions.Remove(companion);
+
+            GameScene.Game.Companion = null;
+            GameScene.Game.NPCCompanionStorageBox.Refresh();
         }
         public void Process(S.CompanionWeightUpdate p)
         {
@@ -4267,8 +4290,6 @@ namespace Client.Envir
         }
         public void Process(S.MarriageOnlineChanged p)
         {
-
-
             ClientObjectData data;
 
             GameScene.Game.DataDictionary.TryGetValue(GameScene.Game.Partner.ObjectID > 0 ? GameScene.Game.Partner.ObjectID : p.ObjectID, out data);
@@ -4364,11 +4385,21 @@ namespace Client.Envir
 
             if (!GameScene.Game.DataDictionary.TryGetValue(p.ObjectID, out data)) return;
 
+            bool playLocatorAnim = false;
+
+            if (GameScene.Game.User.ObjectID == p.ObjectID)
+            {
+                if (data.MapIndex != p.MapIndex)
+                {
+                    playLocatorAnim = true;
+                }
+            }
+
             data.Location = p.CurrentLocation;
             data.MapIndex = p.MapIndex;
 
             GameScene.Game.BigMapBox.Update(data);
-            GameScene.Game.MiniMapBox.Update(data);
+            GameScene.Game.MiniMapBox.Update(data, playLocatorAnim);
         }
         public void Process(S.DataObjectHealthMana p)
         {

@@ -118,12 +118,14 @@ namespace Server.Envir.Translations
 
         public override string CompanionAppearanceAlready { get; set; } = "新的宠物{0}已经可以领养";
         public override string CompanionNeedTicket { get; set; } = "你需要在商城购买一张宠物解锁券来解锁这只新宠物";
+        public override string CompanionNeedItem { get; set; } = "You need to have a {0} to unlock a new appearance.";
         public override string CompanionSkillEnabled { get; set; } = "宠物可以使用{0}级的技能";
         public override string CompanionSkillDisabled { get; set; } = "宠物不能使用{0}级的技能";
         public override string CompanionAppearanceLocked { get; set; } = "新宠物{0}目前尚未解锁，你无法购买";
-        public override string CompanionNeedGold { get; set; } = "当前金币不足无法购买宠物";
+        public override string CompanionNeedCurrency { get; set; } = "当前金币不足无法购买宠物";
         public override string CompanionBadName { get; set; } = "该名称不符合宠物命名的规则";
         public override string CompanionRetrieveFailed { get; set; } = "无法获得{0}宠物，该宠物当前跟随{1}";
+        public override string CompanionReleaseFailed { get; set; } = "Unable to release {0} because it is currently with {1}.";
         public override string QuestSelectReward { get; set; } = "你必须选择任务奖励";
         public override string QuestNeedSpace { get; set; } = "无法完成任务，你的背包空间不足";
 

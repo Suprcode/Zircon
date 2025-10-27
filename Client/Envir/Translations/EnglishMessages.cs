@@ -97,6 +97,7 @@ namespace Client.Envir.Translations
         public override string BuySellNeedGold { get; set; } = "You do not have enough gold to buy a '{0}'.";
         public override string QuestSelectReward { get; set; } = "Please select a reward.";
         public override string CompanionNeedTicket { get; set; } = "You need a Companion Ticket to unlock a new appearance";
+        public override string CompanionNeedItem { get; set; } = "You need a {0} to unlock a new appearance";
         public override string RefineNeedIronOre { get; set; } = "You need Iron Ore x4 to create a Refinement Stone";
         public override string RefineNeedSilverOre { get; set; } = "You need Silver Ore x4 to create a Refinement Stone";
         public override string RefineNeedDiamond { get; set; } = "You need Diamond x4 to create a Refinement Stone";

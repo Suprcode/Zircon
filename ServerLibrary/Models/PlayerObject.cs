@@ -2935,13 +2935,21 @@ namespace Server.Models
                 return;
             }
 
+            var unlockItem = info.UnlockItem;
+
+            unlockItem ??= SEnvir.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.CompanionTicket);
+
+            if (unlockItem == null) 
+            { 
+                return; 
+            }
+
             UserItem item = null;
             int slot = 0;
 
             for (int i = 0; i < Inventory.Length; i++)
             {
-                if (Inventory[i] == null || Inventory[i].Info.ItemEffect != ItemEffect.CompanionTicket) continue;
-
+                if (Inventory[i] == null || Inventory[i].Info != unlockItem) continue;
 
                 item = Inventory[i];
                 slot = i;
@@ -2950,7 +2958,7 @@ namespace Server.Models
 
             if (item == null)
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.CompanionNeedTicket, MessageType.System);
+                Connection.ReceiveChatWithObservers(con => con.Language.CompanionNeedItem, MessageType.System);
                 return;
             }
 
@@ -3001,9 +3009,11 @@ namespace Server.Models
                 return;
             }
 
-            if (info.Price > Gold.Amount)
+            var userCurrency = GetCurrency(info.Currency);
+
+            if (info.Price > userCurrency.Amount)
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.CompanionNeedGold, MessageType.System);
+                Connection.ReceiveChatWithObservers(con => con.Language.CompanionNeedCurrency, MessageType.System);
                 return;
             }
 
@@ -3013,8 +3023,8 @@ namespace Server.Models
                 return;
             }
 
-            Gold.Amount -= info.Price;
-            GoldChanged();
+            userCurrency.Amount -= info.Price;
+            CurrencyChanged(userCurrency);
 
             UserCompanion companion = SEnvir.UserCompanionList.CreateNewObject();
 
@@ -3065,7 +3075,31 @@ namespace Server.Models
 
             CompanionDespawn();
             CompanionSpawn();
+        }
+        public void CompanionRelease(int index)
+        {
+            if (Dead || NPC == null || NPCPage == null) return;
 
+            if (NPCPage.DialogType != NPCDialogType.CompanionManage) return;
+
+            UserCompanion info = Character.Account.Companions.FirstOrDefault(x => x.Index == index);
+
+            if (info == null) return;
+
+            if (info.Character != null)
+            {
+                if (info.Character != Character)
+                {
+                    Connection.ReceiveChatWithObservers(con => string.Format(con.Language.CompanionReleaseFailed, info.Name, info.Character.CharacterName), MessageType.System);
+                    return;
+                }
+            }
+
+            Character.Account.Companions.Remove(info);
+
+            Enqueue(new S.CompanionRelease { Index = index });
+
+            CompanionDespawn();
         }
 
         public void CompanionStore(int index)
@@ -3089,15 +3123,14 @@ namespace Server.Models
 
             if (Character.Companion == null) return;
 
-            Companion tempCompanion = new Companion(Character.Companion)
+            Companion companion = new Companion(Character.Companion)
             {
                 CompanionOwner = this,
             };
 
-
-            if (tempCompanion.Spawn(CurrentMap, CurrentLocation))
+            if (companion.Spawn(CurrentMap, CurrentLocation))
             {
-                Companion = tempCompanion;
+                Companion = companion;
                 CompanionApplyBuff();
             }
         }

@@ -668,6 +668,16 @@ namespace Client.Models
                     StruckSound = SoundIndex.RedMoonProtectorStruck;
                     DieSound = SoundIndex.RedMoonProtectorDie;
                     break;
+                case MonsterImage.RedMoonRedProtector:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_11, out BodyLibrary);
+                    BodyShape = 9;
+                    //TODO - Needs sound
+                    break;
+                case MonsterImage.RedMoonGrayProtector:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_12, out BodyLibrary);
+                    BodyShape = 0;
+                    //TODO - Needs sound
+                    break;
                 case MonsterImage.VenomousArachnid:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_12, out BodyLibrary);
                     BodyShape = 1;
@@ -1400,42 +1410,93 @@ namespace Client.Models
                 case MonsterImage.Companion_Pig:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 0;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Pig)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_TuskLord:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 1;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_TuskLord)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_SkeletonLord:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 2;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_SkeletonLord)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_Griffin:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 3;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Griffin)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_Dragon:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 4;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Dragon)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_Donkey:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 5;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Donkey)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_Sheep:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 6;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Sheep)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_BanyoLordGuzak:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 7;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_BanyoLordGuzak)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_Panda:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 8;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Panda)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.Companion_Rabbit:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_34, out BodyLibrary);
                     BodyShape = 9;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Rabbit)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Companion_Dog:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_57, out BodyLibrary);
+                    BodyShape = 0;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Dog)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Companion_Jinchon:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_57, out BodyLibrary);
+                    BodyShape = 1;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Jinchon)
+                        Frames[frame.Key] = frame.Value;
+                    break;
+                case MonsterImage.Companion_Dino:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_57, out BodyLibrary);
+                    BodyShape = 2;
+
+                    foreach (KeyValuePair<MirAnimation, Frame> frame in FrameSet.Companion_Dino)
+                        Frames[frame.Key] = frame.Value;
                     break;
                 case MonsterImage.InfernalSoldier:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_26, out BodyLibrary);
@@ -2465,6 +2526,22 @@ namespace Client.Models
                     break;
                 case MirAction.Hide:
                     animation = MirAnimation.Hide;
+                    break;
+                case MirAction.Idle:
+                    {
+                        animation = (int)action.Extra[0] switch
+                        {
+                            1 => MirAnimation.Combat1,
+                            2 => MirAnimation.Combat2,
+                            3 => MirAnimation.Combat3,
+                            4 => MirAnimation.Combat4,
+                            5 => MirAnimation.Combat5,
+                            6 => MirAnimation.Combat6,
+                            7 => MirAnimation.Combat7,
+                            8 => MirAnimation.Combat8,
+                            _ => MirAnimation.Standing,
+                        };
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

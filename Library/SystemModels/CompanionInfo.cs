@@ -53,5 +53,8 @@ namespace Library.SystemModels
             }
         }
         private bool _Available;
+
+        [Association("CompanionSpeeches", true)]
+        public DBBindingList<CompanionSpeech> CompanionSpeeches { get; set; }
     }
 }
