@@ -414,13 +414,15 @@ namespace Client.Scenes.Views
 
             }
 
-            if (User.Opacity != 1f) return;
-            float oldOpacity = MapObject.User.Opacity;
-            MapObject.User.Opacity = 0.65F;
+            if (User.Opacity == 1f)
+            {
+                float oldOpacity = MapObject.User.Opacity;
+                MapObject.User.Opacity = 0.65F;
 
-            MapObject.User.DrawPlayer(false);
+                MapObject.User.DrawPlayer(false);
 
-            MapObject.User.Opacity = oldOpacity;
+                MapObject.User.Opacity = oldOpacity;
+            }
 
             if (Config.DrawEffects)
             {

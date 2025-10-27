@@ -4161,6 +4161,7 @@ namespace Client.Envir
 
             GameScene.Game.NPCCompanionStorageBox.Companions.Add(p.UserCompanion);
             GameScene.Game.NPCCompanionStorageBox.Refresh();
+            GameScene.Game.NPCCompanionStorageBox.Visible = true;
         }
         public void Process(S.CompanionStore p)
         {

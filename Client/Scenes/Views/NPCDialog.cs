@@ -358,7 +358,7 @@ namespace Client.Scenes.Views
                     break;
                 case NPCDialogType.CompanionManage:
                     GameScene.Game.NPCCompanionStorageBox.Visible = GameScene.Game.NPCCompanionStorageBox.Companions.Count > 0;
-                    GameScene.Game.NPCCompanionStorageBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCAdoptCompanionBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCAdoptCompanionBox.Size.Height) / 2);
+                    GameScene.Game.NPCCompanionStorageBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCCompanionStorageBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCCompanionStorageBox.Size.Height) / 2);
                     GameScene.Game.NPCCompanionStorageBox.SelectedIndex = 0;
                     GameScene.Game.NPCAdoptCompanionBox.Visible = true;
                     GameScene.Game.NPCAdoptCompanionBox.Location = new Point(0, Size.Height);
@@ -4492,28 +4492,28 @@ namespace Client.Scenes.Views
             NameTitleLabel = new DXLabel
             {
                 Parent = this,
-                Text = "Name"
+                Text = CEnvir.Language.CompanionDialogCompanionTabNameLabel
             };
             NameTitleLabel.Location = new Point(190 - NameTitleLabel.Size.Width, 52);
 
             LevelTitleLabel = new DXLabel
             {
                 Parent = this,
-                Text = "Level"
+                Text = CEnvir.Language.CompanionDialogCompanionTabLevelLabel
             };
             LevelTitleLabel.Location = new Point(190 - LevelTitleLabel.Size.Width, 74);
 
             ExpTitleLabel = new DXLabel
             {
                 Parent = this,
-                Text = "Exp"
+                Text = CEnvir.Language.CompanionDialogCompanionTabExpLabel
             };
             ExpTitleLabel.Location = new Point(190 - ExpTitleLabel.Size.Width, 96);
 
             HungerTitleLabel = new DXLabel
             {
                 Parent = this,
-                Text = "Hunger"
+                Text = CEnvir.Language.CompanionDialogCompanionTabHungerLabel
             };
             HungerTitleLabel.Location = new Point(190 - HungerTitleLabel.Size.Width, 118);
 
@@ -4650,7 +4650,7 @@ namespace Client.Scenes.Views
             StoreButton = new DXButton
             {
                 Parent = this,
-                Location = new Point(30, Size.Height - 42),
+                Location = new Point(30, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
                 ButtonType = ButtonType.Default,
                 Label = { Text = "Store" },
@@ -4663,7 +4663,7 @@ namespace Client.Scenes.Views
                 Size = new Size(80, DefaultHeight),
                 ButtonType = ButtonType.Default,
                 Label = { Text = "Retrieve" },
-                Location = new Point(30, Size.Height - 42),
+                Location = new Point(30, Size.Height - 43),
                 Visible = false
             };
             RetrieveButton.MouseClick += RetrieveButton_MouseClick;
@@ -4674,7 +4674,7 @@ namespace Client.Scenes.Views
                 Size = new Size(80, DefaultHeight),
                 ButtonType = ButtonType.Default,
                 Label = { Text = "Release" },
-                Location = new Point(30 + 80 + 35, Size.Height - 42)
+                Location = new Point(30 + 80 + 35, Size.Height - 43)
             };
             ReleaseButton.MouseClick += ReleaseButton_MouseClick;
         }
