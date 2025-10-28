@@ -6086,7 +6086,7 @@ namespace Server.Models
                                 }
                             }
                             break;
-                        case 19:
+                        case 19: //Stat Extractor [From Weapon] (All Added Stats)
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6156,7 +6156,7 @@ namespace Server.Models
                             RefreshStats();
 
                             break;
-                        case 20: //Stat Extractor
+                        case 20: //Stat Extractor [To Weapon] (All Added Stats)
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6203,7 +6203,7 @@ namespace Server.Models
                             Enqueue(new S.ItemStatsRefreshed { Slot = (int)EquipmentSlot.Weapon, GridType = GridType.Equipment, NewStats = new Stats(weapon.Stats) });
                             RefreshStats();
                             break;
-                        case 21:
+                        case 21: //Stat Extractor [From Weapon] (Refine Only)
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6278,7 +6278,7 @@ namespace Server.Models
                             RefreshStats();
 
                             break;
-                        case 22: //Refine Extractor
+                        case 22: //Stat Extractor [To Weapon] (Refine Only)
                             if (Horse != HorseType.None) return;
                             weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -6320,6 +6320,33 @@ namespace Server.Models
 
                             Enqueue(new S.ItemStatsRefreshed { Slot = (int)EquipmentSlot.Weapon, GridType = GridType.Equipment, NewStats = new Stats(weapon.Stats) });
                             RefreshStats();
+                            break;
+                        case 23: //Instance cooldown reset
+                            {
+                                if (SEnvir.Now < UseItemTime) return;
+                                if (CurrentMap.Instance != null) return;
+
+                                var instances = SEnvir.InstanceInfoList.Binding;
+
+                                int resetCount = 0;
+
+                                foreach (var instance in SEnvir.InstanceInfoList.Binding)
+                                {
+                                    if (instance.UserCooldown.TryGetValue(Name, out var cooldown) && cooldown > SEnvir.Now)
+                                    {
+                                        instance.UserCooldown.Remove(Name);
+                                        resetCount++;
+                                    }
+                                }
+
+                                if (resetCount == 0)
+                                {
+                                    Connection.ReceiveChat("No instance cooldowns to reset.", MessageType.System);
+                                    return;
+                                }
+
+                                Connection.ReceiveChat("Cooldowns for all instances have been reset.", MessageType.System);
+                            }
                             break;
                     }
 

@@ -1788,7 +1788,6 @@ namespace Client.Scenes
                     break;
             }
 
-
             if (displayInfo.RequiredGender != RequiredGender.None)
             {
                 Color colour = Color.White;
@@ -1815,7 +1814,6 @@ namespace Client.Scenes
                 ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
                     label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
             }
-
 
             if (displayInfo.RequiredClass != RequiredClass.All)
             {
@@ -1857,8 +1855,6 @@ namespace Client.Scenes
                 ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
                     label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
             }
-
-
 
             if (displayInfo.RequiredAmount > 0)
             {
@@ -1966,7 +1962,6 @@ namespace Client.Scenes
                     label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
             }
 
-
             bool spacer = false;
             long sale = MouseItem.Price(Math.Max(1, MouseItem.Count));
             if (sale > 0)
@@ -1983,7 +1978,6 @@ namespace Client.Scenes
                     label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
             }
             ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
-
 
             if (MouseItem.Info.Durability > 0 && !MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1)
             {
@@ -2160,7 +2154,6 @@ namespace Client.Scenes
             if (spacer)
                 ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
 
-
             if (MouseItem.Info.Durability > 0 && MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1 && MouseItem.Info.ItemType != ItemType.Book)
             {
                 label = new DXLabel
@@ -2231,7 +2224,6 @@ namespace Client.Scenes
 
                 ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
             }
-
 
             if (MouseItem.Info.Set != null)
                 SetItemInfo(MouseItem.Info.Set);
@@ -2330,9 +2322,8 @@ namespace Client.Scenes
 
                 ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
             }
-
-
         }
+
         private void EquipmentItemInfo()
         {
             Stats stats = new Stats();
@@ -2526,6 +2517,7 @@ namespace Client.Scenes
 
             }
         }
+
         private void CreatePotionLabel()
         {
             if (MouseItem == null) return;
@@ -2533,7 +2525,6 @@ namespace Client.Scenes
             Stats stats = new Stats();
 
             stats.Add(MouseItem.Info.Stats);
-
 
             DXLabel label;
             foreach (KeyValuePair<Stat, int> pair in stats.Values)
@@ -2576,13 +2567,14 @@ namespace Client.Scenes
                     ForeColour = Color.White,
                     Location = new Point(4, ItemLabel.DisplayArea.Bottom),
                     Parent = ItemLabel,
-                    Text = $"Cooldown: {MouseItem.Info.Durability / 1000M:#,##0.#} Seconds"
+                    Text = $"Cooldown: {Functions.ToString(TimeSpan.FromMilliseconds(MouseItem.Info.Durability), true)}"
                 };
 
                 ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
                     label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
             }
         }
+
         private void CreateMagicLabel()
         {
             if (MouseMagic == null) return;
@@ -2901,7 +2893,6 @@ namespace Client.Scenes
 
             ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
         }
-
 
         public void UseMagic(SpellKey key)
         {

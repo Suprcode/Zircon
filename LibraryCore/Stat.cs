@@ -325,7 +325,6 @@ namespace Library
             }
         }
 
-
         public string GetFormat(Stat stat)
         {
             Type type = stat.GetType();
