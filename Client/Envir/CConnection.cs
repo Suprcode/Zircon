@@ -4073,7 +4073,11 @@ namespace Client.Envir
         }
         public void Process(S.GuildConquestFinished p)
         {
-            GameScene.Game.ConquestWars.Remove(CEnvir.CastleInfoList.Binding.First(x => x.Index == p.Index));
+            CastleInfo castle = CEnvir.CastleInfoList.Binding.First(x => x.Index == p.Index);
+
+            GameScene.Game.ConquestWars.Remove(castle);
+
+            castle.WarDate = DateTime.MinValue;
 
             foreach (MapObject ob in GameScene.Game.MapControl.Objects)
                 ob.NameChanged();
