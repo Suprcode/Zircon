@@ -1214,7 +1214,7 @@ namespace Server.Envir
                                 {
                                     pair.Value.Process();
 
-                                    if (pair.Value.InstanceExpiryDateTime < SEnvir.Now)
+                                    if (pair.Value.InstanceExpiry != DateTime.MinValue && pair.Value.InstanceExpiry < Now)
                                     {
                                         expired = true;
                                     }

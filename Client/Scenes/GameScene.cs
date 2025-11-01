@@ -812,7 +812,7 @@ namespace Client.Scenes
 
             FishingCatchBox.Location = new Point(((Size.Width - FishingCatchBox.Size.Width) / 2), ((Size.Height - FishingCatchBox.Size.Height) / 2) + 200);
 
-            TimerBox.Location = new Point(Size.Width - 120, Size.Height - 180);
+            TimerBox.Location = new Point(MainPanel.DisplayArea.Right - 115, Size.Height - 170);
 
             BundleBox.Location = new Point((Size.Width - BundleBox.Size.Width) / 2, (Size.Height - BundleBox.Size.Height) / 2);
 

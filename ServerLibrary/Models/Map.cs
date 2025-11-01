@@ -37,7 +37,8 @@ namespace Server.Models
         public List<NPCObject> NPCs { get; } = new List<NPCObject>();
         public HashSet<MapObject>[] OrderedObjects;
 
-        public DateTime LastProcess, LastPlayer, InstanceExpiryDateTime;
+        public DateTime LastProcess, LastPlayer;
+        public DateTime InstanceExpiry;
 
         public DateTime HalloweenEventTime, ChristmasEventTime;
 
@@ -50,7 +51,7 @@ namespace Server.Models
             {
                 Instance = instance;
                 InstanceSequence = instanceSequence;
-                InstanceExpiryDateTime = instance.TimeLimitInMinutes > 0 ? SEnvir.Now.AddMinutes(instance.TimeLimitInMinutes) : DateTime.MaxValue;
+                InstanceExpiry = instance.TimeLimitInMinutes > 0 ? SEnvir.Now.AddMinutes(instance.TimeLimitInMinutes) : DateTime.MinValue;
             }
         }
 

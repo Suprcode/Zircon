@@ -215,15 +215,15 @@ namespace Client.Scenes.Views
                 default:
                 case 0:
                     _eggTimer.Visible = false;
-                    _eggTimer.Index = 960;
+                    _eggTimer.Index = 6600;
                     break;
                 case 1:
                     _eggTimer.Visible = true;
-                    _eggTimer.Index = 960;
+                    _eggTimer.Index = 6600;
                     break;
                 case 2:
                     _eggTimer.Visible = true;
-                    _eggTimer.Index = 440;
+                    _eggTimer.Index = 6600;
                     break;
             }
 

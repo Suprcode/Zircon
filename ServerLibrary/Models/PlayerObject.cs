@@ -1390,7 +1390,16 @@ namespace Server.Models
             else if (Spawned && CurrentMap.Info.CanMine)
                 PauseBuffs();
 
-            if (PlayerMoverRegion.QuickCheck(this))
+            if (PreviousCell != null && 
+                PreviousCell.Map != CurrentCell.Map && 
+                PreviousCell.Map.InstanceExpiry != CurrentCell.Map.InstanceExpiry)
+            {
+                // Show instance timer, or reset timer when instance is null
+                if (CurrentMap.Instance == null || CurrentMap.Instance.ShowTimer)
+                    SetTimer("Map", CurrentMap.InstanceExpiry);
+            }
+
+            if (PlayerMoveRegion.QuickCheck(this))
             {
                 SEnvir.EventHandler.Process(this, "PLAYERMOVEREGION");
             }
@@ -6320,33 +6329,6 @@ namespace Server.Models
 
                             Enqueue(new S.ItemStatsRefreshed { Slot = (int)EquipmentSlot.Weapon, GridType = GridType.Equipment, NewStats = new Stats(weapon.Stats) });
                             RefreshStats();
-                            break;
-                        case 23: //Instance cooldown reset
-                            {
-                                if (SEnvir.Now < UseItemTime) return;
-                                if (CurrentMap.Instance != null) return;
-
-                                var instances = SEnvir.InstanceInfoList.Binding;
-
-                                int resetCount = 0;
-
-                                foreach (var instance in SEnvir.InstanceInfoList.Binding)
-                                {
-                                    if (instance.UserCooldown.TryGetValue(Name, out var cooldown) && cooldown > SEnvir.Now)
-                                    {
-                                        instance.UserCooldown.Remove(Name);
-                                        resetCount++;
-                                    }
-                                }
-
-                                if (resetCount == 0)
-                                {
-                                    Connection.ReceiveChat("No instance cooldowns to reset.", MessageType.System);
-                                    return;
-                                }
-
-                                Connection.ReceiveChat("Cooldowns for all instances have been reset.", MessageType.System);
-                            }
                             break;
                     }
 
@@ -15496,7 +15478,7 @@ namespace Server.Models
             {
                 var map = SEnvir.GetMap(instance.ConnectRegion.Map, instance, index.Value);
 
-                if (!map.Players.Any())
+                if (map.Players.Count == 0)
                 {
                     foreach (PlayerObject member in GroupMembers)
                     {
@@ -15547,15 +15529,17 @@ namespace Server.Models
                         {
                             if (cooldown > SEnvir.Now)
                                 return (null, InstanceResult.UserCooldown);
-
-                            if (!checkOnly)
-                                instance.UserCooldown.Remove(Name);
                         }
 
                         if (instance.UserRecord.ContainsKey(Name))
                         {
                             if (CheckInstanceFreeSpace(instance, instance.UserRecord[Name]))
+                            {
+                                if (!checkOnly)
+                                    instance.UserCooldown.Remove(Name);
+
                                 return (instance.UserRecord[Name], InstanceResult.Success);
+                            }
                         }
 
                         for (byte i = 0; i < mapInstance.Length; i++)
@@ -15574,6 +15558,9 @@ namespace Server.Models
                                     }
                                 }
 
+                                if (!checkOnly)
+                                    instance.UserCooldown.Remove(Name);
+
                                 return (i, InstanceResult.Success);
                             }
                         }
@@ -15585,9 +15572,6 @@ namespace Server.Models
                         {
                             if (cooldown > SEnvir.Now)
                                 return (null, InstanceResult.UserCooldown);
-
-                            if (!checkOnly)
-                                instance.UserCooldown.Remove(Name);
                         }
 
                         if (GroupMembers == null)
@@ -15606,7 +15590,12 @@ namespace Server.Models
                                 var sequence = member.CurrentMap.InstanceSequence;
 
                                 if (CheckInstanceFreeSpace(instance, sequence))
+                                {
+                                    if (!checkOnly)
+                                        instance.UserCooldown.Remove(Name);
+
                                     return (sequence, InstanceResult.Success);
+                                }
 
                                 return (sequence, InstanceResult.Invalid);
                             }
@@ -15615,7 +15604,12 @@ namespace Server.Models
                         if (instance.UserRecord.ContainsKey(Name))
                         {
                             if (CheckInstanceFreeSpace(instance, instance.UserRecord[Name]))
+                            {
+                                if (!checkOnly)
+                                    instance.UserCooldown.Remove(Name);
+
                                 return (instance.UserRecord[Name], InstanceResult.Success);
+                            }
                         }
 
                         if (dungeonFinder && GroupMembers[0] != this)
@@ -15630,10 +15624,9 @@ namespace Server.Models
                         if (instance.GuildCooldown.TryGetValue(Character.Account.GuildMember.Guild.GuildName, out DateTime cooldown))
                         {
                             if (cooldown > SEnvir.Now)
+                            {
                                 return (null, InstanceResult.GuildCooldown);
-
-                            if (!checkOnly)
-                                instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
+                            }
                         }
 
                         foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
@@ -15643,7 +15636,12 @@ namespace Server.Models
                                 var sequence = member.Account.Connection.Player.CurrentMap.InstanceSequence;
 
                                 if (CheckInstanceFreeSpace(instance, sequence))
+                                {
+                                    if (!checkOnly)
+                                        instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
+
                                     return (sequence, InstanceResult.Success);
+                                }
 
                                 return (sequence, InstanceResult.Invalid);
                             }
@@ -15652,7 +15650,12 @@ namespace Server.Models
                         if (instance.UserRecord.ContainsKey(Name))
                         {
                             if (CheckInstanceFreeSpace(instance, instance.UserRecord[Name]))
+                            {
+                                if (!checkOnly)
+                                    instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
+
                                 return (instance.UserRecord[Name], InstanceResult.Success);
+                            }
                         }
                     }
                     break;
@@ -15661,8 +15664,6 @@ namespace Server.Models
                         if (Character.Account.GuildMember == null)
                             return (null, InstanceResult.NotInGuild);
 
-                        var castle = Character.Account.GuildMember.Guild.Castle;
-
                         if (Character.Account.GuildMember.Guild.Castle == null)
                             return (null, InstanceResult.NotInGuild);
 
@@ -15670,9 +15671,6 @@ namespace Server.Models
                         {
                             if (cooldown > SEnvir.Now)
                                 return (null, InstanceResult.GuildCooldown);
-
-                            if (!checkOnly)
-                                instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
                         }
 
                         foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
@@ -15682,7 +15680,12 @@ namespace Server.Models
                                 var sequence = member.Account.Connection.Player.CurrentMap.InstanceSequence;
 
                                 if (CheckInstanceFreeSpace(instance, sequence))
+                                {
+                                    if (!checkOnly)
+                                        instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
+
                                     return (sequence, InstanceResult.Success);
+                                }
 
                                 return (sequence, InstanceResult.Invalid);
                             }
@@ -15691,7 +15694,12 @@ namespace Server.Models
                         if (instance.UserRecord.ContainsKey(Name))
                         {
                             if (CheckInstanceFreeSpace(instance, instance.UserRecord[Name]))
+                            {
+                                if (!checkOnly)
+                                    instance.GuildCooldown.Remove(Character.Account.GuildMember.Guild.GuildName);
+
                                 return (instance.UserRecord[Name], InstanceResult.Success);
+                            }
                         }
                     }
                     break;
@@ -15780,7 +15788,7 @@ namespace Server.Models
 
         public void SetTimer(string key, DateTime expiry)
         {
-            var seconds = Math.Max(0, (int)(expiry - DateTime.UtcNow).TotalSeconds);
+            var seconds = Math.Max(0, (int)(expiry - SEnvir.Now).TotalSeconds);
 
             Enqueue(new S.SetTimer { Key = key, Type = 0, Seconds = seconds });
         }
