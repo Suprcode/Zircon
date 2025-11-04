@@ -1,8 +1,10 @@
-﻿using MirDB;
+﻿using MemoryPack;
+using MirDB;
 
 namespace Library.SystemModels
 {
-    public class DisciplineInfo : DBObject
+    [MemoryPackable]
+    public partial class DisciplineInfo : DBObject
     {
         [IsIdentity]
         public int Level

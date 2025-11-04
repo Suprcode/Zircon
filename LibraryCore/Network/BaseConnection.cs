@@ -315,22 +315,23 @@ namespace Library.Network
 
             DateTime start = Time.Now;
 
+            var packetType = p.GetType();
             MethodInfo info;
-            if (!PacketMethods.TryGetValue(p.PacketType, out info))
-                PacketMethods[p.PacketType] = info = GetType().GetMethod("Process", new[] { p.PacketType });
+            if (!PacketMethods.TryGetValue(packetType, out info))
+                PacketMethods[packetType] = info = GetType().GetMethod("Process", new[] { packetType });
 
             if (info == null)
-                throw new NotImplementedException($"Not Implemented Exception: Method Process({p.PacketType}).");
+                throw new NotImplementedException($"Not Implemented Exception: Method Process({packetType}).");
 
-            info.Invoke(this, new object[] { p });
+            info.Invoke(this, [p]);
 
             if (!Monitor) return;
 
             TimeSpan execution = Time.Now - start;
             DiagnosticValue value;
 
-            if (!Diagnostics.TryGetValue(p.PacketType.FullName, out value))
-                Diagnostics[p.PacketType.FullName] = value = new DiagnosticValue { Name = p.PacketType.FullName };
+            if (!Diagnostics.TryGetValue(packetType.FullName, out value))
+                Diagnostics[packetType.FullName] = value = new DiagnosticValue { Name = packetType.FullName };
 
             value.Count++;
             value.TotalTime += execution;

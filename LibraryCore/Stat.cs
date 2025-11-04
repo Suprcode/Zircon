@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using MemoryPack;
 
 namespace Library
 {
-    public sealed class Stats
+    [MemoryPackable]
+    public sealed partial class Stats
     {
         public SortedDictionary<Stat, int> Values { get; set; } = new SortedDictionary<Stat, int>();
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public int Count => Values.Sum(pair => Math.Abs(pair.Value));
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public int this[Stat stat]
         {
             get
@@ -36,6 +38,7 @@ namespace Library
             }
         }
 
+        [MemoryPackConstructor]
         public Stats()
         { }
 

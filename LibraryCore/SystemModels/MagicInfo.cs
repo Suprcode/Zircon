@@ -1,8 +1,10 @@
-﻿using MirDB;
+﻿using MemoryPack;
+using MirDB;
 
 namespace Library.SystemModels
 {
-    public sealed class MagicInfo : DBObject
+    [MemoryPackable]
+    public sealed partial class MagicInfo : DBObject
     {
         [IsIdentity]
         public string Name

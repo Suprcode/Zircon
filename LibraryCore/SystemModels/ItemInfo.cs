@@ -1,10 +1,12 @@
 ﻿using MirDB;
 using System;
 using System.Text.Json.Serialization;
+using MemoryPack;
 
 namespace Library.SystemModels
 {
-    public class ItemInfo : DBObject
+    [MemoryPackable]
+    public partial class ItemInfo : DBObject
     {
         [IsIdentity]
         public string ItemName
