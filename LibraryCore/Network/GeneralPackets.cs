@@ -1,24 +1,33 @@
-﻿namespace Library.Network.GeneralPackets
+﻿using MemoryPack;
+
+namespace Library.Network.GeneralPackets
 {
-    public sealed class Connected : Packet { }
-    public sealed class Ping : Packet { }
-    public sealed class CheckVersion : Packet
+    [MemoryPackable]
+    public sealed partial class Connected : Packet { }
+    [MemoryPackable]
+    public sealed partial class Ping : Packet { }
+    [MemoryPackable]
+    public sealed partial class CheckVersion : Packet
     {
     }
-    public sealed class Version : Packet
+    [MemoryPackable]
+    public sealed partial class Version : Packet
     {
         public byte[] ClientHash { get; set; }
     }
-    public sealed class GoodVersion : Packet
+    [MemoryPackable]
+    public sealed partial class GoodVersion : Packet
     {
         public byte[] DatabaseKey { get; set; }
     }
-    public sealed class PingResponse : Packet
+    [MemoryPackable]
+    public sealed partial class PingResponse : Packet
     {
         public int Ping { get; set; }
     }
 
-    public sealed class Disconnect : Packet
+    [MemoryPackable]
+    public sealed partial class Disconnect : Packet
     {
         public DisconnectReason Reason { get; set; }
     }

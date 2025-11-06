@@ -1,8 +1,10 @@
-﻿using MirDB;
+﻿using MemoryPack;
+using MirDB;
 
 namespace Library.SystemModels
 {
-    public class CompanionInfo : DBObject
+    [MemoryPackable]
+    public partial class CompanionInfo : DBObject
     {
         [IsIdentity]
         public MonsterInfo MonsterInfo

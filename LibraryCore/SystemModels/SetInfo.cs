@@ -1,9 +1,11 @@
 ﻿using MirDB;
 using System.Text.Json.Serialization;
+using MemoryPack;
 
 namespace Library.SystemModels
 {
-    public class SetInfo : DBObject
+    [MemoryPackable]
+    public partial class SetInfo : DBObject
     {
         [IsIdentity]
         public string SetName

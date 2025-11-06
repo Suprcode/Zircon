@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
+using MemoryPack;
 
 namespace Library
 {
@@ -318,7 +319,8 @@ namespace Library
         }
     }
 
-    public sealed class SelectInfo
+    [MemoryPackable]
+    public sealed partial class SelectInfo
     {
         public int CharacterIndex { get; set; }
         public string CharacterName { get; set; }
@@ -330,13 +332,15 @@ namespace Library
         public DateTime LastLogin { get; set; }
     }
 
-    public sealed class StartInformation
+    [MemoryPackable]
+    public sealed partial class StartInformation
     {
         public int Index { get; set; }
         public uint ObjectID { get; set; }
         public string Name { get; set; }
 
         public string Caption { get; set; }
+        [MemoryPackAllowSerialize]
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
         public string GuildRank { get; set; }
@@ -351,11 +355,13 @@ namespace Library
 
         public int Level { get; set; }
         public int HairType { get; set; }
+        [MemoryPackAllowSerialize]
         public Color HairColour { get; set; }
         public int Weapon { get; set; }
         public int Armour { get; set; }
         public int Costume { get; set; }
         public int Shield { get; set; }
+        [MemoryPackAllowSerialize]
         public Color ArmourColour { get; set; }
 
         public ExteriorEffect ArmourEffect { get; set; }
@@ -409,6 +415,7 @@ namespace Library
         public List<ClientUserQuest> Quests { get; set; }
 
         public List<int> CompanionUnlocks { get; set; }
+        [MemoryPackIgnore]
         public List<CompanionInfo> AvailableCompanions = new List<CompanionInfo>();
 
         public List<ClientUserCompanion> Companions { get; set; }
@@ -425,7 +432,7 @@ namespace Library
         public bool StruckEnabled { get; set; }
         public bool HermitEnabled { get; set; }
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void OnComplete()
         {
             foreach (int index in CompanionUnlocks)
@@ -433,8 +440,10 @@ namespace Library
         }
     }
 
-    public sealed class ClientUserItem
+    [MemoryPackable]
+    public sealed partial class ClientUserItem
     {
+        [MemoryPackIgnore]
         public ItemInfo Info;
 
         public int Index { get; set; } //ItemID
@@ -450,21 +459,22 @@ namespace Library
         public int Level { get; set; }
         public decimal Experience { get; set; }
 
+        [MemoryPackAllowSerialize]
         public Color Colour { get; set; }
 
         public TimeSpan SpecialRepairCoolDown { get; set; }
         public TimeSpan ResetCoolDown { get; set; }
 
         public bool New;
+        [MemoryPackIgnore]
         public DateTime NextSpecialRepair, NextReset;
 
         public Stats AddedStats { get; set; }
 
         public UserItemFlags Flags { get; set; }
         public TimeSpan ExpireTime { get; set; }
-
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public int Weight
         {
             get
@@ -480,7 +490,7 @@ namespace Library
             }
         }
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void Complete()
         {
             Info = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
@@ -489,6 +499,7 @@ namespace Library
             NextReset = Time.Now + ResetCoolDown;
         }
 
+        [MemoryPackConstructor]
         public ClientUserItem() { }
 
         public ClientUserItem(ItemInfo info, long count)
@@ -760,14 +771,16 @@ namespace Library
         }
     }
 
-    public sealed class ClientBeltLink
+    [MemoryPackable]
+    public sealed partial class ClientBeltLink
     {
         public int Slot { get; set; }
         public int LinkInfoIndex { get; set; }
         public int LinkItemIndex { get; set; }
     }
 
-    public sealed class ClientAutoPotionLink
+    [MemoryPackable]
+    public sealed partial class ClientAutoPotionLink
     {
         public int Slot { get; set; }
         public int LinkInfoIndex { get; set; }
@@ -776,10 +789,12 @@ namespace Library
         public bool Enabled { get; set; }
     }
 
-    public class ClientUserMagic
+    [MemoryPackable]
+    public partial class ClientUserMagic
     {
         public int Index { get; set; }
         public int InfoIndex { get; set; }
+        [MemoryPackIgnore]
         public MagicInfo Info;
 
         public SpellKey Set1Key { get; set; }
@@ -793,13 +808,13 @@ namespace Library
 
         public TimeSpan Cooldown { get; set; }
 
+        [MemoryPackIgnore]
         public DateTime NextCast;
-
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public int Cost => Info.BaseCost + Level * Info.LevelCost / 3;
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void Complete()
         {
             NextCast = Time.Now + Cooldown;
@@ -807,20 +822,23 @@ namespace Library
         }
     }
 
-    public class ClientNPCValues
+    [MemoryPackable]
+    public partial class ClientNPCValues
     {
         public int ID { get; set; }
         public string Value { get; set; }
     }
 
-    public class CellLinkInfo
+    [MemoryPackable]
+    public partial class CellLinkInfo
     {
         public GridType GridType { get; set; }
         public int Slot { get; set; }
         public long Count { get; set; }
     }
 
-    public class ClientBuffInfo
+    [MemoryPackable]
+    public partial class ClientBuffInfo
     {
         public int Index { get; set; }
         public BuffType Type { get; set; }
@@ -832,7 +850,8 @@ namespace Library
         public int Extra { get; set; }
     }
 
-    public class ClientRefineInfo
+    [MemoryPackable]
+    public partial class ClientRefineInfo
     {
         public int Index { get; set; }
         public ClientUserItem Weapon { get; set; }
@@ -842,9 +861,10 @@ namespace Library
         public int MaxChance { get; set; }
         public TimeSpan ReadyDuration { get; set; }
 
+        [MemoryPackIgnore]
         public DateTime RetrieveTime;
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void Complete()
         {
             RetrieveTime = Time.Now + ReadyDuration;
@@ -852,7 +872,8 @@ namespace Library
     }
 
 
-    public sealed class RankInfo
+    [MemoryPackable]
+    public sealed partial class RankInfo
     {
         public int Rank { get; set; }
         public int Index { get; set; }
@@ -867,7 +888,8 @@ namespace Library
         public int RankChange { get; set; }
     }
 
-    public class ClientMarketPlaceInfo
+    [MemoryPackable]
+    public partial class ClientMarketPlaceInfo
     {
         public int Index { get; set; }
         public ClientUserItem Item { get; set; }
@@ -881,7 +903,8 @@ namespace Library
         public bool Loading;
     }
 
-    public class ClientMailInfo
+    [MemoryPackable]
+    public partial class ClientMailInfo
     {
         public int Index { get; set; }
         public bool Opened { get; set; }
@@ -896,7 +919,8 @@ namespace Library
         public List<ClientUserItem> Items { get; set; }
     }
 
-    public class ClientGuildInfo
+    [MemoryPackable]
+    public partial class ClientGuildInfo
     {
         public string GuildName { get; set; }
 
@@ -918,18 +942,20 @@ namespace Library
         public string DefaultRank { get; set; }
         public GuildPermission DefaultPermission { get; set; }
 
+        [MemoryPackAllowSerialize]
         public Color Colour { get; set; }
         public int Flag { get; set; }
 
         public List<ClientGuildMemberInfo> Members { get; set; }
 
         public List<ClientUserItem> Storage { get; set; }
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public GuildPermission Permission => Members.FirstOrDefault(x => x.Index == UserIndex)?.Permission ?? GuildPermission.None;
     }
 
-    public class ClientGuildMemberInfo
+    [MemoryPackable]
+    public partial class ClientGuildMemberInfo
     {
         public int Index { get; set; }
         public string Name { get; set; }
@@ -940,10 +966,11 @@ namespace Library
 
         public GuildPermission Permission { get; set; }
 
+        [MemoryPackIgnore]
         public DateTime LastOnline;
         public uint ObjectID { get; set; }
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void Complete()
         {
             if (Online == TimeSpan.MinValue)
@@ -954,11 +981,12 @@ namespace Library
 
     }
 
-    public class ClientUserQuest
+    [MemoryPackable]
+    public partial class ClientUserQuest
     {
         public int Index { get; set; }
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public QuestInfo Quest { get; set; }
 
         public int QuestIndex { get; set; }
@@ -971,41 +999,43 @@ namespace Library
 
         public DateTime DateTaken { get; set; }
         public DateTime DateCompleted { get; set; }
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public bool IsComplete => Tasks.Count == Quest.Tasks.Count && Tasks.All(x => x.Completed);
 
         public List<ClientUserQuestTask> Tasks { get; set; }
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void Complete()
         {
             Quest = Globals.QuestInfoList.Binding.First(x => x.Index == QuestIndex);
         }
     }
 
-    public class ClientUserQuestTask
+    [MemoryPackable]
+    public partial class ClientUserQuestTask
     {
         public int Index { get; set; }
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public QuestTask Task { get; set; }
 
         public int TaskIndex { get; set; }
 
         public long Amount { get; set; }
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public bool Completed => Amount >= Task.Amount;
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void Complete()
         {
             Task = Globals.QuestTaskList.Binding.First(x => x.Index == TaskIndex);
         }
     }
 
-    public class ClientCompanionObject
+    [MemoryPackable]
+    public partial class ClientCompanionObject
     {
         public string Name { get; set; }
 
@@ -1013,12 +1043,14 @@ namespace Library
         public int BackShape { get; set; }
     }
 
-    public class ClientUserCompanion
+    [MemoryPackable]
+    public partial class ClientUserCompanion
     {
         public int Index { get; set; }
         public string Name { get; set; }
 
         public int CompanionIndex { get; set; }
+        [MemoryPackIgnore]
         public CompanionInfo CompanionInfo;
 
         public int Level { get; set; }
@@ -1037,10 +1069,11 @@ namespace Library
 
         public List<ClientUserItem> Items { get; set; }
 
+        [MemoryPackIgnore]
         public ClientUserItem[] EquipmentArray = new ClientUserItem[Globals.CompanionEquipmentSize], InventoryArray = new ClientUserItem[Globals.CompanionInventorySize];
 
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void OnComplete()
         {
             CompanionInfo = Globals.CompanionInfoList.Binding.First(x => x.Index == CompanionIndex);
@@ -1056,13 +1089,15 @@ namespace Library
 
     }
 
-    public class ClientPlayerInfo
+    [MemoryPackable]
+    public partial class ClientPlayerInfo
     {
         public uint ObjectID { get; set; }
 
         public string Name { get; set; }
     }
-    public class ClientObjectData
+    [MemoryPackable]
+    public partial class ClientObjectData
     {
         public uint ObjectID;
 
@@ -1087,31 +1122,36 @@ namespace Library
         public bool Dead;
     }
 
-    public class ClientBlockInfo
+    [MemoryPackable]
+    public partial class ClientBlockInfo
     {
         public int Index { get; set; }
         public string Name { get; set; }
     }
 
-    public class ClientFriendInfo
+    [MemoryPackable]
+    public partial class ClientFriendInfo
     {
         public int Index { get; set; }
         public string Name { get; set; }
         public OnlineState State { get; set; }
     }
 
-    public class ClientFortuneInfo
+    [MemoryPackable]
+    public partial class ClientFortuneInfo
     {
         public int ItemIndex { get; set; }
+        [MemoryPackIgnore]
         public ItemInfo ItemInfo;
 
         public TimeSpan CheckTime { get; set; }
         public long DropCount { get; set; }
         public decimal Progress { get; set; }
 
+        [MemoryPackIgnore]
         public DateTime CheckDate;
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void OnComplete()
         {
             ItemInfo = Globals.ItemInfoList.Binding.First(x => x.Index == ItemIndex);
@@ -1120,27 +1160,30 @@ namespace Library
         }
     }
 
-    public class CompanionFiltersInfo
+    [MemoryPackable]
+    public partial class CompanionFiltersInfo
     {
         public string FilterClass { get; set; }
         public string FilterRarity { get; set; }
         public string FilterItemType { get; set; }
     }
 
-    public class ClientUserCurrency
+    [MemoryPackable]
+    public partial class ClientUserCurrency
     {
         public int CurrencyIndex { get; set; }
         public CurrencyInfo Info;
         public long Amount { get; set; }
-
-        [IgnorePropertyPacket]
+        
+        [MemoryPackIgnore]
         public bool CanPickup
         {
             get { return Info != null && Info.DropItem != null && Info.DropItem.CanDrop; }
         }
     }
 
-    public class ClientUserDiscipline
+    [MemoryPackable]
+    public partial class ClientUserDiscipline
     {
         public int InfoIndex { get; set; }
         public DisciplineInfo DisciplineInfo;
@@ -1149,28 +1192,32 @@ namespace Library
         public List<ClientUserMagic> Magics { get; set; }
     }
 
-    public class ClientBundleItemInfo
+    [MemoryPackable]
+    public partial class ClientBundleItemInfo
     {
         public int ItemIndex { get; set; }
+        [MemoryPackIgnore]
         public ItemInfo ItemInfo;
         public int Amount { get; set; }
         public int Slot { get; set; }
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void OnComplete()
         {
             ItemInfo = Globals.ItemInfoList.Binding.First(x => x.Index == ItemIndex);
         }
     }
 
-    public class ClientLootBoxItemInfo
+    [MemoryPackable]
+    public partial class ClientLootBoxItemInfo
     {
         public int ItemIndex { get; set; }
+        [MemoryPackIgnore]
         public ItemInfo ItemInfo;
         public int Amount { get; set; }
         public int Slot { get; set; }
 
-        [CompleteObject]
+        [MemoryPackOnDeserialized]
         public void OnComplete()
         {
             ItemInfo = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == ItemIndex);

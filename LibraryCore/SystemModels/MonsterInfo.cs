@@ -1,9 +1,11 @@
 ﻿using MirDB;
 using System.Text.Json.Serialization;
+using MemoryPack;
 
 namespace Library.SystemModels
 {
-    public sealed class MonsterInfo : DBObject
+    [MemoryPackable]
+    public sealed partial class MonsterInfo : DBObject
     {
         [IsIdentity]
         public string MonsterName

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using MemoryPack;
 
 namespace Library.Network.ClientPackets
 {
-    public sealed class NewAccount : Packet
+    [MemoryPackable]
+    public sealed partial class NewAccount : Packet
     {
         public string EMailAddress { get; set; }
         public string Password { get; set; }
@@ -14,7 +16,8 @@ namespace Library.Network.ClientPackets
         public string CheckSum { get; set; }
     }
 
-    public sealed class ChangePassword : Packet
+    [MemoryPackable]
+    public sealed partial class ChangePassword : Packet
     {
         public string EMailAddress { get; set; }
         public string CurrentPassword { get; set; }
@@ -22,89 +25,107 @@ namespace Library.Network.ClientPackets
         public string CheckSum { get; set; }
     }
 
-    public sealed class RequestPasswordReset : Packet
+    [MemoryPackable]
+    public sealed partial class RequestPasswordReset : Packet
     {
         public string EMailAddress { get; set; }
         public string CheckSum { get; set; }
     }
 
-    public sealed class ResetPassword : Packet
+    [MemoryPackable]
+    public sealed partial class ResetPassword : Packet
     {
         public string ResetKey { get; set; }
         public string NewPassword { get; set; }
         public string CheckSum { get; set; }
     }
 
-    public sealed class Activation : Packet
+    [MemoryPackable]
+    public sealed partial class Activation : Packet
     {
         public string ActivationKey { get; set; }
         public string CheckSum { get; set; }
     }
 
-    public sealed class RequestActivationKey : Packet
+    [MemoryPackable]
+    public sealed partial class RequestActivationKey : Packet
     {
         public string EMailAddress { get; set; }
         public string CheckSum { get; set; }
     }
 
-    public sealed class SelectLanguage : Packet
+    [MemoryPackable]
+    public sealed partial class SelectLanguage : Packet
     {
         public string Language { get; set; }
     }
 
-    public sealed class Login : Packet
+    [MemoryPackable]
+    public sealed partial class Login : Packet
     {
         public string EMailAddress { get; set; }
         public string Password { get; set; }
         public string CheckSum { get; set; }
     }
 
-    public sealed class Logout : Packet { }
+    [MemoryPackable]
+    public sealed partial class Logout : Packet { }
 
 
-    public sealed class NewCharacter : Packet
+    [MemoryPackable]
+    public sealed partial class NewCharacter : Packet
     {
         public string CharacterName { get; set; }
         public MirClass Class { get; set; }
         public MirGender Gender { get; set; }
         public int HairType { get; set; }
+        [MemoryPackAllowSerialize]
         public Color HairColour { get; set; }
+        [MemoryPackAllowSerialize]
         public Color ArmourColour { get; set; }
         public string CheckSum { get; set; }
     }
 
-    public sealed class DeleteCharacter : Packet
+    [MemoryPackable]
+    public sealed partial class DeleteCharacter : Packet
     {
         public int CharacterIndex { get; set; }
         public string CheckSum { get; set; }
     }
 
-    public sealed class StartGame : Packet
+    [MemoryPackable]
+    public sealed partial class StartGame : Packet
     {
         public int CharacterIndex { get; set; }
     }
 
-    public sealed class TownRevive : Packet { }
+    [MemoryPackable]
+    public sealed partial class TownRevive : Packet { }
 
-    public sealed class Turn : Packet
+    [MemoryPackable]
+    public sealed partial class Turn : Packet
     {
         public MirDirection Direction { get; set; }
     }
 
-    public sealed class Harvest : Packet
+    [MemoryPackable]
+    public sealed partial class Harvest : Packet
     {
         public MirDirection Direction { get; set; }
     }
 
-    public sealed class Move : Packet
+    [MemoryPackable]
+    public sealed partial class Move : Packet
     {
         public MirDirection Direction { get; set; }
         public int Distance { get; set; }
     }
 
-    public sealed class Mount : Packet { }
+    [MemoryPackable]
+    public sealed partial class Mount : Packet { }
 
-    public sealed class FishingCast : Packet
+    [MemoryPackable]
+    public sealed partial class FishingCast : Packet
     {
         public FishingState State { get; set; }
         public MirDirection Direction { get; set; }
@@ -112,26 +133,30 @@ namespace Library.Network.ClientPackets
         public bool CaughtFish { get; set; }
     }
 
-    public sealed class Attack : Packet
+    [MemoryPackable]
+    public sealed partial class Attack : Packet
     {
         public MirDirection Direction { get; set; }
         public MirAction Action { get; set; }
         public MagicType AttackMagic { get; set; }
     }
 
-    public sealed class RangeAttack : Packet
+    [MemoryPackable]
+    public sealed partial class RangeAttack : Packet
     {
         public MirDirection Direction { get; set; }
         public uint Target { get; set; }
         public int DelayedTime { get; set; }
 
     }
-    public sealed class Mining : Packet
+    [MemoryPackable]
+    public sealed partial class Mining : Packet
     {
         public MirDirection Direction { get; set; }
     }
 
-    public sealed class Magic : Packet
+    [MemoryPackable]
+    public sealed partial class Magic : Packet
     {
         public MirDirection Direction { get; set; }
         public MirAction Action { get; set; }
@@ -140,7 +165,8 @@ namespace Library.Network.ClientPackets
         public Point Location { get; set; }
     }
 
-    public sealed class ItemMove : Packet
+    [MemoryPackable]
+    public sealed partial class ItemMove : Packet
     {
         public GridType FromGrid { get; set; }
         public GridType ToGrid { get; set; }
@@ -149,56 +175,65 @@ namespace Library.Network.ClientPackets
         public bool MergeItem { get; set; }
     }
 
-    public sealed class ItemSort : Packet
+    [MemoryPackable]
+    public sealed partial class ItemSort : Packet
     {
         public GridType Grid { get; set; }
     }
 
-    public sealed class ItemDelete : Packet
+    [MemoryPackable]
+    public sealed partial class ItemDelete : Packet
     {
         public GridType Grid { get; set; }
         public int Slot { get; set; }
     }
 
-    public sealed class ItemSplit : Packet
+    [MemoryPackable]
+    public sealed partial class ItemSplit : Packet
     {
         public GridType Grid { get; set; }
         public int Slot { get; set; }
         public long Count { get; set; }
     }
 
-    public sealed class ItemDrop : Packet
+    [MemoryPackable]
+    public sealed partial class ItemDrop : Packet
     {
         public CellLinkInfo Link { get; set; }
         public int Slot { get; set; }
     }
 
-    public sealed class CurrencyDrop : Packet
+    [MemoryPackable]
+    public sealed partial class CurrencyDrop : Packet
     {
         public int CurrencyIndex { get; set; }
         public long Amount { get; set; }
     }
 
-    public sealed class ItemUse : Packet
+    [MemoryPackable]
+    public sealed partial class ItemUse : Packet
     {
         public CellLinkInfo Link { get; set; }
     }
 
-    public sealed class ItemLock : Packet
+    [MemoryPackable]
+    public sealed partial class ItemLock : Packet
     {
         public GridType GridType { get; set; }
         public int SlotIndex { get; set; }
         public bool Locked { get; set; }
     }
 
-    public sealed class BeltLinkChanged : Packet
+    [MemoryPackable]
+    public sealed partial class BeltLinkChanged : Packet
     {
         public int Slot { get; set; }
         public int LinkIndex { get; set; }
         public int LinkItemIndex { get; set; }
     }
 
-    public sealed class AutoPotionLinkChanged : Packet
+    [MemoryPackable]
+    public sealed partial class AutoPotionLinkChanged : Packet
     {
         public int Slot { get; set; }
         public int LinkIndex { get; set; }
@@ -207,59 +242,70 @@ namespace Library.Network.ClientPackets
         public bool Enabled { get; set; }
     }
 
-    public sealed class PickUp : Packet { }
+    [MemoryPackable]
+    public sealed partial class PickUp : Packet { }
 
-    public sealed class Chat : Packet
+    [MemoryPackable]
+    public sealed partial class Chat : Packet
     {
         public string Text { get; set; }
     }
 
-    public sealed class NPCCall : Packet
+    [MemoryPackable]
+    public sealed partial class NPCCall : Packet
     {
         public uint ObjectID { get; set; }
     }
 
-    public sealed class NPCButton : Packet
+    [MemoryPackable]
+    public sealed partial class NPCButton : Packet
     {
         public int ButtonID { get; set; }
     }
 
-    public sealed class NPCRoll : Packet
+    [MemoryPackable]
+    public sealed partial class NPCRoll : Packet
     {
         public int Type { get; set; }
     }
 
-    public sealed class NPCRollResult : Packet
+    [MemoryPackable]
+    public sealed partial class NPCRollResult : Packet
     {
     }
 
-    public sealed class NPCBuy : Packet
+    [MemoryPackable]
+    public sealed partial class NPCBuy : Packet
     {
         public int Index { get; set; }
         public long Amount { get; set; }
         public bool GuildFunds { get; set; }
     }
 
-    public sealed class NPCSell : Packet
+    [MemoryPackable]
+    public sealed partial class NPCSell : Packet
     {
         public List<CellLinkInfo> Links { get; set; }
 
     }
 
-    public sealed class NPCFragment : Packet
+    [MemoryPackable]
+    public sealed partial class NPCFragment : Packet
     {
         public List<CellLinkInfo> Links { get; set; }
 
     }
 
-    public sealed class NPCRepair : Packet
+    [MemoryPackable]
+    public sealed partial class NPCRepair : Packet
     {
         public List<CellLinkInfo> Links { get; set; }
         public bool Special { get; set; }
         public bool GuildFunds { get; set; }
     }
 
-    public sealed class NPCRefine : Packet
+    [MemoryPackable]
+    public sealed partial class NPCRefine : Packet
     {
         public RefineType RefineType { get; set; }
         public RefineQuality RefineQuality { get; set; }
@@ -267,7 +313,8 @@ namespace Library.Network.ClientPackets
         public List<CellLinkInfo> Items { get; set; }
         public List<CellLinkInfo> Specials { get; set; }
     }
-    public sealed class NPCMasterRefine : Packet
+    [MemoryPackable]
+    public sealed partial class NPCMasterRefine : Packet
     {
         public RefineType RefineType { get; set; }
         public List<CellLinkInfo> Fragment1s { get; set; }
@@ -276,7 +323,8 @@ namespace Library.Network.ClientPackets
         public List<CellLinkInfo> Stones { get; set; }
         public List<CellLinkInfo> Specials { get; set; }
     }
-    public sealed class NPCMasterRefineEvaluate : Packet
+    [MemoryPackable]
+    public sealed partial class NPCMasterRefineEvaluate : Packet
     {
         public RefineType RefineType { get; set; }
         public List<CellLinkInfo> Fragment1s { get; set; }
@@ -285,7 +333,8 @@ namespace Library.Network.ClientPackets
         public List<CellLinkInfo> Stones { get; set; }
         public List<CellLinkInfo> Specials { get; set; }
     }
-    public sealed class NPCRefinementStone : Packet
+    [MemoryPackable]
+    public sealed partial class NPCRefinementStone : Packet
     {
         public List<CellLinkInfo> IronOres { get; set; }
         public List<CellLinkInfo> SilverOres { get; set; }
@@ -295,27 +344,32 @@ namespace Library.Network.ClientPackets
         public long Gold { get; set; }
     }
 
-    public sealed class NPCClose : Packet
+    [MemoryPackable]
+    public sealed partial class NPCClose : Packet
     {
     }
 
-    public sealed class NPCRefineRetrieve : Packet
+    [MemoryPackable]
+    public sealed partial class NPCRefineRetrieve : Packet
     {
         public int Index { get; set; }
     }
 
-    public sealed class NPCAccessoryLevelUp : Packet
+    [MemoryPackable]
+    public sealed partial class NPCAccessoryLevelUp : Packet
     {
         public CellLinkInfo Target { get; set; }
         public List<CellLinkInfo> Links { get; set; }
     }
-    public sealed class NPCAccessoryUpgrade : Packet
+    [MemoryPackable]
+    public sealed partial class NPCAccessoryUpgrade : Packet
     {
         public CellLinkInfo Target { get; set; }
         public RefineType RefineType { get; set; }
     }
 
-    public sealed class MagicKey : Packet
+    [MemoryPackable]
+    public sealed partial class MagicKey : Packet
     {
         public MagicType Magic { get; set; }
 
@@ -325,73 +379,86 @@ namespace Library.Network.ClientPackets
         public SpellKey Set4Key { get; set; }
     }
 
-    public sealed class MagicToggle : Packet
+    [MemoryPackable]
+    public sealed partial class MagicToggle : Packet
     {
         public MagicType Magic { get; set; }
         public bool CanUse { get; set; }
     }
 
-    public sealed class GroupSwitch : Packet
+    [MemoryPackable]
+    public sealed partial class GroupSwitch : Packet
     {
         public bool Allow { get; set; }
     }
 
-    public sealed class GroupInvite : Packet
+    [MemoryPackable]
+    public sealed partial class GroupInvite : Packet
     {
         public string Name { get; set; }
     }
 
-    public sealed class GroupRemove : Packet
+    [MemoryPackable]
+    public sealed partial class GroupRemove : Packet
     {
         public string Name { get; set; }
     }
 
-    public sealed class GroupResponse : Packet
+    [MemoryPackable]
+    public sealed partial class GroupResponse : Packet
     {
         public bool Accept { get; set; }
     }
 
-    public sealed class Inspect : Packet
+    [MemoryPackable]
+    public sealed partial class Inspect : Packet
     {
         public int Index { get; set; }
         public bool Ranking { get; set; }
     }
 
-    public sealed class RankRequest : Packet
+    [MemoryPackable]
+    public sealed partial class RankRequest : Packet
     {
         public RequiredClass Class { get; set; }
         public bool OnlineOnly { get; set; }
         public int StartIndex { get; set; }
     }
 
-    public sealed class RankSearch : Packet
+    [MemoryPackable]
+    public sealed partial class RankSearch : Packet
     {
         public string Name { get; set; }
     }
 
-    public sealed class ObserverRequest : Packet
+    [MemoryPackable]
+    public sealed partial class ObserverRequest : Packet
     {
         public string Name { get; set; }
     }
 
-    public sealed class ObservableSwitch : Packet
+    [MemoryPackable]
+    public sealed partial class ObservableSwitch : Packet
     {
         public bool Allow { get; set; }
     }
 
-    public sealed class Hermit : Packet
+    [MemoryPackable]
+    public sealed partial class Hermit : Packet
     {
         public Stat Stat { get; set; }
     }
 
 
-    public sealed class MarketPlaceHistory : Packet
+    [MemoryPackable]
+    public sealed partial class MarketPlaceHistory : Packet
     {
         public int Index { get; set; }
         public int Display { get; set; }
         public int PartIndex { get; set; }
     }
-    public sealed class MarketPlaceConsign : Packet
+    [MemoryPackable]
+    public sealed partial class MarketPlaceConsign : Packet
     {
         public CellLinkInfo Link { get; set; }
 
@@ -400,7 +467,8 @@ namespace Library.Network.ClientPackets
         public string Message { get; set; }
         public bool GuildFunds { get; set; }
     }
-    public sealed class MarketPlaceSearch : Packet
+    [MemoryPackable]
+    public sealed partial class MarketPlaceSearch : Packet
     {
         public string Name { get; set; }
 
@@ -409,22 +477,26 @@ namespace Library.Network.ClientPackets
 
         public MarketPlaceSort Sort { get; set; }
     }
-    public sealed class MarketPlaceSearchIndex : Packet
+    [MemoryPackable]
+    public sealed partial class MarketPlaceSearchIndex : Packet
     {
         public int Index { get; set; }
     }
-    public sealed class MarketPlaceCancelConsign : Packet
+    [MemoryPackable]
+    public sealed partial class MarketPlaceCancelConsign : Packet
     {
         public int Index { get; set; }
         public long Count { get; set; }
     }
-    public sealed class MarketPlaceBuy : Packet
+    [MemoryPackable]
+    public sealed partial class MarketPlaceBuy : Packet
     {
         public long Index { get; set; }
         public long Count { get; set; }
         public bool GuildFunds { get; set; }
     }
-    public sealed class MarketPlaceStoreBuy : Packet
+    [MemoryPackable]
+    public sealed partial class MarketPlaceStoreBuy : Packet
     {
         public int Index { get; set; }
         public long Count { get; set; }
@@ -432,20 +504,24 @@ namespace Library.Network.ClientPackets
     }
 
 
-    public sealed class MailOpened : Packet
+    [MemoryPackable]
+    public sealed partial class MailOpened : Packet
     {
         public int Index { get; set; }
     }
-    public sealed class MailGetItem : Packet
+    [MemoryPackable]
+    public sealed partial class MailGetItem : Packet
     {
         public int Index { get; set; }
         public int Slot { get; set; }
     }
-    public sealed class MailDelete : Packet
+    [MemoryPackable]
+    public sealed partial class MailDelete : Packet
     {
         public int Index { get; set; }
     }
-    public sealed class MailSend : Packet
+    [MemoryPackable]
+    public sealed partial class MailSend : Packet
     {
         public List<CellLinkInfo> Links { get; set; }
         public string Recipient { get; set; }
@@ -455,242 +531,297 @@ namespace Library.Network.ClientPackets
     }
 
 
-    public sealed class ChangeAttackMode : Packet
+    [MemoryPackable]
+    public sealed partial class ChangeAttackMode : Packet
     {
         public AttackMode Mode { get; set; }
     }
-    public sealed class ChangePetMode : Packet
+    [MemoryPackable]
+    public sealed partial class ChangePetMode : Packet
     {
         public PetMode Mode { get; set; }
     }
 
-    public sealed class GameGoldRecharge : Packet
+    [MemoryPackable]
+    public sealed partial class GameGoldRecharge : Packet
     { }
 
-    public sealed class TradeRequest : Packet
+    [MemoryPackable]
+    public sealed partial class TradeRequest : Packet
     {
     }
-    public sealed class TradeRequestResponse : Packet
+    [MemoryPackable]
+    public sealed partial class TradeRequestResponse : Packet
     {
         public bool Accept { get; set; }
     }
-    public sealed class TradeClose : Packet
+    [MemoryPackable]
+    public sealed partial class TradeClose : Packet
     {
 
     }
-    public sealed class TradeAddGold : Packet
+    [MemoryPackable]
+    public sealed partial class TradeAddGold : Packet
     {
         public long Gold { get; set; }
     }
-    public sealed class TradeAddItem : Packet
+    [MemoryPackable]
+    public sealed partial class TradeAddItem : Packet
     {
         public CellLinkInfo Cell { get; set; }
     }
-    public sealed class TradeConfirm : Packet
+    [MemoryPackable]
+    public sealed partial class TradeConfirm : Packet
     {
 
     }
 
-    public sealed class GuildCreate : Packet
+    [MemoryPackable]
+    public sealed partial class GuildCreate : Packet
     {
         public string Name { get; set; }
         public bool UseGold { get; set; }
         public int Members { get; set; }
         public int Storage { get; set; }
     }
-    public sealed class GuildEditNotice : Packet
+    [MemoryPackable]
+    public sealed partial class GuildEditNotice : Packet
     {
         public string Notice { get; set; }
     }
-    public sealed class GuildEditMember : Packet
+    [MemoryPackable]
+    public sealed partial class GuildEditMember : Packet
     {
         public int Index { get; set; }
         public string Rank { get; set; }
         public GuildPermission Permission { get; set; }
 
     }
-    public sealed class GuildInviteMember : Packet
+    [MemoryPackable]
+    public sealed partial class GuildInviteMember : Packet
     {
         public string Name { get; set; }
     }
-    public sealed class GuildKickMember : Packet
+    [MemoryPackable]
+    public sealed partial class GuildKickMember : Packet
     {
         public int Index { get; set; }
     }
-    public sealed class GuildTax : Packet
+    [MemoryPackable]
+    public sealed partial class GuildTax : Packet
     {
         public long Tax { get; set; }
     }
-    public sealed class GuildIncreaseMember : Packet
+    [MemoryPackable]
+    public sealed partial class GuildIncreaseMember : Packet
     {
 
     }
-    public sealed class GuildIncreaseStorage : Packet
+    [MemoryPackable]
+    public sealed partial class GuildIncreaseStorage : Packet
     {
 
     }
-    public sealed class GuildResponse : Packet
+    [MemoryPackable]
+    public sealed partial class GuildResponse : Packet
     {
         public bool Accept { get; set; }
     }
 
-    public sealed class GuildWar : Packet
+    [MemoryPackable]
+    public sealed partial class GuildWar : Packet
     {
         public string GuildName { get; set; }
     }
 
-    public sealed class GuildRequestConquest : Packet
+    [MemoryPackable]
+    public sealed partial class GuildRequestConquest : Packet
     {
         public int Index { get; set; }
     }
 
-    public sealed class GuildColour : Packet
+    [MemoryPackable]
+    public sealed partial class GuildColour : Packet
     {
+        [MemoryPackAllowSerialize]
         public Color Colour { get; set; }
     }
 
-    public sealed class GuildFlag : Packet
+    [MemoryPackable]
+    public sealed partial class GuildFlag : Packet
     {
         public int Flag { get; set; }
     }
 
-    public sealed class GuildToggleCastleGates : Packet
+    [MemoryPackable]
+    public sealed partial class GuildToggleCastleGates : Packet
     {
 
     }
 
-    public sealed class GuildRepairCastleGates : Packet
+    [MemoryPackable]
+    public sealed partial class GuildRepairCastleGates : Packet
     {
 
     }
 
-    public sealed class GuildRepairCastleGuards : Packet
+    [MemoryPackable]
+    public sealed partial class GuildRepairCastleGuards : Packet
     {
 
     }
 
-    public sealed class QuestAccept : Packet
+    [MemoryPackable]
+    public sealed partial class QuestAccept : Packet
     {
         public int Index { get; set; }
     }
-    public sealed class QuestComplete : Packet
+    [MemoryPackable]
+    public sealed partial class QuestComplete : Packet
     {
         public int Index { get; set; }
 
         public int ChoiceIndex { get; set; }
     }
-    public sealed class QuestTrack : Packet
+    [MemoryPackable]
+    public sealed partial class QuestTrack : Packet
     {
         public int Index { get; set; }
 
         public bool Track { get; set; }
     }
-    public sealed class QuestAbandon : Packet
+    [MemoryPackable]
+    public sealed partial class QuestAbandon : Packet
     {
         public int Index { get; set; }
     }
 
-    public sealed class CompanionUnlock : Packet
+    [MemoryPackable]
+    public sealed partial class CompanionUnlock : Packet
     {
         public int Index { get; set; }
     }
-    public sealed class CompanionAdopt : Packet
+    [MemoryPackable]
+    public sealed partial class CompanionAdopt : Packet
     {
         public int Index { get; set; }
         public string Name { get; set; }
     }
 
-    public sealed class CompanionRetrieve : Packet
+    [MemoryPackable]
+    public sealed partial class CompanionRetrieve : Packet
     {
         public int Index { get; set; }
     }
-
-    public sealed class CompanionRelease : Packet
+    
+    [MemoryPackable]
+    public sealed partial class CompanionRelease : Packet
     {
         public int Index { get; set; }
     }
-    public sealed class CompanionStore : Packet
+    
+    [MemoryPackable]
+    public sealed partial class CompanionStore : Packet
     {
         public int Index { get; set; }
     }
-    public sealed class MarriageResponse : Packet
+    [MemoryPackable]
+    public sealed partial class MarriageResponse : Packet
     {
         public bool Accept { get; set; }
     }
 
-    public sealed class MarriageMakeRing : Packet
+    [MemoryPackable]
+    public sealed partial class MarriageMakeRing : Packet
     {
         public int Slot { get; set; }
     }
 
-    public sealed class MarriageTeleport : Packet
+    [MemoryPackable]
+    public sealed partial class MarriageTeleport : Packet
     {
 
     }
 
-    public sealed class BlockAdd : Packet
+    [MemoryPackable]
+    public sealed partial class BlockAdd : Packet
     {
         public string Name { get; set; }
     }
-    public sealed class BlockRemove : Packet
+    [MemoryPackable]
+    public sealed partial class BlockRemove : Packet
     {
         public int Index { get; set; }
     }
 
-    public sealed class HelmetToggle : Packet
+    [MemoryPackable]
+    public sealed partial class HelmetToggle : Packet
     {
         public bool HideHelmet { get; set; }
     }
 
-    public sealed class GenderChange : Packet
+    [MemoryPackable]
+    public sealed partial class GenderChange : Packet
     {
         public MirGender Gender { get; set; }
         public int HairType { get; set; }
+        [MemoryPackAllowSerialize]
         public Color HairColour { get; set; }
     }
 
-    public sealed class HairChange : Packet
+    [MemoryPackable]
+    public sealed partial class HairChange : Packet
     {
         public int HairType { get; set; }
+        [MemoryPackAllowSerialize]
         public Color HairColour { get; set; }
     }
 
-    public sealed class ArmourDye : Packet
+    [MemoryPackable]
+    public sealed partial class ArmourDye : Packet
     {
+        [MemoryPackAllowSerialize]
         public Color ArmourColour { get; set; }
     }
 
-    public sealed class NameChange : Packet
+    [MemoryPackable]
+    public sealed partial class NameChange : Packet
     {
         public string Name { get; set; }
     }
 
-    public sealed class CaptionChange : Packet
+    [MemoryPackable]
+    public sealed partial class CaptionChange : Packet
     {
         public string Caption { get; set; }
     }
 
-    public sealed class FortuneCheck : Packet
+    [MemoryPackable]
+    public sealed partial class FortuneCheck : Packet
     {
         public int ItemIndex { get; set; }
     }
 
-    public sealed class TeleportRing : Packet
+    [MemoryPackable]
+    public sealed partial class TeleportRing : Packet
     {
         public Point Location { get; set; }
         public int Index { get; set; }
     }
 
-    public sealed class JoinStarterGuild : Packet
+    [MemoryPackable]
+    public sealed partial class JoinStarterGuild : Packet
     {
 
     }
 
-    public sealed class NPCAccessoryReset : Packet
+    [MemoryPackable]
+    public sealed partial class NPCAccessoryReset : Packet
     {
         public CellLinkInfo Cell { get; set; }
     }
-    public sealed class NPCWeaponCraft : Packet
+    [MemoryPackable]
+    public sealed partial class NPCWeaponCraft : Packet
     {
         public RequiredClass Class { get; set; }
         public CellLinkInfo Template { get; set; }
@@ -701,75 +832,89 @@ namespace Library.Network.ClientPackets
         public CellLinkInfo Green { get; set; }
         public CellLinkInfo Grey { get; set; }
     }
-    public sealed class NPCAccessoryRefine : Packet
+    [MemoryPackable]
+    public sealed partial class NPCAccessoryRefine : Packet
     {
         public CellLinkInfo Target { get; set; }
         public CellLinkInfo OreTarget { get; set; }
         public List<CellLinkInfo> Links { get; set; }
         public RefineType RefineType { get; set; }
     }
-    public sealed class JoinInstance : Packet
+    [MemoryPackable]
+    public sealed partial class JoinInstance : Packet
     {
         public int Index { get; set; }
     }
 
-    public sealed class SendCompanionFilters : Packet
+    [MemoryPackable]
+    public sealed partial class SendCompanionFilters : Packet
     {
         public List<MirClass> FilterClass { get; set; }
         public List<Rarity> FilterRarity { get; set; }
         public List<ItemType> FilterItemType { get; set; }
     }
-    public sealed class ChangeOnlineState : Packet
+    [MemoryPackable]
+    public sealed partial class ChangeOnlineState : Packet
     {
         public OnlineState State { get; set; }
     }
 
-    public sealed class FriendAdd : Packet
+    [MemoryPackable]
+    public sealed partial class FriendAdd : Packet
     {
         public string Name { get; set; }
     }
-    public sealed class FriendRemove : Packet
+    [MemoryPackable]
+    public sealed partial class FriendRemove : Packet
     {
         public int Index { get; set; }
     }
 
-    public sealed class IncreaseDiscipline : Packet
+    [MemoryPackable]
+    public sealed partial class IncreaseDiscipline : Packet
     {
     }
 
-    public sealed class LootBoxOpen : Packet
-    {
-        public int Slot { get; set; }
-    }
-
-    public sealed class LootBoxReroll : Packet
+    [MemoryPackable]
+    public sealed partial class LootBoxOpen : Packet
     {
         public int Slot { get; set; }
     }
 
-    public sealed class LootBoxConfirmSelection : Packet
+    [MemoryPackable]
+    public sealed partial class LootBoxReroll : Packet
     {
         public int Slot { get; set; }
     }
 
-    public sealed class LootBoxReveal : Packet
+    [MemoryPackable]
+    public sealed partial class LootBoxConfirmSelection : Packet
+    {
+        public int Slot { get; set; }
+    }
+
+    [MemoryPackable]
+    public sealed partial class LootBoxReveal : Packet
     {
         public int Slot { get; set; }
         public int Choice { get; set; }
     }
 
-    public sealed class LootBoxTakeItems : Packet
+    [MemoryPackable]
+    public sealed partial class LootBoxTakeItems : Packet
     {
         public int Slot { get; set; }
         public int Choice { get; set; }
     }
 
-    public sealed class BundleOpen : Packet
+    [MemoryPackable]
+    public sealed partial class BundleOpen : Packet
     {
         public int Slot { get; set; }
     }
 
-    public sealed class BundleConfirm : Packet
+    [MemoryPackable]
+    public sealed partial class BundleConfirm : Packet
     {
         public int Slot { get; set; }
         public int Choice { get; set; }
