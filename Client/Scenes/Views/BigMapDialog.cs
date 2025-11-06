@@ -65,6 +65,8 @@ namespace Client.Scenes.Views
             var locationX = (Image.Size.Width - Panel.Size.Width) / 2;
             var locationY = (Image.Size.Height - Panel.Size.Height) / 2;
 
+            Point defaultImageLocation = new Point(-locationX, -locationY);
+
             Image.Location = new Point(-locationX, -locationY);
 
             RecenterButton.Location = new Point(Size.Width - 30 - 80, Size.Height - 43);
@@ -76,6 +78,10 @@ namespace Client.Scenes.Views
             ScaleX = Image.Size.Width / (float)size.Width;
             ScaleY = Image.Size.Height / (float)size.Height;
 
+            Image.Location = SelectedInfo == GameScene.Game.MapControl.MapInfo
+                ? GetUserCentredImageLocation(defaultImageLocation)
+                : defaultImageLocation;
+
             foreach (NPCInfo ob in Globals.NPCInfoList.Binding)
                 Update(ob);
 
@@ -84,6 +90,32 @@ namespace Client.Scenes.Views
 
             foreach (ClientObjectData ob in GameScene.Game.DataDictionary.Values)
                 Update(ob);
+        }
+
+        private Point GetUserCentredImageLocation(Point fallbackLocation)
+        {
+            if (Image == null || Panel == null) return fallbackLocation;
+            if (MapObject.User == null) return fallbackLocation;
+            if (SelectedInfo != GameScene.Game.MapControl.MapInfo) return fallbackLocation;
+
+            Point userLocation = MapObject.User.CurrentLocation;
+            Size panelSize = Panel.Size;
+
+            float userPixelX = ScaleX * userLocation.X;
+            float userPixelY = ScaleY * userLocation.Y;
+
+            int targetX = (int)Math.Round(panelSize.Width / 2f - userPixelX);
+            int targetY = (int)Math.Round(panelSize.Height / 2f - userPixelY);
+
+            int minX = Math.Min(0, panelSize.Width - Image.Size.Width);
+            int maxX = Math.Max(0, panelSize.Width - Image.Size.Width);
+            int minY = Math.Min(0, panelSize.Height - Image.Size.Height);
+            int maxY = Math.Max(0, panelSize.Height - Image.Size.Height);
+
+            targetX = Math.Max(minX, Math.Min(maxX, targetX));
+            targetY = Math.Max(minY, Math.Min(maxY, targetY));
+
+            return new Point(targetX, targetY);
         }
 
         public void ToggleOpen(bool open)
