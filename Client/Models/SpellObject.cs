@@ -97,24 +97,24 @@ namespace Client.Models
                     BlendRate = 0.55f;
                     Light = 15;
                     break;
-                    //{
-                    //    var effect = new MirEffect(2600, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 30, Globals.IceColour)
-                    //    {
-                    //        Blend = true,
-                    //        Target = this,
-                    //        Loop = true
-                    //    };
-                    //    effect.CompleteAction += () =>
-                    //    {
-                    //        effects.Add(effect = new MirEffect(2700, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 30, 10, Globals.IceColour)
-                    //        {
-                    //            Blend = true,
-                    //            Target = this,
-                    //        });
-                    //        effect.Process();
-                    //    };
-                    //    effects.Add(effect);
-                    //}
+                //{
+                //    var effect = new MirEffect(2600, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 10, 30, Globals.IceColour)
+                //    {
+                //        Blend = true,
+                //        Target = this,
+                //        Loop = true
+                //    };
+                //    effect.CompleteAction += () =>
+                //    {
+                //        effects.Add(effect = new MirEffect(2700, 10, TimeSpan.FromMilliseconds(100), LibraryFile.MagicEx5, 30, 10, Globals.IceColour)
+                //        {
+                //            Blend = true,
+                //            Target = this,
+                //        });
+                //        effect.Process();
+                //    };
+                //    effects.Add(effect);
+                //}
                 case SpellEffect.TrapOctagon:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Magic, out BodyLibrary);
                     Frames[MirAnimation.Standing] = new Frame(640, 10, 0, TimeSpan.FromMilliseconds(100));

@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using Client.Models.Player;
 using Client.Scenes;
 using Library;
@@ -9,9 +10,8 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Frame = Library.Frame;
-using S = Library.Network.ServerPackets;
-using Client.Extensions;
 using Matrix = SharpDX.Matrix;
+using S = Library.Network.ServerPackets;
 
 namespace Client.Models
 {

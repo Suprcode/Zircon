@@ -418,6 +418,11 @@ namespace Library.Network.ServerPackets
         public float DayTime { get; set; }
     }
 
+    public sealed class TimeOfDayChanged : Packet
+    {
+        public TimeOfDay TimeOfDay { get; set; }
+    }
+
     public sealed class InformMaxExperience : Packet
     {
         public decimal MaxExperience { get; set; }

@@ -1,11 +1,11 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using Library;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Client.Extensions;
-using SharpDX.Direct3D9;
 
 namespace Client.Controls
 {

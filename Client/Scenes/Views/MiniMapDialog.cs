@@ -237,7 +237,7 @@ namespace Client.Scenes.Views
         {
             if (GameScene.Game.MapControl.MapInfo == null) return;
 
-            if (!MapInfoObjects.TryGetValue(ob, out DXControl existing))
+            if (!MapInfoObjects.TryGetValue(ob, out DXControl control))
             {
                 if (ob.MapIndex != GameScene.Game.MapControl.MapInfo.Index) return;
                 if (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common) return;
@@ -245,23 +245,14 @@ namespace Client.Scenes.Views
 
                 DXMapInfoControl created = CreateMapInfoObject();
                 MapInfoObjects[ob] = created;
-                existing = created;
+                control = created;
 
             }
             else if (ob.MapIndex != GameScene.Game.MapControl.MapInfo.Index || (ob.MonsterInfo != null && ob.Dead) || (ob.ItemInfo != null && ob.ItemInfo.Rarity == Rarity.Common))
             {
-                existing.Dispose();
+                control.Dispose();
                 MapInfoObjects.Remove(ob);
                 return;
-            }
-
-            if (existing is not DXMapInfoControl control)
-            {
-                existing.Dispose();
-
-                DXMapInfoControl created = CreateMapInfoObject();
-                MapInfoObjects[ob] = created;
-                control = created;
             }
 
             Size size = new Size(3, 3);
@@ -340,9 +331,11 @@ namespace Client.Scenes.Views
 
                     if (control.ProcessAction == null)
                     {
+                        var overlay = DXMapInfoControl.GetOverlay(control);
+
                         control.ProcessAction = () =>
                         {
-                            if (!control.IsBorderAnimationActive)
+                            if (overlay?.IsBorderAnimationActive == false)
                             {
                                 bool isVisibleSecond = CEnvir.Now.Millisecond < 500;
 
@@ -353,6 +346,7 @@ namespace Client.Scenes.Views
                             else
                             {
                                 control.BorderSize = 3f;
+                                control.BorderColour = colour;
                             }
                         };
                     }
@@ -451,8 +445,7 @@ namespace Client.Scenes.Views
             if (!MapInfoObjects.TryGetValue(ob, out var control))
                 return;
 
-            if (control is DXMapInfoControl mapInfoObject)
-                mapInfoObject.PlayBorderAnimation();
+            DXMapInfoControl.GetOverlay(control)?.PlayBorderAnimation(Color.Lime);
         }
 
         private DXMapInfoControl CreateMapInfoObject()

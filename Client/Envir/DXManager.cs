@@ -12,10 +12,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Blend = SharpDX.Direct3D9.Blend;
+using D3DResultCode = SharpDX.Direct3D9.ResultCode;
 using DataRectangle = SharpDX.DataRectangle;
 using Result = SharpDX.Result;
-using D3DResultCode = SharpDX.Direct3D9.ResultCode;
-using System.Numerics;
 
 namespace Client.Envir
 {

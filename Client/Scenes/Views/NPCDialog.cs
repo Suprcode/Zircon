@@ -4,15 +4,12 @@ using Client.Models;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using static System.ComponentModel.Design.ObjectSelectorEditor;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using C = Library.Network.ClientPackets;
 using Font = System.Drawing.Font;
 using S = Library.Network.ServerPackets;
@@ -4176,9 +4173,9 @@ namespace Client.Scenes.Views
 
             item ??= Globals.ItemInfoList.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.CompanionTicket);
 
-            if (item == null) 
-            { 
-                return; 
+            if (item == null)
+            {
+                return;
             }
 
             if (GameScene.Game.Inventory.All(x => x == null || x.Info != item))

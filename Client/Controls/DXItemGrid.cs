@@ -1,10 +1,10 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Client.Extensions;
 
 //Cleaned
 namespace Client.Controls

@@ -1,9 +1,10 @@
 ﻿using Client.Envir;
 using Client.Extensions;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using SharpDX.Direct3D9;
+using System.Runtime.CompilerServices;
 
 namespace Client.Controls
 {
@@ -16,6 +17,11 @@ namespace Client.Controls
 
         private readonly List<BorderAnimation> _activeAnimations = [];
 
+        private static readonly ConditionalWeakTable<DXControl, DXMapInfoControl> OverlayTable = new();
+
+        private DXControl _overlayTarget;
+        private bool _isOverlayInstance;
+
         public int BorderAnimationLayerCount = 4;
         public int StartInnerInflation = 50;
         public int TargetInnerInflation = 2;
@@ -24,16 +30,82 @@ namespace Client.Controls
         public float InnerLayerOpacity = 1f;
         public float OuterLayerOpacity = 0.25f;
         public TimeSpan BorderAnimationDuration = TimeSpan.FromMilliseconds(750);
+        public Color AnimationColour;
 
         public bool IsBorderAnimationActive => _activeAnimations.Count > 0;
 
         public DXMapInfoControl()
         {
             DrawTexture = true;
+            PassThrough = false;
         }
 
-        public void PlayBorderAnimation()
+        public DXControl OverlayTarget
         {
+            get => _overlayTarget;
+            set
+            {
+                if (_overlayTarget == value) return;
+
+                if (_overlayTarget != null)
+                    DetachOverlayTarget(_overlayTarget);
+
+                _overlayTarget = value;
+
+                if (_overlayTarget != null)
+                {
+                    AttachOverlayTarget(_overlayTarget);
+                    SynchroniseWithOverlayTarget();
+                }
+                else if (_isOverlayInstance)
+                {
+                    Parent = null;
+                }
+            }
+        }
+
+        public static DXMapInfoControl GetOverlay(DXControl target)
+        {
+            if (target == null || target.IsDisposed)
+                return null;
+
+            if (!OverlayTable.TryGetValue(target, out DXMapInfoControl overlay) || overlay.IsDisposed)
+            {
+                overlay = CreateOverlayInstance(target);
+                OverlayTable.Remove(target);
+                OverlayTable.Add(target, overlay);
+            }
+            else
+            {
+                overlay.OverlayTarget = target;
+            }
+
+            //overlay.BringToFront();
+
+            return overlay;
+        }
+
+        private static DXMapInfoControl CreateOverlayInstance(DXControl target)
+        {
+            DXMapInfoControl overlay = new DXMapInfoControl
+            {
+                DrawTexture = false,
+                BackColour = Color.Empty,
+                Border = false,
+                PassThrough = true,
+                BorderSize = 3f
+            };
+
+            overlay._isOverlayInstance = true;
+            overlay.OverlayTarget = target;
+
+            return overlay;
+        }
+
+        public void PlayBorderAnimation(Color animationColour)
+        {
+            AnimationColour = animationColour;
+
             _activeAnimations.Add(new BorderAnimation { StartTime = CEnvir.Now });
         }
 
@@ -148,7 +220,7 @@ namespace Client.Controls
 
         private Color GetLayerColour(int layer)
         {
-            Color baseColour = BorderColour == Color.Empty ? Color.White : BorderColour;
+            Color baseColour = AnimationColour == Color.Empty ? Color.White : AnimationColour;
             float baseAlpha = baseColour.A / 255f;
             if (baseAlpha <= 0f)
                 baseAlpha = 1f;
@@ -164,6 +236,100 @@ namespace Client.Controls
         private static float Lerp(float from, float to, float t)
         {
             return from + (to - from) * Math.Min(1f, Math.Max(0f, t));
+        }
+
+        private void AttachOverlayTarget(DXControl target)
+        {
+            target.LocationChanged += OverlayTargetBoundsChanged;
+            target.SizeChanged += OverlayTargetBoundsChanged;
+            target.VisibleChanged += OverlayTargetVisibilityChanged;
+            target.IsVisibleChanged += OverlayTargetVisibilityChanged;
+            target.OpacityChanged += OverlayTargetOpacityChanged;
+            target.ParentChanged += OverlayTargetParentChanged;
+            target.Disposing += OverlayTargetDisposing;
+
+            PassThrough = true;
+
+            SynchroniseWithOverlayTarget();
+        }
+
+        private void DetachOverlayTarget(DXControl target)
+        {
+            target.LocationChanged -= OverlayTargetBoundsChanged;
+            target.SizeChanged -= OverlayTargetBoundsChanged;
+            target.VisibleChanged -= OverlayTargetVisibilityChanged;
+            target.IsVisibleChanged -= OverlayTargetVisibilityChanged;
+            target.OpacityChanged -= OverlayTargetOpacityChanged;
+            target.ParentChanged -= OverlayTargetParentChanged;
+            target.Disposing -= OverlayTargetDisposing;
+
+            OverlayTable.Remove(target);
+        }
+
+        private void OverlayTargetBoundsChanged(object sender, EventArgs e)
+        {
+            SynchroniseWithOverlayTarget();
+        }
+
+        private void OverlayTargetVisibilityChanged(object sender, EventArgs e)
+        {
+            if (_overlayTarget == null) return;
+
+            Visible = _overlayTarget.Visible;
+            IsVisible = _overlayTarget.IsVisible;
+        }
+
+        private void OverlayTargetOpacityChanged(object sender, EventArgs e)
+        {
+            if (_overlayTarget == null) return;
+
+            Opacity = _overlayTarget.Opacity;
+        }
+
+        private void OverlayTargetParentChanged(object sender, EventArgs e)
+        {
+            if (_overlayTarget == null) return;
+
+            Parent = _overlayTarget.Parent;
+            //BringToFront();
+        }
+
+        private void OverlayTargetDisposing(object sender, EventArgs e)
+        {
+            if (sender is DXControl target)
+            {
+                DetachOverlayTarget(target);
+            }
+
+            if (!IsDisposed)
+                Dispose();
+        }
+
+        private void SynchroniseWithOverlayTarget()
+        {
+            if (_overlayTarget == null) return;
+
+            if (Parent != _overlayTarget.Parent)
+                Parent = _overlayTarget.Parent;
+
+            Location = _overlayTarget.Location;
+            Size = _overlayTarget.Size;
+            Opacity = _overlayTarget.Opacity;
+            Visible = _overlayTarget.Visible;
+            IsVisible = _overlayTarget.IsVisible;
+
+            //BringToFront();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && _overlayTarget != null)
+            {
+                DetachOverlayTarget(_overlayTarget);
+                _overlayTarget = null;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }
