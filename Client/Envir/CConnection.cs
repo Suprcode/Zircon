@@ -800,6 +800,10 @@ namespace Client.Envir
         {
             GameScene.Game.DayTime = p.DayTime;
         }
+        public void Process(S.TimeOfDayChanged p)
+        {
+            GameScene.Game.TimeOfDay = p.TimeOfDay;
+        }
         public void Process(S.UserLocation p)
         {
             GameScene.Game.Displacement(p.Direction, p.Location);
@@ -1167,7 +1171,7 @@ namespace Client.Envir
                     for (int i = 1; i <= p.Distance; i++)
                         ob.ActionQueue.Add(new ObjectAction(MirAction.Moving, p.Direction, Functions.Move(p.Location, p.Direction, i - p.Distance), 1, p.Magic));
                 }
-                else if(ob == MapObject.User)
+                else if (ob == MapObject.User)
                 {
                     GameScene.Game.CanRun = false;
                 }
@@ -1367,7 +1371,7 @@ namespace Client.Envir
                                 MapTarget = p.CurrentLocation,
                                 Skip = 10,
                                 Direction = p.Direction,
-                                Blend = true,    
+                                Blend = true,
                             });
 
                             spell.CompleteAction = () =>

@@ -44,7 +44,7 @@ namespace Client.Envir
                 {
                     using (var mp3 = new NAudioWave.Mp3FileReader(FileName))
                     {
-                        Format = ConvertWaveFormat(mp3.WaveFormat); 
+                        Format = ConvertWaveFormat(mp3.WaveFormat);
 
                         RawData = ReadAllBytes(mp3);
                     }

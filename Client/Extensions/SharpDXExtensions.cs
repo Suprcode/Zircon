@@ -1,9 +1,9 @@
+using SharpDX.Direct3D9;
+using SharpDX.Mathematics.Interop;
 using System;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using SharpDX.Direct3D9;
-using SharpDX.Mathematics.Interop;
 using Color4 = SharpDX.Color4;
 
 namespace Client.Extensions;

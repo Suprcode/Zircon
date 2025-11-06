@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Extensions;
 using Client.Models;
 using Client.Models.Particles;
 using Library;
@@ -13,7 +14,6 @@ using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
-using Client.Extensions;
 using Matrix = SharpDX.Matrix;
 
 //Cleaned

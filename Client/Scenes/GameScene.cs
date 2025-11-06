@@ -347,6 +347,18 @@ namespace Client.Scenes
         }
         private float _DayTime;
 
+        public TimeOfDay TimeOfDay
+        {
+            get => _TimeOfDay;
+            set
+            {
+                if (_TimeOfDay == value) return;
+
+                _TimeOfDay = value;
+            }
+        }
+        private TimeOfDay _TimeOfDay;
+
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
             base.OnSizeChanged(oValue, nValue);

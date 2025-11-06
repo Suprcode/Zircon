@@ -1,13 +1,13 @@
-﻿using Library;
+﻿using Client.Extensions;
+using Library;
 using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Threading;
-using Client.Extensions;
-using Matrix = SharpDX.Matrix;
 using DataRectangle = SharpDX.DataRectangle;
+using Matrix = SharpDX.Matrix;
 
 namespace Client.Envir
 {

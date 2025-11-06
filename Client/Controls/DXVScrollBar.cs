@@ -3,7 +3,6 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
-using Client.Extensions;
 
 //Cleaned
 namespace Client.Controls

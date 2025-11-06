@@ -335,10 +335,13 @@ namespace Server.Envir
                 if (_TimeOfDay == value) return;
 
                 _TimeOfDay = value;
+
+                EventHandler.Process("TIMEOFDAY");
+
+                Broadcast(new S.TimeOfDayChanged { TimeOfDay = TimeOfDay });
             }
         }
 
-        public static float PreviousDayTime { get; private set; }
         private static float _DayTime;
         public static float DayTime
         {
@@ -347,7 +350,6 @@ namespace Server.Envir
             {
                 if (_DayTime == value) return;
 
-                PreviousDayTime = _DayTime;
                 _DayTime = value;
 
                 Broadcast(new S.DayChanged { DayTime = DayTime });
@@ -1544,34 +1546,65 @@ namespace Server.Envir
 
         public static void CalculateLights()
         {
-            DayTime = Math.Max(0.05F, Math.Abs((float)Math.Round(((Now.TimeOfDay.TotalMinutes * Config.DayCycleCount) % 1440) / 1440F * 2 - 1, 2))); //12 hour rotation
+            double realMinutes = Now.TimeOfDay.TotalMinutes;
+            double gameMinutes = (realMinutes * Config.DayCycleCount) % 1440; // 1440 minutes = 24 hours
+            TimeSpan gameTime = TimeSpan.FromMinutes(gameMinutes);
 
-            var previousTimeOfDay = TimeOfDay;
+            TimeSpan dawnStart = new(5, 0, 0);  // 05:00
+            TimeSpan dayStart = new(8, 0, 0);  // 08:00
+            TimeSpan duskStart = new(17, 0, 0); // 17:00
+            TimeSpan nightStart = new(20, 0, 0); // 20:00
 
-            if (DayTime <= 0.35F)
+            TimeOfDay newTimeOfDay;
+            float newLightLevel;
+
+            if (gameTime < dawnStart)
             {
-                TimeOfDay = TimeOfDay.Night;
+                // 00:00–04:59 — Night
+                newTimeOfDay = TimeOfDay.Night;
+                newLightLevel = 0f;
             }
-            else if (DayTime > 0.65F)
+            else if (gameTime < dayStart)
             {
-                TimeOfDay = TimeOfDay.Day;
+                // 05:00–07:59 — Dawn (gradually increase brightness)
+                newTimeOfDay = TimeOfDay.Dawn;
+                newLightLevel = GetInterpolatedLight(gameTime, dawnStart, dayStart, increasing: true);
+            }
+            else if (gameTime < duskStart)
+            {
+                // 08:00–16:59 — Day
+                newTimeOfDay = TimeOfDay.Day;
+                newLightLevel = 1f;
+            }
+            else if (gameTime < nightStart)
+            {
+                // 17:00–19:59 — Dusk (gradually decrease brightness)
+                newTimeOfDay = TimeOfDay.Dusk;
+                newLightLevel = GetInterpolatedLight(gameTime, duskStart, nightStart, increasing: false);
             }
             else
             {
-                if (DayTime > PreviousDayTime)
-                {
-                    TimeOfDay = TimeOfDay.Dawn;
-                }
-                else
-                {
-                    TimeOfDay = TimeOfDay.Dusk;
-                }
+                // 20:00–23:59 — Night
+                newTimeOfDay = TimeOfDay.Night;
+                newLightLevel = 0f;
             }
 
-            if (previousTimeOfDay != TimeOfDay)
-            {
-                SEnvir.EventHandler.Process("TIMEOFDAY");
-            }
+            DayTime = newLightLevel;
+            TimeOfDay = newTimeOfDay;
+        }
+
+        /// <summary>
+        /// Calculates light level between two times.
+        /// </summary>
+        /// <param name="current">Current time in the game day.</param>
+        /// <param name="start">Start of the transition.</param>
+        /// <param name="end">End of the transition.</param>
+        /// <param name="increasing">True if light should increase, false if decrease.</param>
+        private static float GetInterpolatedLight(TimeSpan current, TimeSpan start, TimeSpan end, bool increasing)
+        {
+            double progress = (current - start).TotalMinutes / (end - start).TotalMinutes;
+            progress = Math.Clamp(progress, 0, 1); // Ensure within bounds
+            return increasing ? (float)progress : 1f - (float)progress;
         }
 
         public static void StartConquest(CastleInfo info, bool forced)

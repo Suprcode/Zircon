@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Extensions;
 using Client.Models.Particles;
 using Client.Scenes;
 using Client.Scenes.Views;
@@ -13,7 +14,6 @@ using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using Frame = Library.Frame;
-using Client.Extensions;
 
 namespace Client.Models
 {
@@ -757,7 +757,7 @@ namespace Client.Models
                             break;
 
                         #endregion
-       
+
                         #region Taecheon Sword
 
                         case MagicType.TaecheonSword:
@@ -2786,7 +2786,7 @@ namespace Client.Models
                                         Target = attackTarget,
                                     });
                                     spell.Process();
-                                    
+
                                     DXSoundManager.Play(SoundIndex.FlamingDaggers);
                                 };
 

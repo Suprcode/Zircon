@@ -4,8 +4,8 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using Font = System.Drawing.Font;
 using DataRectangle = SharpDX.DataRectangle;
+using Font = System.Drawing.Font;
 
 //Cleaned
 namespace Client.Controls

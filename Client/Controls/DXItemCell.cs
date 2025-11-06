@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Extensions;
 using Client.Models;
 using Client.Scenes;
 using Client.Scenes.Views;
@@ -7,11 +8,10 @@ using Library;
 using Library.SystemModels;
 using System;
 using System.Drawing;
-using System.Numerics;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
-using Client.Extensions;
 
 namespace Client.Controls
 {
