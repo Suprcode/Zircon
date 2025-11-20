@@ -3104,6 +3104,11 @@ namespace Server.Models
                 }
             }
 
+            if (Character.Companion == info)
+            {
+                Character.Companion = null;
+            }
+
             Character.Account.Companions.Remove(info);
 
             Enqueue(new S.CompanionRelease { Index = index });
@@ -3131,6 +3136,13 @@ namespace Server.Models
             if (Companion != null) return;
 
             if (Character.Companion == null) return;
+
+            // Fix incase companion was removed from account but still linked to character
+            if (!Character.Account.Companions.Contains(Character.Companion))
+            {
+                Character.Companion = null;
+                return;
+            }
 
             Companion companion = new Companion(Character.Companion)
             {
