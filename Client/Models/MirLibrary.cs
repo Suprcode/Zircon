@@ -257,6 +257,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
+
         public void Draw(int index, float x, float y, Color colour, bool useOffSet, float opacity, ImageType type, float scale = 1F)
         {
             if (!CheckImage(index))
@@ -388,6 +389,63 @@ namespace Client.Envir
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
+        public void DrawBlendScaled(int index, float scaleX, float scaleY, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+        {
+            if (!CheckImage(index)) return;
+
+            MirImage image = Images[index];
+
+            if (type == ImageType.Shadow) return;
+
+            RenderTexture texture = GetRenderTexture(image, type);
+            if (!texture.IsValid) return;
+
+            if (useOffSet)
+            {
+                x += image.OffSetX;
+                y += image.OffSetY;
+            }
+
+            bool oldBlend = RenderingPipelineManager.IsBlending();
+            float oldRate = RenderingPipelineManager.GetBlendRate();
+            BlendMode oldMode = RenderingPipelineManager.GetBlendMode();
+            RenderingPipelineManager.SetBlend(true, opacity);
+
+            float cx = image.Width / 2f;
+            float cy = image.Height / 2f;
+
+            // 1) Move pivot to origin
+            Matrix3x2 toOrigin = Matrix3x2.CreateTranslation(-cx, -cy);
+
+            // 2) Scale around pivot
+            Matrix3x2 scaling = Matrix3x2.CreateScale(scaleX, scaleY);
+
+            // 3) Rotate around pivot
+            Matrix3x2 rotation = Matrix3x2.CreateRotation(angle);
+
+            // 4) Move final rotated/scaled image center to (x, y)
+            Matrix3x2 translation = Matrix3x2.CreateTranslation(x + cx, y + cy);
+
+            // FINAL ORDER (DX accurate):
+            Matrix3x2 final =
+                toOrigin     // move pivot
+                * scaling    // scale around pivot
+                * rotation   // rotate around pivot
+                * translation; // place in world
+
+            RenderingPipelineManager.DrawTexture(
+                texture,
+                null,
+                final,
+                Vector3.Zero,
+                Vector3.Zero, // IMPORTANT: origin handled explicitly in matrix
+                colour);
+
+            CEnvir.DPSCounter++;
+            RenderingPipelineManager.SetBlend(oldBlend, oldRate, oldMode);
+            image.ExpireTime = Time.Now + Config.CacheDuration;
+        }
+
         public void DrawBlend(int index, float size, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
@@ -427,6 +485,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
+
         public void DrawBlendCentered(int index, float size, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;
@@ -471,6 +530,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
+
         public void DrawBlend(int index, float x, float y, Color colour, bool useOffSet, float rate, ImageType type, byte shadow = 0)
         {
             if (!CheckImage(index))
@@ -499,15 +559,6 @@ namespace Client.Envir
                     break;
                 case ImageType.Shadow:
                     return;
-                /*     if (!image.ShadowValid) image.CreateShadow(_BReader);
-                     texture = image.Shadow;
-
-                     if (useOffSet)
-                     {
-                         x += image.ShadowOffSetX;
-                         y += image.ShadowOffSetY;
-                     }
-                     break;*/
                 case ImageType.Overlay:
                     if (!image.OverlayValid)
                     {
@@ -544,7 +595,6 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
-
 
         #region IDisposable Support
 

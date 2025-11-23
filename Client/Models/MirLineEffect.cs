@@ -121,13 +121,11 @@ namespace Client.Models
 
                 if (Blend)
                 {
-                    //TODO - Check (needs stretch X/Y)
-                    //Library.DrawBlend(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y, angle, Opacity, ImageType.Image, false, 0);
+                    Library.DrawBlendScaled(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y, angle, Opacity, ImageType.Image, false, 0);
                 }
                 else
                 {
-                    //TODO - Check (needs stretch X/Y)
-                    //Library.Draw(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y, angle, Opacity, ImageType.Image, false, 0);
+                    Library.DrawBlendScaled(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y, angle, Opacity, ImageType.Image, false, 0);
                 }
             }
         }

@@ -7,19 +7,18 @@ using SharpDX.Mathematics.Interop;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
-using Color = System.Drawing.Color;
-using RectangleF = System.Drawing.RectangleF;
-using Matrix3x2 = System.Numerics.Matrix3x2;
-using Matrix4x4 = System.Numerics.Matrix4x4;
-using Vector2 = System.Numerics.Vector2;
 using Buffer = SharpDX.Direct3D11.Buffer;
+using Color = System.Drawing.Color;
 using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
+using Matrix3x2 = System.Numerics.Matrix3x2;
+using Matrix4x4 = System.Numerics.Matrix4x4;
+using RectangleF = System.Drawing.RectangleF;
+using Vector2 = System.Numerics.Vector2;
 
 namespace Client.Rendering.SharpDXD3D11
 {
-    public sealed class D3D11SpriteRenderer : IDisposable
+    public sealed class SharpDXD3D11SpriteRenderer : IDisposable
     {
         private readonly Device _device;
         private readonly DeviceContext _context;
@@ -72,6 +71,7 @@ namespace Client.Rendering.SharpDXD3D11
                 return texColor * input.Col;
             }
             ";
+
         [StructLayout(LayoutKind.Sequential)]
         private struct VertexType
         {
@@ -87,7 +87,7 @@ namespace Client.Rendering.SharpDXD3D11
             }
         }
 
-        public D3D11SpriteRenderer(Device device)
+        public SharpDXD3D11SpriteRenderer(Device device)
         {
             _device = device ?? throw new ArgumentNullException(nameof(device));
             _context = _device.ImmediateContext;

@@ -114,7 +114,7 @@ namespace Client.Rendering.SharpDXD3D11
         public static SharpD3D11TextureResource LightTexture { get; private set; }
         public static SharpD3D11TextureResource PoisonTexture { get; private set; }
 
-        public static D3D11SpriteRenderer SpriteRenderer { get; private set; }
+        public static SharpDXD3D11SpriteRenderer SpriteRenderer { get; private set; }
 
         private static bool _resetRequested;
 
@@ -179,7 +179,7 @@ namespace Client.Rendering.SharpDXD3D11
                 };
             }
 
-            SpriteRenderer = new D3D11SpriteRenderer(Device);
+            SpriteRenderer = new SharpDXD3D11SpriteRenderer(Device);
 
             CreateTargets();
             LoadTextures();
