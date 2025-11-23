@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
@@ -2710,9 +2711,9 @@ namespace Client.Models
                 case MonsterImage.JinamStoneGate:
                     return;
             }
-            DXManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
+            RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
             DrawBody(DrawX, y);
-            DXManager.SetBlend(false);
+            RenderingPipelineManager.SetBlend(false);
         }
         public override void DrawName()
         {

@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using Client.Scenes.Views;
 using Library;
 using System;
@@ -49,10 +50,10 @@ namespace Client.Controls
 
             Size = size;
 
-            DXManager.SetResolution(size);
+            RenderingPipelineManager.SetResolution(size);
 
             if (!Config.FullScreen)
-                CEnvir.Target.Center();
+                RenderingPipelineManager.CenterOnSelectedMonitor();
         }
 
         #region Methods

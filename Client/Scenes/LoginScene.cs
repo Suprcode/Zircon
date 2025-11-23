@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Rendering;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
@@ -148,11 +149,12 @@ namespace Client.Scenes
             };
             control.BeforeDraw += (o, e) =>
             {
-                DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
+                //TODO - Check
+                //DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
             };
             control.AfterDraw += (o, e) =>
             {
-                DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+                //DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
             };
 
             // Flags
@@ -168,11 +170,11 @@ namespace Client.Scenes
             };
             control.BeforeDraw += (o, e) =>
             {
-                DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
+                //DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
             };
             control.AfterDraw += (o, e) =>
             {
-                DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+                //DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
             };
 
             // Ray of light

@@ -144,6 +144,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGraphicsTabClipMouseLabel { get; set; } = "Clip Mouse:";
         public override string CommonControlConfigWindowGraphicsTabDebugLabelLabel { get; set; } = "Debug Label:";
         public override string CommonControlConfigWindowGraphicsTabLanguageLabel { get; set; } = "Language:";
+        public override string CommonControlConfigWindowGraphicsTabRenderingPipelineLabel { get; set; } = "Render Mode:";
         public override string CommonControlConfigWindowSoundTabBackgroundSoundLabel { get; set; } = "Background Sound:";
         public override string CommonControlConfigWindowSoundTabSystemVolumeLabel { get; set; } = "System Volume:";
         public override string CommonControlConfigWindowSoundTabMusicVolumeLabel { get; set; } = "Music Volume:";

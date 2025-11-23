@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
@@ -16,9 +17,11 @@ namespace Client.Controls
         public static Size GetSize(string text, Font font, bool outline, int paddingBottom = 0)
         {
             if (string.IsNullOrEmpty(text))
+            {
                 return Size.Empty;
+            }
 
-            Size tempSize = TextRenderer.MeasureText(DXManager.Graphics, text, font);
+            Size tempSize = RenderingPipelineManager.MeasureText(text, font);
 
             if (outline && tempSize.Width > 0 && tempSize.Height > 0)
             {
@@ -32,7 +35,7 @@ namespace Client.Controls
         }
         public static Size GetHeight(DXLabel label, int width)
         {
-            Size tempSize = TextRenderer.MeasureText(DXManager.Graphics, label.Text, label.Font, new Size(width, 2000), label.DrawFormat);
+            Size tempSize = RenderingPipelineManager.MeasureText(label.Text, label.Font, new Size(width, 2000), label.DrawFormat);
 
             if (label.Outline && tempSize.Width > 0 && tempSize.Height > 0)
             {
@@ -271,25 +274,28 @@ namespace Client.Controls
             Size = GetSize(Text, Font, Outline, PaddingBottom);
         }
 
+        private RenderTexture _labelTextureHandle;
+
         protected override void CreateTexture()
         {
             int width = DisplayArea.Width;
             int height = DisplayArea.Height;
 
-            if (ControlTexture == null || DisplayArea.Size != TextureSize)
+            if (!ControlTexture.IsValid || DisplayArea.Size != TextureSize)
             {
                 DisposeTexture();
                 TextureSize = DisplayArea.Size;
-                ControlTexture = new Texture(DXManager.Device, TextureSize.Width, TextureSize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-                DXManager.ControlList.Add(this);
+                _labelTextureHandle = RenderingPipelineManager.CreateTexture(TextureSize, RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
+
+                ControlTexture = _labelTextureHandle;
+                RenderingPipelineManager.RegisterControlCache(this);
             }
 
-            DataRectangle rect = ControlTexture.LockRectangle(0, LockFlags.Discard);
-
-            using (Bitmap image = new Bitmap(width, height, width * 4, PixelFormat.Format32bppArgb, rect.DataPointer))
+            using (TextureLock textureLock = RenderingPipelineManager.LockTexture(_labelTextureHandle, TextureLockMode.Discard))
+            using (Bitmap image = new Bitmap(width, height, textureLock.Pitch, PixelFormat.Format32bppArgb, textureLock.DataPointer))
             using (Graphics graphics = Graphics.FromImage(image))
             {
-                DXManager.ConfigureGraphics(graphics);
+                RenderingPipelineManager.ConfigureGraphics(graphics);
                 graphics.Clear(BackColour);
 
                 if (Outline)
@@ -302,32 +308,41 @@ namespace Client.Controls
                 }
                 else
                 {
-                    if (DropShadow)
-                    {
-                        TextRenderer.DrawText(graphics, Text, Font, new Rectangle(2, 1, width, height), Color.Black, DrawFormat);
-                    }
-
                     TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 0, width, height), ForeColour, DrawFormat);
                 }
             }
-            ControlTexture.UnlockRectangle(0);
-
             TextureValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
+        public override void DisposeTexture()
+        {
+            if (_labelTextureHandle.IsValid)
+            {
+                RenderingPipelineManager.ReleaseTexture(_labelTextureHandle);
+                _labelTextureHandle = default;
+            }
+
+            base.DisposeTexture();
+        }
         protected override void DrawControl()
         {
-            if (!DrawTexture) return;
+            if (!DrawTexture)
+            {
+                return;
+            }
 
-            if (!TextureValid) CreateTexture();
+            if (!TextureValid)
+            {
+                CreateTexture();
+            }
 
-            float oldOpacity = DXManager.Opacity;
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
-            DXManager.SetOpacity(Opacity);
+            RenderingPipelineManager.SetOpacity(Opacity);
 
             PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
 
-            DXManager.SetOpacity(oldOpacity);
+            RenderingPipelineManager.SetOpacity(oldOpacity);
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }

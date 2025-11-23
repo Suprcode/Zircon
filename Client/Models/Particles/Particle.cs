@@ -204,8 +204,8 @@ namespace Client.Models.Particles
 
             Size size = Library.GetSize(TextureIndex);
 
-            var drawX = Position.X - ((size.Width) / 2);
-            var drawY = Position.Y - ((size.Height) / 2);
+            var drawX = Position.X;
+            var drawY = Position.Y;
 
             if (UseMovingOffset)
             {
@@ -213,7 +213,7 @@ namespace Client.Models.Particles
                 drawY -= (UseMovingOffset ? MapObject.User.MovingOffSet.Y : 0) + ((MapObject.User.CurrentLocation.Y - UserLocationOnCreation.Y) * MapObject.CellHeight);
             }
 
-            Library.DrawBlend(TextureIndex, Scale, Scale, Color, drawX, drawY, Angle, Opacity, ImageType.Image, false, 0);
+            Library.DrawBlendCentered(TextureIndex, Scale, Color, drawX, drawY, Angle, Opacity, ImageType.Image, false, 0);
         }
 
         #region IDisposable

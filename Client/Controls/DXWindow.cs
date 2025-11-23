@@ -1,8 +1,7 @@
 ﻿using Client.Envir;
-using Client.Extensions;
+using Client.Rendering;
 using Client.UserModels;
 using Library;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -130,8 +129,9 @@ namespace Client.Controls
         public DXButton CloseButton { get; protected set; }
         public DXLabel TitleLabel { get; protected set; }
 
-        public Texture WindowTexture;
-        public Surface WindowSurface;
+        private RenderTargetResource _windowRenderTarget;
+        public RenderTexture WindowTexture;
+        public RenderSurface WindowSurface { get; private set; }
         public bool WindowValid;
 
         public override void OnSizeChanged(Size oValue, Size nValue)
@@ -230,35 +230,36 @@ namespace Client.Controls
         {
             base.CreateTexture();
 
-            if (WindowTexture == null || DisplayArea.Size != TextureSize)
+            if (!WindowTexture.IsValid || DisplayArea.Size != TextureSize)
             {
-                WindowTexture = new Texture(DXManager.Device, DXManager.Parameters.BackBufferWidth, DXManager.Parameters.BackBufferHeight, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
-                WindowSurface = WindowTexture.GetSurfaceLevel(0);
+                ReleaseWindowRenderTarget();
+
+                Size backBufferSize = RenderingPipelineManager.GetBackBufferSize();
+                _windowRenderTarget = RenderingPipelineManager.CreateRenderTarget(backBufferSize);
+
+                WindowTexture = _windowRenderTarget.Texture;
+                WindowSurface = _windowRenderTarget.Surface;
                 WindowValid = false;
             }
         }
-
         public override void DisposeTexture()
         {
             base.DisposeTexture();
 
-            if (WindowTexture != null)
-            {
-                if (!WindowTexture.IsDisposed)
-                    WindowTexture.Dispose();
+            ReleaseWindowRenderTarget();
 
-                WindowTexture = null;
-            }
-
-            if (WindowSurface != null)
-            {
-                if (!WindowSurface.IsDisposed)
-                    WindowSurface.Dispose();
-
-                WindowSurface = null;
-            }
         }
+        private void ReleaseWindowRenderTarget()
+        {
+            if (_windowRenderTarget.IsValid)
+            {
+                RenderingPipelineManager.ReleaseRenderTarget(_windowRenderTarget);
+                _windowRenderTarget = default;
+            }
 
+            WindowTexture = default;
+            WindowSurface = default;
+        }
         private void UpdateLocations()
         {
             if (CloseButton != null)
@@ -365,23 +366,25 @@ namespace Client.Controls
 
             if (!WindowValid)
             {
-                Surface oldSurface = DXManager.CurrentSurface;
-                DXManager.SetSurface(WindowSurface);
-                DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
+                if (!WindowSurface.IsValid)
+                    throw new InvalidOperationException("Window surface is not available.");
+
+                RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+                RenderingPipelineManager.SetSurface(WindowSurface);
+                RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
 
                 DrawEdges();
 
-                DXManager.SetSurface(oldSurface);
+                RenderingPipelineManager.SetSurface(oldSurface);
                 WindowValid = true;
             }
 
-            float oldOpacity = DXManager.Opacity;
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
-            DXManager.SetOpacity(Opacity);
-
+            RenderingPipelineManager.SetOpacity(Opacity);
             PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
 
-            DXManager.SetOpacity(oldOpacity);
+            RenderingPipelineManager.SetOpacity(oldOpacity);
         }
 
         private void DrawEdges()
@@ -552,21 +555,7 @@ namespace Client.Controls
                 HasFooterChanged = null;
                 ClientAreaChanged = null;
 
-                if (WindowTexture != null)
-                {
-                    if (!WindowTexture.IsDisposed)
-                        WindowTexture.Dispose();
-
-                    WindowTexture = null;
-                }
-
-                if (WindowSurface != null)
-                {
-                    if (!WindowSurface.IsDisposed)
-                        WindowSurface.Dispose();
-
-                    WindowSurface = null;
-                }
+                ReleaseWindowRenderTarget();
 
                 WindowValid = false;
                 Settings = null;

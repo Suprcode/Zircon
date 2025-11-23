@@ -1,4 +1,5 @@
-﻿using Library;
+﻿using Client.Rendering;
+using Library;
 using System;
 using System.Drawing;
 using System.Numerics;
@@ -241,19 +242,22 @@ namespace Client.Controls
         protected internal override void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0) return;
+            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0)
+            {
+                return;
+            }
 
             BorderInformation = new[]
             {
-                new Vector2(0, 0),
-                new Vector2(Size.Width + 1, 0),
-                new Vector2(Size.Width + 1, Size.Height + 1),
-                new Vector2(0, Size.Height + 1),
-                new Vector2(0, 0),
-                new Vector2(0,  14),
-                new Vector2(Size.Width + 1, 14),
-                new Vector2(Size.Width + 1, Size.Height - 13),
-                new Vector2(0, Size.Height - 13),
+                new LinePoint(0, 0),
+                new LinePoint(Size.Width + 1, 0),
+                new LinePoint(Size.Width + 1, Size.Height + 1),
+                new LinePoint(0, Size.Height + 1),
+                new LinePoint(0, 0),
+                new LinePoint(0, 14),
+                new LinePoint(Size.Width + 1, 14),
+                new LinePoint(Size.Width + 1, Size.Height - 13),
+                new LinePoint(0, Size.Height - 13),
 
             };
         }

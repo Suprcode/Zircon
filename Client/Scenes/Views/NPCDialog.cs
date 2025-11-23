@@ -1,6 +1,7 @@
 ﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
+using Client.Rendering;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
@@ -455,7 +456,7 @@ namespace Client.Scenes.Views
             {
                 var buttonIndex = buttonRanges[i];
 
-                List<ButtonInfo> buttons = GetWordRegionsNew(DXManager.Graphics, PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
+                List<ButtonInfo> buttons = GetWordRegionsNew(PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
 
                 List<DXLabel> labels = new();
 
@@ -529,13 +530,13 @@ namespace Client.Scenes.Views
             }
         }
 
-        public static List<ButtonInfo> GetWordRegionsNew(Graphics graphics, string text, Font font, TextFormatFlags flags, int width, int index, int length)
+        public static List<ButtonInfo> GetWordRegionsNew(string text, Font font, TextFormatFlags flags, int width, int index, int length)
         {
             List<ButtonInfo> regions = new List<ButtonInfo>();
 
-            Size tSize = TextRenderer.MeasureText(graphics, "A", font, new Size(width, 2000), flags);
+            Size tSize = RenderingPipelineManager.MeasureText("A", font, new Size(width, 2000), flags);
             int h = tSize.Height;
-            int leading = tSize.Width - (TextRenderer.MeasureText(graphics, "AA", font, new Size(width, 2000), flags).Width - tSize.Width);
+            int leading = tSize.Width - (RenderingPipelineManager.MeasureText("AA", font, new Size(width, 2000), flags).Width - tSize.Width);
 
             int lineStart = 0;
             int lastHeight = h;
@@ -554,7 +555,7 @@ namespace Client.Scenes.Views
             //If Word Wrap enabled.
             foreach (CharacterRange range in ranges)
             {
-                int height = TextRenderer.MeasureText(graphics, text.Substring(0, range.First + range.Length), font, new Size(width, 9999), flags).Height;
+                int height = RenderingPipelineManager.MeasureText(text.Substring(0, range.First + range.Length), font, new Size(width, 9999), flags).Height;
 
                 if (range.First >= index + length) break;
 
@@ -574,7 +575,7 @@ namespace Client.Scenes.Views
                         {
                             X = 0,
                             Y = height - h,
-                            Width = TextRenderer.MeasureText(graphics, text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
+                            Width = RenderingPipelineManager.MeasureText(text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
                             Height = h,
                         };
                         currentInfo = new ButtonInfo { Region = region, Index = range.First, Length = range.Length };
@@ -592,9 +593,9 @@ namespace Client.Scenes.Views
                         {
                             Rectangle region = new Rectangle
                             {
-                                X = TextRenderer.MeasureText(graphics, text.Substring(lineStart, range.First - lineStart), font, new Size(width, 9999), flags).Width,
+                                X = RenderingPipelineManager.MeasureText(text.Substring(lineStart, range.First - lineStart), font, new Size(width, 9999), flags).Width,
                                 Y = height - h,
-                                Width = TextRenderer.MeasureText(graphics, text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
+                                Width = RenderingPipelineManager.MeasureText(text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
                                 Height = h,
                             };
 
@@ -607,7 +608,7 @@ namespace Client.Scenes.Views
                         {
                             //Measure Current.Index to range.First + Length
                             currentInfo.Length = range.First + range.Length - currentInfo.Index;
-                            currentInfo.Region.Width = TextRenderer.MeasureText(graphics, text.Substring(currentInfo.Index, currentInfo.Length), font, new Size(width, 9999), flags).Width;
+                            currentInfo.Region.Width = RenderingPipelineManager.MeasureText(text.Substring(currentInfo.Index, currentInfo.Length), font, new Size(width, 9999), flags).Width;
                         }
                         //We need to capture this word.
                         //ADD to any previous rects otherwise create new ?
@@ -814,7 +815,6 @@ namespace Client.Scenes.Views
 
             HasFooter = true;
             Movable = false;
-
 
             SetClientSize(new Size(227, 7 * 43 + 1));
 

@@ -1,6 +1,6 @@
 ﻿using Client.Envir;
-using Client.Extensions;
 using Client.Models;
+using Client.Rendering;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;
@@ -9,7 +9,6 @@ using Library.SystemModels;
 using System;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
@@ -595,7 +594,6 @@ namespace Client.Controls
             ShowCountLabel = true;
             AllowLink = true;
 
-
             BorderColour = Color.FromArgb(99, 83, 50);
             Size = new Size(CellWidth, CellHeight);
 
@@ -618,22 +616,28 @@ namespace Client.Controls
         {
             base.OnClearTexture();
 
-            if (!Border || BorderInformation == null) return;
+            if (!Border || BorderInformation == null)
+            {
+                return;
+            }
 
-            DXManager.Line.Draw(BorderInformation, BorderColour);
+            RenderingPipelineManager.DrawLine(BorderInformation, BorderColour);
         }
         protected internal override void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || Size.Width == 0 || Size.Height == 0) return;
+            if (!Border || Size.Width == 0 || Size.Height == 0)
+            {
+                return;
+            }
 
             BorderInformation = new[]
             {
-                new Vector2(0, 0),
-                new Vector2(Size.Width - 1, 0 ),
-                new Vector2(Size.Width - 1, Size.Height - 1),
-                new Vector2(0 , Size.Height - 1),
-                new Vector2(0 , 0 )
+                new LinePoint(0, 0),
+                new LinePoint(Size.Width - 1, 0),
+                new LinePoint(Size.Width - 1, Size.Height - 1),
+                new LinePoint(0, Size.Height - 1),
+                new LinePoint(0, 0)
             };
             TextureValid = false;
         }

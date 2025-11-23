@@ -3,6 +3,7 @@ using Client.Envir;
 using Client.Extensions;
 using Client.Models;
 using Client.Models.Particles;
+using Client.Rendering;
 using Library;
 using Library.SystemModels;
 using SharpDX.Direct3D9;
@@ -204,7 +205,12 @@ namespace Client.Scenes.Views
             DrawBackground();
 
             if (FLayer.TextureValid)
-                DXManager.Sprite.Draw(FLayer.ControlTexture, Color.White);
+            {
+                RenderTexture floorTexture = FLayer.ControlTexture;
+                Rectangle floorSource = new Rectangle(0, 0, FLayer.TextureSize.Width, FLayer.TextureSize.Height);
+                RectangleF floorDestination = new RectangleF(0F, 0F, FLayer.TextureSize.Width, FLayer.TextureSize.Height);
+                RenderingPipelineManager.DrawTexture(floorTexture, floorSource, floorDestination, Color.White);
+            }
 
             if (Config.DrawEffects)
             {
@@ -231,15 +237,23 @@ namespace Client.Scenes.Views
                 }
             }
 
-            DXManager.Sprite.Flush();
+            RenderingPipelineManager.FlushSprite();
 
-            DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.Zero);
-            DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.SourceColor);
+            bool previousBlendEnabled = RenderingPipelineManager.IsBlending();
+            float previousBlendRate = RenderingPipelineManager.GetBlendRate();
+            BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
 
-            DXManager.Sprite.Draw(LLayer.ControlTexture, Color.White);
+            RenderingPipelineManager.SetBlend(true, 1F, BlendMode.LIGHTMAP);
 
-            DXManager.Sprite.End();
-            DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
+            if (LLayer.TextureValid)
+            {
+                RenderTexture lightLayerTexture = LLayer.ControlTexture;
+                Rectangle lightLayerSource = new Rectangle(0, 0, LLayer.TextureSize.Width, LLayer.TextureSize.Height);
+                RectangleF lightLayerDestination = new RectangleF(0F, 0F, LLayer.TextureSize.Width, LLayer.TextureSize.Height);
+                RenderingPipelineManager.DrawTexture(lightLayerTexture, lightLayerSource, lightLayerDestination, Color.White);
+            }
+
+            RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
 
             foreach (MapObject ob in Objects)
             {
@@ -1514,14 +1528,31 @@ namespace Client.Scenes.Views
 
                 if (MapObject.User.Dead)
                 {
-                    DXManager.Device.Clear(ClearFlags.Target, Color.IndianRed, 0f, 0);
+                    RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.IndianRed, 0, 0);
                     return;
                 }
 
-                DXManager.SetBlend(true);
-                DXManager.Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-                DXManager.Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                bool previousBlendEnabled = RenderingPipelineManager.IsBlending();
+                float previousBlendRate = RenderingPipelineManager.GetBlendRate();
+                BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
 
+                RenderingPipelineManager.SetBlend(true, 1F, BlendMode.COLORFY);
+
+                RenderTexture lightTexture;
+                Size lightSize;
+
+                try
+                {
+                    lightTexture = RenderingPipelineManager.GetLightTexture();
+                    lightSize = RenderingPipelineManager.GetLightTextureSize();
+                }
+                catch (InvalidOperationException)
+                {
+                    RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
+                    return;
+                }
+
+                Rectangle lightSource = new Rectangle(0, 0, lightSize.Width, lightSize.Height);
 
                 const float lightScale = 0.02F; //Players/Monsters
                 const float baseSize = 0.1F;
@@ -1531,26 +1562,15 @@ namespace Client.Scenes.Views
 
                 if ((MapObject.User.Poison & PoisonType.Abyss) == PoisonType.Abyss)
                 {
-                    DXManager.Device.Clear(ClearFlags.Target, Color.Black, 0f, 0);
+                    RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 0, 0);
 
                     float scale = baseSize + 4 * lightScale;
+                    float abyssX = (OffSetX + MapObject.User.CurrentLocation.X - User.CurrentLocation.X) * CellWidth + CellWidth / 2F - (lightSize.Width * scale) / 2F;
+                    float abyssY = (OffSetY + MapObject.User.CurrentLocation.Y - User.CurrentLocation.Y) * CellHeight - (lightSize.Height * scale) / 2F;
 
-                    fX = (OffSetX + MapObject.User.CurrentLocation.X - User.CurrentLocation.X) * CellWidth + CellWidth / 2;
-                    fY = (OffSetY + MapObject.User.CurrentLocation.Y - User.CurrentLocation.Y) * CellHeight;
+                    DrawLight(lightTexture, lightSource, lightSize, abyssX, abyssY, scale, Color.White);
 
-                    fX -= (DXManager.LightWidth * scale) / 2;
-                    fY -= (DXManager.LightHeight * scale) / 2;
-
-                    fX /= scale;
-                    fY /= scale;
-
-                    DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
-
-                    DXManager.Sprite.Draw(DXManager.LightTexture, Vector3.Zero, new Vector3(fX, fY, 0), Color.White);
-
-                    DXManager.Sprite.Transform = Matrix.Identity;
-
-                    DXManager.SetBlend(false);
+                    RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
 
                     var abyssEffects = MapObject.User.CreateMagicEffect(MagicEffect.Abyss);
 
@@ -1566,21 +1586,10 @@ namespace Client.Scenes.Views
                     if (ob.Light > 0 && (!ob.Dead || ob == MapObject.User || ob.Race == ObjectType.Spell))
                     {
                         float scale = baseSize + ob.Light * 2 * lightScale;
+                        float objectX = (OffSetX + ob.CurrentLocation.X - User.CurrentLocation.X) * CellWidth + ob.MovingOffSet.X - User.MovingOffSet.X + CellWidth / 2F - (lightSize.Width * scale) / 2F;
+                        float objectY = (OffSetY + ob.CurrentLocation.Y - User.CurrentLocation.Y) * CellHeight + ob.MovingOffSet.Y - User.MovingOffSet.Y - (lightSize.Height * scale) / 2F;
 
-                        fX = (OffSetX + ob.CurrentLocation.X - User.CurrentLocation.X) * CellWidth + ob.MovingOffSet.X - User.MovingOffSet.X + CellWidth / 2;
-                        fY = (OffSetY + ob.CurrentLocation.Y - User.CurrentLocation.Y) * CellHeight + ob.MovingOffSet.Y - User.MovingOffSet.Y;
-
-                        fX -= (DXManager.LightWidth * scale) / 2;
-                        fY -= (DXManager.LightHeight * scale) / 2;
-
-                        fX /= scale;
-                        fY /= scale;
-
-                        DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
-
-                        DXManager.Sprite.Draw(DXManager.LightTexture, Vector3.Zero, new Vector3(fX, fY, 0), ob.LightColour);
-
-                        DXManager.Sprite.Transform = Matrix.Identity;
+                        DrawLight(lightTexture, lightSource, lightSize, objectX, objectY, scale, ob.LightColour);
                     }
                 }
 
@@ -1591,21 +1600,10 @@ namespace Client.Scenes.Views
                     if (frameLight > 0)
                     {
                         float scale = baseSize + frameLight * 2 * lightScale / 5;
+                        float effectX = ob.DrawX + CellWidth / 2F - (lightSize.Width * scale) / 2F;
+                        float effectY = ob.DrawY + CellHeight / 2F - (lightSize.Height * scale) / 2F;
 
-                        fX = ob.DrawX + CellWidth / 2;
-                        fY = ob.DrawY + CellHeight / 2;
-
-                        fX -= (DXManager.LightWidth * scale) / 2;
-                        fY -= (DXManager.LightHeight * scale) / 2;
-
-                        fX /= scale;
-                        fY /= scale;
-
-                        DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
-
-                        DXManager.Sprite.Draw(DXManager.LightTexture, Vector3.Zero, new Vector3(fX, fY, 0), ob.FrameLightColour);
-
-                        DXManager.Sprite.Transform = Matrix.Identity;
+                        DrawLight(lightTexture, lightSource, lightSize, effectX, effectY, scale, ob.FrameLightColour);
                     }
                 }
 
@@ -1631,25 +1629,28 @@ namespace Client.Scenes.Views
                         if (tile.Light == 0) continue;
 
                         float scale = baseSize + tile.Light * 30 * lightScale;
+                        float tileX = drawX + CellWidth / 2F - (lightSize.Width * scale) / 2F;
+                        float tileY = drawY + CellHeight / 2F - (lightSize.Height * scale) / 2F;
 
-                        fX = drawX + CellWidth / 2;
-                        fY = drawY + CellHeight / 2;
-
-                        fX -= DXManager.LightWidth * scale / 2;
-                        fY -= DXManager.LightHeight * scale / 2;
-
-                        fX /= scale;
-                        fY /= scale;
-
-                        DXManager.Sprite.Transform = Matrix.Scaling(scale, scale, 1);
-
-                        DXManager.Sprite.Draw(DXManager.LightTexture, Vector3.Zero, new Vector3(fX, fY, 0), Color.White);
-
-                        DXManager.Sprite.Transform = Matrix.Identity;
+                        DrawLight(lightTexture, lightSource, lightSize, tileX, tileY, scale, Color.White);
                     }
                 }
 
-                DXManager.SetBlend(false);
+                RenderingPipelineManager.SetBlend(previousBlendEnabled, previousBlendRate, previousBlendMode);
+            }
+
+            private void DrawLight(RenderTexture lightTexture, Rectangle sourceRectangle, Size lightSize, float topLeftX, float topLeftY, float scale, Color colour)
+            {
+                float width = lightSize.Width * scale;
+                float height = lightSize.Height * scale;
+
+                if (width <= 0 || height <= 0)
+                {
+                    return;
+                }
+
+                RectangleF destination = new RectangleF(topLeftX, topLeftY, width, height);
+                RenderingPipelineManager.DrawTexture(lightTexture, sourceRectangle, destination, colour);
             }
 
             public void UpdateLights()

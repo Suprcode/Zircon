@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using Library;
 using System;
 using System.Drawing;
@@ -256,6 +257,8 @@ namespace Client.Controls
 
         #endregion
 
+        public bool IntersectParent;
+
         public DXImageControl()
         {
             DrawImage = true;
@@ -275,24 +278,34 @@ namespace Client.Controls
         }
         protected virtual void DrawMirTexture()
         {
-            bool oldBlend = DXManager.Blending;
-            float oldRate = DXManager.BlendRate;
+            bool oldBlend = RenderingPipelineManager.IsBlending();
+            float oldRate = RenderingPipelineManager.GetBlendRate();
+            BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
+            float previousOpacity = RenderingPipelineManager.GetOpacity();
 
             MirImage image = Library.CreateImage(Index, ImageType.Image);
 
-            if (image?.Image == null) return;
+            if (image?.Image == null)
+            {
+                return;
+            }
 
             if (Blend)
-                DXManager.SetBlend(true, ImageOpacity, BlendMode);
+            {
+                RenderingPipelineManager.SetBlend(true, ImageOpacity, BlendMode);
+            }
             else
-                DXManager.SetOpacity(ImageOpacity);
+            {
+                RenderingPipelineManager.SetOpacity(ImageOpacity);
+            }
 
-            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0);
+            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
 
             if (Blend)
-                DXManager.SetBlend(oldBlend, oldRate, BlendMode);
-            else
-                DXManager.SetOpacity(1F);
+            {
+                RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
+            }
+            RenderingPipelineManager.SetOpacity(previousOpacity);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }

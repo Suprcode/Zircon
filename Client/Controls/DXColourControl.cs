@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using Client.UserModels;
 using System;
 using System.Drawing;
@@ -233,7 +234,12 @@ namespace Client.Controls
             };
             AfterDraw += (o, e) =>
             {
-                PresentTexture(DXManager.ColourPallete, ColourScaleBox, ColourScaleBox.DisplayArea, Color.White, this);
+                RenderTexture paletteHandle = RenderingPipelineManager.GetColourPaletteTexture();
+
+                if (!paletteHandle.IsValid)
+                    return;
+
+                PresentTexture(paletteHandle, ColourScaleBox, ColourScaleBox.DisplayArea, Color.White, this);
             };
             ColourScaleBox.MouseClick += ColourScaleBox_MouseClick;
 
@@ -320,7 +326,14 @@ namespace Client.Controls
 
             if (x < 0 || y < 0 || x >= 200 || y >= 149) return;
 
-            SelectedColour = Color.FromArgb(DXManager.PalleteData[(y * 200 + x) * 4 + 2], DXManager.PalleteData[(y * 200 + x) * 4 + 1], DXManager.PalleteData[(y * 200 + x) * 4]);
+            byte[] paletteData = RenderingPipelineManager.GetColourPaletteData();
+
+            int index = (y * 200 + x) * 4;
+
+            if (index + 2 >= paletteData.Length)
+                return;
+
+            SelectedColour = Color.FromArgb(paletteData[index + 2], paletteData[index + 1], paletteData[index]);
         }
         private void CancelButton_MouseClick(object sender, MouseEventArgs e)
         {

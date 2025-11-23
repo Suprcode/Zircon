@@ -1,4 +1,5 @@
-﻿using Library;
+﻿using Client.Rendering;
+using Library;
 using SharpDX.DirectSound;
 using System;
 using System.Collections.Generic;
@@ -1071,8 +1072,12 @@ namespace Client.Envir
         }
         public static void StopAllSounds()
         {
-            for (int i = DXManager.SoundList.Count - 1; i >= 0; i--)
-                DXManager.SoundList[i].Stop();
+            List<ISoundCacheItem> sounds = new List<ISoundCacheItem>(RenderingPipelineManager.GetRegisteredSoundCaches());
+
+            for (int i = sounds.Count - 1; i >= 0; i--)
+            {
+                sounds[i].Stop();
+            }
         }
         public static void AdjustVolume()
         {
@@ -1081,8 +1086,12 @@ namespace Client.Envir
         }
         public static void UpdateFlags()
         {
-            for (int i = DXManager.SoundList.Count - 1; i >= 0; i--)
-                DXManager.SoundList[i].UpdateFlags();
+            List<ISoundCacheItem> sounds = new List<ISoundCacheItem>(RenderingPipelineManager.GetRegisteredSoundCaches());
+
+            for (int i = sounds.Count - 1; i >= 0; i--)
+            {
+                sounds[i].UpdateFlags();
+            }
         }
 
         public static int GetVolume(SoundType type)
@@ -1119,18 +1128,22 @@ namespace Client.Envir
 
         public static void Unload()
         {
-            for (int i = DXManager.SoundList.Count - 1; i >= 0; i--)
-                DXManager.SoundList[i].DisposeSoundBuffer();
+            List<ISoundCacheItem> sounds = new List<ISoundCacheItem>(RenderingPipelineManager.GetRegisteredSoundCaches());
+
+            for (int i = sounds.Count - 1; i >= 0; i--)
+            {
+                sounds[i].DisposeSoundBuffer();
+            }
 
             if (Device != null)
             {
                 if (!Device.IsDisposed)
+                {
                     Device.Dispose();
+                }
 
                 Device = null;
             }
-
-
         }
     }
 

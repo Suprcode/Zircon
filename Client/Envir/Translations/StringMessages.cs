@@ -144,6 +144,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGraphicsTabClipMouseLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDebugLabelLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLanguageLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabRenderingPipelineLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabBackgroundSoundLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabSystemVolumeLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabMusicVolumeLabel { get; set; }

@@ -1,9 +1,13 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
@@ -18,10 +22,10 @@ namespace Client.Controls
 
         private DXTabControl TabControl;
 
-        //Grpahics
+        //Graphics
         public DXTab GraphicsTab;
         public DXCheckBox FullScreenCheckBox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
-        private DXComboBox GameSizeComboBox, LanguageComboBox;
+        private DXComboBox GameSizeComboBox, LanguageComboBox, RenderingPipelineComboBox;
 
         //Sound
         public DXTab SoundTab;
@@ -65,6 +69,7 @@ namespace Client.Controls
             ClipMouseCheckBox.Checked = Config.ClipMouse;
             DebugLabelCheckBox.Checked = Config.DebugLabel;
             LanguageComboBox.ListBox.SelectItem(Config.Language);
+            RenderingPipelineComboBox.ListBox.SelectItem(Config.RenderingPipeline);
 
             BackgroundSoundBox.Checked = Config.SoundInBackground;
             SystemVolumeBox.ValueTextBox.TextBox.Text = Config.SystemVolume.ToString();
@@ -212,7 +217,9 @@ namespace Client.Controls
                 Size = new Size(100, DXComboBox.DefaultNormalHeight),
             };
 
-            foreach (Size resolution in DXManager.ValidResolutions)
+            IReadOnlyList<Size> supportedResolutions = RenderingPipelineManager.GetSupportedResolutions();
+
+            foreach (Size resolution in supportedResolutions)
                 new DXListBoxItem
                 {
                     Parent = GameSizeComboBox.ListBox,
@@ -277,6 +284,31 @@ namespace Client.Controls
                     Label = { Text = language },
                     Item = language
                 };
+
+            label = new DXLabel
+            {
+                Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabRenderingPipelineLabel,
+                Outline = true,
+                Parent = GraphicsTab,
+            };
+            label.Location = new Point(104 - label.Size.Width, 180);
+
+            RenderingPipelineComboBox = new DXComboBox
+            {
+                Parent = GraphicsTab,
+                Location = new Point(104, 180),
+                Size = new Size(140, DXComboBox.DefaultNormalHeight),
+            };
+
+            foreach (string pipelineId in RenderingPipelineManager.AvailablePipelineIds.OrderBy(x => x))
+            {
+                new DXListBoxItem
+                {
+                    Parent = RenderingPipelineComboBox.ListBox,
+                    Label = { Text = pipelineId },
+                    Item = pipelineId
+                };
+            }
             #endregion
 
             #region Sound
@@ -923,17 +955,16 @@ namespace Client.Controls
         {
             if (Config.FullScreen != FullScreenCheckBox.Checked)
             {
-                DXManager.ToggleFullScreen();
+                RenderingPipelineManager.ToggleFullScreen();
             }
 
             if (GameSizeComboBox.SelectedItem is Size && Config.GameSize != (Size)GameSizeComboBox.SelectedItem)
             {
-                Config.GameSize = (Size)GameSizeComboBox.SelectedItem;
+                var gameSize = (Size)GameSizeComboBox.SelectedItem;
 
                 if (ActiveScene is GameScene)
                 {
-                    ActiveScene.Size = Config.GameSize;
-                    DXManager.SetResolution(ActiveScene.Size);
+                    RenderingPipelineManager.SetResolution(gameSize);
                 }
             }
 
@@ -947,11 +978,22 @@ namespace Client.Controls
                     CEnvir.Enqueue(new C.SelectLanguage { Language = Config.Language });
             }
 
+            if (RenderingPipelineComboBox.SelectedItem is string && Config.RenderingPipeline != (string)RenderingPipelineComboBox.SelectedItem)
+            {
+                var renderingPipeline = RenderingPipelineManager.SupportsMultiplePipelines
+                    ? RenderingPipelineComboBox.SelectedItem as string
+                    : RenderingPipelineManager.DefaultPipelineIdentifier;
+
+                if (ActiveScene is GameScene)
+                {
+                    Config.RenderingPipeline = renderingPipeline;
+                }
+            }
 
             if (Config.VSync != VSyncCheckBox.Checked)
             {
                 Config.VSync = VSyncCheckBox.Checked;
-                DXManager.ResetDevice();
+                RenderingPipelineManager.ResetDevice();
             }
 
             Config.LimitFPS = LimitFPSCheckBox.Checked;

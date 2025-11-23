@@ -1,12 +1,12 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Rendering;
 using Client.UserModels;
 using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
@@ -293,7 +293,7 @@ namespace Client.Scenes
 
             if (!CharacterAnimation.Loop)
             {
-                DXManager.SetBlend(true);
+                RenderingPipelineManager.SetBlend(true);
 
                 MirImage image = CharacterAnimation.Library?.GetImage(CharacterAnimation.Index);
 
@@ -311,8 +311,7 @@ namespace Client.Scenes
                 if (image != null)
                     PresentTexture(image.Image, CharacterAnimation.Parent, new Rectangle(x + image.OffSetX, y + image.OffSetY, image.Width, image.Height), Color.White, this);
 
-
-                DXManager.SetBlend(false);
+                RenderingPipelineManager.SetBlend(false);
             }
         }
         private void CharacterAnimation_BeforeDraw(object sender, EventArgs e)
@@ -1792,15 +1791,18 @@ namespace Client.Scenes
             protected internal override void UpdateBorderInformation()
             {
                 BorderInformation = null;
-                if (!Border || Size.Width == 0 || Size.Height == 0) return;
+                if (!Border || Size.Width == 0 || Size.Height == 0)
+                {
+                    return;
+                }
 
                 BorderInformation = new[]
                 {
-                    new Vector2(DisplayArea.Left, DisplayArea.Top),
-                    new Vector2(DisplayArea.Right - 1, DisplayArea.Top),
-                    new Vector2(DisplayArea.Right - 1, DisplayArea.Bottom - 1),
-                    new Vector2(DisplayArea.Left, DisplayArea.Bottom - 1),
-                    new Vector2(DisplayArea.Left, DisplayArea.Top)
+                    new LinePoint(DisplayArea.Left, DisplayArea.Top),
+                    new LinePoint(DisplayArea.Right - 1, DisplayArea.Top),
+                    new LinePoint(DisplayArea.Right - 1, DisplayArea.Bottom - 1),
+                    new LinePoint(DisplayArea.Left, DisplayArea.Bottom - 1),
+                    new LinePoint(DisplayArea.Left, DisplayArea.Top)
                 };
             }
 
