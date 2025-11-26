@@ -1,4 +1,5 @@
 ﻿using Client.Rendering;
+using Client.Rendering.PixelShaders;
 using Library;
 using System;
 using System.Drawing;
@@ -160,13 +161,14 @@ namespace Client.Envir
             return image.VisiblePixel(location, accurate);
         }
 
-        public void Draw(int index, float x, float y, Color colour, Rectangle area, float opacity, ImageType type, byte shadow = 0)
+        public void Draw(int index, float x, float y, Color colour, Rectangle area, float opacity, ImageType type, byte shadow = 0, IPixelShader pixelShader = null)
         {
             if (!CheckImage(index)) return;
 
             MirImage image = Images[index];
 
             RenderTexture texture;
+            PixelShaderResult shaderResult;
 
             float oldOpacity = RenderingPipelineManager.GetOpacity();
             switch (type)
@@ -174,10 +176,13 @@ namespace Client.Envir
                 case ImageType.Image:
                     if (!image.ImageValid) image.CreateImage(_BReader);
                     texture = image.Image;
+                    shaderResult = ApplyPixelShader(texture, new Size(area.Width, area.Height), pixelShader);
                     break;
                 case ImageType.Shadow:
                     if (!image.ShadowValid) image.CreateShadow(_BReader);
                     texture = image.Shadow;
+
+                    shaderResult = ApplyPixelShader(texture, new Size(area.Width, area.Height), pixelShader);
 
                     if (!texture.IsValid)
                     {
@@ -236,29 +241,30 @@ namespace Client.Envir
                 case ImageType.Overlay:
                     if (!image.OverlayValid) image.CreateOverlay(_BReader);
                     texture = image.Overlay;
+                    shaderResult = ApplyPixelShader(texture, new Size(area.Width, area.Height), pixelShader);
                     break;
                 default:
                     return;
             }
 
-            if (!texture.IsValid)
+            if (!shaderResult.Texture.IsValid)
             {
                 return;
             }
 
-            Rectangle sourceRectangle = area;
-            RectangleF destinationRectangle = new RectangleF(x, y, sourceRectangle.Width, sourceRectangle.Height);
+            Rectangle sourceRectangle = new Rectangle(area.Location, shaderResult.Size);
+            RectangleF destinationRectangle = new RectangleF(x + shaderResult.Offset.X, y + shaderResult.Offset.Y, shaderResult.Size.Width, shaderResult.Size.Height);
 
             RenderingPipelineManager.SetOpacity(opacity);
 
-            RenderingPipelineManager.DrawTexture(texture, sourceRectangle, destinationRectangle, Color.FromArgb(colour.ToArgb()));
+            RenderingPipelineManager.DrawTexture(shaderResult.Texture, sourceRectangle, destinationRectangle, Color.FromArgb(colour.ToArgb()));
             CEnvir.DPSCounter++;
             RenderingPipelineManager.SetOpacity(oldOpacity);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
-        public void Draw(int index, float x, float y, Color colour, bool useOffSet, float opacity, ImageType type, float scale = 1F)
+        public void Draw(int index, float x, float y, Color colour, bool useOffSet, float opacity, ImageType type, float scale = 1F, IPixelShader pixelShader = null)
         {
             if (!CheckImage(index))
             {
@@ -268,6 +274,7 @@ namespace Client.Envir
             MirImage image = Images[index];
 
             RenderTexture texture;
+            PixelShaderResult shaderResult;
 
             Matrix3x2 scaling;
             Matrix3x2 translation;
@@ -282,21 +289,23 @@ namespace Client.Envir
                     }
 
                     texture = image.Image;
+                    shaderResult = ApplyPixelShader(texture, new Size(image.Width, image.Height), pixelShader);
                     if (useOffSet)
                     {
-                        x += image.OffSetX;
-                        y += image.OffSetY;
+                        x += image.OffSetX + shaderResult.Offset.X;
+                        y += image.OffSetY + shaderResult.Offset.Y;
                     }
                     break;
                 case ImageType.Shadow:
                     {
                         if (!image.ShadowValid) image.CreateShadow(_BReader);
                         texture = image.Shadow;
+                        shaderResult = ApplyPixelShader(texture, new Size(image.ShadowWidth, image.ShadowHeight), pixelShader);
 
                         if (useOffSet)
                         {
-                            x += image.ShadowOffSetX;
-                            y += image.ShadowOffSetY;
+                            x += image.ShadowOffSetX + shaderResult.Offset.X;
+                            y += image.ShadowOffSetY + shaderResult.Offset.Y;
                         }
 
                         if (!texture.IsValid)
@@ -356,31 +365,32 @@ namespace Client.Envir
                     }
 
                     texture = image.Overlay;
+                    shaderResult = ApplyPixelShader(texture, new Size(image.OverlayWidth, image.OverlayHeight), pixelShader);
 
                     if (useOffSet)
                     {
-                        x += image.OffSetX;
-                        y += image.OffSetY;
+                        x += image.OffSetX + shaderResult.Offset.X;
+                        y += image.OffSetY + shaderResult.Offset.Y;
                     }
                     break;
                 default:
                     return;
             }
 
-            if (!texture.IsValid)
+            if (!shaderResult.Texture.IsValid)
             {
                 return;
             }
 
             scaling = Matrix3x2.CreateScale(scale);
-            translation = Matrix3x2.CreateTranslation(x + (image.Width / 2), y + (image.Height / 2));
+            translation = Matrix3x2.CreateTranslation(x + (shaderResult.Size.Width / 2), y + (shaderResult.Size.Height / 2));
 
             RenderingPipelineManager.SetOpacity(opacity);
 
-            var vector = new Vector3(-(image.Width / 2), -(image.Height / 2), 0f);
+            var vector = new Vector3(-(shaderResult.Size.Width / 2), -(shaderResult.Size.Height / 2), 0f);
 
             Matrix3x2 transformMatrix = scaling * translation;
-            RenderingPipelineManager.DrawTexture(texture, null, transformMatrix, Vector3.Zero, vector, colour);
+            RenderingPipelineManager.DrawTexture(shaderResult.Texture, null, transformMatrix, Vector3.Zero, vector, colour);
 
             CEnvir.DPSCounter++;
 
@@ -389,7 +399,7 @@ namespace Client.Envir
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
-        public void DrawBlendScaled(int index, float scaleX, float scaleY, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+        public void DrawBlendScaled(int index, float scaleX, float scaleY, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0, IPixelShader pixelShader = null)
         {
             if (!CheckImage(index)) return;
 
@@ -398,12 +408,13 @@ namespace Client.Envir
             if (type == ImageType.Shadow) return;
 
             RenderTexture texture = GetRenderTexture(image, type);
-            if (!texture.IsValid) return;
+            PixelShaderResult shaderResult = ApplyPixelShader(texture, new Size(image.Width, image.Height), pixelShader);
+            if (!shaderResult.Texture.IsValid) return;
 
             if (useOffSet)
             {
-                x += image.OffSetX;
-                y += image.OffSetY;
+                x += image.OffSetX + shaderResult.Offset.X;
+                y += image.OffSetY + shaderResult.Offset.Y;
             }
 
             bool oldBlend = RenderingPipelineManager.IsBlending();
@@ -411,8 +422,8 @@ namespace Client.Envir
             BlendMode oldMode = RenderingPipelineManager.GetBlendMode();
             RenderingPipelineManager.SetBlend(true, opacity);
 
-            float cx = image.Width / 2f;
-            float cy = image.Height / 2f;
+            float cx = shaderResult.Size.Width / 2f;
+            float cy = shaderResult.Size.Height / 2f;
 
             // 1) Move pivot to origin
             Matrix3x2 toOrigin = Matrix3x2.CreateTranslation(-cx, -cy);
@@ -434,7 +445,7 @@ namespace Client.Envir
                 * translation; // place in world
 
             RenderingPipelineManager.DrawTexture(
-                texture,
+                shaderResult.Texture,
                 null,
                 final,
                 Vector3.Zero,
@@ -446,7 +457,7 @@ namespace Client.Envir
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
-        public void DrawBlend(int index, float size, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+        public void DrawBlend(int index, float size, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0, IPixelShader pixelShader = null)
         {
             if (!CheckImage(index)) return;
 
@@ -456,12 +467,14 @@ namespace Client.Envir
 
             RenderTexture texture = GetRenderTexture(image, type);
 
-            if (!texture.IsValid) return;
+            PixelShaderResult shaderResult = ApplyPixelShader(texture, new Size(image.Width, image.Height), pixelShader);
+
+            if (!shaderResult.Texture.IsValid) return;
 
             if (useOffSet)
             {
-                x += image.OffSetX;
-                y += image.OffSetY;
+                x += image.OffSetX + shaderResult.Offset.X;
+                y += image.OffSetY + shaderResult.Offset.Y;
             }
 
             bool oldBlend = RenderingPipelineManager.IsBlending();
@@ -472,12 +485,12 @@ namespace Client.Envir
 
             Matrix3x2 scaling = Matrix3x2.CreateScale(size);
             Matrix3x2 rotation = Matrix3x2.CreateRotation(angle);
-            Matrix3x2 translation = Matrix3x2.CreateTranslation(x + (image.Width / 2), y + (image.Height / 2));
+            Matrix3x2 translation = Matrix3x2.CreateTranslation(x + (shaderResult.Size.Width / 2), y + (shaderResult.Size.Height / 2));
 
-            var vector = new Vector3(-(image.Width / 2), -(image.Height / 2), 0f);
+            var vector = new Vector3(-(shaderResult.Size.Width / 2), -(shaderResult.Size.Height / 2), 0f);
 
             Matrix3x2 pipelineTransform = scaling * rotation * translation;
-            RenderingPipelineManager.DrawTexture(texture, null, pipelineTransform, System.Numerics.Vector3.Zero, vector, colour);
+            RenderingPipelineManager.DrawTexture(shaderResult.Texture, null, pipelineTransform, System.Numerics.Vector3.Zero, vector, colour);
 
             CEnvir.DPSCounter++;
 
@@ -486,7 +499,7 @@ namespace Client.Envir
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
-        public void DrawBlendCentered(int index, float size, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
+        public void DrawBlendCentered(int index, float size, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0, IPixelShader pixelShader = null)
         {
             if (!CheckImage(index)) return;
 
@@ -496,12 +509,14 @@ namespace Client.Envir
 
             RenderTexture texture = GetRenderTexture(image, type);
 
-            if (!texture.IsValid) return;
+            PixelShaderResult shaderResult = ApplyPixelShader(texture, new Size(image.Width, image.Height), pixelShader);
+
+            if (!shaderResult.Texture.IsValid) return;
 
             if (useOffSet)
             {
-                x += image.OffSetX;
-                y += image.OffSetY;
+                x += image.OffSetX + shaderResult.Offset.X;
+                y += image.OffSetY + shaderResult.Offset.Y;
             }
 
             bool oldBlend = RenderingPipelineManager.IsBlending();
@@ -516,13 +531,9 @@ namespace Client.Envir
 
             Matrix3x2 pipelineTransform = scaling * rotation * translation;
 
-            var vector = new Vector3(image.Width / 2F, image.Height / 2F, 0F);
+            var vector = new Vector3(shaderResult.Size.Width / 2F, shaderResult.Size.Height / 2F, 0F);
 
-            // Pass Center (w/2, h/2) and Translation (0)
-            // DrawTexture will apply Translate(-Center) * Transform.
-            // Result: Translate(-Center) * Scale * Rotate * Translate(Position).
-            // This rotates around the center of the image and places it at Position.
-            RenderingPipelineManager.DrawTexture(texture, null, pipelineTransform, vector, System.Numerics.Vector3.Zero, colour);
+            RenderingPipelineManager.DrawTexture(shaderResult.Texture, null, pipelineTransform, vector, System.Numerics.Vector3.Zero, colour);
 
             CEnvir.DPSCounter++;
 
@@ -531,7 +542,7 @@ namespace Client.Envir
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
-        public void DrawBlend(int index, float x, float y, Color colour, bool useOffSet, float rate, ImageType type, byte shadow = 0)
+        public void DrawBlend(int index, float x, float y, Color colour, bool useOffSet, float rate, ImageType type, byte shadow = 0, IPixelShader pixelShader = null)
         {
             if (!CheckImage(index))
             {
@@ -541,6 +552,7 @@ namespace Client.Envir
             MirImage image = Images[index];
 
             RenderTexture texture;
+            PixelShaderResult shaderResult;
 
             switch (type)
             {
@@ -551,10 +563,11 @@ namespace Client.Envir
                     }
 
                     texture = image.Image;
+                    shaderResult = ApplyPixelShader(texture, new Size(image.Width, image.Height), pixelShader);
                     if (useOffSet)
                     {
-                        x += image.OffSetX;
-                        y += image.OffSetY;
+                        x += image.OffSetX + shaderResult.Offset.X;
+                        y += image.OffSetY + shaderResult.Offset.Y;
                     }
                     break;
                 case ImageType.Shadow:
@@ -566,18 +579,19 @@ namespace Client.Envir
                     }
 
                     texture = image.Overlay;
+                    shaderResult = ApplyPixelShader(texture, new Size(image.OverlayWidth, image.OverlayHeight), pixelShader);
 
                     if (useOffSet)
                     {
-                        x += image.OffSetX;
-                        y += image.OffSetY;
+                        x += image.OffSetX + shaderResult.Offset.X;
+                        y += image.OffSetY + shaderResult.Offset.Y;
                     }
                     break;
                 default:
                     return;
             }
 
-            if (!texture.IsValid)
+            if (!shaderResult.Texture.IsValid)
             {
                 return;
             }
@@ -588,12 +602,20 @@ namespace Client.Envir
 
             RenderingPipelineManager.SetBlend(true, rate);
 
-            RenderingPipelineManager.DrawTexture(texture, null, Matrix3x2.Identity, System.Numerics.Vector3.Zero, new System.Numerics.Vector3(x, y, 0F), colour);
+            RenderingPipelineManager.DrawTexture(shaderResult.Texture, null, Matrix3x2.Identity, System.Numerics.Vector3.Zero, new System.Numerics.Vector3(x, y, 0F), colour);
             CEnvir.DPSCounter++;
 
             RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
+        }
+
+        private static PixelShaderResult ApplyPixelShader(RenderTexture texture, Size sourceSize, IPixelShader pixelShader)
+        {
+            if (pixelShader == null)
+                return PixelShaderResult.FromTexture(texture, sourceSize);
+
+            return pixelShader.Apply(texture, sourceSize);
         }
 
         #region IDisposable Support
