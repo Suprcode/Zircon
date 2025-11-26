@@ -63,18 +63,18 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
     float alpha = texColor.a;
 
     bool hasNeighbour = false;
-    int radius = (int)OutlineThickness;
+    int radius = (int)ceil(OutlineThickness);
 
-    [unroll]
-    for (int x = -2; x <= 2; ++x)
+    // Sample a square neighborhood sized by the requested thickness. This allows thicker borders (e.g., 10px)
+    // to extend fully around the sprite instead of being clamped to a fixed 2px kernel.
+    for (int x = -radius; x <= radius; ++x)
     {
-        [unroll]
-        for (int y = -2; y <= 2; ++y)
+        for (int y = -radius; y <= radius; ++y)
         {
-            if (abs(x) > radius || abs(y) > radius || (x == 0 && y == 0))
+            if ((x == 0 && y == 0) || (abs(x) == radius && abs(y) == radius && radius == 0))
                 continue;
 
-            float2 offset = float2(x, y) * texelSize;
+            float2 offset = float2((float)x, (float)y) * texelSize;
             float neighbourAlpha = SampleSprite(input.Tex + offset, sourceMin, sourceMax, paddingUv).a;
 
             if (neighbourAlpha > 0.05)

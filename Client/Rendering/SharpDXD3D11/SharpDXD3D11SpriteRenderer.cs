@@ -361,7 +361,7 @@ namespace Client.Rendering.SharpDXD3D11
             _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
             _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<VertexType>(), 0));
 
-            UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity);
+            UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity, usingOutline ? outlineBuffer : null);
             UpdateMatrixBuffer(transform);
 
             _context.VertexShader.Set(_vertexShader);
@@ -398,7 +398,7 @@ namespace Client.Rendering.SharpDXD3D11
             _context.OutputMerger.SetBlendState(null, null, -1);
         }
 
-        private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity)
+        private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity, OutlineBufferType? outlineBuffer)
         {
             float left = dest.Left;
             float right = dest.Right;
@@ -412,6 +412,25 @@ namespace Client.Rendering.SharpDXD3D11
                 v1 = source.Value.Top / (float)texHeight;
                 u2 = source.Value.Right / (float)texWidth;
                 v2 = source.Value.Bottom / (float)texHeight;
+            }
+
+            if (outlineBuffer.HasValue)
+            {
+                var ob = outlineBuffer.Value;
+                float expand = ob.OutlineThickness;
+                left -= expand;
+                right += expand;
+                top -= expand;
+                bottom += expand;
+
+                // Extend UVs so the expanded quad keeps the original sprite centered while giving the shader room to sample
+                // virtual padding outside the source rect. Clamp to [0,1] to avoid sampling errors near atlas edges.
+                float padU = ob.Padding / texWidth;
+                float padV = ob.Padding / texHeight;
+                u1 = Math.Max(0f, u1 - padU);
+                v1 = Math.Max(0f, v1 - padV);
+                u2 = Math.Min(1f, u2 + padU);
+                v2 = Math.Min(1f, v2 + padV);
             }
 
             var col = new RawColor4(color.R / 255f, color.G / 255f, color.B / 255f, (color.A / 255f) * opacity);
