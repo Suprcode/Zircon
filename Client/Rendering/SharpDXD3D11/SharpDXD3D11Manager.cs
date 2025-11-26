@@ -515,6 +515,7 @@ namespace Client.Rendering.SharpDXD3D11
             CurrentTarget = target;
             Context.OutputMerger.SetRenderTargets(target.RenderTargetView);
             D2DContext.Target = target.TargetBitmap;
+            SpriteRenderer?.SetViewport(target.Texture.Description.Width, target.Texture.Description.Height);
         }
 
         public static void BeginDraw(Color clearColor)

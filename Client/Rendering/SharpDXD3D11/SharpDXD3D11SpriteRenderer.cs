@@ -29,8 +29,24 @@ namespace Client.Rendering.SharpDXD3D11
         private Buffer _matrixBuffer;
         private SamplerState _samplerState;
 
+        private RawViewportF _viewport;
+
         private readonly Dictionary<BlendMode, BlendState> _blendStates = new Dictionary<BlendMode, BlendState>();
-        private readonly Dictionary<Texture2D, ShaderResourceView> _srvCache = new Dictionary<Texture2D, ShaderResourceView>();
+        private readonly Dictionary<Texture2D, SpriteResources> _textureResources = new Dictionary<Texture2D, SpriteResources>();
+
+        private readonly struct SpriteResources
+        {
+            public ShaderResourceView ShaderResourceView { get; }
+            public int Width { get; }
+            public int Height { get; }
+
+            public SpriteResources(ShaderResourceView shaderResourceView, int width, int height)
+            {
+                ShaderResourceView = shaderResourceView;
+                Width = width;
+                Height = height;
+            }
+        }
 
         private static readonly string ShaderSource = @"
             cbuffer MatrixBuffer : register(b0)
@@ -96,6 +112,24 @@ namespace Client.Rendering.SharpDXD3D11
             InitializeBuffers();
             InitializeBlendStates();
             InitializeSampler();
+        }
+
+        public void SetViewport(int width, int height)
+        {
+            if (width <= 0 || height <= 0)
+                return;
+
+            _viewport = new RawViewportF
+            {
+                X = 0,
+                Y = 0,
+                Width = width,
+                Height = height,
+                MinDepth = 0,
+                MaxDepth = 1
+            };
+
+            _context.Rasterizer.SetViewport(_viewport);
         }
 
         private void InitializeShaders()
@@ -233,29 +267,16 @@ namespace Client.Rendering.SharpDXD3D11
         {
             if (texture == null) return;
 
-            // Ensure we have a valid viewport to calculate projection from
-            // Fix: Retrieve the current RenderTargetView from OutputMerger and use its resource size.
-            var rtv = _context.OutputMerger.GetRenderTargets(1);
-            if (rtv != null && rtv.Length > 0 && rtv[0] != null)
-            {
-                using (var res = rtv[0].Resource)
-                using (var tex = res.QueryInterface<Texture2D>())
-                {
-                    var width = tex.Description.Width;
-                    var height = tex.Description.Height;
-                    _context.Rasterizer.SetViewport(new RawViewportF
-                    {
-                        X = 0, Y = 0, Width = width, Height = height, MinDepth = 0, MaxDepth = 1
-                    });
-                }
-                rtv[0].Dispose();
-            }
+            if (_viewport.Width <= 0 || _viewport.Height <= 0)
+                return;
 
-            // Get or Create SRV
-            if (!_srvCache.TryGetValue(texture, out var srv))
+            // Get or create SRV and cached texture dimensions
+            if (!_textureResources.TryGetValue(texture, out var resources))
             {
-                srv = new ShaderResourceView(_device, texture);
-                _srvCache[texture] = srv;
+                var desc = texture.Description;
+                var srv = new ShaderResourceView(_device, texture);
+                resources = new SpriteResources(srv, desc.Width, desc.Height);
+                _textureResources[texture] = resources;
             }
 
             // 1. Setup Input Assembler
@@ -264,7 +285,7 @@ namespace Client.Rendering.SharpDXD3D11
             _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<VertexType>(), 0));
 
             // 2. Update Vertex Buffer (Quad)
-            UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity);
+            UpdateVertexBuffer(destination, source, resources.Width, resources.Height, color, opacity);
 
             // 3. Update Constants (Matrix)
             UpdateMatrixBuffer(transform);
@@ -272,7 +293,7 @@ namespace Client.Rendering.SharpDXD3D11
             // 4. Setup Shaders
             _context.VertexShader.Set(_vertexShader);
             _context.PixelShader.Set(_pixelShader);
-            _context.PixelShader.SetShaderResource(0, srv);
+            _context.PixelShader.SetShaderResource(0, resources.ShaderResourceView);
             _context.PixelShader.SetSampler(0, _samplerState);
             _context.VertexShader.SetConstantBuffer(0, _matrixBuffer);
 
@@ -335,9 +356,8 @@ namespace Client.Rendering.SharpDXD3D11
         private void UpdateMatrixBuffer(Matrix3x2 transform)
         {
             // Create Orthographic Projection Matrix based on BackBuffer size
-            var viewport = _context.Rasterizer.GetViewports<RawViewportF>()[0];
-            float width = viewport.Width;
-            float height = viewport.Height;
+            float width = _viewport.Width;
+            float height = _viewport.Height;
 
             // Standard 2D Ortho: Top-Left (0,0) to Bottom-Right (w,h)
             // Map 0..W to -1..1, 0..H to 1..-1
@@ -388,8 +408,10 @@ namespace Client.Rendering.SharpDXD3D11
 
         public void Dispose()
         {
-            foreach (var srv in _srvCache.Values) srv.Dispose();
-            _srvCache.Clear();
+            foreach (var resources in _textureResources.Values)
+                resources.ShaderResourceView.Dispose();
+
+            _textureResources.Clear();
 
             foreach (var bs in _blendStates.Values) bs.Dispose();
             _blendStates.Clear();
