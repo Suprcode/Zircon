@@ -248,8 +248,9 @@ namespace Client.Rendering.SharpDXD3D11
             if (!texture.IsValid)
                 return;
 
-            if (TryDrawOutline(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity))
-                return;
+            // Draw the outline first (when enabled) but continue to render the base sprite normally so it isn't affected by the
+            // outline shader's blending or opacity rules.
+            TryDrawOutline(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity);
 
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
             {
@@ -326,8 +327,8 @@ namespace Client.Rendering.SharpDXD3D11
 
                 RectangleF geom = new RectangleF(0, 0, drawW, drawH);
 
-                if (TryDrawOutline(texture, geom, sourceRectangle, colour, finalTransform))
-                    return;
+                // Draw outline first, then fall through to render the main sprite with the default shader.
+                TryDrawOutline(texture, geom, sourceRectangle, colour, finalTransform);
             }
 
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
@@ -396,12 +397,12 @@ namespace Client.Rendering.SharpDXD3D11
             };
         }
 
-        private bool TryDrawOutline(RenderTexture texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
+        private void TryDrawOutline(RenderTexture texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
         {
             var outlineEffect = RenderingPipelineManager.GetOutlineEffect();
 
             if (!outlineEffect.HasValue || SharpDXD3D11Manager.SpriteRenderer == null || !SharpDXD3D11Manager.SpriteRenderer.SupportsOutlineShader)
-                return false;
+                return;
 
             Texture2D d3dTex = null;
 
@@ -409,7 +410,7 @@ namespace Client.Rendering.SharpDXD3D11
             else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
 
             if (d3dTex == null)
-                return false;
+                return;
 
             SharpDXD3D11Manager.FlushSprite();
 
@@ -427,13 +428,11 @@ namespace Client.Rendering.SharpDXD3D11
                 sourceRectangle,
                 colour,
                 transform,
-                SharpDXD3D11Manager.BlendMode,
-                SharpDXD3D11Manager.Opacity,
-                SharpDXD3D11Manager.BlendRate,
+                BlendMode.NORMAL,
+                1f,
+                1f,
                 outlineColor,
                 outline.Thickness);
-
-            return true;
         }
 
         public RenderSurface GetCurrentSurface()

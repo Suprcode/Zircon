@@ -65,12 +65,9 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
         }
     }
 
-    if (alpha > 0.05)
-    {
-        return texColor;
-    }
-
-    if (hasNeighbour)
+    // Suppress drawing of interior pixels here so the main sprite can be rendered normally in a subsequent pass.
+    // The outline shader is now responsible only for emitting the border.
+    if (alpha <= 0.05 && hasNeighbour)
     {
         // Draw a fully opaque outline regardless of the incoming vertex color or global opacity.
         return float4(OutlineColor.rgb, 1.0);
