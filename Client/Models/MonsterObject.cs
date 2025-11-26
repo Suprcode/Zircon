@@ -1,5 +1,6 @@
 ﻿using Client.Envir;
 using Client.Rendering;
+using Client.Rendering.PixelShaders;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
@@ -65,6 +66,8 @@ namespace Client.Models
         public ClientCompanionObject CompanionObject;
 
         public MonsterImage Image;
+
+        private static readonly OutlinePixelShader HoverOutlineShader = new OutlinePixelShader(2, Color.Red);
 
         public MonsterObject(CompanionInfo info)
         {
@@ -2559,6 +2562,8 @@ namespace Client.Models
 
             int y = DrawY;
 
+            IPixelShader hoverShader = MapObject.MouseObject == this ? HoverOutlineShader : null;
+
             switch (Image)
             {
                 case MonsterImage.ChestnutTree:
@@ -2571,7 +2576,7 @@ namespace Client.Models
 
             DrawShadow(DrawX, y);
 
-            DrawBody(DrawX, y);
+            DrawBody(DrawX, y, hoverShader);
         }
 
         public void DrawShadow(int x, int y)
@@ -2598,7 +2603,7 @@ namespace Client.Models
             }
         }
 
-        public void DrawBody(int x, int y)
+        public void DrawBody(int x, int y, IPixelShader pixelShader = null)
         {
             switch (Image)
             {
@@ -2606,19 +2611,19 @@ namespace Client.Models
                     break;
                 case MonsterImage.DustDevil:
                 case MonsterImage.Tornado:
-                    BodyLibrary.DrawBlend(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image);
+                    BodyLibrary.DrawBlend(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, pixelShader: pixelShader);
                     break;
                 case MonsterImage.LobsterLord:
-                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
-                    BodyLibrary.Draw(BodyFrame + 1000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
-                    BodyLibrary.Draw(BodyFrame + 2000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
+                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale, pixelShader);
+                    BodyLibrary.Draw(BodyFrame + 1000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale, pixelShader);
+                    BodyLibrary.Draw(BodyFrame + 2000, x, y, DrawColour, true, Opacity, ImageType.Image, Scale, pixelShader);
                     break;
                 case MonsterImage.CastleFlag:
-                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
-                    BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Colour, true, 1F, ImageType.Overlay, Scale);
+                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale, pixelShader);
+                    BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Colour, true, 1F, ImageType.Overlay, Scale, pixelShader);
                     break;
                 default:
-                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale);
+                    BodyLibrary.Draw(BodyFrame, x, y, DrawColour, true, Opacity, ImageType.Image, Scale, pixelShader);
                     break;
             }
 
@@ -2628,23 +2633,23 @@ namespace Client.Models
                 case MonsterImage.NewMob1:
                     if (CurrentAction == MirAction.Dead) break;
                     if (!CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx20, out library)) break;
-                    library.DrawBlend(DrawFrame + 2000, x, y, Color.White, true, 1f, ImageType.Image);
+                    library.DrawBlend(DrawFrame + 2000, x, y, Color.White, true, 1f, ImageType.Image, pixelShader: pixelShader);
                     break;
                 case MonsterImage.NumaHighMage:
                     if (CurrentAction == MirAction.Dead) break;
                     if (!CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx4, out library)) break;
-                    library.DrawBlend(DrawFrame + 500, x, y, Color.White, true, 1f, ImageType.Image);
+                    library.DrawBlend(DrawFrame + 500, x, y, Color.White, true, 1f, ImageType.Image, pixelShader: pixelShader);
                     break;
                 case MonsterImage.InfernalSoldier:
                     if (CurrentAction == MirAction.Dead) break;
                     if (!CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx8, out library)) break;
-                    library.DrawBlend(DrawFrame, x, y, Color.White, true, 1f, ImageType.Image);
-                    library.DrawBlend(DrawFrame + 1000, x, y, Color.White, true, 1f, ImageType.Image);
+                    library.DrawBlend(DrawFrame, x, y, Color.White, true, 1f, ImageType.Image, pixelShader: pixelShader);
+                    library.DrawBlend(DrawFrame + 1000, x, y, Color.White, true, 1f, ImageType.Image, pixelShader: pixelShader);
                     break;
                 case MonsterImage.JinamStoneGate:
                     if (CurrentAction == MirAction.Dead) break;
                     if (!CEnvir.LibraryList.TryGetValue(LibraryFile.MonMagicEx6, out library)) break;
-                    library.DrawBlend((GameScene.Game.MapControl.Animation % 30) + 1400, x, y, Color.White, true, 1f, ImageType.Image);
+                    library.DrawBlend((GameScene.Game.MapControl.Animation % 30) + 1400, x, y, Color.White, true, 1f, ImageType.Image, pixelShader: pixelShader);
                     break;
             }
 
@@ -2654,7 +2659,7 @@ namespace Client.Models
                 {
                     case MonsterImage.Companion_Pig:
                         if (!CEnvir.LibraryList.TryGetValue(LibraryFile.PEquipH1, out library)) break;
-                        library.Draw(DrawFrame + (CompanionObject.HeadShape * 1000), x, y, Color.White, true, 1f, ImageType.Image, Scale);
+                        library.Draw(DrawFrame + (CompanionObject.HeadShape * 1000), x, y, Color.White, true, 1f, ImageType.Image, Scale, pixelShader);
                         break;
                 }
             }
@@ -2665,7 +2670,7 @@ namespace Client.Models
                 {
                     case MonsterImage.Companion_Pig:
                         if (!CEnvir.LibraryList.TryGetValue(LibraryFile.PEquipB1, out library)) break;
-                        library.Draw(DrawFrame + (CompanionObject.BackShape * 1000), x, y, Color.White, true, 1f, ImageType.Image, Scale);
+                        library.Draw(DrawFrame + (CompanionObject.BackShape * 1000), x, y, Color.White, true, 1f, ImageType.Image, Scale, pixelShader);
                         break;
                 }
             }
@@ -2703,6 +2708,8 @@ namespace Client.Models
 
             int y = DrawY;
 
+            IPixelShader hoverShader = MapObject.MouseObject == this ? HoverOutlineShader : null;
+
             switch (Image)
             {
                 case MonsterImage.ChestnutTree:
@@ -2712,7 +2719,7 @@ namespace Client.Models
                     return;
             }
             RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
-            DrawBody(DrawX, y);
+            DrawBody(DrawX, y, hoverShader);
             RenderingPipelineManager.SetBlend(false);
         }
         public override void DrawName()
