@@ -30,6 +30,12 @@ namespace Client.Rendering.SharpDXD3D11
         private SamplerState _samplerState;
 
         private RawViewportF _viewport;
+        private bool _pipelineConfigured;
+        private ShaderResourceView _currentTextureView;
+        private BlendMode _currentBlendMode = (BlendMode)(-1);
+        private RawColor4 _currentBlendFactor;
+        private VertexBufferBinding _vertexBufferBinding;
+        private readonly int _vertexSize = Utilities.SizeOf<VertexType>();
 
         private readonly Dictionary<BlendMode, BlendState> _blendStates = new Dictionary<BlendMode, BlendState>();
         private readonly Dictionary<Texture2D, SpriteResources> _textureResources = new Dictionary<Texture2D, SpriteResources>();
@@ -176,6 +182,8 @@ namespace Client.Rendering.SharpDXD3D11
                 OptionFlags = ResourceOptionFlags.None,
                 StructureByteStride = 0
             });
+
+            _vertexBufferBinding = new VertexBufferBinding(_vertexBuffer, _vertexSize, 0);
         }
 
         private void InitializeSampler()
@@ -242,6 +250,23 @@ namespace Client.Rendering.SharpDXD3D11
             CreateBlendState(BlendMode.NONE, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha);
         }
 
+        private void EnsurePipelineConfigured()
+        {
+            if (_pipelineConfigured)
+                return;
+
+            _context.InputAssembler.InputLayout = _inputLayout;
+            _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
+            _context.InputAssembler.SetVertexBuffers(0, _vertexBufferBinding);
+
+            _context.VertexShader.Set(_vertexShader);
+            _context.PixelShader.Set(_pixelShader);
+            _context.PixelShader.SetSampler(0, _samplerState);
+            _context.VertexShader.SetConstantBuffer(0, _matrixBuffer);
+
+            _pipelineConfigured = true;
+        }
+
         private void CreateBlendState(BlendMode mode, BlendOption src, BlendOption dest, BlendOption srcAlpha, BlendOption destAlpha)
         {
             var desc = new BlendStateDescription();
@@ -270,6 +295,8 @@ namespace Client.Rendering.SharpDXD3D11
             if (_viewport.Width <= 0 || _viewport.Height <= 0)
                 return;
 
+            EnsurePipelineConfigured();
+
             // Get or create SRV and cached texture dimensions
             if (!_textureResources.TryGetValue(texture, out var resources))
             {
@@ -279,11 +306,6 @@ namespace Client.Rendering.SharpDXD3D11
                 _textureResources[texture] = resources;
             }
 
-            // 1. Setup Input Assembler
-            _context.InputAssembler.InputLayout = _inputLayout;
-            _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
-            _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<VertexType>(), 0));
-
             // 2. Update Vertex Buffer (Quad)
             UpdateVertexBuffer(destination, source, resources.Width, resources.Height, color, opacity);
 
@@ -291,31 +313,26 @@ namespace Client.Rendering.SharpDXD3D11
             UpdateMatrixBuffer(transform);
 
             // 4. Setup Shaders
-            _context.VertexShader.Set(_vertexShader);
-            _context.PixelShader.Set(_pixelShader);
-            _context.PixelShader.SetShaderResource(0, resources.ShaderResourceView);
-            _context.PixelShader.SetSampler(0, _samplerState);
-            _context.VertexShader.SetConstantBuffer(0, _matrixBuffer);
+            if (_currentTextureView != resources.ShaderResourceView)
+            {
+                _context.PixelShader.SetShaderResource(0, resources.ShaderResourceView);
+                _currentTextureView = resources.ShaderResourceView;
+            }
 
             // 5. Setup Blend State
-            if (_blendStates.TryGetValue(blendMode, out var blendState))
+            RawColor4 factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
+            if (_currentBlendMode != blendMode || !_currentBlendFactor.Equals(factor))
             {
-                // Calculate BlendFactor color
-                var factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
+                if (!_blendStates.TryGetValue(blendMode, out var blendState))
+                    blendState = _blendStates[BlendMode.NORMAL];
+
                 _context.OutputMerger.SetBlendState(blendState, factor, -1);
-            }
-            else
-            {
-                // Fallback to Normal/Screen
-                 var factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
-                _context.OutputMerger.SetBlendState(_blendStates[BlendMode.NORMAL], factor, -1);
+                _currentBlendMode = blendMode;
+                _currentBlendFactor = factor;
             }
 
             // 6. Draw
             _context.Draw(4, 0);
-
-            // Reset Blend State (Optional, but good hygiene if mixing with D2D)
-            _context.OutputMerger.SetBlendState(null, null, -1);
         }
 
         private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity)
@@ -343,13 +360,12 @@ namespace Client.Rendering.SharpDXD3D11
             var v3 = new VertexType(new Vector2(right, bottom), new Vector2(u2, v2), col);
 
             DataBox box = _context.MapSubresource(_vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-            using (var stream = new DataStream(box.DataPointer, Utilities.SizeOf<VertexType>() * 4, true, true))
-            {
-                stream.Write(v0);
-                stream.Write(v1_);
-                stream.Write(v2_);
-                stream.Write(v3);
-            }
+            var dataPtr = box.DataPointer;
+
+            Utilities.Write(dataPtr, ref v0);
+            Utilities.Write(IntPtr.Add(dataPtr, _vertexSize), ref v1_);
+            Utilities.Write(IntPtr.Add(dataPtr, _vertexSize * 2), ref v2_);
+            Utilities.Write(IntPtr.Add(dataPtr, _vertexSize * 3), ref v3);
             _context.UnmapSubresource(_vertexBuffer, 0);
         }
 
@@ -399,10 +415,7 @@ namespace Client.Rendering.SharpDXD3D11
             final = Matrix4x4.Transpose(final);
 
             DataBox box = _context.MapSubresource(_matrixBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-            using (var stream = new DataStream(box.DataPointer, Utilities.SizeOf<Matrix4x4>(), true, true))
-            {
-                stream.Write(final);
-            }
+            Utilities.Write(box.DataPointer, ref final);
             _context.UnmapSubresource(_matrixBuffer, 0);
         }
 
