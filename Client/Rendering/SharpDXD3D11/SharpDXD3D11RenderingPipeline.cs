@@ -475,7 +475,7 @@ namespace Client.Rendering.SharpDXD3D11
 
         public void FlushSprite()
         {
-            SharpDXD3D11Manager.D2DContext?.Flush();
+            SharpDXD3D11Manager.FlushSprite();
         }
 
         public void RegisterControlCache(ITextureCacheItem control)

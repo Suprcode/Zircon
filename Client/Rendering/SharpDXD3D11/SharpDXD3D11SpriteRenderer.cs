@@ -26,6 +26,7 @@ namespace Client.Rendering.SharpDXD3D11
         private PixelShader _pixelShader;
         private InputLayout _inputLayout;
         private Buffer _vertexBuffer;
+        private Buffer _indexBuffer;
         private Buffer _matrixBuffer;
         private SamplerState _samplerState;
 
@@ -36,6 +37,9 @@ namespace Client.Rendering.SharpDXD3D11
         private RawColor4 _currentBlendFactor;
         private VertexBufferBinding _vertexBufferBinding;
         private readonly int _vertexSize = Utilities.SizeOf<VertexType>();
+        private const int MaxBatchSize = 1024;
+        private readonly VertexType[] _vertexData = new VertexType[MaxBatchSize * 4];
+        private int _queuedSprites;
 
         private readonly Dictionary<BlendMode, BlendState> _blendStates = new Dictionary<BlendMode, BlendState>();
         private readonly Dictionary<Texture2D, SpriteResources> _textureResources = new Dictionary<Texture2D, SpriteResources>();
@@ -57,7 +61,7 @@ namespace Client.Rendering.SharpDXD3D11
         private static readonly string ShaderSource = @"
             cbuffer MatrixBuffer : register(b0)
             {
-                matrix Matrix;
+                matrix Projection;
             };
 
             struct VS_INPUT
@@ -77,8 +81,8 @@ namespace Client.Rendering.SharpDXD3D11
             PS_INPUT VS(VS_INPUT input)
             {
                 PS_INPUT output;
-                // Transform position by matrix (Projection * World)
-                output.Pos = mul(float4(input.Pos, 0.0, 1.0), Matrix);
+                // Apply projection to transformed screen-space position
+                output.Pos = mul(float4(input.Pos, 0.0, 1.0), Projection);
                 output.Tex = input.Tex;
                 output.Col = input.Col;
                 return output;
@@ -136,6 +140,8 @@ namespace Client.Rendering.SharpDXD3D11
             };
 
             _context.Rasterizer.SetViewport(_viewport);
+
+            UpdateProjectionMatrix();
         }
 
         private void InitializeShaders()
@@ -165,12 +171,29 @@ namespace Client.Rendering.SharpDXD3D11
             _vertexBuffer = new Buffer(_device, new BufferDescription
             {
                 Usage = ResourceUsage.Dynamic,
-                SizeInBytes = Utilities.SizeOf<VertexType>() * 4,
+                SizeInBytes = Utilities.SizeOf<VertexType>() * MaxBatchSize * 4,
                 BindFlags = BindFlags.VertexBuffer,
                 CpuAccessFlags = CpuAccessFlags.Write,
                 OptionFlags = ResourceOptionFlags.None,
                 StructureByteStride = 0
             });
+
+            var indices = new int[MaxBatchSize * 6];
+            int baseVertex = 0;
+            for (int i = 0; i < MaxBatchSize; i++)
+            {
+                int indexOffset = i * 6;
+                indices[indexOffset] = baseVertex;
+                indices[indexOffset + 1] = baseVertex + 1;
+                indices[indexOffset + 2] = baseVertex + 2;
+                indices[indexOffset + 3] = baseVertex + 2;
+                indices[indexOffset + 4] = baseVertex + 1;
+                indices[indexOffset + 5] = baseVertex + 3;
+
+                baseVertex += 4;
+            }
+
+            _indexBuffer = Buffer.Create(_device, BindFlags.IndexBuffer, indices);
 
             // Matrix constant buffer
             _matrixBuffer = new Buffer(_device, new BufferDescription
@@ -256,8 +279,9 @@ namespace Client.Rendering.SharpDXD3D11
                 return;
 
             _context.InputAssembler.InputLayout = _inputLayout;
-            _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
+            _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             _context.InputAssembler.SetVertexBuffers(0, _vertexBufferBinding);
+            _context.InputAssembler.SetIndexBuffer(_indexBuffer, Format.R32_UInt, 0);
 
             _context.VertexShader.Set(_vertexShader);
             _context.PixelShader.Set(_pixelShader);
@@ -306,21 +330,22 @@ namespace Client.Rendering.SharpDXD3D11
                 _textureResources[texture] = resources;
             }
 
-            // 2. Update Vertex Buffer (Quad)
-            UpdateVertexBuffer(destination, source, resources.Width, resources.Height, color, opacity);
+            if (_queuedSprites >= MaxBatchSize)
+                Flush();
 
-            // 3. Update Constants (Matrix)
-            UpdateMatrixBuffer(transform);
+            // Flush when state changes to keep batches contiguous
+            RawColor4 factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
+            bool textureChanged = _currentTextureView != null && _currentTextureView != resources.ShaderResourceView;
+            bool blendChanged = _currentBlendMode != blendMode || !_currentBlendFactor.Equals(factor);
+            if ((_queuedSprites > 0) && (textureChanged || blendChanged))
+                Flush();
 
-            // 4. Setup Shaders
             if (_currentTextureView != resources.ShaderResourceView)
             {
                 _context.PixelShader.SetShaderResource(0, resources.ShaderResourceView);
                 _currentTextureView = resources.ShaderResourceView;
             }
 
-            // 5. Setup Blend State
-            RawColor4 factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
             if (_currentBlendMode != blendMode || !_currentBlendFactor.Equals(factor))
             {
                 if (!_blendStates.TryGetValue(blendMode, out var blendState))
@@ -331,11 +356,11 @@ namespace Client.Rendering.SharpDXD3D11
                 _currentBlendFactor = factor;
             }
 
-            // 6. Draw
-            _context.Draw(4, 0);
+            // Queue sprite vertices transformed on the CPU to keep GPU state stable during batching
+            QueueSprite(destination, source, resources.Width, resources.Height, color, opacity, transform);
         }
 
-        private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity)
+        private void QueueSprite(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity, Matrix3x2 transform)
         {
             float left = dest.Left;
             float right = dest.Right;
@@ -353,25 +378,36 @@ namespace Client.Rendering.SharpDXD3D11
 
             var col = new RawColor4(color.R / 255f, color.G / 255f, color.B / 255f, (color.A / 255f) * opacity);
 
-            // Triangle Strip: TopLeft, TopRight, BottomLeft, BottomRight
-            var v0 = new VertexType(new Vector2(left, top), new Vector2(u1, v1), col);
-            var v1_ = new VertexType(new Vector2(right, top), new Vector2(u2, v1), col); // v1 is reserved
-            var v2_ = new VertexType(new Vector2(left, bottom), new Vector2(u1, v2), col);
-            var v3 = new VertexType(new Vector2(right, bottom), new Vector2(u2, v2), col);
+            // Transform positions on CPU so the GPU only applies projection during batching
+            var topLeft = Vector2.Transform(new Vector2(left, top), transform);
+            var topRight = Vector2.Transform(new Vector2(right, top), transform);
+            var bottomLeft = Vector2.Transform(new Vector2(left, bottom), transform);
+            var bottomRight = Vector2.Transform(new Vector2(right, bottom), transform);
 
-            DataBox box = _context.MapSubresource(_vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-            var dataPtr = box.DataPointer;
+            int baseVertex = _queuedSprites * 4;
+            _vertexData[baseVertex] = new VertexType(topLeft, new Vector2(u1, v1), col);
+            _vertexData[baseVertex + 1] = new VertexType(topRight, new Vector2(u2, v1), col);
+            _vertexData[baseVertex + 2] = new VertexType(bottomLeft, new Vector2(u1, v2), col);
+            _vertexData[baseVertex + 3] = new VertexType(bottomRight, new Vector2(u2, v2), col);
 
-            Utilities.Write(dataPtr, ref v0);
-            Utilities.Write(IntPtr.Add(dataPtr, _vertexSize), ref v1_);
-            Utilities.Write(IntPtr.Add(dataPtr, _vertexSize * 2), ref v2_);
-            Utilities.Write(IntPtr.Add(dataPtr, _vertexSize * 3), ref v3);
-            _context.UnmapSubresource(_vertexBuffer, 0);
+            _queuedSprites++;
         }
 
-        private void UpdateMatrixBuffer(Matrix3x2 transform)
+        public void Flush()
         {
-            // Create Orthographic Projection Matrix based on BackBuffer size
+            if (_queuedSprites == 0)
+                return;
+
+            DataBox box = _context.MapSubresource(_vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            Utilities.Write(box.DataPointer, _vertexData, 0, _queuedSprites * 4);
+            _context.UnmapSubresource(_vertexBuffer, 0);
+
+            _context.DrawIndexed(_queuedSprites * 6, 0, 0);
+            _queuedSprites = 0;
+        }
+
+        private void UpdateProjectionMatrix()
+        {
             float width = _viewport.Width;
             float height = _viewport.Height;
 
@@ -388,31 +424,7 @@ namespace Client.Rendering.SharpDXD3D11
             projection.M41 = -1.0f;
             projection.M42 = 1.0f;
 
-            // Apply the object transform (Matrix3x2)
-            // 3x2 = [ M11 M12 ]
-            //       [ M21 M22 ]
-            //       [ M31 M32 ]
-            // Extend to 4x4
-            Matrix4x4 world = Matrix4x4.Identity;
-            world.M11 = transform.M11;
-            world.M12 = transform.M12;
-            world.M21 = transform.M21;
-            world.M22 = transform.M22;
-            world.M41 = transform.M31; // Translation X
-            world.M42 = transform.M32; // Translation Y
-
-            // Final Matrix = World * Projection
-            // Transpose because HLSL defaults to column-major in mul(v, M) or row-major?
-            // SharpDX matrices are Row-Major. HLSL mul(vector, matrix) expects Row-Major matrix if vector is row.
-            // mul(float4, matrix) -> Row Vector * Matrix.
-            // So we send it as is.
-
-            Matrix4x4 final = world * projection;
-
-            // However, D3D default constant buffer layout expects Column-Major logic if we don't transpose,
-            // OR we construct it carefully.
-            // SharpDX Matrix.Transpose() is usually needed if the shader uses `matrix` type and `mul(pos, mat)`.
-            final = Matrix4x4.Transpose(final);
+            Matrix4x4 final = Matrix4x4.Transpose(projection);
 
             DataBox box = _context.MapSubresource(_matrixBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, ref final);
@@ -430,6 +442,7 @@ namespace Client.Rendering.SharpDXD3D11
             _blendStates.Clear();
 
             _samplerState?.Dispose();
+            _indexBuffer?.Dispose();
             _matrixBuffer?.Dispose();
             _vertexBuffer?.Dispose();
             _inputLayout?.Dispose();

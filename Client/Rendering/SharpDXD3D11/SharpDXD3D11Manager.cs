@@ -421,6 +421,7 @@ namespace Client.Rendering.SharpDXD3D11
 
         public static void FlushSprite()
         {
+            SpriteRenderer?.Flush();
             D2DContext?.Flush();
         }
 
