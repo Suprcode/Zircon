@@ -223,7 +223,7 @@ namespace Client.Rendering.SharpDXD3D11
 
         public static void SetResolution(Size size)
         {
-            if (size == Config.GameSize)
+            if (CEnvir.Target.ClientSize == size && GetBackBufferSize() == size)
                 return;
 
             Config.GameSize = size;
@@ -241,7 +241,7 @@ namespace Client.Rendering.SharpDXD3D11
                 monitorIndex = 0;
 
             Screen screen = Screen.AllScreens[monitorIndex];
-            //Config.SelectedMonitorIndex = monitorIndex;
+
             CEnvir.Target.Location = screen.Bounds.Location;
             RequestReset();
         }
@@ -251,10 +251,9 @@ namespace Client.Rendering.SharpDXD3D11
             if (CEnvir.Target == null)
                 return;
 
-            //if (Config.SelectedMonitorIndex < 0 || Config.SelectedMonitorIndex >= Screen.AllScreens.Length)
-            //    Config.SelectedMonitorIndex = 0;
+            int index = 0;
 
-            Screen screen = Screen.AllScreens[0];
+            Screen screen = Screen.AllScreens[index];
             int x = Math.Max(screen.Bounds.X, screen.Bounds.X + (screen.Bounds.Width - CEnvir.Target.Width) / 2);
             int y = Math.Max(screen.Bounds.Y, screen.Bounds.Y + (screen.Bounds.Height - CEnvir.Target.Height) / 2);
             CEnvir.Target.Location = new Point(x, y);
@@ -457,6 +456,21 @@ namespace Client.Rendering.SharpDXD3D11
 
         public static void Unload()
         {
+            for (int i = ControlList.Count - 1; i >= 0; i--)
+                ControlList[i].DisposeTexture();
+
+            ControlList.Clear();
+
+            for (int i = TextureList.Count - 1; i >= 0; i--)
+                TextureList[i].DisposeTexture();
+
+            TextureList.Clear();
+
+            for (int i = SoundList.Count - 1; i >= 0; i--)
+                SoundList[i].DisposeSoundBuffer();
+
+            SoundList.Clear();
+
             DisposeTargets();
 
             SpriteRenderer?.Dispose();

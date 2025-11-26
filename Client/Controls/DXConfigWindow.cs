@@ -960,11 +960,18 @@ namespace Client.Controls
 
             if (GameSizeComboBox.SelectedItem is Size && Config.GameSize != (Size)GameSizeComboBox.SelectedItem)
             {
-                var gameSize = (Size)GameSizeComboBox.SelectedItem;
+                Config.GameSize = (Size)GameSizeComboBox.SelectedItem;
 
                 if (ActiveScene is GameScene)
                 {
-                    RenderingPipelineManager.SetResolution(gameSize);
+                    ActiveScene.Size = Config.GameSize;
+                    RenderingPipelineManager.SetResolution(Config.GameSize);
+                }
+
+                if (!Config.FullScreen)
+                {
+                    CEnvir.Target.ClientSize = Config.GameSize;
+                    CEnvir.Target.Center();
                 }
             }
 
@@ -986,6 +993,7 @@ namespace Client.Controls
 
                 if (ActiveScene is GameScene)
                 {
+                    RenderingPipelineManager.SwitchPipeline(renderingPipeline);
                     Config.RenderingPipeline = renderingPipeline;
                 }
             }

@@ -328,17 +328,17 @@ namespace Client.Rendering.SharpDXD3D9
                 _LightSurface = null;
             }
 
-
             for (int i = ControlList.Count - 1; i >= 0; i--)
-            {
                 ControlList[i].DisposeTexture();
-            }
+
+            ControlList.Clear();
 
             for (int i = TextureList.Count - 1; i >= 0; i--)
-            {
                 TextureList[i].DisposeTexture();
-            }
+
+            TextureList.Clear();
         }
+
         public static void MemoryClear()
         {
             for (int i = ControlList.Count - 1; i >= 0; i--)
@@ -554,9 +554,7 @@ namespace Client.Rendering.SharpDXD3D9
 
         public static void CenterOnSelectedMonitor()
         {
-            int index = 0;// Config.SelectedMonitorIndex;
-            if (index < 0 || index >= Screen.AllScreens.Length)
-                index = 0;
+            int index = 0;
 
             Screen selectedScreen = Screen.AllScreens[index];
 
@@ -571,7 +569,6 @@ namespace Client.Rendering.SharpDXD3D9
             if (monitorIndex < 0 || monitorIndex >= Screen.AllScreens.Length)
                 monitorIndex = 0;
 
-            //Config.SelectedMonitorIndex = monitorIndex;
             Screen targetScreen = Screen.AllScreens[monitorIndex];
 
             if (Config.FullScreen)

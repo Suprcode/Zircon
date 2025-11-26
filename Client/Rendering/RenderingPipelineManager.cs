@@ -12,12 +12,12 @@ namespace Client.Rendering
         private const string DefaultPipelineId = RenderingPipelineIds.SlimDXD3D9;
         private static readonly Dictionary<string, Func<IRenderingPipeline>> PipelineFactories = new(StringComparer.OrdinalIgnoreCase)
         {
-            //{ RenderingPipelineIds.SlimDXD3D9, () => new SlimDXD3D9.SlimDXD3D9RenderingPipeline() },
             { RenderingPipelineIds.SharpDXD3D9, () => new SharpDXD3D9.SharpDXD3D9RenderingPipeline() },
             { RenderingPipelineIds.SharpDXD3D11, () => new SharpDXD3D11.SharpDXD3D11RenderingPipeline() }
         };
 
         private static IRenderingPipeline _activePipeline;
+        private static RenderingPipelineContext _context;
         private static readonly Graphics FallbackGraphics;
         private static readonly List<ITextureCacheItem> FallbackControlCache = new();
         private static readonly List<ITextureCacheItem> FallbackTextureCache = new();
@@ -73,6 +73,8 @@ namespace Client.Rendering
             if (!PipelineFactories.TryGetValue(pipelineId, out Func<IRenderingPipeline>? factory))
                 throw new ArgumentException($"Unknown rendering pipeline '{pipelineId}'.", nameof(pipelineId));
 
+            _context = context;
+
             _activePipeline = factory();
             try
             {
@@ -103,6 +105,17 @@ namespace Client.Rendering
                 Console.WriteLine($"Falling back to rendering pipeline '{DefaultPipelineId}' after '{pipelineToUse}' failed: {ex.Message}");
                 return _activePipeline!.Id;
             }
+        }
+        
+        public static void SwitchPipeline(string pipelineId)
+        {
+            pipelineId = NormalizePipelineId(pipelineId);
+
+            if (string.Equals(ActivePipelineId, pipelineId, StringComparison.OrdinalIgnoreCase)) return;
+
+            Shutdown();
+
+            InitializeWithFallback(pipelineId, _context);
         }
 
         public static void Shutdown()
