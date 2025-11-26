@@ -99,6 +99,7 @@ namespace Client.Rendering.SharpDXD3D11
             public Vector2 TextureSize;
             public float OutlineThickness;
             public float Padding;
+            public Vector4 SourceUV;
         }
 
         public SharpDXD3D11SpriteRenderer(Device device)
@@ -301,12 +302,26 @@ namespace Client.Rendering.SharpDXD3D11
 
             if (SupportsOutlineShader)
             {
+                var texDesc = texture.Description;
+                var texWidth = texDesc.Width;
+                var texHeight = texDesc.Height;
+
+                float u1 = 0, v1 = 0, u2 = 1, v2 = 1;
+                if (source.HasValue)
+                {
+                    u1 = source.Value.Left / (float)texWidth;
+                    v1 = source.Value.Top / (float)texHeight;
+                    u2 = source.Value.Right / (float)texWidth;
+                    v2 = source.Value.Bottom / (float)texHeight;
+                }
+
                 outlineBuffer = new OutlineBufferType
                 {
                     OutlineColor = outlineColor,
-                    TextureSize = new Vector2(texture.Description.Width, texture.Description.Height),
+                    TextureSize = new Vector2(texWidth, texHeight),
                     OutlineThickness = outlineThickness,
-                    Padding = Math.Max(outlineThickness, 1f)
+                    Padding = Math.Max(outlineThickness, 1f),
+                    SourceUV = new Vector4(u1, v1, u2, v2)
                 };
             }
 

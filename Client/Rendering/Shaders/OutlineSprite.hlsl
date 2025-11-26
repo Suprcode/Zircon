@@ -9,6 +9,7 @@ cbuffer OutlineBuffer : register(b1)
     float2 TextureSize;
     float OutlineThickness;
     float Padding;
+    float4 SourceUV; // xy = min, zw = max
 };
 
 struct VS_INPUT
@@ -37,10 +38,10 @@ PS_INPUT VS(VS_INPUT input)
     return output;
 }
 
-float4 SampleSprite(float2 uv, float2 innerMin, float2 innerMax)
+float4 SampleSprite(float2 uv, float2 innerMin, float2 innerMax, float2 sourceMin, float2 sourceMax)
 {
     float2 innerSize = max(innerMax - innerMin, float2(0.0001, 0.0001));
-    float2 normalized = (uv - innerMin) / innerSize;
+    float2 normalized = (uv - sourceMin) / max(sourceMax - sourceMin, float2(0.0001, 0.0001));
 
     // Treat samples outside the padded inner region as fully transparent to guarantee outline space at texture edges.
     if (any(uv < innerMin) || any(uv > innerMax))
@@ -52,11 +53,13 @@ float4 SampleSprite(float2 uv, float2 innerMin, float2 innerMax)
 float4 PS_OUTLINE(PS_INPUT input) : SV_Target
 {
     float2 paddingUv = (Padding > 0.0) ? (Padding / TextureSize) : 0.0;
-    float2 innerMin = paddingUv;
-    float2 innerMax = 1.0 - paddingUv;
+    float2 sourceMin = SourceUV.xy;
+    float2 sourceMax = SourceUV.zw;
+    float2 innerMin = sourceMin + paddingUv;
+    float2 innerMax = sourceMax - paddingUv;
     float2 texelSize = 1.0 / TextureSize;
 
-    float4 texColor = SampleSprite(input.Tex, innerMin, innerMax) * input.Col;
+    float4 texColor = SampleSprite(input.Tex, innerMin, innerMax, sourceMin, sourceMax) * input.Col;
     float alpha = texColor.a;
 
     bool hasNeighbour = false;
@@ -72,7 +75,7 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
                 continue;
 
             float2 offset = float2(x, y) * texelSize;
-            float neighbourAlpha = SampleSprite(input.Tex + offset, innerMin, innerMax).a;
+            float neighbourAlpha = SampleSprite(input.Tex + offset, innerMin, innerMax, sourceMin, sourceMax).a;
 
             if (neighbourAlpha > 0.05)
             {
