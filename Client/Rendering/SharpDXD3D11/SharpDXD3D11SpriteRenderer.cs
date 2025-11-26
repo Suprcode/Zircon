@@ -423,6 +423,13 @@ namespace Client.Rendering.SharpDXD3D11
                 top -= expand;
                 bottom += expand;
 
+                float uPad = expand / texWidth;
+                float vPad = expand / texHeight;
+                u1 -= uPad;
+                v1 -= vPad;
+                u2 += uPad;
+                v2 += vPad;
+
             }
 
             var col = new RawColor4(color.R / 255f, color.G / 255f, color.B / 255f, (color.A / 255f) * opacity);
