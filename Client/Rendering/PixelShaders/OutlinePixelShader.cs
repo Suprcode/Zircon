@@ -229,7 +229,7 @@ namespace Client.Rendering.PixelShaders
                     [0] = new RenderTargetBlendDescription
                     {
                         IsBlendEnabled = true,
-                        SourceBlend = BlendOption.SourceAlpha,
+                        SourceBlend = BlendOption.One,
                         DestinationBlend = BlendOption.InverseSourceAlpha,
                         BlendOperation = BlendOperation.Add,
                         SourceAlphaBlend = BlendOption.One,
