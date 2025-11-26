@@ -38,17 +38,18 @@ PS_INPUT VS(VS_INPUT input)
     return output;
 }
 
-float4 SampleSprite(float2 uv, float2 sourceMin, float2 sourceMax, float2 paddingFrac)
+float4 SampleSprite(float2 uv, float2 sourceMin, float2 sourceMax, float2 paddingUv)
 {
-    float2 sourceSpan = max(sourceMax - sourceMin, float2(0.0001, 0.0001));
-    float2 normalized = (uv - sourceMin) / sourceSpan;
+    // Compute virtual padding directly in UV space so sampling respects the original atlas location.
+    // If padding would eclipse the sprite completely, collapse to a degenerate inner rectangle but keep it valid.
+    float2 innerMin = min(sourceMin + paddingUv, sourceMax);
+    float2 innerMax = max(sourceMax - paddingUv, innerMin + float2(0.0001, 0.0001));
 
-    // Treat samples inside the virtual padding band as fully transparent to guarantee outline space even when the
-    // source rectangle touches the atlas edges (no baked transparent pixels).
-    if (any(normalized < paddingFrac) || any(normalized > (1.0 - paddingFrac)))
+    // Treat any sample outside the padded inner rect as transparent, even if it would clamp to opaque edge texels.
+    if (any(uv < innerMin) || any(uv > innerMax))
         return float4(0, 0, 0, 0);
 
-    return shaderTexture.Sample(sampleState, normalized);
+    return shaderTexture.Sample(sampleState, uv);
 }
 
 float4 PS_OUTLINE(PS_INPUT input) : SV_Target
@@ -56,11 +57,9 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
     float2 paddingUv = (Padding > 0.0) ? (Padding / TextureSize) : 0.0;
     float2 sourceMin = SourceUV.xy;
     float2 sourceMax = SourceUV.zw;
-    float2 sourceSpan = max(sourceMax - sourceMin, float2(0.0001, 0.0001));
-    float2 paddingFrac = saturate(paddingUv / sourceSpan);
     float2 texelSize = 1.0 / TextureSize;
 
-    float4 texColor = SampleSprite(input.Tex, sourceMin, sourceMax, paddingFrac) * input.Col;
+    float4 texColor = SampleSprite(input.Tex, sourceMin, sourceMax, paddingUv) * input.Col;
     float alpha = texColor.a;
 
     bool hasNeighbour = false;
@@ -76,7 +75,7 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
                 continue;
 
             float2 offset = float2(x, y) * texelSize;
-            float neighbourAlpha = SampleSprite(input.Tex + offset, sourceMin, sourceMax, paddingFrac).a;
+            float neighbourAlpha = SampleSprite(input.Tex + offset, sourceMin, sourceMax, paddingUv).a;
 
             if (neighbourAlpha > 0.05)
             {
