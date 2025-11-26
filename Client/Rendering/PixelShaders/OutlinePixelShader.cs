@@ -10,6 +10,7 @@ using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using SharpDX.Mathematics.Interop;
 using Color = System.Drawing.Color;
 using Device = SharpDX.Direct3D11.Device;
 using NumericsVector2 = System.Numerics.Vector2;
@@ -98,10 +99,20 @@ namespace Client.Rendering.PixelShaders
             if (device == null || context == null)
                 throw new InvalidOperationException("Direct3D11 device is not available.");
 
-            ViewportF[] originalViewports = context.Rasterizer.GetViewports<ViewportF>();
+            RawViewportF[] originalViewports = context.Rasterizer.GetViewports<RawViewportF>();
             BlendState previousBlendState = context.OutputMerger.GetBlendState(out RawColor4 previousBlendFactor, out int previousSampleMask);
 
-            context.Rasterizer.SetViewport(new ViewportF(0, 0, outputSize.Width, outputSize.Height, 0, 1));
+            RawViewportF viewport = new RawViewportF
+            {
+                X = 0,
+                Y = 0,
+                Width = outputSize.Width,
+                Height = outputSize.Height,
+                MinDepth = 0,
+                MaxDepth = 1
+            };
+
+            context.Rasterizer.SetViewports(viewport);
 
             Matrix4x4 projection = Matrix4x4.CreateOrthographicOffCenter(0, outputSize.Width, outputSize.Height, 0, 0f, 1f);
             context.UpdateSubresource(ref projection, _matrixBuffer);
