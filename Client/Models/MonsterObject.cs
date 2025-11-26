@@ -2598,8 +2598,16 @@ namespace Client.Models
             }
         }
 
-        public void DrawBody(int x, int y)
+        public void DrawBody(int x, int y, bool showOutline = false)
         {
+            bool outlineEnabled = false;
+
+            if (showOutline)
+            {
+                RenderingPipelineManager.EnableOutlineEffect(Color.DeepSkyBlue, 2f);
+                outlineEnabled = true;
+            }
+
             switch (Image)
             {
                 case MonsterImage.None:
@@ -2669,6 +2677,11 @@ namespace Client.Models
                         break;
                 }
             }
+
+            if (outlineEnabled)
+            {
+                RenderingPipelineManager.DisableOutlineEffect();
+            }
         }
         public override void DrawHealth()
         {
@@ -2711,18 +2724,7 @@ namespace Client.Models
                 case MonsterImage.JinamStoneGate:
                     return;
             }
-            RenderingPipelineManager.EnableOutlineEffect(Color.DeepSkyBlue, 2f);
-
-            try
-            {
-                RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
-                DrawBody(DrawX, y);
-                RenderingPipelineManager.SetBlend(false);
-            }
-            finally
-            {
-                RenderingPipelineManager.DisableOutlineEffect();
-            }
+            DrawBody(DrawX, y, true);
         }
         public override void DrawName()
         {
