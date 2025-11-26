@@ -428,7 +428,8 @@ namespace Client.Rendering.SharpDXD3D11
                 sourceRectangle,
                 colour,
                 transform,
-                BlendMode.NORMAL,
+                // Use standard alpha blending so the outline draws fully opaque instead of screen blending with the scene.
+                BlendMode.NONE,
                 1f,
                 1f,
                 outlineColor,
