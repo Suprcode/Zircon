@@ -26,6 +26,7 @@ namespace Client.Rendering
         private static bool _fallbackBlending;
         private static float _fallbackBlendRate = 1F;
         private static BlendMode _fallbackBlendMode = BlendMode.NORMAL;
+        private static OutlineEffectSettings? _outlineEffect;
         private static float _fallbackLineWidth = 1F;
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
         private static readonly object GraphicsLock = new();
@@ -334,6 +335,18 @@ namespace Client.Rendering
 
             _fallbackLineWidth = width;
         }
+
+        public static void EnableOutlineEffect(Color colour, float thickness)
+        {
+            _outlineEffect = new OutlineEffectSettings(colour, thickness);
+        }
+
+        public static void DisableOutlineEffect()
+        {
+            _outlineEffect = null;
+        }
+
+        internal static OutlineEffectSettings? GetOutlineEffect() => _outlineEffect;
 
         public static void DrawLine(IReadOnlyList<LinePoint> points, Color colour)
         {
@@ -745,6 +758,18 @@ namespace Client.Rendering
             if (t < 1f / 2f) return q;
             if (t < 2f / 3f) return p + (q - p) * (2f / 3f - t) * 6f;
             return p;
+        }
+
+        internal readonly struct OutlineEffectSettings
+        {
+            public Color Colour { get; }
+            public float Thickness { get; }
+
+            public OutlineEffectSettings(Color colour, float thickness)
+            {
+                Colour = colour;
+                Thickness = thickness;
+            }
         }
     }
 }

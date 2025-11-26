@@ -6,6 +6,7 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Color = System.Drawing.Color;
@@ -24,13 +25,17 @@ namespace Client.Rendering.SharpDXD3D11
         private readonly DeviceContext _context;
         private VertexShader _vertexShader;
         private PixelShader _pixelShader;
+        private PixelShader _outlinePixelShader;
         private InputLayout _inputLayout;
         private Buffer _vertexBuffer;
         private Buffer _matrixBuffer;
+        private Buffer _outlineBuffer;
         private SamplerState _samplerState;
 
         private readonly Dictionary<BlendMode, BlendState> _blendStates = new Dictionary<BlendMode, BlendState>();
         private readonly Dictionary<Texture2D, ShaderResourceView> _srvCache = new Dictionary<Texture2D, ShaderResourceView>();
+
+        private const string OutlineShaderFileName = "OutlineSprite.hlsl";
 
         private static readonly string ShaderSource = @"
             cbuffer MatrixBuffer : register(b0)
@@ -87,6 +92,15 @@ namespace Client.Rendering.SharpDXD3D11
             }
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct OutlineBufferType
+        {
+            public RawColor4 OutlineColor;
+            public Vector2 TextureSize;
+            public float OutlineThickness;
+            public float Padding;
+        }
+
         public SharpDXD3D11SpriteRenderer(Device device)
         {
             _device = device ?? throw new ArgumentNullException(nameof(device));
@@ -117,6 +131,51 @@ namespace Client.Rendering.SharpDXD3D11
             {
                 _pixelShader = new PixelShader(_device, pixelShaderByteCode);
             }
+
+            InitializeOutlineShader();
+        }
+
+        private void InitializeOutlineShader()
+        {
+            string? shaderPath = FindOutlineShaderPath();
+
+            if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
+                return;
+
+            using (var pixelShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_5_0"))
+            {
+                _outlinePixelShader = new PixelShader(_device, pixelShaderByteCode);
+            }
+
+            _outlineBuffer = new Buffer(_device, new BufferDescription
+            {
+                Usage = ResourceUsage.Dynamic,
+                SizeInBytes = Utilities.SizeOf<OutlineBufferType>(),
+                BindFlags = BindFlags.ConstantBuffer,
+                CpuAccessFlags = CpuAccessFlags.Write,
+                OptionFlags = ResourceOptionFlags.None,
+                StructureByteStride = 0
+            });
+        }
+
+        private string? FindOutlineShaderPath()
+        {
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
+
+            string[] candidates = new[]
+            {
+                Path.Combine(baseDirectory, "Rendering", "Shaders", OutlineShaderFileName),
+                Path.Combine(baseDirectory, "Shaders", OutlineShaderFileName),
+                Path.Combine(baseDirectory, OutlineShaderFileName)
+            };
+
+            foreach (string candidate in candidates)
+            {
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+
+            return null;
         }
 
         private void InitializeBuffers()
@@ -229,12 +288,38 @@ namespace Client.Rendering.SharpDXD3D11
             _blendStates[mode] = new BlendState(_device, desc);
         }
 
+        public bool SupportsOutlineShader => _outlinePixelShader != null && _outlineBuffer != null;
+
         public void Draw(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate)
+        {
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _pixelShader, null);
+        }
+
+        public void DrawOutlined(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 outlineColor, float outlineThickness)
+        {
+            OutlineBufferType? outlineBuffer = null;
+
+            if (SupportsOutlineShader)
+            {
+                outlineBuffer = new OutlineBufferType
+                {
+                    OutlineColor = outlineColor,
+                    TextureSize = new Vector2(texture.Description.Width, texture.Description.Height),
+                    OutlineThickness = outlineThickness,
+                    Padding = 0f
+                };
+            }
+
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _outlinePixelShader ?? _pixelShader, outlineBuffer);
+        }
+
+        private void DrawInternal(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, PixelShader pixelShader, OutlineBufferType? outlineBuffer)
         {
             if (texture == null) return;
 
-            // Ensure we have a valid viewport to calculate projection from
-            // Fix: Retrieve the current RenderTargetView from OutputMerger and use its resource size.
+            var activePixelShader = pixelShader ?? _pixelShader;
+            if (activePixelShader == null) return;
+
             var rtv = _context.OutputMerger.GetRenderTargets(1);
             if (rtv != null && rtv.Length > 0 && rtv[0] != null)
             {
@@ -251,49 +336,50 @@ namespace Client.Rendering.SharpDXD3D11
                 rtv[0].Dispose();
             }
 
-            // Get or Create SRV
             if (!_srvCache.TryGetValue(texture, out var srv))
             {
                 srv = new ShaderResourceView(_device, texture);
                 _srvCache[texture] = srv;
             }
 
-            // 1. Setup Input Assembler
             _context.InputAssembler.InputLayout = _inputLayout;
             _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
             _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<VertexType>(), 0));
 
-            // 2. Update Vertex Buffer (Quad)
             UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity);
-
-            // 3. Update Constants (Matrix)
             UpdateMatrixBuffer(transform);
 
-            // 4. Setup Shaders
             _context.VertexShader.Set(_vertexShader);
-            _context.PixelShader.Set(_pixelShader);
+            _context.PixelShader.Set(activePixelShader);
             _context.PixelShader.SetShaderResource(0, srv);
             _context.PixelShader.SetSampler(0, _samplerState);
             _context.VertexShader.SetConstantBuffer(0, _matrixBuffer);
 
-            // 5. Setup Blend State
+            bool usingOutline = outlineBuffer.HasValue && SupportsOutlineShader && activePixelShader == _outlinePixelShader;
+            if (usingOutline)
+            {
+                UpdateOutlineBuffer(outlineBuffer!.Value);
+                _context.PixelShader.SetConstantBuffer(1, _outlineBuffer);
+            }
+            else
+            {
+                _context.PixelShader.SetConstantBuffer(1, null);
+            }
+
             if (_blendStates.TryGetValue(blendMode, out var blendState))
             {
-                // Calculate BlendFactor color
                 var factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
                 _context.OutputMerger.SetBlendState(blendState, factor, -1);
             }
             else
             {
-                // Fallback to Normal/Screen
-                 var factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
+                var factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
                 _context.OutputMerger.SetBlendState(_blendStates[BlendMode.NORMAL], factor, -1);
             }
 
-            // 6. Draw
             _context.Draw(4, 0);
 
-            // Reset Blend State (Optional, but good hygiene if mixing with D2D)
+            _context.PixelShader.SetConstantBuffer(1, null);
             _context.OutputMerger.SetBlendState(null, null, -1);
         }
 
@@ -386,6 +472,19 @@ namespace Client.Rendering.SharpDXD3D11
             _context.UnmapSubresource(_matrixBuffer, 0);
         }
 
+        private void UpdateOutlineBuffer(OutlineBufferType outlineBuffer)
+        {
+            if (_outlineBuffer == null)
+                return;
+
+            DataBox box = _context.MapSubresource(_outlineBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            using (var stream = new DataStream(box.DataPointer, Utilities.SizeOf<OutlineBufferType>(), true, true))
+            {
+                stream.Write(outlineBuffer);
+            }
+            _context.UnmapSubresource(_outlineBuffer, 0);
+        }
+
         public void Dispose()
         {
             foreach (var srv in _srvCache.Values) srv.Dispose();
@@ -396,9 +495,11 @@ namespace Client.Rendering.SharpDXD3D11
 
             _samplerState?.Dispose();
             _matrixBuffer?.Dispose();
+            _outlineBuffer?.Dispose();
             _vertexBuffer?.Dispose();
             _inputLayout?.Dispose();
             _pixelShader?.Dispose();
+            _outlinePixelShader?.Dispose();
             _vertexShader?.Dispose();
         }
     }

@@ -2711,9 +2711,18 @@ namespace Client.Models
                 case MonsterImage.JinamStoneGate:
                     return;
             }
-            RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
-            DrawBody(DrawX, y);
-            RenderingPipelineManager.SetBlend(false);
+            RenderingPipelineManager.EnableOutlineEffect(Color.DeepSkyBlue, 2f);
+
+            try
+            {
+                RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
+                DrawBody(DrawX, y);
+                RenderingPipelineManager.SetBlend(false);
+            }
+            finally
+            {
+                RenderingPipelineManager.DisableOutlineEffect();
+            }
         }
         public override void DrawName()
         {
