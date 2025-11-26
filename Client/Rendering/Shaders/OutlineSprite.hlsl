@@ -37,11 +37,27 @@ PS_INPUT VS(VS_INPUT input)
     return output;
 }
 
+float4 SampleSprite(float2 uv, float2 innerMin, float2 innerMax)
+{
+    float2 innerSize = max(innerMax - innerMin, float2(0.0001, 0.0001));
+    float2 normalized = (uv - innerMin) / innerSize;
+
+    // Treat samples outside the padded inner region as fully transparent to guarantee outline space at texture edges.
+    if (any(uv < innerMin) || any(uv > innerMax))
+        return float4(0, 0, 0, 0);
+
+    return shaderTexture.Sample(sampleState, normalized);
+}
+
 float4 PS_OUTLINE(PS_INPUT input) : SV_Target
 {
-    float4 texColor = shaderTexture.Sample(sampleState, input.Tex) * input.Col;
-    float alpha = texColor.a;
+    float2 paddingUv = (Padding > 0.0) ? (Padding / TextureSize) : 0.0;
+    float2 innerMin = paddingUv;
+    float2 innerMax = 1.0 - paddingUv;
     float2 texelSize = 1.0 / TextureSize;
+
+    float4 texColor = SampleSprite(input.Tex, innerMin, innerMax) * input.Col;
+    float alpha = texColor.a;
 
     bool hasNeighbour = false;
     int radius = (int)OutlineThickness;
@@ -56,7 +72,7 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
                 continue;
 
             float2 offset = float2(x, y) * texelSize;
-            float neighbourAlpha = shaderTexture.Sample(sampleState, input.Tex + offset).a;
+            float neighbourAlpha = SampleSprite(input.Tex + offset, innerMin, innerMax).a;
 
             if (neighbourAlpha > 0.05)
             {

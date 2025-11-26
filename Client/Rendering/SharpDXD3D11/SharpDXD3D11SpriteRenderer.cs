@@ -306,7 +306,7 @@ namespace Client.Rendering.SharpDXD3D11
                     OutlineColor = outlineColor,
                     TextureSize = new Vector2(texture.Description.Width, texture.Description.Height),
                     OutlineThickness = outlineThickness,
-                    Padding = 0f
+                    Padding = Math.Max(outlineThickness, 1f)
                 };
             }
 
