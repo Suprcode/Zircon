@@ -115,6 +115,7 @@ namespace Client.Rendering.PixelShaders
             context.Rasterizer.SetViewports(viewport);
 
             Matrix4x4 projection = Matrix4x4.CreateOrthographicOffCenter(0, outputSize.Width, outputSize.Height, 0, 0f, 1f);
+            projection = Matrix4x4.Transpose(projection);
             context.UpdateSubresource(ref projection, _matrixBuffer);
 
             float texelWidth = 1f / sourceSize.Width;
