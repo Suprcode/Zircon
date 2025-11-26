@@ -38,15 +38,11 @@ PS_INPUT VS(VS_INPUT input)
     return output;
 }
 
-float4 SampleSprite(float2 uv, float2 sourceMin, float2 sourceMax, float2 paddingUv)
+float4 SampleSprite(float2 uv, float2 sourceMin, float2 sourceMax)
 {
-    // Compute virtual padding directly in UV space so sampling respects the original atlas location.
-    // If padding would eclipse the sprite completely, collapse to a degenerate inner rectangle but keep it valid.
-    float2 innerMin = min(sourceMin + paddingUv, sourceMax);
-    float2 innerMax = max(sourceMax - paddingUv, innerMin + float2(0.0001, 0.0001));
-
-    // Treat any sample outside the padded inner rect as transparent, even if it would clamp to opaque edge texels.
-    if (any(uv < innerMin) || any(uv > innerMax))
+    // Treat any sample outside the sprite's atlas rectangle as transparent. This keeps the outline aligned directly
+    // against the sprite edge instead of shrinking it inward when padding is requested.
+    if (any(uv < sourceMin) || any(uv > sourceMax))
         return float4(0, 0, 0, 0);
 
     return shaderTexture.Sample(sampleState, uv);
@@ -54,12 +50,11 @@ float4 SampleSprite(float2 uv, float2 sourceMin, float2 sourceMax, float2 paddin
 
 float4 PS_OUTLINE(PS_INPUT input) : SV_Target
 {
-    float2 paddingUv = (Padding > 0.0) ? (Padding / TextureSize) : 0.0;
     float2 sourceMin = SourceUV.xy;
     float2 sourceMax = SourceUV.zw;
     float2 texelSize = 1.0 / TextureSize;
 
-    float4 texColor = SampleSprite(input.Tex, sourceMin, sourceMax, paddingUv) * input.Col;
+    float4 texColor = SampleSprite(input.Tex, sourceMin, sourceMax) * input.Col;
     float alpha = texColor.a;
 
     bool hasNeighbour = false;
@@ -75,7 +70,7 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
                 continue;
 
             float2 offset = float2((float)x, (float)y) * texelSize;
-            float neighbourAlpha = SampleSprite(input.Tex + offset, sourceMin, sourceMax, paddingUv).a;
+            float neighbourAlpha = SampleSprite(input.Tex + offset, sourceMin, sourceMax).a;
 
             if (neighbourAlpha > 0.05)
             {
