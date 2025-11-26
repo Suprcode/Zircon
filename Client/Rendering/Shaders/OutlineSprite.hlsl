@@ -72,7 +72,8 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
 
     if (hasNeighbour)
     {
-        return float4(OutlineColor.rgb, OutlineColor.a);
+        // Draw a fully opaque outline regardless of the incoming vertex color or global opacity.
+        return float4(OutlineColor.rgb, 1.0);
     }
 
     return float4(0, 0, 0, 0);

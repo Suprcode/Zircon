@@ -419,7 +419,7 @@ namespace Client.Rendering.SharpDXD3D11
                 outline.Colour.R / 255f,
                 outline.Colour.G / 255f,
                 outline.Colour.B / 255f,
-                (outline.Colour.A / 255f) * SharpDXD3D11Manager.Opacity);
+                1f);
 
             SharpDXD3D11Manager.SpriteRenderer.DrawOutlined(
                 d3dTex,
