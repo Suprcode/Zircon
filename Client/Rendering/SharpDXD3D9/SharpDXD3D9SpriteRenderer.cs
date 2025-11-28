@@ -4,8 +4,8 @@ using SharpDX.Mathematics.Interop;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using D3D9ShaderBytecode = SharpDX.Direct3D9.ShaderBytecode;
-using ShaderFlags = SharpDX.Direct3D9.ShaderFlags;
+using D3DCompiler = SharpDX.D3DCompiler.ShaderBytecode;
+using D3DCompilerShaderFlags = SharpDX.D3DCompiler.ShaderFlags;
 using DxVector2 = SharpDX.Vector2;
 using NumericsMatrix3x2 = System.Numerics.Matrix3x2;
 
@@ -64,11 +64,11 @@ namespace Client.Rendering.SharpDXD3D9
             if (shaderPath == null)
                 return;
 
-            using (var vertexByteCode = D3D9ShaderBytecode.CompileFromFile(shaderPath, "VS", "vs_3_0", ShaderFlags.OptimizationLevel3))
-            using (var pixelByteCode = D3D9ShaderBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", ShaderFlags.OptimizationLevel3))
+            using (var vertexByteCode = D3DCompiler.CompileFromFile(shaderPath, "VS", "vs_3_0", D3DCompilerShaderFlags.OptimizationLevel3))
+            using (var pixelByteCode = D3DCompiler.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", D3DCompilerShaderFlags.OptimizationLevel3))
             {
-                _vertexShader = new VertexShader(_device, vertexByteCode);
-                _outlinePixelShader = new PixelShader(_device, pixelByteCode);
+                _vertexShader = new VertexShader(_device, vertexByteCode.Bytecode.Data);
+                _outlinePixelShader = new PixelShader(_device, pixelByteCode.Bytecode.Data);
             }
         }
 
