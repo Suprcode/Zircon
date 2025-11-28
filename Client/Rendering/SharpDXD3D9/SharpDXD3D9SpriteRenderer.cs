@@ -4,8 +4,11 @@ using SharpDX.D3DCompiler;
 using SharpDX.Mathematics.Interop;
 using System;
 using System.IO;
-using System.Numerics;
 using System.Runtime.InteropServices;
+using D3D9ConstantTable = SharpDX.Direct3D9.ConstantTable;
+using DxVector2 = SharpDX.Vector2;
+using DxVector4 = SharpDX.Vector4;
+using NumericsMatrix3x2 = System.Numerics.Matrix3x2;
 
 namespace Client.Rendering.SharpDXD3D9
 {
@@ -17,16 +20,16 @@ namespace Client.Rendering.SharpDXD3D9
         private PixelShader _outlinePixelShader;
         private VertexBuffer _vertexBuffer;
         private VertexDeclaration _vertexDeclaration;
-        private ConstantTable _vertexConstants;
-        private ConstantTable _pixelConstants;
+        private D3D9ConstantTable _vertexConstants;
+        private D3D9ConstantTable _pixelConstants;
 
         private const string OutlineShaderFileName = "OutlineSpriteD3D9.hlsl";
 
         [StructLayout(LayoutKind.Sequential)]
         private struct VertexType
         {
-            public Vector4 Position;
-            public Vector2 TexCoord;
+            public DxVector4 Position;
+            public DxVector2 TexCoord;
             public RawColorBGRA Color;
         }
 
@@ -67,8 +70,8 @@ namespace Client.Rendering.SharpDXD3D9
             using (var vertexByteCode = ShaderBytecode.CompileFromFile(shaderPath, "VS", "vs_3_0", ShaderFlags.OptimizationLevel3))
             using (var pixelByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", ShaderFlags.OptimizationLevel3))
             {
-                _vertexConstants = ShaderBytecode.GetConstantTable(vertexByteCode);
-                _pixelConstants = ShaderBytecode.GetConstantTable(pixelByteCode);
+                _vertexConstants = new D3D9ConstantTable(vertexByteCode);
+                _pixelConstants = new D3D9ConstantTable(pixelByteCode);
 
                 _vertexShader = new VertexShader(_device, vertexByteCode);
                 _outlinePixelShader = new PixelShader(_device, pixelByteCode);
@@ -88,7 +91,7 @@ namespace Client.Rendering.SharpDXD3D9
             });
         }
 
-        public void DrawOutlined(Texture texture, System.Drawing.RectangleF destination, System.Drawing.Rectangle? source, System.Drawing.Color color, Matrix3x2 transform, Color4 outlineColor, float outlineThickness)
+        public void DrawOutlined(Texture texture, System.Drawing.RectangleF destination, System.Drawing.Rectangle? source, System.Drawing.Color color, NumericsMatrix3x2 transform, Color4 outlineColor, float outlineThickness)
         {
             if (!SupportsOutlineShader || texture == null || texture.IsDisposed)
                 return;
@@ -135,10 +138,10 @@ namespace Client.Rendering.SharpDXD3D9
             UpdateOutlineConstants(desc.Width, desc.Height, outlineColor, outlineThickness, u1, v1, u2, v2);
 
             DataStream stream = _vertexBuffer.Lock(0, 0, LockFlags.Discard);
-            stream.Write(new VertexType { Position = new Vector4(left, top, 0f, 1f), TexCoord = new Vector2(u1, v1), Color = vertexColor });
-            stream.Write(new VertexType { Position = new Vector4(right, top, 0f, 1f), TexCoord = new Vector2(u2, v1), Color = vertexColor });
-            stream.Write(new VertexType { Position = new Vector4(left, bottom, 0f, 1f), TexCoord = new Vector2(u1, v2), Color = vertexColor });
-            stream.Write(new VertexType { Position = new Vector4(right, bottom, 0f, 1f), TexCoord = new Vector2(u2, v2), Color = vertexColor });
+            stream.Write(new VertexType { Position = new DxVector4(left, top, 0f, 1f), TexCoord = new DxVector2(u1, v1), Color = vertexColor });
+            stream.Write(new VertexType { Position = new DxVector4(right, top, 0f, 1f), TexCoord = new DxVector2(u2, v1), Color = vertexColor });
+            stream.Write(new VertexType { Position = new DxVector4(left, bottom, 0f, 1f), TexCoord = new DxVector2(u1, v2), Color = vertexColor });
+            stream.Write(new VertexType { Position = new DxVector4(right, bottom, 0f, 1f), TexCoord = new DxVector2(u2, v2), Color = vertexColor });
             _vertexBuffer.Unlock();
 
             _device.SetRenderState(RenderState.AlphaBlendEnable, true);
@@ -163,7 +166,7 @@ namespace Client.Rendering.SharpDXD3D9
             stateBlock.Apply();
         }
 
-        private void UpdateMatrix(Matrix3x2 transform, int backBufferWidth, int backBufferHeight)
+        private void UpdateMatrix(NumericsMatrix3x2 transform, int backBufferWidth, int backBufferHeight)
         {
             Matrix projection = Matrix.Identity;
             projection.M11 = 2f / backBufferWidth;
@@ -188,10 +191,10 @@ namespace Client.Rendering.SharpDXD3D9
         private void UpdateOutlineConstants(int texWidth, int texHeight, Color4 outlineColor, float outlineThickness, float u1, float v1, float u2, float v2)
         {
             _pixelConstants?.SetValue(_device, "OutlineColor", outlineColor);
-            _pixelConstants?.SetValue(_device, "TextureSize", new Vector2(texWidth, texHeight));
+            _pixelConstants?.SetValue(_device, "TextureSize", new DxVector2(texWidth, texHeight));
             _pixelConstants?.SetValue(_device, "OutlineThickness", outlineThickness);
             _pixelConstants?.SetValue(_device, "Padding", 0f);
-            _pixelConstants?.SetValue(_device, "SourceUV", new Vector4(u1, v1, u2, v2));
+            _pixelConstants?.SetValue(_device, "SourceUV", new DxVector4(u1, v1, u2, v2));
         }
 
         public void Dispose()
