@@ -248,6 +248,10 @@ namespace Client.Rendering.SharpDXD3D11
             if (!texture.IsValid)
                 return;
 
+            // Draw the outline first (when enabled) but continue to render the base sprite normally so it isn't affected by the
+            // outline shader's blending or opacity rules.
+            TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity);
+
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
             {
                 // Use Custom D3D11 Renderer for specific blend modes
@@ -309,13 +313,26 @@ namespace Client.Rendering.SharpDXD3D11
             finalTransform.M31 += translation.X;
             finalTransform.M32 += translation.Y;
 
+            Texture2D d3dTex = null;
+
+            if (texture.NativeHandle is SharpD3D11TextureResource texRes) d3dTex = texRes.Texture;
+            else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
+
+            if (d3dTex != null)
+            {
+                float w = d3dTex.Description.Width;
+                float h = d3dTex.Description.Height;
+                float drawW = sourceRectangle.HasValue ? sourceRectangle.Value.Width : w;
+                float drawH = sourceRectangle.HasValue ? sourceRectangle.Value.Height : h;
+
+                RectangleF geom = new RectangleF(0, 0, drawW, drawH);
+
+                // Draw outline first, then fall through to render the main sprite with the default shader.
+                TryDrawSpriteEffect(texture, geom, sourceRectangle, colour, finalTransform);
+            }
+
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
             {
-                Texture2D d3dTex = null;
-
-                if (texture.NativeHandle is SharpD3D11TextureResource texRes) d3dTex = texRes.Texture;
-                else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
-
                 if (d3dTex != null)
                 {
                     SharpDXD3D11Manager.FlushSprite();
@@ -378,6 +395,56 @@ namespace Client.Rendering.SharpDXD3D11
                 M11 = 1,
                 M22 = 1
             };
+        }
+
+        private void TryDrawSpriteEffect(RenderTexture texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
+        {
+            var effect = RenderingPipelineManager.GetSpriteShaderEffect();
+
+            if (!effect.HasValue || SharpDXD3D11Manager.SpriteRenderer == null)
+                return;
+
+            Texture2D d3dTex = null;
+
+            if (texture.NativeHandle is SharpD3D11TextureResource texRes) d3dTex = texRes.Texture;
+            else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
+
+            if (d3dTex == null)
+                return;
+
+            switch (effect.Value.Kind)
+            {
+                case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
+                    TryDrawOutlineEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
+                    break;
+            }
+        }
+
+        private void TryDrawOutlineEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform, RenderingPipelineManager.OutlineEffectSettings outline)
+        {
+            if (SharpDXD3D11Manager.SpriteRenderer == null || !SharpDXD3D11Manager.SpriteRenderer.SupportsOutlineShader)
+                return;
+
+            SharpDXD3D11Manager.FlushSprite();
+
+            var outlineColor = new RawColor4(
+                outline.Colour.R / 255f,
+                outline.Colour.G / 255f,
+                outline.Colour.B / 255f,
+                1f);
+
+            SharpDXD3D11Manager.SpriteRenderer.DrawOutlined(
+                texture,
+                geometry,
+                sourceRectangle,
+                colour,
+                transform,
+                // Use standard alpha blending so the outline draws fully opaque instead of screen blending with the scene.
+                BlendMode.NONE,
+                1f,
+                1f,
+                outlineColor,
+                outline.Thickness);
         }
 
         public RenderSurface GetCurrentSurface()

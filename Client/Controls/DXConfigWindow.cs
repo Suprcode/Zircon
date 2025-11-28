@@ -36,7 +36,7 @@ namespace Client.Controls
         public DXTab GameTab;
         private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox,
-            DrawParticlesCheckBox, DrawWeatherCheckBox;
+            DrawParticlesCheckBox, DrawWeatherCheckBox, ShowTargetOutlineCheckBox;
         public DXCheckBox DisplayHelmetCheckBox, HideChatBarCheckBox;
 
         public DXButton KeyBindButton;
@@ -87,15 +87,17 @@ namespace Client.Controls
             UserHealthCheckBox.Checked = Config.ShowUserHealth;
             MonsterHealthCheckBox.Checked = Config.ShowMonsterHealth;
             DamageNumbersCheckBox.Checked = Config.ShowDamageNumbers;
+            DrawParticlesCheckBox.Checked = Config.DrawParticles;
+            HideChatBarCheckBox.Checked = Config.HideChatBar;
+
             EscapeCloseAllCheckBox.Checked = Config.EscapeCloseAll;
             ShiftOpenChatCheckBox.Checked = Config.ShiftOpenChat;
             RightClickDeTargetCheckBox.Checked = Config.RightClickDeTarget;
             MonsterBoxVisibleCheckBox.Checked = Config.MonsterBoxVisible;
             LogChatCheckBox.Checked = Config.LogChat;
             DrawEffectsCheckBox.Checked = Config.DrawEffects;
-            DrawParticlesCheckBox.Checked = Config.DrawParticles;
             DrawWeatherCheckBox.Checked = Config.DrawWeather;
-            HideChatBarCheckBox.Checked = Config.HideChatBar;
+            ShowTargetOutlineCheckBox.Checked = Config.ShowTargetOutline;
 
             LocalForeColourBox.BackColour = Config.LocalTextForeColour;
             GMWhisperInForeColourBox.BackColour = Config.GMWhisperInTextForeColour;
@@ -531,10 +533,17 @@ namespace Client.Controls
             };
             DrawWeatherCheckBox.Location = new Point(270 - DrawWeatherCheckBox.Size.Width, 160);
 
+            ShowTargetOutlineCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabShowTargetOutlineLabel },
+                Parent = GameTab,
+            };
+            ShowTargetOutlineCheckBox.Location = new Point(270 - ShowTargetOutlineCheckBox.Size.Width, 185);
+
             KeyBindButton = new DXButton
             {
                 Parent = GameTab,
-                Location = new Point(190, 185),
+                Location = new Point(190, 210),
                 Size = new Size(80, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
                 Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabKeyBindButtonLabel }
@@ -1061,6 +1070,8 @@ namespace Client.Controls
             Config.ShowUserHealth = UserHealthCheckBox.Checked;
             Config.ShowMonsterHealth = MonsterHealthCheckBox.Checked;
             Config.ShowDamageNumbers = DamageNumbersCheckBox.Checked;
+            Config.DrawParticles = DrawParticlesCheckBox.Checked;
+            Config.HideChatBar = HideChatBarCheckBox.Checked;
 
             Config.EscapeCloseAll = EscapeCloseAllCheckBox.Checked;
             Config.ShiftOpenChat = ShiftOpenChatCheckBox.Checked;
@@ -1068,9 +1079,8 @@ namespace Client.Controls
             Config.MonsterBoxVisible = MonsterBoxVisibleCheckBox.Checked;
             Config.LogChat = LogChatCheckBox.Checked;
             Config.DrawEffects = DrawEffectsCheckBox.Checked;
-            Config.DrawParticles = DrawParticlesCheckBox.Checked;
             Config.DrawWeather = DrawWeatherCheckBox.Checked;
-            Config.HideChatBar = HideChatBarCheckBox.Checked;
+            Config.ShowTargetOutline = ShowTargetOutlineCheckBox.Checked;
 
             if (volumeChanged)
                 DXSoundManager.AdjustVolume();
@@ -1543,6 +1553,29 @@ namespace Client.Controls
                     LogChatCheckBox = null;
                 }
 
+                if (DrawParticlesCheckBox != null)
+                {
+                    if (!DrawParticlesCheckBox.IsDisposed)
+                        DrawParticlesCheckBox.Dispose();
+
+                    DrawParticlesCheckBox = null;
+                }
+
+                if (DrawWeatherCheckBox != null)
+                {
+                    if (!DrawWeatherCheckBox.IsDisposed)
+                        DrawWeatherCheckBox.Dispose();
+
+                    DrawWeatherCheckBox = null;
+                }
+
+                if (ShowTargetOutlineCheckBox != null)
+                {
+                    if (!ShowTargetOutlineCheckBox.IsDisposed)
+                        ShowTargetOutlineCheckBox.Dispose();
+                    ShowTargetOutlineCheckBox = null;
+                }
+
                 if (KeyBindButton != null)
                 {
                     if (!KeyBindButton.IsDisposed)
@@ -1550,6 +1583,7 @@ namespace Client.Controls
 
                     KeyBindButton = null;
                 }
+
                 #endregion
 
                 #region Network

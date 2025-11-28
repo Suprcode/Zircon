@@ -6,6 +6,7 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Color = System.Drawing.Color;
@@ -24,13 +25,17 @@ namespace Client.Rendering.SharpDXD3D11
         private readonly DeviceContext _context;
         private VertexShader _vertexShader;
         private PixelShader _pixelShader;
+        private PixelShader _outlinePixelShader;
         private InputLayout _inputLayout;
         private Buffer _vertexBuffer;
         private Buffer _matrixBuffer;
+        private Buffer _outlineBuffer;
         private SamplerState _samplerState;
 
         private readonly Dictionary<BlendMode, BlendState> _blendStates = new Dictionary<BlendMode, BlendState>();
         private readonly Dictionary<Texture2D, ShaderResourceView> _srvCache = new Dictionary<Texture2D, ShaderResourceView>();
+
+        private const string OutlineShaderFileName = "OutlineSprite.hlsl";
 
         private static readonly string ShaderSource = @"
             cbuffer MatrixBuffer : register(b0)
@@ -87,6 +92,38 @@ namespace Client.Rendering.SharpDXD3D11
             }
         }
 
+        private readonly struct SpriteEffect
+        {
+            public PixelShader Shader { get; }
+            public Buffer? ConstantBuffer { get; }
+            public int ConstantBufferSizeInBytes { get; }
+            public float GeometryExpand { get; }
+            public bool ExpandUvs { get; }
+            public Action<DataStream>? WriteConstants { get; }
+
+            public bool IsValid => Shader != null;
+
+            public SpriteEffect(PixelShader shader, Buffer? constantBuffer, int constantBufferSizeInBytes, float geometryExpand, bool expandUvs, Action<DataStream>? writeConstants)
+            {
+                Shader = shader;
+                ConstantBuffer = constantBuffer;
+                ConstantBufferSizeInBytes = constantBufferSizeInBytes;
+                GeometryExpand = geometryExpand;
+                ExpandUvs = expandUvs;
+                WriteConstants = writeConstants;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct OutlineBufferType
+        {
+            public RawColor4 OutlineColor;
+            public Vector2 TextureSize;
+            public float OutlineThickness;
+            public float Padding;
+            public Vector4 SourceUV;
+        }
+
         public SharpDXD3D11SpriteRenderer(Device device)
         {
             _device = device ?? throw new ArgumentNullException(nameof(device));
@@ -117,6 +154,51 @@ namespace Client.Rendering.SharpDXD3D11
             {
                 _pixelShader = new PixelShader(_device, pixelShaderByteCode);
             }
+
+            InitializeOutlineShader();
+        }
+
+        private void InitializeOutlineShader()
+        {
+            string shaderPath = FindOutlineShaderPath();
+
+            if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
+                return;
+
+            using (var pixelShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_5_0"))
+            {
+                _outlinePixelShader = new PixelShader(_device, pixelShaderByteCode);
+            }
+
+            _outlineBuffer = new Buffer(_device, new BufferDescription
+            {
+                Usage = ResourceUsage.Dynamic,
+                SizeInBytes = Utilities.SizeOf<OutlineBufferType>(),
+                BindFlags = BindFlags.ConstantBuffer,
+                CpuAccessFlags = CpuAccessFlags.Write,
+                OptionFlags = ResourceOptionFlags.None,
+                StructureByteStride = 0
+            });
+        }
+
+        private static string FindOutlineShaderPath()
+        {
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
+
+            string[] candidates = new[]
+            {
+                Path.Combine(baseDirectory, "Rendering", "Shaders", OutlineShaderFileName),
+                Path.Combine(baseDirectory, "Shaders", OutlineShaderFileName),
+                Path.Combine(baseDirectory, OutlineShaderFileName)
+            };
+
+            foreach (string candidate in candidates)
+            {
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+
+            return null;
         }
 
         private void InitializeBuffers()
@@ -229,12 +311,62 @@ namespace Client.Rendering.SharpDXD3D11
             _blendStates[mode] = new BlendState(_device, desc);
         }
 
+        public bool SupportsOutlineShader => _outlinePixelShader != null && _outlineBuffer != null;
+
         public void Draw(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate)
+        {
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _pixelShader, null);
+        }
+
+        public void DrawOutlined(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 outlineColor, float outlineThickness)
+        {
+            var outlineEffect = CreateOutlineEffect(texture, source, outlineColor, outlineThickness);
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _outlinePixelShader ?? _pixelShader, outlineEffect);
+        }
+
+        private SpriteEffect? CreateOutlineEffect(Texture2D texture, RectangleF? source, RawColor4 outlineColor, float outlineThickness)
+        {
+            if (!SupportsOutlineShader || _outlinePixelShader == null)
+                return null;
+
+            var texDesc = texture.Description;
+            var texWidth = texDesc.Width;
+            var texHeight = texDesc.Height;
+
+            float u1 = 0, v1 = 0, u2 = 1, v2 = 1;
+            if (source.HasValue)
+            {
+                u1 = source.Value.Left / texWidth;
+                v1 = source.Value.Top / texHeight;
+                u2 = source.Value.Right / texWidth;
+                v2 = source.Value.Bottom / texHeight;
+            }
+
+            var outlineBuffer = new OutlineBufferType
+            {
+                OutlineColor = outlineColor,
+                TextureSize = new Vector2(texWidth, texHeight),
+                OutlineThickness = outlineThickness,
+                Padding = 0f,
+                SourceUV = new Vector4(u1, v1, u2, v2)
+            };
+
+            return new SpriteEffect(
+                _outlinePixelShader,
+                _outlineBuffer,
+                Utilities.SizeOf<OutlineBufferType>(),
+                outlineThickness,
+                true,
+                stream => stream.Write(outlineBuffer));
+        }
+
+        private void DrawInternal(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, PixelShader pixelShader, SpriteEffect? effect)
         {
             if (texture == null) return;
 
-            // Ensure we have a valid viewport to calculate projection from
-            // Fix: Retrieve the current RenderTargetView from OutputMerger and use its resource size.
+            var activePixelShader = effect?.Shader ?? pixelShader ?? _pixelShader;
+            if (activePixelShader == null) return;
+
             var rtv = _context.OutputMerger.GetRenderTargets(1);
             if (rtv != null && rtv.Length > 0 && rtv[0] != null)
             {
@@ -251,53 +383,76 @@ namespace Client.Rendering.SharpDXD3D11
                 rtv[0].Dispose();
             }
 
-            // Get or Create SRV
             if (!_srvCache.TryGetValue(texture, out var srv))
             {
                 srv = new ShaderResourceView(_device, texture);
                 _srvCache[texture] = srv;
             }
 
-            // 1. Setup Input Assembler
             _context.InputAssembler.InputLayout = _inputLayout;
             _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
             _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<VertexType>(), 0));
 
-            // 2. Update Vertex Buffer (Quad)
-            UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity);
+            bool usingEffect = effect.HasValue && effect.Value.IsValid;
+            float geometryExpand = usingEffect ? effect.Value.GeometryExpand : 0f;
+            bool expandUvs = usingEffect && effect.Value.ExpandUvs;
 
-            // 3. Update Constants (Matrix)
+            UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity, geometryExpand, expandUvs);
             UpdateMatrixBuffer(transform);
 
-            // 4. Setup Shaders
             _context.VertexShader.Set(_vertexShader);
-            _context.PixelShader.Set(_pixelShader);
+            _context.PixelShader.Set(activePixelShader);
             _context.PixelShader.SetShaderResource(0, srv);
             _context.PixelShader.SetSampler(0, _samplerState);
             _context.VertexShader.SetConstantBuffer(0, _matrixBuffer);
 
-            // 5. Setup Blend State
+            ApplyEffect(effect);
+
             if (_blendStates.TryGetValue(blendMode, out var blendState))
             {
-                // Calculate BlendFactor color
                 var factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
                 _context.OutputMerger.SetBlendState(blendState, factor, -1);
             }
             else
             {
-                // Fallback to Normal/Screen
-                 var factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
+                var factor = new RawColor4(blendRate, blendRate, blendRate, blendRate);
                 _context.OutputMerger.SetBlendState(_blendStates[BlendMode.NORMAL], factor, -1);
             }
 
-            // 6. Draw
             _context.Draw(4, 0);
 
-            // Reset Blend State (Optional, but good hygiene if mixing with D2D)
+            _context.PixelShader.SetConstantBuffer(1, null);
             _context.OutputMerger.SetBlendState(null, null, -1);
         }
 
-        private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity)
+        private void ApplyEffect(SpriteEffect? effect)
+        {
+            if (!effect.HasValue || !effect.Value.IsValid)
+            {
+                _context.PixelShader.SetConstantBuffer(1, null);
+                return;
+            }
+
+            var spriteEffect = effect.Value;
+
+            if (spriteEffect.ConstantBuffer != null && spriteEffect.WriteConstants != null)
+            {
+                DataBox box = _context.MapSubresource(spriteEffect.ConstantBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                using (var stream = new DataStream(box.DataPointer, spriteEffect.ConstantBufferSizeInBytes, true, true))
+                {
+                    spriteEffect.WriteConstants(stream);
+                }
+                _context.UnmapSubresource(spriteEffect.ConstantBuffer, 0);
+
+                _context.PixelShader.SetConstantBuffer(1, spriteEffect.ConstantBuffer);
+            }
+            else
+            {
+                _context.PixelShader.SetConstantBuffer(1, null);
+            }
+        }
+
+        private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity, float geometryExpand, bool expandUvs)
         {
             float left = dest.Left;
             float right = dest.Right;
@@ -311,6 +466,24 @@ namespace Client.Rendering.SharpDXD3D11
                 v1 = source.Value.Top / (float)texHeight;
                 u2 = source.Value.Right / (float)texWidth;
                 v2 = source.Value.Bottom / (float)texHeight;
+            }
+
+            if (geometryExpand > 0)
+            {
+                left -= geometryExpand;
+                right += geometryExpand;
+                top -= geometryExpand;
+                bottom += geometryExpand;
+
+                if (expandUvs)
+                {
+                    float uPad = geometryExpand / texWidth;
+                    float vPad = geometryExpand / texHeight;
+                    u1 -= uPad;
+                    v1 -= vPad;
+                    u2 += uPad;
+                    v2 += vPad;
+                }
             }
 
             var col = new RawColor4(color.R / 255f, color.G / 255f, color.B / 255f, (color.A / 255f) * opacity);
@@ -396,9 +569,11 @@ namespace Client.Rendering.SharpDXD3D11
 
             _samplerState?.Dispose();
             _matrixBuffer?.Dispose();
+            _outlineBuffer?.Dispose();
             _vertexBuffer?.Dispose();
             _inputLayout?.Dispose();
             _pixelShader?.Dispose();
+            _outlinePixelShader?.Dispose();
             _vertexShader?.Dispose();
         }
     }

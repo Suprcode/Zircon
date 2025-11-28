@@ -41,6 +41,11 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Rendering\Shaders\OutlineSprite.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Zircon.ico" />
   </ItemGroup>
   <ItemGroup>

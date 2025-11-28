@@ -26,6 +26,7 @@ namespace Client.Rendering
         private static bool _fallbackBlending;
         private static float _fallbackBlendRate = 1F;
         private static BlendMode _fallbackBlendMode = BlendMode.NORMAL;
+        private static SpriteShaderEffectRequest? _spriteShaderEffect;
         private static float _fallbackLineWidth = 1F;
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
         private static readonly object GraphicsLock = new();
@@ -334,6 +335,18 @@ namespace Client.Rendering
 
             _fallbackLineWidth = width;
         }
+
+        public static void EnableOutlineEffect(Color colour, float thickness)
+        {
+            _spriteShaderEffect = new SpriteShaderEffectRequest(new OutlineEffectSettings(colour, thickness));
+        }
+
+        public static void DisableOutlineEffect()
+        {
+            _spriteShaderEffect = null;
+        }
+
+        internal static SpriteShaderEffectRequest? GetSpriteShaderEffect() => _spriteShaderEffect;
 
         public static void DrawLine(IReadOnlyList<LinePoint> points, Color colour)
         {
@@ -745,6 +758,35 @@ namespace Client.Rendering
             if (t < 1f / 2f) return q;
             if (t < 2f / 3f) return p + (q - p) * (2f / 3f - t) * 6f;
             return p;
+        }
+
+        internal readonly struct OutlineEffectSettings
+        {
+            public Color Colour { get; }
+            public float Thickness { get; }
+
+            public OutlineEffectSettings(Color colour, float thickness)
+            {
+                Colour = colour;
+                Thickness = thickness;
+            }
+        }
+
+        internal readonly struct SpriteShaderEffectRequest
+        {
+            public SpriteShaderEffectKind Kind { get; }
+            public OutlineEffectSettings Outline { get; }
+
+            public SpriteShaderEffectRequest(OutlineEffectSettings outline)
+            {
+                Kind = SpriteShaderEffectKind.Outline;
+                Outline = outline;
+            }
+        }
+
+        internal enum SpriteShaderEffectKind
+        {
+            Outline
         }
     }
 }
