@@ -67,8 +67,14 @@ namespace Client.Rendering.SharpDXD3D9
             using (var vertexByteCode = D3DCompiler.CompileFromFile(shaderPath, "VS", "vs_3_0", D3DCompilerShaderFlags.OptimizationLevel3))
             using (var pixelByteCode = D3DCompiler.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", D3DCompilerShaderFlags.OptimizationLevel3))
             {
-                _vertexShader = new VertexShader(_device, vertexByteCode);
-                _outlinePixelShader = new PixelShader(_device, pixelByteCode);
+                byte[] vertexShaderBytes = new byte[vertexByteCode.BufferSize];
+                Marshal.Copy(vertexByteCode.BufferPointer, vertexShaderBytes, 0, vertexShaderBytes.Length);
+
+                byte[] pixelShaderBytes = new byte[pixelByteCode.BufferSize];
+                Marshal.Copy(pixelByteCode.BufferPointer, pixelShaderBytes, 0, pixelShaderBytes.Length);
+
+                _vertexShader = new VertexShader(_device, vertexShaderBytes);
+                _outlinePixelShader = new PixelShader(_device, pixelShaderBytes);
             }
         }
 
