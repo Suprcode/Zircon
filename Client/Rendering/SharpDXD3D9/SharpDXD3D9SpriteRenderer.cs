@@ -94,6 +94,8 @@ namespace Client.Rendering.SharpDXD3D9
             if (!SupportsOutlineShader || texture == null || texture.IsDisposed)
                 return;
 
+            float effectiveThickness = outlineThickness > 0 ? 1.0f : 0.0f;
+
             using var stateBlock = new StateBlock(_device, StateBlockType.All);
             stateBlock.Capture();
 
@@ -113,15 +115,15 @@ namespace Client.Rendering.SharpDXD3D9
                 v2 = source.Value.Bottom / (float)desc.Height;
             }
 
-            if (outlineThickness > 0)
+            if (effectiveThickness > 0)
             {
-                left -= outlineThickness;
-                right += outlineThickness;
-                top -= outlineThickness;
-                bottom += outlineThickness;
+                left -= effectiveThickness;
+                right += effectiveThickness;
+                top -= effectiveThickness;
+                bottom += effectiveThickness;
 
-                float uPad = outlineThickness / desc.Width;
-                float vPad = outlineThickness / desc.Height;
+                float uPad = effectiveThickness / desc.Width;
+                float vPad = effectiveThickness / desc.Height;
                 u1 -= uPad;
                 v1 -= vPad;
                 u2 += uPad;
@@ -133,7 +135,7 @@ namespace Client.Rendering.SharpDXD3D9
             var viewport = _device.Viewport;
 
             UpdateMatrix(transform, viewport.Width, viewport.Height);
-            UpdateOutlineConstants(desc.Width, desc.Height, outlineColor, outlineThickness, u1, v1, u2, v2);
+            UpdateOutlineConstants(desc.Width, desc.Height, outlineColor, effectiveThickness, u1, v1, u2, v2);
 
             DataStream stream = _vertexBuffer.Lock(0, 0, LockFlags.Discard);
             stream.Write(new VertexType { Position = new DxVector2(left, top), TexCoord = new DxVector2(u1, v1), Color = vertexColor });

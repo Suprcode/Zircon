@@ -47,13 +47,10 @@ float4 PS_OUTLINE(PS_INPUT input) : COLOR0
     float alpha = texColor.a;
 
     bool hasNeighbour = false;
-    float outlineThickness = OutlineParams.z;
-    float minNeighbourDistance = outlineThickness + 1.0;
-
-    // Avoid gradient/loop restrictions in ps_3_0 by clamping the loop bounds to a
-    // small, fixed kernel that still honors the requested thickness.
-    static const int MAX_RADIUS = 4;
-    int radius = (int)min(outlineThickness, (float)MAX_RADIUS);
+    // D3D9 ps_3_0 has limited dynamic flow-control support; use a small, fixed
+    // kernel suitable for a 1px outline (the only thickness this path supports).
+    static const int MAX_RADIUS = 1;
+    int radius = MAX_RADIUS;
 
     [unroll]
     for (int x = -MAX_RADIUS; x <= MAX_RADIUS; ++x)
@@ -70,24 +67,13 @@ float4 PS_OUTLINE(PS_INPUT input) : COLOR0
             if (neighbourAlpha > 0.05)
             {
                 hasNeighbour = true;
-                float distance = length(float2((float)x, (float)y));
-                minNeighbourDistance = min(minNeighbourDistance, distance);
             }
         }
     }
 
     if (alpha <= 0.05 && hasNeighbour)
     {
-        // Avoid dividing by zero: early out for a 1-pixel outline, otherwise compute
-        // a smooth falloff with a guaranteed non-zero denominator.
-        if (outlineThickness <= 1.0)
-            return float4(OutlineColor.rgb, 1.0);
-
-        float denom = max(outlineThickness - 1.0, 1.0);
-        float falloff = saturate((minNeighbourDistance - 1.0) / denom);
-        float outlineAlpha = lerp(1.0, 0.5, falloff);
-
-        return float4(OutlineColor.rgb, outlineAlpha);
+        return float4(OutlineColor.rgb, OutlineColor.a);
     }
 
     return float4(0, 0, 0, 0);
