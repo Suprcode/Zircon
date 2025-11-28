@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using D3DCompiler = SharpDX.D3DCompiler.ShaderBytecode;
-using D3DCompilerResult = SharpDX.D3DCompiler.CompilationResult;
 using D3DCompilerShaderFlags = SharpDX.D3DCompiler.ShaderFlags;
+using EffectFlags = SharpDX.D3DCompiler.EffectFlags;
 using DxVector2 = SharpDX.Vector2;
 using NumericsMatrix3x2 = System.Numerics.Matrix3x2;
 
@@ -65,17 +65,11 @@ namespace Client.Rendering.SharpDXD3D9
             if (shaderPath == null)
                 return;
 
-            using (D3DCompilerResult vertexByteCode = D3DCompiler.CompileFromFile(shaderPath, "VS", "vs_3_0", D3DCompilerShaderFlags.OptimizationLevel3))
-            using (D3DCompilerResult pixelByteCode = D3DCompiler.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", D3DCompilerShaderFlags.OptimizationLevel3))
+            using (var vertexByteCode = D3DCompiler.CompileFromFile(shaderPath, "VS", "vs_3_0", D3DCompilerShaderFlags.OptimizationLevel3, EffectFlags.None))
+            using (var pixelByteCode = D3DCompiler.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", D3DCompilerShaderFlags.OptimizationLevel3, EffectFlags.None))
             {
-                byte[] vertexShaderBytes = vertexByteCode.Bytecode?.Data?.ReadRange<byte>((int)vertexByteCode.Bytecode.BufferSize);
-                byte[] pixelShaderBytes = pixelByteCode.Bytecode?.Data?.ReadRange<byte>((int)pixelByteCode.Bytecode.BufferSize);
-
-                if (vertexShaderBytes == null || pixelShaderBytes == null)
-                    return;
-
-                _vertexShader = new VertexShader(_device, vertexShaderBytes);
-                _outlinePixelShader = new PixelShader(_device, pixelShaderBytes);
+                _vertexShader = new VertexShader(_device, vertexByteCode);
+                _outlinePixelShader = new PixelShader(_device, pixelByteCode);
             }
         }
 
