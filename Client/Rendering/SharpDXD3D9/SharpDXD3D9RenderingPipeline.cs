@@ -302,6 +302,8 @@ namespace Client.Rendering.SharpDXD3D9
 
             try
             {
+                TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, NumericsMatrix3x2.Identity);
+
                 SharpDXD3D9Manager.Sprite.Transform = DxMatrix.Scaling(scaleX, scaleY, 1F);
 
                 float translateX = destinationRectangle.X / scaleX;
@@ -328,6 +330,22 @@ namespace Client.Rendering.SharpDXD3D9
 
             if (dxTexture.IsDisposed)
                 return;
+
+            NumericsMatrix3x2 finalTransform = transform;
+
+            if (center.X != 0 || center.Y != 0)
+            {
+                finalTransform = NumericsMatrix3x2.CreateTranslation(-center.X, -center.Y) * finalTransform;
+            }
+
+            finalTransform.M31 += translation.X;
+            finalTransform.M32 += translation.Y;
+
+            var levelDesc = dxTexture.GetLevelDescription(0);
+            float width = sourceRectangle?.Width ?? levelDesc.Width;
+            float height = sourceRectangle?.Height ?? levelDesc.Height;
+
+            TryDrawSpriteEffect(texture, new GdiRectangleF(0, 0, width, height), sourceRectangle, colour, finalTransform);
 
             DxMatrix original = SharpDXD3D9Manager.Sprite.Transform;
             DxMatrix converted = new DxMatrix
@@ -365,6 +383,47 @@ namespace Client.Rendering.SharpDXD3D9
             }
 
             SharpDXD3D9Manager.Sprite.Transform = original;
+        }
+
+        private void TryDrawSpriteEffect(RenderTexture texture, GdiRectangleF geometry, GdiRectangle? sourceRectangle, GdiColor colour, NumericsMatrix3x2 transform)
+        {
+            var effect = RenderingPipelineManager.GetSpriteShaderEffect();
+
+            if (!effect.HasValue || SharpDXD3D9Manager.SpriteRenderer == null)
+                return;
+
+            if (texture.NativeHandle is not Texture dxTexture || dxTexture.IsDisposed)
+                return;
+
+            switch (effect.Value.Kind)
+            {
+                case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
+                    TryDrawOutlineEffect(dxTexture, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
+                    break;
+            }
+        }
+
+        private void TryDrawOutlineEffect(Texture texture, GdiRectangleF geometry, GdiRectangle? sourceRectangle, GdiColor colour, NumericsMatrix3x2 transform, RenderingPipelineManager.OutlineEffectSettings outline)
+        {
+            if (SharpDXD3D9Manager.SpriteRenderer == null || !SharpDXD3D9Manager.SpriteRenderer.SupportsOutlineShader)
+                return;
+
+            SharpDXD3D9Manager.Sprite.Flush();
+
+            var outlineColor = new Color4(
+                outline.Colour.R / 255f,
+                outline.Colour.G / 255f,
+                outline.Colour.B / 255f,
+                1f);
+
+            SharpDXD3D9Manager.SpriteRenderer.DrawOutlined(
+                texture,
+                geometry,
+                sourceRectangle,
+                colour,
+                transform,
+                outlineColor,
+                outline.Thickness);
         }
 
         public RenderSurface GetCurrentSurface()
