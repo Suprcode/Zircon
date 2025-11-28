@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using D3D9ConstantTable = SharpDX.Direct3D9.ConstantTable;
-using D3DCompilerShaderBytecode = SharpDX.D3DCompiler.ShaderBytecode;
-using ShaderFlags = SharpDX.D3DCompiler.ShaderFlags;
+using D3D9ShaderBytecode = SharpDX.Direct3D9.ShaderBytecode;
+using ShaderFlags = SharpDX.Direct3D9.ShaderFlags;
 using DxVector2 = SharpDX.Vector2;
 using DxVector4 = SharpDX.Vector4;
 using NumericsMatrix3x2 = System.Numerics.Matrix3x2;
@@ -68,16 +68,11 @@ namespace Client.Rendering.SharpDXD3D9
             if (shaderPath == null)
                 return;
 
-            using (var vertexByteCode = D3DCompilerShaderBytecode.CompileFromFile(shaderPath, "VS", "vs_3_0", ShaderFlags.OptimizationLevel3))
-            using (var pixelByteCode = D3DCompilerShaderBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", ShaderFlags.OptimizationLevel3))
+            using (var vertexByteCode = D3D9ShaderBytecode.CompileFromFile(shaderPath, "VS", "vs_3_0", ShaderFlags.OptimizationLevel3))
+            using (var pixelByteCode = D3D9ShaderBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", ShaderFlags.OptimizationLevel3))
             {
-                var vertexBytes = vertexByteCode.Data.ReadRange<byte>((int)vertexByteCode.Data.Length);
-                vertexByteCode.Data.Position = 0;
-                var pixelBytes = pixelByteCode.Data.ReadRange<byte>((int)pixelByteCode.Data.Length);
-                pixelByteCode.Data.Position = 0;
-
-                _vertexConstants = D3D9ConstantTable.FromMemory(vertexBytes);
-                _pixelConstants = D3D9ConstantTable.FromMemory(pixelBytes);
+                _vertexConstants = vertexByteCode.ConstantTable;
+                _pixelConstants = pixelByteCode.ConstantTable;
 
                 _vertexShader = new VertexShader(_device, vertexByteCode);
                 _outlinePixelShader = new PixelShader(_device, pixelByteCode);
