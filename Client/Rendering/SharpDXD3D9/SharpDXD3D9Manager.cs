@@ -32,6 +32,7 @@ namespace Client.Rendering.SharpDXD3D9
         public static Device Device { get; private set; }
         public static Sprite Sprite { get; private set; }
         public static Line Line { get; private set; }
+        public static SharpDXD3D9SpriteRenderer SpriteRenderer { get; private set; }
 
         public static Surface CurrentSurface { get; private set; }
         public static Surface MainSurface { get; private set; }
@@ -198,6 +199,7 @@ namespace Client.Rendering.SharpDXD3D9
         {
             Sprite = new Sprite(Device);
             Line = new Line(Device) { Width = 1F };
+            SpriteRenderer = new SharpDXD3D9SpriteRenderer(Device);
 
             MainSurface = Device.GetBackBuffer(0, 0);
             CurrentSurface = MainSurface;
@@ -254,6 +256,12 @@ namespace Client.Rendering.SharpDXD3D9
                 }
 
                 Line = null;
+            }
+
+            if (SpriteRenderer != null)
+            {
+                SpriteRenderer.Dispose();
+                SpriteRenderer = null;
             }
 
             if (CurrentSurface != null)
