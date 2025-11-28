@@ -30,12 +30,20 @@ PS_INPUT VS(VS_INPUT input)
     return output;
 }
 
-float4 SampleSprite(float2 uv, float2 sourceMin, float2 sourceMax)
+float SampleBaseAlpha(float2 uv, float2 sourceMin, float2 sourceMax)
 {
+    // Only consider alpha within the sprite's UV bounds to avoid suppressing the shadow outside the image.
     if (any(uv < sourceMin) || any(uv > sourceMax))
-        return float4(0, 0, 0, 0);
+        return 0.0;
 
-    return tex2D(shaderTexture, uv);
+    return tex2D(shaderTexture, uv).a;
+}
+
+float SampleShadowAlpha(float2 uv, float2 sourceMin, float2 sourceMax)
+{
+    // Clamp to the sprite region so the shadow can sample the edge texels while still ignoring atlas neighbors.
+    float2 clampedUv = clamp(uv, sourceMin, sourceMax);
+    return tex2D(shaderTexture, clampedUv).a;
 }
 
 float4 PS_DROPSHADOW(PS_INPUT input) : COLOR0
@@ -44,8 +52,8 @@ float4 PS_DROPSHADOW(PS_INPUT input) : COLOR0
     float2 sourceMax = SourceUV.zw;
     float2 texelSize = 1.0 / ShadowParams1.xy;
 
-    float4 baseSample = SampleSprite(input.Tex, sourceMin, sourceMax);
-    if (baseSample.a > 0.05)
+    float baseAlpha = SampleBaseAlpha(input.Tex, sourceMin, sourceMax);
+    if (baseAlpha > 0.05)
         return float4(0, 0, 0, 0);
 
     float blur = max(ShadowParams1.z, 0.01);
@@ -64,7 +72,7 @@ float4 PS_DROPSHADOW(PS_INPUT input) : COLOR0
         for (int y = -RADIUS; y <= RADIUS; ++y)
         {
             float2 offset = float2((float)x, (float)y) * texelSize;
-            float sampleAlpha = SampleSprite(shadowUv + offset, sourceMin, sourceMax).a;
+            float sampleAlpha = SampleShadowAlpha(shadowUv + offset, sourceMin, sourceMax);
             float distance = length(float2((float)x, (float)y));
             float weight = exp(-distance * distance / blurDenominator);
 
