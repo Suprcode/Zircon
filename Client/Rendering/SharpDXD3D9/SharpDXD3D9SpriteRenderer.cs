@@ -184,9 +184,9 @@ namespace Client.Rendering.SharpDXD3D9
 
         private void UpdateOutlineConstants(int texWidth, int texHeight, Color4 outlineColor, float outlineThickness, float u1, float v1, float u2, float v2)
         {
-            _device.SetPixelShaderConstant(0, new[] { outlineColor.Red, outlineColor.Green, outlineColor.Blue, outlineColor.Alpha });
-            _device.SetPixelShaderConstant(1, new[] { (float)texWidth, (float)texHeight, outlineThickness, 0f });
-            _device.SetPixelShaderConstant(2, new[] { u1, v1, u2, v2 });
+            _device.SetPixelShaderConstant(4, new[] { outlineColor.Red, outlineColor.Green, outlineColor.Blue, outlineColor.Alpha });
+            _device.SetPixelShaderConstant(5, new[] { texWidth, texHeight, outlineThickness, 0f });
+            _device.SetPixelShaderConstant(6, new[] { u1, v1, u2, v2 });
         }
 
         public void Dispose()

@@ -1,10 +1,8 @@
-float4x4 Matrix;
+float4x4 Matrix : register(c0);
 
-float4 OutlineColor;
-float2 TextureSize;
-float OutlineThickness;
-float Padding;
-float4 SourceUV; // xy = min, zw = max
+float4 OutlineColor : register(c4);
+float4 OutlineParams : register(c5); // xy = texture size, z = outline thickness, w = padding
+float4 SourceUV : register(c6); // xy = min, zw = max
 
 struct VS_INPUT
 {
@@ -43,14 +41,15 @@ float4 PS_OUTLINE(PS_INPUT input) : COLOR0
 {
     float2 sourceMin = SourceUV.xy;
     float2 sourceMax = SourceUV.zw;
-    float2 texelSize = 1.0 / TextureSize;
+    float2 texelSize = 1.0 / OutlineParams.xy;
 
     float4 texColor = SampleSprite(input.Tex, sourceMin, sourceMax) * input.Col;
     float alpha = texColor.a;
 
     bool hasNeighbour = false;
-    float minNeighbourDistance = OutlineThickness + 1.0;
-    int radius = (int)ceil(OutlineThickness);
+    float outlineThickness = OutlineParams.z;
+    float minNeighbourDistance = outlineThickness + 1.0;
+    int radius = (int)ceil(outlineThickness);
 
     for (int x = -radius; x <= radius; ++x)
     {
@@ -73,7 +72,7 @@ float4 PS_OUTLINE(PS_INPUT input) : COLOR0
 
     if (alpha <= 0.05 && hasNeighbour)
     {
-        float falloff = (OutlineThickness <= 1.0) ? 0.0 : saturate((minNeighbourDistance - 1.0) / max(1.0, OutlineThickness - 1.0));
+        float falloff = (outlineThickness <= 1.0) ? 0.0 : saturate((minNeighbourDistance - 1.0) / max(1.0, outlineThickness - 1.0));
         float outlineAlpha = lerp(1.0, 0.5, falloff);
         return float4(OutlineColor.rgb, outlineAlpha);
     }
