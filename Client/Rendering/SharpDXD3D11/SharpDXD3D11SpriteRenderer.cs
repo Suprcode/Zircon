@@ -160,7 +160,7 @@ namespace Client.Rendering.SharpDXD3D11
 
         private void InitializeOutlineShader()
         {
-            string? shaderPath = FindOutlineShaderPath();
+            string shaderPath = FindOutlineShaderPath();
 
             if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
                 return;
@@ -181,7 +181,7 @@ namespace Client.Rendering.SharpDXD3D11
             });
         }
 
-        private string? FindOutlineShaderPath()
+        private static string FindOutlineShaderPath()
         {
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
 

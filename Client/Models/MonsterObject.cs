@@ -2604,10 +2604,10 @@ namespace Client.Models
 
             if (mouseOver && Config.ShowTargetOutline)
             {
-                var result = (GameScene.Game.User.Level - Level) switch
+                var result = (GameScene.Game.User.Level - MonsterInfo.Level) switch
                 {
                     > 2 => Color.LimeGreen,
-                    < 0 => Color.Yellow,
+                    <= 2 and >= 0 => Color.Yellow,
                     _ => Color.Red
                 };
 
