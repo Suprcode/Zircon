@@ -49,13 +49,19 @@ float4 PS_OUTLINE(PS_INPUT input) : COLOR0
     bool hasNeighbour = false;
     float outlineThickness = OutlineParams.z;
     float minNeighbourDistance = outlineThickness + 1.0;
-    int radius = (int)ceil(outlineThickness);
 
-    for (int x = -radius; x <= radius; ++x)
+    // Avoid gradient/loop restrictions in ps_3_0 by clamping the loop bounds to a
+    // small, fixed kernel that still honors the requested thickness.
+    static const int MAX_RADIUS = 4;
+    int radius = (int)min(outlineThickness, (float)MAX_RADIUS);
+
+    [unroll]
+    for (int x = -MAX_RADIUS; x <= MAX_RADIUS; ++x)
     {
-        for (int y = -radius; y <= radius; ++y)
+        [unroll]
+        for (int y = -MAX_RADIUS; y <= MAX_RADIUS; ++y)
         {
-            if (x == 0 && y == 0)
+            if (abs(x) > radius || abs(y) > radius || (x == 0 && y == 0))
                 continue;
 
             float2 offset = float2((float)x, (float)y) * texelSize;
