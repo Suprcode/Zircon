@@ -455,7 +455,7 @@ namespace Client.Rendering.SharpDXD3D11
                 Padding2 = Vector2.Zero
             };
 
-            float geometryExpand = Math.Max(Math.Abs(shadowOffset.X), Math.Abs(shadowOffset.Y)) + shadowBlur;
+            float geometryExpand = Math.Max(Math.Abs(shadowOffset.X), Math.Abs(shadowOffset.Y)) + Math.Max(1f, shadowBlur * 3f);
 
             return new SpriteEffect(
                 _dropShadowPixelShader,

@@ -67,8 +67,8 @@ float4 PS_DROPSHADOW(PS_INPUT input) : SV_Target
         return float4(0, 0, 0, 0);
 
     float blur = max(ShadowBlur, 0.01);
-    // Use a slightly larger kernel to create a softer falloff while still keeping the loop bounded.
-    int sampleRadius = (int)ceil(min(blur * 1.5, 6.0));
+    // Scale the kernel radius with the requested blur so the shadow width can expand.
+    int sampleRadius = (int)ceil(clamp(blur * 2.0, 1.0, 12.0));
     if (sampleRadius < 1) sampleRadius = 1;
 
     float2 shadowUv = input.Tex + ShadowOffset * texelSize;
@@ -85,7 +85,8 @@ float4 PS_DROPSHADOW(PS_INPUT input) : SV_Target
             float2 offset = float2((float)x, (float)y) * texelSize;
             float sampleAlpha = SampleShadowAlpha(shadowUv + offset, sourceMin, sourceMax);
             float distance = length(float2((float)x, (float)y));
-            float weight = exp(-distance * distance / blurDenominator);
+            float falloff = saturate(1.0 - (distance / (sampleRadius + 0.5)));
+            float weight = falloff * exp(-distance * distance / blurDenominator);
 
             alphaSum += sampleAlpha * weight;
             weightSum += weight;

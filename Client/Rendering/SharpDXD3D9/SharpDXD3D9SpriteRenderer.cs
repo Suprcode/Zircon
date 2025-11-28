@@ -219,7 +219,7 @@ namespace Client.Rendering.SharpDXD3D9
             if (!SupportsDropShadowShader || texture == null || texture.IsDisposed)
                 return;
 
-            float geometryExpand = Math.Max(Math.Max(Math.Abs(shadowOffset.X), Math.Abs(shadowOffset.Y)), 0f) + Math.Max(1f, shadowBlur);
+            float geometryExpand = Math.Max(Math.Max(Math.Abs(shadowOffset.X), Math.Abs(shadowOffset.Y)), 0f) + Math.Max(1f, shadowBlur * 3f);
 
             using var stateBlock = new StateBlock(_device, StateBlockType.All);
             stateBlock.Capture();

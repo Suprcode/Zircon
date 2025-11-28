@@ -59,23 +59,24 @@ float4 PS_DROPSHADOW(PS_INPUT input) : COLOR0
     float blur = max(ShadowParams1.z, 0.01);
     float2 shadowUv = input.Tex + ShadowParams2.xy * texelSize;
 
-    // Use a small, fixed kernel suitable for ps_3_0
-    static const int RADIUS = 3;
+    // Allow the radius to scale with the blur value so shadow width is adjustable on DX9.
+    int sampleRadius = (int)ceil(clamp(blur * 2.0, 1.0, 8.0));
     float alphaSum = 0.0;
     float weightSum = 0.0;
     float sigma = max(blur * 0.55, 0.75);
     float blurDenominator = max(1.0, 2.0 * sigma * sigma);
 
     [unroll]
-    for (int x = -RADIUS; x <= RADIUS; ++x)
+    for (int x = -sampleRadius; x <= sampleRadius; ++x)
     {
         [unroll]
-        for (int y = -RADIUS; y <= RADIUS; ++y)
+        for (int y = -sampleRadius; y <= sampleRadius; ++y)
         {
             float2 offset = float2((float)x, (float)y) * texelSize;
             float sampleAlpha = SampleShadowAlpha(shadowUv + offset, sourceMin, sourceMax);
             float distance = length(float2((float)x, (float)y));
-            float weight = exp(-distance * distance / blurDenominator);
+            float falloff = saturate(1.0 - (distance / (sampleRadius + 0.5)));
+            float weight = falloff * exp(-distance * distance / blurDenominator);
 
             alphaSum += sampleAlpha * weight;
             weightSum += weight;
