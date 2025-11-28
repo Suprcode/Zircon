@@ -136,6 +136,7 @@ namespace Client.Rendering.SharpDXD3D11
             public float ShadowBlur;
             public float Padding;
             public Vector4 SourceUV;
+            public Vector2 Padding2;
         }
 
         public SharpDXD3D11SpriteRenderer(Device device)
@@ -450,7 +451,8 @@ namespace Client.Rendering.SharpDXD3D11
                 ShadowOffset = shadowOffset,
                 ShadowBlur = shadowBlur,
                 Padding = 0f,
-                SourceUV = new Vector4(u1, v1, u2, v2)
+                SourceUV = new Vector4(u1, v1, u2, v2),
+                Padding2 = Vector2.Zero
             };
 
             float geometryExpand = Math.Max(Math.Abs(shadowOffset.X), Math.Abs(shadowOffset.Y)) + shadowBlur;

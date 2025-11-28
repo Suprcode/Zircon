@@ -11,6 +11,7 @@ cbuffer DropShadowBuffer : register(b1)
     float ShadowBlur;
     float Padding;
     float4 SourceUV; // xy = min, zw = max
+    float2 Padding2;
 };
 
 struct VS_INPUT

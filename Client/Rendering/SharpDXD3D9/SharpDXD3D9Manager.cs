@@ -110,6 +110,11 @@ namespace Client.Rendering.SharpDXD3D9
 
         public static Texture PoisonTexture;
 
+        public static void FlushSprite()
+        {
+            Sprite?.Flush();
+        }
+
         static SharpDXD3D9Manager()
         {
             Graphics = Graphics.FromHwnd(IntPtr.Zero);
