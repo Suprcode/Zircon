@@ -956,14 +956,14 @@ namespace Client.Models
         public override void Draw()
         {
             if (BodyLibrary == null) return;
-            DrawPlayer(true);
+            DrawPlayer(true, MouseObject == this && MouseObject != User);
         }
 
-        public void DrawPlayer(bool shadow = false)
+        public void DrawPlayer(bool shadow = false, bool allowOutline = false)
         {
             ExteriorEffectManager.DrawExteriorEffects(this, true);
 
-            DrawBody(shadow);
+            DrawBody(shadow, allowOutline);
 
             ExteriorEffectManager.DrawExteriorEffects(this, false);
         }
@@ -977,7 +977,7 @@ namespace Client.Models
             //DXManager.SetBlend(false);
         }
 
-        public void DrawBody(bool shadow)
+        public void DrawBody(bool shadow, bool allowOutline)
         {
             RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
             RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
@@ -1246,12 +1246,25 @@ namespace Client.Models
                     break;
             }
 
+            bool outlineEnabled = false;
+
+            if (allowOutline && Config.ShowTargetOutline)
+            {
+                RenderingPipelineManager.EnableOutlineEffect(Color.Red, 2f);
+                outlineEnabled = true;
+            }
+
             Rectangle scratchSource = Rectangle.FromLTRB(l, t, r, b);
             RectangleF scratchDestination = new RectangleF(l, t, r - l, b - t);
             RenderTexture scratchTexture = RenderingPipelineManager.GetScratchTexture();
 
             RenderingPipelineManager.DrawTexture(scratchTexture, scratchSource, scratchDestination, DrawColour);
             CEnvir.DPSCounter++;
+
+            if (outlineEnabled)
+            {
+                RenderingPipelineManager.DisableOutlineEffect();
+            }
 
             if (oldOpacity != Opacity && !RenderingPipelineManager.IsBlending())
             {

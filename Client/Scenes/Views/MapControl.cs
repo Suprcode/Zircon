@@ -433,7 +433,7 @@ namespace Client.Scenes.Views
                 float oldOpacity = MapObject.User.Opacity;
                 MapObject.User.Opacity = 0.65F;
 
-                MapObject.User.DrawPlayer(false);
+                MapObject.User.DrawPlayer(false, false);
 
                 MapObject.User.Opacity = oldOpacity;
             }
@@ -1556,9 +1556,6 @@ namespace Client.Scenes.Views
 
                 const float lightScale = 0.02F; //Players/Monsters
                 const float baseSize = 0.1F;
-
-                float fX;
-                float fY;
 
                 if ((MapObject.User.Poison & PoisonType.Abyss) == PoisonType.Abyss)
                 {
