@@ -79,15 +79,13 @@ float4 PS_OUTLINE(PS_INPUT input) : COLOR0
     if (alpha <= 0.05 && hasNeighbour)
     {
         // Avoid dividing by zero: early out for a 1-pixel outline, otherwise compute
-        // a smooth falloff with a clamped denominator.
-        float outlineAlpha = 1.0;
+        // a smooth falloff with a guaranteed non-zero denominator.
+        if (outlineThickness <= 1.0)
+            return float4(OutlineColor.rgb, 1.0);
 
-        if (outlineThickness > 1.0)
-        {
-            float denom = max(outlineThickness - 1.0, 0.001);
-            float falloff = saturate((minNeighbourDistance - 1.0) / denom);
-            outlineAlpha = lerp(1.0, 0.5, falloff);
-        }
+        float denom = max(outlineThickness - 1.0, 1.0);
+        float falloff = saturate((minNeighbourDistance - 1.0) / denom);
+        float outlineAlpha = lerp(1.0, 0.5, falloff);
 
         return float4(OutlineColor.rgb, outlineAlpha);
     }
