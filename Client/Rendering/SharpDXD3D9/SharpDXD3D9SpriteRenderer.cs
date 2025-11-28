@@ -44,26 +44,14 @@ namespace Client.Rendering.SharpDXD3D9
 
         private void InitializeShaders()
         {
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
-            string[] candidates = new[]
-            {
-                Path.Combine(baseDirectory, "Rendering", "Shaders", OutlineShaderFileName),
-                Path.Combine(baseDirectory, "Shaders", OutlineShaderFileName),
-                Path.Combine(baseDirectory, OutlineShaderFileName)
-            };
+            InitializeOutlineShader();
+        }
 
-            string shaderPath = null;
+        private void InitializeOutlineShader()
+        {
+            string shaderPath = FindShaderPath(OutlineShaderFileName);
 
-            foreach (string candidate in candidates)
-            {
-                if (File.Exists(candidate))
-                {
-                    shaderPath = candidate;
-                    break;
-                }
-            }
-
-            if (shaderPath == null)
+            if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
                 return;
 
             using (var compiledVertex = D3DCompilerBytecode.CompileFromFile(shaderPath, "VS", "vs_3_0", D3DCompilerShaderFlags.OptimizationLevel3, EffectFlags.None))
@@ -74,6 +62,24 @@ namespace Client.Rendering.SharpDXD3D9
                 _vertexShader = new VertexShader(_device, vertexByteCode);
                 _outlinePixelShader = new PixelShader(_device, pixelByteCode);
             }
+        }
+
+        private static string FindShaderPath(string filename)
+        {
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
+
+            string[] candidates = new[]
+            {
+                Path.Combine(baseDirectory, "Rendering", "SharpDXD3D9", "Shaders", filename)
+            };
+
+            foreach (string candidate in candidates)
+            {
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+
+            return null;
         }
 
         private void InitializeBuffers()

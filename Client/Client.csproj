@@ -41,14 +41,6 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Rendering\Shaders\OutlineSprite.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Rendering\Shaders\OutlineSpriteD3D9.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Zircon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -73,5 +65,19 @@
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Rendering\Shaders\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Rendering\SharpDXD3D11\Shaders\OutlineSpriteD3D11.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Rendering\SharpDXD3D11\Shaders\SpriteD3D11.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Rendering\SharpDXD3D9\Shaders\OutlineSpriteD3D9.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

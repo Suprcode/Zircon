@@ -35,47 +35,8 @@ namespace Client.Rendering.SharpDXD3D11
         private readonly Dictionary<BlendMode, BlendState> _blendStates = new Dictionary<BlendMode, BlendState>();
         private readonly Dictionary<Texture2D, ShaderResourceView> _srvCache = new Dictionary<Texture2D, ShaderResourceView>();
 
-        private const string OutlineShaderFileName = "OutlineSprite.hlsl";
-
-        private static readonly string ShaderSource = @"
-            cbuffer MatrixBuffer : register(b0)
-            {
-                matrix Matrix;
-            };
-
-            struct VS_INPUT
-            {
-                float2 Pos : POSITION;
-                float2 Tex : TEXCOORD;
-                float4 Col : COLOR;
-            };
-
-            struct PS_INPUT
-            {
-                float4 Pos : SV_POSITION;
-                float2 Tex : TEXCOORD;
-                float4 Col : COLOR;
-            };
-
-            PS_INPUT VS(VS_INPUT input)
-            {
-                PS_INPUT output;
-                // Transform position by matrix (Projection * World)
-                output.Pos = mul(float4(input.Pos, 0.0, 1.0), Matrix);
-                output.Tex = input.Tex;
-                output.Col = input.Col;
-                return output;
-            }
-
-            Texture2D shaderTexture : register(t0);
-            SamplerState sampleState : register(s0);
-
-            float4 PS(PS_INPUT input) : SV_Target
-            {
-                float4 texColor = shaderTexture.Sample(sampleState, input.Tex);
-                return texColor * input.Col;
-            }
-            ";
+        private const string ShaderFileName = "SpriteD3D11.hlsl";
+        private const string OutlineShaderFileName = "OutlineSpriteD3D11.hlsl";
 
         [StructLayout(LayoutKind.Sequential)]
         private struct VertexType
@@ -137,8 +98,19 @@ namespace Client.Rendering.SharpDXD3D11
 
         private void InitializeShaders()
         {
+            InitializeShader();
+            InitializeOutlineShader();
+        }
+
+        private void InitializeShader()
+        {
+            string shaderPath = FindShaderPath(ShaderFileName);
+
+            if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
+                return;
+
             // Compile Vertex Shader
-            using (var vertexShaderByteCode = ShaderBytecode.Compile(ShaderSource, "VS", "vs_5_0"))
+            using (var vertexShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "VS", "vs_5_0"))
             {
                 _vertexShader = new VertexShader(_device, vertexShaderByteCode);
                 _inputLayout = new InputLayout(_device, vertexShaderByteCode, new[]
@@ -150,17 +122,15 @@ namespace Client.Rendering.SharpDXD3D11
             }
 
             // Compile Pixel Shader
-            using (var pixelShaderByteCode = ShaderBytecode.Compile(ShaderSource, "PS", "ps_5_0"))
+            using (var pixelShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS", "ps_5_0"))
             {
                 _pixelShader = new PixelShader(_device, pixelShaderByteCode);
             }
-
-            InitializeOutlineShader();
         }
 
         private void InitializeOutlineShader()
         {
-            string shaderPath = FindOutlineShaderPath();
+            string shaderPath = FindShaderPath(OutlineShaderFileName);
 
             if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
                 return;
@@ -181,15 +151,13 @@ namespace Client.Rendering.SharpDXD3D11
             });
         }
 
-        private static string FindOutlineShaderPath()
+        private static string FindShaderPath(string filename)
         {
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
 
             string[] candidates = new[]
             {
-                Path.Combine(baseDirectory, "Rendering", "Shaders", OutlineShaderFileName),
-                Path.Combine(baseDirectory, "Shaders", OutlineShaderFileName),
-                Path.Combine(baseDirectory, OutlineShaderFileName)
+                Path.Combine(baseDirectory, "Rendering", "SharpDXD3D11", "Shaders", filename)
             };
 
             foreach (string candidate in candidates)
