@@ -283,6 +283,9 @@ namespace Client.Scenes.Views
             Index = Inspect ? 115 : 110;
             Movable = true;
             Sort = true;
+            DrawDropShadow = true;
+            DropShadowOffset = new Point(6, 8);
+            DropShadowBlur = 5f;
 
             CloseButton = new DXButton
             {

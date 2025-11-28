@@ -388,6 +388,35 @@ namespace Client.Controls
 
         #endregion
 
+        #region DropShadow
+
+        public bool DrawDropShadow
+        {
+            get => _DrawDropShadow;
+            set
+            {
+                if (_DrawDropShadow == value) return;
+
+                bool oldValue = _DrawDropShadow;
+                _DrawDropShadow = value;
+
+                OnDrawDropShadowChanged(oldValue, value);
+            }
+        }
+        private bool _DrawDropShadow;
+        public event EventHandler<EventArgs> DrawDropShadowChanged;
+        public virtual void OnDrawDropShadowChanged(bool oValue, bool nValue)
+        {
+            DrawDropShadowChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public Color DropShadowColour { get; set; } = Color.FromArgb(180, 0, 0, 0);
+        public Point DropShadowOffset { get; set; } = new Point(4, 4);
+        public float DropShadowBlur { get; set; } = 4f;
+        protected bool IsDrawingDropShadow { get; private set; }
+
+        #endregion
+
         #region DisplayArea
 
         public Rectangle DisplayArea
@@ -1727,6 +1756,28 @@ BorderInformation = new[]
             RenderingPipelineManager.SetOpacity(oldOpacity);
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
+        }
+
+        protected void RenderDropShadow(RenderTexture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f, bool intersectParent = true)
+        {
+            if (!DrawDropShadow || IsDrawingDropShadow)
+                return;
+
+            if (!texture.IsValid)
+                return;
+
+            IsDrawingDropShadow = true;
+
+            try
+            {
+                RenderingPipelineManager.EnableDropShadowEffect(DropShadowColour, new Vector2(DropShadowOffset.X, DropShadowOffset.Y), DropShadowBlur);
+                PresentTexture(texture, parent, displayArea, colour, control, offX, offY, scale, intersectParent);
+            }
+            finally
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+                IsDrawingDropShadow = false;
+            }
         }
 
         public static void PresentTexture(RenderTexture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f, bool intersectParent = true)

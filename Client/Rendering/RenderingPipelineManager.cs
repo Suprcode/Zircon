@@ -341,9 +341,19 @@ namespace Client.Rendering
             _spriteShaderEffect = new SpriteShaderEffectRequest(new OutlineEffectSettings(colour, thickness));
         }
 
-        public static void DisableOutlineEffect()
+        public static void EnableDropShadowEffect(Color colour, Vector2 offset, float blurRadius)
+        {
+            _spriteShaderEffect = new SpriteShaderEffectRequest(new DropShadowEffectSettings(colour, offset, blurRadius));
+        }
+
+        public static void DisableSpriteShaderEffect()
         {
             _spriteShaderEffect = null;
+        }
+
+        public static void DisableOutlineEffect()
+        {
+            DisableSpriteShaderEffect();
         }
 
         internal static SpriteShaderEffectRequest? GetSpriteShaderEffect() => _spriteShaderEffect;
@@ -772,21 +782,45 @@ namespace Client.Rendering
             }
         }
 
+        internal readonly struct DropShadowEffectSettings
+        {
+            public Color Colour { get; }
+            public Vector2 Offset { get; }
+            public float BlurRadius { get; }
+
+            public DropShadowEffectSettings(Color colour, Vector2 offset, float blurRadius)
+            {
+                Colour = colour;
+                Offset = offset;
+                BlurRadius = blurRadius;
+            }
+        }
+
         internal readonly struct SpriteShaderEffectRequest
         {
             public SpriteShaderEffectKind Kind { get; }
             public OutlineEffectSettings Outline { get; }
+            public DropShadowEffectSettings DropShadow { get; }
 
             public SpriteShaderEffectRequest(OutlineEffectSettings outline)
             {
                 Kind = SpriteShaderEffectKind.Outline;
                 Outline = outline;
+                DropShadow = default;
+            }
+
+            public SpriteShaderEffectRequest(DropShadowEffectSettings dropShadow)
+            {
+                Kind = SpriteShaderEffectKind.DropShadow;
+                DropShadow = dropShadow;
+                Outline = default;
             }
         }
 
         internal enum SpriteShaderEffectKind
         {
-            Outline
+            Outline,
+            DropShadow
         }
     }
 }

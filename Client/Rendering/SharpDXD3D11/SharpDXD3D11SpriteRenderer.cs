@@ -26,16 +26,19 @@ namespace Client.Rendering.SharpDXD3D11
         private VertexShader _vertexShader;
         private PixelShader _pixelShader;
         private PixelShader _outlinePixelShader;
+        private PixelShader _dropShadowPixelShader;
         private InputLayout _inputLayout;
         private Buffer _vertexBuffer;
         private Buffer _matrixBuffer;
         private Buffer _outlineBuffer;
+        private Buffer _dropShadowBuffer;
         private SamplerState _samplerState;
 
         private readonly Dictionary<BlendMode, BlendState> _blendStates = new Dictionary<BlendMode, BlendState>();
         private readonly Dictionary<Texture2D, ShaderResourceView> _srvCache = new Dictionary<Texture2D, ShaderResourceView>();
 
         private const string OutlineShaderFileName = "OutlineSprite.hlsl";
+        private const string DropShadowShaderFileName = "DropShadowSprite.hlsl";
 
         private static readonly string ShaderSource = @"
             cbuffer MatrixBuffer : register(b0)
@@ -124,6 +127,17 @@ namespace Client.Rendering.SharpDXD3D11
             public Vector4 SourceUV;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DropShadowBufferType
+        {
+            public RawColor4 ShadowColor;
+            public Vector2 TextureSize;
+            public Vector2 ShadowOffset;
+            public float ShadowBlur;
+            public float Padding;
+            public Vector4 SourceUV;
+        }
+
         public SharpDXD3D11SpriteRenderer(Device device)
         {
             _device = device ?? throw new ArgumentNullException(nameof(device));
@@ -156,6 +170,7 @@ namespace Client.Rendering.SharpDXD3D11
             }
 
             InitializeOutlineShader();
+            InitializeDropShadowShader();
         }
 
         private void InitializeOutlineShader()
@@ -179,6 +194,49 @@ namespace Client.Rendering.SharpDXD3D11
                 OptionFlags = ResourceOptionFlags.None,
                 StructureByteStride = 0
             });
+        }
+
+        private void InitializeDropShadowShader()
+        {
+            string shaderPath = FindDropShadowShaderPath();
+
+            if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
+                return;
+
+            using (var pixelShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS_DROPSHADOW", "ps_5_0"))
+            {
+                _dropShadowPixelShader = new PixelShader(_device, pixelShaderByteCode);
+            }
+
+            _dropShadowBuffer = new Buffer(_device, new BufferDescription
+            {
+                Usage = ResourceUsage.Dynamic,
+                SizeInBytes = Utilities.SizeOf<DropShadowBufferType>(),
+                BindFlags = BindFlags.ConstantBuffer,
+                CpuAccessFlags = CpuAccessFlags.Write,
+                OptionFlags = ResourceOptionFlags.None,
+                StructureByteStride = 0
+            });
+        }
+
+        private static string FindDropShadowShaderPath()
+        {
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
+
+            string[] candidates = new[]
+            {
+                Path.Combine(baseDirectory, "Rendering", "Shaders", DropShadowShaderFileName),
+                Path.Combine(baseDirectory, "Shaders", DropShadowShaderFileName),
+                Path.Combine(baseDirectory, DropShadowShaderFileName)
+            };
+
+            foreach (string candidate in candidates)
+            {
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+
+            return string.Empty;
         }
 
         private static string FindOutlineShaderPath()
@@ -312,6 +370,7 @@ namespace Client.Rendering.SharpDXD3D11
         }
 
         public bool SupportsOutlineShader => _outlinePixelShader != null && _outlineBuffer != null;
+        public bool SupportsDropShadowShader => _dropShadowPixelShader != null && _dropShadowBuffer != null;
 
         public void Draw(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate)
         {
@@ -322,6 +381,12 @@ namespace Client.Rendering.SharpDXD3D11
         {
             var outlineEffect = CreateOutlineEffect(texture, source, outlineColor, outlineThickness);
             DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _outlinePixelShader ?? _pixelShader, outlineEffect);
+        }
+
+        public void DrawDropShadow(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 shadowColor, Vector2 shadowOffset, float shadowBlur)
+        {
+            var dropShadowEffect = CreateDropShadowEffect(texture, source, shadowColor, shadowOffset, shadowBlur);
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _dropShadowPixelShader ?? _pixelShader, dropShadowEffect);
         }
 
         private SpriteEffect? CreateOutlineEffect(Texture2D texture, RectangleF? source, RawColor4 outlineColor, float outlineThickness)
@@ -358,6 +423,45 @@ namespace Client.Rendering.SharpDXD3D11
                 outlineThickness,
                 true,
                 stream => stream.Write(outlineBuffer));
+        }
+
+        private SpriteEffect? CreateDropShadowEffect(Texture2D texture, RectangleF? source, RawColor4 shadowColor, Vector2 shadowOffset, float shadowBlur)
+        {
+            if (!SupportsDropShadowShader || _dropShadowPixelShader == null)
+                return null;
+
+            var texDesc = texture.Description;
+            var texWidth = texDesc.Width;
+            var texHeight = texDesc.Height;
+
+            float u1 = 0, v1 = 0, u2 = 1, v2 = 1;
+            if (source.HasValue)
+            {
+                u1 = source.Value.Left / texWidth;
+                v1 = source.Value.Top / texHeight;
+                u2 = source.Value.Right / texWidth;
+                v2 = source.Value.Bottom / texHeight;
+            }
+
+            var dropShadowBuffer = new DropShadowBufferType
+            {
+                ShadowColor = shadowColor,
+                TextureSize = new Vector2(texWidth, texHeight),
+                ShadowOffset = shadowOffset,
+                ShadowBlur = shadowBlur,
+                Padding = 0f,
+                SourceUV = new Vector4(u1, v1, u2, v2)
+            };
+
+            float geometryExpand = Math.Max(Math.Abs(shadowOffset.X), Math.Abs(shadowOffset.Y)) + shadowBlur;
+
+            return new SpriteEffect(
+                _dropShadowPixelShader,
+                _dropShadowBuffer,
+                Utilities.SizeOf<DropShadowBufferType>(),
+                geometryExpand,
+                true,
+                stream => stream.Write(dropShadowBuffer));
         }
 
         private void DrawInternal(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, PixelShader pixelShader, SpriteEffect? effect)
@@ -570,10 +674,12 @@ namespace Client.Rendering.SharpDXD3D11
             _samplerState?.Dispose();
             _matrixBuffer?.Dispose();
             _outlineBuffer?.Dispose();
+            _dropShadowBuffer?.Dispose();
             _vertexBuffer?.Dispose();
             _inputLayout?.Dispose();
             _pixelShader?.Dispose();
             _outlinePixelShader?.Dispose();
+            _dropShadowPixelShader?.Dispose();
             _vertexShader?.Dispose();
         }
     }

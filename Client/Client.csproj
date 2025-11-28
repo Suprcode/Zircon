@@ -47,6 +47,12 @@
     <None Include="Rendering\Shaders\OutlineSpriteD3D9.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Rendering\Shaders\DropShadowSprite.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Rendering\Shaders\DropShadowSpriteD3D9.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zircon.ico" />

@@ -382,6 +382,10 @@ namespace Client.Controls
             float oldOpacity = RenderingPipelineManager.GetOpacity();
 
             RenderingPipelineManager.SetOpacity(Opacity);
+
+            if (DrawDropShadow)
+                RenderDropShadow(WindowTexture, Parent, DisplayArea, ForeColour, this);
+
             PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
 
             RenderingPipelineManager.SetOpacity(oldOpacity);

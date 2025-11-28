@@ -299,6 +299,8 @@ namespace Client.Controls
                 RenderingPipelineManager.SetOpacity(ImageOpacity);
             }
 
+            RenderDropShadow(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f, IntersectParent);
+
             PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
 
             if (Blend)

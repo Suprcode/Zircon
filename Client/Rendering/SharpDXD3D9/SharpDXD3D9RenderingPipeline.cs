@@ -400,6 +400,9 @@ namespace Client.Rendering.SharpDXD3D9
                 case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
                     TryDrawOutlineEffect(dxTexture, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
                     break;
+                case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
+                    TryDrawDropShadowEffect(dxTexture, geometry, sourceRectangle, colour, transform, effect.Value.DropShadow);
+                    break;
             }
         }
 
@@ -424,6 +427,30 @@ namespace Client.Rendering.SharpDXD3D9
                 transform,
                 outlineColor,
                 outline.Thickness);
+        }
+
+        private void TryDrawDropShadowEffect(Texture texture, GdiRectangleF geometry, GdiRectangle? sourceRectangle, GdiColor colour, NumericsMatrix3x2 transform, RenderingPipelineManager.DropShadowEffectSettings dropShadow)
+        {
+            if (SharpDXD3D9Manager.SpriteRenderer == null || !SharpDXD3D9Manager.SpriteRenderer.SupportsDropShadowShader)
+                return;
+
+            SharpDXD3D9Manager.FlushSprite();
+
+            var shadowColor = new Color4(
+                dropShadow.Colour.R / 255f,
+                dropShadow.Colour.G / 255f,
+                dropShadow.Colour.B / 255f,
+                dropShadow.Colour.A / 255f);
+
+            SharpDXD3D9Manager.SpriteRenderer.DrawDropShadow(
+                texture,
+                geometry,
+                sourceRectangle,
+                colour,
+                transform,
+                shadowColor,
+                new DxVector2(dropShadow.Offset.X, dropShadow.Offset.Y),
+                dropShadow.BlurRadius);
         }
 
         public RenderSurface GetCurrentSurface()
