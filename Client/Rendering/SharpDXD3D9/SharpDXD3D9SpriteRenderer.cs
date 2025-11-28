@@ -1,11 +1,12 @@
 using SharpDX;
 using SharpDX.Direct3D9;
-using SharpDX.D3DCompiler;
 using SharpDX.Mathematics.Interop;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using D3D9ConstantTable = SharpDX.Direct3D9.ConstantTable;
+using D3DCompilerShaderBytecode = SharpDX.D3DCompiler.ShaderBytecode;
+using ShaderFlags = SharpDX.D3DCompiler.ShaderFlags;
 using DxVector2 = SharpDX.Vector2;
 using DxVector4 = SharpDX.Vector4;
 using NumericsMatrix3x2 = System.Numerics.Matrix3x2;
@@ -67,11 +68,16 @@ namespace Client.Rendering.SharpDXD3D9
             if (shaderPath == null)
                 return;
 
-            using (var vertexByteCode = ShaderBytecode.CompileFromFile(shaderPath, "VS", "vs_3_0", ShaderFlags.OptimizationLevel3))
-            using (var pixelByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", ShaderFlags.OptimizationLevel3))
+            using (var vertexByteCode = D3DCompilerShaderBytecode.CompileFromFile(shaderPath, "VS", "vs_3_0", ShaderFlags.OptimizationLevel3))
+            using (var pixelByteCode = D3DCompilerShaderBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", ShaderFlags.OptimizationLevel3))
             {
-                _vertexConstants = new D3D9ConstantTable(vertexByteCode);
-                _pixelConstants = new D3D9ConstantTable(pixelByteCode);
+                var vertexBytes = vertexByteCode.Data.ReadRange<byte>((int)vertexByteCode.Data.Length);
+                vertexByteCode.Data.Position = 0;
+                var pixelBytes = pixelByteCode.Data.ReadRange<byte>((int)pixelByteCode.Data.Length);
+                pixelByteCode.Data.Position = 0;
+
+                _vertexConstants = D3D9ConstantTable.FromMemory(vertexBytes);
+                _pixelConstants = D3D9ConstantTable.FromMemory(pixelBytes);
 
                 _vertexShader = new VertexShader(_device, vertexByteCode);
                 _outlinePixelShader = new PixelShader(_device, pixelByteCode);
@@ -96,7 +102,7 @@ namespace Client.Rendering.SharpDXD3D9
             if (!SupportsOutlineShader || texture == null || texture.IsDisposed)
                 return;
 
-            using var stateBlock = new StateBlock(_device, StateBlockMask.All);
+            using var stateBlock = new StateBlock(_device, StateBlockType.All);
             stateBlock.Capture();
 
             var desc = texture.GetLevelDescription(0);
