@@ -120,6 +120,7 @@ namespace Client.Rendering.SharpDXD3D11
             public RawColor4 OutlineColor;
             public Vector2 TextureSize;
             public float OutlineThickness;
+            public float Padding;
             public Vector4 SourceUV;
         }
 
@@ -346,6 +347,7 @@ namespace Client.Rendering.SharpDXD3D11
                 OutlineColor = outlineColor,
                 TextureSize = new Vector2(texWidth, texHeight),
                 OutlineThickness = outlineThickness,
+                Padding = 0f,
                 SourceUV = new Vector4(u1, v1, u2, v2)
             };
 
