@@ -98,7 +98,6 @@ namespace Client.Rendering.SharpDXD3D11
             public RawColor4 OutlineColor;
             public Vector2 TextureSize;
             public float OutlineThickness;
-            public float Padding;
             public Vector4 SourceUV;
         }
 
@@ -320,7 +319,6 @@ namespace Client.Rendering.SharpDXD3D11
                     OutlineColor = outlineColor,
                     TextureSize = new Vector2(texWidth, texHeight),
                     OutlineThickness = outlineThickness,
-                    Padding = 0f,
                     SourceUV = new Vector4(u1, v1, u2, v2)
                 };
             }
@@ -361,6 +359,7 @@ namespace Client.Rendering.SharpDXD3D11
             _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
             _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<VertexType>(), 0));
 
+            bool usingOutline = outlineBuffer.HasValue && SupportsOutlineShader && activePixelShader == _outlinePixelShader;
             UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity, usingOutline ? outlineBuffer : null);
             UpdateMatrixBuffer(transform);
 
@@ -370,7 +369,6 @@ namespace Client.Rendering.SharpDXD3D11
             _context.PixelShader.SetSampler(0, _samplerState);
             _context.VertexShader.SetConstantBuffer(0, _matrixBuffer);
 
-            bool usingOutline = outlineBuffer.HasValue && SupportsOutlineShader && activePixelShader == _outlinePixelShader;
             if (usingOutline)
             {
                 UpdateOutlineBuffer(outlineBuffer!.Value);

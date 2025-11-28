@@ -8,7 +8,6 @@ cbuffer OutlineBuffer : register(b1)
     float4 OutlineColor;
     float2 TextureSize;
     float OutlineThickness;
-    float Padding;
     float4 SourceUV; // xy = min, zw = max
 };
 
