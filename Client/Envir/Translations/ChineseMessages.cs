@@ -170,6 +170,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameTabLogChatLabel { get; set; } = "聊天日志:";
         public override string CommonControlConfigWindowGameTabDrawEffectsLabel { get; set; } = "特效绘制:";
         public override string CommonControlConfigWindowGameTabDrawWeatherLabel { get; set; } = "天气绘制:";
+        public override string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; } = "Target Outline:";
         public override string CommonControlConfigWindowGameTabKeyBindButtonLabel { get; set; } = "按键绑定";
         public override string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; } = "开启网络配置:";
         public override string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; } = "IP地址:";

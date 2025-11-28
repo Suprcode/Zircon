@@ -169,6 +169,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameTabLogChatLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDrawEffectsLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDrawWeatherLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabKeyBindButtonLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; }
