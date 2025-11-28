@@ -92,6 +92,28 @@ namespace Client.Rendering.SharpDXD3D11
             }
         }
 
+        private readonly struct SpriteEffect
+        {
+            public PixelShader Shader { get; }
+            public Buffer? ConstantBuffer { get; }
+            public int ConstantBufferSizeInBytes { get; }
+            public float GeometryExpand { get; }
+            public bool ExpandUvs { get; }
+            public Action<DataStream>? WriteConstants { get; }
+
+            public bool IsValid => Shader != null;
+
+            public SpriteEffect(PixelShader shader, Buffer? constantBuffer, int constantBufferSizeInBytes, float geometryExpand, bool expandUvs, Action<DataStream>? writeConstants)
+            {
+                Shader = shader;
+                ConstantBuffer = constantBuffer;
+                ConstantBufferSizeInBytes = constantBufferSizeInBytes;
+                GeometryExpand = geometryExpand;
+                ExpandUvs = expandUvs;
+                WriteConstants = writeConstants;
+            }
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         private struct OutlineBufferType
         {
@@ -297,40 +319,50 @@ namespace Client.Rendering.SharpDXD3D11
 
         public void DrawOutlined(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 outlineColor, float outlineThickness)
         {
-            OutlineBufferType? outlineBuffer = null;
-
-            if (SupportsOutlineShader)
-            {
-                var texDesc = texture.Description;
-                var texWidth = texDesc.Width;
-                var texHeight = texDesc.Height;
-
-                float u1 = 0, v1 = 0, u2 = 1, v2 = 1;
-                if (source.HasValue)
-                {
-                    u1 = source.Value.Left / (float)texWidth;
-                    v1 = source.Value.Top / (float)texHeight;
-                    u2 = source.Value.Right / (float)texWidth;
-                    v2 = source.Value.Bottom / (float)texHeight;
-                }
-
-                outlineBuffer = new OutlineBufferType
-                {
-                    OutlineColor = outlineColor,
-                    TextureSize = new Vector2(texWidth, texHeight),
-                    OutlineThickness = outlineThickness,
-                    SourceUV = new Vector4(u1, v1, u2, v2)
-                };
-            }
-
-            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _outlinePixelShader ?? _pixelShader, outlineBuffer);
+            var outlineEffect = CreateOutlineEffect(texture, source, outlineColor, outlineThickness);
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _outlinePixelShader ?? _pixelShader, outlineEffect);
         }
 
-        private void DrawInternal(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, PixelShader pixelShader, OutlineBufferType? outlineBuffer)
+        private SpriteEffect? CreateOutlineEffect(Texture2D texture, RectangleF? source, RawColor4 outlineColor, float outlineThickness)
+        {
+            if (!SupportsOutlineShader || _outlinePixelShader == null)
+                return null;
+
+            var texDesc = texture.Description;
+            var texWidth = texDesc.Width;
+            var texHeight = texDesc.Height;
+
+            float u1 = 0, v1 = 0, u2 = 1, v2 = 1;
+            if (source.HasValue)
+            {
+                u1 = source.Value.Left / texWidth;
+                v1 = source.Value.Top / texHeight;
+                u2 = source.Value.Right / texWidth;
+                v2 = source.Value.Bottom / texHeight;
+            }
+
+            var outlineBuffer = new OutlineBufferType
+            {
+                OutlineColor = outlineColor,
+                TextureSize = new Vector2(texWidth, texHeight),
+                OutlineThickness = outlineThickness,
+                SourceUV = new Vector4(u1, v1, u2, v2)
+            };
+
+            return new SpriteEffect(
+                _outlinePixelShader,
+                _outlineBuffer,
+                Utilities.SizeOf<OutlineBufferType>(),
+                outlineThickness,
+                true,
+                stream => stream.Write(outlineBuffer));
+        }
+
+        private void DrawInternal(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, PixelShader pixelShader, SpriteEffect? effect)
         {
             if (texture == null) return;
 
-            var activePixelShader = pixelShader ?? _pixelShader;
+            var activePixelShader = effect?.Shader ?? pixelShader ?? _pixelShader;
             if (activePixelShader == null) return;
 
             var rtv = _context.OutputMerger.GetRenderTargets(1);
@@ -359,8 +391,11 @@ namespace Client.Rendering.SharpDXD3D11
             _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
             _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(_vertexBuffer, Utilities.SizeOf<VertexType>(), 0));
 
-            bool usingOutline = outlineBuffer.HasValue && SupportsOutlineShader && activePixelShader == _outlinePixelShader;
-            UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity, usingOutline ? outlineBuffer : null);
+            bool usingEffect = effect.HasValue && effect.Value.IsValid;
+            float geometryExpand = usingEffect ? effect.Value.GeometryExpand : 0f;
+            bool expandUvs = usingEffect && effect.Value.ExpandUvs;
+
+            UpdateVertexBuffer(destination, source, texture.Description.Width, texture.Description.Height, color, opacity, geometryExpand, expandUvs);
             UpdateMatrixBuffer(transform);
 
             _context.VertexShader.Set(_vertexShader);
@@ -369,15 +404,7 @@ namespace Client.Rendering.SharpDXD3D11
             _context.PixelShader.SetSampler(0, _samplerState);
             _context.VertexShader.SetConstantBuffer(0, _matrixBuffer);
 
-            if (usingOutline)
-            {
-                UpdateOutlineBuffer(outlineBuffer!.Value);
-                _context.PixelShader.SetConstantBuffer(1, _outlineBuffer);
-            }
-            else
-            {
-                _context.PixelShader.SetConstantBuffer(1, null);
-            }
+            ApplyEffect(effect);
 
             if (_blendStates.TryGetValue(blendMode, out var blendState))
             {
@@ -396,7 +423,34 @@ namespace Client.Rendering.SharpDXD3D11
             _context.OutputMerger.SetBlendState(null, null, -1);
         }
 
-        private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity, OutlineBufferType? outlineBuffer)
+        private void ApplyEffect(SpriteEffect? effect)
+        {
+            if (!effect.HasValue || !effect.Value.IsValid)
+            {
+                _context.PixelShader.SetConstantBuffer(1, null);
+                return;
+            }
+
+            var spriteEffect = effect.Value;
+
+            if (spriteEffect.ConstantBuffer != null && spriteEffect.WriteConstants != null)
+            {
+                DataBox box = _context.MapSubresource(spriteEffect.ConstantBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                using (var stream = new DataStream(box.DataPointer, spriteEffect.ConstantBufferSizeInBytes, true, true))
+                {
+                    spriteEffect.WriteConstants(stream);
+                }
+                _context.UnmapSubresource(spriteEffect.ConstantBuffer, 0);
+
+                _context.PixelShader.SetConstantBuffer(1, spriteEffect.ConstantBuffer);
+            }
+            else
+            {
+                _context.PixelShader.SetConstantBuffer(1, null);
+            }
+        }
+
+        private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity, float geometryExpand, bool expandUvs)
         {
             float left = dest.Left;
             float right = dest.Right;
@@ -412,22 +466,22 @@ namespace Client.Rendering.SharpDXD3D11
                 v2 = source.Value.Bottom / (float)texHeight;
             }
 
-            if (outlineBuffer.HasValue)
+            if (geometryExpand > 0)
             {
-                var ob = outlineBuffer.Value;
-                float expand = ob.OutlineThickness;
-                left -= expand;
-                right += expand;
-                top -= expand;
-                bottom += expand;
+                left -= geometryExpand;
+                right += geometryExpand;
+                top -= geometryExpand;
+                bottom += geometryExpand;
 
-                float uPad = expand / texWidth;
-                float vPad = expand / texHeight;
-                u1 -= uPad;
-                v1 -= vPad;
-                u2 += uPad;
-                v2 += vPad;
-
+                if (expandUvs)
+                {
+                    float uPad = geometryExpand / texWidth;
+                    float vPad = geometryExpand / texHeight;
+                    u1 -= uPad;
+                    v1 -= vPad;
+                    u2 += uPad;
+                    v2 += vPad;
+                }
             }
 
             var col = new RawColor4(color.R / 255f, color.G / 255f, color.B / 255f, (color.A / 255f) * opacity);
@@ -501,19 +555,6 @@ namespace Client.Rendering.SharpDXD3D11
                 stream.Write(final);
             }
             _context.UnmapSubresource(_matrixBuffer, 0);
-        }
-
-        private void UpdateOutlineBuffer(OutlineBufferType outlineBuffer)
-        {
-            if (_outlineBuffer == null)
-                return;
-
-            DataBox box = _context.MapSubresource(_outlineBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-            using (var stream = new DataStream(box.DataPointer, Utilities.SizeOf<OutlineBufferType>(), true, true))
-            {
-                stream.Write(outlineBuffer);
-            }
-            _context.UnmapSubresource(_outlineBuffer, 0);
         }
 
         public void Dispose()

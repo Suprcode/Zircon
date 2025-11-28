@@ -250,7 +250,7 @@ namespace Client.Rendering.SharpDXD3D11
 
             // Draw the outline first (when enabled) but continue to render the base sprite normally so it isn't affected by the
             // outline shader's blending or opacity rules.
-            TryDrawOutline(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity);
+            TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity);
 
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
             {
@@ -328,7 +328,7 @@ namespace Client.Rendering.SharpDXD3D11
                 RectangleF geom = new RectangleF(0, 0, drawW, drawH);
 
                 // Draw outline first, then fall through to render the main sprite with the default shader.
-                TryDrawOutline(texture, geom, sourceRectangle, colour, finalTransform);
+                TryDrawSpriteEffect(texture, geom, sourceRectangle, colour, finalTransform);
             }
 
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
@@ -397,11 +397,11 @@ namespace Client.Rendering.SharpDXD3D11
             };
         }
 
-        private void TryDrawOutline(RenderTexture texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
+        private void TryDrawSpriteEffect(RenderTexture texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
         {
-            var outlineEffect = RenderingPipelineManager.GetOutlineEffect();
+            var effect = RenderingPipelineManager.GetSpriteShaderEffect();
 
-            if (!outlineEffect.HasValue || SharpDXD3D11Manager.SpriteRenderer == null || !SharpDXD3D11Manager.SpriteRenderer.SupportsOutlineShader)
+            if (!effect.HasValue || SharpDXD3D11Manager.SpriteRenderer == null)
                 return;
 
             Texture2D d3dTex = null;
@@ -412,9 +412,20 @@ namespace Client.Rendering.SharpDXD3D11
             if (d3dTex == null)
                 return;
 
-            SharpDXD3D11Manager.FlushSprite();
+            switch (effect.Value.Kind)
+            {
+                case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
+                    TryDrawOutlineEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
+                    break;
+            }
+        }
 
-            RenderingPipelineManager.OutlineEffectSettings outline = outlineEffect.Value;
+        private void TryDrawOutlineEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform, RenderingPipelineManager.OutlineEffectSettings outline)
+        {
+            if (SharpDXD3D11Manager.SpriteRenderer == null || !SharpDXD3D11Manager.SpriteRenderer.SupportsOutlineShader)
+                return;
+
+            SharpDXD3D11Manager.FlushSprite();
 
             var outlineColor = new RawColor4(
                 outline.Colour.R / 255f,
@@ -423,7 +434,7 @@ namespace Client.Rendering.SharpDXD3D11
                 1f);
 
             SharpDXD3D11Manager.SpriteRenderer.DrawOutlined(
-                d3dTex,
+                texture,
                 geometry,
                 sourceRectangle,
                 colour,

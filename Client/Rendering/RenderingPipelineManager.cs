@@ -26,7 +26,7 @@ namespace Client.Rendering
         private static bool _fallbackBlending;
         private static float _fallbackBlendRate = 1F;
         private static BlendMode _fallbackBlendMode = BlendMode.NORMAL;
-        private static OutlineEffectSettings? _outlineEffect;
+        private static SpriteShaderEffectRequest? _spriteShaderEffect;
         private static float _fallbackLineWidth = 1F;
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
         private static readonly object GraphicsLock = new();
@@ -338,15 +338,15 @@ namespace Client.Rendering
 
         public static void EnableOutlineEffect(Color colour, float thickness)
         {
-            _outlineEffect = new OutlineEffectSettings(colour, thickness);
+            _spriteShaderEffect = new SpriteShaderEffectRequest(new OutlineEffectSettings(colour, thickness));
         }
 
         public static void DisableOutlineEffect()
         {
-            _outlineEffect = null;
+            _spriteShaderEffect = null;
         }
 
-        internal static OutlineEffectSettings? GetOutlineEffect() => _outlineEffect;
+        internal static SpriteShaderEffectRequest? GetSpriteShaderEffect() => _spriteShaderEffect;
 
         public static void DrawLine(IReadOnlyList<LinePoint> points, Color colour)
         {
@@ -770,6 +770,23 @@ namespace Client.Rendering
                 Colour = colour;
                 Thickness = thickness;
             }
+        }
+
+        internal readonly struct SpriteShaderEffectRequest
+        {
+            public SpriteShaderEffectKind Kind { get; }
+            public OutlineEffectSettings Outline { get; }
+
+            public SpriteShaderEffectRequest(OutlineEffectSettings outline)
+            {
+                Kind = SpriteShaderEffectKind.Outline;
+                Outline = outline;
+            }
+        }
+
+        internal enum SpriteShaderEffectKind
+        {
+            Outline
         }
     }
 }
