@@ -58,6 +58,7 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
     float alpha = texColor.a;
 
     bool hasNeighbour = false;
+    float minNeighbourDistance = OutlineThickness + 1.0;
     int radius = (int)ceil(OutlineThickness);
 
     // Sample a square neighborhood sized by the requested thickness. This allows thicker borders (e.g., 10px)
@@ -75,6 +76,8 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
             if (neighbourAlpha > 0.05)
             {
                 hasNeighbour = true;
+                float distance = length(float2((float)x, (float)y));
+                minNeighbourDistance = min(minNeighbourDistance, distance);
             }
         }
     }
@@ -83,8 +86,10 @@ float4 PS_OUTLINE(PS_INPUT input) : SV_Target
     // The outline shader is now responsible only for emitting the border.
     if (alpha <= 0.05 && hasNeighbour)
     {
-        // Draw a fully opaque outline regardless of the incoming vertex color or global opacity.
-        return float4(OutlineColor.rgb, 1.0);
+        // Fade the border slightly as it grows outward: 1px ring is solid, outer rings (if any) ease toward 50%.
+        float falloff = (OutlineThickness <= 1.0) ? 0.0 : saturate((minNeighbourDistance - 1.0) / max(1.0, OutlineThickness - 1.0));
+        float outlineAlpha = lerp(1.0, 0.5, falloff);
+        return float4(OutlineColor.rgb, outlineAlpha);
     }
 
     return float4(0, 0, 0, 0);
