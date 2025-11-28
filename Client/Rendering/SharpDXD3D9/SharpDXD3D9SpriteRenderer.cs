@@ -4,7 +4,8 @@ using SharpDX.Mathematics.Interop;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using D3DCompiler = SharpDX.D3DCompiler.ShaderBytecode;
+using D3DCompilerBytecode = SharpDX.D3DCompiler.ShaderBytecode;
+using D3D9ShaderBytecode = SharpDX.Direct3D9.ShaderBytecode;
 using D3DCompilerShaderFlags = SharpDX.D3DCompiler.ShaderFlags;
 using EffectFlags = SharpDX.D3DCompiler.EffectFlags;
 using DxVector2 = SharpDX.Vector2;
@@ -65,8 +66,10 @@ namespace Client.Rendering.SharpDXD3D9
             if (shaderPath == null)
                 return;
 
-            using (var vertexByteCode = D3DCompiler.CompileFromFile(shaderPath, "VS", "vs_3_0", D3DCompilerShaderFlags.OptimizationLevel3, EffectFlags.None))
-            using (var pixelByteCode = D3DCompiler.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", D3DCompilerShaderFlags.OptimizationLevel3, EffectFlags.None))
+            using (var compiledVertex = D3DCompilerBytecode.CompileFromFile(shaderPath, "VS", "vs_3_0", D3DCompilerShaderFlags.OptimizationLevel3, EffectFlags.None))
+            using (var compiledPixel = D3DCompilerBytecode.CompileFromFile(shaderPath, "PS_OUTLINE", "ps_3_0", D3DCompilerShaderFlags.OptimizationLevel3, EffectFlags.None))
+            using (var vertexByteCode = new D3D9ShaderBytecode(compiledVertex))
+            using (var pixelByteCode = new D3D9ShaderBytecode(compiledPixel))
             {
                 _vertexShader = new VertexShader(_device, vertexByteCode);
                 _outlinePixelShader = new PixelShader(_device, pixelByteCode);
