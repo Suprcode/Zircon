@@ -28,6 +28,7 @@ namespace Client.Rendering
         private static BlendMode _fallbackBlendMode = BlendMode.NORMAL;
         private static float _fallbackLineWidth = 1F;
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
+        private static SpriteEffectRequest _spriteEffectRequest;
         private static readonly object GraphicsLock = new();
 
         static RenderingPipelineManager()
@@ -290,6 +291,18 @@ namespace Client.Rendering
             _fallbackBlending = enabled;
             _fallbackBlendRate = rate;
             _fallbackBlendMode = mode;
+        }
+
+        public static void RequestSpriteEffect(SpriteEffectRequest request)
+        {
+            _spriteEffectRequest = request;
+        }
+
+        internal static bool TryConsumeSpriteEffect(out SpriteEffectRequest request)
+        {
+            request = _spriteEffectRequest;
+            _spriteEffectRequest = null;
+            return request != null && request.Type != SpriteEffectType.None;
         }
 
         public static bool IsBlending()

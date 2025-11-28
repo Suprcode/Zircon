@@ -1,6 +1,7 @@
 ﻿using Client.Controls;
 using Client.Envir;
 using SharpDX;
+using SharpDX.D3DCompiler;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,10 @@ namespace Client.Rendering.SharpDXD3D9
 
         public static Texture ScratchTexture;
         public static Surface ScratchSurface;
+
+        private static VertexDeclaration _outlineVertexDeclaration;
+        private static VertexShader _outlineVertexShader;
+        private static PixelShader _outlinePixelShader;
 
         public static byte[] PalleteData;
         private static Texture _ColourPallete;
@@ -199,6 +204,8 @@ namespace Client.Rendering.SharpDXD3D9
             Sprite = new Sprite(Device);
             Line = new Line(Device) { Width = 1F };
 
+            InitializeOutlineShader();
+
             MainSurface = Device.GetBackBuffer(0, 0);
             CurrentSurface = MainSurface;
             Device.SetRenderTarget(0, MainSurface);
@@ -222,6 +229,48 @@ namespace Client.Rendering.SharpDXD3D9
             ScratchSurface = ScratchTexture.GetSurfaceLevel(0);
         }
 
+        private static void InitializeOutlineShader()
+        {
+            DisposeOutlineShader();
+
+            try
+            {
+                string shaderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Shaders", "OutlineSpriteD3D9.hlsl");
+
+                using ShaderBytecode vertexShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "VS", "vs_2_0");
+                using ShaderBytecode pixelShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS", "ps_2_0");
+
+                _outlineVertexShader = new VertexShader(Device, vertexShaderByteCode);
+                _outlinePixelShader = new PixelShader(Device, pixelShaderByteCode);
+
+                VertexElement[] elements =
+                {
+                    new VertexElement(0, 0, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.PositionTransformed, 0),
+                    new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
+                    VertexElement.VertexDeclarationEnd
+                };
+
+                _outlineVertexDeclaration = new VertexDeclaration(Device, elements);
+            }
+            catch (Exception ex)
+            {
+                CEnvir.SaveException(ex);
+                DisposeOutlineShader();
+            }
+        }
+
+        private static void DisposeOutlineShader()
+        {
+            _outlineVertexDeclaration?.Dispose();
+            _outlineVertexDeclaration = null;
+
+            _outlineVertexShader?.Dispose();
+            _outlineVertexShader = null;
+
+            _outlinePixelShader?.Dispose();
+            _outlinePixelShader = null;
+        }
+
         private static void CreateLight()
         {
             Texture light = new Texture(Device, LightWidth, LightHeight, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
@@ -234,8 +283,74 @@ namespace Client.Rendering.SharpDXD3D9
 
             _LightTexture = light;
         }
+
+        private static float CalculateOutlineAlpha(float baseAlpha)
+        {
+            float alpha = baseAlpha * Opacity;
+
+            if (Blending)
+                alpha *= BlendRate;
+
+            return alpha;
+        }
+
+        public static bool TryDrawOutline(Texture texture, GdiRectangle source, RectangleF destination, GdiColor colour, float thickness)
+        {
+            if (texture == null || texture.IsDisposed)
+                return false;
+
+            if (_outlineVertexShader == null || _outlinePixelShader == null || _outlineVertexDeclaration == null)
+                return false;
+
+            SurfaceDescription desc = texture.GetLevelDescription(0);
+
+            float left = destination.Left - thickness;
+            float right = destination.Right + thickness;
+            float top = destination.Top - thickness;
+            float bottom = destination.Bottom + thickness;
+
+            float u1 = source.Left / (float)desc.Width;
+            float v1 = source.Top / (float)desc.Height;
+            float u2 = source.Right / (float)desc.Width;
+            float v2 = source.Bottom / (float)desc.Height;
+
+            float alpha = CalculateOutlineAlpha(colour.A / 255f);
+
+            var outlineColour = new Vector4(colour.R / 255f, colour.G / 255f, colour.B / 255f, alpha);
+            var outlineParams = new Vector4(1f / desc.Width, 1f / desc.Height, thickness, 0f);
+
+            Sprite?.Flush();
+
+            Device.VertexDeclaration = _outlineVertexDeclaration;
+            Device.VertexShader = _outlineVertexShader;
+            Device.PixelShader = _outlinePixelShader;
+
+            Device.SetPixelShaderConstant(0, outlineColour);
+            Device.SetPixelShaderConstant(1, outlineParams);
+
+            Device.SetTexture(0, texture);
+
+            OutlineVertex[] vertices =
+            {
+                new OutlineVertex(new Vector4(left, top, 0f, 1f), new Vector2(u1, v1)),
+                new OutlineVertex(new Vector4(right, top, 0f, 1f), new Vector2(u2, v1)),
+                new OutlineVertex(new Vector4(left, bottom, 0f, 1f), new Vector2(u1, v2)),
+                new OutlineVertex(new Vector4(right, bottom, 0f, 1f), new Vector2(u2, v2)),
+            };
+
+            Device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, vertices);
+
+            Device.PixelShader = null;
+            Device.VertexShader = null;
+            Device.VertexDeclaration = null;
+            Device.SetTexture(0, null);
+
+            return true;
+        }
         private static void CleanUp()
         {
+            DisposeOutlineShader();
+
             if (Sprite != null)
             {
                 if (!Sprite.IsDisposed)
@@ -719,6 +834,19 @@ namespace Client.Rendering.SharpDXD3D9
             if (t < 1f / 2f) return q;
             if (t < 2f / 3f) return p + (q - p) * (2f / 3f - t) * 6f;
             return p;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct OutlineVertex
+        {
+            public Vector4 Position;
+            public Vector2 TexCoord;
+
+            public OutlineVertex(Vector4 position, Vector2 texCoord)
+            {
+                Position = position;
+                TexCoord = texCoord;
+            }
         }
     }
 

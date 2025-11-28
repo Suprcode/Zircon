@@ -289,6 +289,13 @@ namespace Client.Rendering.SharpDXD3D9
             if (destinationRectangle.Width <= 0 || destinationRectangle.Height <= 0)
                 return;
 
+            if (RenderingPipelineManager.TryConsumeSpriteEffect(out SpriteEffectRequest effect) &&
+                effect.Type == SpriteEffectType.Outline &&
+                SharpDXD3D9Manager.TryDrawOutline(dxTexture, sourceRectangle, destinationRectangle, effect.Colour, effect.Thickness))
+            {
+                return;
+            }
+
             DxMatrix original = SharpDXD3D9Manager.Sprite.Transform;
 
             float scaleX = destinationRectangle.Width / sourceRectangle.Width;
@@ -328,6 +335,14 @@ namespace Client.Rendering.SharpDXD3D9
 
             if (dxTexture.IsDisposed)
                 return;
+
+            if (RenderingPipelineManager.TryConsumeSpriteEffect(out SpriteEffectRequest effect) &&
+                effect.Type == SpriteEffectType.Outline &&
+                sourceRectangle.HasValue &&
+                SharpDXD3D9Manager.TryDrawOutline(dxTexture, sourceRectangle.Value, new GdiRectangleF(translation.X, translation.Y, sourceRectangle.Value.Width, sourceRectangle.Value.Height), effect.Colour, effect.Thickness))
+            {
+                return;
+            }
 
             DxMatrix original = SharpDXD3D9Manager.Sprite.Transform;
             DxMatrix converted = new DxMatrix
