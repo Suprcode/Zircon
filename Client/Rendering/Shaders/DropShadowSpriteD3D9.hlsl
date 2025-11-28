@@ -60,10 +60,11 @@ float4 PS_DROPSHADOW(PS_INPUT input) : COLOR0
     float2 shadowUv = input.Tex + ShadowParams2.xy * texelSize;
 
     // Use a small, fixed kernel suitable for ps_3_0
-    static const int RADIUS = 2;
+    static const int RADIUS = 3;
     float alphaSum = 0.0;
     float weightSum = 0.0;
-    float blurDenominator = max(1.0, blur * blur);
+    float sigma = max(blur * 0.55, 0.75);
+    float blurDenominator = max(1.0, 2.0 * sigma * sigma);
 
     [unroll]
     for (int x = -RADIUS; x <= RADIUS; ++x)

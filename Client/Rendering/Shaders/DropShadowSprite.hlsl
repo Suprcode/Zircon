@@ -67,14 +67,16 @@ float4 PS_DROPSHADOW(PS_INPUT input) : SV_Target
         return float4(0, 0, 0, 0);
 
     float blur = max(ShadowBlur, 0.01);
-    int sampleRadius = (int)ceil(min(blur, 4.0));
+    // Use a slightly larger kernel to create a softer falloff while still keeping the loop bounded.
+    int sampleRadius = (int)ceil(min(blur * 1.5, 6.0));
     if (sampleRadius < 1) sampleRadius = 1;
 
     float2 shadowUv = input.Tex + ShadowOffset * texelSize;
 
     float alphaSum = 0.0;
     float weightSum = 0.0;
-    float blurDenominator = max(1.0, blur * blur);
+    float sigma = max(blur * 0.55, 0.75);
+    float blurDenominator = max(1.0, 2.0 * sigma * sigma);
 
     for (int x = -sampleRadius; x <= sampleRadius; ++x)
     {

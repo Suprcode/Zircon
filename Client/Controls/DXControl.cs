@@ -410,9 +410,9 @@ namespace Client.Controls
             DrawDropShadowChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public Color DropShadowColour { get; set; } = Color.FromArgb(180, 0, 0, 0);
+        public Color DropShadowColour { get; set; } = Color.FromArgb(120, 0, 0, 0);
         public Point DropShadowOffset { get; set; } = new Point(4, 4);
-        public float DropShadowBlur { get; set; } = 4f;
+        public float DropShadowBlur { get; set; } = 8f;
         protected bool IsDrawingDropShadow { get; private set; }
 
         #endregion

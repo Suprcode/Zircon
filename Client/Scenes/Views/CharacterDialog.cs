@@ -284,8 +284,9 @@ namespace Client.Scenes.Views
             Movable = true;
             Sort = true;
             DrawDropShadow = true;
-            DropShadowOffset = new Point(6, 8);
-            DropShadowBlur = 5f;
+            DropShadowColour = Color.FromArgb(140, 0, 0, 0);
+            DropShadowOffset = new Point(5, 7);
+            DropShadowBlur = 8f;
 
             CloseButton = new DXButton
             {
