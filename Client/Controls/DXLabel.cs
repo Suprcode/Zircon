@@ -340,9 +340,22 @@ namespace Client.Controls
 
             RenderingPipelineManager.SetOpacity(Opacity);
 
-            PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
+            bool applyGrayscale = !IsEnabled;
 
-            RenderingPipelineManager.SetOpacity(oldOpacity);
+            if (applyGrayscale)
+                RenderingPipelineManager.EnableGrayscaleEffect();
+
+            try
+            {
+                PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
+            }
+            finally
+            {
+                if (applyGrayscale)
+                    RenderingPipelineManager.DisableSpriteShaderEffect();
+
+                RenderingPipelineManager.SetOpacity(oldOpacity);
+            }
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
