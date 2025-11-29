@@ -366,7 +366,12 @@ namespace Client.Rendering.SharpDXD3D11
                     var height = tex.Description.Height;
                     _context.Rasterizer.SetViewport(new RawViewportF
                     {
-                        X = 0, Y = 0, Width = width, Height = height, MinDepth = 0, MaxDepth = 1
+                        X = 0,
+                        Y = 0,
+                        Width = width,
+                        Height = height,
+                        MinDepth = 0,
+                        MaxDepth = 1
                     });
                 }
                 rtv[0].Dispose();

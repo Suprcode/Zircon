@@ -4,11 +4,11 @@ using SharpDX.Mathematics.Interop;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using D3DCompilerBytecode = SharpDX.D3DCompiler.ShaderBytecode;
 using D3D9ShaderBytecode = SharpDX.Direct3D9.ShaderBytecode;
+using D3DCompilerBytecode = SharpDX.D3DCompiler.ShaderBytecode;
 using D3DCompilerShaderFlags = SharpDX.D3DCompiler.ShaderFlags;
-using EffectFlags = SharpDX.D3DCompiler.EffectFlags;
 using DxVector2 = SharpDX.Vector2;
+using EffectFlags = SharpDX.D3DCompiler.EffectFlags;
 using NumericsMatrix3x2 = System.Numerics.Matrix3x2;
 
 namespace Client.Rendering.SharpDXD3D9

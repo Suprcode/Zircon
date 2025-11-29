@@ -107,7 +107,7 @@ namespace Client.Rendering
                 return _activePipeline!.Id;
             }
         }
-        
+
         public static void SwitchPipeline(string pipelineId)
         {
             pipelineId = NormalizePipelineId(pipelineId);

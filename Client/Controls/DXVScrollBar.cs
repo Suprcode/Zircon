@@ -2,7 +2,6 @@
 using Library;
 using System;
 using System.Drawing;
-using System.Numerics;
 using System.Windows.Forms;
 
 //Cleaned

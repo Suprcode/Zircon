@@ -4,7 +4,6 @@ using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;

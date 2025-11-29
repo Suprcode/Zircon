@@ -62,14 +62,14 @@ namespace Client.Rendering.SharpDXD3D9
                 {
                     _ColourPallete = null;
 
-                        if (PalleteData != null)
-                        {
-                            _ColourPallete = new Texture(Device, 200, 149, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-                            DataRectangle rect = _ColourPallete.LockRectangle(0, LockFlags.Discard);
-                            Marshal.Copy(PalleteData, 0, rect.DataPointer, PalleteData.Length);
-                            _ColourPallete.UnlockRectangle(0);
-                        }
+                    if (PalleteData != null)
+                    {
+                        _ColourPallete = new Texture(Device, 200, 149, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+                        DataRectangle rect = _ColourPallete.LockRectangle(0, LockFlags.Discard);
+                        Marshal.Copy(PalleteData, 0, rect.DataPointer, PalleteData.Length);
+                        _ColourPallete.UnlockRectangle(0);
                     }
+                }
 
                 return _ColourPallete;
             }
@@ -495,7 +495,7 @@ namespace Client.Rendering.SharpDXD3D9
                         Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
                         break;
                 }
-                
+
                 Device.SetRenderState(RenderState.BlendFactor, GdiColor.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
             }
             else

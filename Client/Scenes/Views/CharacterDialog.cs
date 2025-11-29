@@ -2518,7 +2518,7 @@ namespace Client.Scenes.Views
                 MirImage image = FameEffectDecider.GetFameEffectImageOrNull(Fame, out int offSetX, out int offSetY);
                 if (image != null)
                 {
-                    
+
                     bool oldBlend = RenderingPipelineManager.IsBlending();
                     float oldRate = RenderingPipelineManager.GetBlendRate();
 

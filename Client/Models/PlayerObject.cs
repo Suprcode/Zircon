@@ -1,17 +1,14 @@
 ﻿using Client.Envir;
-using Client.Extensions;
 using Client.Models.Player;
 using Client.Rendering;
 using Client.Scenes;
 using Library;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Frame = Library.Frame;
-using Matrix = SharpDX.Matrix;
 using S = Library.Network.ServerPackets;
 
 namespace Client.Models

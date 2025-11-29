@@ -1,6 +1,5 @@
 ﻿using Client.Controls;
 using Client.Envir;
-using Client.Extensions;
 using Client.Models.Particles;
 using Client.Rendering;
 using Client.Scenes;
@@ -12,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using System.Windows.Forms;
 using Frame = Library.Frame;
 

@@ -1,12 +1,10 @@
 ﻿using Client.Envir;
 using Client.Rendering;
-using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using DataRectangle = SharpDX.DataRectangle;
 using Font = System.Drawing.Font;
 
 //Cleaned

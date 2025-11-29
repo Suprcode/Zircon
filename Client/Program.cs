@@ -4,7 +4,6 @@ using Client.Rendering;
 using Client.Scenes;
 using Library;
 using Sentry;
-using SharpDX.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;

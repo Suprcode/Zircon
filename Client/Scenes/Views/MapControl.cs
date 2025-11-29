@@ -1,21 +1,17 @@
 ﻿using Client.Controls;
 using Client.Envir;
-using Client.Extensions;
 using Client.Models;
 using Client.Models.Particles;
 using Client.Rendering;
 using Library;
 using Library.SystemModels;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
-using Matrix = SharpDX.Matrix;
 
 //Cleaned
 namespace Client.Scenes.Views

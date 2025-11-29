@@ -1,6 +1,5 @@
 ﻿using Client.Controls;
 using Client.Envir.Translations;
-using Client.Extensions;
 using Client.Models;
 using Client.Rendering;
 using Client.Scenes;
@@ -11,7 +10,6 @@ using Library.Network;
 using Library.SystemModels;
 using MirDB;
 using Sentry;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
