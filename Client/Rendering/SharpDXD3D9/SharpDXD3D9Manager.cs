@@ -465,11 +465,6 @@ namespace Client.Rendering.SharpDXD3D9
 
                 switch (BlendMode)
                 {
-                    case BlendMode.NORMAL:
-                        // Use standard alpha blending so grayscale sprites don't fade under screen-style blending.
-                        Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-                        Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-                        break;
                     case BlendMode.INVLIGHT:
                         Device.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
                         Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);

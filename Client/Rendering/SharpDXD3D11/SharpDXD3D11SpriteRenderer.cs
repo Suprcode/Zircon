@@ -221,9 +221,7 @@ namespace Client.Rendering.SharpDXD3D11
             // DX9: SourceBlend = InverseDestinationColor, DestinationBlend = One
             // Applied to both Color and Alpha channels.
 
-            // NORMAL should be standard alpha blending so sprites keep their source opacity instead of using
-            // the screen-style blending that dims textures when grayscale is active.
-            CreateBlendState(BlendMode.NORMAL, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha);
+            CreateBlendState(BlendMode.NORMAL, BlendOption.InverseDestinationColor, BlendOption.One, BlendOption.InverseDestinationAlpha, BlendOption.One);
             CreateBlendState(BlendMode.LIGHT, BlendOption.InverseDestinationColor, BlendOption.One, BlendOption.InverseDestinationAlpha, BlendOption.One);
             CreateBlendState(BlendMode.LIGHTINV, BlendOption.InverseDestinationColor, BlendOption.One, BlendOption.InverseDestinationAlpha, BlendOption.One);
             CreateBlendState(BlendMode.INVNORMAL, BlendOption.InverseDestinationColor, BlendOption.One, BlendOption.InverseDestinationAlpha, BlendOption.One);

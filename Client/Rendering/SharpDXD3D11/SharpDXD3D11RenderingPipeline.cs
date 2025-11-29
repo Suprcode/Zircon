@@ -467,7 +467,8 @@ namespace Client.Rendering.SharpDXD3D11
                 sourceRectangle,
                 colour,
                 transform,
-                SharpDXD3D11Manager.BlendMode,
+                // Force standard alpha blending so grayscale drawing doesn't inherit screen-style blends.
+                BlendMode.NONE,
                 SharpDXD3D11Manager.Opacity,
                 SharpDXD3D11Manager.BlendRate);
         }
