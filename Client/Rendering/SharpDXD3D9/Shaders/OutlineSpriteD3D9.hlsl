@@ -84,6 +84,6 @@ float4 PS_GRAY(PS_INPUT input) : COLOR0
     float4 texColor = tex2D(shaderTexture, input.Tex);
     float gray = dot(texColor.rgb, float3(0.299f, 0.587f, 0.114f));
 
-    // Keep the source alpha untouched so enabling grayscale does not alter opacity.
-    return float4(gray, gray, gray, texColor.a);
+    // Preserve the existing vertex/opacity contribution on alpha while desaturating the colour.
+    return float4(gray * input.Col.rgb, texColor.a * input.Col.a);
 }

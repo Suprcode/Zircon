@@ -41,7 +41,6 @@ float4 PS_GRAY(PS_INPUT input) : SV_Target
     float4 texColor = shaderTexture.Sample(sampleState, input.Tex);
     float gray = dot(texColor.rgb, float3(0.299f, 0.587f, 0.114f));
 
-    // Preserve the original texture alpha exactly so grayscale shading does not introduce
-    // any additional opacity changes when the effect is enabled.
-    return float4(gray, gray, gray, texColor.a);
+    // Preserve the existing vertex/opacity contribution on alpha while desaturating the colour.
+    return float4(gray * input.Col.rgb, texColor.a * input.Col.a);
 }
