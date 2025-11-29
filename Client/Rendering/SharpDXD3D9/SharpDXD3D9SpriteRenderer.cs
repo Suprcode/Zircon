@@ -253,8 +253,12 @@ namespace Client.Rendering.SharpDXD3D9
             Matrix projection = Matrix.Identity;
             projection.M11 = 2f / backBufferWidth;
             projection.M22 = -2f / backBufferHeight;
-            projection.M41 = -1f;
-            projection.M42 = 1f;
+
+            // Apply a half-pixel offset to align texels to pixel centers when using point sampling in D3D9.
+            float halfPixelX = 1f / backBufferWidth;
+            float halfPixelY = 1f / backBufferHeight;
+            projection.M41 = -1f - halfPixelX;
+            projection.M42 = 1f + halfPixelY;
 
             Matrix world = Matrix.Identity;
             world.M11 = transform.M11;
