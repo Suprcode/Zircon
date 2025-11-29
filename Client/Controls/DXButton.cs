@@ -333,7 +333,20 @@ namespace Client.Controls
                 RenderingPipelineManager.SetOpacity(Opacity);
             }
 
-            PresentTexture(texture, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0);
+            bool applyGrayscale = !IsEnabled;
+
+            if (applyGrayscale)
+                RenderingPipelineManager.EnableGrayscaleEffect();
+
+            try
+            {
+                PresentTexture(texture, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0);
+            }
+            finally
+            {
+                if (applyGrayscale)
+                    RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
 
             if (Blend)
             {

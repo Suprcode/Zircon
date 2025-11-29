@@ -417,6 +417,9 @@ namespace Client.Rendering.SharpDXD3D11
                 case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
                     TryDrawOutlineEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
                     break;
+                case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
+                    TryDrawGrayscaleEffect(d3dTex, geometry, sourceRectangle, colour, transform);
+                    break;
             }
         }
 
@@ -445,6 +448,24 @@ namespace Client.Rendering.SharpDXD3D11
                 1f,
                 outlineColor,
                 outline.Thickness);
+        }
+
+        private void TryDrawGrayscaleEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
+        {
+            if (SharpDXD3D11Manager.SpriteRenderer == null)
+                return;
+
+            SharpDXD3D11Manager.FlushSprite();
+
+            SharpDXD3D11Manager.SpriteRenderer.DrawGrayscale(
+                texture,
+                geometry,
+                sourceRectangle,
+                colour,
+                transform,
+                SharpDXD3D11Manager.BlendMode,
+                SharpDXD3D11Manager.Opacity,
+                SharpDXD3D11Manager.BlendRate);
         }
 
         public RenderSurface GetCurrentSurface()
