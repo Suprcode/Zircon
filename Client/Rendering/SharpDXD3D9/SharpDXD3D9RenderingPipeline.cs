@@ -401,6 +401,7 @@ namespace Client.Rendering.SharpDXD3D9
             {
                 case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
                     TryDrawOutlineEffect(dxTexture, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
+                    // Continue to render the base sprite normally so it isn't affected by the outline shader's blending or opacity rules.
                     return false;
                 case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
                     TryDrawGrayscaleEffect(dxTexture, geometry, sourceRectangle, colour, transform);

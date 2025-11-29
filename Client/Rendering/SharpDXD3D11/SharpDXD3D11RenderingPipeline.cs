@@ -248,8 +248,6 @@ namespace Client.Rendering.SharpDXD3D11
             if (!texture.IsValid)
                 return;
 
-            // Draw the outline first (when enabled) but continue to render the base sprite normally so it isn't affected by the
-            // outline shader's blending or opacity rules. For grayscale, the shader fully replaces base rendering.
             if (TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity))
                 return;
 
@@ -418,6 +416,7 @@ namespace Client.Rendering.SharpDXD3D11
             {
                 case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
                     TryDrawOutlineEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
+                    // Continue to render the base sprite normally so it isn't affected by the outline shader's blending or opacity rules.
                     return false;
                 case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
                     TryDrawGrayscaleEffect(d3dTex, geometry, sourceRectangle, colour, transform);
