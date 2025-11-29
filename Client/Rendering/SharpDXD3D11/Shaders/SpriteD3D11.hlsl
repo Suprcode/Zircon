@@ -41,8 +41,7 @@ float4 PS_GRAY(PS_INPUT input) : SV_Target
     float4 texColor = shaderTexture.Sample(sampleState, input.Tex);
     float gray = dot(texColor.rgb, float3(0.299f, 0.587f, 0.114f));
 
-    // Preserve the original texture alpha and only apply the vertex alpha for opacity so
-    // grayscale shading does not pick up colour tinting that can dim the sprite.
-    float alpha = texColor.a * input.Col.a;
-    return float4(gray, gray, gray, alpha);
+    // Preserve the original texture alpha exactly so grayscale shading does not introduce
+    // any additional opacity changes when the effect is enabled.
+    return float4(gray, gray, gray, texColor.a);
 }

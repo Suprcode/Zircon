@@ -84,8 +84,6 @@ float4 PS_GRAY(PS_INPUT input) : COLOR0
     float4 texColor = tex2D(shaderTexture, input.Tex);
     float gray = dot(texColor.rgb, float3(0.299f, 0.587f, 0.114f));
 
-    // Keep the source alpha untouched aside from the vertex alpha contribution so the
-    // grayscale pass does not inherit tinting that lowers sprite intensity.
-    float alpha = texColor.a * input.Col.a;
-    return float4(gray, gray, gray, alpha);
+    // Keep the source alpha untouched so enabling grayscale does not alter opacity.
+    return float4(gray, gray, gray, texColor.a);
 }
