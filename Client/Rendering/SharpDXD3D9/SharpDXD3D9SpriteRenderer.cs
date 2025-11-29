@@ -226,9 +226,9 @@ namespace Client.Rendering.SharpDXD3D9
             stream.Write(new VertexType { Position = new DxVector2(right, bottom), TexCoord = new DxVector2(u2, v2), Color = vertexColor });
             _vertexBuffer.Unlock();
 
-            _device.SetRenderState(RenderState.AlphaBlendEnable, true);
-            _device.SetRenderState(RenderState.SourceBlend, SharpDX.Direct3D9.Blend.SourceAlpha);
-            _device.SetRenderState(RenderState.DestinationBlend, SharpDX.Direct3D9.Blend.InverseSourceAlpha);
+            _device.SetRenderState(RenderState.AlphaBlendEnable, SharpDXD3D9Manager.Blending);
+            _device.SetRenderState(RenderState.SourceBlend, Blend.InverseDestinationColor);
+            _device.SetRenderState(RenderState.DestinationBlend, Blend.One);
             _device.SetRenderState(RenderState.CullMode, Cull.None);
 
             _device.SetTexture(0, texture);

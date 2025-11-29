@@ -446,7 +446,6 @@ namespace Client.Rendering.SharpDXD3D11
                 sourceRectangle,
                 colour,
                 transform,
-                // Use standard alpha blending so the outline draws fully opaque instead of screen blending with the scene.
                 BlendMode.NONE,
                 1f,
                 1f,
@@ -467,8 +466,7 @@ namespace Client.Rendering.SharpDXD3D11
                 sourceRectangle,
                 colour,
                 transform,
-                // Force standard alpha blending so grayscale drawing doesn't inherit screen-style blends.
-                BlendMode.NONE,
+                SharpDXD3D11Manager.Blending ? SharpDXD3D11Manager.BlendMode : BlendMode.NONE,
                 SharpDXD3D11Manager.Opacity,
                 SharpDXD3D11Manager.BlendRate);
         }
