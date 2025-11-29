@@ -249,8 +249,9 @@ namespace Client.Rendering.SharpDXD3D11
                 return;
 
             // Draw the outline first (when enabled) but continue to render the base sprite normally so it isn't affected by the
-            // outline shader's blending or opacity rules.
-            TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity);
+            // outline shader's blending or opacity rules. For grayscale, the shader fully replaces base rendering.
+            if (TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity))
+                return;
 
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
             {
@@ -328,7 +329,8 @@ namespace Client.Rendering.SharpDXD3D11
                 RectangleF geom = new RectangleF(0, 0, drawW, drawH);
 
                 // Draw outline first, then fall through to render the main sprite with the default shader.
-                TryDrawSpriteEffect(texture, geom, sourceRectangle, colour, finalTransform);
+                if (TryDrawSpriteEffect(texture, geom, sourceRectangle, colour, finalTransform))
+                    return;
             }
 
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
@@ -397,12 +399,12 @@ namespace Client.Rendering.SharpDXD3D11
             };
         }
 
-        private void TryDrawSpriteEffect(RenderTexture texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
+        private bool TryDrawSpriteEffect(RenderTexture texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
         {
             var effect = RenderingPipelineManager.GetSpriteShaderEffect();
 
             if (!effect.HasValue || SharpDXD3D11Manager.SpriteRenderer == null)
-                return;
+                return false;
 
             Texture2D d3dTex = null;
 
@@ -410,14 +412,19 @@ namespace Client.Rendering.SharpDXD3D11
             else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
 
             if (d3dTex == null)
-                return;
+                return false;
 
             switch (effect.Value.Kind)
             {
                 case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
                     TryDrawOutlineEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
-                    break;
+                    return false;
+                case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
+                    TryDrawGrayscaleEffect(d3dTex, geometry, sourceRectangle, colour, transform);
+                    return true;
             }
+
+            return false;
         }
 
         private void TryDrawOutlineEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform, RenderingPipelineManager.OutlineEffectSettings outline)
@@ -439,12 +446,29 @@ namespace Client.Rendering.SharpDXD3D11
                 sourceRectangle,
                 colour,
                 transform,
-                // Use standard alpha blending so the outline draws fully opaque instead of screen blending with the scene.
                 BlendMode.NONE,
                 1f,
                 1f,
                 outlineColor,
                 outline.Thickness);
+        }
+
+        private void TryDrawGrayscaleEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
+        {
+            if (SharpDXD3D11Manager.SpriteRenderer == null)
+                return;
+
+            SharpDXD3D11Manager.FlushSprite();
+
+            SharpDXD3D11Manager.SpriteRenderer.DrawGrayscale(
+                texture,
+                geometry,
+                sourceRectangle,
+                colour,
+                transform,
+                SharpDXD3D11Manager.Blending ? SharpDXD3D11Manager.BlendMode : BlendMode.NONE,
+                SharpDXD3D11Manager.Opacity,
+                SharpDXD3D11Manager.BlendRate);
         }
 
         public RenderSurface GetCurrentSurface()

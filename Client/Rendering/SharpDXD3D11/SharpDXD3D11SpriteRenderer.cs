@@ -25,6 +25,7 @@ namespace Client.Rendering.SharpDXD3D11
         private readonly DeviceContext _context;
         private VertexShader _vertexShader;
         private PixelShader _pixelShader;
+        private PixelShader _grayscalePixelShader;
         private PixelShader _outlinePixelShader;
         private InputLayout _inputLayout;
         private Buffer _vertexBuffer;
@@ -125,6 +126,12 @@ namespace Client.Rendering.SharpDXD3D11
             using (var pixelShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS", "ps_5_0"))
             {
                 _pixelShader = new PixelShader(_device, pixelShaderByteCode);
+            }
+
+            // Compile Grayscale Pixel Shader
+            using (var grayscaleShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS_GRAY", "ps_5_0"))
+            {
+                _grayscalePixelShader = new PixelShader(_device, grayscaleShaderByteCode);
             }
         }
 
@@ -292,6 +299,12 @@ namespace Client.Rendering.SharpDXD3D11
             DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _outlinePixelShader ?? _pixelShader, outlineEffect);
         }
 
+        public void DrawGrayscale(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate)
+        {
+            var grayscaleEffect = CreateGrayscaleEffect();
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _grayscalePixelShader ?? _pixelShader, grayscaleEffect);
+        }
+
         private SpriteEffect? CreateOutlineEffect(Texture2D texture, RectangleF? source, RawColor4 outlineColor, float outlineThickness)
         {
             if (!SupportsOutlineShader || _outlinePixelShader == null)
@@ -326,6 +339,14 @@ namespace Client.Rendering.SharpDXD3D11
                 outlineThickness,
                 true,
                 stream => stream.Write(outlineBuffer));
+        }
+
+        private SpriteEffect? CreateGrayscaleEffect()
+        {
+            if (_grayscalePixelShader == null)
+                return null;
+
+            return new SpriteEffect(_grayscalePixelShader, null, 0, 0f, false, null);
         }
 
         private void DrawInternal(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, PixelShader pixelShader, SpriteEffect? effect)
@@ -541,6 +562,7 @@ namespace Client.Rendering.SharpDXD3D11
             _vertexBuffer?.Dispose();
             _inputLayout?.Dispose();
             _pixelShader?.Dispose();
+            _grayscalePixelShader?.Dispose();
             _outlinePixelShader?.Dispose();
             _vertexShader?.Dispose();
         }

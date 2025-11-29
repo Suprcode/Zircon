@@ -341,9 +341,19 @@ namespace Client.Rendering
             _spriteShaderEffect = new SpriteShaderEffectRequest(new OutlineEffectSettings(colour, thickness));
         }
 
-        public static void DisableOutlineEffect()
+        public static void EnableGrayscaleEffect()
+        {
+            _spriteShaderEffect = new SpriteShaderEffectRequest(SpriteShaderEffectKind.Grayscale);
+        }
+
+        public static void DisableSpriteShaderEffect()
         {
             _spriteShaderEffect = null;
+        }
+
+        public static void DisableOutlineEffect()
+        {
+            DisableSpriteShaderEffect();
         }
 
         internal static SpriteShaderEffectRequest? GetSpriteShaderEffect() => _spriteShaderEffect;
@@ -782,11 +792,18 @@ namespace Client.Rendering
                 Kind = SpriteShaderEffectKind.Outline;
                 Outline = outline;
             }
+
+            public SpriteShaderEffectRequest(SpriteShaderEffectKind kind)
+            {
+                Kind = kind;
+                Outline = default;
+            }
         }
 
         internal enum SpriteShaderEffectKind
         {
-            Outline
+            Outline,
+            Grayscale
         }
     }
 }

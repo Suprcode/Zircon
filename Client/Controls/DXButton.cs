@@ -1,12 +1,9 @@
 ﻿using Client.Envir;
-using Client.Extensions;
 using Client.Rendering;
 using Library;
-using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Texture = SharpDX.Direct3D9.Texture;
 
 namespace Client.Controls
 {
@@ -375,7 +372,9 @@ namespace Client.Controls
         public void UpdateForeColour()
         {
             if (!IsEnabled)
+            {
                 ForeColour = Color.FromArgb(51, 51, 51);
+            }
             else
                 ForeColour = MouseControl == this || Pressed ? Color.White : Color.FromArgb(217, 217, 217);
         }

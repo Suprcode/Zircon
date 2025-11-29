@@ -340,7 +340,19 @@ namespace Client.Controls
 
             RenderingPipelineManager.SetOpacity(Opacity);
 
+            bool applyGrayscale = !IsEnabled;
+
+            if (applyGrayscale)
+            {
+                RenderingPipelineManager.EnableGrayscaleEffect();
+            }
+
             PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
+
+            if (applyGrayscale)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
 
             RenderingPipelineManager.SetOpacity(oldOpacity);
 

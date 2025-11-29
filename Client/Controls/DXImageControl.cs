@@ -305,6 +305,7 @@ namespace Client.Controls
             {
                 RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
             }
+
             RenderingPipelineManager.SetOpacity(previousOpacity);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
