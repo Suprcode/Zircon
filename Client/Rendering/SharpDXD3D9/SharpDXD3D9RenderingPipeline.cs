@@ -302,7 +302,8 @@ namespace Client.Rendering.SharpDXD3D9
 
             try
             {
-                TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, NumericsMatrix3x2.Identity);
+                if (TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, NumericsMatrix3x2.Identity))
+                    return;
 
                 SharpDXD3D9Manager.Sprite.Transform = DxMatrix.Scaling(scaleX, scaleY, 1F);
 
@@ -345,7 +346,8 @@ namespace Client.Rendering.SharpDXD3D9
             float width = sourceRectangle?.Width ?? levelDesc.Width;
             float height = sourceRectangle?.Height ?? levelDesc.Height;
 
-            TryDrawSpriteEffect(texture, new GdiRectangleF(0, 0, width, height), sourceRectangle, colour, finalTransform);
+            if (TryDrawSpriteEffect(texture, new GdiRectangleF(0, 0, width, height), sourceRectangle, colour, finalTransform))
+                return;
 
             DxMatrix original = SharpDXD3D9Manager.Sprite.Transform;
             DxMatrix converted = new DxMatrix
@@ -385,25 +387,27 @@ namespace Client.Rendering.SharpDXD3D9
             SharpDXD3D9Manager.Sprite.Transform = original;
         }
 
-        private void TryDrawSpriteEffect(RenderTexture texture, GdiRectangleF geometry, GdiRectangle? sourceRectangle, GdiColor colour, NumericsMatrix3x2 transform)
+        private bool TryDrawSpriteEffect(RenderTexture texture, GdiRectangleF geometry, GdiRectangle? sourceRectangle, GdiColor colour, NumericsMatrix3x2 transform)
         {
             var effect = RenderingPipelineManager.GetSpriteShaderEffect();
 
             if (!effect.HasValue || SharpDXD3D9Manager.SpriteRenderer == null)
-                return;
+                return false;
 
             if (texture.NativeHandle is not Texture dxTexture || dxTexture.IsDisposed)
-                return;
+                return false;
 
             switch (effect.Value.Kind)
             {
                 case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
                     TryDrawOutlineEffect(dxTexture, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
-                    break;
+                    return false;
                 case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
                     TryDrawGrayscaleEffect(dxTexture, geometry, sourceRectangle, colour, transform);
-                    break;
+                    return true;
             }
+
+            return false;
         }
 
         private void TryDrawOutlineEffect(Texture texture, GdiRectangleF geometry, GdiRectangle? sourceRectangle, GdiColor colour, NumericsMatrix3x2 transform, RenderingPipelineManager.OutlineEffectSettings outline)
