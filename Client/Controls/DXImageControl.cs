@@ -299,13 +299,26 @@ namespace Client.Controls
                 RenderingPipelineManager.SetOpacity(ImageOpacity);
             }
 
-            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+            bool applyGrayscale = !IsEnabled;
 
-            if (Blend)
+            if (applyGrayscale)
+                RenderingPipelineManager.EnableGrayscaleEffect();
+
+            try
             {
-                RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
+                PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
             }
-            RenderingPipelineManager.SetOpacity(previousOpacity);
+            finally
+            {
+                if (applyGrayscale)
+                    RenderingPipelineManager.DisableSpriteShaderEffect();
+
+                if (Blend)
+                {
+                    RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
+                }
+                RenderingPipelineManager.SetOpacity(previousOpacity);
+            }
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
