@@ -23,7 +23,8 @@ namespace Client.Rendering.SharpDXD3D9
         private VertexBuffer _vertexBuffer;
         private VertexDeclaration _vertexDeclaration;
 
-        private const string OutlineShaderFileName = "OutlineSpriteD3D9.hlsl";
+        private const string OutlineShaderFileName = "OutlineD3D9.hlsl";
+        private const string GrayscaleShaderFileName = "GrayscaleD3D9.hlsl";
 
         [StructLayout(LayoutKind.Sequential)]
         private struct VertexType
@@ -69,7 +70,7 @@ namespace Client.Rendering.SharpDXD3D9
 
         private void InitializeGrayscaleShader()
         {
-            string shaderPath = FindShaderPath(OutlineShaderFileName);
+            string shaderPath = FindShaderPath(GrayscaleShaderFileName);
 
             if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
                 return;

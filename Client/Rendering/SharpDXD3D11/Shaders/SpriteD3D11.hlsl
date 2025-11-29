@@ -35,12 +35,3 @@ float4 PS(PS_INPUT input) : SV_Target
     float4 texColor = shaderTexture.Sample(sampleState, input.Tex);
     return texColor * input.Col;
 }
-
-float4 PS_GRAY(PS_INPUT input) : SV_Target
-{
-    float4 texColor = shaderTexture.Sample(sampleState, input.Tex);
-    float gray = dot(texColor.rgb, float3(0.299f, 0.587f, 0.114f));
-
-    // Preserve the source alpha so grayscale doesn't introduce additional opacity.
-    return float4(gray * input.Col.rgb, texColor.a);
-}

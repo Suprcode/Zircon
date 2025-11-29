@@ -1010,6 +1010,17 @@ namespace Client.Rendering.SharpDXD3D11
 
             Size targetSize = CEnvir.Target?.ClientSize ?? size;
 
+            if (SwapChain.IsFullScreen)
+            {
+                ModeDescription targetDescription = SwapChain.Description.ModeDescription;
+                targetDescription.Width = targetSize.Width;
+                targetDescription.Height = targetSize.Height;
+                targetDescription.RefreshRate = targetDescription.RefreshRate.Numerator == 0 ? new Rational(60, 1) : targetDescription.RefreshRate;
+                targetDescription.Scaling = DisplayModeScaling.Unspecified;
+
+                SwapChain.ResizeTarget(ref targetDescription);
+            }
+
             SwapChain.ResizeBuffers(1, targetSize.Width, targetSize.Height, Format.B8G8R8A8_UNorm, SwapChainFlags.AllowModeSwitch);
             CreateTargets();
         }

@@ -2604,10 +2604,12 @@ namespace Client.Models
 
             if (mouseOver && Config.ShowTargetOutline)
             {
+                const int levelDiff = 2;
+
                 var result = (GameScene.Game.User.Level - MonsterInfo.Level) switch
                 {
-                    > 2 => Color.LimeGreen,
-                    <= 2 and >= 0 => Color.Yellow,
+                    > levelDiff => Color.LimeGreen,
+                    <= levelDiff and >= 0 => Color.Yellow,
                     _ => Color.Red
                 };
 

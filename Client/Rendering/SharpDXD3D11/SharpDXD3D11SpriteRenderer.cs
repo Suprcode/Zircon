@@ -37,7 +37,8 @@ namespace Client.Rendering.SharpDXD3D11
         private readonly Dictionary<Texture2D, ShaderResourceView> _srvCache = new Dictionary<Texture2D, ShaderResourceView>();
 
         private const string ShaderFileName = "SpriteD3D11.hlsl";
-        private const string OutlineShaderFileName = "OutlineSpriteD3D11.hlsl";
+        private const string OutlineShaderFileName = "OutlineD3D11.hlsl";
+        private const string GrayscaleFileName = "GrayscaleD3D11.hlsl";
 
         [StructLayout(LayoutKind.Sequential)]
         private struct VertexType
@@ -101,6 +102,7 @@ namespace Client.Rendering.SharpDXD3D11
         {
             InitializeShader();
             InitializeOutlineShader();
+            InitializeGrayscaleShader();
         }
 
         private void InitializeShader()
@@ -127,6 +129,14 @@ namespace Client.Rendering.SharpDXD3D11
             {
                 _pixelShader = new PixelShader(_device, pixelShaderByteCode);
             }
+        }
+
+        private void InitializeGrayscaleShader()
+        {
+            string shaderPath = FindShaderPath(GrayscaleFileName);
+
+            if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
+                return;
 
             // Compile Grayscale Pixel Shader
             using (var grayscaleShaderByteCode = ShaderBytecode.CompileFromFile(shaderPath, "PS_GRAY", "ps_5_0"))

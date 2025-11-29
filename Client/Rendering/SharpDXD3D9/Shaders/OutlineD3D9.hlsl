@@ -78,12 +78,3 @@ float4 PS_OUTLINE(PS_INPUT input) : COLOR0
 
     return float4(0, 0, 0, 0);
 }
-
-float4 PS_GRAY(PS_INPUT input) : COLOR0
-{
-    float4 texColor = tex2D(shaderTexture, input.Tex);
-    float gray = dot(texColor.rgb, float3(0.299f, 0.587f, 0.114f));
-
-    // Preserve the source alpha so grayscale doesn't introduce additional opacity.
-    return float4(gray * input.Col.rgb, texColor.a);
-}
