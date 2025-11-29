@@ -175,9 +175,9 @@ namespace Client.Rendering.SharpDXD3D9
             _device.SetTexture(0, texture);
             _device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
             _device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
-            _device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
-            _device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
-            _device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Linear);
+            _device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
+            _device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+            _device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Point);
 
             _device.VertexDeclaration = _vertexDeclaration;
             _device.SetStreamSource(0, _vertexBuffer, 0, Marshal.SizeOf<VertexType>());
@@ -234,9 +234,9 @@ namespace Client.Rendering.SharpDXD3D9
             _device.SetTexture(0, texture);
             _device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
             _device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
-            _device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
-            _device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
-            _device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Linear);
+            _device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
+            _device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+            _device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Point);
 
             _device.VertexDeclaration = _vertexDeclaration;
             _device.SetStreamSource(0, _vertexBuffer, 0, Marshal.SizeOf<VertexType>());
