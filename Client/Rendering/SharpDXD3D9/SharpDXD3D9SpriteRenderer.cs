@@ -18,6 +18,7 @@ namespace Client.Rendering.SharpDXD3D9
         private readonly Device _device;
 
         private VertexShader _vertexShader;
+        private VertexShader _shadowVertexShader;
         private PixelShader _outlinePixelShader;
         private PixelShader _grayscalePixelShader;
         private PixelShader _dropShadowPixelShader;
@@ -38,7 +39,7 @@ namespace Client.Rendering.SharpDXD3D9
 
         public bool SupportsOutlineShader => _outlinePixelShader != null && _vertexShader != null;
         public bool SupportsGrayscaleShader => _grayscalePixelShader != null && _vertexShader != null;
-        public bool SupportsDropShadowShader => _dropShadowPixelShader != null && _vertexShader != null;
+        public bool SupportsDropShadowShader => _dropShadowPixelShader != null && _shadowVertexShader != null;
 
         public SharpDXD3D9SpriteRenderer(Device device)
         {
@@ -98,7 +99,7 @@ namespace Client.Rendering.SharpDXD3D9
             using (var vertexByteCode = new D3D9ShaderBytecode(compiledVertex))
             using (var pixelByteCode = new D3D9ShaderBytecode(compiledPixel))
             {
-                _vertexShader ??= new VertexShader(_device, vertexByteCode);
+                _shadowVertexShader = new VertexShader(_device, vertexByteCode);
                 _dropShadowPixelShader = new PixelShader(_device, pixelByteCode);
             }
         }
@@ -344,7 +345,7 @@ namespace Client.Rendering.SharpDXD3D9
 
             _device.VertexDeclaration = _vertexDeclaration;
             _device.SetStreamSource(0, _vertexBuffer, 0, Marshal.SizeOf<VertexType>());
-            _device.VertexShader = _vertexShader;
+            _device.VertexShader = _shadowVertexShader;
             _device.PixelShader = _dropShadowPixelShader;
 
             _device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
@@ -399,6 +400,7 @@ namespace Client.Rendering.SharpDXD3D9
             _outlinePixelShader?.Dispose();
             _grayscalePixelShader?.Dispose();
             _dropShadowPixelShader?.Dispose();
+            _shadowVertexShader?.Dispose();
         }
     }
 }

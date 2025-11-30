@@ -10,7 +10,7 @@ struct VS_INPUT
     float4 Col : COLOR0;
 };
 
-struct PS_INPUT
+struct VS_OUTPUT
 {
     float4 Pos : POSITION0;
     float2 Tex : TEXCOORD0;
@@ -18,13 +18,20 @@ struct PS_INPUT
     float2 ScreenPos : TEXCOORD1;
 };
 
-PS_INPUT VS(VS_INPUT input)
+struct PS_INPUT
 {
-    PS_INPUT output;
+    float2 Tex : TEXCOORD0;
+    float4 Col : COLOR0;
+    float2 ScreenPos : TEXCOORD1;
+};
+
+VS_OUTPUT VS(VS_INPUT input)
+{
+    VS_OUTPUT output;
     output.Pos = mul(float4(input.Pos, 0.0, 1.0), Matrix);
+    output.ScreenPos = input.Pos;
     output.Tex = input.Tex;
     output.Col = input.Col;
-    output.ScreenPos = input.Pos;
     return output;
 }
 
