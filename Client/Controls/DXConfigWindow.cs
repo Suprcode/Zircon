@@ -145,6 +145,7 @@ namespace Client.Controls
             Size = new Size(300, 355);
             TitleLabel.Text = CEnvir.Language.CommonControlConfigWindowTitle;
             HasFooter = true;
+            DropShadow = true;
 
             TabControl = new DXTabControl
             {

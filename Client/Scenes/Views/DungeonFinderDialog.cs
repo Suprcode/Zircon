@@ -81,6 +81,7 @@ namespace Client.Scenes.Views
         public DungeonFinderDialog()
         {
             TitleLabel.Text = "Dungeon Finder";
+            DropShadow = true;
             SetClientSize(new Size(560, 461));
 
             TabControl = new DXTabControl

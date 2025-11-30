@@ -70,6 +70,9 @@
     <Folder Include="Rendering\Shaders\" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Rendering\SharpDXD3D11\Shaders\DropShadowD3D11.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Rendering\SharpDXD3D11\Shaders\GrayscaleD3D11.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -77,6 +80,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Rendering\SharpDXD3D11\Shaders\SpriteD3D11.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Rendering\SharpDXD3D9\Shaders\DropShadowD3D9.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Rendering\SharpDXD3D9\Shaders\GrayscaleD3D9.hlsl">

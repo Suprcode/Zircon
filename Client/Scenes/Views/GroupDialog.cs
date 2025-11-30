@@ -179,6 +179,7 @@ namespace Client.Scenes.Views
             Index = 240;
             Movable = true;
             Sort = true;
+            DropShadow = true;
 
             TitleLabel = new DXLabel
             {

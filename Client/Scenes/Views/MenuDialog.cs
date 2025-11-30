@@ -85,6 +85,7 @@ namespace Client.Scenes.Views
             Index = 280;
             Sort = true;
             Movable = true;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {

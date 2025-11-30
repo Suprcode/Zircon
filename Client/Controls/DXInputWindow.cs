@@ -26,6 +26,7 @@ namespace Client.Controls
         public DXInputWindow(string message, string caption)
         {
             HasFooter = true;
+            DropShadow = true;
 
             TitleLabel.Text = caption;
 

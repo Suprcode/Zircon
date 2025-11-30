@@ -129,6 +129,30 @@ namespace Client.Controls
         public DXButton CloseButton { get; protected set; }
         public DXLabel TitleLabel { get; protected set; }
 
+        #region DropShadow
+
+        public bool DropShadow
+        {
+            get => _DropShadow;
+            set
+            {
+                if (_DropShadow == value) return;
+
+                bool oldValue = _DropShadow;
+                _DropShadow = value;
+
+                OnDropShadowChanged(oldValue, value);
+            }
+        }
+        private bool _DropShadow;
+        public event EventHandler<EventArgs> DropShadowChanged;
+        public virtual void OnDropShadowChanged(bool oValue, bool nValue)
+        {
+            DropShadowChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         private RenderTargetResource _windowRenderTarget;
         public RenderTexture WindowTexture;
         public RenderSurface WindowSurface { get; private set; }
@@ -381,8 +405,21 @@ namespace Client.Controls
 
             float oldOpacity = RenderingPipelineManager.GetOpacity();
 
+            if (DropShadow)
+            {
+                Rectangle displayArea = DisplayArea;
+                RectangleF shadowBounds = new RectangleF(displayArea.X, displayArea.Y, displayArea.Width, displayArea.Height);
+
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
+            }
+
             RenderingPipelineManager.SetOpacity(Opacity);
             PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
+
+            if (DropShadow)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
 
             RenderingPipelineManager.SetOpacity(oldOpacity);
         }

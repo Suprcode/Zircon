@@ -255,6 +255,7 @@ namespace Client.Scenes.Views
         {
             Size = new Size(260, 650 - 90);
             HasFooter = true;
+            DropShadow = true;
             TitleLabel.Text = "Change";
             CloseButton.MouseClick += (o, e) => Close();
 

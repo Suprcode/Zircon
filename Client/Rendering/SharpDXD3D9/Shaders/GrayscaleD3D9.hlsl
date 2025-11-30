@@ -1,4 +1,20 @@
 
+float4x4 Matrix : register(c0);
+
+struct VS_INPUT
+{
+    float2 Pos : POSITION0;
+    float2 Tex : TEXCOORD0;
+    float4 Col : COLOR0;
+};
+
+struct PS_INPUT
+{
+    float4 Pos : POSITION0;
+    float2 Tex : TEXCOORD0;
+    float4 Col : COLOR0;
+};
+
 PS_INPUT VS(VS_INPUT input)
 {
     PS_INPUT output;

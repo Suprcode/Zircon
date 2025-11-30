@@ -259,6 +259,30 @@ namespace Client.Controls
 
         public bool IntersectParent;
 
+        #region Drop Shadow
+
+        public bool DropShadow
+        {
+            get => _DropShadow;
+            set
+            {
+                if (_DropShadow == value) return;
+
+                bool oldValue = _DropShadow;
+                _DropShadow = value;
+
+                OnDropShadowChanged(oldValue, value);
+            }
+        }
+        private bool _DropShadow = false;
+        public event EventHandler<EventArgs> DropShadowChanged;
+        public virtual void OnDropShadowChanged(bool oValue, bool nValue)
+        {
+            DropShadowChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         public DXImageControl()
         {
             DrawImage = true;
@@ -299,7 +323,35 @@ namespace Client.Controls
                 RenderingPipelineManager.SetOpacity(ImageOpacity);
             }
 
-            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+            Rectangle drawArea = DisplayArea;
+
+            RectangleF? shadowBounds = null;
+
+            if (image.ImageValid)
+            {
+                Rectangle visibleBounds = image.GetVisibleBounds();
+
+                if (visibleBounds.Width > 0 && visibleBounds.Height > 0)
+                {
+                    shadowBounds = new RectangleF(
+                        drawArea.Left + visibleBounds.Left,
+                        drawArea.Top + visibleBounds.Top,
+                        visibleBounds.Width,
+                        visibleBounds.Height);
+                }
+            }
+
+            if (DropShadow)
+            {
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
+            }
+
+            PresentTexture(image.Image, FixedSize ? null : Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+
+            if (DropShadow)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
 
             if (Blend)
             {
@@ -343,6 +395,7 @@ namespace Client.Controls
                 _LibraryFile = LibraryFile.None;
                 _PixelDetect = false;
                 _UseOffSet = false;
+                _DropShadow = false;
 
                 BlendChanged = null;
                 DrawImageChanged = null;

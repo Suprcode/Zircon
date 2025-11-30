@@ -24,7 +24,7 @@ namespace Client.Scenes.Views
         public int Length;
     }
 
-    public sealed partial class NPCDialog : DXControl
+    public sealed partial class NPCDialog : DXWindow
     {
         #region Properties
 
@@ -42,7 +42,6 @@ namespace Client.Scenes.Views
         private string CurrentPageSay;
         private bool Rolling = true;
 
-        public DXButton CloseButton;
         private DXImageControl HeaderImage, FooterImage;
         private DXImageControl[] RowImages = new DXImageControl[6];
         private DXVScrollBar ScrollBar;
@@ -50,6 +49,12 @@ namespace Client.Scenes.Views
         private const int _HeaderHeight = 140;
         private const int _FooterHeight = 64;
         private const int _RowHeight = 20;
+
+        public override WindowType Type => WindowType.None;
+
+        public override bool CustomSize => false;
+
+        public override bool AutomaticVisibility => false;
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -140,6 +145,8 @@ namespace Client.Scenes.Views
         {
             Movable = false;
             Sort = true;
+            DropShadow = true;
+            HasFooter = false;
 
             HeaderImage = new DXImageControl
             {
@@ -812,7 +819,7 @@ namespace Client.Scenes.Views
         public NPCGoodsDialog()
         {
             TitleLabel.Text = "Goods";
-
+            DropShadow = true;
             HasFooter = true;
             Movable = false;
 
@@ -1413,6 +1420,7 @@ namespace Client.Scenes.Views
         {
             TitleLabel.Text = "Repair Items";
             Movable = false;
+            DropShadow = true;
 
             Grid = new DXItemGrid
             {
@@ -1862,8 +1870,7 @@ namespace Client.Scenes.Views
         public NPCRefineDialog()
         {
             TitleLabel.Text = "Refine";
-
-
+            DropShadow = true;
 
             SetClientSize(new Size(491, 130));
 
@@ -2863,6 +2870,7 @@ namespace Client.Scenes.Views
             Movable = false;
             Sort = true;
             Location = new Point(0, GameScene.Game.NPCBox.Size.Height);
+            DropShadow = true;
 
             TitleLabel = new DXLabel
             {
@@ -3306,6 +3314,7 @@ namespace Client.Scenes.Views
             Movable = false;
             Sort = true;
             Location = new Point(GameScene.Game.NPCBox.Size.Width, 0);
+            DropShadow = true;
 
             TitleLabel = new DXLabel
             {
@@ -4017,6 +4026,7 @@ namespace Client.Scenes.Views
             LibraryFile = LibraryFile.Interface;
             Index = 146;
             Movable = false;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -4460,6 +4470,7 @@ namespace Client.Scenes.Views
             Index = 147;
 
             Movable = true;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -7258,6 +7269,7 @@ namespace Client.Scenes.Views
             TitleLabel.Text = "Weapon Craft";
 
             HasFooter = false;
+            DropShadow = true;
 
             SetClientSize(new Size(250, 280));
 

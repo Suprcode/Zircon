@@ -406,6 +406,9 @@ namespace Client.Rendering.SharpDXD3D9
                 case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
                     TryDrawGrayscaleEffect(dxTexture, geometry, sourceRectangle, colour, transform);
                     return true;
+                case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
+                    TryDrawDropShadowEffect(dxTexture, geometry, sourceRectangle, colour, transform, effect.Value.DropShadow);
+                    return false;
             }
 
             return false;
@@ -447,6 +450,33 @@ namespace Client.Rendering.SharpDXD3D9
                 sourceRectangle,
                 colour,
                 transform);
+        }
+
+        private void TryDrawDropShadowEffect(Texture texture, GdiRectangleF geometry, GdiRectangle? sourceRectangle, GdiColor colour, NumericsMatrix3x2 transform, RenderingPipelineManager.DropShadowEffectSettings dropShadow)
+        {
+            if (SharpDXD3D9Manager.SpriteRenderer == null || !SharpDXD3D9Manager.SpriteRenderer.SupportsDropShadowShader)
+                return;
+
+            SharpDXD3D9Manager.Sprite.Flush();
+
+            var shadowBounds = dropShadow.VisibleBounds ?? geometry;
+
+            var shadowColor = new Color4(
+                dropShadow.Colour.R / 255f,
+                dropShadow.Colour.G / 255f,
+                dropShadow.Colour.B / 255f,
+                1f);
+
+            SharpDXD3D9Manager.SpriteRenderer.DrawDropShadow(
+                texture,
+                geometry,
+                shadowBounds,
+                sourceRectangle,
+                colour,
+                transform,
+                shadowColor,
+                dropShadow.Width,
+                dropShadow.StartOpacity);
         }
 
         public RenderSurface GetCurrentSurface()

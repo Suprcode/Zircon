@@ -421,6 +421,9 @@ namespace Client.Rendering.SharpDXD3D11
                 case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
                     TryDrawGrayscaleEffect(d3dTex, geometry, sourceRectangle, colour, transform);
                     return true;
+                case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
+                    TryDrawDropShadowEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.DropShadow);
+                    return false;
             }
 
             return false;
@@ -468,6 +471,36 @@ namespace Client.Rendering.SharpDXD3D11
                 SharpDXD3D11Manager.Blending ? SharpDXD3D11Manager.BlendMode : BlendMode.NONE,
                 SharpDXD3D11Manager.Opacity,
                 SharpDXD3D11Manager.BlendRate);
+        }
+
+        private void TryDrawDropShadowEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform, RenderingPipelineManager.DropShadowEffectSettings dropShadow)
+        {
+            if (SharpDXD3D11Manager.SpriteRenderer == null)
+                return;
+
+            SharpDXD3D11Manager.FlushSprite();
+
+            RectangleF shadowBounds = dropShadow.VisibleBounds ?? geometry;
+
+            var shadowColor = new RawColor4(
+                dropShadow.Colour.R / 255f,
+                dropShadow.Colour.G / 255f,
+                dropShadow.Colour.B / 255f,
+                1f);
+
+            SharpDXD3D11Manager.SpriteRenderer.DrawDropShadow(
+                texture,
+                geometry,
+                shadowBounds,
+                sourceRectangle,
+                colour,
+                transform,
+                SharpDXD3D11Manager.Blending ? SharpDXD3D11Manager.BlendMode : BlendMode.NONE,
+                SharpDXD3D11Manager.Opacity,
+                SharpDXD3D11Manager.BlendRate,
+                shadowColor,
+                dropShadow.Width,
+                dropShadow.StartOpacity);
         }
 
         public RenderSurface GetCurrentSurface()

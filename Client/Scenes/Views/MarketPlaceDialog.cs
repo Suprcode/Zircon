@@ -259,6 +259,7 @@ namespace Client.Scenes.Views
             //HasFooter = true;
             TitleLabel.Text = CEnvir.Language.MarketPlaceDialogTitle;
             SetClientSize(new Size(740, 461));
+            DropShadow = true;
 
 
             TabControl = new DXTabControl
