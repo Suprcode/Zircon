@@ -476,8 +476,7 @@ namespace Client.Rendering.SharpDXD3D9
                 transform,
                 shadowColor,
                 dropShadow.Width,
-                dropShadow.StartOpacity,
-                dropShadow.OpacityExponent);
+                dropShadow.StartOpacity);
         }
 
         public RenderSurface GetCurrentSurface()

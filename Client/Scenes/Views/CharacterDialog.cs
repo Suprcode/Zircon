@@ -284,10 +284,6 @@ namespace Client.Scenes.Views
             Movable = true;
             Sort = true;
 
-            DropShadow = true;
-            DropShadowWidth = 5f;
-            DropShadowOpacity = 0.5f;
-
             CloseButton = new DXButton
             {
                 Parent = this,

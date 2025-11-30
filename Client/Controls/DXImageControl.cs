@@ -274,91 +274,11 @@ namespace Client.Controls
                 OnDropShadowChanged(oldValue, value);
             }
         }
-        private bool _DropShadow;
+        private bool _DropShadow = true;
         public event EventHandler<EventArgs> DropShadowChanged;
         public virtual void OnDropShadowChanged(bool oValue, bool nValue)
         {
             DropShadowChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public Color DropShadowColour
-        {
-            get => _DropShadowColour;
-            set
-            {
-                if (_DropShadowColour == value) return;
-
-                Color oldValue = _DropShadowColour;
-                _DropShadowColour = value;
-
-                OnDropShadowColourChanged(oldValue, value);
-            }
-        }
-        private Color _DropShadowColour = Color.Black;
-        public event EventHandler<EventArgs> DropShadowColourChanged;
-        public virtual void OnDropShadowColourChanged(Color oValue, Color nValue)
-        {
-            DropShadowColourChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public float DropShadowWidth
-        {
-            get => _DropShadowWidth;
-            set
-            {
-                if (Math.Abs(_DropShadowWidth - value) < float.Epsilon) return;
-
-                float oldValue = _DropShadowWidth;
-                _DropShadowWidth = value;
-
-                OnDropShadowWidthChanged(oldValue, value);
-            }
-        }
-        private float _DropShadowWidth = 5f;
-        public event EventHandler<EventArgs> DropShadowWidthChanged;
-        public virtual void OnDropShadowWidthChanged(float oValue, float nValue)
-        {
-            DropShadowWidthChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public float DropShadowOpacity
-        {
-            get => _DropShadowOpacity;
-            set
-            {
-                if (Math.Abs(_DropShadowOpacity - value) < float.Epsilon) return;
-
-                float oldValue = _DropShadowOpacity;
-                _DropShadowOpacity = value;
-
-                OnDropShadowOpacityChanged(oldValue, value);
-            }
-        }
-        private float _DropShadowOpacity = 0.5f;
-        public event EventHandler<EventArgs> DropShadowOpacityChanged;
-        public virtual void OnDropShadowOpacityChanged(float oValue, float nValue)
-        {
-            DropShadowOpacityChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public float DropShadowOpacityExponent
-        {
-            get => _DropShadowOpacityExponent;
-            set
-            {
-                if (Math.Abs(_DropShadowOpacityExponent - value) < float.Epsilon) return;
-
-                float oldValue = _DropShadowOpacityExponent;
-                _DropShadowOpacityExponent = value;
-
-                OnDropShadowOpacityExponentChanged(oldValue, value);
-            }
-        }
-        private float _DropShadowOpacityExponent = 1f;
-        public event EventHandler<EventArgs> DropShadowOpacityExponentChanged;
-        public virtual void OnDropShadowOpacityExponentChanged(float oValue, float nValue)
-        {
-            DropShadowOpacityExponentChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -425,11 +345,7 @@ namespace Client.Controls
 
             if (dropShadowEnabled)
             {
-                float shadowWidth = Math.Max(0, DropShadowWidth);
-                float shadowOpacity = Math.Min(1f, Math.Max(0f, DropShadowOpacity));
-                float shadowExponent = Math.Max(0.01f, DropShadowOpacityExponent);
-
-                RenderingPipelineManager.EnableDropShadowEffect(DropShadowColour, shadowWidth, shadowOpacity, shadowExponent, shadowBounds);
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 6f, 0.5f, shadowBounds);
             }
 
             PresentTexture(image.Image, FixedSize ? null : Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
@@ -482,10 +398,6 @@ namespace Client.Controls
                 _PixelDetect = false;
                 _UseOffSet = false;
                 _DropShadow = false;
-                _DropShadowColour = Color.Empty;
-                _DropShadowWidth = 0f;
-                _DropShadowOpacity = 0f;
-                _DropShadowOpacityExponent = 0f;
 
                 BlendChanged = null;
                 DrawImageChanged = null;

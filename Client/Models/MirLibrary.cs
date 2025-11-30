@@ -639,362 +639,359 @@ namespace Client.Envir
 
     }
 
-        public sealed class MirImage : IDisposable, ITextureCacheItem
+    public sealed class MirImage : IDisposable, ITextureCacheItem
+    {
+        public int Version;
+        public int Position;
+
+    #region Texture
+
+    public short Width;
+    public short Height;
+    public short OffSetX;
+    public short OffSetY;
+    public byte ShadowType;
+    public RenderTexture Image;
+    public bool ImageValid { get; private set; }
+    public byte[] ImageData;
+    public int ImageDataSize
+    {
+        get
         {
-            public int Version;
-            public int Position;
-
-        #region Texture
-
-        public short Width;
-        public short Height;
-        public short OffSetX;
-        public short OffSetY;
-        public byte ShadowType;
-        public RenderTexture Image;
-        public bool ImageValid { get; private set; }
-        public byte[] ImageData;
-        public int ImageDataSize
-        {
-            get
-            {
-                int w = Width + (4 - Width % 4) % 4;
-                int h = Height + (4 - Height % 4) % 4;
-
-                if (Version > 0)
-                {
-                    return w * h;
-                }
-                else
-                {
-                    return w * h / 2;
-                }
-            }
-        }
-        #endregion
-
-        #region Shadow
-        public short ShadowWidth;
-        public short ShadowHeight;
-
-        public short ShadowOffSetX;
-        public short ShadowOffSetY;
-
-        public RenderTexture Shadow;
-        public bool ShadowValid { get; private set; }
-        public byte[] ShadowData;
-        public int ShadowDataSize
-        {
-            get
-            {
-                int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
-                int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
-
-                if (Version > 0)
-                {
-                    return w * h;
-                }
-                else
-                {
-                    return w * h / 2;
-                }
-            }
-        }
-        #endregion
-
-        #region Overlay
-        public short OverlayWidth;
-        public short OverlayHeight;
-
-        public RenderTexture Overlay;
-        public bool OverlayValid { get; private set; }
-        public byte[] OverlayData;
-        public int OverlayDataSize
-        {
-            get
-            {
-                int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
-                int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
-
-                if (Version > 0)
-                {
-                    return w * h;
-                }
-                else
-                {
-                    return w * h / 2;
-                }
-            }
-        }
-        #endregion
-
-        private RenderTextureFormat DrawFormat
-        {
-            get
-            {
-                return Version switch
-                {
-                    0 => RenderTextureFormat.Dxt1,
-                    _ => RenderTextureFormat.Dxt5,
-                };
-            }
-        }
-
-        public DateTime ExpireTime { get; set; }
-
-        private Rectangle _visibleBounds;
-        private bool _visibleBoundsComputed;
-
-        public MirImage(BinaryReader reader, int version)
-        {
-            Version = version;
-
-            Position = reader.ReadInt32();
-
-            Width = reader.ReadInt16();
-            Height = reader.ReadInt16();
-            OffSetX = reader.ReadInt16();
-            OffSetY = reader.ReadInt16();
-
-            ShadowType = reader.ReadByte();
-            ShadowWidth = reader.ReadInt16();
-            ShadowHeight = reader.ReadInt16();
-            ShadowOffSetX = reader.ReadInt16();
-            ShadowOffSetY = reader.ReadInt16();
-
-            OverlayWidth = reader.ReadInt16();
-            OverlayHeight = reader.ReadInt16();
-        }
-
-        public Rectangle GetVisibleBounds()
-        {
-            if (_visibleBoundsComputed)
-                return _visibleBounds;
-
-            _visibleBounds = CalculateVisibleBounds();
-            _visibleBoundsComputed = true;
-
-            return _visibleBounds;
-        }
-
-        private Rectangle CalculateVisibleBounds()
-        {
-            if (!ImageValid || ImageData == null || Width <= 0 || Height <= 0)
-                return new Rectangle(0, 0, Width, Height);
-
-            int minX = Width;
-            int minY = Height;
-            int maxX = -1;
-            int maxY = -1;
-
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    if (!VisiblePixel(new Point(x, y), true)) continue;
-
-                    if (x < minX) minX = x;
-                    if (y < minY) minY = y;
-                    if (x > maxX) maxX = x;
-                    if (y > maxY) maxY = y;
-                }
-            }
-
-            if (maxX < minX || maxY < minY)
-                return new Rectangle(0, 0, Width, Height);
-
-            return Rectangle.FromLTRB(minX, minY, maxX + 1, maxY + 1);
-        }
-
-        public unsafe bool VisiblePixel(Point p, bool acurrate)
-        {
-            if (p.X < 0 || p.Y < 0 || !ImageValid || ImageData == null) return false;
-
             int w = Width + (4 - Width % 4) % 4;
             int h = Height + (4 - Height % 4) % 4;
 
-            if (p.X >= w || p.Y >= h)
-                return false;
-
-            int x = (p.X - p.X % 4) / 4;
-            int y = (p.Y - p.Y % 4) / 4;
-            int index = (y * (w / 4) + x) * 8;
-
-            int col0 = ImageData[index + 1] << 8 | ImageData[index];
-            int col1 = ImageData[index + 3] << 8 | ImageData[index + 2];
-
-            if (col0 == 0 && col1 == 0) return false;
-
-            if (!acurrate || col1 < col0) return true;
-
-            x = p.X % 4;
-            y = p.Y % 4;
-            x *= 2;
-
-            return (ImageData[index + 4 + y] & 1 << x) >> x != 1 || (ImageData[index + 4 + y] & 1 << x + 1) >> x + 1 != 1;
-        }
-
-        public void DisposeTexture()
-        {
-            RenderingPipelineManager.ReleaseTexture(Image);
-            RenderingPipelineManager.ReleaseTexture(Shadow);
-            RenderingPipelineManager.ReleaseTexture(Overlay);
-
-            ImageData = null;
-            ShadowData = null;
-            OverlayData = null;
-
-            Image = default;
-            Shadow = default;
-                Overlay = default;
-
-            ImageValid = false;
-            ShadowValid = false;
-            OverlayValid = false;
-
-                ExpireTime = DateTime.MinValue;
-
-                _visibleBounds = Rectangle.Empty;
-                _visibleBoundsComputed = false;
-
-                RenderingPipelineManager.UnregisterTextureCache(this);
-            }
-
-        public void CreateImage(BinaryReader reader)
-        {
-            if (Position == 0) return;
-
-            int w = Width + (4 - Width % 4) % 4;
-            int h = Height + (4 - Height % 4) % 4;
-
-            if (w == 0 || h == 0) return;
-
-            byte[] buffer;
-
-            lock (reader)
+            if (Version > 0)
             {
-                reader.BaseStream.Seek(Position, SeekOrigin.Begin);
-                buffer = reader.ReadBytes(ImageDataSize);
+                return w * h;
             }
-
-            ImageData = buffer;
-
-            Image = RenderingPipelineManager.CreateTexture(new Size(w, h), DrawFormat, RenderTextureUsage.None, RenderTexturePool.Managed);
-
-            using (TextureLock textureLock = RenderingPipelineManager.LockTexture(Image, TextureLockMode.Discard))
+            else
             {
-                Marshal.Copy(buffer, 0, textureLock.DataPointer, buffer.Length);
+                return w * h / 2;
             }
-
-            ImageValid = true;
-            ExpireTime = CEnvir.Now + Config.CacheDuration;
-            RenderingPipelineManager.RegisterTextureCache(this);
         }
-        public void CreateShadow(BinaryReader reader)
+    }
+    #endregion
+
+    #region Shadow
+    public short ShadowWidth;
+    public short ShadowHeight;
+
+    public short ShadowOffSetX;
+    public short ShadowOffSetY;
+
+    public RenderTexture Shadow;
+    public bool ShadowValid { get; private set; }
+    public byte[] ShadowData;
+    public int ShadowDataSize
+    {
+        get
         {
-            if (Position == 0) return;
-
-            if (!ImageValid)
-                CreateImage(reader);
-
             int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
             int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
 
-            if (w == 0 || h == 0) return;
-
-            byte[] buffer;
-
-            lock (reader)
+            if (Version > 0)
             {
-                reader.BaseStream.Seek(Position + ImageDataSize, SeekOrigin.Begin);
-                buffer = reader.ReadBytes(ShadowDataSize);
+                return w * h;
             }
-
-            ShadowData = buffer;
-
-            Shadow = RenderingPipelineManager.CreateTexture(new Size(w, h), DrawFormat, RenderTextureUsage.None, RenderTexturePool.Managed);
-
-            using (TextureLock textureLock = RenderingPipelineManager.LockTexture(Shadow, TextureLockMode.Discard))
+            else
             {
-                Marshal.Copy(buffer, 0, textureLock.DataPointer, buffer.Length);
+                return w * h / 2;
             }
-
-            ShadowValid = true;
         }
-        public void CreateOverlay(BinaryReader reader)
+    }
+    #endregion
+
+    #region Overlay
+    public short OverlayWidth;
+    public short OverlayHeight;
+
+    public RenderTexture Overlay;
+    public bool OverlayValid { get; private set; }
+    public byte[] OverlayData;
+    public int OverlayDataSize
+    {
+        get
         {
-            if (Position == 0) return;
-
-            if (!ImageValid)
-                CreateImage(reader);
-
             int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
             int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
 
-            if (w == 0 || h == 0) return;
-
-            byte[] buffer;
-
-            lock (reader)
+            if (Version > 0)
             {
-                reader.BaseStream.Seek(Position + ImageDataSize + ShadowDataSize, SeekOrigin.Begin);
-                buffer = reader.ReadBytes(OverlayDataSize);
+                return w * h;
             }
-
-            OverlayData = buffer;
-
-            Overlay = RenderingPipelineManager.CreateTexture(new Size(w, h), DrawFormat, RenderTextureUsage.None, RenderTexturePool.Managed);
-
-            using (TextureLock textureLock = RenderingPipelineManager.LockTexture(Overlay, TextureLockMode.Discard))
+            else
             {
-                Marshal.Copy(buffer, 0, textureLock.DataPointer, buffer.Length);
+                return w * h / 2;
             }
-
-            OverlayValid = true;
         }
+    }
+    #endregion
 
-
-        #region IDisposable Support
-
-        public bool IsDisposed { get; private set; }
-
-        public void Dispose(bool disposing)
+    private RenderTextureFormat DrawFormat
+    {
+        get
         {
-            if (disposing)
+            return Version switch
             {
-                IsDisposed = true;
+                0 => RenderTextureFormat.Dxt1,
+                _ => RenderTextureFormat.Dxt5,
+            };
+        }
+    }
 
-                Position = 0;
+    public DateTime ExpireTime { get; set; }
 
-                Width = 0;
-                Height = 0;
-                OffSetX = 0;
-                OffSetY = 0;
+    private Rectangle _visibleBounds = default;
 
-                ShadowWidth = 0;
-                ShadowHeight = 0;
-                ShadowOffSetX = 0;
-                ShadowOffSetY = 0;
+    public MirImage(BinaryReader reader, int version)
+    {
+        Version = version;
 
-                OverlayWidth = 0;
-                OverlayHeight = 0;
+        Position = reader.ReadInt32();
+
+        Width = reader.ReadInt16();
+        Height = reader.ReadInt16();
+        OffSetX = reader.ReadInt16();
+        OffSetY = reader.ReadInt16();
+
+        ShadowType = reader.ReadByte();
+        ShadowWidth = reader.ReadInt16();
+        ShadowHeight = reader.ReadInt16();
+        ShadowOffSetX = reader.ReadInt16();
+        ShadowOffSetY = reader.ReadInt16();
+
+        OverlayWidth = reader.ReadInt16();
+        OverlayHeight = reader.ReadInt16();
+    }
+
+    public Rectangle GetVisibleBounds()
+    {
+        if (_visibleBounds != default)
+            return _visibleBounds;
+
+        _visibleBounds = CalculateVisibleBounds();
+
+        return _visibleBounds;
+    }
+
+    private Rectangle CalculateVisibleBounds()
+    {
+        if (!ImageValid || ImageData == null || Width <= 0 || Height <= 0)
+            return new Rectangle(0, 0, Width, Height);
+
+        int minX = Width;
+        int minY = Height;
+        int maxX = -1;
+        int maxY = -1;
+
+        for (int y = 0; y < Height; y++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                if (!VisiblePixel(new Point(x, y), true)) continue;
+
+                if (x < minX) minX = x;
+                if (y < minY) minY = y;
+                if (x > maxX) maxX = x;
+                if (y > maxY) maxY = y;
             }
-
         }
 
-        public void Dispose()
+        if (maxX < minX || maxY < minY)
+            return new Rectangle(0, 0, Width, Height);
+
+        return Rectangle.FromLTRB(minX, minY, maxX + 1, maxY + 1);
+    }
+
+    public unsafe bool VisiblePixel(Point p, bool acurrate)
+    {
+        if (p.X < 0 || p.Y < 0 || !ImageValid || ImageData == null) return false;
+
+        int w = Width + (4 - Width % 4) % 4;
+        int h = Height + (4 - Height % 4) % 4;
+
+        if (p.X >= w || p.Y >= h)
+            return false;
+
+        int x = (p.X - p.X % 4) / 4;
+        int y = (p.Y - p.Y % 4) / 4;
+        int index = (y * (w / 4) + x) * 8;
+
+        int col0 = ImageData[index + 1] << 8 | ImageData[index];
+        int col1 = ImageData[index + 3] << 8 | ImageData[index + 2];
+
+        if (col0 == 0 && col1 == 0) return false;
+
+        if (!acurrate || col1 < col0) return true;
+
+        x = p.X % 4;
+        y = p.Y % 4;
+        x *= 2;
+
+        return (ImageData[index + 4 + y] & 1 << x) >> x != 1 || (ImageData[index + 4 + y] & 1 << x + 1) >> x + 1 != 1;
+    }
+
+    public void DisposeTexture()
+    {
+        RenderingPipelineManager.ReleaseTexture(Image);
+        RenderingPipelineManager.ReleaseTexture(Shadow);
+        RenderingPipelineManager.ReleaseTexture(Overlay);
+
+        ImageData = null;
+        ShadowData = null;
+        OverlayData = null;
+
+        Image = default;
+        Shadow = default;
+            Overlay = default;
+
+        ImageValid = false;
+        ShadowValid = false;
+        OverlayValid = false;
+
+        ExpireTime = DateTime.MinValue;
+
+        _visibleBounds = Rectangle.Empty;
+
+        RenderingPipelineManager.UnregisterTextureCache(this);
+    }
+
+    public void CreateImage(BinaryReader reader)
+    {
+        if (Position == 0) return;
+
+        int w = Width + (4 - Width % 4) % 4;
+        int h = Height + (4 - Height % 4) % 4;
+
+        if (w == 0 || h == 0) return;
+
+        byte[] buffer;
+
+        lock (reader)
         {
-            Dispose(!IsDisposed);
-            GC.SuppressFinalize(this);
-        }
-        ~MirImage()
-        {
-            Dispose(false);
+            reader.BaseStream.Seek(Position, SeekOrigin.Begin);
+            buffer = reader.ReadBytes(ImageDataSize);
         }
 
-        #endregion
+        ImageData = buffer;
+
+        Image = RenderingPipelineManager.CreateTexture(new Size(w, h), DrawFormat, RenderTextureUsage.None, RenderTexturePool.Managed);
+
+        using (TextureLock textureLock = RenderingPipelineManager.LockTexture(Image, TextureLockMode.Discard))
+        {
+            Marshal.Copy(buffer, 0, textureLock.DataPointer, buffer.Length);
+        }
+
+        ImageValid = true;
+        ExpireTime = CEnvir.Now + Config.CacheDuration;
+        RenderingPipelineManager.RegisterTextureCache(this);
+    }
+    public void CreateShadow(BinaryReader reader)
+    {
+        if (Position == 0) return;
+
+        if (!ImageValid)
+            CreateImage(reader);
+
+        int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
+        int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
+
+        if (w == 0 || h == 0) return;
+
+        byte[] buffer;
+
+        lock (reader)
+        {
+            reader.BaseStream.Seek(Position + ImageDataSize, SeekOrigin.Begin);
+            buffer = reader.ReadBytes(ShadowDataSize);
+        }
+
+        ShadowData = buffer;
+
+        Shadow = RenderingPipelineManager.CreateTexture(new Size(w, h), DrawFormat, RenderTextureUsage.None, RenderTexturePool.Managed);
+
+        using (TextureLock textureLock = RenderingPipelineManager.LockTexture(Shadow, TextureLockMode.Discard))
+        {
+            Marshal.Copy(buffer, 0, textureLock.DataPointer, buffer.Length);
+        }
+
+        ShadowValid = true;
+    }
+    public void CreateOverlay(BinaryReader reader)
+    {
+        if (Position == 0) return;
+
+        if (!ImageValid)
+            CreateImage(reader);
+
+        int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
+        int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
+
+        if (w == 0 || h == 0) return;
+
+        byte[] buffer;
+
+        lock (reader)
+        {
+            reader.BaseStream.Seek(Position + ImageDataSize + ShadowDataSize, SeekOrigin.Begin);
+            buffer = reader.ReadBytes(OverlayDataSize);
+        }
+
+        OverlayData = buffer;
+
+        Overlay = RenderingPipelineManager.CreateTexture(new Size(w, h), DrawFormat, RenderTextureUsage.None, RenderTexturePool.Managed);
+
+        using (TextureLock textureLock = RenderingPipelineManager.LockTexture(Overlay, TextureLockMode.Discard))
+        {
+            Marshal.Copy(buffer, 0, textureLock.DataPointer, buffer.Length);
+        }
+
+        OverlayValid = true;
+    }
+
+
+    #region IDisposable Support
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            IsDisposed = true;
+
+            Position = 0;
+
+            Width = 0;
+            Height = 0;
+            OffSetX = 0;
+            OffSetY = 0;
+
+            ShadowWidth = 0;
+            ShadowHeight = 0;
+            ShadowOffSetX = 0;
+            ShadowOffSetY = 0;
+
+            OverlayWidth = 0;
+            OverlayHeight = 0;
+        }
 
     }
+
+    public void Dispose()
+    {
+        Dispose(!IsDisposed);
+        GC.SuppressFinalize(this);
+    }
+    ~MirImage()
+    {
+        Dispose(false);
+    }
+
+    #endregion
+
+}
 
     public enum ImageType
     {

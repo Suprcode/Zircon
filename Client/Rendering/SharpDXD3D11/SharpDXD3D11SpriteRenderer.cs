@@ -352,7 +352,7 @@ namespace Client.Rendering.SharpDXD3D11
             DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _grayscalePixelShader ?? _pixelShader, grayscaleEffect);
         }
 
-        public void DrawDropShadow(Texture2D texture, RectangleF destination, RectangleF shadowBounds, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, float shadowOpacityExponent)
+        public void DrawDropShadow(Texture2D texture, RectangleF destination, RectangleF shadowBounds, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity)
         {
             var dropShadowEffect = CreateDropShadowEffect(texture, shadowBounds, shadowWidth, shadowMaxOpacity);
             DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _dropShadowPixelShader ?? _pixelShader, dropShadowEffect);

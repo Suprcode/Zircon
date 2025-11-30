@@ -423,7 +423,7 @@ namespace Client.Rendering.SharpDXD3D11
                     return true;
                 case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
                     TryDrawDropShadowEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.DropShadow);
-                    return true;
+                    return false;
             }
 
             return false;
@@ -500,8 +500,7 @@ namespace Client.Rendering.SharpDXD3D11
                 SharpDXD3D11Manager.BlendRate,
                 shadowColor,
                 dropShadow.Width,
-                dropShadow.StartOpacity,
-                dropShadow.OpacityExponent);
+                dropShadow.StartOpacity);
         }
 
         public RenderSurface GetCurrentSurface()
