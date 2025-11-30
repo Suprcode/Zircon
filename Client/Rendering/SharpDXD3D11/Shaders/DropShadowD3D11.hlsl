@@ -70,13 +70,18 @@ float4 PS_SHADOW(PS_INPUT input) : SV_Target
     // Otherwise, search for the nearest opaque texel within the shadow width
     float minDistance = ShadowWidth + 1.0;
     bool hasNeighbour = false;
-    int radius = (int)ceil(ShadowWidth);
 
-    for (int x = -radius; x <= radius; ++x)
+    static const int MAX_RADIUS = 8;
+    int radius = (int)ceil(ShadowWidth);
+    radius = min(radius, MAX_RADIUS);
+
+    [unroll]
+    for (int x = -MAX_RADIUS; x <= MAX_RADIUS; ++x)
     {
-        for (int y = -radius; y <= radius; ++y)
+        [unroll]
+        for (int y = -MAX_RADIUS; y <= MAX_RADIUS; ++y)
         {
-            if (x == 0 && y == 0)
+            if (abs(x) > radius || abs(y) > radius || (x == 0 && y == 0))
                 continue;
 
             float2 offset = float2((float)x, (float)y) * texelSize;
