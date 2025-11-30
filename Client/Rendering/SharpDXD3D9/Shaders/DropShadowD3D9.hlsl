@@ -51,6 +51,7 @@ float4 PS_SHADOW(PS_INPUT input) : COLOR0
     float2 sourceMin = SourceUV.xy;
     float2 sourceMax = SourceUV.zw;
     float2 texelSize = 1.0 / ShadowParams1.xy;
+    float2 clampedBase = clamp(input.Tex, sourceMin, sourceMax);
 
     // Draw the sprite normally when present
     float4 texColor = SampleSpriteMasked(input.Tex, sourceMin, sourceMax) * input.Col;
@@ -79,7 +80,7 @@ float4 PS_SHADOW(PS_INPUT input) : COLOR0
                 continue;
 
             float2 offset = float2((float)x, (float)y) * texelSize;
-            float neighbourAlpha = SampleSpriteClamped(input.Tex + offset, sourceMin, sourceMax).a;
+            float neighbourAlpha = SampleSpriteClamped(clampedBase + offset, sourceMin, sourceMax).a;
 
             if (neighbourAlpha > 0.05)
             {
