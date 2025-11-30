@@ -1,9 +1,7 @@
 float4x4 Matrix : register(c0);
 
-float4 ShadowColor : register(c4);
-float4 ShadowParams1 : register(c5); // xy = texture size, z = shadow width, w = start opacity
-float4 ShadowParams2 : register(c6); // x = opacity exponent
-float4 SourceUV : register(c7);      // xy = min, zw = max
+float4 ImgMinMax : register(c4);  // xy = min, zw = max
+float4 ShadowParams : register(c5); // x = shadow size, y = max alpha
 
 struct VS_INPUT
 {
@@ -19,8 +17,6 @@ struct PS_INPUT
     float4 Col : COLOR0;
 };
 
-sampler2D shaderTexture : register(s0);
-
 PS_INPUT VS(VS_INPUT input)
 {
     PS_INPUT output;
@@ -30,78 +26,21 @@ PS_INPUT VS(VS_INPUT input)
     return output;
 }
 
-float4 SampleSpriteClamped(float2 uv, float2 sourceMin, float2 sourceMax)
-{
-    float2 clamped = clamp(uv, sourceMin, sourceMax);
-    return tex2D(shaderTexture, clamped);
-}
-
-float4 SampleSpriteMasked(float2 uv, float2 sourceMin, float2 sourceMax)
-{
-    float4 colour = SampleSpriteClamped(uv, sourceMin, sourceMax);
-
-    if (any(uv < sourceMin) || any(uv > sourceMax))
-        colour.a = 0.0;
-
-    return colour;
-}
-
 float4 PS_SHADOW(PS_INPUT input) : COLOR0
 {
-    float2 sourceMin = SourceUV.xy;
-    float2 sourceMax = SourceUV.zw;
-    float2 texelSize = 1.0 / ShadowParams1.xy;
-    float2 clampedBase = clamp(input.Tex, sourceMin, sourceMax);
+    float2 position = input.Pos.xy;
 
-    // Draw the sprite normally when present
-    float4 texColor = SampleSpriteMasked(input.Tex, sourceMin, sourceMax) * input.Col;
-    if (texColor.a > 0.01)
-        return texColor;
+    float distLeft = position.x - ImgMinMax.x;
+    float distTop = position.y - ImgMinMax.y;
+    float distRight = ImgMinMax.z - position.x;
+    float distBottom = ImgMinMax.w - position.y;
 
-    // Otherwise, search for the nearest opaque texel within the shadow width
-    float shadowWidth = ShadowParams1.z;
-    float shadowMaxOpacity = ShadowParams1.w;
-    float shadowOpacityExponent = max(ShadowParams2.x, 0.0001);
+    float shadowDistance = min(min(distLeft, distTop), min(distRight, distBottom));
 
-    float minDistance = shadowWidth + 1.0;
-    bool hasNeighbour = false;
-
-    // Distance from the current sample position to the clamped sprite edge, in texels.
-    // This ensures pixels outside the sprite measure distance from the true edge rather than
-    // the clamped sampling point alone.
-    float2 baseDelta = (input.Tex - clampedBase) / texelSize;
-
-    static const int MAX_RADIUS = 8;
-    int radius = (int)ceil(shadowWidth);
-    radius = min(radius, MAX_RADIUS);
-
-    [unroll]
-    for (int x = -MAX_RADIUS; x <= MAX_RADIUS; ++x)
-    {
-        [unroll]
-        for (int y = -MAX_RADIUS; y <= MAX_RADIUS; ++y)
-        {
-            if (abs(x) > radius || abs(y) > radius)
-                continue;
-
-            float2 offset = float2((float)x, (float)y) * texelSize;
-            float neighbourAlpha = SampleSpriteClamped(clampedBase + offset, sourceMin, sourceMax).a;
-
-            if (neighbourAlpha > 0.05)
-            {
-                hasNeighbour = true;
-                float distance = length(float2((float)x, (float)y) + baseDelta);
-                minDistance = min(minDistance, distance);
-            }
-        }
-    }
-
-    if (!hasNeighbour || minDistance > shadowWidth)
+    if (shadowDistance < 0.0)
         return float4(0, 0, 0, 0);
 
-    float t = saturate(minDistance / max(shadowWidth, 0.0001));
-    float falloff = pow(1.0 - t, shadowOpacityExponent);
-    float alpha = shadowMaxOpacity * falloff;
+    float alpha = saturate(1.0 - shadowDistance / max(ShadowParams.x, 0.0001)) * ShadowParams.y;
 
-    return float4(ShadowColor.rgb, alpha);
+    return float4(0, 0, 0, alpha);
 }

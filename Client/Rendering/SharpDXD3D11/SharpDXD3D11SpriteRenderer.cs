@@ -93,13 +93,11 @@ namespace Client.Rendering.SharpDXD3D11
         [StructLayout(LayoutKind.Sequential)]
         private struct DropShadowBufferType
         {
-            public RawColor4 ShadowColor;
-            public Vector2 TextureSize;
-            public float ShadowWidth;
-            public float ShadowMaxOpacity;
-            public float ShadowOpacityExponent;
-            public Vector3 Padding;
-            public Vector4 SourceUV;
+            public Vector2 ImgMin;
+            public Vector2 ImgMax;
+            public float ShadowSize;
+            public float MaxAlpha;
+            public Vector2 Padding;
         }
 
         public SharpDXD3D11SpriteRenderer(Device device)
@@ -356,7 +354,7 @@ namespace Client.Rendering.SharpDXD3D11
 
         public void DrawDropShadow(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, float shadowOpacityExponent)
         {
-            var dropShadowEffect = CreateDropShadowEffect(texture, source, shadowColor, shadowWidth, shadowMaxOpacity, shadowOpacityExponent);
+            var dropShadowEffect = CreateDropShadowEffect(texture, destination, shadowWidth, shadowMaxOpacity);
             DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _dropShadowPixelShader ?? _pixelShader, dropShadowEffect);
         }
 
@@ -404,30 +402,18 @@ namespace Client.Rendering.SharpDXD3D11
             return new SpriteEffect(_grayscalePixelShader, null, 0, 0f, false, null);
         }
 
-        private SpriteEffect? CreateDropShadowEffect(Texture2D texture, RectangleF? source, RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, float shadowOpacityExponent)
+        private SpriteEffect? CreateDropShadowEffect(Texture2D texture, RectangleF destination, float shadowWidth, float shadowMaxOpacity)
         {
             if (_dropShadowPixelShader == null || _dropShadowBuffer == null)
                 return null;
 
-            float u1 = 0, v1 = 0, u2 = 1, v2 = 1;
-
-            if (source.HasValue)
-            {
-                u1 = source.Value.Left / texture.Description.Width;
-                v1 = source.Value.Top / texture.Description.Height;
-                u2 = source.Value.Right / texture.Description.Width;
-                v2 = source.Value.Bottom / texture.Description.Height;
-            }
-
             var shadowBuffer = new DropShadowBufferType
             {
-                ShadowColor = shadowColor,
-                TextureSize = new Vector2(texture.Description.Width, texture.Description.Height),
-                ShadowWidth = shadowWidth,
-                ShadowMaxOpacity = shadowMaxOpacity,
-                ShadowOpacityExponent = shadowOpacityExponent,
-                Padding = Vector3.Zero,
-                SourceUV = new Vector4(u1, v1, u2, v2)
+                ImgMin = new Vector2(destination.Left, destination.Top),
+                ImgMax = new Vector2(destination.Right, destination.Bottom),
+                ShadowSize = shadowWidth,
+                MaxAlpha = shadowMaxOpacity,
+                Padding = Vector2.Zero
             };
 
             return new SpriteEffect(
@@ -435,7 +421,7 @@ namespace Client.Rendering.SharpDXD3D11
                 _dropShadowBuffer,
                 Utilities.SizeOf<DropShadowBufferType>(),
                 shadowWidth,
-                true,
+                false,
                 stream => stream.Write(shadowBuffer));
         }
 

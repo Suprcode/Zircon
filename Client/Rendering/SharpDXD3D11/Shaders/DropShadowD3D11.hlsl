@@ -5,13 +5,11 @@ cbuffer MatrixBuffer : register(b0)
 
 cbuffer DropShadowBuffer : register(b1)
 {
-    float4 ShadowColor;          // rgb = colour, a = unused (alpha provided separately)
-    float2 TextureSize;          // texture dimensions in pixels
-    float ShadowWidth;           // shadow extension in pixels
-    float ShadowMaxOpacity;      // starting opacity at the sprite edge
-    float ShadowOpacityExponent; // controls how quickly the opacity falls off
-    float3 Padding;              // padding for 16-byte alignment
-    float4 SourceUV;             // xy = min, zw = max
+    float2 ImgMin;      // Top-left corner of the image in screen pixels
+    float2 ImgMax;      // Bottom-right corner of the image in screen pixels
+    float ShadowSize;   // Shadow extension in pixels
+    float MaxAlpha;     // Opacity at the image edge
+    float2 Padding;     // Padding for 16-byte alignment
 };
 
 struct VS_INPUT
@@ -28,9 +26,6 @@ struct PS_INPUT
     float4 Col : COLOR;
 };
 
-Texture2D shaderTexture : register(t0);
-SamplerState sampleState : register(s0);
-
 PS_INPUT VS(VS_INPUT input)
 {
     PS_INPUT output;
@@ -40,75 +35,21 @@ PS_INPUT VS(VS_INPUT input)
     return output;
 }
 
-float4 SampleSpriteClamped(float2 uv, float2 sourceMin, float2 sourceMax)
-{
-    float2 clamped = clamp(uv, sourceMin, sourceMax);
-    return shaderTexture.Sample(sampleState, clamped);
-}
-
-float4 SampleSpriteMasked(float2 uv, float2 sourceMin, float2 sourceMax)
-{
-    float4 colour = SampleSpriteClamped(uv, sourceMin, sourceMax);
-
-    if (any(uv < sourceMin) || any(uv > sourceMax))
-        colour.a = 0.0;
-
-    return colour;
-}
-
 float4 PS_SHADOW(PS_INPUT input) : SV_Target
 {
-    float2 sourceMin = SourceUV.xy;
-    float2 sourceMax = SourceUV.zw;
-    float2 texelSize = 1.0 / TextureSize;
-    float2 clampedBase = clamp(input.Tex, sourceMin, sourceMax);
+    float2 position = input.Pos.xy;
 
-    // Draw the sprite normally when present
-    float4 texColor = SampleSpriteMasked(input.Tex, sourceMin, sourceMax) * input.Col;
-    if (texColor.a > 0.01)
-        return texColor;
+    float distLeft = position.x - ImgMin.x;
+    float distTop = position.y - ImgMin.y;
+    float distRight = ImgMax.x - position.x;
+    float distBottom = ImgMax.y - position.y;
 
-    // Otherwise, search for the nearest opaque texel within the shadow width
-    float minDistance = ShadowWidth + 1.0;
-    bool hasNeighbour = false;
+    float shadowDistance = min(min(distLeft, distTop), min(distRight, distBottom));
 
-    // Distance from the current sample position to the clamped sprite edge, in texels.
-    // This ensures pixels outside the sprite measure distance from the true edge rather than
-    // the clamped sampling point alone.
-    float2 baseDelta = (input.Tex - clampedBase) / texelSize;
-
-    static const int MAX_RADIUS = 8;
-    int radius = (int)ceil(ShadowWidth);
-    radius = min(radius, MAX_RADIUS);
-
-    [unroll]
-    for (int x = -MAX_RADIUS; x <= MAX_RADIUS; ++x)
-    {
-        [unroll]
-        for (int y = -MAX_RADIUS; y <= MAX_RADIUS; ++y)
-        {
-            if (abs(x) > radius || abs(y) > radius)
-                continue;
-
-            float2 offset = float2((float)x, (float)y) * texelSize;
-            float neighbourAlpha = SampleSpriteClamped(clampedBase + offset, sourceMin, sourceMax).a;
-
-            if (neighbourAlpha > 0.05)
-            {
-                hasNeighbour = true;
-                float distance = length(float2((float)x, (float)y) + baseDelta);
-                minDistance = min(minDistance, distance);
-            }
-        }
-    }
-
-    if (!hasNeighbour || minDistance > ShadowWidth)
+    if (shadowDistance < 0.0)
         return float4(0, 0, 0, 0);
 
-    // Smoothly fade from ShadowMaxOpacity at the sprite edge down to 0 at the edge of the shadow
-    float t = saturate(minDistance / max(ShadowWidth, 0.0001));
-    float falloff = pow(1.0 - t, max(ShadowOpacityExponent, 0.0001));
-    float alpha = ShadowMaxOpacity * falloff;
+    float alpha = saturate(1.0 - shadowDistance / max(ShadowSize, 0.0001)) * MaxAlpha;
 
-    return float4(ShadowColor.rgb, alpha);
+    return float4(0, 0, 0, alpha);
 }

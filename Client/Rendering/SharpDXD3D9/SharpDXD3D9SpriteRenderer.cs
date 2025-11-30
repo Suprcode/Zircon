@@ -280,6 +280,11 @@ namespace Client.Rendering.SharpDXD3D9
 
             var desc = texture.GetLevelDescription(0);
 
+            float imageLeft = destination.Left;
+            float imageRight = destination.Right;
+            float imageTop = destination.Top;
+            float imageBottom = destination.Bottom;
+
             float left = destination.Left;
             float right = destination.Right;
             float top = destination.Top;
@@ -316,7 +321,7 @@ namespace Client.Rendering.SharpDXD3D9
             var viewport = _device.Viewport;
 
             UpdateMatrix(transform, viewport.Width, viewport.Height);
-            UpdateShadowConstants(desc.Width, desc.Height, shadowColor, effectiveWidth, shadowMaxOpacity, shadowOpacityExponent, u1, v1, u2, v2);
+            UpdateShadowConstants(imageLeft, imageTop, imageRight, imageBottom, effectiveWidth, shadowMaxOpacity);
 
             DataStream stream = _vertexBuffer.Lock(0, 0, LockFlags.Discard);
             stream.Write(new VertexType { Position = new DxVector2(left, top), TexCoord = new DxVector2(u1, v1), Color = vertexColor });
@@ -380,12 +385,10 @@ namespace Client.Rendering.SharpDXD3D9
             _device.SetPixelShaderConstant(6, new[] { u1, v1, u2, v2 });
         }
 
-        private void UpdateShadowConstants(int texWidth, int texHeight, SharpDX.Mathematics.Interop.RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, float shadowOpacityExponent, float u1, float v1, float u2, float v2)
+        private void UpdateShadowConstants(float imageLeft, float imageTop, float imageRight, float imageBottom, float shadowWidth, float shadowMaxOpacity)
         {
-            _device.SetPixelShaderConstant(4, new[] { shadowColor.R, shadowColor.G, shadowColor.B, shadowColor.A });
-            _device.SetPixelShaderConstant(5, new[] { texWidth, texHeight, shadowWidth, shadowMaxOpacity });
-            _device.SetPixelShaderConstant(6, new[] { shadowOpacityExponent, 0f, 0f, 0f });
-            _device.SetPixelShaderConstant(7, new[] { u1, v1, u2, v2 });
+            _device.SetPixelShaderConstant(4, new[] { imageLeft, imageTop, imageRight, imageBottom });
+            _device.SetPixelShaderConstant(5, new[] { shadowWidth, shadowMaxOpacity, 0f, 0f });
         }
 
         public void Dispose()
