@@ -15,7 +15,7 @@ using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
-    public sealed class MagicDialog : DXControl
+    public sealed class MagicDialog : DXWindow
     {
         #region Properties
 
@@ -69,45 +69,21 @@ namespace Client.Scenes.Views
 
         #region Settings
 
-        public WindowSetting Settings;
-        public WindowType Type => WindowType.MagicBox;
+        public override WindowType Type => WindowType.MagicBox;
 
-        public void LoadSettings()
-        {
-            if (Type == WindowType.None || !CEnvir.Loaded) return;
+        public override bool CustomSize => false;
 
-            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
-
-            if (Settings != null)
-            {
-                ApplySettings();
-                return;
-            }
-
-            Settings = CEnvir.WindowSettings.CreateNewObject();
-            Settings.Resolution = Config.GameSize;
-            Settings.Window = Type;
-            Settings.Size = Size;
-            Settings.Visible = Visible;
-            Settings.Location = Location;
-        }
-
-        public void ApplySettings()
-        {
-            if (Settings == null) return;
-
-            Location = Settings.Location;
-
-            Visible = Settings.Visible;
-        }
-
+        public override bool AutomaticVisibility => false;
+        
         #endregion
 
         public MagicDialog()
         {
-            Size = new Size(420, 516);
+            Size = new Size(419, 502);
             Movable = true;
             Sort = true;
+            HasFooter = false;
+            DropShadow = true;
 
             HeaderImage = new DXImageControl
             {
@@ -1087,5 +1063,4 @@ namespace Client.Scenes.Views
 
         #endregion
     }
-
 }

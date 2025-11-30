@@ -48,6 +48,7 @@ namespace Client.Scenes.Views
             LibraryFile = LibraryFile.GameInter2;
             Index = 2900;
             Movable = false;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {

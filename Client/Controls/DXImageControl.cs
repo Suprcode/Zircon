@@ -274,7 +274,7 @@ namespace Client.Controls
                 OnDropShadowChanged(oldValue, value);
             }
         }
-        private bool _DropShadow = true;
+        private bool _DropShadow = false;
         public event EventHandler<EventArgs> DropShadowChanged;
         public virtual void OnDropShadowChanged(bool oValue, bool nValue)
         {
@@ -323,8 +323,6 @@ namespace Client.Controls
                 RenderingPipelineManager.SetOpacity(ImageOpacity);
             }
 
-            bool dropShadowEnabled = DropShadow;
-
             Rectangle drawArea = DisplayArea;
 
             RectangleF? shadowBounds = null;
@@ -343,14 +341,14 @@ namespace Client.Controls
                 }
             }
 
-            if (dropShadowEnabled)
+            if (DropShadow)
             {
-                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 6f, 0.5f, shadowBounds);
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
             }
 
             PresentTexture(image.Image, FixedSize ? null : Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
 
-            if (dropShadowEnabled)
+            if (DropShadow)
             {
                 RenderingPipelineManager.DisableSpriteShaderEffect();
             }

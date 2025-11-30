@@ -151,86 +151,6 @@ namespace Client.Controls
             DropShadowChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public Color DropShadowColour
-        {
-            get => _DropShadowColour;
-            set
-            {
-                if (_DropShadowColour == value) return;
-
-                Color oldValue = _DropShadowColour;
-                _DropShadowColour = value;
-
-                OnDropShadowColourChanged(oldValue, value);
-            }
-        }
-        private Color _DropShadowColour = Color.Black;
-        public event EventHandler<EventArgs> DropShadowColourChanged;
-        public virtual void OnDropShadowColourChanged(Color oValue, Color nValue)
-        {
-            DropShadowColourChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public float DropShadowWidth
-        {
-            get => _DropShadowWidth;
-            set
-            {
-                if (Math.Abs(_DropShadowWidth - value) < float.Epsilon) return;
-
-                float oldValue = _DropShadowWidth;
-                _DropShadowWidth = value;
-
-                OnDropShadowWidthChanged(oldValue, value);
-            }
-        }
-        private float _DropShadowWidth = 5f;
-        public event EventHandler<EventArgs> DropShadowWidthChanged;
-        public virtual void OnDropShadowWidthChanged(float oValue, float nValue)
-        {
-            DropShadowWidthChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public float DropShadowOpacity
-        {
-            get => _DropShadowOpacity;
-            set
-            {
-                if (Math.Abs(_DropShadowOpacity - value) < float.Epsilon) return;
-
-                float oldValue = _DropShadowOpacity;
-                _DropShadowOpacity = value;
-
-                OnDropShadowOpacityChanged(oldValue, value);
-            }
-        }
-        private float _DropShadowOpacity = 0.5f;
-        public event EventHandler<EventArgs> DropShadowOpacityChanged;
-        public virtual void OnDropShadowOpacityChanged(float oValue, float nValue)
-        {
-            DropShadowOpacityChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public float DropShadowOpacityExponent
-        {
-            get => _DropShadowOpacityExponent;
-            set
-            {
-                if (Math.Abs(_DropShadowOpacityExponent - value) < float.Epsilon) return;
-
-                float oldValue = _DropShadowOpacityExponent;
-                _DropShadowOpacityExponent = value;
-
-                OnDropShadowOpacityExponentChanged(oldValue, value);
-            }
-        }
-        private float _DropShadowOpacityExponent = 1f;
-        public event EventHandler<EventArgs> DropShadowOpacityExponentChanged;
-        public virtual void OnDropShadowOpacityExponentChanged(float oValue, float nValue)
-        {
-            DropShadowOpacityExponentChanged?.Invoke(this, EventArgs.Empty);
-        }
-
         #endregion
 
         private RenderTargetResource _windowRenderTarget;
@@ -485,24 +405,18 @@ namespace Client.Controls
 
             float oldOpacity = RenderingPipelineManager.GetOpacity();
 
-            bool dropShadowEnabled = DropShadow;
-
-            if (dropShadowEnabled)
+            if (DropShadow)
             {
-                float shadowWidth = Math.Max(0, DropShadowWidth);
-                float shadowOpacity = Math.Min(1f, Math.Max(0f, DropShadowOpacity));
-                float shadowExponent = Math.Max(0.01f, DropShadowOpacityExponent);
-
                 Rectangle displayArea = DisplayArea;
                 RectangleF shadowBounds = new RectangleF(displayArea.X, displayArea.Y, displayArea.Width, displayArea.Height);
 
-                RenderingPipelineManager.EnableDropShadowEffect(DropShadowColour, shadowWidth, shadowOpacity, shadowExponent, shadowBounds);
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
             }
 
             RenderingPipelineManager.SetOpacity(Opacity);
             PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
 
-            if (dropShadowEnabled)
+            if (DropShadow)
             {
                 RenderingPipelineManager.DisableSpriteShaderEffect();
             }

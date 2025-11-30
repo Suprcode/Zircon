@@ -38,6 +38,7 @@ namespace Client.Controls
             HasFooter = true;
             TitleLabel.Text = CEnvir.Language.CommonControlDXKeyBindWindowTitle;
             Modal = true;
+            DropShadow = true;
             CloseButton.Visible = false;
 
             SetClientSize(new Size(430, 330));

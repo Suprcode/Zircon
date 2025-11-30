@@ -29,6 +29,7 @@ namespace Client.Controls
         public DXItemAmountWindow(string caption, ClientUserItem item)
         {
             HasFooter = true;
+            DropShadow = true;
 
             TitleLabel.Text = caption;
             SetClientSize(new Size(200, DXItemCell.CellHeight + 10));

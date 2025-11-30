@@ -408,7 +408,7 @@ namespace Client.Rendering.SharpDXD3D9
                     return true;
                 case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
                     TryDrawDropShadowEffect(dxTexture, geometry, sourceRectangle, colour, transform, effect.Value.DropShadow);
-                    return true;
+                    return false;
             }
 
             return false;
