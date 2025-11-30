@@ -96,7 +96,7 @@ float4 PS_SHADOW(PS_INPUT input) : SV_Target
             if (neighbourAlpha > 0.05)
             {
                 hasNeighbour = true;
-                float distance = length(float2((float)x, (float)y) - baseDelta);
+                float distance = length(float2((float)x, (float)y) + baseDelta);
                 minDistance = min(minDistance, distance);
             }
         }
