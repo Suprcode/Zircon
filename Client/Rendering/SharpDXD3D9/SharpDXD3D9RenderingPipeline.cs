@@ -459,6 +459,8 @@ namespace Client.Rendering.SharpDXD3D9
 
             SharpDXD3D9Manager.Sprite.Flush();
 
+            var shadowBounds = dropShadow.VisibleBounds ?? geometry;
+
             var shadowColor = new Color4(
                 dropShadow.Colour.R / 255f,
                 dropShadow.Colour.G / 255f,
@@ -468,6 +470,7 @@ namespace Client.Rendering.SharpDXD3D9
             SharpDXD3D9Manager.SpriteRenderer.DrawDropShadow(
                 texture,
                 geometry,
+                shadowBounds,
                 sourceRectangle,
                 colour,
                 transform,

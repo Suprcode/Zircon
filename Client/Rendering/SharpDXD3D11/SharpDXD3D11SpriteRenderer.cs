@@ -352,9 +352,9 @@ namespace Client.Rendering.SharpDXD3D11
             DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _grayscalePixelShader ?? _pixelShader, grayscaleEffect);
         }
 
-        public void DrawDropShadow(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, float shadowOpacityExponent)
+        public void DrawDropShadow(Texture2D texture, RectangleF destination, RectangleF shadowBounds, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, float shadowOpacityExponent)
         {
-            var dropShadowEffect = CreateDropShadowEffect(texture, destination, shadowWidth, shadowMaxOpacity);
+            var dropShadowEffect = CreateDropShadowEffect(texture, shadowBounds, shadowWidth, shadowMaxOpacity);
             DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _dropShadowPixelShader ?? _pixelShader, dropShadowEffect);
         }
 
@@ -402,15 +402,15 @@ namespace Client.Rendering.SharpDXD3D11
             return new SpriteEffect(_grayscalePixelShader, null, 0, 0f, false, null);
         }
 
-        private SpriteEffect? CreateDropShadowEffect(Texture2D texture, RectangleF destination, float shadowWidth, float shadowMaxOpacity)
+        private SpriteEffect? CreateDropShadowEffect(Texture2D texture, RectangleF shadowBounds, float shadowWidth, float shadowMaxOpacity)
         {
             if (_dropShadowPixelShader == null || _dropShadowBuffer == null)
                 return null;
 
             var shadowBuffer = new DropShadowBufferType
             {
-                ImgMin = new Vector2(destination.Left, destination.Top),
-                ImgMax = new Vector2(destination.Right, destination.Bottom),
+                ImgMin = new Vector2(shadowBounds.Left, shadowBounds.Top),
+                ImgMax = new Vector2(shadowBounds.Right, shadowBounds.Bottom),
                 ShadowSize = shadowWidth,
                 MaxAlpha = shadowMaxOpacity,
                 Padding = Vector2.Zero

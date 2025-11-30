@@ -346,9 +346,9 @@ namespace Client.Rendering
             _spriteShaderEffect = new SpriteShaderEffectRequest(SpriteShaderEffectKind.Grayscale);
         }
 
-        public static void EnableDropShadowEffect(Color colour, float width, float startOpacity, float opacityExponent)
+        public static void EnableDropShadowEffect(Color colour, float width, float startOpacity, float opacityExponent, RectangleF? visibleBounds = null)
         {
-            _spriteShaderEffect = new SpriteShaderEffectRequest(new DropShadowEffectSettings(colour, width, startOpacity, opacityExponent));
+            _spriteShaderEffect = new SpriteShaderEffectRequest(new DropShadowEffectSettings(colour, width, startOpacity, opacityExponent, visibleBounds));
         }
 
         public static void DisableSpriteShaderEffect()
@@ -793,13 +793,15 @@ namespace Client.Rendering
             public float Width { get; }
             public float StartOpacity { get; }
             public float OpacityExponent { get; }
+            public RectangleF? VisibleBounds { get; }
 
-            public DropShadowEffectSettings(Color colour, float width, float startOpacity, float opacityExponent)
+            public DropShadowEffectSettings(Color colour, float width, float startOpacity, float opacityExponent, RectangleF? visibleBounds)
             {
                 Colour = colour;
                 Width = width;
                 StartOpacity = startOpacity;
                 OpacityExponent = opacityExponent;
+                VisibleBounds = visibleBounds;
             }
         }
 

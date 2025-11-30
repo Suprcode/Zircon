@@ -407,13 +407,29 @@ namespace Client.Controls
 
             Rectangle drawArea = DisplayArea;
 
+            RectangleF? shadowBounds = null;
+
+            if (image.ImageValid)
+            {
+                Rectangle visibleBounds = image.GetVisibleBounds();
+
+                if (visibleBounds.Width > 0 && visibleBounds.Height > 0)
+                {
+                    shadowBounds = new RectangleF(
+                        drawArea.Left + visibleBounds.Left,
+                        drawArea.Top + visibleBounds.Top,
+                        visibleBounds.Width,
+                        visibleBounds.Height);
+                }
+            }
+
             if (dropShadowEnabled)
             {
                 float shadowWidth = Math.Max(0, DropShadowWidth);
                 float shadowOpacity = Math.Min(1f, Math.Max(0f, DropShadowOpacity));
                 float shadowExponent = Math.Max(0.01f, DropShadowOpacityExponent);
 
-                RenderingPipelineManager.EnableDropShadowEffect(DropShadowColour, shadowWidth, shadowOpacity, shadowExponent);
+                RenderingPipelineManager.EnableDropShadowEffect(DropShadowColour, shadowWidth, shadowOpacity, shadowExponent, shadowBounds);
             }
 
             PresentTexture(image.Image, FixedSize ? null : Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);

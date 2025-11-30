@@ -639,10 +639,10 @@ namespace Client.Envir
 
     }
 
-    public sealed class MirImage : IDisposable, ITextureCacheItem
-    {
-        public int Version;
-        public int Position;
+        public sealed class MirImage : IDisposable, ITextureCacheItem
+        {
+            public int Version;
+            public int Position;
 
         #region Texture
 
@@ -742,6 +742,9 @@ namespace Client.Envir
 
         public DateTime ExpireTime { get; set; }
 
+        private Rectangle _visibleBounds;
+        private bool _visibleBoundsComputed;
+
         public MirImage(BinaryReader reader, int version)
         {
             Version = version;
@@ -761,6 +764,46 @@ namespace Client.Envir
 
             OverlayWidth = reader.ReadInt16();
             OverlayHeight = reader.ReadInt16();
+        }
+
+        public Rectangle GetVisibleBounds()
+        {
+            if (_visibleBoundsComputed)
+                return _visibleBounds;
+
+            _visibleBounds = CalculateVisibleBounds();
+            _visibleBoundsComputed = true;
+
+            return _visibleBounds;
+        }
+
+        private Rectangle CalculateVisibleBounds()
+        {
+            if (!ImageValid || ImageData == null || Width <= 0 || Height <= 0)
+                return new Rectangle(0, 0, Width, Height);
+
+            int minX = Width;
+            int minY = Height;
+            int maxX = -1;
+            int maxY = -1;
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    if (!VisiblePixel(new Point(x, y), true)) continue;
+
+                    if (x < minX) minX = x;
+                    if (y < minY) minY = y;
+                    if (x > maxX) maxX = x;
+                    if (y > maxY) maxY = y;
+                }
+            }
+
+            if (maxX < minX || maxY < minY)
+                return new Rectangle(0, 0, Width, Height);
+
+            return Rectangle.FromLTRB(minX, minY, maxX + 1, maxY + 1);
         }
 
         public unsafe bool VisiblePixel(Point p, bool acurrate)
@@ -803,16 +846,19 @@ namespace Client.Envir
 
             Image = default;
             Shadow = default;
-            Overlay = default;
+                Overlay = default;
 
             ImageValid = false;
             ShadowValid = false;
             OverlayValid = false;
 
-            ExpireTime = DateTime.MinValue;
+                ExpireTime = DateTime.MinValue;
 
-            RenderingPipelineManager.UnregisterTextureCache(this);
-        }
+                _visibleBounds = Rectangle.Empty;
+                _visibleBoundsComputed = false;
+
+                RenderingPipelineManager.UnregisterTextureCache(this);
+            }
 
         public void CreateImage(BinaryReader reader)
         {

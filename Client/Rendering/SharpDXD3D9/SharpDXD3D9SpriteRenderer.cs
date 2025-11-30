@@ -270,7 +270,7 @@ namespace Client.Rendering.SharpDXD3D9
             stateBlock.Apply();
         }
 
-        public void DrawDropShadow(Texture texture, System.Drawing.RectangleF destination, System.Drawing.Rectangle? source, System.Drawing.Color color, NumericsMatrix3x2 transform, SharpDX.Mathematics.Interop.RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, float shadowOpacityExponent)
+        public void DrawDropShadow(Texture texture, System.Drawing.RectangleF destination, System.Drawing.RectangleF shadowBounds, System.Drawing.Rectangle? source, System.Drawing.Color color, NumericsMatrix3x2 transform, SharpDX.Mathematics.Interop.RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, float shadowOpacityExponent)
         {
             if (!SupportsDropShadowShader || texture == null || texture.IsDisposed)
                 return;
@@ -280,10 +280,10 @@ namespace Client.Rendering.SharpDXD3D9
 
             var desc = texture.GetLevelDescription(0);
 
-            float imageLeft = destination.Left;
-            float imageRight = destination.Right;
-            float imageTop = destination.Top;
-            float imageBottom = destination.Bottom;
+            float imageLeft = shadowBounds.Left;
+            float imageRight = shadowBounds.Right;
+            float imageTop = shadowBounds.Top;
+            float imageBottom = shadowBounds.Bottom;
 
             float left = destination.Left;
             float right = destination.Right;
