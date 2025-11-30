@@ -39,14 +39,14 @@ float4 PS_SHADOW(PS_INPUT input) : SV_Target
 {
     float2 position = input.Pos.xy;
 
-    float distLeft = position.x - ImgMin.x;
-    float distTop = position.y - ImgMin.y;
-    float distRight = ImgMax.x - position.x;
-    float distBottom = ImgMax.y - position.y;
+    float distLeft = ImgMin.x - position.x;
+    float distTop = ImgMin.y - position.y;
+    float distRight = position.x - ImgMax.x;
+    float distBottom = position.y - ImgMax.y;
 
-    float shadowDistance = min(min(distLeft, distTop), min(distRight, distBottom));
+    float shadowDistance = max(max(distLeft, distTop), max(distRight, distBottom));
 
-    if (shadowDistance < 0.0)
+    if (shadowDistance <= 0.0)
         return float4(0, 0, 0, 0);
 
     float alpha = saturate(1.0 - shadowDistance / max(ShadowSize, 0.0001)) * MaxAlpha;

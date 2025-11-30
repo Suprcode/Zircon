@@ -30,14 +30,14 @@ float4 PS_SHADOW(PS_INPUT input) : COLOR0
 {
     float2 position = input.Pos.xy;
 
-    float distLeft = position.x - ImgMinMax.x;
-    float distTop = position.y - ImgMinMax.y;
-    float distRight = ImgMinMax.z - position.x;
-    float distBottom = ImgMinMax.w - position.y;
+    float distLeft = ImgMinMax.x - position.x;
+    float distTop = ImgMinMax.y - position.y;
+    float distRight = position.x - ImgMinMax.z;
+    float distBottom = position.y - ImgMinMax.w;
 
-    float shadowDistance = min(min(distLeft, distTop), min(distRight, distBottom));
+    float shadowDistance = max(max(distLeft, distTop), max(distRight, distBottom));
 
-    if (shadowDistance < 0.0)
+    if (shadowDistance <= 0.0)
         return float4(0, 0, 0, 0);
 
     float alpha = saturate(1.0 - shadowDistance / max(ShadowParams.x, 0.0001)) * ShadowParams.y;
