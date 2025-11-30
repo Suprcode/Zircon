@@ -72,6 +72,11 @@ float4 PS_SHADOW(PS_INPUT input) : SV_Target
     float minDistance = ShadowWidth + 1.0;
     bool hasNeighbour = false;
 
+    // Distance from the current sample position to the clamped sprite edge, in texels.
+    // This ensures pixels outside the sprite measure distance from the true edge rather than
+    // the clamped sampling point alone.
+    float2 baseDelta = (input.Tex - clampedBase) / texelSize;
+
     static const int MAX_RADIUS = 8;
     int radius = (int)ceil(ShadowWidth);
     radius = min(radius, MAX_RADIUS);
@@ -82,7 +87,7 @@ float4 PS_SHADOW(PS_INPUT input) : SV_Target
         [unroll]
         for (int y = -MAX_RADIUS; y <= MAX_RADIUS; ++y)
         {
-            if (abs(x) > radius || abs(y) > radius || (x == 0 && y == 0))
+            if (abs(x) > radius || abs(y) > radius)
                 continue;
 
             float2 offset = float2((float)x, (float)y) * texelSize;
@@ -91,7 +96,7 @@ float4 PS_SHADOW(PS_INPUT input) : SV_Target
             if (neighbourAlpha > 0.05)
             {
                 hasNeighbour = true;
-                float distance = length(float2((float)x, (float)y));
+                float distance = length(float2((float)x, (float)y) + baseDelta);
                 minDistance = min(minDistance, distance);
             }
         }
