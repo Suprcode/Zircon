@@ -406,6 +406,9 @@ namespace Client.Rendering.SharpDXD3D9
                 case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
                     TryDrawGrayscaleEffect(dxTexture, geometry, sourceRectangle, colour, transform);
                     return true;
+                case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
+                    // Drop shadow is only implemented for the D3D11 pipeline; fall back to the standard draw path here.
+                    return false;
             }
 
             return false;

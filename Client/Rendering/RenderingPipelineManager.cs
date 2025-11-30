@@ -346,6 +346,11 @@ namespace Client.Rendering
             _spriteShaderEffect = new SpriteShaderEffectRequest(SpriteShaderEffectKind.Grayscale);
         }
 
+        public static void EnableDropShadowEffect(Color colour, float width, float startOpacity, float opacityExponent)
+        {
+            _spriteShaderEffect = new SpriteShaderEffectRequest(new DropShadowEffectSettings(colour, width, startOpacity, opacityExponent));
+        }
+
         public static void DisableSpriteShaderEffect()
         {
             _spriteShaderEffect = null;
@@ -782,28 +787,55 @@ namespace Client.Rendering
             }
         }
 
+        internal readonly struct DropShadowEffectSettings
+        {
+            public Color Colour { get; }
+            public float Width { get; }
+            public float StartOpacity { get; }
+            public float OpacityExponent { get; }
+
+            public DropShadowEffectSettings(Color colour, float width, float startOpacity, float opacityExponent)
+            {
+                Colour = colour;
+                Width = width;
+                StartOpacity = startOpacity;
+                OpacityExponent = opacityExponent;
+            }
+        }
+
         internal readonly struct SpriteShaderEffectRequest
         {
             public SpriteShaderEffectKind Kind { get; }
             public OutlineEffectSettings Outline { get; }
+            public DropShadowEffectSettings DropShadow { get; }
 
             public SpriteShaderEffectRequest(OutlineEffectSettings outline)
             {
                 Kind = SpriteShaderEffectKind.Outline;
                 Outline = outline;
+                DropShadow = default;
             }
 
             public SpriteShaderEffectRequest(SpriteShaderEffectKind kind)
             {
                 Kind = kind;
                 Outline = default;
+                DropShadow = default;
+            }
+
+            public SpriteShaderEffectRequest(DropShadowEffectSettings dropShadow)
+            {
+                Kind = SpriteShaderEffectKind.DropShadow;
+                Outline = default;
+                DropShadow = dropShadow;
             }
         }
 
         internal enum SpriteShaderEffectKind
         {
             Outline,
-            Grayscale
+            Grayscale,
+            DropShadow
         }
     }
 }
