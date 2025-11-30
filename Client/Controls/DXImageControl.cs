@@ -405,16 +405,21 @@ namespace Client.Controls
 
             bool dropShadowEnabled = DropShadow;
 
+            Rectangle drawArea = DisplayArea;
+
             if (dropShadowEnabled)
             {
                 float shadowWidth = Math.Max(0, DropShadowWidth);
                 float shadowOpacity = Math.Min(1f, Math.Max(0f, DropShadowOpacity));
                 float shadowExponent = Math.Max(0.01f, DropShadowOpacityExponent);
 
+                int padding = (int)Math.Ceiling(shadowWidth);
+                drawArea = Rectangle.Inflate(DisplayArea, padding, padding);
+
                 RenderingPipelineManager.EnableDropShadowEffect(DropShadowColour, shadowWidth, shadowOpacity, shadowExponent);
             }
 
-            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+            PresentTexture(image.Image, FixedSize ? null : Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
 
             if (dropShadowEnabled)
             {
