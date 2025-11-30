@@ -413,9 +413,6 @@ namespace Client.Controls
                 float shadowOpacity = Math.Min(1f, Math.Max(0f, DropShadowOpacity));
                 float shadowExponent = Math.Max(0.01f, DropShadowOpacityExponent);
 
-                int padding = (int)Math.Ceiling(shadowWidth);
-                drawArea = Rectangle.Inflate(DisplayArea, padding, padding);
-
                 RenderingPipelineManager.EnableDropShadowEffect(DropShadowColour, shadowWidth, shadowOpacity, shadowExponent);
             }
 
