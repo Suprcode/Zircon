@@ -27,10 +27,17 @@ namespace Server.Envir.Commands.Command.Admin
                 targetCharacter.Discipline.Delete();
                 targetCharacter.Discipline = null;
 
-                targetCharacter.Player?.Enqueue(new S.DisciplineUpdate { Discipline = null });
-            }
+                if (targetCharacter.Player != null)
+                {
+                    foreach (var magic in targetCharacter.Discipline.Magics)
+                    {
+                        targetCharacter.Player.MagicObjects.Remove(magic.Info.Magic);
+                    }
 
-            targetCharacter.Player?.RefreshStats();
+                    targetCharacter.Player.Enqueue(new S.DisciplineUpdate { Discipline = null });
+                    targetCharacter.Player.RefreshStats();
+                }
+            }
         }
     }
 }
