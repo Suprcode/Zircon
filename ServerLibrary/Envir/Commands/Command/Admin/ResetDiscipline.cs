@@ -24,19 +24,16 @@ namespace Server.Envir.Commands.Command.Admin
 
             if (targetCharacter.Discipline != null)
             {
+                foreach (var magic in targetCharacter.Discipline.Magics)
+                {
+                    targetCharacter.Player?.MagicObjects.Remove(magic.Info.Magic);
+                }
+
                 targetCharacter.Discipline.Delete();
                 targetCharacter.Discipline = null;
 
-                if (targetCharacter.Player != null)
-                {
-                    foreach (var magic in targetCharacter.Discipline.Magics)
-                    {
-                        targetCharacter.Player.MagicObjects.Remove(magic.Info.Magic);
-                    }
-
-                    targetCharacter.Player.Enqueue(new S.DisciplineUpdate { Discipline = null });
-                    targetCharacter.Player.RefreshStats();
-                }
+                targetCharacter.Player?.Enqueue(new S.DisciplineUpdate { Discipline = null });
+                targetCharacter.Player?.RefreshStats();
             }
         }
     }
