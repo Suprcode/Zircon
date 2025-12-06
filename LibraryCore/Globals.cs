@@ -379,6 +379,8 @@ namespace Library
         public int HermitPoints { get; set; }
 
         public float DayTime { get; set; }
+        public TimeOfDay TimeOfDay { get; set; }
+        public string TimeOfDayLabel { get; set; }
         public bool AllowGroup { get; set; }
 
         public List<ClientFriendInfo> Friends { get; set; }

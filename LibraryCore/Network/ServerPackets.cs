@@ -421,6 +421,7 @@ namespace Library.Network.ServerPackets
     public sealed class TimeOfDayChanged : Packet
     {
         public TimeOfDay TimeOfDay { get; set; }
+        public string TimeOfDayLabel { get; set; }
     }
 
     public sealed class InformMaxExperience : Packet

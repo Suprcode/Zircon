@@ -46,10 +46,15 @@ namespace Client.Envir
         public static bool SoundInBackground { get; set; } = true;
         public static int SoundOverLap { get; set; } = 5;
         public static int SystemVolume { get; set; } = 25;
+        public static bool SystemVolumeMuted { get; set; } = false;
         public static int MusicVolume { get; set; } = 25;
+        public static bool MusicVolumeMuted { get; set; } = false;
         public static int PlayerVolume { get; set; } = 25;
+        public static bool PlayerVolumeMuted { get; set; } = false;
         public static int MonsterVolume { get; set; } = 25;
+        public static bool MonsterVolumeMuted { get; set; } = false;
         public static int MagicVolume { get; set; } = 25;
+        public static bool MagicVolumeMuted { get; set; } = false;
 
         [ConfigSection("Login")]
         public static bool RememberDetails { get; set; } = false;

@@ -5,12 +5,64 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-//Cleaned
 namespace Client.Controls
 {
+    public sealed class DXColourControlPair : DXControl
+    {
+        public DXColourControl ForeColourControl, BackColourControl;
+
+        public DXColourControlPair()
+        {
+            Size = new Size(40, 16);
+            Border = true;
+            BorderColour = Color.FromArgb(198, 166, 99);
+
+            ForeColourControl = new DXColourControl
+            {
+                Parent = this,
+                Location = new Point(0, 0),
+                Size = new Size(20, 16),
+            };
+
+            BackColourControl = new DXColourControl
+            {
+                Parent = this,
+                Location = new Point(20, 0),
+                Size = new Size(20, 16),
+                AllowNoColour = true,
+            };
+        }
+
+        #region IDisposable
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (ForeColourControl != null)
+                {
+                    if (!ForeColourControl.IsDisposed)
+                        ForeColourControl.Dispose();
+
+                    ForeColourControl = null;
+                }
+
+                if (BackColourControl != null)
+                {
+                    if (!BackColourControl.IsDisposed)
+                        BackColourControl.Dispose();
+
+                    BackColourControl = null;
+                }
+            }
+        }
+        #endregion
+    }
+
     public sealed class DXColourControl : DXControl
     {
-        #region Properies
+        #region Properties
         private DXColourPicker Window;
 
         #region AllowNoColour

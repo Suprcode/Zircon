@@ -74,6 +74,28 @@ namespace Client.Controls
 
         #region HasFooter
 
+        public bool SlimFooter
+        {
+            get => _SlimFooter;
+            set
+            {
+                if (_SlimFooter == value) return;
+
+                bool oldValue = _SlimFooter;
+                _SlimFooter = value;
+
+                OnSlimFooterChanged(oldValue, value);
+            }
+        }
+        private bool _SlimFooter;
+        public event EventHandler<EventArgs> SlimFooterChanged;
+        public virtual void OnSlimFooterChanged(bool oValue, bool nValue)
+        {
+            SlimFooterChanged?.Invoke(this, EventArgs.Empty);
+
+            UpdateClientArea();
+        }
+
         public bool HasFooter
         {
             get => _HasFooter;
@@ -334,14 +356,19 @@ namespace Client.Controls
 
 
             if (!HasTopBorder)
-                h += NoFooterSize;
+                h += NoHeaderSize;
             else if (HasTitle)
                 h += HeaderSize;
             else
                 h += HeaderBarSize;
 
             if (!HasFooter)
+            {
                 h += NoFooterSize;
+
+                //if (SlimFooter)
+                //    h -= (SlimFooterSize + 20);
+            }
             else
                 h += FooterSize;
 
@@ -354,7 +381,7 @@ namespace Client.Controls
             int y = 6;
 
             if (!HasTopBorder)
-                y += NoFooterSize;
+                y += NoHeaderSize;
             else if (HasTitle)
                 y += HeaderSize;
             else
@@ -363,9 +390,13 @@ namespace Client.Controls
             int w = size.Width - x * 2;
             int h = size.Height - y - 6;
 
-
             if (!HasFooter)
-                h -= NoFooterSize;
+            {
+                h += NoFooterSize;
+
+                if (SlimFooter)
+                    h -= (SlimFooterSize);
+            }
             else
                 h -= FooterSize;
 
@@ -479,19 +510,38 @@ namespace Client.Controls
 
             if (!HasFooter)
             {
-                s = InterfaceLibrary.GetSize(2);
-                InterfaceLibrary.Draw(2, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
+                if (SlimFooter)
+                {
+                    s = InterfaceLibrary.GetSize(126);
+                    InterfaceLibrary.Draw(126, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
 
-                s = InterfaceLibrary.GetSize(8);
-                InterfaceLibrary.Draw(8, 0, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                    y = s.Height - 2; // Theres a 2 pixel blank space on this image
 
-                s = InterfaceLibrary.GetSize(9);
-                InterfaceLibrary.Draw(9, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                    s = InterfaceLibrary.GetSize(2);
+                    InterfaceLibrary.Draw(2, 0, Size.Height - s.Height - y, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
+
+                    s = InterfaceLibrary.GetSize(8);
+                    InterfaceLibrary.Draw(8, 0, Size.Height - s.Height - y, Color.White, false, 1F, ImageType.Image);
+
+                    s = InterfaceLibrary.GetSize(9);
+                    InterfaceLibrary.Draw(9, Size.Width - s.Width, Size.Height - s.Height - y, Color.White, false, 1F, ImageType.Image);
+                }
+                else
+                {
+                    s = InterfaceLibrary.GetSize(2);
+                    InterfaceLibrary.Draw(2, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
+
+                    s = InterfaceLibrary.GetSize(8);
+                    InterfaceLibrary.Draw(8, 0, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+
+                    s = InterfaceLibrary.GetSize(9);
+                    InterfaceLibrary.Draw(9, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                }
             }
             else
             {
-                s = InterfaceLibrary.GetSize(0);
-                InterfaceLibrary.Draw(0, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
+                s = InterfaceLibrary.GetSize(126);
+                InterfaceLibrary.Draw(126, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
 
                 y = s.Height;
 
@@ -512,11 +562,11 @@ namespace Client.Controls
                 InterfaceLibrary.Draw(7, Size.Width - s.Width, Size.Height - y - s.Height + 3, Color.White, false, 1F, ImageType.Image);
 
 
-                s = InterfaceLibrary.GetSize(13);
-                InterfaceLibrary.Draw(13, 0, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                //s = InterfaceLibrary.GetSize(13);
+                //InterfaceLibrary.Draw(13, 0, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
 
-                s = InterfaceLibrary.GetSize(14);
-                InterfaceLibrary.Draw(14, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                //s = InterfaceLibrary.GetSize(14);
+                //InterfaceLibrary.Draw(14, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
             }
         }
 

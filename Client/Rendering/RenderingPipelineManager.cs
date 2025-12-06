@@ -9,7 +9,7 @@ namespace Client.Rendering
 {
     public static class RenderingPipelineManager
     {
-        private const string DefaultPipelineId = RenderingPipelineIds.SlimDXD3D9;
+        private const string DefaultPipelineId = RenderingPipelineIds.SharpDXD3D11;
         private static readonly Dictionary<string, Func<IRenderingPipeline>> PipelineFactories = new(StringComparer.OrdinalIgnoreCase)
         {
             { RenderingPipelineIds.SharpDXD3D9, () => new SharpDXD3D9.SharpDXD3D9RenderingPipeline() },

@@ -4,10 +4,9 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-//Cleaned
 namespace Client.Controls
 {
-    public sealed class DXVScrollBar : DXControl
+    public sealed class DXHScrollBar : DXControl
     {
         #region Properties
 
@@ -148,38 +147,37 @@ namespace Client.Controls
             HideWhenNoScrollChanged?.Invoke(this, EventArgs.Empty);
         }
 
-
         #endregion
 
 
-        private int ScrollHeight => Size.Height - 50;
+        private int ScrollWidth => Size.Width - 50;
 
         public int Change = 10;
 
-        public DXButton UpButton, DownButton, PositionBar;
+        public DXButton LeftButton, RightButton, PositionBar;
 
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
             base.OnSizeChanged(oValue, nValue);
 
-            if (ScrollHeight < 0)
+            if (ScrollWidth < 0)
                 return;
 
-            DownButton.Location = new Point(UpButton.Location.X, Size.Height - 13);
+            RightButton.Location = new Point(Size.Width - 13, LeftButton.Location.Y);
 
             UpdateScrollBar();
         }
 
         #endregion
 
-        public DXVScrollBar()
+        public DXHScrollBar()
         {
             Border = true;
             BorderColour = Color.FromArgb(198, 166, 99);
             DrawTexture = true;
             BackColour = Color.Black;
 
-            UpButton = new DXButton
+            LeftButton = new DXButton
             {
                 Index = 44,
                 LibraryFile = LibraryFile.Interface,
@@ -187,25 +185,25 @@ namespace Client.Controls
                 Enabled = false,
                 Parent = this,
             };
-            UpButton.MouseClick += (o, e) => Value -= Change;
-            UpButton.MouseWheel += DoMouseWheel;
+            LeftButton.MouseClick += (o, e) => Value -= Change;
+            LeftButton.MouseWheel += DoMouseWheel;
 
-            DownButton = new DXButton
+            RightButton = new DXButton
             {
                 Index = 46,
                 LibraryFile = LibraryFile.Interface,
-                Location = new Point(UpButton.Location.X, 0),
+                Location = new Point(0, LeftButton.Location.Y),
                 Enabled = false,
                 Parent = this,
             };
-            DownButton.MouseClick += (o, e) => Value += Change;
-            DownButton.MouseWheel += DoMouseWheel;
+            RightButton.MouseClick += (o, e) => Value += Change;
+            RightButton.MouseWheel += DoMouseWheel;
 
             PositionBar = new DXButton
             {
                 Index = 45,
                 LibraryFile = LibraryFile.Interface,
-                Location = new Point(UpButton.Location.X, UpButton.Size.Height + 4), // | - Space - Button - Space - | - Space - Bar 
+                Location = new Point(LeftButton.Size.Width + 4, LeftButton.Location.Y), // | - Space - Button - Space - | - Space - Bar
                 Enabled = false,
                 Parent = this,
                 Movable = true,
@@ -222,15 +220,15 @@ namespace Client.Controls
 
         private void UpdateScrollBar()
         {
-            UpButton.Enabled = Value > MinValue;
-            DownButton.Enabled = Value < MaxValue - VisibleSize;
+            LeftButton.Enabled = Value > MinValue;
+            RightButton.Enabled = Value < MaxValue - VisibleSize;
             PositionBar.Enabled = MaxValue - MinValue > VisibleSize;
 
             if (MaxValue - MinValue - VisibleSize != 0)
-                PositionBar.Location = new Point(UpButton.Location.X, 16 + (int)(ScrollHeight * (Value / (float)(MaxValue - MinValue - VisibleSize))));
+                PositionBar.Location = new Point(16 + (int)(ScrollWidth * (Value / (float)(MaxValue - MinValue - VisibleSize))), LeftButton.Location.Y);
 
             if (HideWhenNoScroll)
-                Visible = UpButton.Enabled || DownButton.Enabled;
+                Visible = LeftButton.Enabled || RightButton.Enabled;
         }
 
         public void DoMouseWheel(object sender, MouseEventArgs e)
@@ -253,28 +251,28 @@ namespace Client.Controls
                 new LinePoint(Size.Width + 1, Size.Height + 1),
                 new LinePoint(0, Size.Height + 1),
                 new LinePoint(0, 0),
-                new LinePoint(0, 14),
-                new LinePoint(Size.Width + 1, 14),
-                new LinePoint(Size.Width + 1, Size.Height - 13),
-                new LinePoint(0, Size.Height - 13),
+                new LinePoint(14, 0),
+                new LinePoint(14, Size.Height + 1),
+                new LinePoint(Size.Width - 13, Size.Height + 1),
+                new LinePoint(Size.Width - 13, 0),
 
             };
         }
 
         private void PositionBar_Moving(object sender, MouseEventArgs e)
         {
-            Value = (int)Math.Round((PositionBar.Location.Y - 16) * (MaxValue - MinValue - VisibleSize) / (float)ScrollHeight);
+            Value = (int)Math.Round((PositionBar.Location.X - 16) * (MaxValue - MinValue - VisibleSize) / (float)ScrollWidth);
 
             if (MaxValue - MinValue - VisibleSize == 0) return;
 
-            PositionBar.Location = new Point(UpButton.Location.X, 16 + (int)(ScrollHeight * (Value / (float)(MaxValue - MinValue - VisibleSize))));
+            PositionBar.Location = new Point(16 + (int)(ScrollWidth * (Value / (float)(MaxValue - MinValue - VisibleSize))), LeftButton.Location.Y);
         }
 
         public override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
 
-            Value = (int)Math.Round((e.Location.Y - DisplayArea.Top - (PositionBar.Size.Height + (PositionBar.Size.Height / 2))) * (MaxValue - MinValue - VisibleSize) / (float)ScrollHeight);
+            Value = (int)Math.Round((e.Location.X - DisplayArea.Left - (PositionBar.Size.Width + (PositionBar.Size.Width / 2))) * (MaxValue - MinValue - VisibleSize) / (float)ScrollWidth);
         }
         public override void OnMouseWheel(MouseEventArgs e)
         {
@@ -306,20 +304,20 @@ namespace Client.Controls
 
                 Change = 0;
 
-                if (UpButton != null)
+                if (LeftButton != null)
                 {
-                    if (!UpButton.IsDisposed)
-                        UpButton.Dispose();
+                    if (!LeftButton.IsDisposed)
+                        LeftButton.Dispose();
 
-                    UpButton = null;
+                    LeftButton = null;
                 }
 
-                if (DownButton != null)
+                if (RightButton != null)
                 {
-                    if (!DownButton.IsDisposed)
-                        DownButton.Dispose();
+                    if (!RightButton.IsDisposed)
+                        RightButton.Dispose();
 
-                    DownButton = null;
+                    RightButton = null;
                 }
 
                 if (PositionBar != null)

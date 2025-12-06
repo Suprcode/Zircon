@@ -685,6 +685,7 @@ namespace Client.Rendering.SharpDXD3D9
 
             CEnvir.Target.ClientSize = size;
             CEnvir.Target.MaximizeBox = false;
+            CEnvir.Target.Center();
 
             ResetDevice();
         }

@@ -217,6 +217,7 @@ namespace Client.Rendering.SharpDXD3D11
             bool isFullScreen = SwapChain.IsFullScreen;
             SwapChain.IsFullScreen = !isFullScreen;
             Config.FullScreen = SwapChain.IsFullScreen;
+            DXConfigWindow.ActiveConfig.FullScreenCheckBox.Checked = Config.FullScreen;
             ApplyWindowStyle();
             RequestReset();
         }
@@ -229,7 +230,10 @@ namespace Client.Rendering.SharpDXD3D11
             Config.GameSize = size;
 
             if (CEnvir.Target != null && CEnvir.Target.ClientSize != size)
+            {
                 CEnvir.Target.ClientSize = size;
+                CEnvir.Target.Center();
+            }
 
             ApplyWindowStyle();
             RequestReset();

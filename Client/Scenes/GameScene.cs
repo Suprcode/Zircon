@@ -359,6 +359,18 @@ namespace Client.Scenes
         }
         private TimeOfDay _TimeOfDay;
 
+        public string TimeOfDayLabel
+        {
+            get => _TimeOfDayLabel;
+            set
+            {
+                if (_TimeOfDayLabel == value) return;
+
+                _TimeOfDayLabel = value;
+            }
+        }
+        private string _TimeOfDayLabel = string.Empty;
+
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
             base.OnSizeChanged(oValue, nValue);

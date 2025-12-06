@@ -814,6 +814,9 @@ namespace Server.Models
                 Experience = Experience,
 
                 DayTime = SEnvir.DayTime,
+                TimeOfDay = SEnvir.TimeOfDay,
+                TimeOfDayLabel = SEnvir.GetDayCycleLabel(),
+
                 AllowGroup = Character.Account.AllowGroup,
 
                 CurrentHP = DisplayHP,

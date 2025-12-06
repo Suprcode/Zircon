@@ -71,8 +71,10 @@ namespace Client.Controls
         public static int TabHeight { get; }
         public static int HeaderBarSize { get; }
         public static int HeaderSize { get; }
+        public static int NoHeaderSize { get; }
         public static int FooterSize { get; }
         public static int NoFooterSize { get; }
+        public static int SlimFooterSize { get; }
         public static int SmallButtonHeight { get; }
 
         public static DXLabel DebugLabel, HintLabel, PingLabel;
@@ -115,6 +117,8 @@ namespace Client.Controls
 
             if (InterfaceLibrary == null) return;
 
+            //TODO - Move this out to where its needed. Base control doesn't need this info
+
             DefaultHeight = InterfaceLibrary.GetSize(16).Height;
             TabHeight = InterfaceLibrary.GetSize(19).Height;
             SmallButtonHeight = InterfaceLibrary.GetSize(41).Height;
@@ -124,12 +128,14 @@ namespace Client.Controls
             HeaderSize = HeaderBarSize;
             HeaderSize += InterfaceLibrary.GetSize(3).Height;
 
-            NoFooterSize = InterfaceLibrary.GetSize(2).Height;
+            NoHeaderSize = InterfaceLibrary.GetSize(2).Height;
 
-            FooterSize = HeaderBarSize;
+            FooterSize = InterfaceLibrary.GetSize(126).Height;
             FooterSize += InterfaceLibrary.GetSize(2).Height;
             FooterSize += InterfaceLibrary.GetSize(10).Height;
 
+            NoFooterSize = InterfaceLibrary.GetSize(2).Height;
+            SlimFooterSize = InterfaceLibrary.GetSize(126).Height;
         }
 
         #endregion

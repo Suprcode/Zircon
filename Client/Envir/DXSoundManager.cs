@@ -1101,19 +1101,19 @@ namespace Client.Envir
             switch (type)
             {
                 case SoundType.System:
-                    volume = Math.Max(0, Math.Min(100, Config.SystemVolume));
+                    volume = Config.SystemVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.SystemVolume));
                     break;
                 case SoundType.Music:
-                    volume = Math.Max(0, Math.Min(100, Config.MusicVolume));
+                    volume = Config.MusicVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.MusicVolume));
                     break;
                 case SoundType.Player:
-                    volume = Math.Max(0, Math.Min(100, Config.PlayerVolume));
+                    volume = Config.PlayerVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.PlayerVolume));
                     break;
                 case SoundType.Monster:
-                    volume = Math.Max(0, Math.Min(100, Config.MonsterVolume));
+                    volume = Config.MonsterVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.MonsterVolume));
                     break;
                 case SoundType.Magic:
-                    volume = Math.Max(0, Math.Min(100, Config.MagicVolume));
+                    volume = Config.MagicVolumeMuted ? 0 : Math.Max(0, Math.Min(100, Config.MagicVolume));
                     break;
                 default:
                     volume = 0;

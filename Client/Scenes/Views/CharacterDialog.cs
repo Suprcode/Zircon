@@ -2954,7 +2954,6 @@ namespace Client.Scenes.Views
 
         #endregion
 
-
         #region IDisposable
 
         protected override void Dispose(bool disposing)
