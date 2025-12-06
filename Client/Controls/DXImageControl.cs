@@ -283,6 +283,30 @@ namespace Client.Controls
 
         #endregion
 
+        #region Gray Scale
+
+        public bool GrayScale
+        {
+            get => _GrayScale;
+            set
+            {
+                if (_GrayScale == value) return;
+
+                bool oldValue = _GrayScale;
+                _GrayScale = value;
+
+                OnGrayScaleChanged(oldValue, value);
+            }
+        }
+        private bool _GrayScale = false;
+        public event EventHandler<EventArgs> GrayScaleChanged;
+        public virtual void OnGrayScaleChanged(bool oValue, bool nValue)
+        {
+            GrayScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         public DXImageControl()
         {
             DrawImage = true;
@@ -346,7 +370,17 @@ namespace Client.Controls
                 RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
             }
 
+            if (GrayScale)
+            {
+                RenderingPipelineManager.EnableGrayscaleEffect();
+            }
+
             PresentTexture(image.Image, FixedSize ? null : Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+
+            if (GrayScale)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
 
             if (DropShadow)
             {

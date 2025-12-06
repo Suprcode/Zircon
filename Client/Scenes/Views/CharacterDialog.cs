@@ -5,6 +5,7 @@ using Client.Rendering;
 using Client.Scenes.Views.Character;
 using Client.UserModels;
 using Library;
+using Library.Network.ClientPackets;
 using Library.SystemModels;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
@@ -2892,16 +2894,6 @@ namespace Client.Scenes.Views
                 DisciplineLevel.Index = 215;
                 DisciplineLevelLabel.Text = "0";
                 DisciplineExperienceLabel.Text = $"0/0";
-
-                List<MagicInfo> keys = new(DisciplineMagics.Keys);
-
-                foreach (var key in keys)
-                {
-                    DisciplineMagics[key].Dispose();
-                    DisciplineMagics[key] = null;
-                }
-
-                DisciplineMagics.Clear();
             }
             else
             {
@@ -2912,25 +2904,44 @@ namespace Client.Scenes.Views
                     DisciplineExperienceLabel.Text = $"{userDiscipline.Experience}/{nextLevel.RequiredExperience}";
                 else
                     DisciplineExperienceLabel.Text = $"{userDiscipline.Experience}/Max";
+            }
 
-                int x = 51;
+            int x = 51;
 
-                foreach (var magic in userDiscipline.Magics)
+            var mInfos = Globals.MagicInfoList.Binding
+                .Where(x => x.School == MagicSchool.Discipline && x.Class == GameScene.Game.User.Class)
+                .OrderBy(x => x.NeedLevel1)
+                .Take(4)
+                .ToList();
+
+            for (int i = 0; i < mInfos.Count; i++)
+            {
+                var info = mInfos[i];
+
+                var userInfo = userDiscipline?.Magics.FirstOrDefault(x => x.Info == info);
+
+                DisciplineMagicCell cell = null;
+
+                if (!DisciplineMagics.ContainsKey(info))
                 {
-                    if (!DisciplineMagics.ContainsKey(magic.Info))
+                    cell = new DisciplineMagicCell
                     {
-                        DisciplineMagicCell cell = new DisciplineMagicCell
-                        {
-                            Parent = DisciplineTab,
-                            Info = magic.Info,
-                            BackColour = Color.Empty,
-                            Location = new Point(x, 380)
-                        };
-                        DisciplineMagics[magic.Info] = cell;
-                    }
+                        Parent = DisciplineTab,
+                        Info = info,
+                        BackColour = Color.Empty,
+                        Location = new Point(x, 380)
+                    };
 
-                    x += 62;
+                    DisciplineMagics[info] = cell;
                 }
+                else
+                {
+                    cell = DisciplineMagics[info];
+                }
+
+                cell.Image.GrayScale = userInfo == null;
+
+                x += 62;
             }
         }
 
