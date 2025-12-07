@@ -36,7 +36,20 @@ namespace Client.Rendering.SharpDXD3D11
         private SamplerState _samplerState;
 
         private readonly Dictionary<BlendMode, BlendState> _blendStates = new Dictionary<BlendMode, BlendState>();
-        private readonly Dictionary<Texture2D, ShaderResourceView> _srvCache = new Dictionary<Texture2D, ShaderResourceView>();
+
+        private readonly struct SrvCacheEntry
+        {
+            public Texture2D Texture { get; }
+            public ShaderResourceView ShaderResourceView { get; }
+
+            public SrvCacheEntry(Texture2D texture, ShaderResourceView shaderResourceView)
+            {
+                Texture = texture;
+                ShaderResourceView = shaderResourceView;
+            }
+        }
+
+        private readonly Dictionary<IntPtr, SrvCacheEntry> _srvCache = new Dictionary<IntPtr, SrvCacheEntry>();
 
         private const string ShaderFileName = "SpriteD3D11.hlsl";
         private const string OutlineShaderFileName = "OutlineD3D11.hlsl";
@@ -335,27 +348,27 @@ namespace Client.Rendering.SharpDXD3D11
 
         public bool SupportsOutlineShader => _outlinePixelShader != null && _outlineBuffer != null;
 
-        public void Draw(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate)
+        public void Draw(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, ShaderResourceView shaderResourceView = null)
         {
-            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _pixelShader, null);
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _pixelShader, null, shaderResourceView);
         }
 
-        public void DrawOutlined(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 outlineColor, float outlineThickness)
+        public void DrawOutlined(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 outlineColor, float outlineThickness, ShaderResourceView shaderResourceView = null)
         {
             var outlineEffect = CreateOutlineEffect(texture, source, outlineColor, outlineThickness);
-            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _outlinePixelShader ?? _pixelShader, outlineEffect);
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _outlinePixelShader ?? _pixelShader, outlineEffect, shaderResourceView);
         }
 
-        public void DrawGrayscale(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate)
+        public void DrawGrayscale(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, ShaderResourceView shaderResourceView = null)
         {
             var grayscaleEffect = CreateGrayscaleEffect();
-            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _grayscalePixelShader ?? _pixelShader, grayscaleEffect);
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _grayscalePixelShader ?? _pixelShader, grayscaleEffect, shaderResourceView);
         }
 
-        public void DrawDropShadow(Texture2D texture, RectangleF destination, RectangleF shadowBounds, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity)
+        public void DrawDropShadow(Texture2D texture, RectangleF destination, RectangleF shadowBounds, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, RawColor4 shadowColor, float shadowWidth, float shadowMaxOpacity, ShaderResourceView shaderResourceView = null)
         {
             var dropShadowEffect = CreateDropShadowEffect(texture, shadowBounds, shadowWidth, shadowMaxOpacity);
-            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _dropShadowPixelShader ?? _pixelShader, dropShadowEffect);
+            DrawInternal(texture, destination, source, color, transform, blendMode, opacity, blendRate, _dropShadowPixelShader ?? _pixelShader, dropShadowEffect, shaderResourceView);
         }
 
         private SpriteEffect? CreateOutlineEffect(Texture2D texture, RectangleF? source, RawColor4 outlineColor, float outlineThickness)
@@ -425,39 +438,14 @@ namespace Client.Rendering.SharpDXD3D11
                 stream => stream.Write(shadowBuffer));
         }
 
-        private void DrawInternal(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, PixelShader pixelShader, SpriteEffect? effect)
+        private void DrawInternal(Texture2D texture, RectangleF destination, RectangleF? source, Color color, Matrix3x2 transform, BlendMode blendMode, float opacity, float blendRate, PixelShader pixelShader, SpriteEffect? effect, ShaderResourceView shaderResourceView)
         {
             if (texture == null) return;
 
             var activePixelShader = effect?.Shader ?? pixelShader ?? _pixelShader;
             if (activePixelShader == null) return;
 
-            var rtv = _context.OutputMerger.GetRenderTargets(1);
-            if (rtv != null && rtv.Length > 0 && rtv[0] != null)
-            {
-                using (var res = rtv[0].Resource)
-                using (var tex = res.QueryInterface<Texture2D>())
-                {
-                    var width = tex.Description.Width;
-                    var height = tex.Description.Height;
-                    _context.Rasterizer.SetViewport(new RawViewportF
-                    {
-                        X = 0,
-                        Y = 0,
-                        Width = width,
-                        Height = height,
-                        MinDepth = 0,
-                        MaxDepth = 1
-                    });
-                }
-                rtv[0].Dispose();
-            }
-
-            if (!_srvCache.TryGetValue(texture, out var srv))
-            {
-                srv = new ShaderResourceView(_device, texture);
-                _srvCache[texture] = srv;
-            }
+            ShaderResourceView srv = shaderResourceView ?? GetOrCreateShaderResourceView(texture);
 
             _context.InputAssembler.InputLayout = _inputLayout;
             _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
@@ -493,6 +481,13 @@ namespace Client.Rendering.SharpDXD3D11
 
             _context.PixelShader.SetConstantBuffer(1, null);
             _context.OutputMerger.SetBlendState(null, null, -1);
+
+            // Explicitly clear the bound shader resource so the device context
+            // releases its reference immediately after the draw call. Leaving
+            // it bound prevents textures from being released promptly when
+            // they are expired or disposed elsewhere, which can show up as
+            // steadily rising memory usage while the renderer idles.
+            _context.PixelShader.SetShaderResource(0, null as ShaderResourceView);
         }
 
         private void ApplyEffect(SpriteEffect? effect)
@@ -520,6 +515,52 @@ namespace Client.Rendering.SharpDXD3D11
             {
                 _context.PixelShader.SetConstantBuffer(1, null);
             }
+        }
+
+        private void UnbindShaderResourceView(ShaderResourceView? shaderResourceView)
+        {
+            if (shaderResourceView == null)
+                return;
+
+            var boundShaderResources = _context.PixelShader.GetShaderResources(0, 1);
+
+            try
+            {
+                if (boundShaderResources != null && boundShaderResources.Length > 0 && boundShaderResources[0] != null && boundShaderResources[0].NativePointer == shaderResourceView.NativePointer)
+                {
+                    _context.PixelShader.SetShaderResource(0, null as ShaderResourceView);
+                }
+            }
+            finally
+            {
+                if (boundShaderResources != null)
+                {
+                    foreach (var boundShaderResource in boundShaderResources)
+                        boundShaderResource?.Dispose();
+                }
+            }
+        }
+
+        private ShaderResourceView GetOrCreateShaderResourceView(Texture2D texture)
+        {
+            IntPtr texturePointer = texture.NativePointer;
+
+            if (_srvCache.TryGetValue(texturePointer, out SrvCacheEntry entry))
+            {
+                if (!entry.ShaderResourceView.IsDisposed &&
+                    !entry.Texture.IsDisposed &&
+                    entry.Texture.NativePointer == texturePointer)
+                {
+                    return entry.ShaderResourceView;
+                }
+
+                UnbindShaderResourceView(entry.ShaderResourceView);
+                entry.ShaderResourceView?.Dispose();
+            }
+
+            var srv = new ShaderResourceView(_device, texture);
+            _srvCache[texturePointer] = new SrvCacheEntry(texture, srv);
+            return srv;
         }
 
         private void UpdateVertexBuffer(RectangleF dest, RectangleF? source, int texWidth, int texHeight, Color color, float opacity, float geometryExpand, bool expandUvs)
@@ -629,9 +670,54 @@ namespace Client.Rendering.SharpDXD3D11
             _context.UnmapSubresource(_matrixBuffer, 0);
         }
 
+        /// <summary>
+        /// Removes a texture from the shader resource view cache after the texture is disposed.
+        /// </summary>
+        public void ReleaseTexture(Texture2D? texture)
+        {
+            if (texture == null || texture.NativePointer == IntPtr.Zero)
+                return;
+
+            if (_srvCache.Remove(texture.NativePointer, out SrvCacheEntry entry))
+            {
+                UnbindShaderResourceView(entry.ShaderResourceView);
+                entry.ShaderResourceView?.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Removes any cached shader resource views for textures that have already been disposed elsewhere.
+        /// </summary>
+        public void ReleaseDisposedTextures()
+        {
+            if (_srvCache.Count == 0)
+                return;
+
+            var disposedTextures = new List<IntPtr>();
+
+            foreach (var entry in _srvCache)
+            {
+                if (entry.Value.Texture == null ||
+                    entry.Value.Texture.IsDisposed ||
+                    entry.Value.Texture.NativePointer != entry.Key)
+                {
+                    UnbindShaderResourceView(entry.Value.ShaderResourceView);
+                    entry.Value.ShaderResourceView?.Dispose();
+                    disposedTextures.Add(entry.Key);
+                }
+            }
+
+            foreach (var texturePointer in disposedTextures)
+                _srvCache.Remove(texturePointer);
+        }
+
         public void Dispose()
         {
-            foreach (var srv in _srvCache.Values) srv.Dispose();
+            foreach (var entry in _srvCache.Values)
+            {
+                UnbindShaderResourceView(entry.ShaderResourceView);
+                entry.ShaderResourceView?.Dispose();
+            }
             _srvCache.Clear();
 
             foreach (var bs in _blendStates.Values) bs.Dispose();

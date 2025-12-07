@@ -17,6 +17,11 @@ namespace Client.Rendering.SharpDXD3D11
     {
         private float _lineWidth = 1F;
 
+        private ColorMatrix _tintEffect;
+        private UnPremultiply _unpremultiplyEffect;
+        private ColorMatrix _lightTintEffect;
+        private Premultiply _premultiplyEffect;
+
         public string Id => RenderingPipelineIds.SharpDXD3D11;
 
         public void Initialize(RenderingPipelineContext context)
@@ -255,9 +260,18 @@ namespace Client.Rendering.SharpDXD3D11
             {
                 // Use Custom D3D11 Renderer for specific blend modes
                 Texture2D d3dTex = null;
+                ShaderResourceView shaderResourceView = null;
 
-                if (texture.NativeHandle is SharpD3D11TextureResource texRes) d3dTex = texRes.Texture;
-                else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
+                if (texture.NativeHandle is SharpD3D11TextureResource texRes)
+                {
+                    d3dTex = texRes.Texture;
+                    shaderResourceView = texRes.ShaderResourceView;
+                }
+                else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget)
+                {
+                    d3dTex = renderTarget.Texture;
+                    shaderResourceView = renderTarget.ShaderResourceView;
+                }
 
                 if (d3dTex != null)
                 {
@@ -271,7 +285,8 @@ namespace Client.Rendering.SharpDXD3D11
                         Matrix3x2.Identity,
                         SharpDXD3D11Manager.BlendMode,
                         SharpDXD3D11Manager.Opacity,
-                        SharpDXD3D11Manager.BlendRate);
+                        SharpDXD3D11Manager.BlendRate,
+                        shaderResourceView);
 
                     return;
                 }
@@ -313,9 +328,18 @@ namespace Client.Rendering.SharpDXD3D11
             finalTransform.M32 += translation.Y;
 
             Texture2D d3dTex = null;
+            ShaderResourceView shaderResourceView = null;
 
-            if (texture.NativeHandle is SharpD3D11TextureResource texRes) d3dTex = texRes.Texture;
-            else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
+            if (texture.NativeHandle is SharpD3D11TextureResource texRes)
+            {
+                d3dTex = texRes.Texture;
+                shaderResourceView = texRes.ShaderResourceView;
+            }
+            else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget)
+            {
+                d3dTex = renderTarget.Texture;
+                shaderResourceView = renderTarget.ShaderResourceView;
+            }
 
             if (d3dTex != null)
             {
@@ -361,7 +385,8 @@ namespace Client.Rendering.SharpDXD3D11
                         finalTransform,
                         SharpDXD3D11Manager.BlendMode,
                         SharpDXD3D11Manager.Opacity,
-                        SharpDXD3D11Manager.BlendRate);
+                        SharpDXD3D11Manager.BlendRate,
+                        shaderResourceView);
 
                     return;
                 }
@@ -405,9 +430,18 @@ namespace Client.Rendering.SharpDXD3D11
                 return false;
 
             Texture2D d3dTex = null;
+            ShaderResourceView shaderResourceView = null;
 
-            if (texture.NativeHandle is SharpD3D11TextureResource texRes) d3dTex = texRes.Texture;
-            else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
+            if (texture.NativeHandle is SharpD3D11TextureResource texRes)
+            {
+                d3dTex = texRes.Texture;
+                shaderResourceView = texRes.ShaderResourceView;
+            }
+            else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget)
+            {
+                d3dTex = renderTarget.Texture;
+                shaderResourceView = renderTarget.ShaderResourceView;
+            }
 
             if (d3dTex == null)
                 return false;
@@ -415,21 +449,21 @@ namespace Client.Rendering.SharpDXD3D11
             switch (effect.Value.Kind)
             {
                 case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
-                    TryDrawOutlineEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
+                    TryDrawOutlineEffect(d3dTex, shaderResourceView, geometry, sourceRectangle, colour, transform, effect.Value.Outline);
                     // Continue to render the base sprite normally so it isn't affected by the outline shader's blending or opacity rules.
                     return false;
                 case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
-                    TryDrawGrayscaleEffect(d3dTex, geometry, sourceRectangle, colour, transform);
+                    TryDrawGrayscaleEffect(d3dTex, shaderResourceView, geometry, sourceRectangle, colour, transform);
                     return true;
                 case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
-                    TryDrawDropShadowEffect(d3dTex, geometry, sourceRectangle, colour, transform, effect.Value.DropShadow);
+                    TryDrawDropShadowEffect(d3dTex, shaderResourceView, geometry, sourceRectangle, colour, transform, effect.Value.DropShadow);
                     return false;
             }
 
             return false;
         }
 
-        private void TryDrawOutlineEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform, RenderingPipelineManager.OutlineEffectSettings outline)
+        private void TryDrawOutlineEffect(Texture2D texture, ShaderResourceView shaderResourceView, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform, RenderingPipelineManager.OutlineEffectSettings outline)
         {
             if (SharpDXD3D11Manager.SpriteRenderer == null || !SharpDXD3D11Manager.SpriteRenderer.SupportsOutlineShader)
                 return;
@@ -452,10 +486,11 @@ namespace Client.Rendering.SharpDXD3D11
                 1f,
                 1f,
                 outlineColor,
-                outline.Thickness);
+                outline.Thickness,
+                shaderResourceView);
         }
 
-        private void TryDrawGrayscaleEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
+        private void TryDrawGrayscaleEffect(Texture2D texture, ShaderResourceView shaderResourceView, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
         {
             if (SharpDXD3D11Manager.SpriteRenderer == null)
                 return;
@@ -470,10 +505,11 @@ namespace Client.Rendering.SharpDXD3D11
                 transform,
                 SharpDXD3D11Manager.Blending ? SharpDXD3D11Manager.BlendMode : BlendMode.NONE,
                 SharpDXD3D11Manager.Opacity,
-                SharpDXD3D11Manager.BlendRate);
+                SharpDXD3D11Manager.BlendRate,
+                shaderResourceView);
         }
 
-        private void TryDrawDropShadowEffect(Texture2D texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform, RenderingPipelineManager.DropShadowEffectSettings dropShadow)
+        private void TryDrawDropShadowEffect(Texture2D texture, ShaderResourceView shaderResourceView, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform, RenderingPipelineManager.DropShadowEffectSettings dropShadow)
         {
             if (SharpDXD3D11Manager.SpriteRenderer == null)
                 return;
@@ -500,7 +536,8 @@ namespace Client.Rendering.SharpDXD3D11
                 SharpDXD3D11Manager.BlendRate,
                 shadowColor,
                 dropShadow.Width,
-                dropShadow.StartOpacity);
+                dropShadow.StartOpacity,
+                shaderResourceView);
         }
 
         public RenderSurface GetCurrentSurface()
@@ -724,7 +761,23 @@ namespace Client.Rendering.SharpDXD3D11
 
         public void Shutdown()
         {
+            DisposeEffects();
             SharpDXD3D11Manager.Unload();
+        }
+
+        private void DisposeEffects()
+        {
+            _tintEffect?.Dispose();
+            _tintEffect = null;
+
+            _unpremultiplyEffect?.Dispose();
+            _unpremultiplyEffect = null;
+
+            _lightTintEffect?.Dispose();
+            _lightTintEffect = null;
+
+            _premultiplyEffect?.Dispose();
+            _premultiplyEffect = null;
         }
 
         private static Bitmap1 GetBitmap(RenderTexture texture)
@@ -778,36 +831,40 @@ namespace Client.Rendering.SharpDXD3D11
             // Map stored BitmapInterpolationMode -> D2D InterpolationMode (for DrawImage)
             if (applyTint)
             {
-                using (var effect = new ColorMatrix(ctx))
+                EnsureTintEffect(ctx);
+
+                var matrix = new RawMatrix5x4
                 {
-                    var matrix = new RawMatrix5x4
-                    {
-                        M11 = (colour.R / 255f) * colorScale * opacity,
-                        M22 = (colour.G / 255f) * colorScale * opacity,
-                        M33 = (colour.B / 255f) * colorScale * opacity,
-                        M44 = opacity,   // multiply existing alpha by this
-                        M54 = 0f
-                    };
+                    M11 = (colour.R / 255f) * colorScale * opacity,
+                    M22 = (colour.G / 255f) * colorScale * opacity,
+                    M33 = (colour.B / 255f) * colorScale * opacity,
+                    M44 = opacity,   // multiply existing alpha by this
+                    M54 = 0f
+                };
 
-                    effect.SetValue((int)ColorMatrixProperties.ColorMatrix, matrix);
-                    effect.SetEnumValue((int)ColorMatrixProperties.AlphaMode, ColorMatrixAlphaMode.Straight);
-                    effect.SetInput(0, bitmap, true);
+                _tintEffect.SetValue((int)ColorMatrixProperties.ColorMatrix, matrix);
+                _tintEffect.SetEnumValue((int)ColorMatrixProperties.AlphaMode, ColorMatrixAlphaMode.Straight);
+                _tintEffect.SetInput(0, bitmap, true);
 
-                    RawMatrix3x2 originalTransform = ctx.Transform;
+                RawMatrix3x2 originalTransform = ctx.Transform;
 
-                    if (destination.HasValue)
-                    {
-                        RawRectangleF destRect = destination.Value;
-                        RawMatrix3x2 local = CreateImageTransform(destRect, source, bitmap.PixelSize);
-                        ctx.Transform = Multiply(originalTransform, local);
-                    }
+                if (destination.HasValue)
+                {
+                    RawRectangleF destRect = destination.Value;
+                    RawMatrix3x2 local = CreateImageTransform(destRect, source, bitmap.PixelSize);
+                    ctx.Transform = Multiply(originalTransform, local);
+                }
 
-                    SharpDX.Direct2D1.Image effectOutput = effect.Output;
-
+                try
+                {
+                    SharpDX.Direct2D1.Image effectOutput = _tintEffect.Output;
                     ctx.DrawImage(effectOutput, null, source, interpolation, compositeMode);
-
+                }
+                finally
+                {
                     // restore whatever the pipeline had before
                     ctx.Transform = originalTransform;
+                    _tintEffect.SetInput(0, null as Image, true);
                 }
             }
             else
@@ -857,34 +914,35 @@ namespace Client.Rendering.SharpDXD3D11
 
             try
             {
-                using (var unpremultiply = new UnPremultiply(ctx))
-                using (var tint = new ColorMatrix(ctx))
-                using (var premultiply = new Premultiply(ctx))
+                EnsureLightEffects(ctx);
+
+                _unpremultiplyEffect.SetInput(0, bitmap, true);
+
+                _lightTintEffect.SetInputEffect(0, _unpremultiplyEffect, true);
+                var matrix = new RawMatrix5x4
                 {
-                    unpremultiply.SetInput(0, bitmap, true);
+                    M11 = (colour.R / 255f) * colorScale,
+                    M22 = (colour.G / 255f) * colorScale,
+                    M33 = (colour.B / 255f) * colorScale,
+                    M44 = opacity,
+                    M54 = 0f
+                };
 
-                    tint.SetInputEffect(0, unpremultiply, true);
-                    var matrix = new RawMatrix5x4
-                    {
-                        M11 = (colour.R / 255f) * colorScale,
-                        M22 = (colour.G / 255f) * colorScale,
-                        M33 = (colour.B / 255f) * colorScale,
-                        M44 = opacity,
-                        M54 = 0f
-                    };
+                _lightTintEffect.SetValue((int)ColorMatrixProperties.ColorMatrix, matrix);
+                _lightTintEffect.SetEnumValue((int)ColorMatrixProperties.AlphaMode, ColorMatrixAlphaMode.Straight);
 
-                    tint.SetValue((int)ColorMatrixProperties.ColorMatrix, matrix);
-                    tint.SetEnumValue((int)ColorMatrixProperties.AlphaMode, ColorMatrixAlphaMode.Straight);
+                _premultiplyEffect.SetInputEffect(0, _lightTintEffect, true);
+                SharpDX.Direct2D1.Image output = _premultiplyEffect.Output;
 
-                    premultiply.SetInputEffect(0, tint, true);
-                    SharpDX.Direct2D1.Image output = premultiply.Output;
-
-                    ctx.PrimitiveBlend = PrimitiveBlend.Add;
-                    ctx.DrawImage(output, null, source, interpolation, CompositeMode.SourceOver);
-                }
+                ctx.PrimitiveBlend = PrimitiveBlend.Add;
+                ctx.DrawImage(output, null, source, interpolation, CompositeMode.SourceOver);
             }
             finally
             {
+                _unpremultiplyEffect?.SetInput(0, null as Image, true);
+                _lightTintEffect?.SetInputEffect(0, null, true);
+                _premultiplyEffect?.SetInputEffect(0, null, true);
+
                 ctx.PrimitiveBlend = originalPrimitiveBlend;
                 ctx.Transform = originalTransform;
             }
@@ -910,6 +968,24 @@ namespace Client.Rendering.SharpDXD3D11
                 M31 = a.M31 * b.M11 + a.M32 * b.M21 + b.M31,
                 M32 = a.M31 * b.M12 + a.M32 * b.M22 + b.M32,
             };
+        }
+
+        private void EnsureTintEffect(DeviceContext ctx)
+        {
+            if (_tintEffect == null)
+                _tintEffect = new ColorMatrix(ctx);
+        }
+
+        private void EnsureLightEffects(DeviceContext ctx)
+        {
+            if (_unpremultiplyEffect == null)
+                _unpremultiplyEffect = new UnPremultiply(ctx);
+
+            if (_lightTintEffect == null)
+                _lightTintEffect = new ColorMatrix(ctx);
+
+            if (_premultiplyEffect == null)
+                _premultiplyEffect = new Premultiply(ctx);
         }
 
         private static RawMatrix3x2 CreateImageTransform(RawRectangleF destRect, RawRectangleF? sourceRect, SharpDX.Size2 bitmapSize)

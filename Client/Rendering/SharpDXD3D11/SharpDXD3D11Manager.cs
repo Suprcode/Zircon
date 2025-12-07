@@ -36,17 +36,20 @@ namespace Client.Rendering.SharpDXD3D11
         public Texture2D Texture { get; }
         public Texture2D StagingTexture { get; }
         public Bitmap1 Bitmap { get; }
+        public ShaderResourceView ShaderResourceView { get; }
 
-        public SharpD3D11TextureResource(RenderTextureFormat format, Texture2D texture, Texture2D stagingTexture, Bitmap1 bitmap)
+        public SharpD3D11TextureResource(RenderTextureFormat format, Texture2D texture, Texture2D stagingTexture, Bitmap1 bitmap, ShaderResourceView shaderResourceView)
         {
             Format = format;
             Texture = texture;
             StagingTexture = stagingTexture;
             Bitmap = bitmap;
+            ShaderResourceView = shaderResourceView;
         }
 
         public void Dispose()
         {
+            ShaderResourceView?.Dispose();
             Bitmap?.Dispose();
             StagingTexture?.Dispose();
             Texture?.Dispose();
@@ -58,16 +61,19 @@ namespace Client.Rendering.SharpDXD3D11
         public Texture2D Texture { get; }
         public RenderTargetView RenderTargetView { get; }
         public Bitmap1 TargetBitmap { get; }
+        public ShaderResourceView ShaderResourceView { get; }
 
-        public SharpD3D11RenderTarget(Texture2D texture, RenderTargetView renderTargetView, Bitmap1 targetBitmap)
+        public SharpD3D11RenderTarget(Texture2D texture, RenderTargetView renderTargetView, Bitmap1 targetBitmap, ShaderResourceView shaderResourceView)
         {
             Texture = texture;
             RenderTargetView = renderTargetView;
             TargetBitmap = targetBitmap;
+            ShaderResourceView = shaderResourceView;
         }
 
         public void Dispose()
         {
+            ShaderResourceView?.Dispose();
             TargetBitmap?.Dispose();
             RenderTargetView?.Dispose();
             Texture?.Dispose();
@@ -429,6 +435,8 @@ namespace Client.Rendering.SharpDXD3D11
             if (D2DContext != null)
                 D2DContext.Target = _backBufferTarget?.TargetBitmap;
 
+            SpriteRenderer?.ReleaseDisposedTextures();
+
             for (int i = ControlList.Count - 1; i >= 0; i--)
             {
                 if (CEnvir.Now < ControlList[i].ExpireTime)
@@ -515,6 +523,17 @@ namespace Client.Rendering.SharpDXD3D11
             CurrentTarget = target;
             Context.OutputMerger.SetRenderTargets(target.RenderTargetView);
             D2DContext.Target = target.TargetBitmap;
+
+            var description = target.Texture.Description;
+            Context.Rasterizer.SetViewport(new RawViewportF
+            {
+                X = 0,
+                Y = 0,
+                Width = description.Width,
+                Height = description.Height,
+                MinDepth = 0,
+                MaxDepth = 1
+            });
         }
 
         public static void BeginDraw(Color clearColor)
@@ -557,12 +576,14 @@ namespace Client.Rendering.SharpDXD3D11
             RenderTargetView view = new RenderTargetView(Device, texture);
             using Surface surface = texture.QueryInterface<Surface>();
             Bitmap1 bitmap = new Bitmap1(D2DContext, surface, new BitmapProperties1(new D2D1PixelFormat(Format.B8G8R8A8_UNorm, D2D1AlphaMode.Premultiplied), 96, 96, BitmapOptions.Target));
+            ShaderResourceView shaderResourceView = new ShaderResourceView(Device, texture);
 
-            return new SharpD3D11RenderTarget(texture, view, bitmap);
+            return new SharpD3D11RenderTarget(texture, view, bitmap, shaderResourceView);
         }
 
         public static void ReleaseRenderTarget(SharpD3D11RenderTarget renderTarget)
         {
+            SpriteRenderer?.ReleaseTexture(renderTarget?.Texture);
             renderTarget?.Dispose();
         }
 
@@ -610,12 +631,14 @@ namespace Client.Rendering.SharpDXD3D11
 
             using Surface surface = texture.QueryInterface<Surface>();
             Bitmap1 bitmap = new Bitmap1(D2DContext, surface, new BitmapProperties1(new D2D1PixelFormat(dxFormat, D2D1AlphaMode.Premultiplied), 96, 96, BitmapOptions.None));
+            ShaderResourceView shaderResourceView = new ShaderResourceView(Device, texture);
 
-            return new SharpD3D11TextureResource(format, texture, staging, bitmap);
+            return new SharpD3D11TextureResource(format, texture, staging, bitmap, shaderResourceView);
         }
 
         public static void ReleaseTexture(SharpD3D11TextureResource texture)
         {
+            SpriteRenderer?.ReleaseTexture(texture?.Texture);
             texture?.Dispose();
         }
 
@@ -979,7 +1002,15 @@ namespace Client.Rendering.SharpDXD3D11
             using Surface surface = backBuffer.QueryInterface<Surface>();
             Bitmap1 bitmap = new Bitmap1(D2DContext, surface, new BitmapProperties1(new D2D1PixelFormat(Format.B8G8R8A8_UNorm, D2D1AlphaMode.Premultiplied), 96, 96, BitmapOptions.Target | BitmapOptions.CannotDraw));
 
-            return new SharpD3D11RenderTarget(backBuffer, view, bitmap);
+            ShaderResourceView shaderResourceView = null;
+
+            // The back buffer may not always support shader resource binding depending on swap chain creation flags.
+            // Only create an SRV when the bind flags allow it so Draw calls can reuse the same view without repeatedly
+            // constructing new instances.
+            if ((backBuffer.Description.BindFlags & BindFlags.ShaderResource) != 0)
+                shaderResourceView = new ShaderResourceView(Device, backBuffer);
+
+            return new SharpD3D11RenderTarget(backBuffer, view, bitmap, shaderResourceView);
         }
 
         private static void DisposeTargets()
@@ -990,9 +1021,11 @@ namespace Client.Rendering.SharpDXD3D11
             if (D2DContext != null)
                 D2DContext.Target = null;
 
+            SpriteRenderer?.ReleaseTexture(ScratchTarget?.Texture);
             ScratchTarget?.Dispose();
             ScratchTarget = null;
 
+            SpriteRenderer?.ReleaseTexture(_backBufferTarget?.Texture);
             _backBufferTarget?.Dispose();
             _backBufferTarget = null;
 
