@@ -435,7 +435,7 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
                 NetworkTab = { Enabled = false, TabButton = { Visible = false } },
-                ColourTab = { TabButton = { Visible = true } },
+                UITab = { TabButton = { Visible = true } },
             };
 
             ExitBox = new ExitDialog
@@ -1305,6 +1305,7 @@ namespace Client.Scenes
                         break;
                     case KeyBindAction.UseBelt01:
                         if (Observer) continue;
+                        if (e.Shift && Config.ShiftOpenChat) return;
 
                         if (BeltBox.Grid.Grid.Length > 0)
                         {

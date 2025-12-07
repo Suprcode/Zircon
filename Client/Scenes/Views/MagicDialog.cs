@@ -21,9 +21,6 @@ namespace Client.Scenes.Views
 
         private DXImageControl HeaderImage, BackgroundImage;
 
-        private DXLabel TitleLabel;
-        private DXButton CloseButton;
-
         private DXTabControl TabControl;
         public SortedDictionary<MagicSchool, MagicTab> SchoolTabs = new SortedDictionary<MagicSchool, MagicTab>();
 
@@ -434,6 +431,7 @@ namespace Client.Scenes.Views
         }
 
         #region Methods
+
         public void UpdateLocations()
         {
             int y = -ScrollBar.Value + 7;
