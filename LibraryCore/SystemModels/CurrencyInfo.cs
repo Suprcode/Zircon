@@ -1,8 +1,10 @@
-﻿using MirDB;
+﻿using MemoryPack;
+using MirDB;
 
 namespace Library.SystemModels
 {
-    public sealed class CurrencyInfo : DBObject
+    [MemoryPackable]
+    public sealed partial class CurrencyInfo : DBObject
     {
         [IsIdentity]
         public string Name

@@ -1,6 +1,7 @@
 ﻿using MirDB;
 using System;
 using System.Text.Json.Serialization;
+using MemoryPack;
 
 namespace Library.SystemModels
 {
@@ -129,7 +130,8 @@ namespace Library.SystemModels
         }
     }
 
-    public sealed class NPCPage : DBObject
+    [MemoryPackable]
+    public sealed partial class NPCPage : DBObject
     {
         [IsIdentity]
         public string Description

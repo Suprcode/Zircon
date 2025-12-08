@@ -1,8 +1,10 @@
-﻿using MirDB;
+﻿using MemoryPack;
+using MirDB;
 
 namespace Library.SystemModels
 {
-    public sealed class MonsterInfoStat : DBObject
+    [MemoryPackable]
+    public sealed partial class MonsterInfoStat : DBObject
     {
         [IsIdentity]
         [Association("MonsterInfoStats")]
