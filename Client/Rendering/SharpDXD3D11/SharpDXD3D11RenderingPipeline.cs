@@ -17,6 +17,11 @@ namespace Client.Rendering.SharpDXD3D11
     {
         private float _lineWidth = 1F;
 
+        private ColorMatrix _tintEffect;
+        private UnPremultiply _unpremultiplyEffect;
+        private ColorMatrix _lightTintEffect;
+        private Premultiply _premultiplyEffect;
+
         public string Id => RenderingPipelineIds.SharpDXD3D11;
 
         public void Initialize(RenderingPipelineContext context)
@@ -737,7 +742,7 @@ namespace Client.Rendering.SharpDXD3D11
             };
         }
 
-        private static void DrawBitmap(Bitmap1 bitmap, RawRectangleF? destination, RawRectangleF? source, Color colour)
+        private void DrawBitmap(Bitmap1 bitmap, RawRectangleF? destination, RawRectangleF? source, Color colour)
         {
             var ctx = SharpDXD3D11Manager.D2DContext;
             if (ctx == null)
@@ -778,37 +783,38 @@ namespace Client.Rendering.SharpDXD3D11
             // Map stored BitmapInterpolationMode -> D2D InterpolationMode (for DrawImage)
             if (applyTint)
             {
-                using (var effect = new ColorMatrix(ctx))
+                EnsureTintEffect(ctx);
+
+                var matrix = new RawMatrix5x4
                 {
-                    var matrix = new RawMatrix5x4
-                    {
-                        M11 = (colour.R / 255f) * colorScale * opacity,
-                        M22 = (colour.G / 255f) * colorScale * opacity,
-                        M33 = (colour.B / 255f) * colorScale * opacity,
-                        M44 = opacity,   // multiply existing alpha by this
-                        M54 = 0f
-                    };
+                    M11 = (colour.R / 255f) * colorScale * opacity,
+                    M22 = (colour.G / 255f) * colorScale * opacity,
+                    M33 = (colour.B / 255f) * colorScale * opacity,
+                    M44 = opacity,   // multiply existing alpha by this
+                    M54 = 0f
+                };
 
-                    effect.SetValue((int)ColorMatrixProperties.ColorMatrix, matrix);
-                    effect.SetEnumValue((int)ColorMatrixProperties.AlphaMode, ColorMatrixAlphaMode.Straight);
-                    effect.SetInput(0, bitmap, true);
+                _tintEffect.SetValue((int)ColorMatrixProperties.ColorMatrix, matrix);
+                _tintEffect.SetEnumValue((int)ColorMatrixProperties.AlphaMode, ColorMatrixAlphaMode.Straight);
+                _tintEffect.SetInput(0, bitmap, true);
 
-                    RawMatrix3x2 originalTransform = ctx.Transform;
+                RawMatrix3x2 originalTransform = ctx.Transform;
 
-                    if (destination.HasValue)
-                    {
-                        RawRectangleF destRect = destination.Value;
-                        RawMatrix3x2 local = CreateImageTransform(destRect, source, bitmap.PixelSize);
-                        ctx.Transform = Multiply(originalTransform, local);
-                    }
-
-                    SharpDX.Direct2D1.Image effectOutput = effect.Output;
-
-                    ctx.DrawImage(effectOutput, null, source, interpolation, compositeMode);
-
-                    // restore whatever the pipeline had before
-                    ctx.Transform = originalTransform;
+                if (destination.HasValue)
+                {
+                    RawRectangleF destRect = destination.Value;
+                    RawMatrix3x2 local = CreateImageTransform(destRect, source, bitmap.PixelSize);
+                    ctx.Transform = Multiply(originalTransform, local);
                 }
+
+                SharpDX.Direct2D1.Image effectOutput = _tintEffect.Output;
+
+                ctx.DrawImage(effectOutput, null, source, interpolation, compositeMode);
+
+                // restore whatever the pipeline had before
+                ctx.Transform = originalTransform;
+
+                _tintEffect.SetInput(0, null, true);
             }
             else
             {
@@ -824,10 +830,9 @@ namespace Client.Rendering.SharpDXD3D11
                 ctx.DrawImage(bitmap, null, source, interpolation, compositeMode);
                 ctx.Transform = originalTransform;
             }
-
         }
 
-        private static void DrawLightBlend(Bitmap1 bitmap, RawRectangleF? destination, RawRectangleF? source, Color colour, float opacity, float colorScale)
+        private void DrawLightBlend(Bitmap1 bitmap, RawRectangleF? destination, RawRectangleF? source, Color colour, float opacity, float colorScale)
         {
             var ctx = SharpDXD3D11Manager.D2DContext;
             if (ctx == null)
@@ -857,31 +862,32 @@ namespace Client.Rendering.SharpDXD3D11
 
             try
             {
-                using (var unpremultiply = new UnPremultiply(ctx))
-                using (var tint = new ColorMatrix(ctx))
-                using (var premultiply = new Premultiply(ctx))
+                EnsureLightEffects(ctx);
+
+                _unpremultiplyEffect.SetInput(0, bitmap, true);
+
+                _lightTintEffect.SetInputEffect(0, _unpremultiplyEffect, true);
+                var matrix = new RawMatrix5x4
                 {
-                    unpremultiply.SetInput(0, bitmap, true);
+                    M11 = (colour.R / 255f) * colorScale,
+                    M22 = (colour.G / 255f) * colorScale,
+                    M33 = (colour.B / 255f) * colorScale,
+                    M44 = opacity,
+                    M54 = 0f
+                };
 
-                    tint.SetInputEffect(0, unpremultiply, true);
-                    var matrix = new RawMatrix5x4
-                    {
-                        M11 = (colour.R / 255f) * colorScale,
-                        M22 = (colour.G / 255f) * colorScale,
-                        M33 = (colour.B / 255f) * colorScale,
-                        M44 = opacity,
-                        M54 = 0f
-                    };
+                _lightTintEffect.SetValue((int)ColorMatrixProperties.ColorMatrix, matrix);
+                _lightTintEffect.SetEnumValue((int)ColorMatrixProperties.AlphaMode, ColorMatrixAlphaMode.Straight);
 
-                    tint.SetValue((int)ColorMatrixProperties.ColorMatrix, matrix);
-                    tint.SetEnumValue((int)ColorMatrixProperties.AlphaMode, ColorMatrixAlphaMode.Straight);
+                _premultiplyEffect.SetInputEffect(0, _lightTintEffect, true);
+                SharpDX.Direct2D1.Image output = _premultiplyEffect.Output;
 
-                    premultiply.SetInputEffect(0, tint, true);
-                    SharpDX.Direct2D1.Image output = premultiply.Output;
+                ctx.PrimitiveBlend = PrimitiveBlend.Add;
+                ctx.DrawImage(output, null, source, interpolation, CompositeMode.SourceOver);
 
-                    ctx.PrimitiveBlend = PrimitiveBlend.Add;
-                    ctx.DrawImage(output, null, source, interpolation, CompositeMode.SourceOver);
-                }
+                _unpremultiplyEffect.SetInput(0, null, true);
+                _lightTintEffect.SetInputEffect(0, null, true);
+                _premultiplyEffect.SetInputEffect(0, null, true);
             }
             finally
             {
@@ -890,10 +896,28 @@ namespace Client.Rendering.SharpDXD3D11
             }
         }
 
-        private static SharpDX.Mathematics.Interop.RawColor4 ToRawColor(Color colour, float opacity)
+        private void EnsureTintEffect(SharpDX.Direct2D1.DeviceContext ctx)
+        {
+            if (_tintEffect == null)
+                _tintEffect = new ColorMatrix(ctx);
+        }
+
+        private void EnsureLightEffects(SharpDX.Direct2D1.DeviceContext ctx)
+        {
+            if (_unpremultiplyEffect == null)
+                _unpremultiplyEffect = new UnPremultiply(ctx);
+
+            if (_lightTintEffect == null)
+                _lightTintEffect = new ColorMatrix(ctx);
+
+            if (_premultiplyEffect == null)
+                _premultiplyEffect = new Premultiply(ctx);
+        }
+
+        private static RawColor4 ToRawColor(Color colour, float opacity)
         {
             float alpha = colour.A / 255f * opacity;
-            return new SharpDX.Mathematics.Interop.RawColor4(colour.R / 255f, colour.G / 255f, colour.B / 255f, alpha);
+            return new RawColor4(colour.R / 255f, colour.G / 255f, colour.B / 255f, alpha);
         }
 
         private static RawMatrix3x2 Multiply(RawMatrix3x2 a, RawMatrix3x2 b)

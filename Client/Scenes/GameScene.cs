@@ -4675,6 +4675,7 @@ namespace Client.Scenes
 
                     NPCItemFragmentBox = null;
                 }
+
                 if (NPCAccessoryUpgradeBox != null)
                 {
                     if (!NPCAccessoryUpgradeBox.IsDisposed)
@@ -4682,6 +4683,7 @@ namespace Client.Scenes
 
                     NPCAccessoryUpgradeBox = null;
                 }
+
                 if (NPCAccessoryLevelBox != null)
                 {
                     if (!NPCAccessoryLevelBox.IsDisposed)
@@ -4689,6 +4691,7 @@ namespace Client.Scenes
 
                     NPCAccessoryLevelBox = null;
                 }
+
                 if (NPCAccessoryResetBox != null)
                 {
                     if (!NPCAccessoryResetBox.IsDisposed)
@@ -4696,8 +4699,6 @@ namespace Client.Scenes
 
                     NPCAccessoryResetBox = null;
                 }
-
-
 
                 if (MiniMapBox != null)
                 {

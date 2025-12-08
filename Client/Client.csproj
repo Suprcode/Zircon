@@ -67,9 +67,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Rendering\Shaders\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="Rendering\SharpDXD3D11\Shaders\DropShadowD3D11.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
