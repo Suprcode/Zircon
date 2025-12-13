@@ -1,0 +1,89 @@
+[
+  {
+    "Title": "Stats",
+    "Order": 0,
+    "Description": "Quick guide to your character’s key combat numbers.",
+    "Pages": [
+      {
+        "Title": "Defense",
+        "Order": 0,
+        "Sections": [
+          {
+            "Title": "AC",
+            "Order": 0,
+            "Content": "Armor Class reduces incoming physical melee damage; higher AC means hits hurt less."
+          },
+          {
+            "Title": "MR",
+            "Order": 1,
+            "Content": "Magic Resistance lowers magic damage taken; higher MR softens spells and skills aimed at you."
+          }
+        ]
+      },
+      {
+        "Title": "Physical Attack",
+        "Order": 1,
+        "Sections": [
+          {
+            "Title": "DC",
+            "Order": 0,
+            "Content": "Physical Damage stat for weapons; raises the minimum and maximum damage of your melee attacks."
+          },
+          {
+            "Title": "Accuracy & Attack Speed",
+            "Order": 1,
+            "Content": "Accuracy helps your blows land more often, while Attack Speed shortens the time between swings."
+          }
+        ]
+      },
+      {
+        "Title": "Spell Power",
+        "Order": 2,
+        "Sections": [
+          {
+            "Title": "SP (Nature) - MC",
+            "Order": 0,
+            "Content": "Nature Spell Power boosts magic that scales with MC; increases both low and high ends of those spells."
+          },
+          {
+            "Title": "SP (Spirit) - SC",
+            "Order": 1,
+            "Content": "Spirit Spell Power boosts magic that scales with SC; raises the damage range of spirit-based spells."
+          }
+        ]
+      },
+      {
+        "Title": "Elemental",
+        "Order": 3,
+        "Sections": [
+          {
+            "Title": "Elemental Attack",
+            "Order": 0,
+            "Content": "Fire, Ice, Lightning, Wind, Holy, Dark, and Phantom attack add extra elemental damage to your strikes."
+          },
+          {
+            "Title": "Elemental Resistance",
+            "Order": 1,
+            "Content": "Matching elemental resistances reduce damage from those elements; higher values mean you endure that element better."
+          }
+        ]
+      },
+      {
+        "Title": "Vitals & Utility",
+        "Order": 4,
+        "Sections": [
+          {
+            "Title": "Health & Mana",
+            "Order": 0,
+            "Content": "Health keeps you alive; Mana fuels spells and skills. More of each means greater staying power."
+          },
+          {
+            "Title": "Comfort",
+            "Order": 1,
+            "Content": "Comfort speeds your natural regeneration ticks, helping you recover faster over time."
+          }
+        ]
+      }
+    ]
+  }
+]
