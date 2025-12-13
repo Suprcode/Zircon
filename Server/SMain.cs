@@ -426,6 +426,11 @@ namespace Server
             ShowView(typeof(CurrencyInfoView));
         }
 
+        private void HelpInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(HelpInfoView));
+        }
+
         private void CharacterInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(CharacterView));

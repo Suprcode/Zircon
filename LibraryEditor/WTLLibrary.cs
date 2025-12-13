@@ -114,14 +114,14 @@ namespace LibraryEditor
             }
         }
 
-        public void ToMLibrary()
+        public void ToMLibrary(bool useBlackKeyTransparency = false)
         {
             string fileName = Path.ChangeExtension(_fileName, ".Zl");
 
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
-            Mir3Library library = new Mir3Library(fileName)
+            Mir3Library library = new Mir3Library(fileName, useBlackKeyTransparency)
             {
                 Images = new List<Mir3Library.Mir3Image>(),
                 Version = Mir3Library.LIBRARY_VERSION
@@ -139,9 +139,9 @@ namespace LibraryEditor
                     WTLImage shadowimage = shadowLibrary != null && i < shadowLibrary.Images.Length ? shadowLibrary.Images[i] : null;
 
                     if (shadowimage != null && shadowimage.Length > 0)
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.X, ShadowOffSetY = shadowimage.Y, ShadowType = shadowimage.Shadow };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = shadowimage.X, ShadowOffSetY = shadowimage.Y, ShadowType = shadowimage.Shadow };
                     else
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                 });
             }
             catch (System.Exception)
@@ -176,9 +176,9 @@ namespace LibraryEditor
                     WTLImage shadowimage = shadowLibrary != null && i < shadowLibrary.Images.Length ? shadowLibrary.Images[i] : null;
 
                     if (shadowimage != null)
-                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, shadowimage.Image, image.MaskImage, lib.Version, lib.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                     else
-                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version, lib.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY, ShadowType = image.Shadow };
                 });
                 lib.AddBlanks(newImages);
             }

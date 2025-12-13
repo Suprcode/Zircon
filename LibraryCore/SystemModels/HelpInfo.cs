@@ -20,6 +20,36 @@ namespace Library.SystemModels
         }
         private string _Title;
 
+        public int Order
+        {
+            get { return _Order; }
+            set
+            {
+                if (_Order == value) return;
+
+                var oldValue = _Order;
+                _Order = value;
+
+                OnChanged(oldValue, value, "Order");
+            }
+        }
+        private int _Order;
+
+        public string Description
+        {
+            get { return _Description; }
+            set
+            {
+                if (_Description == value) return;
+
+                var oldValue = _Description;
+                _Description = value;
+
+                OnChanged(oldValue, value, "Description");
+            }
+        }
+        private string _Description;
+
         [Association("Pages", true)]
         public DBBindingList<HelpPageInfo> Pages { get; set; }
     }
@@ -58,6 +88,21 @@ namespace Library.SystemModels
         }
         private string _Title;
 
+        public int Order
+        {
+            get { return _Order; }
+            set
+            {
+                if (_Order == value) return;
+
+                var oldValue = _Order;
+                _Order = value;
+
+                OnChanged(oldValue, value, "Order");
+            }
+        }
+        private int _Order;
+
         [Association("Sections", true)]
         public DBBindingList<HelpSectionInfo> Sections { get; set; }
     }
@@ -95,6 +140,21 @@ namespace Library.SystemModels
             }
         }
         private string _Title;
+
+        public int Order
+        {
+            get { return _Order; }
+            set
+            {
+                if (_Order == value) return;
+
+                var oldValue = _Order;
+                _Order = value;
+
+                OnChanged(oldValue, value, "Order");
+            }
+        }
+        private int _Order;
 
         [IsIdentity]
         public string Content

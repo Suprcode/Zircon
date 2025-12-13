@@ -116,7 +116,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogSettingsButtonLabel },
-                //Hint = CEnvir.Language.MenuDialogSettingsButtonHint
+                Hint = string.Format(CEnvir.Language.MenuDialogSettingsButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.ConfigWindow)),
             };
             SettingsButton.MouseClick += (o, e) => GameScene.Game.ConfigBox.Visible = !GameScene.Game.ConfigBox.Visible;
 
@@ -125,9 +125,10 @@ namespace Client.Scenes.Views
                 Location = new Point(26, 70),
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
-                Label = { Text = CEnvir.Language.MenuDialogHelpButtonLabel }
+                Label = { Text = CEnvir.Language.MenuDialogHelpButtonLabel },
+                Hint = string.Format(CEnvir.Language.MenuDialogHelpButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.HelpWindow)),
             };
-            //HelpButton.MouseClick += (o, e) => GameScene.Game.ConfigBox.Visible = !GameScene.Game.ConfigBox.Visible;
+            HelpButton.MouseClick += (o, e) => GameScene.Game.HelpBox.Visible = !GameScene.Game.HelpBox.Visible;
 
             GuildButton = new DXButton
             {
@@ -135,7 +136,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogGuildButtonLabel },
-                //Hint = CEnvir.Language.MenuDialogGuildButtonHint
+                Hint = string.Format(CEnvir.Language.MenuDialogGuildButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.GuildWindow)),
             };
             GuildButton.MouseClick += (o, e) => GameScene.Game.GuildBox.Visible = !GameScene.Game.GuildBox.Visible;
 
@@ -145,7 +146,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogStorageButtonLabel },
-                //Hint = CEnvir.Language.MenuDialogStorageButtonHint
+                Hint = string.Format(CEnvir.Language.MenuDialogStorageButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.StorageWindow)),
             };
             StorageButton.MouseClick += (o, e) => GameScene.Game.StorageBox.Visible = !GameScene.Game.StorageBox.Visible;
 
@@ -155,7 +156,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogRankingButtonLabel },
-                //Hint = CEnvir.Language.MenuDialogRankingButtonHint
+                Hint = string.Format(CEnvir.Language.MenuDialogRankingButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.RankingWindow)),
             };
             RankingButton.MouseClick += (o, e) => GameScene.Game.RankingBox.Visible = !GameScene.Game.RankingBox.Visible;
 
@@ -165,7 +166,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogCompanionButtonLabel },
-                //Hint = CEnvir.Language.MenuDialogCompanionButtonHint
+                Hint = string.Format(CEnvir.Language.MenuDialogCompanionButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.CompanionWindow)),
             };
             CompanionButton.MouseClick += (o, e) => GameScene.Game.CompanionBox.Visible = !GameScene.Game.CompanionBox.Visible;
 
@@ -175,7 +176,7 @@ namespace Client.Scenes.Views
                 Size = new Size(100, DefaultHeight),
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogLeaveButtonLabel },
-                //Hint = CEnvir.Language.MenuDialogLeaveButtonHint
+                Hint = string.Format(CEnvir.Language.MenuDialogLeaveButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.ExitGameWindow)),
             };
             LeaveButton.MouseClick += (o, e) => GameScene.Game.ExitBox.Visible = true;
         }

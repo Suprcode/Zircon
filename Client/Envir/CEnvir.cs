@@ -353,6 +353,7 @@ namespace Client.Envir
                     Globals.FameInfoList = Session.GetCollection<FameInfo>();
                     Globals.BundleInfoList = Session.GetCollection<BundleInfo>();
                     Globals.LootBoxInfoList = Session.GetCollection<LootBoxInfo>();
+                    Globals.HelpInfoList = Session.GetCollection<HelpInfo>();
 
                     KeyBinds = Session.GetCollection<KeyBindInfo>();
                     WindowSettings = Session.GetCollection<WindowSetting>();
@@ -526,6 +527,10 @@ namespace Client.Envir
                 case KeyBindAction.MenuWindow:
                     bind.Category = "Windows";
                     bind.Key1 = Keys.N;
+                    break;
+                case KeyBindAction.HelpWindow:
+                    bind.Category = "Windows";
+                    bind.Key1 = Keys.H;
                     break;
                 case KeyBindAction.ConfigWindow:
                     bind.Category = "Windows";

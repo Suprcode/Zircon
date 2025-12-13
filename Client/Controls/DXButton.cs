@@ -236,7 +236,7 @@ namespace Client.Controls
             {
                 Location = new Point(0, -1),
                 AutoSize = false,
-                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix,
                 IsControl = false,
                 Parent = this,
             };

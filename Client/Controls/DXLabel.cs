@@ -257,7 +257,7 @@ namespace Client.Controls
             DrawTexture = true;
             AutoSize = true;
             Font = new Font(Config.FontName, CEnvir.FontSize(8F));
-            DrawFormat = TextFormatFlags.WordBreak;
+            DrawFormat = TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix;
 
             Outline = true;
             ForeColour = Color.FromArgb(198, 166, 99);

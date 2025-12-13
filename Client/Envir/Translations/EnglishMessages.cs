@@ -463,6 +463,8 @@ namespace Client.Envir.Translations
         public override string FortuneCheckerRowCheckButtonConfirmMessage { get; set; } = "Are you sure you want to check your fortune progress?";
         public override string FortuneCheckerRowCheckButtonConfirmCaption { get; set; } = "Fortune Check";
 
+        public override string HelpDialogTitle { get; set; } = "Help";
+
         public override string GroupDialogTitle { get; set; } = "Group";
         public override string GroupDialogAllowGroupButtonAllowingHint { get; set; } = "Group Status: Allowing";
         public override string GroupDialogAllowGroupButtonNotAllowingHint { get; set; } = "Group Status: Not Allowing";
@@ -569,6 +571,7 @@ namespace Client.Envir.Translations
         public override string MenuDialogLeaveButtonLabel { get; set; } = "Exit Game";
 
         public override string MenuDialogSettingsButtonHint { get; set; } = "Settings [{0}]";
+        public override string MenuDialogHelpButtonHint { get; set; } = "Help [{0}]";
         public override string MenuDialogGuildButtonHint { get; set; } = "Guild [{0}]";
         public override string MenuDialogStorageButtonHint { get; set; } = "Storage [{0}]";
         public override string MenuDialogRankingButtonHint { get; set; } = "Ranking [{0}]";

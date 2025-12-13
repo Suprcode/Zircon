@@ -462,6 +462,8 @@ namespace Client.Envir.Translations
         public abstract string FortuneCheckerRowCheckButtonConfirmMessage { get; set; }
         public abstract string FortuneCheckerRowCheckButtonConfirmCaption { get; set; }
 
+        public abstract string HelpDialogTitle { get; set; }
+
         public abstract string GroupDialogTitle { get; set; }
         public abstract string GroupDialogAllowGroupButtonAllowingHint { get; set; }
         public abstract string GroupDialogAllowGroupButtonNotAllowingHint { get; set; }
@@ -571,6 +573,7 @@ namespace Client.Envir.Translations
         public abstract string MenuDialogLeaveButtonLabel { get; set; }
 
         public abstract string MenuDialogSettingsButtonHint { get; set; }
+        public abstract string MenuDialogHelpButtonHint { get; set; }
         public abstract string MenuDialogGuildButtonHint { get; set; }
         public abstract string MenuDialogStorageButtonHint { get; set; }
         public abstract string MenuDialogRankingButtonHint { get; set; }

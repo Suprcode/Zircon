@@ -130,14 +130,14 @@ namespace LibraryEditor
             }
         }
 
-        public void ToMLibrary()
+        public void ToMLibrary(bool useBlackKeyTransparency = false)
         {
             string fileName = Path.ChangeExtension(FileName, ".Zl");
 
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
-            Mir3Library library = new Mir3Library(fileName)
+            Mir3Library library = new Mir3Library(fileName, useBlackKeyTransparency)
             {
                 Version = Mir3Library.LIBRARY_VERSION
             };
@@ -152,9 +152,9 @@ namespace LibraryEditor
                 {
                     MImage image = Images[i];
                     if (image.HasMask)
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                     else
-                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, library.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        library.Images[i] = new Mir3Library.Mir3Image(image.Image, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                 });
             }
             catch (System.Exception)
@@ -187,9 +187,9 @@ namespace LibraryEditor
                 {
                     MImage image = Images[i];
                     if (image.HasMask)
-                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, lib.Version, lib.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                     else
-                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, lib.Version) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+                        lib.Images[i + offset] = new Mir3Library.Mir3Image(image.Image, lib.Version, lib.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                 });
                 lib.AddBlanks(newImages);
             }

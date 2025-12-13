@@ -334,5 +334,8 @@ namespace Client.UserModels
 
         [Description("Menu Window")]
         MenuWindow,
+
+        [Description("Help Window")]
+        HelpWindow
     }
 }

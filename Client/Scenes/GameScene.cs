@@ -147,6 +147,7 @@ namespace Client.Scenes
 
         public MenuDialog MenuBox;
         public DXConfigWindow ConfigBox;
+        public HelpDialog HelpBox;
         public CaptionDialog CaptionBox;
         public InventoryDialog InventoryBox;
         public CharacterDialog CharacterBox;
@@ -393,6 +394,7 @@ namespace Client.Scenes
             GroupBox?.LoadSettings();
             GuildBox?.LoadSettings();
             MenuBox?.LoadSettings();
+            HelpBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -436,6 +438,12 @@ namespace Client.Scenes
                 Visible = false,
                 NetworkTab = { Enabled = false, TabButton = { Visible = false } },
                 UITab = { TabButton = { Visible = true } },
+            };
+
+            HelpBox = new HelpDialog
+            {
+                Parent = this,
+                Visible = false
             };
 
             ExitBox = new ExitDialog
@@ -755,6 +763,7 @@ namespace Client.Scenes
             GroupBox.LoadSettings();
             GuildBox.LoadSettings();
             MenuBox.LoadSettings();
+            HelpBox.LoadSettings();
         }
 
         #region Methods
@@ -1126,6 +1135,9 @@ namespace Client.Scenes
                 {
                     case KeyBindAction.MenuWindow:
                         MenuBox.Visible = !MenuBox.Visible;
+                        break;
+                    case KeyBindAction.HelpWindow:
+                        HelpBox.Visible = !HelpBox.Visible;
                         break;
                     case KeyBindAction.ConfigWindow:
                         ConfigBox.Visible = !ConfigBox.Visible;
@@ -4538,6 +4550,14 @@ namespace Client.Scenes
                         ExitBox.Dispose();
 
                     ExitBox = null;
+                }
+
+                if (HelpBox != null)
+                {
+                    if (!HelpBox.IsDisposed)
+                        HelpBox.Dispose();
+
+                    HelpBox = null;
                 }
 
                 if (ChatTextBox != null)

@@ -198,8 +198,8 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Index = 15,
                 LibraryFile = LibraryFile.Interface,
-                Hint = CEnvir.Language.CommonControlClose,
-                HintPosition = HintPosition.TopLeft
+                //Hint = CEnvir.Language.CommonControlClose,
+                //HintPosition = HintPosition.TopLeft
             };
             CloseButton.Location = new Point(240 - CloseButton.Size.Width - 3, 3);
             CloseButton.MouseClick += (o, e) => Visible = false;

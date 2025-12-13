@@ -301,7 +301,7 @@ namespace Client.Controls
                 else
                 {
                     TabButton.ButtonType = ButtonType.SelectedTab;
-                    TabButton.Label.ForeColour = Color.White;
+                    TabButton.Label.ForeColour = Constants.ActiveTabColour;
                 }
             }
             else
@@ -315,7 +315,7 @@ namespace Client.Controls
                 else
                 {
                     TabButton.ButtonType = ButtonType.DeselectedTab;
-                    TabButton.Label.ForeColour = Color.FromArgb(198, 166, 99);
+                    TabButton.Label.ForeColour = Constants.InactiveTabColour;
                 }
             }
 
@@ -441,7 +441,8 @@ namespace Client.Controls
             TabButton = new DXButton
             {
                 ButtonType = ButtonType.DeselectedTab,
-                Size = new Size(60, TabHeight)
+                Size = new Size(60, TabHeight),
+                Label = { ForeColour = Constants.InactiveTabColour }
             };
             TabButton.Label.TextChanged += (o, e) =>
             {

@@ -76,7 +76,7 @@ namespace Client.Scenes.Views
 
         public MagicDialog()
         {
-            Size = new Size(419, 502);
+            Size = new Size(419, 511);
             Movable = true;
             Sort = true;
             HasFooter = false;
@@ -425,7 +425,8 @@ namespace Client.Scenes.Views
                 Border = false,
                 UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
                 DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
-                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface }
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = true,
             };
             ScrollBar.ValueChanged += (o, e) => UpdateLocations();
         }

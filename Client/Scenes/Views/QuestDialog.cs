@@ -399,7 +399,6 @@ namespace Client.Scenes.Views
             get => _SelectedQuest;
             set
             {
-
                 QuestTreeEntry oldValue = _SelectedQuest;
                 _SelectedQuest = value;
 
@@ -511,7 +510,7 @@ namespace Client.Scenes.Views
             EndLabel.Text = SelectedQuest.QuestInfo.FinishNPC.RegionName;
             StartLabel.Text = SelectedQuest.QuestInfo.StartNPC.RegionName;
 
-            SelectedQuestChanged?.Invoke(this, EventArgs.Empty);
+            //SelectedQuestChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

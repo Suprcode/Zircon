@@ -9,6 +9,14 @@ using System.Windows.Forms;
 //Cleaned
 namespace Client.Controls
 {
+    public class Constants
+    {
+        public static Color ActiveTabColour = Color.White;
+        public static Color InactiveTabColour = Color.FromArgb(123, 105, 66);
+
+        //TODO - Add more colour constants here
+    }
+
     public class DXControl : IDisposable, ITextureCacheItem
     {
         #region Static
@@ -1950,5 +1958,4 @@ BorderInformation = new[]
 
         #endregion
     }
-
 }

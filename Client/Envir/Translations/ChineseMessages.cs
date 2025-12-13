@@ -464,6 +464,8 @@ namespace Client.Envir.Translations
         public override string FortuneCheckerRowCheckButtonConfirmMessage { get; set; } = "Are you sure you want to check your fortune progress?";
         public override string FortuneCheckerRowCheckButtonConfirmCaption { get; set; } = "Fortune Check";
 
+        public override string HelpDialogTitle { get; set; } = "Help";
+
         public override string GroupDialogTitle { get; set; } = "编组";
         public override string GroupDialogAllowGroupButtonAllowingHint { get; set; } = "编组状态: 允许";
         public override string GroupDialogAllowGroupButtonNotAllowingHint { get; set; } = "编组状态: 禁止";
@@ -570,6 +572,7 @@ namespace Client.Envir.Translations
         public override string MenuDialogLeaveButtonLabel { get; set; } = "退出游戏";
 
         public override string MenuDialogSettingsButtonHint { get; set; } = "设置 [{0}]";
+        public override string MenuDialogHelpButtonHint { get; set; } = "Help [{0}]";
         public override string MenuDialogGuildButtonHint { get; set; } = "行会 [{0}]";
         public override string MenuDialogStorageButtonHint { get; set; } = "仓库 [{0}]";
         public override string MenuDialogRankingButtonHint { get; set; } = "排行 [{0}]";

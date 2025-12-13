@@ -32,6 +32,7 @@ namespace Library
         public static DBCollection<FameInfo> FameInfoList;
         public static DBCollection<BundleInfo> BundleInfoList;
         public static DBCollection<LootBoxInfo> LootBoxInfoList;
+        public static DBCollection<HelpInfo> HelpInfoList;
 
         public static Random Random = new Random();
 
