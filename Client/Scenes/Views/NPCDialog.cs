@@ -17,20 +17,13 @@ using S = Library.Network.ServerPackets;
 
 namespace Client.Scenes.Views
 {
-    public class ButtonInfo
-    {
-        public Rectangle Region;
-        public int Index;
-        public int Length;
-    }
-
     public sealed partial class NPCDialog : DXWindow
     {
         #region Properties
 
-        private readonly Regex B = DXTextExtensions.ButtonRegex();
-        private readonly Regex C = DXTextExtensions.ColourRegex();
-        private readonly Regex V = DXTextExtensions.ValueRegex();
+        private readonly Regex B = DrawTextExtensions.ButtonRegex();
+        private readonly Regex C = DrawTextExtensions.ColourRegex();
+        private readonly Regex V = DrawTextExtensions.ValueRegex();
 
         public NPCPage Page;
         private readonly DXControl PageTextContainer;
@@ -463,7 +456,7 @@ namespace Client.Scenes.Views
             {
                 var buttonIndex = buttonRanges[i];
 
-                List<ButtonInfo> buttons = DXTextExtensions.GetWordRegionsNew(PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
+                List<ButtonInfo> buttons = DrawTextExtensions.GetWordRegionsNew(PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
 
                 List<DXLabel> labels = new();
 
@@ -3377,6 +3370,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.Visible = true;
                 GameScene.Game.BigMapBox.Opacity = 1F;
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.StartNPC.Region.Map;
+                GameScene.Game.BigMapBox.PlayLocatorAnim(SelectedQuest.QuestInfo.StartNPC.Index);
             };
 
             label = new DXLabel
@@ -3405,6 +3399,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.Visible = true;
                 GameScene.Game.BigMapBox.Opacity = 1F;
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.FinishNPC.Region.Map;
+                GameScene.Game.BigMapBox.PlayLocatorAnim(SelectedQuest.QuestInfo.FinishNPC.Index);
             };
 
             AcceptButton = new DXButton

@@ -637,7 +637,7 @@ namespace Client.Scenes.Views
                 ClientUserItem item = items.FirstOrDefault(e => e.Index == index);
                 if (item == null) continue;
 
-                List<ButtonInfo> buttons = DXTextExtensions.GetWordRegionsNew(label.Text, label.Font, label.DrawFormat, label.Size.Width, ranges[i].First, ranges[i].Length);
+                List<ButtonInfo> buttons = DrawTextExtensions.GetWordRegionsNew(label.Text, label.Font, label.DrawFormat, label.Size.Width, ranges[i].First, ranges[i].Length);
 
                 List<DXLabel> labels = new List<DXLabel>();
 

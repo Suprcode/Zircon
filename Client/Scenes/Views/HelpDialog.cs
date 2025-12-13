@@ -593,7 +593,7 @@ namespace Client.Scenes.Views
 
         private bool Processed = false;
 
-        private readonly Regex C = DXTextExtensions.ColourRegex();
+        private readonly Regex C = DrawTextExtensions.ColourRegex();
 
         public HelpSection()
         {
@@ -686,7 +686,7 @@ namespace Client.Scenes.Views
             {
                 var buttonIndex = buttonRanges[i];
 
-                List<ButtonInfo> buttons = DXTextExtensions.GetWordRegionsNew(PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
+                List<ButtonInfo> buttons = DrawTextExtensions.GetWordRegionsNew(PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
 
                 List<DXLabel> labels = new();
 

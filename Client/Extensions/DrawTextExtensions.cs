@@ -1,5 +1,4 @@
 ﻿using Client.Rendering;
-using Client.Scenes.Views;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -13,13 +12,20 @@ namespace Client.Extensions
         public DXButtonType Type;
     };
 
+    public class ButtonInfo
+    {
+        public Rectangle Region;
+        public int Index;
+        public int Length;
+    }
+
     public enum DXButtonType
     {
         Button,
         Label
     };
 
-    public partial class DXTextExtensions
+    public partial class DrawTextExtensions
     {
         [GeneratedRegex("\\<(?<Text>.*?):(?<Default>.+?)\\>", RegexOptions.Compiled)]
         public static partial Regex ValueRegex();
