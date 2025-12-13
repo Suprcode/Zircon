@@ -1,7 +1,7 @@
 ﻿using Client.Controls;
 using Client.Envir.Translations;
-using Client.Extensions;
 using Client.Models;
+using Client.Rendering;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;
@@ -10,7 +10,6 @@ using Library.Network;
 using Library.SystemModels;
 using MirDB;
 using Sentry;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -76,6 +75,16 @@ namespace Client.Envir
             try
             { A(); }
             catch { }
+        }
+
+        public static void Init(string[] args)
+        {
+            ProcessArgs(args);
+        }
+
+        private static void ProcessArgs(string[] args)
+        {
+            if (args == null || args.Length == 0) return;
         }
 
         public static void LoadLanguage()
@@ -160,7 +169,7 @@ namespace Client.Envir
                 FPSCounter = 0;
                 DPSCount = DPSCounter;
                 DPSCounter = 0;
-                DXManager.MemoryClear();
+                RenderingPipelineManager.MemoryClear();
             }
 
             Connection?.Process();
@@ -288,42 +297,15 @@ namespace Client.Envir
         }
         private static void RenderGame()
         {
-            try
+            if (Target.ClientSize.Width == 0 || Target.ClientSize.Height == 0)
             {
-                if (Target.ClientSize.Width == 0 || Target.ClientSize.Height == 0)
-                {
-                    Thread.Sleep(1);
-                    return;
-                }
+                Thread.Sleep(1);
+                return;
+            }
 
-                if (DXManager.DeviceLost)
-                {
-                    DXManager.AttemptReset();
-                    Thread.Sleep(1);
-                    return;
-                }
-
-                DXManager.Device.Clear(ClearFlags.Target, System.Drawing.Color.Black, 1f, 0);
-                DXManager.Device.BeginScene();
-                DXManager.Sprite.Begin(SpriteFlags.AlphaBlend);
-
-                DXControl.ActiveScene?.Draw();
-
-                DXManager.Sprite.End();
-                DXManager.Device.EndScene();
-
-                DXManager.Device.Present();
+            if (RenderingPipelineManager.RenderFrame(() => DXControl.ActiveScene?.Draw()))
+            {
                 FPSCounter++;
-            }
-            catch (SharpDX.SharpDXException)
-            {
-                DXManager.DeviceLost = true;
-            }
-            catch (Exception ex)
-            {
-                SaveException(ex);
-
-                DXManager.AttemptRecovery();
             }
         }
 
@@ -371,6 +353,7 @@ namespace Client.Envir
                     Globals.FameInfoList = Session.GetCollection<FameInfo>();
                     Globals.BundleInfoList = Session.GetCollection<BundleInfo>();
                     Globals.LootBoxInfoList = Session.GetCollection<LootBoxInfo>();
+                    Globals.HelpInfoList = Session.GetCollection<HelpInfo>();
 
                     KeyBinds = Session.GetCollection<KeyBindInfo>();
                     WindowSettings = Session.GetCollection<WindowSetting>();
@@ -380,8 +363,19 @@ namespace Client.Envir
 
                     CheckKeyBinds();
 
-                    if (!DXManager.ValidResolutions.Contains(Config.GameSize))
-                        Config.GameSize = DXManager.ValidResolutions[0];
+                    IReadOnlyList<Size> supportedResolutions = RenderingPipelineManager.GetSupportedResolutions();
+
+                    if (supportedResolutions.Count > 0)
+                    {
+                        if (!supportedResolutions.Contains(Config.GameSize))
+                            Config.GameSize = supportedResolutions[0];
+                    }
+                    else
+                    {
+                        // Handle the case where no valid resolutions are found.
+                        // For example, set a default resolution.
+                        Config.GameSize = new Size(1024, 768);  // Default resolution
+                    }
 
                     Loaded = true;
                 }
@@ -533,6 +527,10 @@ namespace Client.Envir
                 case KeyBindAction.MenuWindow:
                     bind.Category = "Windows";
                     bind.Key1 = Keys.N;
+                    break;
+                case KeyBindAction.HelpWindow:
+                    bind.Category = "Windows";
+                    bind.Key1 = Keys.H;
                     break;
                 case KeyBindAction.ConfigWindow:
                     bind.Category = "Windows";
@@ -898,7 +896,7 @@ namespace Client.Envir
 
         public static float FontSize(float size)
         {
-            return (size - Config.FontSizeMod) * (96F / DXManager.Graphics.DpiX);
+            return (size - Config.FontSizeMod) * (96F / RenderingPipelineManager.GetHorizontalDpi());
         }
 
         public static int ErrorCount;

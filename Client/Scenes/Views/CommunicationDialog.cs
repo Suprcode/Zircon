@@ -297,6 +297,7 @@ namespace Client.Scenes.Views
             LibraryFile = LibraryFile.Interface;
             Movable = true;
             Sort = true;
+            DropShadow = true;
 
             #region Main
 

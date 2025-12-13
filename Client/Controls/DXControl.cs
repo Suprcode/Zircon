@@ -1,18 +1,23 @@
 ﻿using Client.Envir;
-using Client.Extensions;
+using Client.Rendering;
 using Library;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Numerics;
 using System.Windows.Forms;
-using Matrix = SharpDX.Matrix;
 
 //Cleaned
 namespace Client.Controls
 {
-    public class DXControl : IDisposable
+    public class Constants
+    {
+        public static Color ActiveTabColour = Color.White;
+        public static Color InactiveTabColour = Color.FromArgb(123, 105, 66);
+
+        //TODO - Add more colour constants here
+    }
+
+    public class DXControl : IDisposable, ITextureCacheItem
     {
         #region Static
         public static List<DXControl> MessageBoxList = new List<DXControl>();
@@ -74,8 +79,10 @@ namespace Client.Controls
         public static int TabHeight { get; }
         public static int HeaderBarSize { get; }
         public static int HeaderSize { get; }
+        public static int NoHeaderSize { get; }
         public static int FooterSize { get; }
         public static int NoFooterSize { get; }
+        public static int SlimFooterSize { get; }
         public static int SmallButtonHeight { get; }
 
         public static DXLabel DebugLabel, HintLabel, PingLabel;
@@ -118,6 +125,8 @@ namespace Client.Controls
 
             if (InterfaceLibrary == null) return;
 
+            //TODO - Move this out to where its needed. Base control doesn't need this info
+
             DefaultHeight = InterfaceLibrary.GetSize(16).Height;
             TabHeight = InterfaceLibrary.GetSize(19).Height;
             SmallButtonHeight = InterfaceLibrary.GetSize(41).Height;
@@ -127,12 +136,14 @@ namespace Client.Controls
             HeaderSize = HeaderBarSize;
             HeaderSize += InterfaceLibrary.GetSize(3).Height;
 
-            NoFooterSize = InterfaceLibrary.GetSize(2).Height;
+            NoHeaderSize = InterfaceLibrary.GetSize(2).Height;
 
-            FooterSize = HeaderBarSize;
+            FooterSize = InterfaceLibrary.GetSize(126).Height;
             FooterSize += InterfaceLibrary.GetSize(2).Height;
             FooterSize += InterfaceLibrary.GetSize(10).Height;
 
+            NoFooterSize = InterfaceLibrary.GetSize(2).Height;
+            SlimFooterSize = InterfaceLibrary.GetSize(126).Height;
         }
 
         #endregion
@@ -265,22 +276,25 @@ namespace Client.Controls
 
         #region BorderInformation
 
-        public Vector2[] BorderInformation
+        public LinePoint[] BorderInformation
         {
             get => _BorderInformation;
             set
             {
-                if (_BorderInformation == value) return;
+                if (_BorderInformation == value)
+                {
+                    return;
+                }
 
-                Vector2[] oldValue = _BorderInformation;
+                LinePoint[] oldValue = _BorderInformation;
                 _BorderInformation = value;
 
                 OnBorderInformationChanged(oldValue, value);
             }
         }
-        private Vector2[] _BorderInformation;
+        private LinePoint[] _BorderInformation;
         public event EventHandler<EventArgs> BorderInformationChanged;
-        public virtual void OnBorderInformationChanged(Vector2[] oValue, Vector2[] nValue)
+        public virtual void OnBorderInformationChanged(LinePoint[] oValue, LinePoint[] nValue)
         {
             BorderInformationChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -1018,31 +1032,37 @@ namespace Client.Controls
         public bool ResizeLeft, ResizeRight, ResizeUp, ResizeDown;
 
         #region Texture
+        private RenderTargetResource _controlRenderTarget;
         public bool TextureValid { get; set; }
-        public Texture ControlTexture { get; set; }
+        public RenderTexture ControlTexture { get; set; }
         public Size TextureSize { get; set; }
-        public Surface ControlSurface { get; set; }
+        public RenderSurface ControlSurface { get; private set; }
         public DateTime ExpireTime { get; protected set; }
 
         protected virtual void CreateTexture()
         {
-            if (ControlTexture == null || DisplayArea.Size != TextureSize)
+            if (!_controlRenderTarget.IsValid || !ControlTexture.IsValid || DisplayArea.Size != TextureSize)
             {
                 DisposeTexture();
                 TextureSize = DisplayArea.Size;
-                ControlTexture = new Texture(DXManager.Device, TextureSize.Width, TextureSize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
-                ControlSurface = ControlTexture.GetSurfaceLevel(0);
-                DXManager.ControlList.Add(this);
+                _controlRenderTarget = RenderingPipelineManager.CreateRenderTarget(TextureSize);
+
+                ControlTexture = _controlRenderTarget.Texture;
+                ControlSurface = _controlRenderTarget.Surface;
+                RenderingPipelineManager.RegisterControlCache(this);
             }
 
-            Surface previous = DXManager.CurrentSurface;
-            DXManager.SetSurface(ControlSurface);
+            if (!ControlSurface.IsValid)
+                throw new InvalidOperationException("Control surface is not available.");
 
-            DXManager.Device.Clear(ClearFlags.Target, BackColour, 0f, 0);
+            RenderSurface previous = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(ControlSurface);
+
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, BackColour, 0, 0);
 
             OnClearTexture();
 
-            DXManager.SetSurface(previous);
+            RenderingPipelineManager.SetSurface(previous);
             TextureValid = true;
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
@@ -1052,27 +1072,20 @@ namespace Client.Controls
         }
         public virtual void DisposeTexture()
         {
-            if (ControlTexture != null)
+            if (_controlRenderTarget.IsValid)
             {
-                if (!ControlTexture.IsDisposed)
-                    ControlTexture.Dispose();
-
-                ControlTexture = null;
+                RenderingPipelineManager.ReleaseRenderTarget(_controlRenderTarget);
+                _controlRenderTarget = default;
             }
 
-            if (ControlSurface != null)
-            {
-                if (!ControlSurface.IsDisposed)
-                    ControlSurface.Dispose();
-
-                ControlSurface = null;
-            }
+            ControlTexture = default;
+            ControlSurface = default;
 
             TextureSize = Size.Empty;
             ExpireTime = DateTime.MinValue;
             TextureValid = false;
 
-            DXManager.ControlList.Remove(this);
+            RenderingPipelineManager.UnregisterControlCache(this);
         }
         #endregion
 
@@ -1115,25 +1128,28 @@ namespace Client.Controls
         protected internal virtual void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0) return;
-            /*
-            BorderInformation = new[]
+            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0)
             {
-                new Vector2(DisplayArea.Left - 1, DisplayArea.Top - 1),
-                new Vector2(DisplayArea.Right, DisplayArea.Top - 1),
-                new Vector2(DisplayArea.Right, DisplayArea.Bottom),
-                new Vector2(DisplayArea.Left - 1, DisplayArea.Bottom),
-                new Vector2(DisplayArea.Left - 1, DisplayArea.Top - 1)
-            };
-            */
+                return;
+            }
+            /*
+BorderInformation = new[]
+{
+   new LinePoint(DisplayArea.Left - 1, DisplayArea.Top - 1),
+   new LinePoint(DisplayArea.Right, DisplayArea.Top - 1),
+   new LinePoint(DisplayArea.Right, DisplayArea.Bottom),
+   new LinePoint(DisplayArea.Left - 1, DisplayArea.Bottom),
+   new LinePoint(DisplayArea.Left - 1, DisplayArea.Top - 1)
+};
+*/
 
             BorderInformation = new[]
             {
-                new Vector2(0, 0),
-                new Vector2(Size.Width + 1, 0),
-                new Vector2(Size.Width + 1, Size.Height + 1),
-                new Vector2(0, Size.Height + 1),
-                new Vector2(0, 0)
+                new LinePoint(0, 0),
+                new LinePoint(Size.Width + 1, 0),
+                new LinePoint(Size.Width + 1, Size.Height + 1),
+                new LinePoint(0, Size.Height + 1),
+                new LinePoint(0, 0)
             };
         }
         protected internal virtual void CheckIsVisible()
@@ -1669,21 +1685,28 @@ namespace Client.Controls
         }
         protected virtual void DrawBorder()
         {
-            if (!Border || BorderInformation == null) return;
+            if (!Border || BorderInformation == null)
+            {
+                return;
+            }
 
-            if (DXManager.Line.Width != BorderSize)
-                DXManager.Line.Width = BorderSize;
+            if (RenderingPipelineManager.GetLineWidth() != BorderSize)
+            {
+                RenderingPipelineManager.SetLineWidth(BorderSize);
+            }
 
-            Surface old = DXManager.CurrentSurface;
-            DXManager.SetSurface(DXManager.ScratchSurface);
+            RenderSurface old = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
 
-            DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
 
-            DXManager.Line.Draw(BorderInformation, BorderColour);
+            RenderingPipelineManager.DrawLine(BorderInformation, BorderColour);
 
-            DXManager.SetSurface(old);
+            RenderingPipelineManager.SetSurface(old);
 
-            PresentTexture(DXManager.ScratchTexture, Parent, Rectangle.Inflate(DisplayArea, 1, 1), Color.White, this);
+            RenderTexture scratchHandle = RenderingPipelineManager.GetScratchTexture();
+
+            PresentTexture(scratchHandle, Parent, Rectangle.Inflate(DisplayArea, 1, 1), Color.White, this);
         }
 
         protected virtual void DrawChildControls()
@@ -1705,36 +1728,59 @@ namespace Client.Controls
                 if (!TextureValid) return;
             }
 
-            float oldOpacity = DXManager.Opacity;
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
-            DXManager.SetOpacity(Opacity);
+            RenderingPipelineManager.SetOpacity(Opacity);
 
             PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
 
-            DXManager.SetOpacity(oldOpacity);
+            RenderingPipelineManager.SetOpacity(oldOpacity);
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
 
-        public static void PresentTexture(Texture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scaleX = 1.0f, float scaleY = 1.0f)
+        public static void PresentTexture(RenderTexture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f, bool intersectParent = true)
         {
+            if (!texture.IsValid)
+                return;
+
+            float uiScale = 1f;// control.UiScale;
+            float finalScale = scale * uiScale;
+
+            Rectangle scaledArea = new Rectangle(
+                (int)(displayArea.X * uiScale),
+                (int)(displayArea.Y * uiScale),
+                (int)(displayArea.Width * uiScale),
+                (int)(displayArea.Height * uiScale));
+
             Rectangle bounds = ActiveScene.DisplayArea;
-            Rectangle textureArea = Rectangle.Intersect(bounds, displayArea);
+            Rectangle scaledTextureArea = Rectangle.Intersect(bounds, scaledArea);
 
             if (!control.IsMoving || !control.AllowDragOut)
+            {
                 while (parent != null)
                 {
                     if (parent.IsMoving && parent.AllowDragOut)
                     {
                         bounds = ActiveScene.DisplayArea;
-                        textureArea = Rectangle.Intersect(bounds, displayArea);
+                        if (intersectParent)
+                            scaledTextureArea = Rectangle.Intersect(bounds, scaledArea);
                         break;
                     }
 
-                    bounds = parent.DisplayArea;
-                    textureArea = Rectangle.Intersect(bounds, textureArea);
+                    var parentUiScale = 1f; //parent.UiScale;
 
-                    if (bounds.IntersectsWith(displayArea))
+                    Rectangle scaledParent = new Rectangle(
+                        (int)(parent.DisplayArea.X * parentUiScale),
+                        (int)(parent.DisplayArea.Y * parentUiScale),
+                        (int)(parent.DisplayArea.Width * parentUiScale),
+                        (int)(parent.DisplayArea.Height * parentUiScale));
+
+                    bounds = scaledParent;
+                    if (intersectParent)
+                        scaledTextureArea = Rectangle.Intersect(bounds, scaledTextureArea);
+
+                    if (bounds.IntersectsWith(scaledArea))
                     {
                         parent = parent.Parent;
                         continue;
@@ -1742,22 +1788,33 @@ namespace Client.Controls
 
                     return;
                 }
+            }
 
-            if (textureArea.IsEmpty) return;
+            if (scaledTextureArea.IsEmpty)
+            {
+                return;
+            }
 
-            textureArea.Location = new Point(textureArea.X - displayArea.X, textureArea.Y - displayArea.Y);
+            Rectangle textureArea = new Rectangle(
+                (int)((scaledTextureArea.X - scaledArea.X) / uiScale),
+                (int)((scaledTextureArea.Y - scaledArea.Y) / uiScale),
+                (int)(scaledTextureArea.Width / uiScale),
+                (int)(scaledTextureArea.Height / uiScale));
 
-            float fX = displayArea.X + textureArea.Location.X + offX;
-            float fY = displayArea.Y + textureArea.Location.Y + offY;
+            if (textureArea.Width <= 0 || textureArea.Height <= 0)
+                return;
 
-            fX /= scaleX;
-            fY /= scaleY;
+            float destinationX = scaledTextureArea.X + offX * uiScale;
+            float destinationY = scaledTextureArea.Y + offY * uiScale;
+            float destinationWidth = textureArea.Width * finalScale;
+            float destinationHeight = textureArea.Height * finalScale;
 
-            DXManager.Sprite.Transform = Matrix.Scaling(scaleX, scaleY, 1);
+            if (destinationWidth <= 0 || destinationHeight <= 0)
+                return;
 
-            DXManager.Sprite.Draw(texture, textureArea, Vector3.Zero, new Vector3(fX, fY, 0), colour);
+            RectangleF destinationRectangle = new RectangleF(destinationX, destinationY, destinationWidth, destinationHeight);
 
-            DXManager.Sprite.Transform = Matrix.Identity;
+            RenderingPipelineManager.DrawTexture(texture, textureArea, destinationRectangle, colour);
         }
 
         #endregion
@@ -1901,5 +1958,4 @@ namespace Client.Controls
 
         #endregion
     }
-
 }

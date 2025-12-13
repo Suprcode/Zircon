@@ -340,6 +340,7 @@ namespace Client.Scenes.Views
             Movable = true;
             Sort = true;
             Size = new Size(456, 556);
+            DropShadow = true;
 
             CloseButton = new DXButton
             {

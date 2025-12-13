@@ -1,15 +1,68 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using Client.UserModels;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-//Cleaned
 namespace Client.Controls
 {
+    public sealed class DXColourControlPair : DXControl
+    {
+        public DXColourControl ForeColourControl, BackColourControl;
+
+        public DXColourControlPair()
+        {
+            Size = new Size(40, 16);
+            Border = true;
+            BorderColour = Color.FromArgb(198, 166, 99);
+
+            ForeColourControl = new DXColourControl
+            {
+                Parent = this,
+                Location = new Point(0, 0),
+                Size = new Size(20, 16),
+            };
+
+            BackColourControl = new DXColourControl
+            {
+                Parent = this,
+                Location = new Point(20, 0),
+                Size = new Size(20, 16),
+                AllowNoColour = true,
+            };
+        }
+
+        #region IDisposable
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (ForeColourControl != null)
+                {
+                    if (!ForeColourControl.IsDisposed)
+                        ForeColourControl.Dispose();
+
+                    ForeColourControl = null;
+                }
+
+                if (BackColourControl != null)
+                {
+                    if (!BackColourControl.IsDisposed)
+                        BackColourControl.Dispose();
+
+                    BackColourControl = null;
+                }
+            }
+        }
+        #endregion
+    }
+
     public sealed class DXColourControl : DXControl
     {
-        #region Properies
+        #region Properties
         private DXColourPicker Window;
 
         #region AllowNoColour
@@ -233,7 +286,12 @@ namespace Client.Controls
             };
             AfterDraw += (o, e) =>
             {
-                PresentTexture(DXManager.ColourPallete, ColourScaleBox, ColourScaleBox.DisplayArea, Color.White, this);
+                RenderTexture paletteHandle = RenderingPipelineManager.GetColourPaletteTexture();
+
+                if (!paletteHandle.IsValid)
+                    return;
+
+                PresentTexture(paletteHandle, ColourScaleBox, ColourScaleBox.DisplayArea, Color.White, this);
             };
             ColourScaleBox.MouseClick += ColourScaleBox_MouseClick;
 
@@ -320,7 +378,14 @@ namespace Client.Controls
 
             if (x < 0 || y < 0 || x >= 200 || y >= 149) return;
 
-            SelectedColour = Color.FromArgb(DXManager.PalleteData[(y * 200 + x) * 4 + 2], DXManager.PalleteData[(y * 200 + x) * 4 + 1], DXManager.PalleteData[(y * 200 + x) * 4]);
+            byte[] paletteData = RenderingPipelineManager.GetColourPaletteData();
+
+            int index = (y * 200 + x) * 4;
+
+            if (index + 2 >= paletteData.Length)
+                return;
+
+            SelectedColour = Color.FromArgb(paletteData[index + 2], paletteData[index + 1], paletteData[index]);
         }
         private void CancelButton_MouseClick(object sender, MouseEventArgs e)
         {

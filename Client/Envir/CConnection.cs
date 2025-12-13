@@ -803,6 +803,7 @@ namespace Client.Envir
         public void Process(S.TimeOfDayChanged p)
         {
             GameScene.Game.TimeOfDay = p.TimeOfDay;
+            GameScene.Game.TimeOfDayLabel = p.TimeOfDayLabel;
         }
         public void Process(S.UserLocation p)
         {

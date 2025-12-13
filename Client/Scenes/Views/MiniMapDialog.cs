@@ -19,6 +19,8 @@ namespace Client.Scenes.Views
         private DXImageControl Image;
         public DXControl Panel;
 
+        public DXImageControl TimeOfDayImage;
+
         public Dictionary<object, DXControl> MapInfoObjects = new Dictionary<object, DXControl>();
 
         public static float ScaleX, ScaleY;
@@ -50,6 +52,11 @@ namespace Client.Scenes.Views
 
             Panel.Location = Area.Location;
             Panel.Size = Area.Size;
+
+            if (Size.Height < HeaderSize)
+            {
+                Size = new Size(Size.Width, HeaderSize);
+            }
 
             UpdateMapPosition();
         }
@@ -84,6 +91,15 @@ namespace Client.Scenes.Views
                 Movable = true,
                 IgnoreMoveBounds = true,
             };
+
+            TimeOfDayImage = new DXImageControl
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 0,
+                HintPosition = HintPosition.Fluid
+            };
+
             GameScene.Game.MapControl.MapInfoChanged += MapControl_MapInfoChanged;
             Image.Moving += Image_Moving;
         }
@@ -477,9 +493,39 @@ namespace Client.Scenes.Views
             DrawChildControls();
             DrawWindow();
             TitleLabel.Draw();
+            DrawTimeOfDay();
             DrawBorder();
             OnAfterDraw();
         }
+
+        private void DrawTimeOfDay()
+        {
+            int index = 0;
+
+            switch (GameScene.Game.TimeOfDay)
+            {
+                case TimeOfDay.Dawn:
+                    index = 215;
+                    break;
+                case TimeOfDay.Day:
+                    index = 216;
+                    break;
+                case TimeOfDay.Dusk:
+                    index = 217;
+                    break;
+                case TimeOfDay.Night:
+                    index = 218;
+                    break;
+            }
+
+            TimeOfDayImage.Index = index;
+            TimeOfDayImage.Location = new Point(3, Size.Height - 28 - 1);
+            TimeOfDayImage.Hint = TimeOfDayLabel;
+            TimeOfDayImage.Draw();
+        }
+
+        private static string TimeOfDayLabel => GameScene.Game.TimeOfDayLabel.Replace("##GAME_TIME##", CEnvir.Now.ToShortTimeString());
+
         #endregion
 
         #region IDisposable

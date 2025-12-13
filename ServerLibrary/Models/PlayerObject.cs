@@ -814,6 +814,9 @@ namespace Server.Models
                 Experience = Experience,
 
                 DayTime = SEnvir.DayTime,
+                TimeOfDay = SEnvir.TimeOfDay,
+                TimeOfDayLabel = SEnvir.GetDayCycleLabel(),
+
                 AllowGroup = Character.Account.AllowGroup,
 
                 CurrentHP = DisplayHP,
@@ -16002,10 +16005,12 @@ namespace Server.Models
             uFocus.Info = nextLevel;
             uFocus.Level = nextLevel.Level;
 
-            var mInfo = SEnvir.MagicInfoList.Binding.FirstOrDefault(x =>
-                x.School == MagicSchool.Discipline &&
-                x.NeedLevel1 <= nextLevel.RequiredLevel &&
-                x.Class == Class && !GetMagic(x.Magic, out MagicObject _));
+            var mInfos = SEnvir.MagicInfoList.Binding
+                .Where(x => x.School == MagicSchool.Discipline && x.Class == Class)
+                .OrderBy(x => x.NeedLevel1)
+                .Take(4);
+
+            var mInfo = mInfos.FirstOrDefault(x => x.NeedLevel1 <= nextLevel.RequiredLevel && !GetMagic(x.Magic, out MagicObject _));
 
             if (mInfo != null)
             {

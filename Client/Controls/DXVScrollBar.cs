@@ -1,7 +1,8 @@
-﻿using Library;
+﻿using Client.Envir;
+using Client.Rendering;
+using Library;
 using System;
 using System.Drawing;
-using System.Numerics;
 using System.Windows.Forms;
 
 //Cleaned
@@ -151,12 +152,13 @@ namespace Client.Controls
 
         #endregion
 
-
         private int ScrollHeight => Size.Height - 50;
 
         public int Change = 10;
 
         public DXButton UpButton, DownButton, PositionBar;
+
+        public bool ShowBackgroundSlider { get; set; }
 
         public override void OnSizeChanged(Size oValue, Size nValue)
         {
@@ -220,6 +222,57 @@ namespace Client.Controls
 
         #region Methods
 
+        protected override void OnClearTexture()
+        {
+            base.OnClearTexture();
+
+            if (ShowBackgroundSlider)
+            {
+                if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary library)) return;
+
+                MirImage image = library.CreateImage(59, ImageType.Image);
+
+                if (image == null || !image.Image.IsValid) return;
+
+                const int sectionHeight = 20;
+
+                int topHeight = Math.Min(sectionHeight, Size.Height);
+                Rectangle source = new(0, 0, image.Width, topHeight);
+                RectangleF destination = new(2, 0, Size.Width, topHeight);
+
+                RenderingPipelineManager.DrawTexture(image.Image, source, destination, Color.White);
+
+                int middleHeight = Math.Max(0, Size.Height - topHeight - sectionHeight);
+                int middleSourceHeight = Math.Max(0, image.Height - sectionHeight * 2);
+
+                if (middleHeight > 0 && middleSourceHeight > 0)
+                {
+                    source = new Rectangle(0, sectionHeight, image.Width, middleSourceHeight);
+
+                    int y = sectionHeight;
+                    while (middleHeight > 0)
+                    {
+                        int drawHeight = Math.Min(middleSourceHeight, middleHeight);
+                        destination = new(2, y, Size.Width, drawHeight);
+
+                        RenderingPipelineManager.DrawTexture(image.Image, new(source.X, source.Y, source.Width, drawHeight), destination, Color.White);
+
+                        y += drawHeight;
+                        middleHeight -= drawHeight;
+                    }
+                }
+
+                int bottomHeight = Math.Min(sectionHeight, Size.Height - topHeight);
+                if (bottomHeight > 0)
+                {
+                    source = new(0, image.Height - sectionHeight, image.Width, bottomHeight);
+                    destination = new(2, Size.Height - bottomHeight, Size.Width, bottomHeight);
+
+                    RenderingPipelineManager.DrawTexture(image.Image, source, destination, Color.White);
+                }
+            }
+        }
+
         private void UpdateScrollBar()
         {
             UpButton.Enabled = Value > MinValue;
@@ -241,19 +294,22 @@ namespace Client.Controls
         protected internal override void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0) return;
+            if (!Border || DisplayArea.Width == 0 || DisplayArea.Height == 0)
+            {
+                return;
+            }
 
             BorderInformation = new[]
             {
-                new Vector2(0, 0),
-                new Vector2(Size.Width + 1, 0),
-                new Vector2(Size.Width + 1, Size.Height + 1),
-                new Vector2(0, Size.Height + 1),
-                new Vector2(0, 0),
-                new Vector2(0,  14),
-                new Vector2(Size.Width + 1, 14),
-                new Vector2(Size.Width + 1, Size.Height - 13),
-                new Vector2(0, Size.Height - 13),
+                new LinePoint(0, 0),
+                new LinePoint(Size.Width + 1, 0),
+                new LinePoint(Size.Width + 1, Size.Height + 1),
+                new LinePoint(0, Size.Height + 1),
+                new LinePoint(0, 0),
+                new LinePoint(0, 14),
+                new LinePoint(Size.Width + 1, 14),
+                new LinePoint(Size.Width + 1, Size.Height - 13),
+                new LinePoint(0, Size.Height - 13),
 
             };
         }
@@ -271,7 +327,7 @@ namespace Client.Controls
         {
             base.OnMouseDown(e);
 
-            Value = (int)Math.Round((e.Location.Y - DisplayArea.Top - 32) * (MaxValue - MinValue - VisibleSize) / (float)ScrollHeight);
+            Value = (int)Math.Round((e.Location.Y - DisplayArea.Top - (PositionBar.Size.Height + (PositionBar.Size.Height / 2))) * (MaxValue - MinValue - VisibleSize) / (float)ScrollHeight);
         }
         public override void OnMouseWheel(MouseEventArgs e)
         {

@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Extensions;
 using Client.Models;
 using Client.UserModels;
 using Library;
@@ -16,20 +17,13 @@ using S = Library.Network.ServerPackets;
 
 namespace Client.Scenes.Views
 {
-    public class ButtonInfo
-    {
-        public Rectangle Region;
-        public int Index;
-        public int Length;
-    }
-
-    public sealed partial class NPCDialog : DXControl
+    public sealed partial class NPCDialog : DXWindow
     {
         #region Properties
 
-        private readonly Regex B = ButtonRegex();
-        private readonly Regex C = ColourRegex();
-        private readonly Regex V = ValueRegex();
+        private readonly Regex B = DrawTextExtensions.ButtonRegex();
+        private readonly Regex C = DrawTextExtensions.ColourRegex();
+        private readonly Regex V = DrawTextExtensions.ValueRegex();
 
         public NPCPage Page;
         private readonly DXControl PageTextContainer;
@@ -41,7 +35,6 @@ namespace Client.Scenes.Views
         private string CurrentPageSay;
         private bool Rolling = true;
 
-        public DXButton CloseButton;
         private DXImageControl HeaderImage, FooterImage;
         private DXImageControl[] RowImages = new DXImageControl[6];
         private DXVScrollBar ScrollBar;
@@ -49,6 +42,12 @@ namespace Client.Scenes.Views
         private const int _HeaderHeight = 140;
         private const int _FooterHeight = 64;
         private const int _RowHeight = 20;
+
+        public override WindowType Type => WindowType.None;
+
+        public override bool CustomSize => false;
+
+        public override bool AutomaticVisibility => false;
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -139,6 +138,8 @@ namespace Client.Scenes.Views
         {
             Movable = false;
             Sort = true;
+            DropShadow = true;
+            HasFooter = false;
 
             HeaderImage = new DXImageControl
             {
@@ -421,7 +422,7 @@ namespace Client.Scenes.Views
 
             Buttons.Clear();
 
-            List<ButtonIndex> buttonRanges = new();
+            List<DXButtonIndex> buttonRanges = new();
 
             List<Match> matchList = new();
             matchList.AddRange(B.Matches(page).Cast<Match>());
@@ -432,7 +433,7 @@ namespace Client.Scenes.Views
             int offset = 1;
             foreach (Match match in matchList)
             {
-                ButtonIndex index = new()
+                DXButtonIndex index = new()
                 {
                     Range = new CharacterRange(match.Groups["Text"].Index - offset, match.Groups["Text"].Length)
                 };
@@ -441,12 +442,12 @@ namespace Client.Scenes.Views
 
                 if (!string.IsNullOrEmpty(match.Groups["ID"].Value))
                 {
-                    index.Type = ButtonType.Button;
+                    index.Type = DXButtonType.Button;
                     offset += 3 + match.Groups["ID"].Length;
                 }
                 else if (!string.IsNullOrEmpty(match.Groups["Colour"].Value))
                 {
-                    index.Type = ButtonType.Label;
+                    index.Type = DXButtonType.Label;
                     offset += 3 + match.Groups["Colour"].Length;
                 }
             }
@@ -455,7 +456,7 @@ namespace Client.Scenes.Views
             {
                 var buttonIndex = buttonRanges[i];
 
-                List<ButtonInfo> buttons = GetWordRegionsNew(DXManager.Graphics, PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
+                List<ButtonInfo> buttons = DrawTextExtensions.GetWordRegionsNew(PageText.Text, PageText.Font, PageText.DrawFormat, PageText.Size.Width, buttonIndex.Range.First, buttonIndex.Range.Length);
 
                 List<DXLabel> labels = new();
 
@@ -480,7 +481,7 @@ namespace Client.Scenes.Views
                 {
                     switch (buttonIndex.Type)
                     {
-                        case ButtonType.Button:
+                        case DXButtonType.Button:
                             {
                                 label.ForeColour = Color.Yellow;
                                 label.Sound = SoundIndex.ButtonC;
@@ -517,7 +518,7 @@ namespace Client.Scenes.Views
                                 };
                             }
                             break;
-                        case ButtonType.Label:
+                        case DXButtonType.Label:
                             {
                                 label.ForeColour = Color.FromName(matchList[index].Groups["Colour"].Value);
                             }
@@ -527,95 +528,6 @@ namespace Client.Scenes.Views
                     Buttons.Add(label);
                 }
             }
-        }
-
-        public static List<ButtonInfo> GetWordRegionsNew(Graphics graphics, string text, Font font, TextFormatFlags flags, int width, int index, int length)
-        {
-            List<ButtonInfo> regions = new List<ButtonInfo>();
-
-            Size tSize = TextRenderer.MeasureText(graphics, "A", font, new Size(width, 2000), flags);
-            int h = tSize.Height;
-            int leading = tSize.Width - (TextRenderer.MeasureText(graphics, "AA", font, new Size(width, 2000), flags).Width - tSize.Width);
-
-            int lineStart = 0;
-            int lastHeight = h;
-
-            Regex regex = new Regex(@"(?<Words>\S+)", RegexOptions.Compiled);
-
-            MatchCollection matches = regex.Matches(text);
-
-            List<CharacterRange> ranges = new List<CharacterRange>();
-
-            foreach (Match match in matches)
-                ranges.Add(new CharacterRange(match.Index, match.Length));
-
-            ButtonInfo currentInfo = null;
-
-            //If Word Wrap enabled.
-            foreach (CharacterRange range in ranges)
-            {
-                int height = TextRenderer.MeasureText(graphics, text.Substring(0, range.First + range.Length), font, new Size(width, 9999), flags).Height;
-
-                if (range.First >= index + length) break;
-
-                if (height > lastHeight)
-                {
-                    lineStart = range.First; // New Line was formed record from start.
-                    lastHeight = height;
-
-                    //This Word is on a new line and therefore must start at 0.
-                    //We do NOT know its length on this new line but since its on a new line it will be easy to measure.
-
-                    if (range.First >= index)
-                    {
-                        //We need to capture this word
-                        //It needs to be a new Rectangle.
-                        Rectangle region = new Rectangle
-                        {
-                            X = 0,
-                            Y = height - h,
-                            Width = TextRenderer.MeasureText(graphics, text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
-                            Height = h,
-                        };
-                        currentInfo = new ButtonInfo { Region = region, Index = range.First, Length = range.Length };
-                        regions.Add(currentInfo);
-                    }
-                }
-                else
-                {
-                    //it is on the same Line IT Must be able to contain ALL of the letters. (Word Wrap)
-                    //just need to know the length of the word and the Length of the start of the line to the start of the word
-
-                    if (range.First >= index)
-                    {
-                        if (currentInfo == null)
-                        {
-                            Rectangle region = new Rectangle
-                            {
-                                X = TextRenderer.MeasureText(graphics, text.Substring(lineStart, range.First - lineStart), font, new Size(width, 9999), flags).Width,
-                                Y = height - h,
-                                Width = TextRenderer.MeasureText(graphics, text.Substring(range.First, range.Length), font, new Size(width, 9999), flags).Width,
-                                Height = h,
-                            };
-
-                            if (region.X > 0)
-                                region.X -= leading;
-                            currentInfo = new ButtonInfo { Region = region, Index = range.First, Length = range.Length };
-                            regions.Add(currentInfo);
-                        }
-                        else
-                        {
-                            //Measure Current.Index to range.First + Length
-                            currentInfo.Length = range.First + range.Length - currentInfo.Index;
-                            currentInfo.Region.Width = TextRenderer.MeasureText(graphics, text.Substring(currentInfo.Index, currentInfo.Length), font, new Size(width, 9999), flags).Width;
-                        }
-                        //We need to capture this word.
-                        //ADD to any previous rects otherwise create new ?
-                    }
-                }
-            }
-
-            return regions;
         }
 
         public override void OnKeyDown(KeyEventArgs e)
@@ -725,27 +637,6 @@ namespace Client.Scenes.Views
         }
 
         #endregion
-
-        public class ButtonIndex
-        {
-            public CharacterRange Range;
-            public ButtonType Type;
-        };
-
-        public enum ButtonType
-        {
-            Button,
-            Label
-        };
-
-        [GeneratedRegex("\\<(?<Text>.*?):(?<Default>.+?)\\>", RegexOptions.Compiled)]
-        private static partial Regex ValueRegex();
-
-        [GeneratedRegex("\\{(?<Text>.*?):(?<Colour>.+?)\\}", RegexOptions.Compiled)]
-        private static partial Regex ColourRegex();
-
-        [GeneratedRegex("\\[(?<Text>.*?):(?<ID>.+?)\\]", RegexOptions.Compiled)]
-        private static partial Regex ButtonRegex();
     }
 
     public sealed class NPCGoodsDialog : DXWindow
@@ -811,10 +702,9 @@ namespace Client.Scenes.Views
         public NPCGoodsDialog()
         {
             TitleLabel.Text = "Goods";
-
+            DropShadow = true;
             HasFooter = true;
             Movable = false;
-
 
             SetClientSize(new Size(227, 7 * 43 + 1));
 
@@ -1413,6 +1303,7 @@ namespace Client.Scenes.Views
         {
             TitleLabel.Text = "Repair Items";
             Movable = false;
+            DropShadow = true;
 
             Grid = new DXItemGrid
             {
@@ -1862,8 +1753,7 @@ namespace Client.Scenes.Views
         public NPCRefineDialog()
         {
             TitleLabel.Text = "Refine";
-
-
+            DropShadow = true;
 
             SetClientSize(new Size(491, 130));
 
@@ -2863,6 +2753,7 @@ namespace Client.Scenes.Views
             Movable = false;
             Sort = true;
             Location = new Point(0, GameScene.Game.NPCBox.Size.Height);
+            DropShadow = true;
 
             TitleLabel = new DXLabel
             {
@@ -3306,6 +3197,7 @@ namespace Client.Scenes.Views
             Movable = false;
             Sort = true;
             Location = new Point(GameScene.Game.NPCBox.Size.Width, 0);
+            DropShadow = true;
 
             TitleLabel = new DXLabel
             {
@@ -3478,6 +3370,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.Visible = true;
                 GameScene.Game.BigMapBox.Opacity = 1F;
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.StartNPC.Region.Map;
+                GameScene.Game.BigMapBox.PlayLocatorAnim(SelectedQuest.QuestInfo.StartNPC.Index);
             };
 
             label = new DXLabel
@@ -3506,6 +3399,7 @@ namespace Client.Scenes.Views
                 GameScene.Game.BigMapBox.Visible = true;
                 GameScene.Game.BigMapBox.Opacity = 1F;
                 GameScene.Game.BigMapBox.SelectedInfo = SelectedQuest.QuestInfo.FinishNPC.Region.Map;
+                GameScene.Game.BigMapBox.PlayLocatorAnim(SelectedQuest.QuestInfo.FinishNPC.Index);
             };
 
             AcceptButton = new DXButton
@@ -4017,6 +3911,7 @@ namespace Client.Scenes.Views
             LibraryFile = LibraryFile.Interface;
             Index = 146;
             Movable = false;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -4460,6 +4355,7 @@ namespace Client.Scenes.Views
             Index = 147;
 
             Movable = true;
+            DropShadow = true;
 
             CloseButton = new DXButton
             {
@@ -7258,6 +7154,7 @@ namespace Client.Scenes.Views
             TitleLabel.Text = "Weapon Craft";
 
             HasFooter = false;
+            DropShadow = true;
 
             SetClientSize(new Size(250, 280));
 

@@ -1,9 +1,9 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Rendering;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;
-using SharpDX.Direct3D9;
 using System;
 using System.Drawing;
 using System.Net.Sockets;
@@ -146,14 +146,6 @@ namespace Client.Scenes
                 Loop = true,
                 UseOffSet = true
             };
-            control.BeforeDraw += (o, e) =>
-            {
-                DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
-            };
-            control.AfterDraw += (o, e) =>
-            {
-                DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
-            };
 
             // Flags
             control = new DXAnimatedControl
@@ -165,14 +157,6 @@ namespace Client.Scenes
                 FrameCount = 30,
                 Parent = background,
                 UseOffSet = true
-            };
-            control.BeforeDraw += (o, e) =>
-            {
-                DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
-            };
-            control.AfterDraw += (o, e) =>
-            {
-                DXManager.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
             };
 
             // Ray of light

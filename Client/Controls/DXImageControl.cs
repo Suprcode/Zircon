@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using Library;
 using System;
 using System.Drawing;
@@ -256,6 +257,56 @@ namespace Client.Controls
 
         #endregion
 
+        public bool IntersectParent;
+
+        #region Drop Shadow
+
+        public bool DropShadow
+        {
+            get => _DropShadow;
+            set
+            {
+                if (_DropShadow == value) return;
+
+                bool oldValue = _DropShadow;
+                _DropShadow = value;
+
+                OnDropShadowChanged(oldValue, value);
+            }
+        }
+        private bool _DropShadow = false;
+        public event EventHandler<EventArgs> DropShadowChanged;
+        public virtual void OnDropShadowChanged(bool oValue, bool nValue)
+        {
+            DropShadowChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Gray Scale
+
+        public bool GrayScale
+        {
+            get => _GrayScale;
+            set
+            {
+                if (_GrayScale == value) return;
+
+                bool oldValue = _GrayScale;
+                _GrayScale = value;
+
+                OnGrayScaleChanged(oldValue, value);
+            }
+        }
+        private bool _GrayScale = false;
+        public event EventHandler<EventArgs> GrayScaleChanged;
+        public virtual void OnGrayScaleChanged(bool oValue, bool nValue)
+        {
+            GrayScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         public DXImageControl()
         {
             DrawImage = true;
@@ -275,24 +326,73 @@ namespace Client.Controls
         }
         protected virtual void DrawMirTexture()
         {
-            bool oldBlend = DXManager.Blending;
-            float oldRate = DXManager.BlendRate;
+            bool oldBlend = RenderingPipelineManager.IsBlending();
+            float oldRate = RenderingPipelineManager.GetBlendRate();
+            BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
+            float previousOpacity = RenderingPipelineManager.GetOpacity();
 
             MirImage image = Library.CreateImage(Index, ImageType.Image);
 
-            if (image?.Image == null) return;
+            if (image?.Image == null)
+            {
+                return;
+            }
 
             if (Blend)
-                DXManager.SetBlend(true, ImageOpacity, BlendMode);
+            {
+                RenderingPipelineManager.SetBlend(true, ImageOpacity, BlendMode);
+            }
             else
-                DXManager.SetOpacity(ImageOpacity);
+            {
+                RenderingPipelineManager.SetOpacity(ImageOpacity);
+            }
 
-            PresentTexture(image.Image, FixedSize ? null : Parent, DisplayArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0);
+            Rectangle drawArea = DisplayArea;
+
+            RectangleF? shadowBounds = null;
+
+            if (image.ImageValid)
+            {
+                Rectangle visibleBounds = image.GetVisibleBounds();
+
+                if (visibleBounds.Width > 0 && visibleBounds.Height > 0)
+                {
+                    shadowBounds = new RectangleF(
+                        drawArea.Left + visibleBounds.Left,
+                        drawArea.Top + visibleBounds.Top,
+                        visibleBounds.Width,
+                        visibleBounds.Height);
+                }
+            }
+
+            if (DropShadow)
+            {
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
+            }
+
+            if (GrayScale)
+            {
+                RenderingPipelineManager.EnableGrayscaleEffect();
+            }
+
+            PresentTexture(image.Image, FixedSize ? null : Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+
+            if (GrayScale)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
+
+            if (DropShadow)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
 
             if (Blend)
-                DXManager.SetBlend(oldBlend, oldRate, BlendMode);
-            else
-                DXManager.SetOpacity(1F);
+            {
+                RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
+            }
+
+            RenderingPipelineManager.SetOpacity(previousOpacity);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
@@ -329,6 +429,7 @@ namespace Client.Controls
                 _LibraryFile = LibraryFile.None;
                 _PixelDetect = false;
                 _UseOffSet = false;
+                _DropShadow = false;
 
                 BlendChanged = null;
                 DrawImageChanged = null;

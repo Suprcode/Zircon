@@ -1,16 +1,14 @@
 ﻿using Client.Envir;
-using Client.Extensions;
 using Client.Models.Player;
+using Client.Rendering;
 using Client.Scenes;
 using Library;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Frame = Library.Frame;
-using Matrix = SharpDX.Matrix;
 using S = Library.Network.ServerPackets;
 
 namespace Client.Models
@@ -955,14 +953,14 @@ namespace Client.Models
         public override void Draw()
         {
             if (BodyLibrary == null) return;
-            DrawPlayer(true);
+            DrawPlayer(true, MouseObject == this && MouseObject != User);
         }
 
-        public void DrawPlayer(bool shadow = false)
+        public void DrawPlayer(bool shadow = false, bool allowOutline = false)
         {
             ExteriorEffectManager.DrawExteriorEffects(this, true);
 
-            DrawBody(shadow);
+            DrawBody(shadow, allowOutline);
 
             ExteriorEffectManager.DrawExteriorEffects(this, false);
         }
@@ -976,12 +974,12 @@ namespace Client.Models
             //DXManager.SetBlend(false);
         }
 
-        public void DrawBody(bool shadow)
+        public void DrawBody(bool shadow, bool allowOutline)
         {
-            Surface oldSurface = DXManager.CurrentSurface;
-            DXManager.SetSurface(DXManager.ScratchSurface);
-            DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
-            DXManager.Sprite.Flush();
+            RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
+            RenderingPipelineManager.FlushSprite();
 
             int l = int.MaxValue, t = int.MaxValue, r = int.MinValue, b = int.MinValue;
 
@@ -1189,8 +1187,8 @@ namespace Client.Models
                 }
             }
 
-            DXManager.SetSurface(oldSurface);
-            float oldOpacity = DXManager.Opacity;
+            RenderingPipelineManager.SetSurface(oldSurface);
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
             if (shadow)
             {
@@ -1217,7 +1215,10 @@ namespace Client.Models
                 }
             }
 
-            if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(Opacity);
+            if (oldOpacity != Opacity && !RenderingPipelineManager.IsBlending())
+            {
+                RenderingPipelineManager.SetOpacity(Opacity);
+            }
 
             switch (CurrentAnimation)
             {
@@ -1242,10 +1243,30 @@ namespace Client.Models
                     break;
             }
 
-            DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(l, t, r, b), Vector3.Zero, new Vector3(l, t, 0), DrawColour);
+            bool outlineEnabled = false;
+
+            if (allowOutline && Config.ShowTargetOutline)
+            {
+                RenderingPipelineManager.EnableOutlineEffect(Color.Red, 2f);
+                outlineEnabled = true;
+            }
+
+            Rectangle scratchSource = Rectangle.FromLTRB(l, t, r, b);
+            RectangleF scratchDestination = new RectangleF(l, t, r - l, b - t);
+            RenderTexture scratchTexture = RenderingPipelineManager.GetScratchTexture();
+
+            RenderingPipelineManager.DrawTexture(scratchTexture, scratchSource, scratchDestination, DrawColour);
             CEnvir.DPSCounter++;
 
-            if (oldOpacity != Opacity && !DXManager.Blending) DXManager.SetOpacity(oldOpacity);
+            if (outlineEnabled)
+            {
+                RenderingPipelineManager.DisableOutlineEffect();
+            }
+
+            if (oldOpacity != Opacity && !RenderingPipelineManager.IsBlending())
+            {
+                RenderingPipelineManager.SetOpacity(oldOpacity);
+            }
         }
 
         public void DrawShadow2(int l, int t, int r, int b)
@@ -1257,21 +1278,29 @@ namespace Client.Models
             int w = (DrawX + image.OffSetX) - l;
             int h = (DrawY + image.OffSetY) - t;
 
-            Matrix m = Matrix.Scaling(1F, 0.5f, 0);
+            float translateX = DrawX + image.ShadowOffSetX - w + image.Height / 2F + h / 2F;
+            float translateY = DrawY + image.ShadowOffSetY - h / 2F;
 
-            m.M21 = -0.50F;
-            DXManager.Sprite.Transform = m * Matrix.Translation(DrawX + image.ShadowOffSetX - w + (image.Height) / 2 + h / 2, DrawY + image.ShadowOffSetY - h / 2, 0);
+            Matrix3x2 transform = new Matrix3x2(1F, 0F, -0.5F, 0.5F, translateX, translateY);
+            RenderTexture scratchTexture = RenderingPipelineManager.GetScratchTexture();
+            Rectangle scratchSource = Rectangle.FromLTRB(l, t, r, b);
 
-            DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
+            RenderingPipelineManager.SetTextureFilter(TextureFilterMode.None);
 
-            float oldOpacity = DXManager.Opacity;
-            if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
-            DXManager.Sprite.Draw(DXManager.ScratchTexture, Rectangle.FromLTRB(l, t, r, b), Vector3.Zero, Vector3.Zero, Color.Black);
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
+            if (oldOpacity != 0.5F)
+            {
+                RenderingPipelineManager.SetOpacity(0.5F);
+            }
 
-            DXManager.Sprite.Transform = Matrix.Identity;
-            DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
+            RenderingPipelineManager.DrawTexture(scratchTexture, scratchSource, transform, System.Numerics.Vector3.Zero, System.Numerics.Vector3.Zero, Color.Black);
 
-            if (0.5F != oldOpacity) DXManager.SetOpacity(oldOpacity);
+            RenderingPipelineManager.SetTextureFilter(TextureFilterMode.Point);
+
+            if (0.5F != oldOpacity)
+            {
+                RenderingPipelineManager.SetOpacity(oldOpacity);
+            }
         }
 
         public override void DrawHealth()

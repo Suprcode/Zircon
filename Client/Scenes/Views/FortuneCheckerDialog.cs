@@ -34,6 +34,7 @@ namespace Client.Scenes.Views
             //HasFooter = true;
             TitleLabel.Text = "Fortune Checker";
             SetClientSize(new Size(485, 551));
+            DropShadow = true;
 
             #region Search
 
@@ -142,7 +143,6 @@ namespace Client.Scenes.Views
             }
 
             #endregion
-
 
         }
 

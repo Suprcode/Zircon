@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Rendering;
 using Client.Scenes;
 using Library;
 using Library.SystemModels;
@@ -175,9 +176,9 @@ namespace Client.Models
         {
             if (BodyLibrary == null) return;
 
-            DXManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
+            RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
             DrawBody();
-            DXManager.SetBlend(false);
+            RenderingPipelineManager.SetBlend(false);
         }
 
         public override bool MouseOver(Point p)

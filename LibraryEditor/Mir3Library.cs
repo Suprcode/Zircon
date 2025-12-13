@@ -35,10 +35,13 @@ namespace LibraryEditor
 
         public List<Mir3Image> Images;
 
-        public Mir3Library(string fileName)
+        public bool UseBlackKeyTransparency { get; }
+
+        public Mir3Library(string fileName, bool useBlackKeyTransparency = false)
         {
             FileName = fileName;
             _fileName = Path.ChangeExtension(fileName, null);
+            UseBlackKeyTransparency = useBlackKeyTransparency;
             Images = new List<Mir3Image>();
             if (!File.Exists(fileName))
                 return;
@@ -231,21 +234,21 @@ namespace LibraryEditor
         }
         public void AddImage(Bitmap image, short x, short y)
         {
-            Mir3Image mImage = new Mir3Image(image, Version) { OffSetX = x, OffSetY = y };
+            Mir3Image mImage = new Mir3Image(image, Version, UseBlackKeyTransparency) { OffSetX = x, OffSetY = y };
 
             Images.Add(mImage);
         }
 
         public void ReplaceImage(int Index, Bitmap image, short x, short y)
         {
-            Mir3Image mImage = new Mir3Image(image, Version) { OffSetX = x, OffSetY = y };
+            Mir3Image mImage = new Mir3Image(image, Version, UseBlackKeyTransparency) { OffSetX = x, OffSetY = y };
 
             Images[Index] = mImage;
         }
 
         public void InsertImage(int index, Bitmap image, short x, short y)
         {
-            Mir3Image mImage = new Mir3Image(image, Version) { OffSetX = x, OffSetY = y };
+            Mir3Image mImage = new Mir3Image(image, Version, UseBlackKeyTransparency) { OffSetX = x, OffSetY = y };
 
             Images.Insert(index, mImage);
         }
@@ -435,7 +438,32 @@ namespace LibraryEditor
                 OverlayHeight = reader.ReadInt16();
             }
 
-            public unsafe Mir3Image(Bitmap image, int version)
+            private static byte[] PreparePixels(Bitmap bitmap, bool useBlackKeyTransparency)
+            {
+                BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly,
+                                                 PixelFormat.Format32bppArgb);
+
+                byte[] pixels = new byte[bitmap.Width * bitmap.Height * 4];
+
+                Marshal.Copy(data.Scan0, pixels, 0, pixels.Length);
+                bitmap.UnlockBits(data);
+
+                for (int i = 0; i < pixels.Length; i += 4)
+                {
+                    //Reverse Red/Blue
+                    byte b = pixels[i];
+                    pixels[i] = pixels[i + 2];
+                    pixels[i + 2] = b;
+
+                    if (useBlackKeyTransparency && pixels[i] == 0 && pixels[i + 1] == 0 && pixels[i + 2] == 0)
+                        pixels[i + 3] = 0; //Make Transparent
+                }
+
+                return pixels;
+            }
+
+
+            public unsafe Mir3Image(Bitmap image, int version, bool useBlackKeyTransparency = false)
             {
                 if (image == null)
                 {
@@ -467,24 +495,7 @@ namespace LibraryEditor
 
                 Image = image;
 
-                BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly,
-                                                 PixelFormat.Format32bppArgb);
-
-                byte[] pixels = new byte[image.Width * image.Height * 4];
-
-                Marshal.Copy(data.Scan0, pixels, 0, pixels.Length);
-                image.UnlockBits(data);
-
-                for (int i = 0; i < pixels.Length; i += 4)
-                {
-                    //Reverse Red/Blue
-                    byte b = pixels[i];
-                    pixels[i] = pixels[i + 2];
-                    pixels[i + 2] = b;
-
-                    if (pixels[i] == 0 && pixels[i + 1] == 0 && pixels[i + 2] == 0)
-                        pixels[i + 3] = 0; //Make Transparent
-                }
+                byte[] pixels = PreparePixels(image, useBlackKeyTransparency);
 
                 int count = Squish.GetStorageRequirements(image.Width, image.Height, DxtFlags);
 
@@ -496,7 +507,7 @@ namespace LibraryEditor
                 }
             }
 
-            public unsafe Mir3Image(Bitmap image, Bitmap shadow, Bitmap overlay, int version)
+            public unsafe Mir3Image(Bitmap image, Bitmap shadow, Bitmap overlay, int version, bool useBlackKeyTransparency = false)
             {
                 if (image == null)
                 {
@@ -528,24 +539,7 @@ namespace LibraryEditor
 
                 Image = image;
 
-                BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly,
-                                                 PixelFormat.Format32bppArgb);
-
-                byte[] pixels = new byte[image.Width * image.Height * 4];
-
-                Marshal.Copy(data.Scan0, pixels, 0, pixels.Length);
-                image.UnlockBits(data);
-
-                for (int i = 0; i < pixels.Length; i += 4)
-                {
-                    //Reverse Red/Blue
-                    byte b = pixels[i];
-                    pixels[i] = pixels[i + 2];
-                    pixels[i + 2] = b;
-
-                    if (pixels[i] == 0 && pixels[i + 1] == 0 && pixels[i + 2] == 0)
-                        pixels[i + 3] = 0; //Make Transparent
-                }
+                byte[] pixels = PreparePixels(image, useBlackKeyTransparency);
 
                 int count = Squish.GetStorageRequirements(image.Width, image.Height, DxtFlags);
 
@@ -580,24 +574,7 @@ namespace LibraryEditor
 
                     ShadowImage = shadow;
 
-                    data = shadow.LockBits(new Rectangle(0, 0, shadow.Width, shadow.Height), ImageLockMode.ReadOnly,
-                                                     PixelFormat.Format32bppArgb);
-
-                    pixels = new byte[shadow.Width * shadow.Height * 4];
-
-                    Marshal.Copy(data.Scan0, pixels, 0, pixels.Length);
-                    shadow.UnlockBits(data);
-
-                    for (int i = 0; i < pixels.Length; i += 4)
-                    {
-                        //Reverse Red/Blue
-                        byte b = pixels[i];
-                        pixels[i] = pixels[i + 2];
-                        pixels[i + 2] = b;
-
-                        if (pixels[i] == 0 && pixels[i + 1] == 0 && pixels[i + 2] == 0)
-                            pixels[i + 3] = 0; //Make Transparent
-                    }
+                    pixels = PreparePixels(shadow, useBlackKeyTransparency);
 
                     count = Squish.GetStorageRequirements(shadow.Width, shadow.Height, DxtFlags);
 
@@ -633,24 +610,7 @@ namespace LibraryEditor
 
                     OverlayImage = overlay;
 
-                    data = overlay.LockBits(new Rectangle(0, 0, overlay.Width, overlay.Height), ImageLockMode.ReadOnly,
-                                                     PixelFormat.Format32bppArgb);
-
-                    pixels = new byte[overlay.Width * overlay.Height * 4];
-
-                    Marshal.Copy(data.Scan0, pixels, 0, pixels.Length);
-                    overlay.UnlockBits(data);
-
-                    for (int i = 0; i < pixels.Length; i += 4)
-                    {
-                        //Reverse Red/Blue
-                        byte b = pixels[i];
-                        pixels[i] = pixels[i + 2];
-                        pixels[i + 2] = b;
-
-                        if (pixels[i] == 0 && pixels[i + 1] == 0 && pixels[i + 2] == 0)
-                            pixels[i + 3] = 0; //Make Transparent
-                    }
+                    pixels = PreparePixels(overlay, useBlackKeyTransparency);
 
                     count = Squish.GetStorageRequirements(overlay.Width, overlay.Height, DxtFlags);
 

@@ -135,7 +135,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowSoundTabLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabLabel { get; set; }
-        public abstract string CommonControlConfigWindowColoursTabLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; }
@@ -144,6 +144,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGraphicsTabClipMouseLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDebugLabelLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLanguageLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabRenderingPipelineLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabBackgroundSoundLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabSystemVolumeLabel { get; set; }
         public abstract string CommonControlConfigWindowSoundTabMusicVolumeLabel { get; set; }
@@ -156,19 +157,20 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameTabUserHealthLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabMonsterHealthLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabDamageNumbersLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabDrawParticlesLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabDisplayHelmetLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabHideChatBarLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabEscapeCloseAllLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabShiftOpenChatLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabShiftOpenChatHint { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDrawParticlesLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDisplayHelmetLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabHideChatBarLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabEscapeCloseAllLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabShiftOpenChatLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabShiftOpenChatHint { get; set; }
         public abstract string CommonControlConfigWindowGameTabRightClickDeTargetLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabRightClickDeTargetHint { get; set; }
         public abstract string CommonControlConfigWindowGameTabMonsterBoxVisibleLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabLogChatLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabDrawEffectsLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabDrawWeatherLabel { get; set; }
-        public abstract string CommonControlConfigWindowGameTabKeyBindButtonLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabLogChatLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDrawEffectsLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDrawWeatherLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; }
+        public abstract string CommonControlConfigWindowUITabKeyBindButtonLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUsePortLabel { get; set; }
@@ -460,6 +462,8 @@ namespace Client.Envir.Translations
         public abstract string FortuneCheckerRowCheckButtonConfirmMessage { get; set; }
         public abstract string FortuneCheckerRowCheckButtonConfirmCaption { get; set; }
 
+        public abstract string HelpDialogTitle { get; set; }
+
         public abstract string GroupDialogTitle { get; set; }
         public abstract string GroupDialogAllowGroupButtonAllowingHint { get; set; }
         public abstract string GroupDialogAllowGroupButtonNotAllowingHint { get; set; }
@@ -561,6 +565,7 @@ namespace Client.Envir.Translations
 
         public abstract string MenuDialogTitle { get; set; }
         public abstract string MenuDialogSettingsButtonLabel { get; set; }
+        public abstract string MenuDialogHelpButtonLabel { get; set; }
         public abstract string MenuDialogGuildButtonLabel { get; set; }
         public abstract string MenuDialogStorageButtonLabel { get; set; }
         public abstract string MenuDialogRankingButtonLabel { get; set; }
@@ -568,6 +573,7 @@ namespace Client.Envir.Translations
         public abstract string MenuDialogLeaveButtonLabel { get; set; }
 
         public abstract string MenuDialogSettingsButtonHint { get; set; }
+        public abstract string MenuDialogHelpButtonHint { get; set; }
         public abstract string MenuDialogGuildButtonHint { get; set; }
         public abstract string MenuDialogStorageButtonHint { get; set; }
         public abstract string MenuDialogRankingButtonHint { get; set; }

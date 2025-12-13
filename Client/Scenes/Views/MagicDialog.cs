@@ -15,14 +15,11 @@ using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
 {
-    public sealed class MagicDialog : DXControl
+    public sealed class MagicDialog : DXWindow
     {
         #region Properties
 
         private DXImageControl HeaderImage, BackgroundImage;
-
-        private DXLabel TitleLabel;
-        private DXButton CloseButton;
 
         private DXTabControl TabControl;
         public SortedDictionary<MagicSchool, MagicTab> SchoolTabs = new SortedDictionary<MagicSchool, MagicTab>();
@@ -69,45 +66,21 @@ namespace Client.Scenes.Views
 
         #region Settings
 
-        public WindowSetting Settings;
-        public WindowType Type => WindowType.MagicBox;
+        public override WindowType Type => WindowType.MagicBox;
 
-        public void LoadSettings()
-        {
-            if (Type == WindowType.None || !CEnvir.Loaded) return;
+        public override bool CustomSize => false;
 
-            Settings = CEnvir.WindowSettings.Binding.FirstOrDefault(x => x.Resolution == Config.GameSize && x.Window == Type);
-
-            if (Settings != null)
-            {
-                ApplySettings();
-                return;
-            }
-
-            Settings = CEnvir.WindowSettings.CreateNewObject();
-            Settings.Resolution = Config.GameSize;
-            Settings.Window = Type;
-            Settings.Size = Size;
-            Settings.Visible = Visible;
-            Settings.Location = Location;
-        }
-
-        public void ApplySettings()
-        {
-            if (Settings == null) return;
-
-            Location = Settings.Location;
-
-            Visible = Settings.Visible;
-        }
-
+        public override bool AutomaticVisibility => false;
+        
         #endregion
 
         public MagicDialog()
         {
-            Size = new Size(420, 516);
+            Size = new Size(419, 511);
             Movable = true;
             Sort = true;
+            HasFooter = false;
+            DropShadow = true;
 
             HeaderImage = new DXImageControl
             {
@@ -452,12 +425,14 @@ namespace Client.Scenes.Views
                 Border = false,
                 UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
                 DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
-                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface }
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = true,
             };
             ScrollBar.ValueChanged += (o, e) => UpdateLocations();
         }
 
         #region Methods
+
         public void UpdateLocations()
         {
             int y = -ScrollBar.Value + 7;
@@ -1087,5 +1062,4 @@ namespace Client.Scenes.Views
 
         #endregion
     }
-
 }

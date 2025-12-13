@@ -121,15 +121,11 @@ namespace Client.Models
 
                 if (Blend)
                 {
-                    Library.DrawBlend(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y,
-                       (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2,
-                       Opacity, ImageType.Image, false, 0);
+                    Library.DrawBlendScaled(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y, angle, Opacity, ImageType.Image, false, 0);
                 }
                 else
                 {
-                    Library.Draw(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y,
-                      (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) + MathF.PI / 2,
-                      Opacity, ImageType.Image, false, 0);
+                    Library.DrawBlendScaled(StartIndex, stretchX, stretchY, DrawColour, mid.X, mid.Y, angle, Opacity, ImageType.Image, false, 0);
                 }
             }
         }

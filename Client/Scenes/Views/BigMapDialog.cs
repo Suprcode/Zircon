@@ -226,6 +226,7 @@ namespace Client.Scenes.Views
         public BigMapDialog()
         {
             BackColour = Color.Black;
+            DropShadow = true;
             HasFooter = true;
 
             AllowResize = false;

@@ -1,6 +1,5 @@
 ﻿using Client.Envir;
-using Client.Extensions;
-using SharpDX.Direct3D9;
+using Client.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -146,7 +145,7 @@ namespace Client.Controls
             if (_activeAnimations.Count == 0) return false;
 
             bool drew = false;
-            Surface oldSurface = DXManager.CurrentSurface;
+            RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
             int strokeWidth = Math.Max(1, (int)Math.Round(BorderSize));
 
             DateTime now = CEnvir.Now;
@@ -170,12 +169,14 @@ namespace Client.Controls
                     int inflation = Math.Max(0, (int)Math.Round(inflationValue));
                     Color layerColour = GetLayerColour(layer);
 
-                    DXManager.SetSurface(DXManager.ScratchSurface);
-                    DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
+                    RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
+                    RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
                     DrawBorderLayerToScratch(inflation, strokeWidth, layerColour);
-                    DXManager.SetSurface(oldSurface);
+                    RenderingPipelineManager.SetSurface(oldSurface);
 
-                    PresentTexture(DXManager.ScratchTexture, Parent, Rectangle.Inflate(DisplayArea, inflation, inflation), Color.White, this);
+                    RenderTexture scratchHandle = RenderingPipelineManager.GetScratchTexture();
+
+                    PresentTexture(scratchHandle, Parent, Rectangle.Inflate(DisplayArea, inflation, inflation), Color.White, this);
                     drew = true;
                 }
             }
@@ -214,8 +215,7 @@ namespace Client.Controls
         {
             if (width <= 0 || height <= 0) return;
 
-            SharpDX.Rectangle rectangle = new SharpDX.Rectangle(x, y, x + width, y + height);
-            DXManager.Device.ColorFill(DXManager.ScratchSurface, rectangle, colour.ToColorBGRA());
+            RenderingPipelineManager.ColorFill(RenderingPipelineManager.GetScratchSurface(), new Rectangle(x, y, x + width, y + height), colour);
         }
 
         private Color GetLayerColour(int layer)

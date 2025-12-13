@@ -1,8 +1,7 @@
 ﻿using Client.Envir;
-using Client.Extensions;
+using Client.Rendering;
 using Client.UserModels;
 using Library;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -75,6 +74,28 @@ namespace Client.Controls
 
         #region HasFooter
 
+        public bool SlimFooter
+        {
+            get => _SlimFooter;
+            set
+            {
+                if (_SlimFooter == value) return;
+
+                bool oldValue = _SlimFooter;
+                _SlimFooter = value;
+
+                OnSlimFooterChanged(oldValue, value);
+            }
+        }
+        private bool _SlimFooter;
+        public event EventHandler<EventArgs> SlimFooterChanged;
+        public virtual void OnSlimFooterChanged(bool oValue, bool nValue)
+        {
+            SlimFooterChanged?.Invoke(this, EventArgs.Empty);
+
+            UpdateClientArea();
+        }
+
         public bool HasFooter
         {
             get => _HasFooter;
@@ -130,8 +151,33 @@ namespace Client.Controls
         public DXButton CloseButton { get; protected set; }
         public DXLabel TitleLabel { get; protected set; }
 
-        public Texture WindowTexture;
-        public Surface WindowSurface;
+        #region DropShadow
+
+        public bool DropShadow
+        {
+            get => _DropShadow;
+            set
+            {
+                if (_DropShadow == value) return;
+
+                bool oldValue = _DropShadow;
+                _DropShadow = value;
+
+                OnDropShadowChanged(oldValue, value);
+            }
+        }
+        private bool _DropShadow;
+        public event EventHandler<EventArgs> DropShadowChanged;
+        public virtual void OnDropShadowChanged(bool oValue, bool nValue)
+        {
+            DropShadowChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        private RenderTargetResource _windowRenderTarget;
+        public RenderTexture WindowTexture;
+        public RenderSurface WindowSurface { get; private set; }
         public bool WindowValid;
 
         public override void OnSizeChanged(Size oValue, Size nValue)
@@ -230,35 +276,36 @@ namespace Client.Controls
         {
             base.CreateTexture();
 
-            if (WindowTexture == null || DisplayArea.Size != TextureSize)
+            if (!WindowTexture.IsValid || DisplayArea.Size != TextureSize)
             {
-                WindowTexture = new Texture(DXManager.Device, DXManager.Parameters.BackBufferWidth, DXManager.Parameters.BackBufferHeight, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
-                WindowSurface = WindowTexture.GetSurfaceLevel(0);
+                ReleaseWindowRenderTarget();
+
+                Size backBufferSize = RenderingPipelineManager.GetBackBufferSize();
+                _windowRenderTarget = RenderingPipelineManager.CreateRenderTarget(backBufferSize);
+
+                WindowTexture = _windowRenderTarget.Texture;
+                WindowSurface = _windowRenderTarget.Surface;
                 WindowValid = false;
             }
         }
-
         public override void DisposeTexture()
         {
             base.DisposeTexture();
 
-            if (WindowTexture != null)
-            {
-                if (!WindowTexture.IsDisposed)
-                    WindowTexture.Dispose();
+            ReleaseWindowRenderTarget();
 
-                WindowTexture = null;
-            }
-
-            if (WindowSurface != null)
-            {
-                if (!WindowSurface.IsDisposed)
-                    WindowSurface.Dispose();
-
-                WindowSurface = null;
-            }
         }
+        private void ReleaseWindowRenderTarget()
+        {
+            if (_windowRenderTarget.IsValid)
+            {
+                RenderingPipelineManager.ReleaseRenderTarget(_windowRenderTarget);
+                _windowRenderTarget = default;
+            }
 
+            WindowTexture = default;
+            WindowSurface = default;
+        }
         private void UpdateLocations()
         {
             if (CloseButton != null)
@@ -309,14 +356,19 @@ namespace Client.Controls
 
 
             if (!HasTopBorder)
-                h += NoFooterSize;
+                h += NoHeaderSize;
             else if (HasTitle)
                 h += HeaderSize;
             else
                 h += HeaderBarSize;
 
             if (!HasFooter)
+            {
                 h += NoFooterSize;
+
+                //if (SlimFooter)
+                //    h -= (SlimFooterSize + 20);
+            }
             else
                 h += FooterSize;
 
@@ -329,7 +381,7 @@ namespace Client.Controls
             int y = 6;
 
             if (!HasTopBorder)
-                y += NoFooterSize;
+                y += NoHeaderSize;
             else if (HasTitle)
                 y += HeaderSize;
             else
@@ -338,9 +390,13 @@ namespace Client.Controls
             int w = size.Width - x * 2;
             int h = size.Height - y - 6;
 
-
             if (!HasFooter)
-                h -= NoFooterSize;
+            {
+                h += NoFooterSize;
+
+                if (SlimFooter)
+                    h -= (SlimFooterSize);
+            }
             else
                 h -= FooterSize;
 
@@ -365,23 +421,38 @@ namespace Client.Controls
 
             if (!WindowValid)
             {
-                Surface oldSurface = DXManager.CurrentSurface;
-                DXManager.SetSurface(WindowSurface);
-                DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
+                if (!WindowSurface.IsValid)
+                    throw new InvalidOperationException("Window surface is not available.");
+
+                RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+                RenderingPipelineManager.SetSurface(WindowSurface);
+                RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
 
                 DrawEdges();
 
-                DXManager.SetSurface(oldSurface);
+                RenderingPipelineManager.SetSurface(oldSurface);
                 WindowValid = true;
             }
 
-            float oldOpacity = DXManager.Opacity;
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
-            DXManager.SetOpacity(Opacity);
+            if (DropShadow)
+            {
+                Rectangle displayArea = DisplayArea;
+                RectangleF shadowBounds = new RectangleF(displayArea.X, displayArea.Y, displayArea.Width, displayArea.Height);
 
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
+            }
+
+            RenderingPipelineManager.SetOpacity(Opacity);
             PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
 
-            DXManager.SetOpacity(oldOpacity);
+            if (DropShadow)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
+
+            RenderingPipelineManager.SetOpacity(oldOpacity);
         }
 
         private void DrawEdges()
@@ -439,19 +510,38 @@ namespace Client.Controls
 
             if (!HasFooter)
             {
-                s = InterfaceLibrary.GetSize(2);
-                InterfaceLibrary.Draw(2, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
+                if (SlimFooter)
+                {
+                    s = InterfaceLibrary.GetSize(126);
+                    InterfaceLibrary.Draw(126, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
 
-                s = InterfaceLibrary.GetSize(8);
-                InterfaceLibrary.Draw(8, 0, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                    y = s.Height - 2; // Theres a 2 pixel blank space on this image
 
-                s = InterfaceLibrary.GetSize(9);
-                InterfaceLibrary.Draw(9, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                    s = InterfaceLibrary.GetSize(2);
+                    InterfaceLibrary.Draw(2, 0, Size.Height - s.Height - y, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
+
+                    s = InterfaceLibrary.GetSize(8);
+                    InterfaceLibrary.Draw(8, 0, Size.Height - s.Height - y, Color.White, false, 1F, ImageType.Image);
+
+                    s = InterfaceLibrary.GetSize(9);
+                    InterfaceLibrary.Draw(9, Size.Width - s.Width, Size.Height - s.Height - y, Color.White, false, 1F, ImageType.Image);
+                }
+                else
+                {
+                    s = InterfaceLibrary.GetSize(2);
+                    InterfaceLibrary.Draw(2, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
+
+                    s = InterfaceLibrary.GetSize(8);
+                    InterfaceLibrary.Draw(8, 0, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+
+                    s = InterfaceLibrary.GetSize(9);
+                    InterfaceLibrary.Draw(9, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                }
             }
             else
             {
-                s = InterfaceLibrary.GetSize(0);
-                InterfaceLibrary.Draw(0, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
+                s = InterfaceLibrary.GetSize(126);
+                InterfaceLibrary.Draw(126, 0, Size.Height - s.Height, Color.White, new Rectangle(0, 0, Size.Width, s.Height), 1f, ImageType.Image);
 
                 y = s.Height;
 
@@ -472,11 +562,11 @@ namespace Client.Controls
                 InterfaceLibrary.Draw(7, Size.Width - s.Width, Size.Height - y - s.Height + 3, Color.White, false, 1F, ImageType.Image);
 
 
-                s = InterfaceLibrary.GetSize(13);
-                InterfaceLibrary.Draw(13, 0, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                //s = InterfaceLibrary.GetSize(13);
+                //InterfaceLibrary.Draw(13, 0, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
 
-                s = InterfaceLibrary.GetSize(14);
-                InterfaceLibrary.Draw(14, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
+                //s = InterfaceLibrary.GetSize(14);
+                //InterfaceLibrary.Draw(14, Size.Width - s.Width, Size.Height - s.Height, Color.White, false, 1F, ImageType.Image);
             }
         }
 
@@ -552,21 +642,7 @@ namespace Client.Controls
                 HasFooterChanged = null;
                 ClientAreaChanged = null;
 
-                if (WindowTexture != null)
-                {
-                    if (!WindowTexture.IsDisposed)
-                        WindowTexture.Dispose();
-
-                    WindowTexture = null;
-                }
-
-                if (WindowSurface != null)
-                {
-                    if (!WindowSurface.IsDisposed)
-                        WindowSurface.Dispose();
-
-                    WindowSurface = null;
-                }
+                ReleaseWindowRenderTarget();
 
                 WindowValid = false;
                 Settings = null;

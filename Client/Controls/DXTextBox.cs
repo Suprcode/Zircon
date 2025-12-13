@@ -1,11 +1,10 @@
 ﻿using Client.Envir;
-using SharpDX.Direct3D9;
+using Client.Rendering;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using DataRectangle = SharpDX.DataRectangle;
 using Font = System.Drawing.Font;
 
 //Cleaned
@@ -290,27 +289,39 @@ namespace Client.Controls
 
         #region Methods
 
+        private RenderTexture _textBoxTextureHandle;
+
         protected override void CreateTexture()
         {
-            if (ControlTexture == null || DisplayArea.Size != TextureSize)
+            if (!ControlTexture.IsValid || DisplayArea.Size != TextureSize)
             {
                 DisposeTexture();
                 TextureSize = DisplayArea.Size;
-                ControlTexture = new Texture(DXManager.Device, TextureSize.Width, TextureSize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-                DXManager.ControlList.Add(this);
+                _textBoxTextureHandle = RenderingPipelineManager.CreateTexture(TextureSize, RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
+
+                ControlTexture = _textBoxTextureHandle;
+                RenderingPipelineManager.RegisterControlCache(this);
             }
 
-            DataRectangle rect = ControlTexture.LockRectangle(0, LockFlags.Discard);
-
-            using (Bitmap image = new Bitmap(DisplayArea.Width, DisplayArea.Height, rect.Pitch, PixelFormat.Format32bppArgb, rect.DataPointer))
+            using (TextureLock textureLock = RenderingPipelineManager.LockTexture(_textBoxTextureHandle, TextureLockMode.Discard))
+            using (Bitmap image = new Bitmap(DisplayArea.Width, DisplayArea.Height, textureLock.Pitch, PixelFormat.Format32bppArgb, textureLock.DataPointer))
+            {
                 TextBox.DrawToBitmap(image, new Rectangle(Point.Empty, Size.Round(DisplayArea.Size)));
-
-            ControlTexture.UnlockRectangle(0);
+            }
 
             TextureValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
+        public override void DisposeTexture()
+        {
+            if (_textBoxTextureHandle.IsValid)
+            {
+                RenderingPipelineManager.ReleaseTexture(_textBoxTextureHandle);
+                _textBoxTextureHandle = default;
+            }
 
+            base.DisposeTexture();
+        }
         public virtual void OnActivated()
         {
             if (TextBox.Visible != Editable)
@@ -440,17 +451,23 @@ namespace Client.Controls
 
         protected override void DrawControl()
         {
-            if (!DrawTexture) return;
+            if (!DrawTexture)
+            {
+                return;
+            }
 
-            if (!TextureValid) CreateTexture();
+            if (!TextureValid)
+            {
+                CreateTexture();
+            }
 
-            float oldOpacity = DXManager.Opacity;
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
-            DXManager.SetOpacity(Opacity);
+            RenderingPipelineManager.SetOpacity(Opacity);
 
             PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
 
-            DXManager.SetOpacity(oldOpacity);
+            RenderingPipelineManager.SetOpacity(oldOpacity);
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
@@ -596,7 +613,7 @@ namespace Client.Controls
 
                 if (e.Alt && e.KeyCode == Keys.Enter)
                 {
-                    DXManager.ToggleFullScreen();
+                    RenderingPipelineManager.ToggleFullScreen();
                     return;
                 }
 

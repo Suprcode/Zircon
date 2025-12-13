@@ -1,4 +1,5 @@
 ﻿using Client.Envir;
+using Client.Rendering;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
@@ -2570,7 +2571,7 @@ namespace Client.Models
 
             DrawShadow(DrawX, y);
 
-            DrawBody(DrawX, y);
+            DrawBody(DrawX, y, MouseObject == this);
         }
 
         public void DrawShadow(int x, int y)
@@ -2597,8 +2598,25 @@ namespace Client.Models
             }
         }
 
-        public void DrawBody(int x, int y)
+        public void DrawBody(int x, int y, bool mouseOver = false)
         {
+            bool outlineEnabled = false;
+
+            if (mouseOver && Config.ShowTargetOutline)
+            {
+                const int levelDiff = 2;
+
+                var result = (GameScene.Game.User.Level - MonsterInfo.Level) switch
+                {
+                    > levelDiff => Color.LimeGreen,
+                    <= levelDiff and >= 0 => Color.Yellow,
+                    _ => Color.Red
+                };
+
+                RenderingPipelineManager.EnableOutlineEffect(result, 2f);
+                outlineEnabled = true;
+            }
+
             switch (Image)
             {
                 case MonsterImage.None:
@@ -2668,6 +2686,11 @@ namespace Client.Models
                         break;
                 }
             }
+
+            if (outlineEnabled)
+            {
+                RenderingPipelineManager.DisableOutlineEffect();
+            }
         }
         public override void DrawHealth()
         {
@@ -2710,10 +2733,12 @@ namespace Client.Models
                 case MonsterImage.JinamStoneGate:
                     return;
             }
-            DXManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
+
+            RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
             DrawBody(DrawX, y);
-            DXManager.SetBlend(false);
+            RenderingPipelineManager.SetBlend(false);
         }
+
         public override void DrawName()
         {
             if (!Visible) return;

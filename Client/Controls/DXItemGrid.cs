@@ -1,10 +1,7 @@
-﻿using Client.Envir;
-using Client.Extensions;
+﻿using Client.Rendering;
 using Library;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Numerics;
 
 //Cleaned
 namespace Client.Controls
@@ -337,23 +334,26 @@ namespace Client.Controls
         {
             base.OnClearTexture();
 
-            if (!Border || BorderInformation == null) return;
+            if (!Border || BorderInformation == null)
+            {
+                return;
+            }
 
-            DXManager.Line.Draw(BorderInformation, BorderColour);
+            RenderingPipelineManager.DrawLine(BorderInformation, BorderColour);
 
             for (int i = 0; i <= GridSize.Width; i++)
             {
-                DXManager.Line.Draw(new[] {
-                    new Vector2(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), 0),
-                    new Vector2(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), Size.Height)
+                RenderingPipelineManager.DrawLine(new[] {
+                    new LinePoint(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), 0),
+                    new LinePoint(((DXItemCell.CellWidth - 1 + (GridPadding * 2)) * i), Size.Height)
                 }, BorderColour);
             }
 
             for (int i = 0; i <= Math.Min(GridSize.Height, VisibleHeight); i++)
             {
-                DXManager.Line.Draw(new[] {
-                    new Vector2(0, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i)),
-                    new Vector2(Size.Width, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i))
+                RenderingPipelineManager.DrawLine(new[] {
+                    new LinePoint(0, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i)),
+                    new LinePoint(Size.Width, ((DXItemCell.CellHeight - 1 + (GridPadding * 2)) * i))
                 }, BorderColour);
             }
         }
@@ -361,19 +361,20 @@ namespace Client.Controls
         protected internal override void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || Size.Width == 0 || Size.Height == 0) return;
-
-            List<Vector2> border = new List<Vector2>
+            if (!Border || Size.Width == 0 || Size.Height == 0)
             {
-                new Vector2(0, 0),
-                new Vector2(Size.Width - 1, 0),
-                new Vector2(Size.Width - 1, Size.Height - 1),
-                new Vector2(0, Size.Height - 1),
-                new Vector2(0, 0)
+                return;
+            }
+
+            BorderInformation = new[]
+            {
+                new LinePoint(0, 0),
+                new LinePoint(Size.Width - 1, 0),
+                new LinePoint(Size.Width - 1, Size.Height - 1),
+                new LinePoint(0, Size.Height - 1),
+                new LinePoint(0, 0)
             };
-
-
-            BorderInformation = border.ToArray();
+            TextureValid = false;
         }
 
         protected override void DrawBorder()

@@ -1,6 +1,7 @@
 ﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
+using Client.Rendering;
 using Client.Scenes;
 using Library;
 using SharpDX.Windows;
@@ -145,7 +146,7 @@ namespace Client
             {
                 if (e.Alt && e.KeyCode == Keys.Enter)
                 {
-                    DXManager.ToggleFullScreen();
+                    RenderingPipelineManager.ToggleFullScreen();
                     return;
                 }
 

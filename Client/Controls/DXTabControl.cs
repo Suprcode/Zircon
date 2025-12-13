@@ -1,11 +1,9 @@
 ﻿using Client.Envir;
-using Client.Extensions;
+using Client.Rendering;
 using Library;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Numerics;
 
 namespace Client.Controls
 {
@@ -303,7 +301,7 @@ namespace Client.Controls
                 else
                 {
                     TabButton.ButtonType = ButtonType.SelectedTab;
-                    TabButton.Label.ForeColour = Color.White;
+                    TabButton.Label.ForeColour = Constants.ActiveTabColour;
                 }
             }
             else
@@ -317,7 +315,7 @@ namespace Client.Controls
                 else
                 {
                     TabButton.ButtonType = ButtonType.DeselectedTab;
-                    TabButton.Label.ForeColour = Color.FromArgb(198, 166, 99);
+                    TabButton.Label.ForeColour = Constants.InactiveTabColour;
                 }
             }
 
@@ -443,7 +441,8 @@ namespace Client.Controls
             TabButton = new DXButton
             {
                 ButtonType = ButtonType.DeselectedTab,
-                Size = new Size(60, TabHeight)
+                Size = new Size(60, TabHeight),
+                Label = { ForeColour = Constants.InactiveTabColour }
             };
             TabButton.Label.TextChanged += (o, e) =>
             {
@@ -585,15 +584,18 @@ namespace Client.Controls
         protected internal override void UpdateBorderInformation()
         {
             BorderInformation = null;
-            if (!Border || Size.Width == 0 || Size.Height == 0) return;
+            if (!Border || Size.Width == 0 || Size.Height == 0)
+            {
+                return;
+            }
 
             BorderInformation = new[]
             {
-                new Vector2(1, 1),
-                new Vector2(Size.Width - 1, 1 ),
-                new Vector2(Size.Width - 1, Size.Height - 1),
-                new Vector2(1 , Size.Height - 1),
-                new Vector2(1 , 1)
+                new LinePoint(1, 1),
+                new LinePoint(Size.Width - 1, 1),
+                new LinePoint(Size.Width - 1, Size.Height - 1),
+                new LinePoint(1, Size.Height - 1),
+                new LinePoint(1, 1)
             };
         }
 
@@ -613,23 +615,28 @@ namespace Client.Controls
 
         protected void DrawTabBorder()
         {
-            if (InterfaceLibrary == null) return;
+            if (InterfaceLibrary == null)
+            {
+                return;
+            }
 
-            Surface oldSurface = DXManager.CurrentSurface;
-            DXManager.SetSurface(DXManager.ScratchSurface);
-            DXManager.Device.Clear(ClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
+            RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
 
             DrawEdges();
 
-            DXManager.SetSurface(oldSurface);
+            RenderingPipelineManager.SetSurface(oldSurface);
 
-            float oldOpacity = DXManager.Opacity;
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
 
-            DXManager.SetOpacity(Opacity);
+            RenderingPipelineManager.SetOpacity(Opacity);
 
-            PresentTexture(DXManager.ScratchTexture, Parent, DisplayArea, ForeColour, this);
+            RenderTexture scratchHandle = RenderingPipelineManager.GetScratchTexture();
 
-            DXManager.SetOpacity(oldOpacity);
+            PresentTexture(scratchHandle, Parent, DisplayArea, ForeColour, this);
+
+            RenderingPipelineManager.SetOpacity(oldOpacity);
         }
         public void DrawEdges()
         {

@@ -32,6 +32,7 @@ namespace Library
         public static DBCollection<FameInfo> FameInfoList;
         public static DBCollection<BundleInfo> BundleInfoList;
         public static DBCollection<LootBoxInfo> LootBoxInfoList;
+        public static DBCollection<HelpInfo> HelpInfoList;
 
         public static Random Random = new Random();
 
@@ -379,6 +380,8 @@ namespace Library
         public int HermitPoints { get; set; }
 
         public float DayTime { get; set; }
+        public TimeOfDay TimeOfDay { get; set; }
+        public string TimeOfDayLabel { get; set; }
         public bool AllowGroup { get; set; }
 
         public List<ClientFriendInfo> Friends { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
+using Client.Extensions;
 using Client.UserModels;
 using Library;
 using System;
@@ -636,7 +637,7 @@ namespace Client.Scenes.Views
                 ClientUserItem item = items.FirstOrDefault(e => e.Index == index);
                 if (item == null) continue;
 
-                List<ButtonInfo> buttons = NPCDialog.GetWordRegionsNew(DXManager.Graphics, label.Text, label.Font, label.DrawFormat, label.Size.Width, ranges[i].First, ranges[i].Length);
+                List<ButtonInfo> buttons = DrawTextExtensions.GetWordRegionsNew(label.Text, label.Font, label.DrawFormat, label.Size.Width, ranges[i].First, ranges[i].Length);
 
                 List<DXLabel> labels = new List<DXLabel>();
 

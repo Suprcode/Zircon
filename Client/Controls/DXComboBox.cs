@@ -12,6 +12,7 @@ namespace Client.Controls
         #region Properties
         public static List<DXComboBox> ComboBoxes = new List<DXComboBox>();
 
+        public DXImageControl Background;
 
         #region NormalHeight
 
@@ -153,6 +154,14 @@ namespace Client.Controls
             Border = true;
             BorderColour = Color.FromArgb(198, 166, 99);
 
+            Background = new DXImageControl
+            {
+                LibraryFile = LibraryFile.Interface,
+                Index = 206,
+                Visible = false,
+                Parent = this
+            };
+
             DownArrow = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
@@ -214,6 +223,13 @@ namespace Client.Controls
                 DropDownHeightChanged = null;
                 ShowingChanged = null;
                 SelectedItemChanged = null;
+
+                if (Background != null)
+                {
+                    if (!Background.IsDisposed)
+                        Background.Dispose();
+                    Background = null;
+                }
 
                 if (DownArrow != null)
                 {

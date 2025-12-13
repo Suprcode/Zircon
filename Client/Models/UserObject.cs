@@ -328,6 +328,9 @@ namespace Client.Models
             HideHead = info.HideHead;
 
             GameScene.Game.DayTime = info.DayTime;
+            GameScene.Game.TimeOfDay = info.TimeOfDay;
+            GameScene.Game.TimeOfDayLabel = info.TimeOfDayLabel;
+
             GameScene.Game.GroupBox.AllowGroup = info.AllowGroup;
 
             GameScene.Game.StruckEnabled = info.StruckEnabled;
