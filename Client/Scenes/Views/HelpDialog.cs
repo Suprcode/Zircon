@@ -430,12 +430,14 @@ namespace Client.Scenes.Views
 
             if (oValue != null)
             {
+                oValue.Label.ForeColour = Constants.InactiveTabColour;
                 oValue.Index = 9310;
                 oValue.HoverIndex = 9310;
             }
 
             if (nValue != null)
             {
+                nValue.Label.ForeColour = Color.White;
                 nValue.Index = 9311;
                 nValue.HoverIndex = 9311;
             }
@@ -501,9 +503,13 @@ namespace Client.Scenes.Views
                 Size = new Size(134, 21),
                 Parent = this,
                 Location = new Point(0, y),
-                Label = { Text = page.Info.Title }
+                Label = { Text = page.Info.Title, ForeColour = Constants.InactiveTabColour }
             };
-            button.MouseClick += (o, e) => Selected = (DXButton)o;
+            button.MouseClick += (o, e) =>
+            {
+                Selected = (DXButton)o;
+            };
+
             button.MouseWheel += MenuScrollBar.DoMouseWheel;
 
             Items.Add(button, page);
