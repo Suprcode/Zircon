@@ -49,8 +49,8 @@
             JsonGroup = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             HelpMemoEdit = new DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit();
             PageMemoEdit = new DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit();
-            SectionMemoEdit = new DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit();
-            SectionGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
+            ItemMemoEdit = new DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit();
+            ItemGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn11 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn13 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -60,8 +60,8 @@
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)HelpMemoEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)PageMemoEdit).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)SectionMemoEdit).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)SectionGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ItemMemoEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ItemGridView).BeginInit();
             SuspendLayout();
             // 
             // PageGridView
@@ -100,8 +100,8 @@
             // 
             // gridColumn9
             // 
-            gridColumn9.Caption = "Sections";
-            gridColumn9.FieldName = "Sections";
+            gridColumn9.Caption = "Items";
+            gridColumn9.FieldName = "Items";
             gridColumn9.MinWidth = 17;
             gridColumn9.Name = "gridColumn9";
             gridColumn9.Width = 64;
@@ -110,8 +110,8 @@
             // 
             HelpGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
             gridLevelNode1.LevelTemplate = PageGridView;
-            gridLevelNode2.LevelTemplate = SectionGridView;
-            gridLevelNode2.RelationName = "Sections";
+            gridLevelNode2.LevelTemplate = ItemGridView;
+            gridLevelNode2.RelationName = "Items";
             gridLevelNode1.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode2 });
             gridLevelNode1.RelationName = "Pages";
             HelpGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1 });
@@ -119,11 +119,11 @@
             HelpGridControl.MainView = HelpGridView;
             HelpGridControl.MenuManager = ribbon;
             HelpGridControl.Name = "HelpGridControl";
-            HelpGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { HelpMemoEdit, PageMemoEdit, SectionMemoEdit });
+            HelpGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { HelpMemoEdit, PageMemoEdit, ItemMemoEdit });
             HelpGridControl.ShowOnlyPredefinedDetails = true;
-            HelpGridControl.Size = new System.Drawing.Size(644, 323);
+            HelpGridControl.Size = new System.Drawing.Size(630, 316);
             HelpGridControl.TabIndex = 2;
-            HelpGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { HelpGridView, SectionGridView, PageGridView });
+            HelpGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { HelpGridView, ItemGridView, PageGridView });
             // 
             // HelpGridView
             // 
@@ -178,7 +178,7 @@
             ribbon.Name = "ribbon";
             ribbon.OptionsMenuMinWidth = 283;
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(644, 144);
+            ribbon.Size = new System.Drawing.Size(630, 144);
             // 
             // SaveButton
             // 
@@ -241,24 +241,24 @@
             PageMemoEdit.Name = "PageMemoEdit";
             PageMemoEdit.ShowIcon = false;
             // 
-            // SectionMemoEdit
+            // ItemMemoEdit
             // 
-            SectionMemoEdit.AutoHeight = false;
-            SectionMemoEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            SectionMemoEdit.Name = "SectionMemoEdit";
+            ItemMemoEdit.AutoHeight = false;
+            ItemMemoEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            ItemMemoEdit.Name = "ItemMemoEdit";
             // 
-            // SectionGridView
+            // ItemGridView
             // 
-            SectionGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn10, gridColumn11, gridColumn13 });
-            SectionGridView.DetailHeight = 325;
-            SectionGridView.GridControl = HelpGridControl;
-            SectionGridView.Name = "SectionGridView";
-            SectionGridView.OptionsDetail.EnableMasterViewMode = false;
-            SectionGridView.OptionsView.EnableAppearanceEvenRow = true;
-            SectionGridView.OptionsView.EnableAppearanceOddRow = true;
-            SectionGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
-            SectionGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
-            SectionGridView.OptionsView.ShowGroupPanel = false;
+            ItemGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn10, gridColumn11, gridColumn13 });
+            ItemGridView.DetailHeight = 325;
+            ItemGridView.GridControl = HelpGridControl;
+            ItemGridView.Name = "ItemGridView";
+            ItemGridView.OptionsDetail.EnableMasterViewMode = false;
+            ItemGridView.OptionsView.EnableAppearanceEvenRow = true;
+            ItemGridView.OptionsView.EnableAppearanceOddRow = true;
+            ItemGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
+            ItemGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
+            ItemGridView.OptionsView.ShowGroupPanel = false;
             // 
             // gridColumn10
             // 
@@ -283,7 +283,7 @@
             // gridColumn13
             // 
             gridColumn13.Caption = "Content";
-            gridColumn13.ColumnEdit = SectionMemoEdit;
+            gridColumn13.ColumnEdit = ItemMemoEdit;
             gridColumn13.FieldName = "Content";
             gridColumn13.MinWidth = 17;
             gridColumn13.Name = "gridColumn13";
@@ -295,7 +295,7 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(644, 467);
+            ClientSize = new System.Drawing.Size(630, 460);
             Controls.Add(HelpGridControl);
             Controls.Add(ribbon);
             Name = "HelpInfoView";
@@ -307,8 +307,8 @@
             ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
             ((System.ComponentModel.ISupportInitialize)HelpMemoEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)PageMemoEdit).EndInit();
-            ((System.ComponentModel.ISupportInitialize)SectionMemoEdit).EndInit();
-            ((System.ComponentModel.ISupportInitialize)SectionGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ItemMemoEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ItemGridView).EndInit();
             ResumeLayout(false);
             PerformLayout();
 
@@ -326,7 +326,7 @@
         private DevExpress.XtraGrid.GridControl HelpGridControl;
         private DevExpress.XtraGrid.Views.Grid.GridView HelpGridView;
         private DevExpress.XtraGrid.Views.Grid.GridView PageGridView;
-        private DevExpress.XtraGrid.Views.Grid.GridView SectionGridView;
+        private DevExpress.XtraGrid.Views.Grid.GridView ItemGridView;
         private DevExpress.XtraGrid.Columns.GridColumn colTitle;
         private DevExpress.XtraGrid.Columns.GridColumn colOrder;
         private DevExpress.XtraGrid.Columns.GridColumn colDescription;
@@ -338,6 +338,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn13;
         private DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit HelpMemoEdit;
         private DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit PageMemoEdit;
-        private DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit SectionMemoEdit;
+        private DevExpress.XtraEditors.Repository.RepositoryItemMemoExEdit ItemMemoEdit;
     }
 }

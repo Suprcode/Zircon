@@ -282,7 +282,7 @@ namespace Client.Controls
 
             #region Display
 
-            DXConfigSection displayGraphicsSection = new("Display")
+            DXConfigSection displayGraphicsSection = new(CEnvir.Language.CommonControlConfigWindowGraphicsSectionDisplayLabel)
             {
                 Columns = 1,
                 Parent = GraphicsTab,
@@ -396,7 +396,7 @@ namespace Client.Controls
 
             #region Usability
 
-            DXConfigSection displayUsabilitySection = new("Usability")
+            DXConfigSection displayUsabilitySection = new(CEnvir.Language.CommonControlConfigWindowGraphicsSectionUsabilityLabel)
             {
                 Columns = 1,
                 Parent = GraphicsTab,
@@ -457,7 +457,7 @@ namespace Client.Controls
 
             #region Effects
 
-            DXConfigSection displayEffectsSection = new("Effects")
+            DXConfigSection displayEffectsSection = new(CEnvir.Language.CommonControlConfigWindowGraphicsSectionEffectsLabel)
             {
                 Columns = 2,
                 Parent = GraphicsTab,
@@ -504,7 +504,7 @@ namespace Client.Controls
 
             #region Options
 
-            DXConfigSection soundSettingsSection = new DXConfigSection("Settings")
+            DXConfigSection soundSettingsSection = new DXConfigSection(CEnvir.Language.CommonControlConfigWindowSoundsSectionOptionsLabel)
             {
                 Columns = 1,
                 Parent = SoundTab,
@@ -529,7 +529,7 @@ namespace Client.Controls
 
             #region Volume
 
-            DXConfigSection soundVolumeSection = new DXConfigSection("Volume")
+            DXConfigSection soundVolumeSection = new DXConfigSection(CEnvir.Language.CommonControlConfigWindowSoundsSectionVolumeLabel)
             {
                 Columns = 1,
                 Parent = SoundTab,
@@ -613,7 +613,7 @@ namespace Client.Controls
 
             #region Game
 
-            DXConfigSection gameSettingsSection = new("Settings")
+            DXConfigSection gameSettingsSection = new(CEnvir.Language.CommonControlConfigWindowGameSectionSettingsLabel)
             {
                 Columns = 2,
                 Parent = GameTab,
@@ -688,12 +688,12 @@ namespace Client.Controls
 
             #region Network
 
-            DXConfigSection networkNetworkSection = new("Network")
+            DXConfigSection networkSettingsSection = new(CEnvir.Language.CommonControlConfigWindowNetworkSectionSettingsLabel)
             {
                 Columns = 1,
                 Parent = NetworkTab,
             };
-            NetworkTab.AddSection(networkNetworkSection);
+            NetworkTab.AddSection(networkSettingsSection);
 
             UseNetworkConfigCheckBox = new DXCheckBox
             {
@@ -701,7 +701,7 @@ namespace Client.Controls
                 Parent = NetworkTab,
                 Checked = Config.FullScreen,
             };
-            networkNetworkSection.AddControl("", UseNetworkConfigCheckBox);
+            networkSettingsSection.AddControl("", UseNetworkConfigCheckBox);
 
             IPAddressTextBox = new DXTextBox
             {
@@ -709,7 +709,7 @@ namespace Client.Controls
                 Size = new Size(100, 16),
                 Parent = NetworkTab,
             };
-            networkNetworkSection.AddControl(CEnvir.Language.CommonControlConfigWindowNetworkTabUseIPAddressLabel, IPAddressTextBox);
+            networkSettingsSection.AddControl(CEnvir.Language.CommonControlConfigWindowNetworkTabUseIPAddressLabel, IPAddressTextBox);
 
             PortBox = new DXNumberBox
             {
@@ -719,7 +719,7 @@ namespace Client.Controls
                 Location = new Point(104, 60)
             };
 
-            networkNetworkSection.AddControl(CEnvir.Language.CommonControlConfigWindowNetworkTabUsePortLabel, PortBox);
+            networkSettingsSection.AddControl(CEnvir.Language.CommonControlConfigWindowNetworkTabUsePortLabel, PortBox);
 
             #endregion
 
@@ -727,7 +727,7 @@ namespace Client.Controls
 
             #region Settings
 
-            DXConfigSection uiSettingsSection = new("Settings")
+            DXConfigSection uiSettingsSection = new(CEnvir.Language.CommonControlConfigWindowUISectionSettingsLabel)
             {
                 Columns = 2,
                 Parent = UITab,
@@ -784,7 +784,7 @@ namespace Client.Controls
 
             #region Colours
 
-            DXConfigSection uiColoursSection = new("Colours")
+            DXConfigSection uiColoursSection = new(CEnvir.Language.CommonControlConfigWindowUISectionColoursLabel)
             {
                 Columns = 2,
                 Parent = UITab,
@@ -1451,7 +1451,7 @@ namespace Client.Controls
                 Location = new Point(0, 0)
             };
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 2; i++)
             {
                 BodyImages.Add(new DXImageControl
                 {
@@ -1546,7 +1546,23 @@ namespace Client.Controls
             for (int i = 0; i < bodyCount; i++)
             {
                 if (BodyImages.Count < bodyCount)
-                    break;
+                {
+                    DXImageControl img;
+                    BodyImages.Add(img = new DXImageControl
+                    {
+                        Index = 4751,
+                        LibraryFile = LibraryFile.GameInter,
+                        Parent = this,
+                        IsControl = false,
+                        PassThrough = true,
+                        Visible = false
+                    });
+
+                    var firstIndex = Controls.IndexOf(BodyImages[0]);
+
+                    Controls.Remove(img);
+                    Controls.Insert(firstIndex, img);
+                }
 
                 BodyImages[i].Visible = true;
                 BodyImages[i].Location = new Point(0, imageY);

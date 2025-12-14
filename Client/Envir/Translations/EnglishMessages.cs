@@ -136,6 +136,17 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameTabLabel { get; set; } = "Game";
         public override string CommonControlConfigWindowNetworkTabLabel { get; set; } = "Network";
         public override string CommonControlConfigWindowUITabLabel { get; set; } = "UI";
+
+        public override string CommonControlConfigWindowGraphicsSectionDisplayLabel { get; set; } = "Display";
+        public override string CommonControlConfigWindowGraphicsSectionUsabilityLabel { get; set; } = "Usability";
+        public override string CommonControlConfigWindowGraphicsSectionEffectsLabel { get; set; } = "Effects";
+        public override string CommonControlConfigWindowSoundsSectionOptionsLabel { get; set; } = "Options";
+        public override string CommonControlConfigWindowSoundsSectionVolumeLabel { get; set; } = "Volume";
+        public override string CommonControlConfigWindowGameSectionSettingsLabel { get; set; } = "Settings";
+        public override string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; } = "Settings";
+        public override string CommonControlConfigWindowUISectionSettingsLabel { get; set; } = "Settings";
+        public override string CommonControlConfigWindowUISectionColoursLabel { get; set; } = "Colours";
+
         public override string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; } = "Full Screen";
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "Game Size";
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync";

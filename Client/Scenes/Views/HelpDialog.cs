@@ -22,32 +22,38 @@ namespace Client.Scenes.Views
 
         public HelpMenu Menu;
 
-        #region Selected Page
+        public WindowSetting Settings;
+        public WindowType Type => WindowType.HelpBox;
 
-        public HelpPage SelectedPage
+        #region Selected
+
+        public HelpContainer Selected
         {
-            get => _SelectedPage;
+            get => _Selected;
             private set
             {
-                HelpPage oldValue = _SelectedPage;
-                _SelectedPage = value;
+                HelpContainer oldValue = _Selected;
+                _Selected = value;
 
-                OnSelectedPageChanged(oldValue, value);
+                OnSelectedChanged(oldValue, value);
             }
         }
-        private HelpPage _SelectedPage;
-        public event EventHandler<EventArgs> SelectedPageChanged;
-        public void OnSelectedPageChanged(HelpPage oValue, HelpPage nValue)
+        private HelpContainer _Selected;
+        public event EventHandler<EventArgs> SelectedChanged;
+        public void OnSelectedChanged(HelpContainer oValue, HelpContainer nValue)
         {
-            SelectedPageChanged?.Invoke(this, EventArgs.Empty);
+            oValue?.Visible = false;
+
+            SelectedChanged?.Invoke(this, EventArgs.Empty);
+
+            nValue?.Update();
+
+            nValue?.Visible = true;
         }
 
         #endregion
 
-        public List<HelpPage> Pages = [];
-
-        public WindowSetting Settings;
-        public WindowType Type => WindowType.HelpBox;
+        public List<HelpContainer> Items = [];
 
         public void LoadSettings()
         {
@@ -152,29 +158,25 @@ namespace Client.Scenes.Views
             };
             Menu.SelectedChanged += (o, e) =>
             {
-                SelectedPage?.Visible = false;
-
-                SelectedPage = Menu.GetCurrentPage();
-                SelectedPage.Update(SelectedPage.TabControl.SelectedTab);
-                SelectedPage?.Visible = true;
+                Selected = Menu.GetAndUpdateSelected();
             };
 
-            AddPages();
+            Add();
         }
 
         #region Methods
 
-        private void AddPages()
+        private void Add()
         {
             foreach (var helpInfo in Globals.HelpInfoList.Binding.OrderBy(x => x.Order))
             {
-                AddPage(helpInfo);
+                Add(helpInfo);
             }
         }
 
-        private void AddPage(HelpInfo info)
+        private void Add(HelpInfo info)
         {
-            var page = new HelpPage(info)
+            var page = new HelpContainer(info)
             {
                 Parent = this,
                 Size = new Size(535, 312),
@@ -182,9 +184,9 @@ namespace Client.Scenes.Views
                 Visible = false
             };
 
-            Pages.Add(page);
+            Items.Add(page);
 
-            Menu.AddPage(page);
+            Menu.Add(page);
         }
 
         #endregion
@@ -221,28 +223,27 @@ namespace Client.Scenes.Views
                     Menu = null;
                 }
 
-                _SelectedPage = null;
+                _Selected = null;
             }
         }
 
         #endregion
     }
 
-    public sealed class HelpPage : DXControl
+    public sealed class HelpContainer : DXControl
     {
         #region Properties
 
         public DXTabControl TabControl;
-        public DXControl TextContainer;
-        public DXVScrollBar TextContainerScrollBar;
+        public DXVScrollBar ScrollBar;
 
         #endregion
 
-        public Dictionary<HelpSectionInfo, HelpSection> Sections = new Dictionary<HelpSectionInfo, HelpSection>();
+        public Dictionary<HelpItemInfo, HelpItem> Items = [];
 
         public HelpInfo Info { get; private set; }
 
-        public HelpPage(HelpInfo info) 
+        public HelpContainer(HelpInfo info) 
         {
             Info = info;
 
@@ -256,7 +257,7 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty
             };
 
-            TextContainerScrollBar = new DXVScrollBar
+            ScrollBar = new DXVScrollBar
             {
                 Parent = this,
                 BackColour = Color.Empty,
@@ -273,7 +274,7 @@ namespace Client.Scenes.Views
                 ShowBackgroundSlider = true
             };
 
-            TextContainerScrollBar.ValueChanged += (o, e) => UpdateLocations(TabControl.SelectedTab);
+            ScrollBar.ValueChanged += (o, e) => UpdateLocations(TabControl.SelectedTab);
 
             CreateTabs(info);
         }
@@ -299,27 +300,23 @@ namespace Client.Scenes.Views
                     MinimumTabWidth = 100,
                     Location = new Point(0, 22)
                 };
-                tab.SelectedChanged += (o, e) =>
-                {
-                    var selected = o as DXTab;
-                    Update(selected);
-                };
+                tab.SelectedChanged += (o, e) => Update();
 
                 tabs.Add(tab);
 
                 int k = 0;
 
-                foreach (var infoSection in infoPage.Sections.OrderBy(x => x.Order))
+                foreach (var infoSection in infoPage.Items.OrderBy(x => x.Order))
                 {
-                    HelpSection cell = new HelpSection
+                    HelpItem cell = new HelpItem
                     {
                         Parent = tab,
                         Info = infoSection,
                         BackColour = Color.Empty,
                         Location = new Point(5, k)
                     };
-                    Sections[infoSection] = cell;
-                    cell.MouseWheel += TextContainerScrollBar.DoMouseWheel;
+                    Items[infoSection] = cell;
+                    cell.MouseWheel += ScrollBar.DoMouseWheel;
                 }
 
                 i++;
@@ -328,33 +325,37 @@ namespace Client.Scenes.Views
             }
         }
 
-        public void Update(DXTab tab)
+        public void Update()
         {
+            var tab = TabControl.SelectedTab;
+
             foreach (DXControl control in tab.Controls)
             {
-                if (control is not HelpSection section) continue;
+                if (control is not HelpItem section) continue;
 
                 section.Update();
             }
+
+            ScrollBar.Value = 0;
 
             UpdateLocations(tab);
         }
 
         public void UpdateLocations(DXTab tab)
         {
-            int y = -TextContainerScrollBar.Value + 5;
+            int y = -ScrollBar.Value + 5;
             int h = 0;
 
             foreach (DXControl control in tab.Controls)
             {
-                if (control is not HelpSection) continue;
+                if (control is not HelpItem) continue;
 
                 control.Location = new Point(5, y);
                 h += control.Size.Height;
                 y += control.Size.Height;
             }
 
-            TextContainerScrollBar.MaxValue = h + 30;
+            ScrollBar.MaxValue = h + 30;
         }
 
         #endregion
@@ -375,23 +376,15 @@ namespace Client.Scenes.Views
                     TabControl = null;
                 }
 
-                if (TextContainer != null)
+                if (ScrollBar != null)
                 {
-                    if (!TextContainer.IsDisposed)
-                        TextContainer.Dispose();
+                    if (!ScrollBar.IsDisposed)
+                        ScrollBar.Dispose();
 
-                    TextContainer = null;
+                    ScrollBar = null;
                 }
 
-                if (TextContainerScrollBar != null)
-                {
-                    if (!TextContainerScrollBar.IsDisposed)
-                        TextContainerScrollBar.Dispose();
-
-                    TextContainerScrollBar = null;
-                }
-
-                foreach (KeyValuePair<HelpSectionInfo, HelpSection> pair in Sections)
+                foreach (KeyValuePair<HelpItemInfo, HelpItem> pair in Items)
                 {
                     if (pair.Value != null)
                     {
@@ -400,8 +393,8 @@ namespace Client.Scenes.Views
                     }
                 }
 
-                Sections.Clear();
-                Sections = null;
+                Items.Clear();
+                Items = null;
 
                 Info = null;
             }
@@ -416,7 +409,7 @@ namespace Client.Scenes.Views
 
         public DXVScrollBar MenuScrollBar;
 
-        #region SelectedEntry
+        #region Selected
 
         public DXButton Selected
         {
@@ -452,7 +445,7 @@ namespace Client.Scenes.Views
 
         #endregion
 
-        public Dictionary<DXButton, HelpPage> MenuItems = new Dictionary<DXButton, HelpPage>();
+        public Dictionary<DXButton, HelpContainer> Items = [];
 
         private const int ButtonHeight = 23;
 
@@ -495,9 +488,9 @@ namespace Client.Scenes.Views
             }
         }
 
-        public void AddPage(HelpPage page)
+        public void Add(HelpContainer page)
         {
-            int y = MenuItems.Count * ButtonHeight;
+            int y = Items.Count * ButtonHeight;
 
             var button = new DXButton
             {
@@ -513,15 +506,22 @@ namespace Client.Scenes.Views
             button.MouseClick += (o, e) => Selected = (DXButton)o;
             button.MouseWheel += MenuScrollBar.DoMouseWheel;
 
-            MenuItems.Add(button, page);
+            Items.Add(button, page);
 
-            MenuScrollBar.MaxValue = MenuItems.Count * ButtonHeight;
+            if (Items.Count == 1)
+            {
+                Selected = button;
+            }
+
+            MenuScrollBar.MaxValue = Items.Count * ButtonHeight;
         }
 
-        public HelpPage GetCurrentPage()
+        public HelpContainer GetAndUpdateSelected()
         {
-           if (MenuItems.TryGetValue(Selected, out HelpPage page))
+            if (Items.TryGetValue(Selected, out HelpContainer page))
+            {
                 return page;
+            }
 
            return null;
         }
@@ -546,7 +546,7 @@ namespace Client.Scenes.Views
 
                 _Selected = null;
 
-                foreach (KeyValuePair<DXButton, HelpPage> pair in MenuItems)
+                foreach (KeyValuePair<DXButton, HelpContainer> pair in Items)
                 {
                     if (pair.Value != null)
                     {
@@ -561,15 +561,15 @@ namespace Client.Scenes.Views
                     }
                 }
 
-                MenuItems.Clear();
-                MenuItems = null;
+                Items.Clear();
+                Items = null;
             }
         }
 
         #endregion
     }
 
-    public partial class HelpSection : DXControl
+    public partial class HelpItem : DXControl
     {
         #region Properties
 
@@ -577,11 +577,11 @@ namespace Client.Scenes.Views
         public DXLabel PageText;
         public DXImageControl Spacer;
 
-        private List<DXLabel> Buttons = new();
+        private List<DXLabel> Labels = new();
 
         #endregion
 
-        public HelpSectionInfo Info;
+        public HelpItemInfo Info;
 
         private const int Width = 500;
         private const int TitleWidth = 120;
@@ -595,7 +595,7 @@ namespace Client.Scenes.Views
 
         private readonly Regex C = DrawTextExtensions.ColourRegex();
 
-        public HelpSection()
+        public HelpItem()
         {
             Size = new Size(Width, 40);
 
@@ -653,10 +653,10 @@ namespace Client.Scenes.Views
 
         private void ProcessText(string page)
         {
-            foreach (DXLabel label in Buttons)
+            foreach (DXLabel label in Labels)
                 label.Dispose();
 
-            Buttons.Clear();
+            Labels.Clear();
 
             List<DXButtonIndex> buttonRanges = new();
 
@@ -718,7 +718,7 @@ namespace Client.Scenes.Views
                             break;
                     }
 
-                    Buttons.Add(label);
+                    Labels.Add(label);
                 }
             }
         }
@@ -779,21 +779,21 @@ namespace Client.Scenes.Views
                     Spacer = null;
                 }
 
-                if (Buttons != null)
+                if (Labels != null)
                 {
-                    for (int i = 0; i < Buttons.Count; i++)
+                    for (int i = 0; i < Labels.Count; i++)
                     {
-                        if (Buttons[i] != null)
+                        if (Labels[i] != null)
                         {
-                            if (!Buttons[i].IsDisposed)
-                                Buttons[i].Dispose();
+                            if (!Labels[i].IsDisposed)
+                                Labels[i].Dispose();
 
-                            Buttons[i] = null;
+                            Labels[i] = null;
                         }
                     }
 
-                    Buttons.Clear();
-                    Buttons = null;
+                    Labels.Clear();
+                    Labels = null;
                 }
             }
         }

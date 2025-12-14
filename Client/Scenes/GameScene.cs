@@ -393,7 +393,8 @@ namespace Client.Scenes
             FishingBox?.LoadSettings();
             GroupBox?.LoadSettings();
             GuildBox?.LoadSettings();
-            MenuBox?.LoadSettings();
+            ConfigBox?.LoadSettings();
+            MenuBox?.LoadSettings();          
             HelpBox?.LoadSettings();
 
             LoadChatTabs();

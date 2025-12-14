@@ -136,6 +136,15 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGameTabLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabLabel { get; set; }
         public abstract string CommonControlConfigWindowUITabLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsSectionDisplayLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsSectionUsabilityLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsSectionEffectsLabel { get; set; }
+        public abstract string CommonControlConfigWindowSoundsSectionOptionsLabel { get; set; }
+        public abstract string CommonControlConfigWindowSoundsSectionVolumeLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameSectionSettingsLabel { get; set; }
+        public abstract string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; }
+        public abstract string CommonControlConfigWindowUISectionSettingsLabel { get; set; }
+        public abstract string CommonControlConfigWindowUISectionColoursLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; }

@@ -21,7 +21,7 @@ namespace Server.Views
 
             SMain.SetUpView(HelpGridView);
             SMain.SetUpView(PageGridView);
-            SMain.SetUpView(SectionGridView);
+            SMain.SetUpView(ItemGridView);
         }
 
         private void SaveButton_ItemClick(object sender, ItemClickEventArgs e)

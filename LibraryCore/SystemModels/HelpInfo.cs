@@ -103,13 +103,13 @@ namespace Library.SystemModels
         }
         private int _Order;
 
-        [Association("Sections", true)]
-        public DBBindingList<HelpSectionInfo> Sections { get; set; }
+        [Association("Items", true)]
+        public DBBindingList<HelpItemInfo> Items { get; set; }
     }
 
-    public sealed class HelpSectionInfo : DBObject
+    public sealed class HelpItemInfo : DBObject
     {
-        [Association("Sections")]
+        [Association("Items")]
         public HelpPageInfo Page
         {
             get { return _Page; }
