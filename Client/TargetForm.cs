@@ -34,6 +34,14 @@ namespace Client
             MaximizeBox = false;
         }
 
+        protected override bool IsInputKey(Keys keyData)
+        {
+            if (keyData == Keys.F10)
+                return true;
+
+            return base.IsInputKey(keyData);
+        }
+
         protected override void OnDeactivate(EventArgs e)
         {
             if (GameScene.Game != null)
