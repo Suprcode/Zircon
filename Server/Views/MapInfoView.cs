@@ -1,10 +1,12 @@
 ﻿using DevExpress.XtraBars;
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraGrid.Views.Grid;
 using Library;
 using Library.SystemModels;
 using System;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace Server.Views
 {
@@ -221,6 +223,31 @@ namespace Server.Views
         private void ExportButton_ItemClick(object sender, ItemClickEventArgs e)
         {
             JsonExporter.Export<MapInfo>(MapInfoGridView);
+        }
+
+        private void InsertRowButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var mapCollection = SMain.Session.GetCollection<MapInfo>();
+
+            if (MapInfoGridView.GetFocusedRow() is not MapInfo focusedMap)
+            {
+                XtraMessageBox.Show("Please select a map to insert after.", "Insert Map", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            DialogResult result = XtraMessageBox.Show($"Do you want to insert row after {focusedMap.FileName} - {focusedMap.Description}?", "Insert Map", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            MapInfo newMap = SMain.Session.InsertObjectAfter<MapInfo>(focusedMap.Index);
+
+            MapInfoGridView.RefreshData();
+
+            int bindingIndex = mapCollection.Binding.IndexOf(newMap);
+            int rowHandle = MapInfoGridView.GetRowHandle(bindingIndex);
+
+            MapInfoGridView.FocusedRowHandle = rowHandle;
+            MapInfoGridView.SelectRow(rowHandle);
         }
     }
 }

@@ -235,5 +235,11 @@ namespace MirDB
             foreach (T ob in Binding)
                 ob.OnLoaded();
         }
+
+        internal override IEnumerable<DBObject> GetObjects()
+        {
+            foreach (T ob in Binding)
+                yield return ob;
+        }
     }
 }

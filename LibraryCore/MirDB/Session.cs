@@ -313,6 +313,73 @@ namespace MirDB
             return Collections[type].GetObjectbyFieldName(fieldName, value);
         }
 
+        public T InsertObjectAfter<T>(int insertAfterIndex) where T : DBObject, new()
+        {
+            DBCollection<T> collection = GetCollection<T>();
+
+            if (insertAfterIndex < 0 || insertAfterIndex > collection.Index)
+                throw new ArgumentOutOfRangeException(nameof(insertAfterIndex), $"Value must be between 0 and {collection.Index}");
+
+            List<DBObject> shiftedObjects = new List<DBObject>();
+
+            for (int i = collection.Binding.Count - 1; i >= 0; i--)
+            {
+                T ob = collection.Binding[i];
+
+                if (ob.Index <= insertAfterIndex) continue;
+
+                shiftedObjects.Add(ob);
+
+                int oldIndex = ob.Index;
+                ob.Index = oldIndex + 1;
+                ob.OnChanged(oldIndex, ob.Index, nameof(DBObject.Index));
+            }
+
+            collection.Index++;
+
+            int targetIndex = insertAfterIndex + 1;
+            int insertPosition = 0;
+
+            while (insertPosition < collection.Binding.Count && collection.Binding[insertPosition].Index < targetIndex)
+                insertPosition++;
+
+            T newObject = new T
+            {
+                Collection = collection,
+                Index = targetIndex
+            };
+
+            newObject.OnCreated();
+
+            collection.Binding.Insert(insertPosition, newObject);
+
+            if (shiftedObjects.Count > 0)
+                MarkReferencesModified(typeof(T), shiftedObjects);
+
+            return newObject;
+        }
+
+        private void MarkReferencesModified(Type targetType, List<DBObject> updatedObjects)
+        {
+            HashSet<DBObject> changedObjects = [.. updatedObjects];
+
+            foreach (ADBCollection collection in Collections.Values)
+            {
+                foreach (DBObject ob in collection.GetObjects())
+                {
+                    foreach (DBValue value in collection.Mapping.Properties)
+                    {
+                        if (value.Property == null) continue;
+                        if (!value.Property.PropertyType.IsSubclassOf(typeof(DBObject))) continue;
+                        if (!targetType.IsAssignableFrom(value.Property.PropertyType)) continue;
+
+                        if (value.Property.GetValue(ob) is DBObject link && changedObjects.Contains(link))
+                            ob.OnChanged(link, link, value.Property.Name);
+                    }
+                }
+            }
+        }
+
         internal T CreateObject<T>() where T : DBObject, new()
         {
             return (T)Collections[typeof(T)].CreateObject();

@@ -91,9 +91,11 @@ namespace Server.Views
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
             ExportButton = new DevExpress.XtraBars.BarButtonItem();
+            InsertRowButton = new DevExpress.XtraBars.BarButtonItem();
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            EditGroup = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             StartClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             RequiredClassImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
@@ -178,7 +180,7 @@ namespace Server.Views
             MapInfoGridControl.Name = "MapInfoGridControl";
             MapInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { LightComboBox, MonsterLookUpEdit, DirectionImageComboBox, MapInfoLookUpEdit, MapIconImageComboBox, StartClassImageComboBox, RequiredClassImageComboBox, EditButtonEdit, ItemLookUpEdit, WeatherComboBox, StatImageComboBox, RegionLookUpEdit });
             MapInfoGridControl.ShowOnlyPredefinedDetails = true;
-            MapInfoGridControl.Size = new System.Drawing.Size(774, 367);
+            MapInfoGridControl.Size = new System.Drawing.Size(704, 332);
             MapInfoGridControl.TabIndex = 2;
             MapInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { GuardsGridView, MiningGridView, MapInfoStatsGridView, MapInfoGridView, RegionGridView });
             // 
@@ -526,12 +528,12 @@ namespace Server.Views
             // ribbon
             // 
             ribbon.ExpandCollapseItem.Id = 0;
-            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ImportButton, ExportButton });
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ImportButton, ExportButton, InsertRowButton });
             ribbon.Location = new System.Drawing.Point(0, 0);
-            ribbon.MaxItemId = 6;
+            ribbon.MaxItemId = 9;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(774, 144);
+            ribbon.Size = new System.Drawing.Size(704, 144);
             // 
             // SaveButton
             // 
@@ -561,9 +563,18 @@ namespace Server.Views
             ExportButton.Name = "ExportButton";
             ExportButton.ItemClick += ExportButton_ItemClick;
             // 
+            // InsertRowButton
+            // 
+            InsertRowButton.Caption = "Insert Row";
+            InsertRowButton.Id = 6;
+            InsertRowButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.Image");
+            InsertRowButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.LargeImage");
+            InsertRowButton.Name = "InsertRowButton";
+            InsertRowButton.ItemClick += InsertRowButton_ItemClick;
+            // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport });
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport, EditGroup });
             ribbonPage1.Name = "ribbonPage1";
             ribbonPage1.Text = "Home";
             // 
@@ -581,6 +592,12 @@ namespace Server.Views
             JsonImportExport.ItemLinks.Add(ExportButton);
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
+            // 
+            // EditGroup
+            // 
+            EditGroup.ItemLinks.Add(InsertRowButton);
+            EditGroup.Name = "EditGroup";
+            EditGroup.Text = "Edit";
             // 
             // MapIconImageComboBox
             // 
@@ -608,7 +625,7 @@ namespace Server.Views
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(774, 511);
+            ClientSize = new System.Drawing.Size(704, 476);
             Controls.Add(MapInfoGridControl);
             Controls.Add(ribbon);
             Name = "MapInfoView";
@@ -696,5 +713,7 @@ namespace Server.Views
         private GridColumn gridColumn23;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit RegionLookUpEdit;
         private GridColumn colBackground;
+        private DevExpress.XtraBars.BarButtonItem InsertRowButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup EditGroup;
     }
 }
