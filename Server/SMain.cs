@@ -1,4 +1,5 @@
-﻿using DevExpress.XtraEditors;
+﻿using DevExpress.LookAndFeel;
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Views.Grid;
@@ -13,10 +14,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text.Json;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -26,6 +30,7 @@ namespace Server
     {
         public List<Control> Windows = new List<Control>();
         public static Session Session;
+        private static readonly string CacheFilePath = Path.Combine(Application.StartupPath, "Server.cache.json");
 
         public SMain()
         {
@@ -94,6 +99,8 @@ namespace Server
             if (Config.EncryptionEnabled)
                 Encryption.SetKey(SEnvir.CryptoKey);
 
+            LoadUserCache();
+
             ShowView(typeof(SystemLogView));
 
             Session = new Session(SessionMode.System)
@@ -135,6 +142,8 @@ namespace Server
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            SaveUserCache();
+
             base.OnClosing(e);
 
             Session.BackUpDelay = 0;
@@ -607,6 +616,65 @@ namespace Server
         private void LootBoxInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(LootBoxInfoView));
+        }
+
+        private void LoadUserCache()
+        {
+            try
+            {
+                if (!File.Exists(CacheFilePath)) return;
+
+                var cache = JsonSerializer.Deserialize<ServerUserCache>(File.ReadAllText(CacheFilePath));
+
+                if (cache == null) return;
+
+                if (!string.IsNullOrEmpty(cache.SkinName))
+                {
+                    UserLookAndFeel.Default.SetSkinStyle(cache.SkinName);
+                    DLookAndFeel.LookAndFeel.SkinName = cache.SkinName;
+                }
+
+                WindowState = cache.Maximized ? FormWindowState.Maximized : FormWindowState.Normal;
+
+                if (cache.ExpandedGroups != null)
+                {
+                    foreach (DevExpress.XtraNavBar.NavBarGroup group in navBarControl1.Groups)
+                        group.Expanded = cache.ExpandedGroups.Contains(group.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                SEnvir.Log($"Failed to load UI cache: {ex}");
+            }
+        }
+
+        private void SaveUserCache()
+        {
+            try
+            {
+                var cache = new ServerUserCache
+                {
+                    SkinName = string.IsNullOrEmpty(UserLookAndFeel.Default.SkinName) ? DLookAndFeel.LookAndFeel.SkinName : UserLookAndFeel.Default.SkinName,
+                    ExpandedGroups = navBarControl1.Groups.Cast<DevExpress.XtraNavBar.NavBarGroup>().Where(x => x.Expanded).Select(x => x.Name).ToList(),
+                    Maximized = WindowState == FormWindowState.Maximized
+                };
+
+                File.WriteAllText(CacheFilePath, JsonSerializer.Serialize(cache, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                }));
+            }
+            catch (Exception ex)
+            {
+                SEnvir.Log($"Failed to save UI cache: {ex}");
+            }
+        }
+
+        private class ServerUserCache
+        {
+            public string SkinName { get; set; }
+            public List<string> ExpandedGroups { get; set; } = new List<string>();
+            public bool Maximized { get; set; }
         }
     }
 }
