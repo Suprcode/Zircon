@@ -635,6 +635,7 @@ namespace Library.SystemModels
         }
         private NPCPage _Page;
 
+        [IsIdentity]
         public int ButtonID
         {
             get { return _ButtonID; }

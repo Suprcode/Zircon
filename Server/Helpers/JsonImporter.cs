@@ -10,7 +10,7 @@ namespace Server
 {
     public class JsonImporter
     {
-        public static void Import<T>() where T : DBObject, new()
+        public static void Import<T>(bool allowDeferredReferences = true) where T : DBObject, new()
         {
             var options = new JsonSerializerOptions
             {
@@ -18,15 +18,17 @@ namespace Server
                 PropertyNameCaseInsensitive = true
             };
 
-            JsonImporter.Import<T>(options);
+            JsonImporter.Import<T>(options, allowDeferredReferences);
         }
 
-        public static void Import<T>(JsonSerializerOptions options)
+        public static void Import<T>(JsonSerializerOptions options, bool allowDeferredReferences = true)
         {
             if (!Directory.Exists($"Exports/{typeof(T).Name}"))
             {
                 Directory.CreateDirectory($"Exports/{typeof(T).Name}");
             }
+
+            ImportReferenceResolver.EnableDeferredResolution = allowDeferredReferences;
 
             SMain.Session.Save(true);
 
@@ -45,7 +47,21 @@ namespace Server
                 {
                     var rows = JsonSerializer.Deserialize<T[]>(file, options);
 
-                    XtraMessageBox.Show($"{rows.Length} rows have been successfully imported.", "Success", MessageBoxButtons.OK);
+                    var (resolved, remaining) = ImportReferenceResolver.ResolvePendingReferences(SMain.Session);
+
+                    string message = $"{rows.Length} rows have been successfully imported.";
+
+                    if (allowDeferredReferences)
+                    {
+                        message += $"\n{resolved} deferred reference(s) were resolved.";
+
+                        if (remaining > 0)
+                        {
+                            message += $"\n{remaining} reference(s) are still pending and will be retried on the next import.";
+                        }
+                    }
+
+                    XtraMessageBox.Show(message, "Success", MessageBoxButtons.OK);
                 }
                 catch (Exception ex)
                 {

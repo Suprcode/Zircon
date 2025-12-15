@@ -117,7 +117,9 @@ namespace Server
 
                 List<object> collection = new();
 
-                var converterOptions = CreateDBObjectOptions(bindingListType, property, property.GetValue(obj));
+                var existingCollection = property.GetValue(obj) as IList;
+
+                var converterOptions = CreateDBObjectOptions(bindingListType, property, existingCollection);
 
                 while (reader.Read())
                 {
@@ -133,15 +135,35 @@ namespace Server
                     collection.Add(childObject);
                 }
 
-                RemoveMissingObjects(property.GetValue(obj) as IList, collection);
+                if (existingCollection != null)
+                {
+                    RemoveMissingObjects(existingCollection, collection);
+
+                    foreach (var childObject in collection)
+                    {
+                        if (!existingCollection.Contains(childObject))
+                        {
+                            existingCollection.Add(childObject);
+                        }
+                    }
+                }
             }
             else if (typeof(DBObject).IsAssignableFrom(property.PropertyType))
             {
                 var converterOptions = CreateDBObjectReferenceOptions(property.PropertyType);
 
-                var childObject = JsonSerializer.Deserialize(ref reader, property.PropertyType, converterOptions);
+                ImportReferenceResolver.SetContext(obj, property);
 
-                property.SetValue(obj, childObject);
+                try
+                {
+                    var childObject = JsonSerializer.Deserialize(ref reader, property.PropertyType, converterOptions);
+
+                    property.SetValue(obj, childObject);
+                }
+                finally
+                {
+                    ImportReferenceResolver.ClearContext();
+                }
             }
             else if (property.PropertyType.IsEnum)
             {
@@ -261,6 +283,13 @@ namespace Server
 
             var identities = new List<string>();
 
+            if (identityProperties.Length == 0 && _parentProperty != null)
+            {
+                reader = readerAtStart;
+
+                return Session.GetCollection<T>().CreateNewObject();
+            }
+
             int i = 0;
 
             while (reader.Read())
@@ -369,7 +398,21 @@ namespace Server
                 return null;
             }
 
-            return GetObjectFromIdentity(SplitIdentityValue(identityValue).ToList());
+            List<string> identityValues = SplitIdentityValue(identityValue).ToList();
+
+            var obj = GetObjectFromIdentity(identityValues, false);
+
+            if (obj == null)
+            {
+                if (ImportReferenceResolver.TryAddMissingReference(typeof(T), identityValues))
+                {
+                    return null;
+                }
+
+                return GetObjectFromIdentity(identityValues);
+            }
+
+            return obj;
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
@@ -381,7 +424,7 @@ namespace Server
             writer.WriteStringValue(JoinIdentityValues(identities.ToArray()));
         }
 
-        private T GetObjectFromIdentity(List<string> identityValues)
+        internal T GetObjectFromIdentity(List<string> identityValues, bool throwOnMissing = true)
         {
             var identityProperties = GetIdentityProperties(typeof(T));
 
@@ -394,7 +437,7 @@ namespace Server
                 return identities.SequenceEqual(identityValues);
             });
 
-            if (obj == null)
+            if (obj == null && throwOnMissing)
             {
                 throw new JsonException($"Object not found for '{typeof(T).Name}' using values '{JoinIdentityValues(identityValues.ToArray())}'.");
             }

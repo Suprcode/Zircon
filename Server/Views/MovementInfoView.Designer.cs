@@ -51,8 +51,8 @@
             gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             InstanceLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
-            MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
+            MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MovementGridControl).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MovementGridView).BeginInit();
@@ -71,7 +71,7 @@
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(705, 144);
+            ribbon.Size = new System.Drawing.Size(663, 144);
             // 
             // SaveButton
             // 
@@ -131,7 +131,7 @@
             MovementGridControl.Name = "MovementGridControl";
             MovementGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MapLookUpEdit, MapIconImageComboBox, ItemLookUpEdit, SpawnLookUpEdit, InstanceLookUpEdit });
             MovementGridControl.ShowOnlyPredefinedDetails = true;
-            MovementGridControl.Size = new System.Drawing.Size(705, 377);
+            MovementGridControl.Size = new System.Drawing.Size(663, 356);
             MovementGridControl.TabIndex = 2;
             MovementGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { MovementGridView });
             // 
@@ -188,6 +188,7 @@
             gridColumn4.ColumnEdit = ItemLookUpEdit;
             gridColumn4.FieldName = "NeedItem";
             gridColumn4.Name = "gridColumn4";
+            gridColumn4.ToolTip = "Connection only works when player is holding specified item (Item will be taken on move)";
             gridColumn4.Visible = true;
             gridColumn4.VisibleIndex = 3;
             // 
@@ -206,6 +207,7 @@
             gridColumn5.ColumnEdit = SpawnLookUpEdit;
             gridColumn5.FieldName = "NeedSpawn";
             gridColumn5.Name = "gridColumn5";
+            gridColumn5.ToolTip = "Connection only works when specified monster spawn is alive";
             gridColumn5.Visible = true;
             gridColumn5.VisibleIndex = 4;
             // 
@@ -239,6 +241,7 @@
             gridColumn8.ColumnEdit = InstanceLookUpEdit;
             gridColumn8.FieldName = "NeedInstance";
             gridColumn8.Name = "gridColumn8";
+            gridColumn8.ToolTip = "Connection only works when player is on the specified instance";
             gridColumn8.Visible = true;
             gridColumn8.VisibleIndex = 5;
             // 
@@ -255,8 +258,17 @@
             // 
             gridColumn9.FieldName = "NeedHole";
             gridColumn9.Name = "gridColumn9";
+            gridColumn9.ToolTip = "Connection only works when a zombie hole is above it";
             gridColumn9.Visible = true;
             gridColumn9.VisibleIndex = 6;
+            // 
+            // gridColumn10
+            // 
+            gridColumn10.FieldName = "SkipValidation";
+            gridColumn10.Name = "gridColumn10";
+            gridColumn10.ToolTip = "Allows invalid connections (For minimap icon display)";
+            gridColumn10.Visible = true;
+            gridColumn10.VisibleIndex = 9;
             // 
             // MapIconImageComboBox
             // 
@@ -264,18 +276,11 @@
             MapIconImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             MapIconImageComboBox.Name = "MapIconImageComboBox";
             // 
-            // gridColumn10
-            // 
-            gridColumn10.FieldName = "SkipValidation";
-            gridColumn10.Name = "gridColumn10";
-            gridColumn10.Visible = true;
-            gridColumn10.VisibleIndex = 9;
-            // 
             // MovementInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(705, 521);
+            ClientSize = new System.Drawing.Size(663, 500);
             Controls.Add(MovementGridControl);
             Controls.Add(ribbon);
             Name = "MovementInfoView";
