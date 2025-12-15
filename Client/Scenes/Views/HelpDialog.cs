@@ -437,7 +437,7 @@ namespace Client.Scenes.Views
 
             if (nValue != null)
             {
-                nValue.Label.ForeColour = Color.White;
+                nValue.Label.ForeColour = Constants.ActiveTabColour;
                 nValue.Index = 9311;
                 nValue.HoverIndex = 9311;
             }
