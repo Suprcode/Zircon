@@ -572,7 +572,7 @@ namespace Client.Scenes.Views
 
         private DXControl CreateMapInfoObject()
         {
-            return new DXControl
+            return new DXMapInfoControl
             {
                 Parent = Image,
                 Opacity = Opacity,
