@@ -1480,6 +1480,7 @@ namespace Server.Models
             foreach (Match match in matches)
             {
                 if (!int.TryParse(match.Groups["ID"].Value, out int itemIndex)) continue;
+                if (string.IsNullOrWhiteSpace(match.Groups["Text"].Value)) continue;
 
                 UserItem item = Inventory.FirstOrDefault(e => e != null && e.Index == itemIndex);
 
@@ -1491,6 +1492,7 @@ namespace Server.Models
                     item = Companion.Inventory.FirstOrDefault(e => e != null && e.Index == itemIndex);
                 if (item == null)
                     continue;
+
 
                 text = text.Replace(match.Groups["Text"].Value, item.Info.ItemName);
                 if (!linkedItems.Any(e => e.Index == item.Index))
