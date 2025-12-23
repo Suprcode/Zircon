@@ -65,7 +65,10 @@ namespace Server.Views
             }
 
             if (oValue == null || MapRegion.Map != oValue.Map)
+            {
                 Map.Load(MapRegion.Map.FileName);
+                UpdateScrollBars();
+            }
 
             Map.Selection = MapRegion.GetPoints(Map.Width);
 
@@ -104,7 +107,10 @@ namespace Server.Views
             MapRegion = null;
 
             if (oValue != nValue)
+            {
                 Map.Load(nValue);
+                UpdateScrollBars();
+            }
 
             Map.Selection = new HashSet<Point>();
 
@@ -181,7 +187,11 @@ namespace Server.Views
                 Map.Animation++;
             }
 
+            MapSizeLabel.Caption = string.Format(@"Map Size: {0},{1}", Map.Width, Map.Height);
+            PositionLabel.Caption = string.Format(@"Position: {0},{1}", Map.MouseLocation.X, Map.MouseLocation.Y);
+            SelectedCellsLabel.Caption = string.Format(@"Selected Cells: {0}", Map.Selection.Count);
         }
+
         private void RenderEnvironment()
         {
             try
