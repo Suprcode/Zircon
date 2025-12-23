@@ -36,8 +36,15 @@ namespace Client
 
         protected override bool IsInputKey(Keys keyData)
         {
-            if (keyData == Keys.F10)
+            if ((keyData & Keys.F10) == Keys.F10)
+            {
                 return true;
+            }
+
+            if ((keyData & Keys.Alt) == Keys.Alt)
+            {
+                return true;
+            }
 
             return base.IsInputKey(keyData);
         }
