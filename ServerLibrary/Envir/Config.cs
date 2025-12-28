@@ -157,8 +157,10 @@ namespace Server.Envir
             {
                 if (File.Exists(VersionPath))
                     using (FileStream stream = File.OpenRead(VersionPath))
-                    using (MD5 md5 = MD5.Create())
-                        ClientHash = md5.ComputeHash(stream);
+                    using (SHA256 sha256 = SHA256.Create())
+                    {
+                        ClientHash = sha256.ComputeHash(stream);
+                    }
                 else ClientHash = null;
             }
             catch (Exception ex)

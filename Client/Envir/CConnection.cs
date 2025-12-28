@@ -133,10 +133,10 @@ namespace Client.Envir
         public void Process(G.CheckVersion p)
         {
             byte[] clientHash;
-            using (MD5 md5 = MD5.Create())
+            using (SHA256 sha256 = SHA256.Create())
             {
                 using (FileStream stream = File.OpenRead(Path.ChangeExtension(Application.ExecutablePath, ".dll")))
-                    clientHash = md5.ComputeHash(stream);
+                    clientHash = sha256.ComputeHash(stream);
             }
 
             Enqueue(new G.Version { ClientHash = clientHash });

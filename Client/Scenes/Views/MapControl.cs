@@ -347,10 +347,18 @@ namespace Client.Scenes.Views
 
                     Cell cell = Cells[x, y];
 
-                    MirLibrary library;
-                    LibraryFile file;
+                    if (!cell.LibrariesLoaded)
+                    {
+                        if (Libraries.KROrder.TryGetValue(cell.MiddleFile, out LibraryFile file) && file != LibraryFile.Tilesc)
+                            CEnvir.LibraryList.TryGetValue(file, out cell.MiddleLibrary);
 
-                    if (Libraries.KROrder.TryGetValue(cell.MiddleFile, out file) && file != LibraryFile.Tilesc && CEnvir.LibraryList.TryGetValue(file, out library))
+                        if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc)
+                            CEnvir.LibraryList.TryGetValue(file, out cell.FrontLibrary);
+
+                        cell.LibrariesLoaded = true;
+                    }
+
+                    if (cell.MiddleLibrary != null)
                     {
                         int index = cell.MiddleImage - 1;
 
@@ -361,22 +369,22 @@ namespace Client.Scenes.Views
                             index += Animation % cell.MiddleAnimationCount;
                         }
 
-                        Size s = library.GetSize(index);
+                        Size s = cell.MiddleLibrary.GetSize(index);
 
                         if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
                         {
                             if (!blend)
-                                library.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                                cell.MiddleLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
                             else
-                                library.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                                cell.MiddleLibrary.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
                         }
                         else
                         {
-                            library.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                            cell.MiddleLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
                         }
                     }
 
-                    if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc && CEnvir.LibraryList.TryGetValue(file, out library))
+                    if (cell.FrontLibrary != null)
                     {
                         int index = cell.FrontImage - 1;
 
@@ -387,15 +395,14 @@ namespace Client.Scenes.Views
                             index += Animation % cell.FrontAnimationCount;
                         }
 
-                        Size s = library.GetSize(index);
-
+                        Size s = cell.FrontLibrary.GetSize(index);
 
                         if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
                         {
                             if (!blend)
-                                library.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
+                                cell.FrontLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
                             else
-                                library.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                                cell.FrontLibrary.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
                         }
                     }
                 }
@@ -1718,6 +1725,10 @@ namespace Client.Scenes.Views
         // --- MIDDLE ANIMATION ENCODING ---
         public const int MiddleFrameMask = 0x0F; // lower 4 bits = frame count
         public const int MiddleBlendBit = 0x80;  // bit 7 = blend flag
+
+        public MirLibrary MiddleLibrary;
+        public MirLibrary FrontLibrary;
+        public bool LibrariesLoaded;
 
         public List<MapObject> Objects;
 
