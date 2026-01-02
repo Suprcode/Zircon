@@ -560,33 +560,33 @@ namespace Client.Scenes.Views
 
         public void TransparencyChanged()
         {
-            if (Panel.TransparentCheckBox.Checked)
+            var transparent = Panel.TransparentCheckBox.Checked;
+
+            float opacity = transparent ? 0.5F : 1F;
+
+            if (CurrentTabControl.SelectedTab == this)
+                foreach (DXButton button in CurrentTabControl.TabButtons)
+                    button.Opacity = opacity;
+
+            foreach (DXLabel label in History.Select(x => x.Label))
+                UpdateColours(label);
+
+            ScrollBar.Visible = !transparent;
+            DrawTexture = !transparent;
+            DrawOtherBorder = !transparent;
+            AllowResize = !transparent;
+
+            if (CurrentTabControl.SelectedTab == this)
             {
-                ScrollBar.Visible = false;
-                DrawTexture = false;
-                DrawOtherBorder = false;
-                AllowResize = false;
-
-                if (CurrentTabControl.SelectedTab == this)
-                    foreach (DXButton button in CurrentTabControl.TabButtons)
-                        button.Opacity = 0.5f;
-
-                foreach (DXLabel label in History.Select(x => x.Label))
-                    UpdateColours(label);
-            }
-            else
-            {
-                ScrollBar.Visible = true;
-                DrawTexture = true;
-                AllowResize = true;
-                DrawOtherBorder = true;
-
-                if (CurrentTabControl.SelectedTab == this)
-                    foreach (DXButton button in CurrentTabControl.TabButtons)
-                        button.Opacity = 1f;
-
-                foreach (DXLabel label in History.Select(x => x.Label))
-                    UpdateColours(label);
+                // When hide tab is checked and only 1 tab in list, then hide tab. Otherwise show tab at correct opacity
+                if (!(CurrentTabControl.TabButtons.Count == 1 && Panel.HideTabCheckBox.Checked) || GameScene.Game.ChatOptionsBox.Visible)
+                {
+                    CurrentTabControl.TabButtons[0].Opacity = opacity;
+                }
+                else
+                {
+                    CurrentTabControl.TabButtons[0].Opacity = 0f;
+                }
             }
         }
 

@@ -26,19 +26,7 @@ namespace Client.Scenes.Views
             {
                 DXTabControl pnl = tab.Parent as DXTabControl;
 
-                if (Visible)
-                {
-                    foreach (var button in pnl.TabButtons)
-                    {
-                        button.Visible = true;
-                    }
-                }
-                else
-                {
-                    var panel = tab.Parent as DXTabControl;
-
-                    pnl.TabButtons[0].Visible = !(panel.TabButtons.Count == 1 && tab.Panel.HideTabCheckBox.Checked);
-                }
+                tab.TransparencyChanged();
             }
         }
 
@@ -185,17 +173,7 @@ namespace Client.Scenes.Views
             {
                 var pnl = tab.Parent as DXTabControl;
 
-                if (GameScene.Game.ChatOptionsBox.Visible)
-                {
-                    foreach (var button in pnl.TabButtons)
-                    {
-                        button.Visible = true;
-                    }
-                }
-                else
-                {
-                    pnl.TabButtons[0].Visible = !(pnl.TabButtons.Count == 1 && tab.Panel.HideTabCheckBox.Checked);
-                }
+                tab.TransparencyChanged();
             };
 
             panel.ReverseListCheckBox.CheckedChanged += (o, e1) =>
