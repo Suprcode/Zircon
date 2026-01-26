@@ -399,6 +399,7 @@ namespace LibraryEditor
             {
                 case 0:
                 case 1:
+                case 129: //Not a dxt image but need this here to not fall in to the NotImplementedException below
                     type = SquishFlags.Dxt1;
                     break;
                 case 3:
@@ -414,7 +415,7 @@ namespace LibraryEditor
             var decompressedBuffer = textureType != 128 ? Ionic.Zlib.DeflateStream.UncompressBuffer(buffer) : buffer;
             Bitmap bitmap = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            if (MaskTextureType == 128)
+            if (MaskTextureType >= 128)
             {
                 for (int y = 0; y < h; y++)
                 {
