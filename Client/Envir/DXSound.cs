@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NAudioWave = NAudio.Wave;
+using NAudioVorbis = NAudio.Vorbis;
 using SharpDXMultimedia = SharpDX.Multimedia;
 
 namespace Client.Envir
@@ -36,23 +37,33 @@ namespace Client.Envir
         {
             if (RawData == null)
             {
-                if (!File.Exists(FileName))
+                string soundFileName = GetResolvedFileName();
+
+                if (soundFileName == null)
                 {
                     return;
                 }
 
-                if (string.Equals(Path.GetExtension(FileName), ".mp3", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(Path.GetExtension(soundFileName), ".mp3", StringComparison.OrdinalIgnoreCase))
                 {
-                    using (var mp3 = new NAudioWave.Mp3FileReader(FileName))
+                    using (var mp3 = new NAudioWave.Mp3FileReader(soundFileName))
                     {
                         Format = ConvertWaveFormat(mp3.WaveFormat);
 
                         RawData = ReadAllBytes(mp3);
                     }
                 }
+                else if (string.Equals(Path.GetExtension(soundFileName), ".ogg", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (var ogg = new NAudioVorbis.VorbisWaveReader(soundFileName))
+                    {
+                        Format = ConvertWaveFormat(ogg.WaveFormat);
+                        RawData = ReadAllBytes(ogg);
+                    }
+                }
                 else
                 {
-                    using (var waveReader = new NAudioWave.WaveFileReader(FileName))
+                    using (var waveReader = new NAudioWave.WaveFileReader(soundFileName))
                     {
                         Format = ConvertWaveFormat(waveReader.WaveFormat);
                         RawData = ReadAllBytes(waveReader);
@@ -245,6 +256,23 @@ namespace Client.Envir
                 stream.CopyTo(memory);
                 return memory.ToArray();
             }
+        }
+
+        private string GetResolvedFileName()
+        {
+            if (File.Exists(FileName))
+            {
+                return FileName;
+            }
+
+            string oggFileName = Path.ChangeExtension(FileName, ".ogg");
+
+            if (File.Exists(oggFileName))
+            {
+                return oggFileName;
+            }
+
+            return null;
         }
     }
 }
