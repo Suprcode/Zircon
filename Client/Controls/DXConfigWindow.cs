@@ -45,6 +45,10 @@ namespace Client.Controls
         public DXColourControlPair LocalColourBox, GMWhisperInColourBox, WhisperInColourBox, WhisperOutColourBox, GroupColourBox, GuildColourBox, ShoutColourBox, GlobalColourBox, ObserverColourBox, HintColourBox, SystemColourBox, GainsColourBox, AnnouncementColourBox;
         public DXButton ResetColoursButton;
 
+        //Target Outline Colours
+        public DXColourControl TargetMonsterLowLevelColourBox, TargetMonsterSameLevelColourBox, TargetMonsterHighLevelColourBox, TargetNPCColourBox;
+        public DXButton ResetTargetColoursButton;
+
         private DXButton CloseButton;
         private DXLabel TitleLabel;
 
@@ -131,6 +135,11 @@ namespace Client.Controls
             SystemColourBox.BackColourControl.BackColour = Config.SystemTextBackColour;
             GainsColourBox.BackColourControl.BackColour = Config.GainsTextBackColour;
             AnnouncementColourBox.BackColourControl.BackColour = Config.AnnouncementTextBackColour;
+
+            TargetMonsterLowLevelColourBox.BackColour = Config.TargetMonsterLowLevelColour;
+            TargetMonsterSameLevelColourBox.BackColour = Config.TargetMonsterSameLevelColour;
+            TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
+            TargetNPCColourBox.BackColour = Config.TargetNPCColour;
         }
         public override void OnParentChanged(DXControl oValue, DXControl nValue)
         {
@@ -613,6 +622,9 @@ namespace Client.Controls
 
             #region Game
 
+            #region Settings
+
+
             DXConfigSection gameSettingsSection = new(CEnvir.Language.CommonControlConfigWindowGameSectionSettingsLabel)
             {
                 Columns = 2,
@@ -683,6 +695,49 @@ namespace Client.Controls
             };
             ShowTargetOutlineCheckBox.CheckedChanged += (o, e) => Config.ShowTargetOutline = ShowTargetOutlineCheckBox.Checked;
             gameSettingsSection.AddControl("", ShowTargetOutlineCheckBox);
+
+            #endregion
+
+            #region Target Colours
+
+            DXConfigSection targetColoursSection = new(CEnvir.Language.CommonControlConfigWindowUISectionTargetColoursLabel)
+            {
+                Columns = 2,
+                Parent = GameTab,
+            };
+            GameTab.AddSection(targetColoursSection);
+
+            TargetMonsterLowLevelColourBox = new DXColourControl();
+            TargetMonsterLowLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterLowLevelColour = TargetMonsterLowLevelColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterLowLabel, TargetMonsterLowLevelColourBox);
+
+            TargetMonsterSameLevelColourBox = new DXColourControl();
+            TargetMonsterSameLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterSameLevelColour = TargetMonsterSameLevelColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterSameLabel, TargetMonsterSameLevelColourBox);
+
+            TargetMonsterHighLevelColourBox = new DXColourControl();
+            TargetMonsterHighLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterHighLevelColour = TargetMonsterHighLevelColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterHighLabel, TargetMonsterHighLevelColourBox);
+
+            TargetNPCColourBox = new DXColourControl();
+            TargetNPCColourBox.BackColourChanged += (o, e) => Config.TargetNPCColour = TargetNPCColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabNPCLabel, TargetNPCColourBox);
+            ResetTargetColoursButton = new DXButton
+            {
+                Size = new Size(80, SmallButtonHeight),
+                ButtonType = ButtonType.SmallButton,
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowColoursTabResetColoursButtonLabel }
+            };
+
+            ResetTargetColoursButton.MouseClick += (o, e) =>
+            {
+                TargetMonsterLowLevelColourBox.BackColour = Color.LimeGreen;
+                TargetMonsterSameLevelColourBox.BackColour = Color.Yellow;
+                TargetMonsterHighLevelColourBox.BackColour = Color.Red;
+                TargetNPCColourBox.BackColour = Color.Cyan;
+            };
+            targetColoursSection.AddControl("", ResetTargetColoursButton);
+            #endregion
 
             #endregion
 
@@ -910,6 +965,21 @@ namespace Client.Controls
                 if (ActiveConfig == this)
                     ActiveConfig = null;
 
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+                    TitleLabel = null;
+                }
+
+                if (CloseButton  != null)
+                {
+                    if (!CloseButton.IsDisposed)
+                        CloseButton.Dispose();
+
+                    CloseButton = null;
+                }
+
                 if (TabControl != null)
                 {
                     if (!TabControl.IsDisposed)
@@ -987,6 +1057,15 @@ namespace Client.Controls
 
                     GameSizeComboBox = null;
                 }
+
+                if (RenderingPipelineComboBox != null)
+                {
+                    if (!RenderingPipelineComboBox.IsDisposed)
+                        RenderingPipelineComboBox.Dispose();
+
+                    RenderingPipelineComboBox = null;
+                }
+
                 if (LanguageComboBox != null)
                 {
                     if (!LanguageComboBox.IsDisposed)
@@ -1120,6 +1199,14 @@ namespace Client.Controls
                         DrawParticlesCheckBox.Dispose();
 
                     DrawParticlesCheckBox = null;
+                }
+
+                if (DrawEffectsCheckBox != null)
+                {
+                    if (!DrawEffectsCheckBox.IsDisposed)
+                        DrawEffectsCheckBox.Dispose();
+
+                    DrawEffectsCheckBox = null;
                 }
 
 
@@ -1361,6 +1448,60 @@ namespace Client.Controls
 
                     GainsColourBox = null;
                 }
+
+                if (AnnouncementColourBox != null)
+                {
+                    if (!AnnouncementColourBox.IsDisposed)
+                        AnnouncementColourBox.Dispose();
+
+                    AnnouncementColourBox = null;
+                }
+
+                
+                #endregion
+
+                #region Target Colours
+
+                if (TargetMonsterLowLevelColourBox != null)
+                {
+                    if (!TargetMonsterLowLevelColourBox.IsDisposed)
+                        TargetMonsterLowLevelColourBox.Dispose();
+
+                    TargetMonsterLowLevelColourBox = null;
+                }
+
+                if (TargetMonsterSameLevelColourBox != null)
+                {
+                    if (!TargetMonsterSameLevelColourBox.IsDisposed)
+                        TargetMonsterSameLevelColourBox.Dispose();
+
+                    TargetMonsterSameLevelColourBox = null;
+                }
+
+                if (TargetMonsterHighLevelColourBox != null)
+                {
+                    if (!TargetMonsterHighLevelColourBox.IsDisposed)
+                        TargetMonsterHighLevelColourBox.Dispose();
+
+                    TargetMonsterHighLevelColourBox = null;
+                }
+
+                if (TargetNPCColourBox != null)
+                {
+                    if (!TargetNPCColourBox.IsDisposed)
+                        TargetNPCColourBox.Dispose();
+
+                    TargetNPCColourBox = null;
+                }
+
+                if (ResetTargetColoursButton != null)
+                {
+                    if (!ResetTargetColoursButton.IsDisposed)
+                        ResetTargetColoursButton.Dispose();
+
+                    ResetTargetColoursButton = null;
+                }
+
                 #endregion
             }
         }
@@ -1623,7 +1764,7 @@ namespace Client.Controls
 
             foreach (var control in ConfigControls)
             {
-                if (control.Control is DXColourControlPair)
+                if (control.Control is DXColourControlPair || control.Control is DXColourControl)
                 {
                     labelAlignX = 70;
                 }

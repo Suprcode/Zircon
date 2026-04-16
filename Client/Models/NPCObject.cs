@@ -160,16 +160,31 @@ namespace Client.Models
 
             DrawShadow();
 
-            DrawBody();
+            DrawBody(MouseObject == this);
         }
 
         private void DrawShadow()
         {
             BodyLibrary.Draw(BodyFrame, DrawX, DrawY, Color.White, true, 0.5f, ImageType.Shadow);
         }
-        private void DrawBody()
+        private void DrawBody(bool mouseOver = false)
         {
+            bool outlineEnabled = false;
+
+            if (mouseOver && Config.ShowTargetOutline)
+            {
+                var result = Config.TargetNPCColour;
+
+                RenderingPipelineManager.EnableOutlineEffect(result, 2f);
+                outlineEnabled = true;
+            }
+
             BodyLibrary.Draw(BodyFrame, DrawX, DrawY, DrawColour, true, 1F, ImageType.Image);
+
+            if (outlineEnabled)
+            {
+                RenderingPipelineManager.DisableOutlineEffect();
+            }
         }
 
         public override void DrawBlend()

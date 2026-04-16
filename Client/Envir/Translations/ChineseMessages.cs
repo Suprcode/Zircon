@@ -146,6 +146,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; } = "Settings";
         public override string CommonControlConfigWindowUISectionSettingsLabel { get; set; } = "Settings";
         public override string CommonControlConfigWindowUISectionColoursLabel { get; set; } = "Colours";
+        public override string CommonControlConfigWindowUISectionTargetColoursLabel { get; set; } = "TargerColours";
         public override string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; } = "全屏";
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "分辨率";
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync";
@@ -198,6 +199,10 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowColoursTabGainsTextLabel { get; set; } = "Gains Text";
         public override string CommonControlConfigWindowColoursTabAnnouncementsLabel { get; set; } = "公告";
         public override string CommonControlConfigWindowColoursTabResetColoursButtonLabel { get; set; } = "重置所有";
+        public override string CommonControlConfigWindowTargetColoursTabMonsterLowLabel { get; set; } = "Monster (Low)";
+        public override string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; } = "Monster (Same)";
+        public override string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; } = "Monster (High)";
+        public override string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; } = "NPC";
         public override string CommonControlDXKeyBindWindowTitle { get; set; } = "按键绑定";
         public override string CommonControlDXKeyBindWindowTipLabel { get; set; } = "按 [Esc] 来取消当前的按键绑定";
         public override string CommonControlDXKeyBindWindowDefaultConfirmMessage { get; set; } = "Are you sure you want to reset ALL keybinds back to the default settings?";

@@ -145,7 +145,8 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGameSectionSettingsLabel { get; set; } = "Settings";
         public override string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; } = "Settings";
         public override string CommonControlConfigWindowUISectionSettingsLabel { get; set; } = "Settings";
-        public override string CommonControlConfigWindowUISectionColoursLabel { get; set; } = "Colours";
+        public override string CommonControlConfigWindowUISectionColoursLabel { get; set; } = "Chat Colours";
+        public override string CommonControlConfigWindowUISectionTargetColoursLabel { get; set; } = "Outline Colours";
 
         public override string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; } = "Full Screen";
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "Game Size";
@@ -199,6 +200,10 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowColoursTabGainsTextLabel { get; set; } = "Gains Text";
         public override string CommonControlConfigWindowColoursTabAnnouncementsLabel { get; set; } = "Announcements";
         public override string CommonControlConfigWindowColoursTabResetColoursButtonLabel { get; set; } = "Reset All";
+        public override string CommonControlConfigWindowTargetColoursTabMonsterLowLabel { get; set; } = "Monster (Low)";
+        public override string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; } = "Monster (Same)";
+        public override string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; } = "Monster (High)";
+        public override string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; } = "NPC";
         public override string CommonControlDXKeyBindWindowTitle { get; set; } = "Key Binds";
         public override string CommonControlDXKeyBindWindowTipLabel { get; set; } = "[Escape] to undo changes to current Key Bind";
         public override string CommonControlDXKeyBindWindowDefaultConfirmMessage { get; set; } = "Are you sure you want to reset ALL keybinds back to the default settings?";

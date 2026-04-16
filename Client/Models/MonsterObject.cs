@@ -2608,9 +2608,9 @@ namespace Client.Models
 
                 var result = (GameScene.Game.User.Level - MonsterInfo.Level) switch
                 {
-                    > levelDiff => Color.LimeGreen,
-                    <= levelDiff and >= 0 => Color.Yellow,
-                    _ => Color.Red
+                    > levelDiff => Config.TargetMonsterLowLevelColour,
+                    <= levelDiff and >= 0 => Config.TargetMonsterSameLevelColour,
+                    _ => Config.TargetMonsterHighLevelColour
                 };
 
                 RenderingPipelineManager.EnableOutlineEffect(result, 2f);

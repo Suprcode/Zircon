@@ -117,5 +117,11 @@ namespace Client.Envir
         public static Color SystemTextBackColour { get; set; } = Color.FromArgb(200, 255, 255, 255);
         public static Color GainsTextBackColour { get; set; } = Color.FromArgb(0, 0, 0, 0);
         public static Color AnnouncementTextBackColour { get; set; } = Color.FromArgb(200, 255, 255, 255);
+
+        [ConfigSection("Target Colours")]
+        public static Color TargetMonsterLowLevelColour { get; set; } = Color.LimeGreen;
+        public static Color TargetMonsterSameLevelColour { get; set; } = Color.Yellow;
+        public static Color TargetMonsterHighLevelColour { get; set; } = Color.Red;
+        public static Color TargetNPCColour { get; set; } = Color.Aquamarine;
     }
 }

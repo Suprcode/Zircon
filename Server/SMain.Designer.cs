@@ -134,7 +134,7 @@
             ribbonControl1.ShowItemCaptionsInCaptionBar = true;
             ribbonControl1.ShowQatLocationSelector = false;
             ribbonControl1.ShowToolbarCustomizeItem = false;
-            ribbonControl1.Size = new System.Drawing.Size(1127, 144);
+            ribbonControl1.Size = new System.Drawing.Size(1294, 144);
             ribbonControl1.Toolbar.ShowCustomizeItem = false;
             // 
             // skinRibbonGalleryBarItem1
@@ -203,7 +203,7 @@
             navBarControl1.Location = new System.Drawing.Point(0, 144);
             navBarControl1.Name = "navBarControl1";
             navBarControl1.OptionsNavPane.ExpandedWidth = 144;
-            navBarControl1.Size = new System.Drawing.Size(144, 433);
+            navBarControl1.Size = new System.Drawing.Size(144, 690);
             navBarControl1.TabIndex = 1;
             navBarControl1.Text = "navBarControl1";
             // 
@@ -662,15 +662,15 @@
             barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
             barDockControlTop.Location = new System.Drawing.Point(0, 0);
             barDockControlTop.Manager = BManager;
-            barDockControlTop.Size = new System.Drawing.Size(1127, 0);
+            barDockControlTop.Size = new System.Drawing.Size(1294, 0);
             // 
             // barDockControlBottom
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            barDockControlBottom.Location = new System.Drawing.Point(0, 577);
+            barDockControlBottom.Location = new System.Drawing.Point(0, 834);
             barDockControlBottom.Manager = BManager;
-            barDockControlBottom.Size = new System.Drawing.Size(1127, 25);
+            barDockControlBottom.Size = new System.Drawing.Size(1294, 25);
             // 
             // barDockControlLeft
             // 
@@ -678,15 +678,15 @@
             barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             barDockControlLeft.Location = new System.Drawing.Point(0, 0);
             barDockControlLeft.Manager = BManager;
-            barDockControlLeft.Size = new System.Drawing.Size(0, 577);
+            barDockControlLeft.Size = new System.Drawing.Size(0, 834);
             // 
             // barDockControlRight
             // 
             barDockControlRight.CausesValidation = false;
             barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            barDockControlRight.Location = new System.Drawing.Point(1127, 0);
+            barDockControlRight.Location = new System.Drawing.Point(1294, 0);
             barDockControlRight.Manager = BManager;
-            barDockControlRight.Size = new System.Drawing.Size(0, 577);
+            barDockControlRight.Size = new System.Drawing.Size(0, 834);
             // 
             // InterfaceTimer
             // 
@@ -697,7 +697,7 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1127, 602);
+            ClientSize = new System.Drawing.Size(1294, 859);
             Controls.Add(navBarControl1);
             Controls.Add(ribbonControl1);
             Controls.Add(barDockControlLeft);
@@ -707,8 +707,8 @@
             IsMdiContainer = true;
             Name = "SMain";
             Ribbon = ribbonControl1;
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Zircon Server";
-            WindowState = System.Windows.Forms.FormWindowState.Maximized;
             Load += SMain_Load;
             ((System.ComponentModel.ISupportInitialize)ribbonControl1).EndInit();
             ((System.ComponentModel.ISupportInitialize)navBarControl1).EndInit();

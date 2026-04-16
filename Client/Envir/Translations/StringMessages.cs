@@ -145,6 +145,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowNetworkSectionSettingsLabel { get; set; }
         public abstract string CommonControlConfigWindowUISectionSettingsLabel { get; set; }
         public abstract string CommonControlConfigWindowUISectionColoursLabel { get; set; }
+        public abstract string CommonControlConfigWindowUISectionTargetColoursLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; }
@@ -197,6 +198,10 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowColoursTabGainsTextLabel { get; set; }
         public abstract string CommonControlConfigWindowColoursTabAnnouncementsLabel { get; set; }
         public abstract string CommonControlConfigWindowColoursTabResetColoursButtonLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterLowLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; }
         public abstract string CommonControlDXKeyBindWindowTitle { get; set; }
         public abstract string CommonControlDXKeyBindWindowTipLabel { get; set; }
         public abstract string CommonControlDXKeyBindWindowDefaultConfirmMessage { get; set; }
