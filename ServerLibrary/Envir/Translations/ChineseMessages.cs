@@ -93,6 +93,8 @@ namespace Server.Envir.Translations
         public override string CompanionNoRoom { get; set; } = "你的宠物已经无法携带更多物品";
         public override string StorageLimit { get; set; } = "你不能再扩展存储空间了";
         public override string NotEnoughBagSpaceAvailable { get; set; } = "行李空间不足";
+        public override string CannotUseItemWithSafeZone { get; set; } = "You cannot use [{0}] with maps that have a SafeZone.";
+        public override string NoEmptyInventorySlot { get; set; } = "You do not have any empty inventory slot";
 
 
         public override string MarryAlreadyMarried { get; set; } = "你已经结婚了";
@@ -107,6 +109,8 @@ namespace Server.Envir.Translations
         public override string MarryComplete { get; set; } = "恭喜你，你现在和{0}结婚了";
         public override string MarryDivorce { get; set; } = "你和{0}离婚了";
         public override string MarryDivorced { get; set; } = "{0}和你离婚了";
+        public override string NotMarried { get; set; } = "You are not married";
+        public override string MarryNotRing { get; set; } = "Your ring is not married ring";
         public override string MarryTeleportDead { get; set; } = "你处于死亡状态，无法传送到你的配偶身边";
         public override string MarryTeleportPK { get; set; } = "你处于红名状态，无法传送到你的配偶身边";
         public override string MarryTeleportDelay { get; set; } = "你需要等待{0}才能传送到你的配偶身边";
@@ -124,6 +128,7 @@ namespace Server.Envir.Translations
         public override string CompanionAppearanceLocked { get; set; } = "新宠物{0}目前尚未解锁，你无法购买";
         public override string CompanionNeedCurrency { get; set; } = "当前金币不足无法购买宠物";
         public override string CompanionBadName { get; set; } = "该名称不符合宠物命名的规则";
+        public override string CompanionFiltersUpdated { get; set; } = "Companion filters have been updated";
         public override string CompanionRetrieveFailed { get; set; } = "无法获得{0}宠物，该宠物当前跟随{1}";
         public override string CompanionReleaseFailed { get; set; } = "Unable to release {0} because it is currently with {1}.";
         public override string QuestSelectReward { get; set; } = "你必须选择任务奖励";
@@ -177,6 +182,8 @@ namespace Server.Envir.Translations
         public override string GuildKicked { get; set; } = "你被{0}驱逐出行会";
         public override string GuildManagePermission { get; set; } = "你没有管理行会的权限";
         public override string GuildCastleRepairPermission { get; set; } = "You do not have permission to Repair Castle Defenses.";
+        public override string GuildGateClosed { get; set; } = "{0} {1} has been closed";
+        public override string GuildGateOpened { get; set; } = "{0} {1} has been opened";
         public override string GuildMemberLimit { get; set; } = "行会已达到最大成员上限";
         public override string GuildMemberCost { get; set; } = "行会没有足够的资金来扩展行会成员上限";
         public override string GuildStorageLimit { get; set; } = "行会仓库已达到最大空间上限";

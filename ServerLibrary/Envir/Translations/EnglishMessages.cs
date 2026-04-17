@@ -10,7 +10,7 @@ namespace Server.Envir.Translations
         public override string PaymentComplete { get; set; } = "Your payment for {0} Game Gold was successful.";
         public override string PaymentFailed { get; set; } = "You have been deduceted {0} Game Gold.";
         public override string ReferralPaymentComplete { get; set; } = "One of your referral's has purchased some game gold, You got a bonus of {0} Hunt Gold.";
-        public override string ReferralPaymentFailed { get; set; } = "One of your referal's purchase has failed, You lost your bonus of {0} Hunt Gold.";
+        public override string ReferralPaymentFailed { get; set; } = "One of your referral's purchase has failed, You lost your bonus of {0} Hunt Gold.";
         public override string GameGoldLost { get; set; } = "Your {0} Game Gold was removed.";
         public override string GameGoldRefund { get; set; } = "Your {0} Game Gold was refunded.";
         public override string HuntGoldRefund { get; set; } = "Your {0} Hunt Gold was refunded.";
@@ -88,6 +88,8 @@ namespace Server.Envir.Translations
         public override string CompanionNoRoom { get; set; } = "Your companion cannot carry this many items";
         public override string StorageLimit { get; set; } = "You cannot expand your storage anymore.";
         public override string NotEnoughBagSpaceAvailable { get; set; } = "Not enough bag space available.";
+        public override string CannotUseItemWithSafeZone { get; set; } = "You cannot use [{0}] with maps that have a SafeZone.";
+        public override string NoEmptyInventorySlot { get; set; } = "You do not have any empty inventory slot";
 
         public override string MarryAlreadyMarried { get; set; } = "You are already married.";
         public override string MarryNeedLevel { get; set; } = "You need to be atleast level 22 to get married.";
@@ -101,6 +103,8 @@ namespace Server.Envir.Translations
         public override string MarryComplete { get; set; } = "Congratulations, you're now married to {0}.";
         public override string MarryDivorce { get; set; } = "You have divorced {0}";
         public override string MarryDivorced { get; set; } = "{0} has divorced you.";
+        public override string NotMarried { get; set; } = "You are not married";
+        public override string MarryNotRing { get; set; } = "Your ring is not married ring";
         public override string MarryTeleportDead { get; set; } = "You cannot teleport to your partner you are dead.";
         public override string MarryTeleportPK { get; set; } = "You cannot teleport to your partner you are Red.";
         public override string MarryTeleportDelay { get; set; } = "You cannot teleport to your partner for another {0}.";
@@ -117,6 +121,7 @@ namespace Server.Envir.Translations
         public override string CompanionAppearanceLocked { get; set; } = "The {0} appearance is not available to you.";
         public override string CompanionNeedCurrency { get; set; } = "You cannot afford to adopt this companion.";
         public override string CompanionBadName { get; set; } = "The name given for your new companion is not acceptable.";
+        public override string CompanionFiltersUpdated { get; set; } = "Companion filters have been updated";
         public override string CompanionRetrieveFailed { get; set; } = "Unable to retrieve {0} because it is currently with {1}.";
         public override string CompanionReleaseFailed { get; set; } = "Unable to release {0} because it is currently with {1}.";
         public override string QuestSelectReward { get; set; } = "You must select a reward";
@@ -166,6 +171,8 @@ namespace Server.Envir.Translations
         public override string GuildKicked { get; set; } = "You have been kicked form the guild by {0}.";
         public override string GuildManagePermission { get; set; } = "You do not have permission to Manage the guild.";
         public override string GuildCastleRepairPermission { get; set; } = "You do not have permission to Repair Castle Defenses.";
+        public override string GuildGateClosed { get; set; } = "{0} {1} has been closed";
+        public override string GuildGateOpened { get; set; } = "{0} {1} has been opened";
         public override string GuildMemberLimit { get; set; } = "Guild has already reached the Maxmimum Member Limit.";
         public override string GuildMemberCost { get; set; } = "Guild does not have enough funds to increase member limit.";
         public override string GuildStorageLimit { get; set; } = "Guild has already reached the Maxmimum Storage Size.";

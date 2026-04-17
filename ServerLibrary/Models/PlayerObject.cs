@@ -2849,13 +2849,13 @@ namespace Server.Models
         {
             if (Character.Partner == null)
             {
-                Connection.ReceiveChat("You are not married", MessageType.System);
+                Connection.ReceiveChat(Connection.Language.NotMarried, MessageType.System);
                 return;
             }
 
             if (Equipment[(int)EquipmentSlot.RingL] == null || (Equipment[(int)EquipmentSlot.RingL].Flags & UserItemFlags.Marriage) != UserItemFlags.Marriage)
             {
-                Connection.ReceiveChat("Your ring is not married ring", MessageType.System);
+                Connection.ReceiveChat(Connection.Language.MarryNotRing, MessageType.System);
                 return;
             }
 
@@ -3062,7 +3062,7 @@ namespace Server.Models
             FiltersRarity = Character.FiltersRarity;
 
             Enqueue(new S.SendCompanionFilters { FilterClass = p.FilterClass, FilterRarity = p.FilterRarity, FilterItemType = p.FilterItemType });
-            Connection.ReceiveChat("Companion filters have been updated", MessageType.System);
+            Connection.ReceiveChat(Connection.Language.CompanionFiltersUpdated, MessageType.System);
         }
 
         public void CompanionRetrieve(int index)
@@ -3850,7 +3850,7 @@ namespace Server.Models
 
                 mail.Account = Character.Account;
                 mail.Subject = "Listing Cancelled";
-                mail.Message = string.Format("You canceled your sale of '{0}{1}' and was not able to collect the item.", item.Info.ItemName, item.Count == 1 ? "" : "x" + item.Count);
+                mail.Message = string.Format("You cancelled your sale of '{0}{1}' and was not able to collect the item.", item.Info.ItemName, item.Count == 1 ? "" : "x" + item.Count);
                 mail.Sender = "Market Place";
                 item.Mail = mail;
                 item.Slot = 0;
@@ -4019,7 +4019,7 @@ namespace Server.Models
 
                 mail.Subject = "Item Purchase";
                 mail.Sender = "Market Place";
-                mail.Message = string.Format("You purshased '{0}{1}' and was not able to collect the item.", itemName, item.Count == 1 ? "" : "x" + item.Count);
+                mail.Message = string.Format("You purchased '{0}{1}' and was not able to collect the item.", itemName, item.Count == 1 ? "" : "x" + item.Count);
 
                 item.Mail = mail;
                 item.Slot = 0;
@@ -4172,7 +4172,7 @@ namespace Server.Models
 
                 mail.Account = info.Account;
                 mail.Subject = "Listing Cancelled";
-                mail.Message = "Your listing was canceled because of Item change(s).";
+                mail.Message = "Your listing was cancelled because of Item change(s).";
                 mail.Sender = "System";
                 item.Mail = mail;
                 item.Slot = 0;
@@ -4794,14 +4794,14 @@ namespace Server.Models
                     gate.CloseDoor();
 
                     foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
-                        member.Account.Connection?.ReceiveChat($"{castle.Name} {gate.MonsterInfo.MonsterName} has been closed", MessageType.System);
+                        member.Account.Connection?.ReceiveChat(con => string.Format(con.Language.GuildGateClosed, castle.Name, gate.MonsterInfo.MonsterName), MessageType.System);
                 }
                 else
                 {
                     gate.OpenDoor();
 
                     foreach (GuildMemberInfo member in Character.Account.GuildMember.Guild.Members)
-                        member.Account.Connection?.ReceiveChat($"{castle.Name} {gate.MonsterInfo.MonsterName} has been opened", MessageType.System);
+                        member.Account.Connection?.ReceiveChat(con => string.Format(con.Language.GuildGateOpened, castle.Name, gate.MonsterInfo.MonsterName), MessageType.System);
                 }
             }
         }
@@ -6021,7 +6021,7 @@ namespace Server.Models
                         case 18: //Football Whistle
                             if (item.Info.Stats[Stat.MapSummoning] > 0 && CurrentMap.HasSafeZone)
                             {
-                                Connection.ReceiveChat($"You cannot use [{item.Info.ItemName}] with maps that have a SafeZone.", MessageType.System);
+                                Connection.ReceiveChat(string.Format(Connection.Language.CannotUseItemWithSafeZone, item.Info.ItemName), MessageType.System);
                                 return;
                             }
 
@@ -6043,7 +6043,7 @@ namespace Server.Models
 
                                 if (!hasSpace)
                                 {
-                                    Connection.ReceiveChat("You do not have any empty inventory slot", MessageType.System);
+                                    Connection.ReceiveChat(Connection.Language.NoEmptyInventorySlot, MessageType.System);
                                     return;
                                 }
 
