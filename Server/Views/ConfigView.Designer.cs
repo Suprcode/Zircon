@@ -103,6 +103,8 @@ namespace Server.Views
             MasterPasswordEdit = new DevExpress.XtraEditors.TextEdit();
             labelControl67 = new DevExpress.XtraEditors.LabelControl();
             MapPathEdit = new DevExpress.XtraEditors.ButtonEdit();
+            labelControl97 = new DevExpress.XtraEditors.LabelControl();
+            LazyLoadMapsEdit = new DevExpress.XtraEditors.CheckEdit();
             labelControl13 = new DevExpress.XtraEditors.LabelControl();
             labelControl10 = new DevExpress.XtraEditors.LabelControl();
             DBSaveDelayEdit = new DevExpress.XtraEditors.TimeSpanEdit();
@@ -280,6 +282,7 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)ClientPathEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MasterPasswordEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapPathEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)LazyLoadMapsEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DBSaveDelayEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VersionPathEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CheckVersionEdit.Properties).BeginInit();
@@ -956,6 +959,8 @@ namespace Server.Views
             xtraTabPage3.Controls.Add(MasterPasswordEdit);
             xtraTabPage3.Controls.Add(labelControl67);
             xtraTabPage3.Controls.Add(MapPathEdit);
+            xtraTabPage3.Controls.Add(labelControl97);
+            xtraTabPage3.Controls.Add(LazyLoadMapsEdit);
             xtraTabPage3.Controls.Add(labelControl13);
             xtraTabPage3.Controls.Add(labelControl10);
             xtraTabPage3.Controls.Add(DBSaveDelayEdit);
@@ -1056,6 +1061,23 @@ namespace Server.Views
             MapPathEdit.Size = new System.Drawing.Size(250, 20);
             MapPathEdit.TabIndex = 30;
             MapPathEdit.ButtonClick += MapPathEdit_ButtonClick;
+            // 
+            // labelControl97
+            // 
+            labelControl97.Location = new System.Drawing.Point(18, 227);
+            labelControl97.Name = "labelControl97";
+            labelControl97.Size = new System.Drawing.Size(79, 13);
+            labelControl97.TabIndex = 77;
+            labelControl97.Text = "Lazy Load Maps:";
+            // 
+            // LazyLoadMapsEdit
+            // 
+            LazyLoadMapsEdit.Location = new System.Drawing.Point(103, 224);
+            LazyLoadMapsEdit.MenuManager = ribbon;
+            LazyLoadMapsEdit.Name = "LazyLoadMapsEdit";
+            LazyLoadMapsEdit.Properties.Caption = "";
+            LazyLoadMapsEdit.Size = new System.Drawing.Size(100, 19);
+            LazyLoadMapsEdit.TabIndex = 76;
             // 
             // labelControl13
             // 
@@ -2563,6 +2585,7 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)ClientPathEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)MasterPasswordEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)MapPathEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)LazyLoadMapsEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)DBSaveDelayEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)VersionPathEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)CheckVersionEdit.Properties).EndInit();
@@ -2708,6 +2731,8 @@ namespace Server.Views
         private DevExpress.XtraTab.XtraTabPage xtraTabPage7;
         private DevExpress.XtraTab.XtraTabPage xtraTabPage3;
         private DevExpress.XtraEditors.ButtonEdit MapPathEdit;
+        private DevExpress.XtraEditors.LabelControl labelControl97;
+        private DevExpress.XtraEditors.CheckEdit LazyLoadMapsEdit;
         private DevExpress.XtraEditors.LabelControl labelControl13;
         private DevExpress.XtraEditors.LabelControl labelControl10;
         private DevExpress.XtraEditors.TimeSpanEdit DBSaveDelayEdit;
