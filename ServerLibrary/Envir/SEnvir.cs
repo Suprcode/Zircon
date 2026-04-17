@@ -3841,21 +3841,18 @@ namespace Server.Envir
             CreateQuestRegions(map.Instance, map.InstanceSequence, map.Info);
         }
 
-        private static Map LoadMap(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0, int respawnIndex = 0)
+        private static void FinaliseMapLoad(Map map)
         {
-            if (info == null) return null;
+            if (map == null) return;
 
-            Map map = new Map(info, instance, instanceSequence, respawnIndex);
             map.Load();
             InitialiseLoadedMap(map);
 
-            var scope = instance == null
-                ? $"[{info.FileName}]"
-                : $"[{instance.Name}:{instanceSequence}:{info.FileName}]";
+            var scope = map.Instance == null
+                ? $"[{map.Info.FileName}]"
+                : $"[{map.Instance.Name}:{map.InstanceSequence}:{map.Info.FileName}]";
 
             Log($"Map loaded {scope}");
-
-            return map;
         }
 
         public static Map GetMap(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0)
@@ -3872,10 +3869,10 @@ namespace Server.Envir
                     if (Maps.TryGetValue(info, out loadedMap))
                         return loadedMap;
 
-                    loadedMap = LoadMap(info);
-                    if (loadedMap == null) return null;
-
+                    loadedMap = new Map(info);
                     Maps[info] = loadedMap;
+                    FinaliseMapLoad(loadedMap);
+
                     return loadedMap;
                 }
             }
@@ -3899,10 +3896,9 @@ namespace Server.Envir
                 if (instanceMaps[instanceSequence].TryGetValue(info, out instanceMap))
                     return instanceMap;
 
-                instanceMap = LoadMap(info, instance, instanceSequence, instanceMapInfo.RespawnIndex);
-                if (instanceMap == null) return null;
-
+                instanceMap = new Map(info, instance, instanceSequence, instanceMapInfo.RespawnIndex);
                 instanceMaps[instanceSequence][info] = instanceMap;
+                FinaliseMapLoad(instanceMap);
             }
 
             return instanceMap;
@@ -3917,9 +3913,9 @@ namespace Server.Envir
             for (int i = 0; i < instance.Maps.Count; i++)
             {
                 var mapInfo = instance.Maps[i];
-                Map map = LoadMap(mapInfo.Map, instance, instanceSequence, mapInfo.RespawnIndex);
-                if (map != null)
-                    mapInstance[instanceSequence][mapInfo.Map] = map;
+                Map map = new Map(mapInfo.Map, instance, instanceSequence, mapInfo.RespawnIndex);
+                mapInstance[instanceSequence][mapInfo.Map] = map;
+                FinaliseMapLoad(map);
             }
 
             Log($"Loaded Instance {instance.Name} at index {instanceSequence}");
