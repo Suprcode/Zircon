@@ -312,6 +312,7 @@ namespace Server.Envir
 
         public static Dictionary<MapInfo, Map> Maps = [];
         public static Dictionary<InstanceInfo, Dictionary<MapInfo, Map>[]> Instances = [];
+        private static readonly object MapLoadLock = new();
 
         private static long _ObjectID;
         public static uint ObjectID => (uint)Interlocked.Increment(ref _ObjectID);
@@ -668,46 +669,24 @@ namespace Server.Envir
             LoadExperienceList();
 
             #region Load Files
-            for (int i = 0; i < MapInfoList.Count; i++)
-            {
-                Maps[MapInfoList[i]] = new Map(MapInfoList[i]);
-            }
-
             for (int i = 0; i < InstanceInfoList.Count; i++)
             {
                 int count = InstanceInfoList[i].MaxInstances > 0 ? InstanceInfoList[i].MaxInstances : byte.MaxValue;
 
                 Instances[InstanceInfoList[i]] = new Dictionary<MapInfo, Map>[count];
             }
-
-            Parallel.ForEach(Maps, x => x.Value.Load());
-
             #endregion
 
-            foreach (Map map in Maps.Values)
-                map.Setup();
-
-            Parallel.ForEach(MapRegionList.Binding, x =>
+            // Start maps should be immediately available.
+            foreach (SafeZoneInfo info in SafeZoneInfoList.Binding)
             {
-                Map map = GetMap(x.Map);
+                if (info.StartClass == RequiredClass.None || info.Region?.Map == null) continue;
 
-                if (map == null) return;
-
-                x.CreatePoints(map.Width);
-            });
-
-            CreateSafeZones();
-
-            CreateMovements();
-
-            CreateNPCs();
-
-            CreateSpawns();
-
-            CreateQuestRegions();
+                GetMap(info.Region.Map);
+            }
         }
 
-        private static void CreateMovements(InstanceInfo instance = null, byte instanceSequence = 0)
+        private static void CreateMovements(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
             foreach (MovementInfo movement in MovementInfoList.Binding)
             {
@@ -722,6 +701,8 @@ namespace Server.Envir
                     Log($"[Movement] No Source Region, Destination: {movement.DestinationRegion.ServerDescription}");
                     continue;
                 }
+
+                if (targetMap != null && movement.SourceRegion.Map != targetMap) continue;
 
                 Map sourceMap = GetMap(movement.SourceRegion.Map, instance, instanceSequence);
 
@@ -747,9 +728,12 @@ namespace Server.Envir
                     continue;
                 }
 
-                Map destMap = GetMap(movement.DestinationRegion.Map, instance, instanceSequence);
+                Map destMap = null;
 
-                if (destMap == null)
+                if (targetMap == null)
+                    destMap = GetMap(movement.DestinationRegion.Map, instance, instanceSequence);
+
+                if (targetMap == null && destMap == null)
                 {
                     if (instance == null)
                     {
@@ -784,11 +768,12 @@ namespace Server.Envir
             }
         }
 
-        private static void CreateNPCs(InstanceInfo instance = null, byte instanceSequence = 0)
+        private static void CreateNPCs(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
             foreach (NPCInfo info in NPCInfoList.Binding)
             {
                 if (info.Region == null) continue;
+                if (targetMap != null && info.Region.Map != targetMap) continue;
 
                 Map map = GetMap(info.Region.Map, instance, instanceSequence);
 
@@ -812,7 +797,7 @@ namespace Server.Envir
             }
         }
 
-        private static void CreateQuestRegions(InstanceInfo instance = null, byte instanceSequence = 0)
+        private static void CreateQuestRegions(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
             foreach (QuestInfo quest in QuestInfoList.Binding)
             {
@@ -820,6 +805,7 @@ namespace Server.Envir
                 {
                     if (task.Task != QuestTaskType.Region) continue;
                     if (task.RegionParameter == null) continue;
+                    if (targetMap != null && task.RegionParameter.Map != targetMap) continue;
 
                     var sourceMap = GetMap(task.RegionParameter.Map, instance, instanceSequence);
 
@@ -854,75 +840,80 @@ namespace Server.Envir
             }
         }
 
-        private static void CreateSafeZones(InstanceInfo instance = null, byte instanceSequence = 0)
+        private static void CreateSafeZones(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
             foreach (SafeZoneInfo info in SafeZoneInfoList.Binding)
             {
                 if (info.Region == null) continue;
+                if (targetMap != null && info.Region.Map != targetMap && info.BindRegion?.Map != targetMap) continue;
 
-                Map map = GetMap(info.Region.Map, instance, instanceSequence);
-
-                if (map == null)
+                if (targetMap == null || info.Region.Map == targetMap)
                 {
-                    if (instance == null)
+                    Map map = GetMap(info.Region.Map, instance, instanceSequence);
+
+                    if (map == null)
                     {
-                        Log($"[Safe Zone] Bad Map, Map: {info.Region.ServerDescription}");
-                    }
-
-                    continue;
-                }
-
-                map.HasSafeZone = true;
-
-                HashSet<Point> edges = new HashSet<Point>();
-
-                foreach (Point point in info.Region.PointList)
-                {
-                    Cell cell = map.GetCell(point);
-
-                    if (cell == null)
-                    {
-                        Log($"[Safe Zone] Bad Location, Region: {info.Region.ServerDescription}, X: {point.X}, Y: {point.Y}.");
+                        if (instance == null)
+                        {
+                            Log($"[Safe Zone] Bad Map, Map: {info.Region.ServerDescription}");
+                        }
 
                         continue;
                     }
 
-                    cell.SafeZone = info;
+                    map.HasSafeZone = true;
 
-                    if (info.Border)
+                    HashSet<Point> edges = new HashSet<Point>();
+
+                    foreach (Point point in info.Region.PointList)
                     {
-                        for (int i = 0; i < 8; i++)
+                        Cell cell = map.GetCell(point);
+
+                        if (cell == null)
                         {
-                            Point test = Functions.Move(point, (MirDirection)i);
+                            Log($"[Safe Zone] Bad Location, Region: {info.Region.ServerDescription}, X: {point.X}, Y: {point.Y}.");
 
-                            if (info.Region.PointList.Contains(test)) continue;
-
-                            if (map.GetCell(test) == null) continue;
-
-                            edges.Add(test);
+                            continue;
                         }
+
+                        cell.SafeZone = info;
+
+                        if (info.Border)
+                        {
+                            for (int i = 0; i < 8; i++)
+                            {
+                                Point test = Functions.Move(point, (MirDirection)i);
+
+                                if (info.Region.PointList.Contains(test)) continue;
+
+                                if (map.GetCell(test) == null) continue;
+
+                                edges.Add(test);
+                            }
+                        }
+                    }
+
+                    foreach (Point point in edges)
+                    {
+                        SpellObject ob = new SpellObject
+                        {
+                            Visible = true,
+                            DisplayLocation = point,
+                            TickCount = 10,
+                            TickFrequency = TimeSpan.FromDays(365),
+                            Effect = SpellEffect.SafeZone
+                        };
+
+                        ob.Spawn(map, point);
                     }
                 }
 
-                foreach (Point point in edges)
-                {
-                    SpellObject ob = new SpellObject
-                    {
-                        Visible = true,
-                        DisplayLocation = point,
-                        TickCount = 10,
-                        TickFrequency = TimeSpan.FromDays(365),
-                        Effect = SpellEffect.SafeZone
-                    };
-
-                    ob.Spawn(map, point);
-                }
-
                 if (info.BindRegion == null || instance != null) continue;
+                if (targetMap != null && info.BindRegion.Map != targetMap) continue;
 
-                map = GetMap(info.BindRegion.Map);
+                Map bindMap = GetMap(info.BindRegion.Map);
 
-                if (map == null)
+                if (bindMap == null)
                 {
                     Log($"[Safe Zone] Bad Bind Map, Map: {info.Region.ServerDescription}");
 
@@ -931,7 +922,7 @@ namespace Server.Envir
 
                 foreach (Point point in info.BindRegion.PointList)
                 {
-                    Cell cell = map.GetCell(point);
+                    Cell cell = bindMap.GetCell(point);
 
                     if (cell == null)
                     {
@@ -939,17 +930,19 @@ namespace Server.Envir
                         continue;
                     }
 
-                    info.ValidBindPoints.Add(point);
+                    if (!info.ValidBindPoints.Contains(point))
+                        info.ValidBindPoints.Add(point);
                 }
             }
         }
 
-        private static void CreateSpawns(InstanceInfo instance = null, byte instanceSequence = 0)
+        private static void CreateSpawns(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
             foreach (RespawnInfo info in RespawnInfoList.Binding)
             {
                 if (info.Monster == null) continue;
                 if (info.Region == null) continue;
+                if (targetMap != null && info.Region.Map != targetMap) continue;
 
                 Map map = GetMap(info.Region.Map, instance, instanceSequence);
 
@@ -3824,21 +3817,95 @@ namespace Server.Envir
             return result;
         }
 
+        private static void SetupMapRegions(Map map)
+        {
+            if (map == null || map.Width == 0) return;
+
+            foreach (MapRegion region in map.Info.Regions)
+            {
+                region.CreatePoints(map.Width);
+            }
+        }
+
+        private static void InitialiseLoadedMap(Map map)
+        {
+            if (map == null || map.Width == 0 || map.Height == 0) return;
+
+            map.Setup();
+            SetupMapRegions(map);
+
+            CreateSafeZones(map.Instance, map.InstanceSequence, map.Info);
+            CreateMovements(map.Instance, map.InstanceSequence, map.Info);
+            CreateNPCs(map.Instance, map.InstanceSequence, map.Info);
+            CreateSpawns(map.Instance, map.InstanceSequence, map.Info);
+            CreateQuestRegions(map.Instance, map.InstanceSequence, map.Info);
+        }
+
+        private static Map LoadMap(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0, int respawnIndex = 0)
+        {
+            if (info == null) return null;
+
+            Map map = new Map(info, instance, instanceSequence, respawnIndex);
+            map.Load();
+            InitialiseLoadedMap(map);
+
+            var scope = instance == null
+                ? $"[{info.FileName}]"
+                : $"[{instance.Name}:{instanceSequence}:{info.FileName}]";
+
+            Log($"Map loaded {scope}");
+
+            return map;
+        }
+
         public static Map GetMap(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0)
         {
+            if (info == null) return null;
+
             if (instance == null)
             {
-                return info != null && Maps.ContainsKey(info) ? Maps[info] : null;
+                if (Maps.TryGetValue(info, out Map loadedMap))
+                    return loadedMap;
+
+                lock (MapLoadLock)
+                {
+                    if (Maps.TryGetValue(info, out loadedMap))
+                        return loadedMap;
+
+                    loadedMap = LoadMap(info);
+                    if (loadedMap == null) return null;
+
+                    Maps[info] = loadedMap;
+                    return loadedMap;
+                }
             }
 
-            var instanceMaps = Instances[instance];
+            if (!Instances.TryGetValue(instance, out var instanceMaps))
+                return null;
 
             if (instanceSequence >= instanceMaps.Length || instanceMaps[instanceSequence] == null)
             {
                 return null;
             }
 
-            return instanceMaps != null && instanceMaps[instanceSequence].ContainsKey(info) ? instanceMaps[instanceSequence][info] : null;
+            if (instanceMaps[instanceSequence].TryGetValue(info, out Map instanceMap))
+                return instanceMap;
+
+            var instanceMapInfo = instance.Maps.FirstOrDefault(x => x.Map == info);
+            if (instanceMapInfo == null) return null;
+
+            lock (MapLoadLock)
+            {
+                if (instanceMaps[instanceSequence].TryGetValue(info, out instanceMap))
+                    return instanceMap;
+
+                instanceMap = LoadMap(info, instance, instanceSequence, instanceMapInfo.RespawnIndex);
+                if (instanceMap == null) return null;
+
+                instanceMaps[instanceSequence][info] = instanceMap;
+            }
+
+            return instanceMap;
         }
 
         public static byte? LoadInstance(InstanceInfo instance, byte instanceSequence)
@@ -3849,25 +3916,11 @@ namespace Server.Envir
 
             for (int i = 0; i < instance.Maps.Count; i++)
             {
-                mapInstance[instanceSequence][instance.Maps[i].Map] = new Map(instance.Maps[i].Map, instance, instanceSequence, instance.Maps[i].RespawnIndex);
+                var mapInfo = instance.Maps[i];
+                Map map = LoadMap(mapInfo.Map, instance, instanceSequence, mapInfo.RespawnIndex);
+                if (map != null)
+                    mapInstance[instanceSequence][mapInfo.Map] = map;
             }
-
-            Parallel.ForEach(mapInstance[instanceSequence], x => x.Value.Load());
-
-            foreach (Map map in mapInstance[instanceSequence].Values)
-            {
-                map.Setup();
-            }
-
-            CreateSafeZones(instance, instanceSequence);
-
-            CreateMovements(instance, instanceSequence);
-
-            CreateNPCs(instance, instanceSequence);
-
-            CreateSpawns(instance, instanceSequence);
-
-            CreateQuestRegions(instance, instanceSequence);
 
             Log($"Loaded Instance {instance.Name} at index {instanceSequence}");
 

@@ -1315,7 +1315,10 @@ namespace Server.Models
         {
             if (!Dead) return;
 
-            Cell cell = SEnvir.Maps[Character.BindPoint.BindRegion.Map].GetCell(Character.BindPoint.ValidBindPoints[SEnvir.Random.Next(Character.BindPoint.ValidBindPoints.Count)]);
+            Map bindMap = SEnvir.GetMap(Character.BindPoint.BindRegion.Map);
+            if (bindMap == null) return;
+
+            Cell cell = bindMap.GetCell(Character.BindPoint.ValidBindPoints[SEnvir.Random.Next(Character.BindPoint.ValidBindPoints.Count)]);
 
             CurrentCell = cell.GetMovement(this);
 
@@ -4776,7 +4779,8 @@ namespace Server.Models
             var castle = Character.Account.GuildMember.Guild.Castle;
 
             var castleRegion = castle.CastleRegion;
-            var map = SEnvir.Maps[castleRegion.Map];
+            var map = SEnvir.GetMap(castleRegion.Map);
+            if (map == null) return;
 
             foreach (var gate in map.CastleGates)
             {
@@ -4823,7 +4827,8 @@ namespace Server.Models
 
             var castle = Character.Account.GuildMember.Guild.Castle;
             var castleRegion = castle.CastleRegion;
-            var map = SEnvir.Maps[castleRegion.Map];
+            var map = SEnvir.GetMap(castleRegion.Map);
+            if (map == null) return;
 
             int cost = 0;
 
@@ -4893,7 +4898,8 @@ namespace Server.Models
 
             var castle = Character.Account.GuildMember.Guild.Castle;
             var castleRegion = castle.CastleRegion;
-            var map = SEnvir.Maps[castleRegion.Map];
+            var map = SEnvir.GetMap(castleRegion.Map);
+            if (map == null) return;
 
             int cost = 0;
 
@@ -5691,7 +5697,10 @@ namespace Server.Models
                                 return;
                             }
 
-                            if (!Teleport(SEnvir.Maps[Character.BindPoint.BindRegion.Map], Character.BindPoint.ValidBindPoints[SEnvir.Random.Next(Character.BindPoint.ValidBindPoints.Count)]))
+                            var bindMap = SEnvir.GetMap(Character.BindPoint.BindRegion.Map);
+                            if (bindMap == null) return;
+
+                            if (!Teleport(bindMap, Character.BindPoint.ValidBindPoints[SEnvir.Random.Next(Character.BindPoint.ValidBindPoints.Count)]))
                                 return;
                             break;
                         case 3: //Random Teleport
