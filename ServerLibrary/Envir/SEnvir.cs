@@ -722,7 +722,7 @@ namespace Server.Envir
                     continue;
                 }
 
-                if (movement.DestinationRegion.PointList.Count == 0)
+                if (targetMap == null && (movement.DestinationRegion.PointList == null || movement.DestinationRegion.PointList.Count == 0))
                 {
                     Log($"[Movement] Bad Destination, Dest: {movement.DestinationRegion.ServerDescription}, No Points");
                     continue;
