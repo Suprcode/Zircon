@@ -722,9 +722,23 @@ namespace Server.Envir
                     continue;
                 }
 
-                if (targetMap == null && (movement.DestinationRegion.PointList == null || movement.DestinationRegion.PointList.Count == 0))
+                if (movement.DestinationRegion.PointList == null)
                 {
-                    Log($"[Movement] Bad Destination, Dest: {movement.DestinationRegion.ServerDescription}, No Points");
+                    if (movement.DestinationRegion.Map == sourceMap.Info)
+                    {
+                        movement.DestinationRegion.CreatePoints(sourceMap.Width);
+                    }
+                    else if (movement.DestinationRegion.PointRegion != null)
+                    {
+                        movement.DestinationRegion.PointList = movement.DestinationRegion.PointRegion.ToList();
+                    }
+                }
+
+                if (movement.DestinationRegion.PointList == null || movement.DestinationRegion.PointList.Count == 0)
+                {
+                    if (targetMap == null)
+                        Log($"[Movement] Bad Destination, Dest: {movement.DestinationRegion.ServerDescription}, No Points");
+
                     continue;
                 }
 
