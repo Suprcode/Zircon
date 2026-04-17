@@ -677,12 +677,24 @@ namespace Server.Envir
             }
             #endregion
 
-            // Start maps should be immediately available.
-            foreach (SafeZoneInfo info in SafeZoneInfoList.Binding)
+            if (!Config.LazyLoadMaps)
             {
-                if (info.StartClass == RequiredClass.None || info.Region?.Map == null) continue;
+                Log("Map lazy loading disabled, loading all maps on startup.");
 
-                GetMap(info.Region.Map);
+                for (int i = 0; i < MapInfoList.Count; i++)
+                {
+                    GetMap(MapInfoList[i]);
+                }
+            }
+            else
+            {
+                // Start maps should be immediately available.
+                foreach (SafeZoneInfo info in SafeZoneInfoList.Binding)
+                {
+                    if (info.StartClass == RequiredClass.None || info.Region?.Map == null) continue;
+
+                    GetMap(info.Region.Map);
+                }
             }
         }
 
