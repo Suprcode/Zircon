@@ -668,14 +668,12 @@ namespace Server.Envir
             LoadDatabase();
             LoadExperienceList();
 
-            #region Load Files
             for (int i = 0; i < InstanceInfoList.Count; i++)
             {
                 int count = InstanceInfoList[i].MaxInstances > 0 ? InstanceInfoList[i].MaxInstances : byte.MaxValue;
 
                 Instances[InstanceInfoList[i]] = new Dictionary<MapInfo, Map>[count];
             }
-            #endregion
 
             if (!Config.LazyLoadMaps)
             {
@@ -686,11 +684,7 @@ namespace Server.Envir
                     Maps[MapInfoList[i]] = new Map(MapInfoList[i]);
                 }
 
-                Parallel.ForEach(Maps, x =>
-                {
-                    x.Value.Load();
-                    Log($"Map loaded [{x.Key.FileName}]");
-                });
+                Parallel.ForEach(Maps, x => x.Value.Load());
 
                 foreach (Map map in Maps.Values)
                     map.Setup();
@@ -707,16 +701,6 @@ namespace Server.Envir
                 CreateNPCs();
                 CreateSpawns();
                 CreateQuestRegions();
-            }
-            else
-            {
-                // Start maps should be immediately available.
-                foreach (SafeZoneInfo info in SafeZoneInfoList.Binding)
-                {
-                    if (info.StartClass == RequiredClass.None || info.Region?.Map == null) continue;
-
-                    GetMap(info.Region.Map);
-                }
             }
         }
 
@@ -3875,10 +3859,11 @@ namespace Server.Envir
             }
         }
 
-        private static void InitialiseLoadedMap(Map map)
+        private static void FinaliseMapLoad(Map map)
         {
-            if (map == null || map.Width == 0 || map.Height == 0) return;
+            if (map == null) return;
 
+            map.Load();
             map.Setup();
             SetupMapRegions(map);
 
@@ -3887,20 +3872,12 @@ namespace Server.Envir
             CreateNPCs(map.Instance, map.InstanceSequence, map.Info);
             CreateSpawns(map.Instance, map.InstanceSequence, map.Info);
             CreateQuestRegions(map.Instance, map.InstanceSequence, map.Info);
-        }
-
-        private static void FinaliseMapLoad(Map map)
-        {
-            if (map == null) return;
-
-            map.Load();
-            InitialiseLoadedMap(map);
 
             var scope = map.Instance == null
-                ? $"[{map.Info.FileName}]"
-                : $"[{map.Instance.Name}:{map.InstanceSequence}:{map.Info.FileName}]";
+                ? $"{map.Info.Description} [{map.Info.FileName}]"
+                : $"{map.Info.Description} [{map.Instance.Name}:{map.InstanceSequence}:{map.Info.FileName}]";
 
-            Log($"Map loaded {scope}");
+            Log($"Map loaded: {scope}");
         }
 
         public static Map GetMap(MapInfo info, InstanceInfo instance = null, byte instanceSequence = 0)

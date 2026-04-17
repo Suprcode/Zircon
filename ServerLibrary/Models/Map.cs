@@ -594,10 +594,6 @@ namespace Server.Models
                 }
 
                 if (map == null) break;
-                if (movement.DestinationRegion.PointList == null)
-                    movement.DestinationRegion.CreatePoints(map.Width);
-
-                if (movement.DestinationRegion.PointList == null || movement.DestinationRegion.PointList.Count == 0) break;
 
                 Cell cell = map.GetCell(movement.DestinationRegion.PointList[SEnvir.Random.Next(movement.DestinationRegion.PointList.Count)]);
 
