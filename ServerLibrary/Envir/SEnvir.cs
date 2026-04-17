@@ -683,8 +683,30 @@ namespace Server.Envir
 
                 for (int i = 0; i < MapInfoList.Count; i++)
                 {
-                    GetMap(MapInfoList[i]);
+                    Maps[MapInfoList[i]] = new Map(MapInfoList[i]);
                 }
+
+                Parallel.ForEach(Maps, x =>
+                {
+                    x.Value.Load();
+                    Log($"Map loaded [{x.Key.FileName}]");
+                });
+
+                foreach (Map map in Maps.Values)
+                    map.Setup();
+
+                Parallel.ForEach(MapRegionList.Binding, x =>
+                {
+                    if (!Maps.TryGetValue(x.Map, out Map map)) return;
+
+                    x.CreatePoints(map.Width);
+                });
+
+                CreateSafeZones();
+                CreateMovements();
+                CreateNPCs();
+                CreateSpawns();
+                CreateQuestRegions();
             }
             else
             {

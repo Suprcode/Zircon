@@ -95,6 +95,7 @@ namespace Server.Views
             VersionPathEdit.EditValue = Config.VersionPath;
             DBSaveDelayEdit.EditValue = Config.DBSaveDelay;
             MapPathEdit.EditValue = Config.MapPath;
+            LazyLoadMapsEdit.EditValue = Config.LazyLoadMaps;
             MasterPasswordEdit.EditValue = Config.MasterPassword;
             ClientPathEdit.EditValue = Config.ClientPath;
             ReleaseDateEdit.EditValue = Config.ReleaseDate;
@@ -215,6 +216,7 @@ namespace Server.Views
             Config.VersionPath = (string)VersionPathEdit.EditValue;
             Config.DBSaveDelay = (TimeSpan)DBSaveDelayEdit.EditValue;
             Config.MapPath = (string)MapPathEdit.EditValue;
+            Config.LazyLoadMaps = (bool)LazyLoadMapsEdit.EditValue;
             Config.MasterPassword = (string)MasterPasswordEdit.EditValue;
             Config.ClientPath = (string)ClientPathEdit.EditValue;
             Config.ReleaseDate = (DateTime)ReleaseDateEdit.EditValue;
