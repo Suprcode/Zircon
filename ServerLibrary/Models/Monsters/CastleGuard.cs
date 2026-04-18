@@ -29,7 +29,7 @@ namespace Server.Models.Monsters
 
             Direction = guardInfo.Direction;
 
-            var map = SEnvir.Maps.First(x => x.Key == castle.Map).Value;
+            var map = SEnvir.GetMap(castle.Map);
 
             if (!base.Spawn(map, new Point(guardInfo.X, guardInfo.Y)))
             {

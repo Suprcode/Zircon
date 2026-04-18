@@ -15533,8 +15533,6 @@ namespace Server.Models
 
         public (byte? index, InstanceResult result) GetInstance(InstanceInfo instance, bool checkOnly = false, bool dungeonFinder = false, bool walkOn = false)
         {
-            var mapInstance = SEnvir.Instances[instance];
-
             if (instance.ConnectRegion == null && !walkOn)
                 return (null, InstanceResult.ConnectRegionNotSet);
 
@@ -15546,6 +15544,11 @@ namespace Server.Models
 
             if (instance.UserRecord.ContainsKey(Name) && !instance.AllowRejoin)
                 return (null, InstanceResult.NoRejoin);
+
+            var mapInstance = SEnvir.GetInstance(instance);
+
+            if (mapInstance == null)
+                return (null, InstanceResult.Invalid);
 
             switch (instance.Type)
             {
@@ -15772,7 +15775,10 @@ namespace Server.Models
 
         public bool CheckInstanceFreeSpace(InstanceInfo instance, int instanceSequence)
         {
-            var mapInstance = SEnvir.Instances[instance];
+            var mapInstance = SEnvir.GetInstance(instance);
+
+            if (mapInstance == null)
+                return false;
 
             if (instanceSequence < 0 || instanceSequence >= mapInstance.Length)
                 return false;

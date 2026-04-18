@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -124,12 +125,18 @@ namespace Server.Envir
                 for (int i = Connections.Count - 1; i >= 0; i--)
                     Connections[i].SendDisconnect(p);
 
-                Thread.Sleep(2000);
+                Thread.Sleep(200);
+
+                for (int i = Connections.Count - 1; i >= 0; i--)
+                    Connections[i].Disconnect();
             }
             catch (Exception ex)
             {
                 Log(ex.ToString());
             }
+
+            Connections.Clear();
+            IPCount.Clear();
 
             if (log) Log("Network Stopped.");
         }
@@ -310,8 +317,8 @@ namespace Server.Envir
 
         public static Random Random;
 
-        public static Dictionary<MapInfo, Map> Maps = [];
-        public static Dictionary<InstanceInfo, Dictionary<MapInfo, Map>[]> Instances = [];
+        private static Dictionary<MapInfo, Map> Maps = [];
+        private static Dictionary<InstanceInfo, Dictionary<MapInfo, Map>[]> Instances = [];
         private static readonly object MapLoadLock = new();
 
         private static long _ObjectID;
@@ -1176,6 +1183,7 @@ namespace Server.Envir
             AccountInfoList = null;
             CharacterInfoList = null;
             CurrencyInfoList = null;
+            InstanceMapInfoList = null;
 
             MapInfoList = null;
             SafeZoneInfoList = null;
@@ -1188,18 +1196,67 @@ namespace Server.Envir
             FameInfoList = null;
 
             BeltLinkList = null;
+            AutoPotionLinkList = null;
             UserItemList = null;
             UserCurrencyList = null;
+            RefineInfoList = null;
             UserItemStatsList = null;
             UserMagicList = null;
             BuffInfoList = null;
             SetInfoList = null;
             UserDisciplineList = null;
+            AuctionInfoList = null;
+            MailInfoList = null;
+            QuestInfoList = null;
+            AuctionHistoryInfoList = null;
+            UserDropList = null;
+            StoreInfoList = null;
+            BaseStatList = null;
+            MovementInfoList = null;
+            NPCInfoList = null;
+            MapRegionList = null;
+            GuildInfoList = null;
+            GuildMemberInfoList = null;
+            UserQuestList = null;
+            UserQuestTaskList = null;
+            CompanionInfoList = null;
+            CompanionLevelInfoList = null;
+            UserCompanionList = null;
+            CompanionFiltersList = null;
+            UserCompanionUnlockList = null;
+            CompanionSkillInfoList = null;
+            BlockInfoList = null;
+            FriendInfoList = null;
+            CastleInfoList = null;
+            UserConquestList = null;
+            GameGoldPaymentList = null;
+            GameStoreSaleList = null;
+            GameNPCList = null;
+            GuildWarInfoList = null;
+            UserConquestStatsList = null;
+            UserFortuneInfoList = null;
+            WeaponCraftStatInfoList = null;
+            BundleInfoList = null;
+            LootBoxInfoList = null;
 
             WorldEventInfoTriggerList = null;
             PlayerEventInfoTriggerList = null;
 
+            GoldInfo = null;
+            RefinementStoneInfo = null;
+            FragmentInfo = null;
+            Fragment2Info = null;
+            Fragment3Info = null;
+            FortuneCheckerInfo = null;
+            ItemPartInfo = null;
+
+            StarterGuild = null;
+            MysteryShipMapRegion = null;
+            LairMapRegion = null;
+
             Rankings = null;
+            TopRankings?.Clear();
+            TopRankings = null;
             Random = null;
 
 
@@ -1208,11 +1265,18 @@ namespace Server.Envir
             Objects.Clear();
             ActiveObjects.Clear();
             Players.Clear();
+            ConquestWars.Clear();
+            EventLogs.Clear();
 
             Spawns.Clear();
+            BossList.Clear();
+            MagicTypes.Clear();
 
             _ObjectID = 0;
 
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
+            GC.WaitForPendingFinalizers();
 
             EnvirThread = null;
         }
@@ -4081,6 +4145,14 @@ namespace Server.Envir
             }
 
             return instanceMap;
+        }
+
+        public static Dictionary<MapInfo, Map>[] GetInstance(InstanceInfo info)
+        {
+            if (Instances.TryGetValue(info, out Dictionary<MapInfo, Map>[] loadedInstance))
+                return loadedInstance;
+
+            return null;
         }
 
         public static byte? LoadInstance(InstanceInfo instance, byte instanceSequence)

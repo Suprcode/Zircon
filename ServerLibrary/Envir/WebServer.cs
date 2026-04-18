@@ -128,6 +128,13 @@ namespace Server.Envir
             expiredBuyListener?.Stop();
             expiredIPNListener?.Stop();
 
+            WebCommandQueue = null;
+            PaymentList.Clear();
+            HandledPayments.Clear();
+            while (Messages.TryDequeue(out _))
+            {
+            }
+
             if (log) SEnvir.Log("Web Server Stopped.");
         }
 

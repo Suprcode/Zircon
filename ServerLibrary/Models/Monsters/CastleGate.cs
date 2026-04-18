@@ -46,7 +46,7 @@ namespace Server.Models.Monsters
                 return false;
             }
 
-            var map = SEnvir.Maps.First(x => x.Key == castle.Map).Value;
+            var map = SEnvir.GetMap(castle.Map);
 
             if (!base.Spawn(map, new Point(gateInfo.X, gateInfo.Y)))
             {
