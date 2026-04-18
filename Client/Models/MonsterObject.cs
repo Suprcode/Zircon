@@ -2613,8 +2613,11 @@ namespace Client.Models
                     _ => Config.TargetMonsterHighLevelColour
                 };
 
-                RenderingPipelineManager.EnableOutlineEffect(result, 2f);
-                outlineEnabled = true;
+                if (result != Color.FromArgb(0, 0, 0, 0))
+                {
+                    RenderingPipelineManager.EnableOutlineEffect(result, 2f);
+                    outlineEnabled = true;
+                }
             }
 
             switch (Image)

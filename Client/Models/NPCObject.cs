@@ -175,8 +175,11 @@ namespace Client.Models
             {
                 var result = Config.TargetNPCColour;
 
-                RenderingPipelineManager.EnableOutlineEffect(result, 2f);
-                outlineEnabled = true;
+                if (result != Color.FromArgb(0, 0, 0, 0))
+                {
+                    RenderingPipelineManager.EnableOutlineEffect(result, 2f);
+                    outlineEnabled = true;
+                }
             }
 
             BodyLibrary.Draw(BodyFrame, DrawX, DrawY, DrawColour, true, 1F, ImageType.Image);

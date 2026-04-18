@@ -707,19 +707,19 @@ namespace Client.Controls
             };
             GameTab.AddSection(targetColoursSection);
 
-            TargetMonsterLowLevelColourBox = new DXColourControl();
+            TargetMonsterLowLevelColourBox = new DXColourControl { AllowNoColour = true };
             TargetMonsterLowLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterLowLevelColour = TargetMonsterLowLevelColourBox.BackColour;
             targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterLowLabel, TargetMonsterLowLevelColourBox);
 
-            TargetMonsterSameLevelColourBox = new DXColourControl();
+            TargetMonsterSameLevelColourBox = new DXColourControl { AllowNoColour = true };
             TargetMonsterSameLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterSameLevelColour = TargetMonsterSameLevelColourBox.BackColour;
             targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterSameLabel, TargetMonsterSameLevelColourBox);
 
-            TargetMonsterHighLevelColourBox = new DXColourControl();
+            TargetMonsterHighLevelColourBox = new DXColourControl { AllowNoColour = true };
             TargetMonsterHighLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterHighLevelColour = TargetMonsterHighLevelColourBox.BackColour;
             targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterHighLabel, TargetMonsterHighLevelColourBox);
 
-            TargetNPCColourBox = new DXColourControl();
+            TargetNPCColourBox = new DXColourControl { AllowNoColour = true };
             TargetNPCColourBox.BackColourChanged += (o, e) => Config.TargetNPCColour = TargetNPCColourBox.BackColour;
             targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabNPCLabel, TargetNPCColourBox);
             ResetTargetColoursButton = new DXButton

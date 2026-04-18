@@ -366,7 +366,7 @@ namespace Client.Controls
                 DrawTexture = true,
                 BorderColour = Color.FromArgb(198, 166, 99),
                 Parent = this,
-                Visible = SelectedColour != Color.Empty
+                Visible = SelectedColour != Color.FromArgb(0, 0, 0, 0)
             };
             label = new DXLabel
             {
@@ -380,7 +380,7 @@ namespace Client.Controls
                 Parent = this,
                 Location = new Point(BlueBox.Location.X + BlueBox.ValueTextBox.Location.X, 172),
                 Text = CEnvir.Language.CommonControlColourPickerNoneLabel,
-                Visible = SelectedColour == Color.Empty
+                Visible = SelectedColour == Color.FromArgb(0, 0, 0, 0)
             };
         }
 
