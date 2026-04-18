@@ -706,7 +706,29 @@ namespace Server.Envir
 
         private static void CreateMovements(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
-            foreach (MovementInfo movement in MovementInfoList.Binding)
+            IEnumerable<MovementInfo> movements = MovementInfoList.Binding;
+
+            if (targetMap != null)
+            {
+                HashSet<MovementInfo> mapMovements = [];
+
+                if (targetMap.Regions != null)
+                {
+                    foreach (MapRegion region in targetMap.Regions)
+                    {
+                        if (region.SourceMovements == null) continue;
+
+                        foreach (MovementInfo movement in region.SourceMovements)
+                        {
+                            mapMovements.Add(movement);
+                        }
+                    }
+                }
+
+                movements = mapMovements;
+            }
+
+            foreach (MovementInfo movement in movements)
             {
                 if (movement.SourceRegion == null && movement.DestinationRegion == null)
                 {
@@ -802,7 +824,29 @@ namespace Server.Envir
 
         private static void CreateNPCs(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
-            foreach (NPCInfo info in NPCInfoList.Binding)
+            IEnumerable<NPCInfo> npcInfos = NPCInfoList.Binding;
+
+            if (targetMap != null)
+            {
+                HashSet<NPCInfo> mapNPCInfos = [];
+
+                if (targetMap.Regions != null)
+                {
+                    foreach (MapRegion region in targetMap.Regions)
+                    {
+                        if (region?.NPCs == null) continue;
+
+                        foreach (NPCInfo info in region.NPCs)
+                        {
+                            mapNPCInfos.Add(info);
+                        }
+                    }
+                }
+
+                npcInfos = mapNPCInfos;
+            }
+
+            foreach (NPCInfo info in npcInfos)
             {
                 if (info.Region == null) continue;
                 if (targetMap != null && info.Region.Map != targetMap) continue;
@@ -831,6 +875,61 @@ namespace Server.Envir
 
         private static void CreateQuestRegions(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
+            if (targetMap != null)
+            {
+                HashSet<QuestTask> mapQuestTasks = [];
+
+                if (targetMap.Regions != null)
+                {
+                    foreach (MapRegion region in targetMap.Regions)
+                    {
+                        if (region?.QuestTasks == null) continue;
+
+                        foreach (QuestTask task in region.QuestTasks)
+                        {
+                            mapQuestTasks.Add(task);
+                        }
+                    }
+                }
+
+                foreach (QuestTask task in mapQuestTasks)
+                {
+                    if (task.RegionParameter == null) continue;
+
+                    var sourceMap = GetMap(task.RegionParameter.Map, instance, instanceSequence);
+
+                    if (sourceMap == null)
+                    {
+                        if (instance == null)
+                        {
+                            Log($"[Quest Region] Bad Map, Map: {task.RegionParameter.ServerDescription}");
+                        }
+
+                        continue;
+                    }
+
+                    foreach (Point sPoint in task.RegionParameter.PointList)
+                    {
+                        Cell source = sourceMap.GetCell(sPoint);
+
+                        if (source == null)
+                        {
+                            Log($"[Quest Region] Bad Quest Region, Source: {task.RegionParameter.ServerDescription}, X:{sPoint.X}, Y:{sPoint.Y}");
+                            continue;
+                        }
+
+                        if (source.QuestTasks == null)
+                            source.QuestTasks = new List<QuestTask>();
+
+                        if (source.QuestTasks.Contains(task)) continue;
+
+                        source.QuestTasks.Add(task);
+                    }
+                }
+
+                return;
+            }
+
             foreach (QuestInfo quest in QuestInfoList.Binding)
             {
                 foreach (QuestTask task in quest.Tasks)
@@ -874,7 +973,40 @@ namespace Server.Envir
 
         private static void CreateSafeZones(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
-            foreach (SafeZoneInfo info in SafeZoneInfoList.Binding)
+            IEnumerable<SafeZoneInfo> safeZones = SafeZoneInfoList.Binding;
+
+            if (targetMap != null)
+            {
+                HashSet<SafeZoneInfo> mapSafeZones = [];
+
+                if (targetMap.Regions != null)
+                {
+                    foreach (MapRegion region in targetMap.Regions)
+                    {
+                        if (region?.SafeZones != null)
+                        {
+                            foreach (SafeZoneInfo info in region.SafeZones)
+                            {
+                                mapSafeZones.Add(info);
+                            }
+                        }
+
+                        if (region?.BindSafeZones != null)
+                        {
+                            foreach (SafeZoneInfo info in region.BindSafeZones)
+                            {
+                                mapSafeZones.Add(info);
+                            }
+                        }
+                    }
+                }
+
+                if (mapSafeZones.Count == 0) return;
+
+                safeZones = mapSafeZones;
+            }
+
+            foreach (SafeZoneInfo info in safeZones)
             {
                 if (info.Region == null) continue;
                 if (targetMap != null && info.Region.Map != targetMap && info.BindRegion?.Map != targetMap) continue;
@@ -970,7 +1102,29 @@ namespace Server.Envir
 
         private static void CreateSpawns(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
         {
-            foreach (RespawnInfo info in RespawnInfoList.Binding)
+            IEnumerable<RespawnInfo> respawnInfos = RespawnInfoList.Binding;
+
+            if (targetMap != null)
+            {
+                HashSet<RespawnInfo> mapRespawns = [];
+
+                if (targetMap.Regions != null)
+                {
+                    foreach (MapRegion region in targetMap.Regions)
+                    {
+                        if (region?.Respawns == null) continue;
+
+                        foreach (RespawnInfo info in region.Respawns)
+                        {
+                            mapRespawns.Add(info);
+                        }
+                    }
+                }
+
+                respawnInfos = mapRespawns;
+            }
+
+            foreach (RespawnInfo info in respawnInfos)
             {
                 if (info.Monster == null) continue;
                 if (info.Region == null) continue;

@@ -25,10 +25,10 @@
     <ApplicationIcon>Zircon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Library\ConfigReader.cs">
+    <Compile Include="..\LibraryCore\ConfigReader.cs">
       <Link>ConfigReader.cs</Link>
     </Compile>
-    <Compile Include="..\Library\Time.cs">
+    <Compile Include="..\LibraryCore\Time.cs">
       <Link>Time.cs</Link>
     </Compile>
   </ItemGroup>
@@ -42,10 +42,10 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.11" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.26" />
     <PackageReference Include="System.Formats.Asn1" Version="9.0.0" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.1" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.2" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.3" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 </Project>

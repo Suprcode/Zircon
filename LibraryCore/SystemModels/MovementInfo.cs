@@ -5,6 +5,7 @@ namespace Library.SystemModels
     public sealed class MovementInfo : DBObject
     {
         [IsIdentity]
+        [Association("SourceMovements")]
         public MapRegion SourceRegion
         {
             get { return _SourceRegion; }
@@ -21,6 +22,7 @@ namespace Library.SystemModels
         private MapRegion _SourceRegion;
 
         [IsIdentity]
+        [Association("DestinationMovements")]
         public MapRegion DestinationRegion
         {
             get { return _DestinationRegion; }

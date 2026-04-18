@@ -7,6 +7,7 @@ namespace Library.SystemModels
     public sealed class NPCInfo : DBObject
     {
         [IsIdentity]
+        [Association("RegionNPCs")]
         public MapRegion Region
         {
             get { return _Region; }

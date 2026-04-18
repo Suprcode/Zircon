@@ -397,6 +397,7 @@ namespace Library.SystemModels
         }
         private ItemInfo _ItemParameter;
 
+        [Association("RegionQuestTasks")]
         public MapRegion RegionParameter
         {
             get { return _RegionParameter; }

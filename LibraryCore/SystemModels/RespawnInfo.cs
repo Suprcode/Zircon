@@ -23,6 +23,7 @@ namespace Library.SystemModels
         private MonsterInfo _Monster;
 
         [IsIdentity]
+        [Association("RegionRespawns")]
         public MapRegion Region
         {
             get { return _Region; }
