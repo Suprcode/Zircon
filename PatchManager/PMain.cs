@@ -25,9 +25,6 @@ namespace PatchManager
 
         public PMain()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
-                                                   SecurityProtocolType.Tls11 |
-                                                   SecurityProtocolType.Tls12;
             InitializeComponent();
         }
 

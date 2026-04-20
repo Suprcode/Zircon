@@ -35,10 +35,6 @@ namespace Server
         public SMain()
         {
             InitializeComponent();
-
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
-                                                   SecurityProtocolType.Tls11 |
-                                                   SecurityProtocolType.Tls12;
         }
 
         private void SetupPlugin()
