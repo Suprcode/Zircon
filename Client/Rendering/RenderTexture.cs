@@ -9,7 +9,7 @@ namespace Client.Rendering
             NativeHandle = nativeHandle;
         }
 
-        public object? NativeHandle { get; }
+        public object NativeHandle { get; }
 
         public bool IsValid => NativeHandle != null;
 

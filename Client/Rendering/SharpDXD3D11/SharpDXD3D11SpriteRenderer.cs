@@ -61,15 +61,15 @@ namespace Client.Rendering.SharpDXD3D11
         private readonly struct SpriteEffect
         {
             public PixelShader Shader { get; }
-            public Buffer? ConstantBuffer { get; }
+            public Buffer ConstantBuffer { get; }
             public int ConstantBufferSizeInBytes { get; }
             public float GeometryExpand { get; }
             public bool ExpandUvs { get; }
-            public Action<DataStream>? WriteConstants { get; }
+            public Action<DataStream> WriteConstants { get; }
 
             public bool IsValid => Shader != null;
 
-            public SpriteEffect(PixelShader shader, Buffer? constantBuffer, int constantBufferSizeInBytes, float geometryExpand, bool expandUvs, Action<DataStream>? writeConstants)
+            public SpriteEffect(PixelShader shader, Buffer constantBuffer, int constantBufferSizeInBytes, float geometryExpand, bool expandUvs, Action<DataStream> writeConstants)
             {
                 Shader = shader;
                 ConstantBuffer = constantBuffer;

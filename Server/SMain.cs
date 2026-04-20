@@ -140,11 +140,11 @@ namespace Server
             }
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
             SaveUserCache();
 
-            base.OnClosing(e);
+            base.OnFormClosing(e);
 
             Session.BackUpDelay = 0;
             Session?.Save(true);

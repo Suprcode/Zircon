@@ -51,9 +51,9 @@ namespace Server.Views
 
             LoadSettings();
         }
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            base.OnClosing(e);
+            base.OnFormClosing(e);
 
             SaveSettings();
         }
