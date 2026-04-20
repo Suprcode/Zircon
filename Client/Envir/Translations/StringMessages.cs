@@ -91,6 +91,7 @@ namespace Client.Envir.Translations
         public abstract string FilterConfigSaved { get; set; }
         public abstract string GroupMemberLimit { get; set; }
         public abstract string GroupNotLeader { get; set; }
+        public abstract string GroupDialogCreateLFGButtonHint { get; set; }
         public abstract string MarketNoItemSelected { get; set; }
         public abstract string MarketInvalidPrice { get; set; }
         public abstract string BuySellOverweight { get; set; }

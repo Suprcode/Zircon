@@ -91,6 +91,7 @@ namespace Client.Envir.Translations
         public override string FilterConfigSaved { get; set; } = "Drop filters have been saved to your configuration";
         public override string GroupMemberLimit { get; set; } = "Group member limit has been reached";
         public override string GroupNotLeader { get; set; } = "You are not the leader of your group.";
+        public override string GroupDialogCreateLFGButtonHint { get; set; } = "Create LFG";
         public override string MarketNoItemSelected { get; set; } = "Error: No Item selected.";
         public override string MarketInvalidPrice { get; set; } = "Error: Invalid Price.";
         public override string BuySellOverweight { get; set; } = "You do not have enough weight to buy any '{0}'.";

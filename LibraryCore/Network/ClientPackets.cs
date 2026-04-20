@@ -350,6 +350,23 @@ namespace Library.Network.ClientPackets
     {
         public bool Accept { get; set; }
     }
+    public sealed class GroupRequest : Packet
+    {
+        public string Name { get; set; }
+    }
+
+    public sealed class GroupLFGUpdate : Packet
+    {
+        public bool Enabled { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public int MaxCount { get; set; }
+    }
+
+    public sealed class GroupNotify : Packet
+    {
+        public bool Receive { get; set; }
+    }
 
     public sealed class Inspect : Packet
     {
@@ -773,13 +790,5 @@ namespace Library.Network.ClientPackets
     {
         public int Slot { get; set; }
         public int Choice { get; set; }
-    }
-
-    public sealed class GroupLFGUpdate : Packet
-    {
-        public bool Enabled { get; set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public int MaxCount { get; set; }
     }
 }

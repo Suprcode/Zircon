@@ -1487,6 +1487,13 @@ namespace Server.Envir
 
             Player.LFGUpdate(p);
         }
+
+        public void Process(C.GroupRequest p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GroupRequest(p.Name);
+        }
     }
 
     public enum GameStage
