@@ -867,7 +867,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(15, 40),
                 Size = new Size(150, 30),
-                Scale = 0.8F
+                //Scale = 0.8F
             };
         }
 

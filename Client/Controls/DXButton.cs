@@ -289,6 +289,12 @@ namespace Client.Controls
                     case ButtonType.RemoveButton:
                         InterfaceLibrary.Draw(242, 0, 0, Color.White, false, 1F, ImageType.Image);
                         break;
+                    case ButtonType.LFGButton:
+                        InterfaceLibrary.Draw(243, 0, 0, Color.White, false, 1F, ImageType.Image);
+                        break;
+                    case ButtonType.OptionsButton:
+                        InterfaceLibrary.Draw(245, 0, 0, Color.White, false, 1F, ImageType.Image);
+                        break;
                 }
 
                 RenderingPipelineManager.SetSurface(oldSurface);
@@ -477,6 +483,8 @@ namespace Client.Controls
         DeselectedTab,
         SmallButton,
         AddButton,
-        RemoveButton
+        RemoveButton,
+        LFGButton,
+        OptionsButton
     }
 }
