@@ -702,14 +702,21 @@ namespace Server.Envir
 
             Player.GroupRemove(p.Name);
         }
+
         public void Process(C.GroupResponse p)
         {
             if (Stage != GameStage.Game) return;
 
             if (p.Accept)
                 Player.GroupJoin();
+            else
+            {
+                var requestCon = Player.GroupInvitationRequest?.Connection;
+                requestCon?.ReceiveChat(requestCon.Language.GroupRequestDeclined, MessageType.System);
+            }
 
             Player.GroupInvitation = null;
+            Player.GroupInvitationRequest = null;
         }
 
         public void Process(C.GroupNotify p)
@@ -722,6 +729,20 @@ namespace Server.Envir
             {
                 Player.SendLFGList();
             }
+        }
+
+        public void Process(C.GroupRequest p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GroupRequest(p.Name);
+        }
+
+        public void Process(C.GroupLFGUpdate p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.LFGUpdate(p);
         }
 
         public void Process(C.Inspect p)
@@ -1492,19 +1513,6 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.BundleConfirm(p);
-        }
-        public void Process(C.GroupLFGUpdate p)
-        {
-            if (Stage != GameStage.Game) return;
-
-            Player.LFGUpdate(p);
-        }
-
-        public void Process(C.GroupRequest p)
-        {
-            if (Stage != GameStage.Game) return;
-
-            Player.GroupRequest(p.Name);
         }
     }
 
