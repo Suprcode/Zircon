@@ -1481,6 +1481,12 @@ namespace Server.Envir
 
             Player.BundleConfirm(p);
         }
+        public void Process(C.GroupLFGUpdate p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.LFGUpdate(p);
+        }
     }
 
     public enum GameStage

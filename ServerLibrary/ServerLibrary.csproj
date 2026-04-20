@@ -6,6 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Players\PlayerObject.Group.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Models\Players\PlayerObject.Group.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
   </ItemGroup>
 

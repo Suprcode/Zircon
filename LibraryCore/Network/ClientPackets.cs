@@ -774,4 +774,12 @@ namespace Library.Network.ClientPackets
         public int Slot { get; set; }
         public int Choice { get; set; }
     }
+
+    public sealed class GroupLFGUpdate : Packet
+    {
+        public bool Enabled { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public int MaxCount { get; set; }
+    }
 }
