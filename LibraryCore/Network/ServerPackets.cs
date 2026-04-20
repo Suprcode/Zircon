@@ -724,6 +724,20 @@ namespace Library.Network.ServerPackets
     {
         public string Name { get; set; }
     }
+    public sealed class GroupRequest : Packet
+    {
+        public string Name { get; set; }
+    }
+
+    public sealed class GroupLFG : Packet
+    {
+        public List<ClientGroup> List { get; set; } = new List<ClientGroup>();
+    }
+
+    public sealed class GroupUpdate : Packet
+    {
+        public ClientGroup Group { get; set; }
+    }
 
     public sealed class BuffAdd : Packet
     {
