@@ -712,6 +712,18 @@ namespace Server.Envir
             Player.GroupInvitation = null;
         }
 
+        public void Process(C.GroupNotify p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.LFGReceiveUpdates = p.Receive;
+
+            if (p.Receive)
+            {
+                Player.SendLFGList();
+            }
+        }
+
         public void Process(C.Inspect p)
         {
             if (Stage == GameStage.Game)

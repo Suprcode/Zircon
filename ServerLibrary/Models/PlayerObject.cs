@@ -1092,6 +1092,7 @@ namespace Server.Models
 
             PauseBuffs();
 
+            SendLFGList();
 
             if (SEnvir.TopRankings.Contains(Character))
                 BuffAdd(BuffType.Ranking, TimeSpan.MaxValue, null, true, false, TimeSpan.Zero);
