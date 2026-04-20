@@ -5599,6 +5599,19 @@ namespace Server.Models
             }
         }
 
+        public ClientGroup ToClientGroup()
+        {
+            return new ClientGroup
+            {
+                GroupName = LFGName,
+                LeaderName = Name,
+                GroupType = LFGType,
+                CurrentCount = GroupMembers?.Count ?? 1,
+                MaxCount = LFGMaxCount,
+                Enabled = LFGEnabled
+            };
+        }
+
         #endregion
 
         #region Items
