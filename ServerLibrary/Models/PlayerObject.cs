@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using C = Library.Network.ClientPackets;
@@ -19,7 +20,7 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Models
 {
-    public sealed class PlayerObject : MapObject
+    public partial class PlayerObject : MapObject
     {
         public override ObjectType Race => ObjectType.Player;
 
@@ -155,8 +156,8 @@ namespace Server.Models
 
         public MapObject LastHitter;
 
-        public PlayerObject GroupInvitation,
-            GuildInvitation, MarriageInvitation;
+        public PlayerObject GroupInvitation, GuildInvitation, MarriageInvitation;
+        public HashSet<PlayerObject> GroupInvitationRequest = new();
 
         public PlayerObject TradePartner, TradePartnerRequest;
         public Dictionary<UserItem, CellLinkInfo> TradeItems = new Dictionary<UserItem, CellLinkInfo>();
@@ -296,6 +297,7 @@ namespace Server.Models
             // if (LastHitter != null && LastHitter.Node == null) LastHitter = null;
             if (GroupInvitation != null && GroupInvitation.Node == null) GroupInvitation = null;
             if (GuildInvitation != null && GuildInvitation.Node == null) GuildInvitation = null;
+
             if (MarriageInvitation != null && MarriageInvitation.Node == null) MarriageInvitation = null;
 
             if (CombatTime != SentCombatTime)
@@ -337,6 +339,8 @@ namespace Server.Models
             ProcessItemExpire();
 
             ProcessQuests();
+
+            ProcessGroup();
         }
         public override void ProcessAction(DelayedAction action)
         {
@@ -955,6 +959,8 @@ namespace Server.Models
 
             if (GroupMembers != null) GroupLeave();
 
+            UpdateLFGStatus(false);
+
             HashSet<MonsterObject> clearList = new HashSet<MonsterObject>(TaggedMonsters);
 
             foreach (MonsterObject ob in clearList)
@@ -1092,6 +1098,7 @@ namespace Server.Models
 
             PauseBuffs();
 
+            SendLFGList();
 
             if (SEnvir.TopRankings.Contains(Character))
                 BuffAdd(BuffType.Ranking, TimeSpan.MaxValue, null, true, false, TimeSpan.Zero);
@@ -5168,7 +5175,10 @@ namespace Server.Models
 
             if (GroupMembers != null && GroupMembers.Any(x => x.CurrentMap.Instance != null))
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.InstanceNoAction, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
                 return;
             }
 
@@ -5178,25 +5188,36 @@ namespace Server.Models
 
             if (GroupMembers != null)
                 GroupLeave();
+
+            UpdateLFGStatus(false);
         }
 
         public void GroupRemove(string name)
         {
             if (GroupMembers == null)
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.GroupNoGroup, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.GroupNoGroup, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.GroupNoGroup, MessageType.System);
                 return;
             }
 
             if (GroupMembers[0] != this)
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.GroupNotLeader, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.GroupNotLeader, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.GroupNotLeader, MessageType.System);
                 return;
             }
 
             if (GroupMembers.Any(x => x.CurrentMap.Instance != null))
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.InstanceNoAction, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
                 return;
             }
 
@@ -5208,14 +5229,21 @@ namespace Server.Models
                 return;
             }
 
-            Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GroupMemberNotFound, name), MessageType.System);
+            Connection.ReceiveChat(string.Format(Connection.Language.GroupMemberNotFound, name), MessageType.System);
+
+            foreach (SConnection con in Connection.Observers)
+                con.ReceiveChat(string.Format(con.Language.GroupMemberNotFound, name), MessageType.System);
+
         }
 
         public void GroupInvite(string name)
         {
             if (GroupMembers != null && GroupMembers[0] != this)
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.GroupNotLeader, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.GroupNotLeader, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.GroupNotLeader, MessageType.System);
                 return;
             }
 
@@ -5223,31 +5251,46 @@ namespace Server.Models
 
             if (player == null)
             {
-                Connection.ReceiveChatWithObservers(con => string.Format(con.Language.CannotFindPlayer, name), MessageType.System);
+                Connection.ReceiveChat(string.Format(Connection.Language.CannotFindPlayer, name), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.CannotFindPlayer, name), MessageType.System);
                 return;
             }
 
             if (player.GroupMembers != null)
             {
-                Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GroupAlreadyGrouped, name), MessageType.System);
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupAlreadyGrouped, name), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupAlreadyGrouped, name), MessageType.System);
                 return;
             }
 
             if (player.GroupInvitation != null)
             {
-                Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GroupAlreadyInvited, name), MessageType.System);
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupAlreadyInvited, name), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupAlreadyInvited, name), MessageType.System);
                 return;
             }
 
             if (!player.Character.Account.AllowGroup || SEnvir.IsBlocking(Character.Account, player.Character.Account))
             {
-                Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GroupInviteNotAllowed, name), MessageType.System);
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupInviteNotAllowed, name), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupInviteNotAllowed, name), MessageType.System);
                 return;
             }
 
             if (player == this)
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.GroupSelf, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.GroupSelf, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.GroupSelf, MessageType.System);
                 return;
             }
 
@@ -5255,13 +5298,99 @@ namespace Server.Models
             {
                 if (!CurrentMap.Instance.UserRecord.TryGetValue(player.Name, out byte instanceSequence) || CurrentMap.InstanceSequence != instanceSequence)
                 {
-                    Connection.ReceiveChatWithObservers(con => con.Language.InstanceNoAction, MessageType.System);
+                    Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
+
+                    foreach (SConnection con in Connection.Observers)
+                        con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
+
                     return;
                 }
             }
 
+            if (GroupInvitationRequest.Contains(player))
+            {
+                player.GroupInvitation = this;
+                player.GroupJoin();
+                player.GroupInvitation = null;
+                GroupInvitationRequest.Remove(player);
+                return;
+            }
+
             player.GroupInvitation = this;
             player.Enqueue(new S.GroupInvite { Name = Name, ObserverPacket = false });
+        }
+
+        public void GroupRequest(string groupLeader)
+        {
+            if (GroupMembers != null || !Character.Account.AllowGroup)
+            {
+                return;
+            }
+
+            PlayerObject leader = SEnvir.GetPlayerByCharacter(groupLeader);
+
+            if (leader == null)
+            {
+                Connection.ReceiveChat(string.Format(Connection.Language.CannotFindPlayer, groupLeader), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.CannotFindPlayer, groupLeader), MessageType.System);
+                return;
+            }
+
+            if (!leader.LFGSettings.Enabled)
+            {
+                return;
+            }
+
+            if (leader == this)
+            {
+                Connection.ReceiveChat(Connection.Language.GroupSelf, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.GroupSelf, MessageType.System);
+                return;
+            }
+
+            if (!leader.Character.Account.AllowGroup || SEnvir.IsBlocking(leader.Character.Account, Character.Account))
+            {
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupInviteNotAllowed, groupLeader), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupInviteNotAllowed, groupLeader), MessageType.System);
+                return;
+            }
+
+            if (leader.CurrentMap.Instance != null)
+            {
+                if (!leader.CurrentMap.Instance.UserRecord.TryGetValue(Name, out byte instanceSequence) || leader.CurrentMap.InstanceSequence != instanceSequence)
+                {
+                    Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
+
+                    foreach (SConnection con in Connection.Observers)
+                        con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
+
+                    return;
+                }
+            }
+
+            if (GroupMembers != null && GroupMembers.Count >= leader.LFGSettings.MaxCount)
+            {
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupMemberLimit, GroupInvitation.Name), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupMemberLimit, GroupInvitation.Name), MessageType.System);
+
+                return;
+            }
+
+            if (leader.GroupInvitationRequest.Contains(this))
+            {
+                return;
+            }
+
+            leader.GroupInvitationRequest.Add(this);
+            leader.Enqueue(new S.GroupRequest { Name = Name, Level = Level, Class = Class, ObserverPacket = false });
         }
 
         public void GroupJoin()
@@ -5278,18 +5407,27 @@ namespace Server.Models
             }
             else if (GroupInvitation.GroupMembers[0] != GroupInvitation)
             {
-                Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GroupAlreadyGrouped, GroupInvitation.Name), MessageType.System);
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupAlreadyGrouped, GroupInvitation.Name), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupAlreadyGrouped, GroupInvitation.Name), MessageType.System);
                 return;
             }
             else if (GroupInvitation.GroupMembers.Count >= Globals.GroupLimit)
             {
-                Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GroupMemberLimit, GroupInvitation.Name), MessageType.System);
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupMemberLimit, GroupInvitation.Name), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupMemberLimit, GroupInvitation.Name), MessageType.System);
                 return;
             }
 
             if (CurrentMap.Instance != null)
             {
-                Connection.ReceiveChatWithObservers(con => con.Language.InstanceNoAction, MessageType.System);
+                Connection.ReceiveChat(Connection.Language.InstanceNoAction, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(con.Language.InstanceNoAction, MessageType.System);
                 return;
             }
 
@@ -5311,10 +5449,32 @@ namespace Server.Models
             AddAllObjects();
             ApplyGuildBuff();
 
+            GroupInvitation.LFGSettings.NeedUpdate = true;
+
+            //Disable own LFG as joined another group
+            UpdateLFGStatus(false);
+
             RefreshStats();
             Enqueue(new S.GroupMember { ObjectID = ObjectID, Name = Name });
         }
-        public void GroupLeave()
+        public void GroupDecline(string name)
+        {
+            PlayerObject player = SEnvir.GetPlayerByCharacter(name);
+
+            if (player == null)
+            {
+                return;
+            }
+
+            if (!GroupInvitationRequest.Contains(player))
+            {
+                return;
+            }
+
+            player.Connection?.ReceiveChat(player.Connection.Language.GroupRequestDeclined, MessageType.System);
+        }
+
+        public void GroupLeave(bool disableLFG = true)
         {
             Packet p = new S.GroupRemove { ObjectID = ObjectID };
 
@@ -5333,15 +5493,155 @@ namespace Server.Models
                 ob.ApplyGuildBuff();
             }
 
-            if (oldGroup.Count == 1) oldGroup[0].GroupLeave();
+            if (oldGroup.Count > 0)
+                oldGroup[0].LFGSettings.NeedUpdate = true;
+
+            if (oldGroup.Count == 1) oldGroup[0].GroupLeave(false);
 
             GroupMembers = null;
+
+            if (disableLFG)
+            {
+                //Disable your own LFG if you leave group. Mainly for if group leader has left.
+                UpdateLFGStatus(false, true);
+            }
 
             Enqueue(p);
             RemoveAllObjects();
             RefreshStats();
             ApplyGuildBuff();
         }
+
+        #endregion
+
+        #region Looking For Group
+
+        #region Properties
+
+        public class LookingForGroupSettings
+        {
+            public string Name { get; set; }
+            public string Type { get; set; }
+            public int MaxCount { get; set; }
+            public bool Enabled { get; set; }
+            public DateTime EnabledDateTime { get; set; }
+            public bool ReceiveUpdates { get; set; }
+            public bool NeedUpdate { get; set; }
+        }
+
+        public LookingForGroupSettings LFGSettings = new();
+
+        #endregion
+
+        public void ProcessGroup()
+        {
+            if (LFGSettings.Enabled && SEnvir.Now > LFGSettings.EnabledDateTime)
+            {
+                LFGSettings.Enabled = false;
+                LFGSettings.NeedUpdate = true;
+
+                Connection.ReceiveChat(Connection.Language.GroupLFGExpired, MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(Connection.Language.GroupLFGExpired, MessageType.System);
+            }
+
+            if (LFGSettings.NeedUpdate)
+            {
+                BroadcastLFG();
+
+                LFGSettings.NeedUpdate = false;
+            }
+        }
+
+        public void BroadcastLFG()
+        {
+            for (int i = SEnvir.Players.Count - 1; i >= 0; i--)
+            {
+                var player = SEnvir.Players[i];
+
+                if (player.Connection == null || player.Node == null) continue;
+
+                if (!player.LFGSettings.ReceiveUpdates) continue;
+
+                player.Enqueue(new S.GroupUpdate { Group = ToClientGroup() });
+            }
+        }
+
+        public void SendLFGList()
+        {
+            var list = new List<ClientLookingForGroup>();
+
+            for (int i = SEnvir.Players.Count - 1; i >= 0; i--)
+            {
+                var player = SEnvir.Players[i];
+
+                if (player.Connection == null || player.Node == null) continue;
+
+                if (!player.LFGSettings.Enabled) continue;
+
+                list.Add(player.ToClientGroup());
+            }
+
+            Enqueue(new S.GroupLFG { List = list });
+        }
+
+        public void LFGUpdate(C.GroupLFGUpdate p)
+        {
+            LFGSettings.Name = p.Name;
+            LFGSettings.MaxCount = p.MaxCount;
+            LFGSettings.Type = p.Type;
+
+            UpdateLFGStatus(p.Enabled);
+
+            GroupSwitch(true);
+
+            LFGSettings.NeedUpdate = true;
+        }
+
+        public void UpdateLFGStatus(bool enabled, bool immediate = false)
+        {
+            bool old = LFGSettings.Enabled;
+
+            LFGSettings.Enabled = enabled;
+            if (LFGSettings.Enabled)
+            {
+                int enabledMinutes = 60;
+
+                LFGSettings.EnabledDateTime = SEnvir.Now.AddMinutes(enabledMinutes);
+
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupLFGEnabled, enabledMinutes), MessageType.System);
+
+                foreach (SConnection con in Connection.Observers)
+                    con.ReceiveChat(string.Format(con.Language.GroupLFGEnabled, enabledMinutes), MessageType.System);
+            }
+
+            if (old != LFGSettings.Enabled)
+            {
+                LFGSettings.NeedUpdate = true;
+            }
+
+            if (immediate)
+            {
+                ProcessGroup();
+            }
+        }
+
+        public ClientLookingForGroup ToClientGroup()
+        {
+            var members = GroupMembers?.ToList() ?? [this];
+
+            return new ClientLookingForGroup
+            {
+                GroupName = LFGSettings.Name,
+                LeaderName = Name,
+                GroupType = LFGSettings.Type,
+                MemberInfo = members.Select(x => $"{x.Name} [Level {x.Level} {x.Class}]").ToList(),
+                MaxCount = LFGSettings.MaxCount,
+                Enabled = LFGSettings.Enabled
+            };
+        }
+
         #endregion
 
         #region Items
@@ -6139,7 +6439,7 @@ namespace Server.Models
 
                             if (weapon.Info.ItemEffect == ItemEffect.SpiritBlade)
                             {
-                                Connection.ReceiveChat($"You can not extract a {weapon.Info.ItemName}.", MessageType.System);
+                                Connection.ReceiveChat($"You cannot extract a {weapon.Info.ItemName}.", MessageType.System);
                                 return;
                             }
 
@@ -6208,7 +6508,7 @@ namespace Server.Models
 
                             if (weapon.Info.ItemEffect == ItemEffect.SpiritBlade)
                             {
-                                Connection.ReceiveChat($"You can not apply to a {weapon.Info.ItemName}.", MessageType.System);
+                                Connection.ReceiveChat($"You cannot apply to a {weapon.Info.ItemName}.", MessageType.System);
                                 return;
                             }
 

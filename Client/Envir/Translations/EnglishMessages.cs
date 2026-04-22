@@ -91,6 +91,12 @@ namespace Client.Envir.Translations
         public override string FilterConfigSaved { get; set; } = "Drop filters have been saved to your configuration";
         public override string GroupMemberLimit { get; set; } = "Group member limit has been reached";
         public override string GroupNotLeader { get; set; } = "You are not the leader of your group.";
+        public override string GroupAlreadyGrouped { get; set; } = "You are already in a group.";
+        public override string GroupSelf { get; set; } = "You cannot group with yourself";
+        public override string GroupLFGRequestDelay { get; set; } = "Cannot request to join group for another {0} seconds.";
+        public override string GroupLFGRequestSent { get; set; } = "Request to join group has been sent.";
+        public override string GroupDialogNotAllowingGroupMessage { get; set; } = "You are not currently allowing group.";
+        public override string GroupDialogCreateLFGButtonHint { get; set; } = "Create LFG";
         public override string MarketNoItemSelected { get; set; } = "Error: No Item selected.";
         public override string MarketInvalidPrice { get; set; } = "Error: Invalid Price.";
         public override string BuySellOverweight { get; set; } = "You do not have enough weight to buy any '{0}'.";
@@ -182,6 +188,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGraphicsTabDrawEffectsLabel { get; set; } = "Draw Effects";
         public override string CommonControlConfigWindowGraphicsTabDrawWeatherLabel { get; set; } = "Draw Weather";
         public override string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; } = "Target Outline";
+        public override string CommonControlConfigWindowGameTabObservableLabel { get; set; } = "Observable";
         public override string CommonControlConfigWindowUITabKeyBindButtonLabel { get; set; } = "Key Binds";
         public override string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; } = "Use Config";
         public override string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; } = "IP Address";
@@ -204,6 +211,8 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; } = "Monster (Same)";
         public override string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; } = "Monster (High)";
         public override string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; } = "NPC";
+        public override string CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel { get; set; } = "Player (Friendly)";
+        public override string CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel { get; set; } = "Player (Enemy)";
         public override string CommonControlDXKeyBindWindowTitle { get; set; } = "Key Binds";
         public override string CommonControlDXKeyBindWindowTipLabel { get; set; } = "[Escape] to undo changes to current Key Bind";
         public override string CommonControlDXKeyBindWindowDefaultConfirmMessage { get; set; } = "Are you sure you want to reset ALL keybinds back to the default settings?";

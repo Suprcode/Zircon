@@ -31,7 +31,6 @@
     <PackageReference Include="DevExpress.Win.Design" Version="25.2.6" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.3" />
     <PackageReference Include="WinSCP" Version="6.3.6" />
   </ItemGroup>
 </Project>

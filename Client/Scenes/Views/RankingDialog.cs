@@ -138,7 +138,6 @@ namespace Client.Scenes.Views
 
         #endregion
 
-
         #region AllowObservation
 
         public bool AllowObservation
@@ -158,36 +157,9 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> AllowObservationChanged;
         public void OnAllowObservationChanged(bool oValue, bool nValue)
         {
-            ObservableBox.Visible = nValue;
             ObserveButton.Visible = nValue;
 
             AllowObservationChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
-        #region Observable
-
-        public bool Observable
-        {
-            get => _Observable;
-            set
-            {
-                if (_Observable == value) return;
-
-                bool oldValue = _Observable;
-                _Observable = value;
-
-                OnObserverableChanged(oldValue, value);
-            }
-        }
-        private bool _Observable;
-        public event EventHandler<EventArgs> ObserverableChanged;
-        public void OnObserverableChanged(bool oValue, bool nValue)
-        {
-            ObservableBox.Checked = nValue;
-
-            ObserverableChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -236,7 +208,7 @@ namespace Client.Scenes.Views
         private DXVScrollBar ScrollBar;
 
         public DXComboBox RequiredClassBox;
-        public DXCheckBox OnlineOnlyBox, ObservableBox;
+        public DXCheckBox OnlineOnlyBox;
         public DXButton CloseButton, SearchButton, ObserveButton;
 
         public DXLabel TitleLabel, LastUpdate;
@@ -895,28 +867,6 @@ namespace Client.Scenes.Views
             OnlineOnlyBox.Location = new Point(RequiredClassBox.Location.X + RequiredClassBox.Size.Width + 5, 38);
             OnlineOnlyBox.Checked = Config.RankingOnline;
 
-            ObservableBox = new DXCheckBox
-            {
-                Parent = RankPanel,
-                Visible = false,
-                Label = { Text = CEnvir.Language.RankingDialogObservableLabel }
-            };
-            ObservableBox.CheckedChanged += (o, e) =>
-            {
-                if (ObservableBox.Checked == Observable) return;
-
-                if (GameScene.Game == null) return;
-                if (GameScene.Game.Observer) return;
-                if (!GameScene.Game.User.InSafeZone)
-                {
-                    GameScene.Game.ReceiveChat(CEnvir.Language.SpectatorModeWarningInSafezone, MessageType.System);
-                    return;
-                }
-
-                CEnvir.Enqueue(new C.ObservableSwitch { Allow = !Observable });
-            };
-            ObservableBox.Location = new Point(OnlineOnlyBox.Location.X + OnlineOnlyBox.Size.Width + 5, 38);
-
             LastUpdate = new DXLabel
             {
                 Parent = this,
@@ -1211,9 +1161,6 @@ namespace Client.Scenes.Views
                 _OnlineOnly = false;
                 OnlineOnlyChanged = null;
 
-                _Observable = false;
-                ObserverableChanged = null;
-
                 _SelectedRow = null;
                 SelectedRowChanged = null;
 
@@ -1281,14 +1228,6 @@ namespace Client.Scenes.Views
                         OnlineOnlyBox.Dispose();
 
                     OnlineOnlyBox = null;
-                }
-
-                if (ObservableBox != null)
-                {
-                    if (!ObservableBox.IsDisposed)
-                        ObservableBox.Dispose();
-
-                    ObservableBox = null;
                 }
 
                 if (CloseButton != null)

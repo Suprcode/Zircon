@@ -435,6 +435,8 @@ namespace Client.Scenes.Views
 
                 EndLabel.Text = string.Empty;
                 StartLabel.Text = string.Empty;
+
+                AbandonButton.Enabled = false;
                 return;
             }
 
@@ -501,6 +503,8 @@ namespace Client.Scenes.Views
             QuestLabel.Text = SelectedQuest.QuestInfo.QuestName;
             DescriptionLabel.Text = GameScene.Game.GetQuestText(SelectedQuest.QuestInfo, SelectedQuest.UserQuest, true);
             TasksLabel.Text = GameScene.Game.GetTaskText(SelectedQuest.QuestInfo, SelectedQuest.UserQuest);
+
+            AbandonButton.Enabled = true;
 
             int height = DXLabel.GetHeight(DescriptionLabel, DescriptionLabel.Size.Width).Height;
 
@@ -760,7 +764,8 @@ namespace Client.Scenes.Views
                 Visible = false,
                 Label = { Text = CEnvir.Language.QuestAbandonButtonLabel },
                 Location = new Point(640, 398),
-                Size = new Size(80, DefaultHeight)
+                Size = new Size(80, DefaultHeight),
+                Enabled = false
             };
             AbandonButton.MouseClick += (o, e) =>
             {

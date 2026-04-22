@@ -1179,6 +1179,19 @@ namespace Library
             ItemInfo = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == ItemIndex);
         }
     }
+
+    public class ClientLookingForGroup
+    {
+        public string LeaderName { get; set; }
+        public string GroupName { get; set; }
+        public string GroupType { get; set; }
+
+        [IgnorePropertyPacket]
+        public int CurrentCount => MemberInfo.Count;
+        public List<string> MemberInfo { get; set; } = new List<string>();
+        public int MaxCount { get; set; }
+        public bool Enabled { get; set; }
+    }
 }
 
 
