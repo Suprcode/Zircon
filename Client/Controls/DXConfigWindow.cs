@@ -32,7 +32,7 @@ namespace Client.Controls
         //Game
         private DXCheckBox ItemNameCheckBox, MonsterNameCheckBox, PlayerNameCheckBox, UserHealthCheckBox, MonsterHealthCheckBox, DamageNumbersCheckBox,
             EscapeCloseAllCheckBox, ShiftOpenChatCheckBox, RightClickDeTargetCheckBox, MonsterBoxVisibleCheckBox, LogChatCheckBox, DrawEffectsCheckBox,
-            DrawParticlesCheckBox, DrawWeatherCheckBox, ShowTargetOutlineCheckBox;
+            DrawParticlesCheckBox, DrawWeatherCheckBox, ShowTargetOutlineCheckBox, ObservableCheckBox;
         public DXCheckBox DisplayHelmetCheckBox, HideChatBarCheckBox;
         public DXButton KeyBindButton;
 
@@ -46,13 +46,39 @@ namespace Client.Controls
         public DXButton ResetColoursButton;
 
         //Target Outline Colours
-        public DXColourControl TargetMonsterLowLevelColourBox, TargetMonsterSameLevelColourBox, TargetMonsterHighLevelColourBox, TargetNPCColourBox;
+        public DXColourControl TargetMonsterLowLevelColourBox, TargetMonsterSameLevelColourBox, TargetMonsterHighLevelColourBox, TargetPlayerEnemyColourBox, TargetPlayerFriendlyColourBox, TargetNPCColourBox;
         public DXButton ResetTargetColoursButton;
 
         private DXButton CloseButton;
         private DXLabel TitleLabel;
 
         #region Properties
+
+        #region Observable
+
+        public bool Observable
+        {
+            get => _Observable;
+            set
+            {
+                if (_Observable == value) return;
+
+                bool oldValue = _Observable;
+                _Observable = value;
+
+                OnObserverableChanged(oldValue, value);
+            }
+        }
+        private bool _Observable;
+        public event EventHandler<EventArgs> ObserverableChanged;
+        public void OnObserverableChanged(bool oValue, bool nValue)
+        {
+            ObservableCheckBox.Checked = nValue;
+
+            ObserverableChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
 
         public override void OnVisibleChanged(bool oValue, bool nValue)
         {
@@ -139,7 +165,11 @@ namespace Client.Controls
             TargetMonsterLowLevelColourBox.BackColour = Config.TargetMonsterLowLevelColour;
             TargetMonsterSameLevelColourBox.BackColour = Config.TargetMonsterSameLevelColour;
             TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
+            TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
+            TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
             TargetNPCColourBox.BackColour = Config.TargetNPCColour;
+            TargetPlayerFriendlyColourBox.BackColour = Config.TargetPlayerFriendlyColour;
+            TargetPlayerEnemyColourBox.BackColour = Config.TargetPlayerEnemyColour;
         }
         public override void OnParentChanged(DXControl oValue, DXControl nValue)
         {
@@ -696,6 +726,27 @@ namespace Client.Controls
             ShowTargetOutlineCheckBox.CheckedChanged += (o, e) => Config.ShowTargetOutline = ShowTargetOutlineCheckBox.Checked;
             gameSettingsSection.AddControl("", ShowTargetOutlineCheckBox);
 
+            ObservableCheckBox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGameTabObservableLabel },
+            };
+            ObservableCheckBox.CheckedChanged += (o, e) =>
+            {
+                if (ObservableCheckBox.Checked == Observable) return;
+
+                if (GameScene.Game == null) return;
+                if (GameScene.Game.Observer) return;
+                if (!GameScene.Game.User.InSafeZone)
+                {
+                    GameScene.Game.ReceiveChat(CEnvir.Language.SpectatorModeWarningInSafezone, MessageType.System);
+                    ObservableCheckBox.Checked = Observable;
+                    return;
+                }
+
+                CEnvir.Enqueue(new C.ObservableSwitch { Allow = !Observable });
+            };
+            gameSettingsSection.AddControl("", ObservableCheckBox);
+
             #endregion
 
             #region Target Colours
@@ -719,9 +770,18 @@ namespace Client.Controls
             TargetMonsterHighLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterHighLevelColour = TargetMonsterHighLevelColourBox.BackColour;
             targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterHighLabel, TargetMonsterHighLevelColourBox);
 
+            TargetPlayerFriendlyColourBox = new DXColourControl { AllowNoColour = true };
+            TargetPlayerFriendlyColourBox.BackColourChanged += (o, e) => Config.TargetPlayerFriendlyColour = TargetPlayerFriendlyColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel, TargetPlayerFriendlyColourBox);
+
+            TargetPlayerEnemyColourBox = new DXColourControl { AllowNoColour = true };
+            TargetPlayerEnemyColourBox.BackColourChanged += (o, e) => Config.TargetPlayerEnemyColour = TargetPlayerEnemyColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel, TargetPlayerEnemyColourBox);
+
             TargetNPCColourBox = new DXColourControl { AllowNoColour = true };
             TargetNPCColourBox.BackColourChanged += (o, e) => Config.TargetNPCColour = TargetNPCColourBox.BackColour;
             targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabNPCLabel, TargetNPCColourBox);
+
             ResetTargetColoursButton = new DXButton
             {
                 Size = new Size(80, SmallButtonHeight),
@@ -1136,6 +1196,10 @@ namespace Client.Controls
                 #endregion
 
                 #region Game
+
+                _Observable = false;
+                ObserverableChanged = null;
+
                 if (GameTab != null)
                 {
                     if (!GameTab.IsDisposed)
@@ -1288,6 +1352,13 @@ namespace Client.Controls
                     if (!ShowTargetOutlineCheckBox.IsDisposed)
                         ShowTargetOutlineCheckBox.Dispose();
                     ShowTargetOutlineCheckBox = null;
+                }
+
+                if (ObservableCheckBox != null)
+                {
+                    if (!ObservableCheckBox.IsDisposed)
+                        ObservableCheckBox.Dispose();
+                    ObservableCheckBox = null;
                 }
 
                 if (KeyBindButton != null)
@@ -1492,6 +1563,20 @@ namespace Client.Controls
                         TargetNPCColourBox.Dispose();
 
                     TargetNPCColourBox = null;
+                }
+
+                if (TargetPlayerFriendlyColourBox != null)
+                {
+                    if (!TargetPlayerFriendlyColourBox.IsDisposed)
+                        TargetPlayerFriendlyColourBox.Dispose();
+                    TargetPlayerFriendlyColourBox = null;
+                }
+
+                if (TargetPlayerEnemyColourBox != null)
+                {
+                    if (!TargetPlayerEnemyColourBox.IsDisposed)
+                        TargetPlayerEnemyColourBox.Dispose();
+                    TargetPlayerEnemyColourBox = null;
                 }
 
                 if (ResetTargetColoursButton != null)

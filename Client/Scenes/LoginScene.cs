@@ -220,8 +220,7 @@ namespace Client.Scenes
             RankingBox = new RankingDialog
             {
                 Parent = this,
-                Visible = false,
-                ObservableBox = { Visible = false }
+                Visible = false
             };
             RankingBox.Location = new Point((Size.Width - RankingBox.Size.Width) / 2, (Size.Height - RankingBox.Size.Height) / 2);
 

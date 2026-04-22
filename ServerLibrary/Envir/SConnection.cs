@@ -710,10 +710,7 @@ namespace Server.Envir
             if (p.Accept)
                 Player.GroupJoin();
             else
-            {
-                var requestCon = Player.GroupInvitationRequest?.Connection;
-                requestCon?.ReceiveChat(requestCon.Language.GroupRequestDeclined, MessageType.System);
-            }
+                Player.GroupDecline(p.Name);
 
             Player.GroupInvitation = null;
             Player.GroupInvitationRequest = null;
@@ -723,7 +720,7 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
-            Player.LFGReceiveUpdates = p.Receive;
+            Player.LFGSettings.ReceiveUpdates = p.Receive;
 
             if (p.Receive)
             {

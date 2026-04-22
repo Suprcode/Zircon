@@ -727,16 +727,18 @@ namespace Library.Network.ServerPackets
     public sealed class GroupRequest : Packet
     {
         public string Name { get; set; }
+        public int Level { get; set; }
+        public MirClass Class { get; set; }
     }
 
     public sealed class GroupLFG : Packet
     {
-        public List<ClientGroup> List { get; set; } = new List<ClientGroup>();
+        public List<ClientLookingForGroup> List { get; set; } = new List<ClientLookingForGroup>();
     }
 
     public sealed class GroupUpdate : Packet
     {
-        public ClientGroup Group { get; set; }
+        public ClientLookingForGroup Group { get; set; }
     }
 
     public sealed class BuffAdd : Packet
@@ -794,6 +796,7 @@ namespace Library.Network.ServerPackets
 
         public bool Ranking { get; set; }
     }
+
     public sealed class Rankings : Packet
     {
         public bool OnlineOnly { get; set; }
@@ -804,6 +807,7 @@ namespace Library.Network.ServerPackets
 
         public List<RankInfo> Ranks { get; set; }
     }
+
     public sealed class RankSearch : Packet
     {
         public RankInfo Rank { get; set; }

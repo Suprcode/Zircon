@@ -91,6 +91,7 @@ namespace Client.Envir.Translations
         public abstract string FilterConfigSaved { get; set; }
         public abstract string GroupMemberLimit { get; set; }
         public abstract string GroupNotLeader { get; set; }
+        public abstract string GroupAlreadyGrouped { get; set; }
         public abstract string GroupSelf { get; set; }
         public abstract string GroupLFGRequestDelay { get; set; }
         public abstract string GroupLFGRequestSent { get; set; }
@@ -185,6 +186,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGraphicsTabDrawEffectsLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabDrawWeatherLabel { get; set; }
         public abstract string CommonControlConfigWindowGameTabShowTargetOutlineLabel { get; set; }
+        public abstract string CommonControlConfigWindowGameTabObservableLabel { get; set; }
         public abstract string CommonControlConfigWindowUITabKeyBindButtonLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseNetworkConfigLabel { get; set; }
         public abstract string CommonControlConfigWindowNetworkTabUseIPAddressLabel { get; set; }
@@ -207,6 +209,8 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel { get; set; }
         public abstract string CommonControlDXKeyBindWindowTitle { get; set; }
         public abstract string CommonControlDXKeyBindWindowTipLabel { get; set; }
         public abstract string CommonControlDXKeyBindWindowDefaultConfirmMessage { get; set; }

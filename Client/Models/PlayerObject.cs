@@ -1247,7 +1247,8 @@ namespace Client.Models
 
             if (allowOutline && Config.ShowTargetOutline)
             {
-                RenderingPipelineManager.EnableOutlineEffect(Color.Red, 2f);
+                var isFriendly = GameScene.Game.GroupBox.Members.Any(x => x.ObjectID == ObjectID);
+                RenderingPipelineManager.EnableOutlineEffect(isFriendly ? Config.TargetPlayerFriendlyColour : Config.TargetPlayerEnemyColour, 2f);
                 outlineEnabled = true;
             }
 

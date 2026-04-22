@@ -217,7 +217,7 @@ namespace Server.Envir.Translations
         public override string GroupAlreadyGrouped { get; set; } = "Player: {0}, is already in another group.";
         public override string GroupAlreadyInvited { get; set; } = "Player: {0}, is currently being invited to another group.";
         public override string GroupInviteNotAllowed { get; set; } = "Player: {0}, is not allowing group invites.";
-        public override string GroupSelf { get; set; } = "You can not group with yourself.";
+        public override string GroupSelf { get; set; } = "You cannot group with yourself.";
         public override string GroupMemberLimit { get; set; } = "{0}'s group has already reached the maximum size.";
         public override string GroupRecallDelay { get; set; } = "You cannot group recall for another {0}";
         public override string GroupRecallMap { get; set; } = "You cannot group recall on this map";
@@ -246,7 +246,7 @@ namespace Server.Envir.Translations
         public override string TradePartnerTooMuchGold { get; set; } = "Your Partner cannot carry this much gold...";
         public override string TradeFailedItemsChanged { get; set; } = "Your Items were changed, Trade Failed.";
         public override string TradeFailedPartnerItemsChanged { get; set; } = "{0}'s Items were changed, Trade Failed.";
-        public override string TradeNotEnoughSpace { get; set; } = "You can not Carry this many items, Please make space in your inventory and try again.";
+        public override string TradeNotEnoughSpace { get; set; } = "You cannot Carry this many items, Please make space in your inventory and try again.";
         public override string TradeComplete { get; set; } = "Trade Complete..";
 
         public override string NPCFundsGuild { get; set; } = "You cannot use Guild Funds to buy from a merchant because you are not in a guild.";
@@ -254,7 +254,7 @@ namespace Server.Envir.Translations
         public override string NPCFundsCost { get; set; } = "Unable to buy items, Your Guild needs another {0:#,##0} Gold.";
         public override string NPCFundsCurrency { get; set; } = "Unable to buy items, Guild Funds can only be used for Gold merchants.";
         public override string NPCCost { get; set; } = "Unable to buy items, You need another {0:#,##0} Gold.";
-        public override string NPCNoRoom { get; set; } = "You can not carry this many items.";
+        public override string NPCNoRoom { get; set; } = "You cannot carry this many items.";
         public override string NPCFundsBuy { get; set; } = "{0} used {1:#,##0} gold of guild funds to buy {2} x{3}.";
         public override string NPCSellWorthless { get; set; } = "Unable to sell items that are worthless";
         public override string NPCSellTooMuchGold { get; set; } = "Unable to sell items, You would be carrying too much gold";

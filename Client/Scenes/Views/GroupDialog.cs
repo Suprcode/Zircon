@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Windows.Forms;
-using System.Xml;
 using C = Library.Network.ClientPackets;
 
 namespace Client.Scenes.Views
@@ -275,7 +273,7 @@ namespace Client.Scenes.Views
                     {
                         Text = CEnvir.Language.GroupDialogMemberTabLabel
                     },
-                    Visible = false
+                    Visible = true
                 },
                 Parent = tab,
                 Border = false,
@@ -445,18 +443,21 @@ namespace Client.Scenes.Views
             for (int i = 0; i < 5; i++)
             {
                 int index = i;
+                var item = LFGRows[index];
+
                 LFGRows[index] = new GroupLFGRow
                 {
                     Parent = this,
                     Location = new Point(13, 293 + (i * 21)),
                     Size = new Size(194, 19),
-                    Visible = false
+                    Visible = false,
+                    HintPosition = HintPosition.Fluid
                 };
                 LFGRows[index].MouseWheel += LFGScrollBar.DoMouseWheel;
                 LFGRows[index].MouseClick += LFG_MouseClick;
             }
 
-            UpdateList(new List<ClientGroup>());
+            UpdateList(new List<ClientLookingForGroup>());
         }
 
         private void LFG_MouseClick(object sender, MouseEventArgs e)
@@ -487,7 +488,7 @@ namespace Client.Scenes.Views
 
             if (Members.Count > 0)
             {
-                GameScene.Game.ReceiveChat(CEnvir.Language.GroupNotLeader, MessageType.System);
+                GameScene.Game.ReceiveChat(CEnvir.Language.GroupAlreadyGrouped, MessageType.System);
                 return;
             }
 
@@ -526,12 +527,22 @@ namespace Client.Scenes.Views
                 LFGRows[i].Info = list[index];
                 LFGRows[index].RefreshStatus();
                 LFGRows[index].Visible = true;
+                LFGRows[index].Hint = GetRowHint(list[index]);
             }
         }
 
-        public List<ClientGroup> LFGList = new List<ClientGroup>();
 
-        public void UpdateList(List<ClientGroup> lfgList = null)
+        private string GetRowHint(ClientLookingForGroup group)
+        {
+            if (group == null) return null;
+
+            return $"{string.Join("\n", group.MemberInfo)}";
+        }
+
+
+        public List<ClientLookingForGroup> LFGList = new List<ClientLookingForGroup>();
+
+        public void UpdateList(List<ClientLookingForGroup> lfgList = null)
         {
             if (lfgList != null)
             {
@@ -541,7 +552,7 @@ namespace Client.Scenes.Views
             RefreshList();
         }
 
-        public void UpdateItem(ClientGroup group)
+        public void UpdateItem(ClientLookingForGroup group)
         {
             var lfg = LFGList.FirstOrDefault(x => x.LeaderName == group.LeaderName);
 
@@ -760,7 +771,7 @@ namespace Client.Scenes.Views
                 {
                     Parent = this,
                     Visible = true,
-                    Location = new Point(0, index * 75)
+                    Location = new Point(0, index * 40) //75
                 };
 
                 member.UpdateMember(m);
@@ -800,7 +811,7 @@ namespace Client.Scenes.Views
     {
         public DXLabel NameLabel { get; set; }
         public DXControl HealthBar { get; set; }
-        public BuffDialog BuffBox { get; set; }
+        //public BuffDialog BuffBox { get; set; }
 
         public GroupHealthMember()
         {
@@ -862,13 +873,13 @@ namespace Client.Scenes.Views
                 PresentTexture(image.Image, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HealthBar);
             };
 
-            BuffBox = new BuffDialog
-            {
-                Parent = this,
-                Location = new Point(15, 40),
-                Size = new Size(150, 30),
-                //Scale = 0.8F
-            };
+            //BuffBox = new BuffDialog
+            //{
+            //    Parent = this,
+            //    Location = new Point(15, 40),
+            //    Size = new Size(150, 30),
+            //    //Scale = 0.8F
+            //};
         }
 
         public void UpdateMember(ClientPlayerInfo member)
@@ -876,7 +887,7 @@ namespace Client.Scenes.Views
             NameLabel.Text = member.Name;
             NameLabel.Tag = member.ObjectID;
 
-            BuffBox.BuffsChanged();
+            //BuffBox.BuffsChanged();
         }
 
 
@@ -952,22 +963,22 @@ namespace Client.Scenes.Views
 
         #region Info
 
-        public ClientGroup Info
+        public ClientLookingForGroup Info
         {
             get => _Info;
             set
             {
                 if (_Info == value) return;
 
-                ClientGroup oldValue = _Info;
+                ClientLookingForGroup oldValue = _Info;
                 _Info = value;
 
                 OnInfoChanged(oldValue, value);
             }
         }
-        private ClientGroup _Info;
+        private ClientLookingForGroup _Info;
         private event EventHandler<EventArgs> InfoChanged;
-        private void OnInfoChanged(ClientGroup oValue, ClientGroup nValue)
+        private void OnInfoChanged(ClientLookingForGroup oValue, ClientLookingForGroup nValue)
         {
             InfoChanged?.Invoke(this, EventArgs.Empty);
         }

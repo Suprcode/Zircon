@@ -1180,13 +1180,15 @@ namespace Library
         }
     }
 
-    public class ClientGroup
+    public class ClientLookingForGroup
     {
         public string LeaderName { get; set; }
         public string GroupName { get; set; }
-        public string Description { get; set; }
         public string GroupType { get; set; }
-        public int CurrentCount { get; set; }
+
+        [IgnorePropertyPacket]
+        public int CurrentCount => MemberInfo.Count;
+        public List<string> MemberInfo { get; set; } = new List<string>();
         public int MaxCount { get; set; }
         public bool Enabled { get; set; }
     }

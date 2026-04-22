@@ -348,6 +348,7 @@ namespace Library.Network.ClientPackets
 
     public sealed class GroupResponse : Packet
     {
+        public string Name { get; set; }
         public bool Accept { get; set; }
     }
     public sealed class GroupRequest : Packet

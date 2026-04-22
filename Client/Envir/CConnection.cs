@@ -769,7 +769,7 @@ namespace Client.Envir
                         scene.User = new UserObject(p.StartInformation);
 
                         GameScene.Game.BuffBox.BuffsChanged();
-                        GameScene.Game.RankingBox.Observable = p.StartInformation.Observable;
+                        GameScene.Game.ConfigBox.Observable = p.StartInformation.Observable;
 
                         GameScene.Game.StorageSize = p.StartInformation.StorageSize;
 
@@ -3384,18 +3384,35 @@ namespace Client.Envir
                 GameScene.Game.MiniMapBox.Update(data);
             }
         }
+
         public void Process(S.GroupInvite p)
         {
-
-
             DXMessageBox messageBox = new DXMessageBox($"Do you want to group with {p.Name}?", "Group Invitation", DXMessageBoxButtons.YesNo);
 
-            messageBox.YesButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = true });
-            messageBox.NoButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = false });
-            messageBox.CloseButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = false });
+            messageBox.YesButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = true, Name = p.Name });
+            messageBox.NoButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = false, Name = p.Name });
             messageBox.Modal = false;
             messageBox.CloseButton.Visible = false;
+        }
 
+        public void Process(S.GroupRequest p)
+        {
+            DXMessageBox messageBox = new DXMessageBox($"{p.Name} [Level {p.Level} {p.Class}] would like to join your group.", "Group Invitation Request", DXMessageBoxButtons.YesNo);
+
+            messageBox.YesButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupInvite { Name = p.Name });
+            messageBox.NoButton.MouseClick += (o, e) => CEnvir.Enqueue(new C.GroupResponse { Accept = false, Name = p.Name });
+            messageBox.Modal = false;
+            messageBox.CloseButton.Visible = false;
+        }
+
+        public void Process(S.GroupLFG p)
+        {
+            GameScene.Game.GroupBox.UpdateList(p.List);
+        }
+
+        public void Process(S.GroupUpdate p)
+        {
+            GameScene.Game.GroupBox.UpdateItem(p.Group);
         }
 
         public void Process(S.BuffAdd p)
@@ -3510,7 +3527,7 @@ namespace Client.Envir
         }
         public void Process(S.ObservableSwitch p)
         {
-            GameScene.Game.RankingBox.Observable = p.Allow;
+            GameScene.Game.ConfigBox.Observable = p.Allow;
         }
 
         public void Process(S.MarketPlaceHistory p)
