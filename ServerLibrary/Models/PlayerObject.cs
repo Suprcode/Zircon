@@ -5592,9 +5592,9 @@ namespace Server.Models
             LFGSettings.MaxCount = p.MaxCount;
             LFGSettings.Type = p.Type;
 
-            UpdateLFGStatus(p.Enabled);
-
             GroupSwitch(true);
+
+            UpdateLFGStatus(p.Enabled);
 
             LFGSettings.NeedUpdate = true;
         }
