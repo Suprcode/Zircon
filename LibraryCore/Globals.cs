@@ -65,7 +65,6 @@ namespace Library
             MinRealNameLength = 3,
             MaxRealNameLength = 20,
 
-
             MinCaptionLength = 3,
             MaxCaptionLength = 25,
 
@@ -92,6 +91,7 @@ namespace Library
             DuraLossRate = 15,
 
             GroupLimit = 15,
+            LookingForGroupMinutes = 60,
 
             MaxGrowthLevel = 3,
 

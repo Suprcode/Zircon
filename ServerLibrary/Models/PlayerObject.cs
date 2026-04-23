@@ -5606,14 +5606,12 @@ namespace Server.Models
             LFGSettings.Enabled = enabled;
             if (LFGSettings.Enabled)
             {
-                int enabledMinutes = 60;
+                LFGSettings.EnabledDateTime = SEnvir.Now.AddMinutes(Globals.LookingForGroupMinutes);
 
-                LFGSettings.EnabledDateTime = SEnvir.Now.AddMinutes(enabledMinutes);
-
-                Connection.ReceiveChat(string.Format(Connection.Language.GroupLFGEnabled, enabledMinutes), MessageType.System);
+                Connection.ReceiveChat(string.Format(Connection.Language.GroupLFGEnabled, Globals.LookingForGroupMinutes), MessageType.System);
 
                 foreach (SConnection con in Connection.Observers)
-                    con.ReceiveChat(string.Format(con.Language.GroupLFGEnabled, enabledMinutes), MessageType.System);
+                    con.ReceiveChat(string.Format(con.Language.GroupLFGEnabled, Globals.LookingForGroupMinutes), MessageType.System);
             }
 
             if (old != LFGSettings.Enabled)

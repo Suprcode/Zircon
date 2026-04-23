@@ -37,6 +37,7 @@ namespace Client.Scenes.Views
 
         public DXImageControl MarriageIcon;
         public DXLabel MarriageLabel;
+        private DXControl FameControl;
 
         public DXButton CloseButton;
 
@@ -399,6 +400,22 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Visible = false
             };
+
+            FameControl = new DXControl
+            {
+                Parent = CharacterTab,
+                Visible = true,
+                Size = new Size(34, 36),
+                Location = new Point(235, 16)
+            };
+            FameControl.MouseEnter += (o, e) =>
+            {
+                FameInfo info = Globals.FameInfoList.Binding.FirstOrDefault(x => x.Index == Fame);
+
+                GameScene.Game.MouseFame = info;
+            };
+            FameControl.MouseLeave += (o, e) => GameScene.Game.MouseFame = null;
+
 
             TabControl.SelectedTab = CharacterTab;
 
@@ -2519,7 +2536,6 @@ namespace Client.Scenes.Views
                 MirImage image = FameEffectDecider.GetFameEffectImageOrNull(Fame, out int offSetX, out int offSetY);
                 if (image != null)
                 {
-
                     bool oldBlend = RenderingPipelineManager.IsBlending();
                     float oldRate = RenderingPipelineManager.GetBlendRate();
 
@@ -3051,6 +3067,13 @@ namespace Client.Scenes.Views
                     MarriageLabel = null;
                 }
 
+                if (FameControl != null)
+                {
+                    if (!FameControl.IsDisposed)
+                        FameControl.Dispose();
+
+                    FameControl = null;
+                }
 
                 if (StatsAttackTab != null)
                 {
