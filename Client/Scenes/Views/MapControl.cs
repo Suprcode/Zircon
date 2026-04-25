@@ -684,25 +684,6 @@ namespace Client.Scenes.Views
 
                     if (CEnvir.Now >= User.AttackTime)
                     {
-                        int delayTime = 500;
-
-                        if (Functions.Distance(MapObject.TargetObject.CurrentLocation, MapObject.User.CurrentLocation) == 1)
-                        {
-                            delayTime = 100;
-                        }
-                        else
-                        {
-                            int x = MapObject.OffSetX * MapObject.CellWidth - MapObject.User.MovingOffSet.X;
-                            int y = MapObject.OffSetY * MapObject.CellHeight - MapObject.User.MovingOffSet.Y;
-
-                            int x1 = (MapObject.TargetObject.CurrentLocation.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth - MapObject.User.MovingOffSet.X;
-                            int y1 = (MapObject.TargetObject.CurrentLocation.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight - MapObject.User.MovingOffSet.Y;
-
-                            long duration = Functions.Distance(new Point(x, y / 32 * 48), new Point(x1, y1 / 32 * 48)) * TimeSpan.TicksPerMillisecond * 2;
-
-                            delayTime = int.Parse(duration.ToString().Substring(0, 3));
-                        }
-
                         MapObject.User.AttemptAction(
                             new ObjectAction
                             (
@@ -710,8 +691,7 @@ namespace Client.Scenes.Views
                                       Functions.DirectionFromPoint(MapObject.User.CurrentLocation, MapObject.TargetObject.CurrentLocation),
                                       MapObject.User.CurrentLocation,
                                       MapObject.TargetObject.ObjectID, //Ranged Attack Target ID;
-                                      MagicType.Shuriken,
-                                      delayTime
+                                      MagicType.Shuriken
                             ));
 
                         Stop();

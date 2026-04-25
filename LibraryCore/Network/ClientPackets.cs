@@ -123,8 +123,6 @@ namespace Library.Network.ClientPackets
     {
         public MirDirection Direction { get; set; }
         public uint Target { get; set; }
-        public int DelayedTime { get; set; }
-
     }
     public sealed class Mining : Packet
     {

@@ -635,7 +635,7 @@ namespace Client.Models
                     if (BagWeight > Stats[Stat.BagWeight] || (Poison & PoisonType.Neutralize) == PoisonType.Neutralize)
                         AttackTime += TimeSpan.FromMilliseconds(attackDelay);
 
-                    CEnvir.Enqueue(new C.RangeAttack { Direction = action.Direction, Target = (uint)action.Extra[0], DelayedTime = (int)action.Extra[2] });
+                    CEnvir.Enqueue(new C.RangeAttack { Direction = action.Direction, Target = (uint)action.Extra[0] });
                     GameScene.Game.CanRun = false;
                     break;
                 case MirAction.Spell:

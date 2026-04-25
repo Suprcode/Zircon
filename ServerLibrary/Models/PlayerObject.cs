@@ -379,7 +379,7 @@ namespace Server.Models
                     return;
                 case ActionType.RangeAttack:
                     PacketWaiting = false;
-                    RangeAttack((MirDirection)action.Data[0], (int)action.Data[1], (uint)action.Data[2]);
+                    RangeAttack((MirDirection)action.Data[0], (uint)action.Data[1]);
                     return;
                 case ActionType.DelayAttack:
                     Attack((MapObject)action.Data[0], (List<MagicType>)action.Data[1], (bool)action.Data[2], (int)action.Data[3]);
@@ -3692,7 +3692,7 @@ namespace Server.Models
 
             if (!ParseLinks(p.Link)) return;
 
-            if (p.Message.Length > 150) return;
+            if (string.IsNullOrEmpty(p.Message) || p.Message.Length > 150) return;
 
             UserItem[] array;
             switch (p.Link.GridType)
@@ -4209,6 +4209,7 @@ namespace Server.Models
 
             if (Character.Account.GuildMember != null) return;
 
+            if (string.IsNullOrWhiteSpace(p.Name)) return;
             if (p.Members < 0 || p.Members > 100) return;
             if (p.Storage < 0 || p.Storage > 500) return;
 
@@ -4311,8 +4312,7 @@ namespace Server.Models
                 return;
             }
 
-            if (p.Notice.Length > Globals.MaxGuildNoticeLength) return;
-
+            if (p.Notice == null || p.Notice.Length > Globals.MaxGuildNoticeLength) return;
 
             Character.Account.GuildMember.Guild.GuildNotice = p.Notice;
 
@@ -4331,7 +4331,7 @@ namespace Server.Models
                 return;
             }
 
-            if (p.Rank.Length > Globals.MaxCharacterNameLength)
+            if (p.Rank == null || p.Rank.Length > Globals.MaxCharacterNameLength)
             {
                 Connection.ReceiveChatWithObservers(con => con.Language.GuildMemberLength, MessageType.System);
                 return;
@@ -8009,7 +8009,7 @@ namespace Server.Models
         {
             if (Dead) return;
 
-            var currency = SEnvir.CurrencyInfoList.Binding.First(x => x.Index == p.CurrencyIndex);
+            var currency = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => x.Index == p.CurrencyIndex);
 
             if (currency == null) return;
 
@@ -14042,7 +14042,7 @@ namespace Server.Models
             return result;
         }
 
-        public void RangeAttack(MirDirection direction, int delayTime, uint target)
+        public void RangeAttack(MirDirection direction, uint target)
         {
             UserItem weapon = Equipment[(int)EquipmentSlot.Weapon];
 
@@ -14060,7 +14060,7 @@ namespace Server.Models
             {
                 if (!PacketWaiting)
                 {
-                    ActionList.Add(new DelayedAction(ActionTime, ActionType.RangeAttack, direction, delayTime, target));
+                    ActionList.Add(new DelayedAction(ActionTime, ActionType.RangeAttack, direction, target));
                     PacketWaiting = true;
                 }
                 else
@@ -14124,7 +14124,9 @@ namespace Server.Models
                 Targets = new List<uint> { ob.ObjectID }
             });
 
-            ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(delayTime), ActionType.DelayAttack, ob, new List<MagicType>() { MagicType.Shuriken }, true, 50));
+            int projectileDelay = Math.Max(100, Math.Min(750, Functions.Distance(CurrentLocation, ob.CurrentLocation) * 50));
+
+            ActionList.Add(new DelayedAction(SEnvir.Now.AddMilliseconds(projectileDelay), ActionType.DelayAttack, ob, new List<MagicType>() { MagicType.Shuriken }, true, 50));
 
             DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon);
         }

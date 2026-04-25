@@ -251,7 +251,7 @@ namespace Server.Envir
 
         public void Process(C.SelectLanguage p)
         {
-            switch (p.Language.ToUpper())
+            switch ((p.Language ?? string.Empty).ToUpperInvariant())
             {
                 case "ENGLISH":
                     Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)];
@@ -457,7 +457,7 @@ namespace Server.Envir
 
             if (p.Direction < MirDirection.Up || p.Direction > MirDirection.UpLeft) return;
 
-            Player.RangeAttack(p.Direction, p.DelayedTime, p.Target);
+            Player.RangeAttack(p.Direction, p.Target);
         }
         public void Process(C.Magic p)
         {
@@ -540,7 +540,7 @@ namespace Server.Envir
 
         public void Process(C.Chat p)
         {
-            if (p.Text.Length > Globals.MaxChatLength) return;
+            if (string.IsNullOrEmpty(p.Text) || p.Text.Length > Globals.MaxChatLength) return;
 
             if (Stage == GameStage.Game)
                 Player.Chat(p.Text);
@@ -793,6 +793,8 @@ namespace Server.Envir
 
         public void Process(C.ObserverRequest p)
         {
+            if (Stage != GameStage.Login && Stage != GameStage.Game && Stage != GameStage.Observer) return;
+
             if (!Config.AllowObservation && (Account == null || (!Account.TempAdmin && !Account.Observer))) return;
 
             PlayerObject player = SEnvir.GetPlayerByCharacter(p.Name);
