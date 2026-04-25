@@ -709,6 +709,10 @@ namespace Server.Envir
                 CreateSpawns();
                 CreateQuestRegions();
             }
+            else
+            {
+                CreateStartZones();
+            }
         }
 
         private static void CreateMovements(InstanceInfo instance = null, byte instanceSequence = 0, MapInfo targetMap = null)
@@ -1104,6 +1108,16 @@ namespace Server.Envir
                     if (!info.ValidBindPoints.Contains(point))
                         info.ValidBindPoints.Add(point);
                 }
+            }
+        }
+
+        private static void CreateStartZones()
+        {
+            foreach (SafeZoneInfo info in SafeZoneInfoList.Binding)
+            {
+                if (info.StartClass == RequiredClass.None && !info.RedZone) continue;
+
+                _ = GetMap(info.Region.Map);
             }
         }
 
@@ -4124,15 +4138,14 @@ namespace Server.Envir
                 return null;
 
             if (instanceSequence >= instanceMaps.Length || instanceMaps[instanceSequence] == null)
-            {
                 return null;
-            }
 
             if (instanceMaps[instanceSequence].TryGetValue(info, out Map instanceMap))
                 return instanceMap;
 
             var instanceMapInfo = instance.Maps.FirstOrDefault(x => x.Map == info);
-            if (instanceMapInfo == null) return null;
+            if (instanceMapInfo == null) 
+                return null;
 
             lock (MapLoadLock)
             {
@@ -4164,6 +4177,7 @@ namespace Server.Envir
             for (int i = 0; i < instance.Maps.Count; i++)
             {
                 var mapInfo = instance.Maps[i];
+
                 Map map = new Map(mapInfo.Map, instance, instanceSequence, mapInfo.RespawnIndex);
                 mapInstance[instanceSequence][mapInfo.Map] = map;
                 FinaliseMapLoad(map);
