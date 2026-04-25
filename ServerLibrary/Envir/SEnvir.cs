@@ -3914,35 +3914,26 @@ namespace Server.Envir
 
         public static byte[] CreateHash(string password)
         {
-            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
-            {
-                byte[] salt = new byte[SaltSize];
-                rng.GetBytes(salt);
+            byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, hashSize);
 
-                using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256))
-                {
-                    byte[] hash = rfc.GetBytes(hashSize);
+            byte[] totalHash = new byte[SaltSize + hashSize];
 
-                    byte[] totalHash = new byte[SaltSize + hashSize];
+            Buffer.BlockCopy(salt, 0, totalHash, 0, SaltSize);
+            Buffer.BlockCopy(hash, 0, totalHash, SaltSize, hashSize);
 
-                    Buffer.BlockCopy(salt, 0, totalHash, 0, SaltSize);
-                    Buffer.BlockCopy(hash, 0, totalHash, SaltSize, hashSize);
-
-                    return totalHash;
-                }
-            }
+            return totalHash;
         }
         private static bool PasswordMatch(string password, byte[] totalHash)
         {
+            if (totalHash == null || totalHash.Length != SaltSize + hashSize) return false;
+
             byte[] salt = new byte[SaltSize];
             Buffer.BlockCopy(totalHash, 0, salt, 0, SaltSize);
 
-            using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256))
-            {
-                byte[] hash = rfc.GetBytes(hashSize);
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, hashSize);
 
-                return Functions.IsMatch(totalHash, hash, SaltSize);
-            }
+            return CryptographicOperations.FixedTimeEquals(totalHash.AsSpan(SaltSize, hashSize), hash);
         }
         #endregion
 
