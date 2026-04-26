@@ -5471,6 +5471,8 @@ namespace Server.Models
                 return;
             }
 
+            GroupInvitationRequest.Remove(player);
+
             player.Connection?.ReceiveChat(player.Connection.Language.GroupRequestDeclined, MessageType.System);
         }
 
