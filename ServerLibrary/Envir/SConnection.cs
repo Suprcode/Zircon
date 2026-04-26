@@ -713,7 +713,6 @@ namespace Server.Envir
                 Player.GroupDecline(p.Name);
 
             Player.GroupInvitation = null;
-            Player.GroupInvitationRequest = null;
         }
 
         public void Process(C.GroupNotify p)
