@@ -33,6 +33,7 @@ namespace Library
         public static DBCollection<BundleInfo> BundleInfoList;
         public static DBCollection<LootBoxInfo> LootBoxInfoList;
         public static DBCollection<HelpInfo> HelpInfoList;
+        public static DBCollection<TitleInfo> TitleInfoList;
 
         public static Random Random = new Random();
 
@@ -389,6 +390,7 @@ namespace Library
         public List<ClientUserItem> Items { get; set; }
         public List<ClientBeltLink> BeltLinks { get; set; }
         public List<ClientAutoPotionLink> AutoPotionLinks { get; set; }
+        public List<ClientUserTitle> Titles { get; set; }
 
         public List<ClientUserMagic> Magics { get; set; }
         public List<ClientBuffInfo> Buffs { get; set; }
@@ -1141,6 +1143,12 @@ namespace Library
         {
             get { return Info != null && Info.DropItem != null && Info.DropItem.CanDrop; }
         }
+
+        [CompleteObject]
+        public void Complete()
+        {
+            Info = Globals.CurrencyInfoList.Binding.FirstOrDefault(x => x.Index == CurrencyIndex);
+        }
     }
 
     public class ClientUserDiscipline
@@ -1150,6 +1158,12 @@ namespace Library
         public int Level { get; set; }
         public long Experience { get; set; }
         public List<ClientUserMagic> Magics { get; set; }
+
+        [CompleteObject]
+        public void Complete()
+        {
+            DisciplineInfo = Globals.DisciplineInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
+        }
     }
 
     public class ClientBundleItemInfo
@@ -1191,6 +1205,21 @@ namespace Library
         public List<string> MemberInfo { get; set; } = new List<string>();
         public int MaxCount { get; set; }
         public bool Enabled { get; set; }
+    }
+
+    public class ClientUserTitle
+    {
+        public int Index { get; set; }
+        public int InfoIndex { get; set; }
+        public TitleInfo Info;
+        public DateTime DateEarned { get; set; }
+        public bool Active { get; set; }
+
+        [CompleteObject]
+        public void Complete()
+        {
+            Info = Globals.TitleInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
+        }
     }
 }
 

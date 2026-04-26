@@ -206,6 +206,7 @@ namespace Client.Models
         public List<ClientBuffInfo> Buffs = new List<ClientBuffInfo>();
 
         public Dictionary<MagicInfo, ClientUserMagic> Magics = new Dictionary<MagicInfo, ClientUserMagic>();
+        public List<ClientUserTitle> Titles = new List<ClientUserTitle>();
 
         public DateTime NextActionTime, ServerTime, AttackTime, NextRunTime, NextMagicTime, BuffTime = CEnvir.Now, LotusTime, CombatTime, MoveTime;
         public MagicType AttackMagic;
@@ -269,7 +270,6 @@ namespace Client.Models
             }
         }
         private bool _CanFlameSplash;
-
 
         public UserObject(StartInformation info)
         {
@@ -344,21 +344,14 @@ namespace Client.Models
             foreach (ClientBuffInfo buff in info.Buffs)
                 AddBuff(buff);
 
+            foreach (ClientUserTitle title in info.Titles)
+                Titles.Add(title);
+
             foreach (ClientUserCurrency currency in info.Currencies)
-            {
-                Currencies.Add(new ClientUserCurrency
-                {
-                    CurrencyIndex = currency.CurrencyIndex,
-                    Info = Globals.CurrencyInfoList.Binding.First(x => x.Index == currency.CurrencyIndex),
-                    Amount = currency.Amount
-                });
-            }
+                Currencies.Add(currency);
 
             if (info.Discipline != null)
-            {
                 Discipline = info.Discipline;
-                Discipline.DisciplineInfo = Globals.DisciplineInfoList.Binding.First(x => x.Index == info.Discipline.InfoIndex);
-            }
 
             FiltersClass = info.FiltersClass;
             FiltersRarity = info.FiltersRarity;

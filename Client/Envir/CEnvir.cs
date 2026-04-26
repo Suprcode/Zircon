@@ -354,6 +354,7 @@ namespace Client.Envir
                     Globals.BundleInfoList = Session.GetCollection<BundleInfo>();
                     Globals.LootBoxInfoList = Session.GetCollection<LootBoxInfo>();
                     Globals.HelpInfoList = Session.GetCollection<HelpInfo>();
+                    Globals.TitleInfoList = Session.GetCollection<TitleInfo>();
 
                     KeyBinds = Session.GetCollection<KeyBindInfo>();
                     WindowSettings = Session.GetCollection<WindowSetting>();

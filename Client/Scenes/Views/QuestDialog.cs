@@ -19,6 +19,7 @@ namespace Client.Scenes.Views
 
         public DXTabControl TabControl;
         public QuestTab AvailableTab, CurrentTab, CompletedTab;
+        public DXTab TitleTab, MissionTab;
 
         public DXLabel TitleLabel;
         public DXButton CloseButton;
@@ -100,7 +101,7 @@ namespace Client.Scenes.Views
         public QuestDialog()
         {
             LibraryFile = LibraryFile.Interface;
-            Index = 214;
+            Index = 291;
             Movable = true;
             Sort = true;
             DropShadow = true;
@@ -146,6 +147,10 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty,
                 Location = new Point(0, 22)
             };
+            CurrentTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 291;
+            };
 
             AvailableTab = new QuestTab
             {
@@ -156,6 +161,10 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty,
                 Location = new Point(0, 22)
             };
+            AvailableTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 291;
+            };
 
             CompletedTab = new QuestTab
             {
@@ -165,6 +174,36 @@ namespace Client.Scenes.Views
                 ShowTrackerBox = { Visible = false },
                 BackColour = Color.Empty,
                 Location = new Point(0, 22)
+            };
+            CompletedTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 291;
+            };
+
+            TitleTab = new TitleTab
+            {
+                TabButton = { Label = { Text = "Title" } },
+                Parent = TabControl,
+                Border = false,
+                BackColour = Color.Empty,
+                Location = new Point(0, 22)
+            };
+            TitleTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 292;
+            };
+
+            MissionTab = new MissionTab
+            {
+                TabButton = { Label = { Text = "Mission" } },
+                Parent = TabControl,
+                Border = false,
+                BackColour = Color.Empty,
+                Location = new Point(0, 22)
+            };
+            MissionTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 293;
             };
         }
 
@@ -357,6 +396,8 @@ namespace Client.Scenes.Views
 
         #endregion
     }
+
+    #region Quest
 
     public sealed class QuestTab : DXTab
     {
@@ -1522,4 +1563,560 @@ namespace Client.Scenes.Views
         #endregion
     }
 
+    #endregion
+
+    #region Title
+
+    public sealed class TitleTab : DXTab
+    {
+        public TitleMenu Menu;
+        public DXLabel ActiveTitle;
+
+        public List<TitleContainer> Items = [];
+
+        #region Selected
+
+        public TitleContainer SelectedCategory
+        {
+            get => _SelectedCategory;
+            private set
+            {
+                TitleContainer oldValue = _SelectedCategory;
+                _SelectedCategory = value;
+
+                OnSelectedCategoryChanged(oldValue, value);
+            }
+        }
+        private TitleContainer _SelectedCategory;
+        public event EventHandler<EventArgs> SelectedCategoryChanged;
+        public void OnSelectedCategoryChanged(TitleContainer oValue, TitleContainer nValue)
+        {
+            oValue?.Visible = false;
+
+            SelectedCategoryChanged?.Invoke(this, EventArgs.Empty);
+
+            nValue?.Update();
+
+            nValue?.Visible = true;
+        }
+
+        #endregion
+
+        public TitleTab()
+        {
+            Menu = new TitleMenu
+            {
+                Parent = this,
+                Location = new Point(13, 40),
+            };
+            Menu.SelectedChanged += (o, e) =>
+            {
+                SelectedCategory = Menu.GetAndUpdateSelected();
+            };
+
+            ActiveTitle = new DXLabel
+            {
+                Parent = this,
+                Size = new Size(165, 18),
+                Location = new Point(12, 12),
+                AutoSize = false,
+                Text = "Test Title Name",
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
+            };
+
+            Add();
+        }
+
+        #region Methods
+
+        private void Add()
+        {
+            //var infos = new List<TitleInfo>
+            //{ 
+            //    new TitleInfo { Title = "Title 1", Category = "Category 1", Description = "Description 1" },
+            //    new TitleInfo { Title = "Title 2", Category = "Category 1", Description = "Description 2" },
+            //    new TitleInfo { Title = "Title 3", Category = "Category 2", Description = "Description 3" },
+            //    new TitleInfo { Title = "Title 4", Category = "Category 2", Description = "Description 4" },
+            //    new TitleInfo { Title = "Title 5", Category = "Category 3", Description = "Description 5" },
+            //    new TitleInfo { Title = "Title 6", Category = "Category 1", Description = "Description 6" },
+            //    new TitleInfo { Title = "Title 7", Category = "Category 1", Description = "Description 7" },
+            //    new TitleInfo { Title = "Title 8", Category = "Category 2", Description = "Description 8" },
+            //    new TitleInfo { Title = "Title 9", Category = "Category 2", Description = "Description 9" },
+            //    new TitleInfo { Title = "Title 10", Category = "Category 4", Description = "Description 10" },
+            //    new TitleInfo { Title = "Title 11", Category = "Category 1", Description = "Description 11" },
+            //    new TitleInfo { Title = "Title 12", Category = "Category 1", Description = "Description 12" },
+            //    new TitleInfo { Title = "Title 13", Category = "Category 2", Description = "Description 13" },
+            //    new TitleInfo { Title = "Title 14", Category = "Category 2", Description = "Description 14" },
+            //    new TitleInfo { Title = "Title 15", Category = "Category 4", Description = "Description 15" },
+            //};
+
+            var grouped = Globals.TitleInfoList.Binding.GroupBy(x => x.Category);
+
+            foreach (var group in grouped)
+            {
+                Add(group.Key, group.ToList());
+            }
+        }
+
+        private void Add(string category, List<TitleInfo> info)
+        {
+            var page = new TitleContainer(info)
+            {
+                Title = category,
+                Parent = this,
+                Size = new Size(536, 385),
+                Location = new Point(188, 5),
+                Visible = false,
+            };
+
+            Items.Add(page);
+
+            Menu.Add(page);
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+
+            }
+        }
+
+        #endregion
+
+    }
+
+    public sealed class TitleMenu : DXControl
+    {
+        #region Properties
+
+        public DXVScrollBar MenuScrollBar;
+
+        #region Selected
+
+        public DXButton Selected
+        {
+            get => _Selected;
+            private set
+            {
+                DXButton oldValue = _Selected;
+                _Selected = value;
+
+                OnSelectedChanged(oldValue, value);
+            }
+        }
+        private DXButton _Selected;
+        public event EventHandler<EventArgs> SelectedChanged;
+        public void OnSelectedChanged(DXButton oValue, DXButton nValue)
+        {
+            SelectedChanged?.Invoke(this, EventArgs.Empty);
+
+            if (oValue != null)
+            {
+                oValue.Label.ForeColour = Constants.InactiveTabColour;
+                oValue.Index = 521;
+                oValue.HoverIndex = 521;
+            }
+
+            if (nValue != null)
+            {
+                nValue.Label.ForeColour = Constants.ActiveTabColour;
+                nValue.Index = 522;
+                nValue.HoverIndex = 522;
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        public Dictionary<DXButton, TitleContainer> Items = [];
+
+        private const int ButtonHeight = 26;
+
+        public TitleMenu()
+        {
+            Size = new Size(165, 345);
+
+            MenuScrollBar = new DXVScrollBar
+            {
+                Parent = this,
+                BackColour = Color.Empty,
+                Location = new Point(145, 0),
+                Size = new Size(20, 345),
+                MinValue = 0,
+                VisibleSize = Size.Height,
+                Change = ButtonHeight,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = true,
+                Border = false,
+                Visible = false
+            };
+
+            MenuScrollBar.ValueChanged += (o, e) => UpdateLocations(-MenuScrollBar.Value);
+        }
+
+        #region Methods
+
+        public void UpdateLocations(int value)
+        {
+            int y = value + 3;
+
+            foreach (DXControl control in Controls)
+            {
+                if (control is DXButton)
+                {
+                    control.Location = new Point(0, y);
+                    y += ButtonHeight;
+                }
+            }
+        }
+
+        public void Add(TitleContainer page)
+        {
+            int y = (Items.Count * ButtonHeight) + 3;
+
+            var button = new DXButton
+            {
+                Index = 521,
+                HoverIndex = 522,
+                PressedIndex = 522,
+                LibraryFile = LibraryFile.GameInter2,
+                Size = new Size(164, 24),
+                Parent = this,
+                Location = new Point(2, y),
+                Label = { Text = page.Title, ForeColour = Constants.InactiveTabColour }
+            };
+            button.MouseClick += (o, e) =>
+            {
+                Selected = (DXButton)o;
+            };
+
+            button.MouseWheel += MenuScrollBar.DoMouseWheel;
+
+            Items.Add(button, page);
+
+            if (Items.Count == 1)
+            {
+                Selected = button;
+            }
+
+            MenuScrollBar.MaxValue = Items.Count * ButtonHeight;
+        }
+
+        public TitleContainer GetAndUpdateSelected()
+        {
+            if (Items.TryGetValue(Selected, out TitleContainer page))
+            {
+                return page;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (MenuScrollBar != null)
+                {
+                    if (!MenuScrollBar.IsDisposed)
+                        MenuScrollBar.Dispose();
+
+                    MenuScrollBar = null;
+                }
+
+                _Selected = null;
+
+                foreach (KeyValuePair<DXButton, TitleContainer> pair in Items)
+                {
+                    if (pair.Value != null)
+                    {
+                        if (!pair.Value.IsDisposed)
+                            pair.Value.Dispose();
+                    }
+
+                    if (pair.Key != null)
+                    {
+                        if (!pair.Key.IsDisposed)
+                            pair.Key.Dispose();
+                    }
+                }
+
+                Items.Clear();
+                Items = null;
+            }
+        }
+
+        #endregion
+    }
+
+    public sealed class TitleContainer : DXControl
+    {
+        #region Properties
+
+        public string Title { get; set; }
+
+        public DXVScrollBar ScrollBar;
+
+        #endregion
+
+        public Dictionary<TitleInfo, TitleItem> Items = [];
+
+        public TitleContainer(List<TitleInfo> infos)
+        {
+            ScrollBar = new DXVScrollBar
+            {
+                Parent = this,
+                BackColour = Color.Empty,
+                Location = new Point(516, 0),
+                Size = new Size(20, 385),
+                VisibleSize = 5,
+                Change = 1,
+                Border = false,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = false,
+            };
+
+            ScrollBar.ValueChanged += (o, e) => UpdateLocations();
+
+            CreateItems(infos);
+        }
+
+        #region Methods
+
+        public void CreateItems(List<TitleInfo> infos)
+        {
+            int k = 0;
+
+            foreach (var info in infos)
+            {
+                TitleItem cell = new TitleItem
+                {
+                    Index = 510,
+                    LibraryFile = LibraryFile.GameInter2,
+                    Size = new Size(516, 90),
+                    Parent = this,
+                    Info = info,
+                    BackColour = Color.Empty,
+                    Location = new Point(0, k),
+                };
+                Items[info] = cell;
+                cell.MouseWheel += ScrollBar.DoMouseWheel;
+
+                k += 95;
+            }
+
+            ScrollBar.Value = 0;
+
+            ScrollBar.MaxValue = Items.Count + 1;
+        }
+
+        public void Update()
+        {
+            foreach (DXControl control in Controls)
+            {
+                if (control is not TitleItem section) continue;
+
+                section.Update();
+            }
+
+            UpdateLocations();
+        }
+
+        public void UpdateLocations()
+        {
+            int y = -(ScrollBar.Value * 95) + 4;
+            int h = 0;
+
+            foreach (DXControl control in Controls)
+            {
+                if (control is not TitleItem) continue;
+
+                control.Location = new Point(0, y);
+                h += control.Size.Height;
+                y += control.Size.Height + 5;
+            }
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (ScrollBar != null)
+                {
+                    if (!ScrollBar.IsDisposed)
+                        ScrollBar.Dispose();
+
+                    ScrollBar = null;
+                }
+
+                foreach (KeyValuePair<TitleInfo, TitleItem> pair in Items)
+                {
+                    if (pair.Value != null)
+                    {
+                        if (!pair.Value.IsDisposed)
+                            pair.Value.Dispose();
+                    }
+                }
+
+                Items.Clear();
+                Items = null;
+            }
+        }
+
+        #endregion
+    }
+
+    public sealed class TitleItem : DXImageControl
+    {
+        public TitleInfo Info { get; set; }
+
+        public DXCheckBox ActiveCheckbox;
+        public DXLabel CategoryLabel, TitleLabel, DescriptionLabel, DateAchievedLabel, LevelLabel;
+
+        public DXItemCell ItemCell;
+
+        public TitleItem()
+        {
+            ActiveCheckbox = new DXCheckBox
+            {
+                Parent = this,
+                Location = new Point(22, 7),
+            };
+
+            CategoryLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(35, 6),
+                ForeColour = Color.White,
+                IsControl = false
+            };
+
+            LevelLabel  = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(8, 75),
+                Size = new Size (75, 14),
+                AutoSize = false,
+                IsControl = false,
+                ForeColour = Color.White,
+                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                Text = "[Low Class]"
+            };
+
+            TitleLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(120, 14),
+                Size  = new Size(288, 17),
+                AutoSize = false,
+                ForeColour = Color.White,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                IsControl = false
+            };
+
+            DescriptionLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(75, 35),
+                Size = new Size(370, 35),
+                AutoSize = false,
+                ForeColour = Color.White,
+                IsControl = false
+            };
+
+            ItemCell = new DXItemCell
+            {
+                Parent = this,
+                Location = new Point(27, 34),
+                FixedBorder = true,
+                Border = true,
+                ReadOnly = true,
+                ItemGrid = new ClientUserItem[1],
+                Slot = 0,
+                FixedBorderColour = true,
+                ShowCountLabel = true
+            };
+
+            DateAchievedLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(438, 70),
+                Size = new Size(70, 15),
+                AutoSize = false,
+                ForeColour = Color.Goldenrod,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                IsControl = false,
+                Text = "2025.11.11",
+            };
+        }
+
+        public void Update()
+        {
+            CategoryLabel.Text = Info.Category;
+            TitleLabel.Text = Info.Title;
+            DescriptionLabel.Text = Info.Description;
+        }
+    }
+
+    #endregion
+
+    #region Mission
+
+    public sealed class MissionTab : DXTab
+    {
+        public DXLabel TitleLabel;
+
+        public MissionTab()
+        {
+
+        }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+            }
+        }
+
+        #endregion
+    }
+
+    #endregion
 }

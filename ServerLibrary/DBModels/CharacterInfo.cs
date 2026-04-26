@@ -43,7 +43,6 @@ namespace Server.DBModels
         private string _CharacterName;
 
 
-
         public MirClass Class
         {
             get { return _Class; }
@@ -672,6 +671,9 @@ namespace Server.DBModels
 
         [Association("FriendedBy", true)]
         public DBBindingList<FriendInfo> FriendedBy { get; set; }
+
+        [Association("Titles", true)]
+        public DBBindingList<UserTitle> Titles { get; set; }
 
         public OnlineState OnlineState
         {
