@@ -312,6 +312,8 @@ namespace Client.Models
         public static int CellHeight => MapControl.CellHeight;
         public static int OffSetX => MapControl.OffSetX;
         public static int OffSetY => MapControl.OffSetY;
+        public static int PixelOffsetX => MapControl.PixelOffsetX;
+        public static int PixelOffsetY => MapControl.PixelOffsetY;
 
         public List<ObjectAction> ActionQueue = new List<ObjectAction>();
 
@@ -344,6 +346,8 @@ namespace Client.Models
 
             DrawX *= MapControl.CellWidth;
             DrawY *= MapControl.CellHeight;
+            DrawX += MapControl.PixelOffsetX;
+            DrawY += MapControl.PixelOffsetY;
 
             //if (this != User)
             {
