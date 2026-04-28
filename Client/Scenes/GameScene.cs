@@ -219,6 +219,7 @@ namespace Client.Scenes
         public GuildMemberDialog GuildMemberBox;
         public QuestDialog QuestBox;
         public QuestTrackerDialog QuestTrackerBox;
+        public MilestoneAchievedDialog MilestoneAchievedBox;
         public CompanionDialog CompanionBox;
         public MonsterDialog MonsterBox;
         public MagicBarDialog MagicBarBox;
@@ -697,11 +698,19 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false
             };
+
             QuestTrackerBox = new QuestTrackerDialog
             {
                 Parent = this,
                 Visible = false
             };
+
+            MilestoneAchievedBox = new MilestoneAchievedDialog
+            {
+                Parent = this,
+                Visible = true,
+            };
+
             CompanionBox = new CompanionDialog
             {
                 Parent = this,
@@ -839,6 +848,8 @@ namespace Client.Scenes
             MiniMapBox.Location = new Point(Size.Width - MiniMapBox.Size.Width, 0);
 
             QuestTrackerBox.Location = new Point(Size.Width - QuestTrackerBox.Size.Width, MiniMapBox.Size.Height + 5);
+
+            MilestoneAchievedBox.Location = new Point((Size.Width - MilestoneAchievedBox.Size.Width) / 2, ((Size.Height - MilestoneAchievedBox.Size.Height) / 2) + 100);
 
             BuffBox.Location = new Point(Size.Width - MiniMapBox.Size.Width - BuffBox.Size.Width - 5, 0);
 

@@ -297,6 +297,9 @@ namespace Server.Envir
         public static DBCollection<UserDiscipline> UserDisciplineList;
         public static DBCollection<BundleInfo> BundleInfoList;
         public static DBCollection<LootBoxInfo> LootBoxInfoList;
+        public static DBCollection<MilestoneInfo> MilestoneInfoList;
+        public static DBCollection<UserMilestoneLog> UserMilestoneLogList;
+        public static DBCollection<UserMilestone> UserMilestoneList;
 
         public static DBCollection<WorldEventTrigger> WorldEventInfoTriggerList;
         public static DBCollection<PlayerEventTrigger> PlayerEventInfoTriggerList;
@@ -499,6 +502,9 @@ namespace Server.Envir
             UserDisciplineList = Session.GetCollection<UserDiscipline>();
             BundleInfoList = Session.GetCollection<BundleInfo>();
             LootBoxInfoList = Session.GetCollection<LootBoxInfo>();
+            MilestoneInfoList = Session.GetCollection<MilestoneInfo>();
+            UserMilestoneLogList = Session.GetCollection<UserMilestoneLog>();
+            UserMilestoneList = Session.GetCollection<UserMilestone>();
 
             WorldEventInfoTriggerList = Session.GetCollection<WorldEventTrigger>();
             PlayerEventInfoTriggerList = Session.GetCollection<PlayerEventTrigger>();
@@ -1252,6 +1258,8 @@ namespace Server.Envir
             WeaponCraftStatInfoList = null;
             BundleInfoList = null;
             LootBoxInfoList = null;
+            UserMilestoneLogList = null;
+            UserMilestoneList = null;
 
             WorldEventInfoTriggerList = null;
             PlayerEventInfoTriggerList = null;

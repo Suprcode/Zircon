@@ -33,7 +33,8 @@ namespace Library
         public static DBCollection<BundleInfo> BundleInfoList;
         public static DBCollection<LootBoxInfo> LootBoxInfoList;
         public static DBCollection<HelpInfo> HelpInfoList;
-        public static DBCollection<TitleInfo> TitleInfoList;
+        public static DBCollection<MilestoneInfo> MilestoneInfoList;
+        public static DBCollection<MilestoneInfoTask> MilestoneTaskInfoList;
 
         public static Random Random = new Random();
 
@@ -339,6 +340,7 @@ namespace Library
         public string Name { get; set; }
 
         public string Caption { get; set; }
+        public string MilestoneTitle { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
         public string GuildRank { get; set; }
@@ -390,7 +392,7 @@ namespace Library
         public List<ClientUserItem> Items { get; set; }
         public List<ClientBeltLink> BeltLinks { get; set; }
         public List<ClientAutoPotionLink> AutoPotionLinks { get; set; }
-        public List<ClientUserTitle> Titles { get; set; }
+        public List<ClientUserMilestone> Milestones { get; set; }
 
         public List<ClientUserMagic> Magics { get; set; }
         public List<ClientBuffInfo> Buffs { get; set; }
@@ -1207,18 +1209,40 @@ namespace Library
         public bool Enabled { get; set; }
     }
 
-    public class ClientUserTitle
+    public class ClientUserMilestone
     {
         public int Index { get; set; }
         public int InfoIndex { get; set; }
-        public TitleInfo Info;
-        public DateTime DateEarned { get; set; }
+        public MilestoneInfo Info;
+        public int Count { get; set; }
         public bool Active { get; set; }
+        public DateTime DateEarned { get; set; }
+
+        public List<ClientUserMilestoneTask> Tasks { get; set; }
+
+        [IgnorePropertyPacket]
+        public DateTime LastSent { get; set; }
+
+        [IgnorePropertyPacket]
+        public DateTime LastUpdated { get; set; }
 
         [CompleteObject]
         public void Complete()
         {
-            Info = Globals.TitleInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
+            Info = Globals.MilestoneInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
+        }
+    }
+
+    public class ClientUserMilestoneTask
+    {
+        public int InfoTaskIndex { get; set; }
+        public MilestoneInfoTask Info;
+        public int Count { get; set; }
+
+        [CompleteObject]
+        public void Complete()
+        {
+            Info = Globals.MilestoneTaskInfoList.Binding.FirstOrDefault(x => x.Index == InfoTaskIndex);
         }
     }
 }

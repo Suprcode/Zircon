@@ -5,44 +5,44 @@ namespace Library
 {
     public enum MirGender : byte
     {
-        Male,
-        Female
+        Male = 0,
+        Female = 1
     }
 
     public enum MirClass : byte
     {
-        Warrior,
-        Wizard,
-        Taoist,
-        Assassin,
+        Warrior = 0,
+        Wizard = 1,
+        Taoist = 2,
+        Assassin = 3,
     }
 
     public enum AttackMode : byte
     {
         [Description("Attack: Peaceful")]
-        Peace,
+        Peace = 0,
         [Description("Attack: Group")]
-        Group,
+        Group = 1,
         [Description("Attack: Guild")]
-        Guild,
+        Guild = 2,
         [Description("Attack: War, Red, Brown")]
-        WarRedBrown,
+        WarRedBrown = 3,
         [Description("Attack: All")]
-        All
+        All = 4
     }
 
     public enum PetMode : byte
     {
         [Description("Pet: Move, Attack")]
-        Both,
+        Both = 0,
         [Description("Pet: Move")]
-        Move,
+        Move = 1,
         [Description("Pet: Attack")]
-        Attack,
+        Attack = 2,
         [Description("Pet: PvP")]
-        PvP,
+        PvP = 3,
         [Description("Pet: None")]
-        None,
+        None = 4,
     }
 
     public enum MirDirection : byte
@@ -1867,6 +1867,80 @@ namespace Library
         KillMonster = 0,
         GainItem = 1,
         Region = 2
+    }
+
+    //Low, Medium, High grades - Blue or red colour
+
+    public enum MilestoneType
+    {
+        Walk = 0,
+        Run = 1,
+        Ride = 2,
+        Harvest = 3,
+        Die = 6,
+        Level = 7,
+        Poisoned = 8, //todo
+        Quest = 10, //todo
+        Marry = 11,
+        Divorce = 12,
+        Trade = 13,
+        Rebirth = 15,
+        PKPoint = 16,
+        Ranking = 17, //todo //reverse amount
+
+        MineCast = 30,
+        MineCatch = 31,
+
+        FishingCast = 40,
+        FishingCatch = 41,
+        FishingFail = 42,
+
+        //All below TODO
+
+        //Tracked by Region
+        Region = 50,
+
+        //Track by Instance
+        InstanceJoin = 60,
+
+        //Tracked by Monster
+        MonsterKilled = 100,
+        MonsterDeath = 101,
+        MonsterDamage = 102,
+        MonsterSeen = 103,
+
+        //Tracked by Player
+        PlayerKilled = 110,
+        PlayerDeath = 111,
+        PlayerDamage = 112,
+
+        //Tracked by Item
+        ItemGained = 120,
+        ItemUsed = 121, //poison/amulet/others
+
+        CompanionAdopt = 130,
+
+        //Track by Currency
+        CurrencyGain = 140,
+
+        //Track by Item
+        ShopPurchase = 150,
+        ShopSell = 151,
+        ShopRepair = 152,
+        ShopRefine = 153,
+
+        MailSent = 160,
+
+        MarketConsign = 170,
+        MarketPurchase = 171,
+
+        GuildJoin = 180,
+        GuildCreate = 181,
+
+        GroupJoin = 190,
+        GroupCreate = 191,
+
+        FriendAdd = 200
     }
 
     public enum MovementEffect

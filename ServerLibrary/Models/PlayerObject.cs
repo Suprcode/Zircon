@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using C = Library.Network.ClientPackets;
@@ -51,6 +50,8 @@ namespace Server.Models
 
         public MirGender Gender => Character.Gender;
         public MirClass Class => Character.Class;
+
+        public string MilestoneTitle => Character.Milestones.FirstOrDefault(x => x.Active)?.Info.Title;
 
         public override int CurrentHP
         {
@@ -785,6 +786,7 @@ namespace Server.Models
                 ObjectID = ObjectID,
                 Name = Name,
                 Caption = Character.Caption,
+                MilestoneTitle = MilestoneTitle,
                 GuildName = Character.Account.GuildMember?.Guild.GuildName,
                 GuildRank = Character.Account.GuildMember?.Rank,
                 NameColour = NameColour,
@@ -838,7 +840,7 @@ namespace Server.Models
                 Items = Character.Items.Select(x => x.ToClientInfo()).ToList(),
                 BeltLinks = blinks,
                 AutoPotionLinks = alinks,
-                Titles = Character.Titles.Select(x => x.ToClientInfo()).ToList(),
+                Milestones = GetClientUserMilestones(),
                 Magics = Character.Magics.Select(x => x.ToClientInfo()).ToList(),
                 Buffs = Buffs.Select(x => x.ToClientInfo()).ToList(),
                 Currencies = Character.Account.Currencies.Select(x => x.ToClientInfo(x.Info.Type == CurrencyType.GameGold && observer)).ToList(),
@@ -1892,6 +1894,7 @@ namespace Server.Models
             con.Enqueue(packet);
         }
 
+        //TODO - Move to MagicObject
         public override void CelestialLightActivate()
         {
             base.CelestialLightActivate();
@@ -1901,7 +1904,7 @@ namespace Server.Models
                 celestialLight.MagicCooldown(null, 6000);
             }
         }
-
+        
         public override void ItemRevive()
         {
             base.ItemRevive();
@@ -2009,6 +2012,8 @@ namespace Server.Models
 
             if (Character.Account.Characters.Max(x => x.Level) <= Level)
                 BuffRemove(BuffType.Veteran);
+
+            LogMilestone(MilestoneType.Level, 1);
 
             ApplyGuildBuff();
         }
@@ -2791,6 +2796,9 @@ namespace Server.Models
             Gold.Amount -= cost;
             MarriageInvitation.Gold.Amount -= cost;
 
+            LogMilestone(MilestoneType.Marry, 1);
+            MarriageInvitation.LogMilestone(MilestoneType.Marry, 1);
+
             GoldChanged();
             MarriageInvitation.GoldChanged();
 
@@ -2812,20 +2820,24 @@ namespace Server.Models
 
             Enqueue(GetMarriageInfo());
 
+            LogMilestone(MilestoneType.Divorce, 1);
 
             if (partner.Player != null)
             {
                 partner.Player.MarriageRemoveRing();
                 partner.Player.Connection.ReceiveChatWithObservers(con => string.Format(con.Language.MarryDivorce, Character.CharacterName), MessageType.System);
                 partner.Player.Enqueue(partner.Player.GetMarriageInfo());
+                partner.Player.LogMilestone(MilestoneType.Divorce, 1);
             }
             else
+            {
                 foreach (UserItem item in partner.Items)
                 {
                     if (item.Slot != Globals.EquipmentOffSet + (int)EquipmentSlot.RingL) continue;
 
                     item.Flags &= ~UserItemFlags.Marriage;
                 }
+            }
         }
         public void MarriageMakeRing(int index)
         {
@@ -9579,7 +9591,6 @@ namespace Server.Models
 
             foreach (KeyValuePair<UserItem, CellLinkInfo> pair in TradeItems)
             {
-
                 if (pair.Key.Count > pair.Value.Count)
                 {
                     pair.Key.Count -= pair.Value.Count;
@@ -9632,7 +9643,6 @@ namespace Server.Models
                     continue;
                 }
 
-
                 UserItem[] fromArray;
 
                 switch (pair.Value.GridType)
@@ -9671,6 +9681,9 @@ namespace Server.Models
 
             TradePartner.Gold.Amount += TradeGold - TradePartner.TradeGold;
             TradePartner.GoldChanged();
+
+            LogMilestone(MilestoneType.Trade, 1);
+            TradePartner.LogMilestone(MilestoneType.Trade, 1);
 
             Connection.ReceiveChatWithObservers(con => con.Language.TradeComplete, MessageType.System);
             TradePartner.Connection.ReceiveChatWithObservers(con => con.Language.TradeComplete, MessageType.System);
@@ -11876,6 +11889,8 @@ namespace Server.Models
             Character.SpentPoints = 0;
             Character.HermitStats.Clear();
 
+            LogMilestone(MilestoneType.Rebirth, 1);
+
             if (Character.Discipline != null)
             {
                 Character.Discipline.Delete();
@@ -13194,6 +13209,8 @@ namespace Server.Models
                                 continue;
                             }
 
+                            LogMilestone(MilestoneType.Harvest, 1);
+
                             if (ob.HarvestCount > 0)
                             {
                                 ob.HarvestCount--;
@@ -13217,8 +13234,6 @@ namespace Server.Models
 
                                 if (items.Count == 0) items = null;
                             }
-
-
 
                             if (items == null)
                             {
@@ -13400,9 +13415,10 @@ namespace Server.Models
                     #endregion
 
                     Fishing = true;
-
                     FishingDirection = castDirection;
                     FishingLocation = floatLocation;
+
+                    LogMilestone(MilestoneType.FishingCast, 1);
 
                     PauseBuffs();
 
@@ -13434,6 +13450,8 @@ namespace Server.Models
 
                     if (caught)
                     {
+                        LogMilestone(MilestoneType.FishingCatch, 1);
+
                         #region Calculate Success Point Increase (Reel, ReelBonus Stat)
 
                         FishPointsCurrent += Math.Max(Config.FishPointSuccessRewardMin, Math.Min(Config.FishPointSuccessRewardMax, Config.FishPointSuccessRewardMin + Stats[Stat.ReelBonus]));
@@ -13442,6 +13460,8 @@ namespace Server.Models
                     }
                     else
                     {
+                        LogMilestone(MilestoneType.FishingFail, 1);
+
                         #region Calculate Failure Point Deduction (Float, FloatStrength Stat)
 
                         FishPointsCurrent -= Math.Max(Config.FishPointFailureRewardMin, Math.Min(Config.FishPointFailureRewardMax, Config.FishPointFailureRewardMax - Stats[Stat.FloatStrength]));
@@ -13598,7 +13618,6 @@ namespace Server.Models
                 return;
             }
 
-
             Cell cell = null;
 
             for (int i = 1; i <= distance; i++)
@@ -13631,6 +13650,18 @@ namespace Server.Models
                 }
             }
 
+            switch (distance)
+            {
+                case 1:
+                    LogMilestone(MilestoneType.Walk, 1);
+                    break;
+                case 2:
+                    LogMilestone(MilestoneType.Run, 1);
+                    break;
+                case 3:
+                    LogMilestone(MilestoneType.Ride, 1);
+                    break;
+            }
 
             Direction = direction;
 
@@ -13940,6 +13971,8 @@ namespace Server.Models
                 {
                     DamageItem(GridType.Equipment, (int)EquipmentSlot.Weapon, 4);
 
+                    LogMilestone(MilestoneType.MineCast, 1);
+
                     foreach (MineInfo info in CurrentMap.Info.Mining)
                     {
                         if (SEnvir.Random.Next(info.Chance) > 0) continue;
@@ -13961,6 +13994,8 @@ namespace Server.Models
 
                         UserItem item = SEnvir.CreateDropItem(check);
                         GainItem(item);
+
+                        LogMilestone(MilestoneType.MineCatch, 1);
 
                         if (info.Quantity > 0)
                         {
@@ -15142,6 +15177,8 @@ namespace Server.Models
             if (Buffs.Any(x => x.Type == BuffType.SoulResonance))
                 SoulResonance.Activate(this);
 
+            LogMilestone(MilestoneType.Die, 1);
+
             SEnvir.EventHandler.Process(this, "PLAYERDIE");
 
             #region Conquest Stats
@@ -15550,6 +15587,8 @@ namespace Server.Models
                     Character.BindPoint = info;
             }
 
+            LogMilestone(MilestoneType.PKPoint, count);
+
             BuffAdd(BuffType.PKPoint, TimeSpan.MaxValue, new Stats { [Stat.PKPoint] = count }, false, false, Config.PKPointTickRate);
         }
 
@@ -15721,6 +15760,7 @@ namespace Server.Models
 
                 Name = Name,
                 Caption = Caption,
+                MilestoneTitle = MilestoneTitle,
                 Gender = Gender,
                 HairType = HairType,
                 HairColour = HairColour,

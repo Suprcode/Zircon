@@ -4552,6 +4552,7 @@ namespace Client.Envir
 
                 player.Name = p.Name;
                 player.Caption = p.Caption;
+                player.MilestoneTitle = p.MilestoneTitle;
                 player.Gender = p.Gender;
                 player.HairType = p.HairType;
                 player.HairColour = p.HairColour;
@@ -5005,6 +5006,24 @@ namespace Client.Envir
         {
             GameScene.Game.LootBoxBox.Close();
         }
+
+        public void Process(S.UserMilestones p)
+        {
+            foreach (var milestone in p.Milestones)
+            {
+                var existingMilestone = GameScene.Game.User.Milestones.FirstOrDefault(x => x.InfoIndex == milestone.Info.Index);
+
+                if (existingMilestone != null)
+                {
+                    GameScene.Game.User.Milestones.Remove(existingMilestone);
+                }
+
+                GameScene.Game.User.Milestones.Add(milestone);
+
+                GameScene.Game.QuestBox.RefreshMilestones();
+            }
+        }
+
     }
 }
 

@@ -206,7 +206,7 @@ namespace Client.Models
         public List<ClientBuffInfo> Buffs = new List<ClientBuffInfo>();
 
         public Dictionary<MagicInfo, ClientUserMagic> Magics = new Dictionary<MagicInfo, ClientUserMagic>();
-        public List<ClientUserTitle> Titles = new List<ClientUserTitle>();
+        public List<ClientUserMilestone> Milestones = new List<ClientUserMilestone>();
 
         public DateTime NextActionTime, ServerTime, AttackTime, NextRunTime, NextMagicTime, BuffTime = CEnvir.Now, LotusTime, CombatTime, MoveTime;
         public MagicType AttackMagic;
@@ -279,6 +279,7 @@ namespace Client.Models
 
             Name = info.Name;
             Caption = info.Caption;
+            MilestoneTitle = info.MilestoneTitle;
             NameColour = info.NameColour;
 
             Class = info.Class;
@@ -344,8 +345,8 @@ namespace Client.Models
             foreach (ClientBuffInfo buff in info.Buffs)
                 AddBuff(buff);
 
-            foreach (ClientUserTitle title in info.Titles)
-                Titles.Add(title);
+            foreach (ClientUserMilestone title in info.Milestones)
+                Milestones.Add(title);
 
             foreach (ClientUserCurrency currency in info.Currencies)
                 Currencies.Add(currency);

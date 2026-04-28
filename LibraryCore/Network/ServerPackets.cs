@@ -1304,6 +1304,7 @@ namespace Library.Network.ServerPackets
         public uint ObjectID { get; set; }
         public string Name { get; set; }
         public string Caption { get; set; }
+        public string MilestoneTitle { get; set; }
         public MirGender Gender { get; set; }
         public int HairType { get; set; }
 
@@ -1416,6 +1417,11 @@ namespace Library.Network.ServerPackets
     public sealed class BundleClose : Packet
     {
 
+    }
+
+    public sealed class UserMilestones : Packet
+    {
+        public List<ClientUserMilestone> Milestones { get; set; }
     }
 }
 

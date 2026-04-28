@@ -534,6 +534,11 @@ namespace Server
             ShowView(typeof(QuestInfoView));
         }
 
+        private void MilestoneInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(MilestoneInfoView));
+        }
+
         private void CompanionInfoButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(CompanionInfoView));

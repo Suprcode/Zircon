@@ -672,8 +672,11 @@ namespace Server.DBModels
         [Association("FriendedBy", true)]
         public DBBindingList<FriendInfo> FriendedBy { get; set; }
 
-        [Association("Titles", true)]
-        public DBBindingList<UserTitle> Titles { get; set; }
+        [Association("MilestoneLogs", true)]
+        public DBBindingList<UserMilestoneLog> MilestoneLogs { get; set; }
+
+        [Association("Milestones", true)]
+        public DBBindingList<UserMilestone> Milestones { get; set; }
 
         public OnlineState OnlineState
         {

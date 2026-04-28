@@ -1512,6 +1512,27 @@ namespace Server.Envir
 
             Player.BundleConfirm(p);
         }
+
+        public void Process(C.MilestoneActive p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.MilestoneActive(p);
+        }
+
+        public void Process(C.MilestoneNotify p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.ReceiveMilestoneUpdates = p.Receive;
+
+            if (p.Receive)
+            {
+                var items = Player.GetClientUserMilestones(true);
+
+                Player.Enqueue(new S.UserMilestones { Milestones = items });
+            }
+        }
     }
 
     public enum GameStage

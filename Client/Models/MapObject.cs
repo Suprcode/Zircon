@@ -131,6 +131,21 @@ namespace Client.Models
             }
         }
         private string _Caption;
+
+        public virtual string MilestoneTitle
+        {
+            get { return _MilestoneTitle; }
+            set
+            {
+                if (_MilestoneTitle == value) return;
+
+                _MilestoneTitle = value;
+
+                NameChanged();
+            }
+        }
+        private string _MilestoneTitle;
+
         public virtual string Title
         {
             get { return _Title; }
@@ -5307,15 +5322,15 @@ namespace Client.Models
 
         public virtual void NameChanged()
         {
-            if (Race is ObjectType.Player && Caption is not null)
+            if (Race is ObjectType.Player && (MilestoneTitle is not null || Caption is not null))
             {
                 CaptionLabel = new DXLabel
                 {
                     BackColour = Color.Empty,
                     ForeColour = NameColour,
                     Outline = true,
-                    OutlineColour = Color.Black,
-                    Text = Caption,
+                    OutlineColour = Color.Red,
+                    Text = MilestoneTitle ?? Caption,
                     IsControl = false,
                     IsVisible = true,
                 };
