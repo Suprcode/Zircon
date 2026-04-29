@@ -1,6 +1,7 @@
 ﻿using Client.Envir;
 using Client.Models.Particles;
 using Client.Scenes;
+using Client.Scenes.Views;
 using Library;
 using System;
 using System.Drawing;
@@ -165,8 +166,8 @@ namespace Client.Models
             }
             else
             {
-                DrawX = (MapTarget.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth - MapObject.User.MovingOffSet.X + AdditionalOffSet.X;
-                DrawY = (MapTarget.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight - MapObject.User.MovingOffSet.Y + AdditionalOffSet.Y;
+                DrawX = (MapTarget.X - MapObject.User.CurrentLocation.X + MapObject.OffSetX) * MapObject.CellWidth - MapObject.User.MovingOffSet.X + AdditionalOffSet.X + MapControl.PixelOffsetX;
+                DrawY = (MapTarget.Y - MapObject.User.CurrentLocation.Y + MapObject.OffSetY) * MapObject.CellHeight - MapObject.User.MovingOffSet.Y + AdditionalOffSet.Y + MapControl.PixelOffsetY;
             }
 
             int frame = GetFrame();
