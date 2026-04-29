@@ -708,7 +708,7 @@ namespace Client.Scenes
             MilestoneAchievedBox = new MilestoneAchievedDialog
             {
                 Parent = this,
-                Visible = true,
+                Visible = false,
             };
 
             CompanionBox = new CompanionDialog

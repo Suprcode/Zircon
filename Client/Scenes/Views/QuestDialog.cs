@@ -2396,7 +2396,7 @@ namespace Client.Scenes.Views
                 IsControl = false
             };
 
-            Show(null);
+            //Show(null);
         }
 
         public void Show(MilestoneInfo info)
