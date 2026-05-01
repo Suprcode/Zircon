@@ -296,5 +296,10 @@ namespace Library.SystemModels
             foreach (MonsterInfoStat stat in MonsterInfoStats)
                 Stats[stat.Stat] += stat.Amount;
         }
+
+        public override string ToString()
+        {
+            return MonsterName;
+        }
     }
 }

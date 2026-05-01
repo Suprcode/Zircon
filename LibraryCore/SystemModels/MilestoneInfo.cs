@@ -1,4 +1,5 @@
 ﻿using MirDB;
+using System.Drawing;
 
 namespace Library.SystemModels
 {
@@ -35,6 +36,21 @@ namespace Library.SystemModels
         }
         private string _Category;
 
+        public MilestoneGrade Grade
+        {
+            get { return _Grade; }
+            set
+            {
+                if (_Grade == value) return;
+
+                var oldValue = _Grade;
+                _Grade = value;
+
+                OnChanged(oldValue, value, "Grade");
+            }
+        }
+        private MilestoneGrade _Grade;
+
         public string Description
         {
             get { return _Description; }
@@ -50,20 +66,35 @@ namespace Library.SystemModels
         }
         private string _Description;
 
-        public MilestoneType Type
+        public string Task
         {
-            get { return _Type; }
+            get { return _Task; }
             set
             {
-                if (_Type == value) return;
+                if (_Task == value) return;
 
-                var oldValue = _Type;
-                _Type = value;
+                var oldValue = _Task;
+                _Task = value;
 
-                OnChanged(oldValue, value, "Type");
+                OnChanged(oldValue, value, "Task");
             }
         }
-        private MilestoneType _Type;
+        private string _Task;
+
+        public bool ShowCount
+        {
+            get { return _ShowCount; }
+            set
+            {
+                if (_ShowCount == value) return;
+
+                var oldValue = _ShowCount;
+                _ShowCount = value;
+
+                OnChanged(oldValue, value, "ShowCount");
+            }
+        }
+        private bool _ShowCount;
 
         public RequiredClass RequiredClass
         {
@@ -118,6 +149,28 @@ namespace Library.SystemModels
             base.OnCreated();
 
             RequiredClass = RequiredClass.All;
+            RewardAmount = 1;
+            ShowCount = true;
+        }
+
+        [IgnoreProperty]
+        public Color OutlineColour
+        {
+            get
+            {
+                return Grade switch
+                {
+                    MilestoneGrade.Low => Color.Black,
+                    MilestoneGrade.Medium => Color.Blue,
+                    MilestoneGrade.High => Color.Red,
+                    _ => Color.Black,
+                };
+            }
+        }
+
+        public override string ToString()
+        {
+            return Title;
         }
     }
 
@@ -139,6 +192,22 @@ namespace Library.SystemModels
             }
         }
         private MilestoneInfo _Milestone;
+
+        [IsIdentity]
+        public MilestoneType Type
+        {
+            get { return _Type; }
+            set
+            {
+                if (_Type == value) return;
+
+                var oldValue = _Type;
+                _Type = value;
+
+                OnChanged(oldValue, value, "Type");
+            }
+        }
+        private MilestoneType _Type;
 
         [IsIdentity]
         public RequiredClass Class
@@ -237,6 +306,22 @@ namespace Library.SystemModels
         private InstanceInfo _Instance;
 
         [IsIdentity]
+        public QuestInfo Quest
+        {
+            get { return _Quest; }
+            set
+            {
+                if (_Quest == value) return;
+
+                var oldValue = _Quest;
+                _Quest = value;
+
+                OnChanged(oldValue, value, "Quest");
+            }
+        }
+        private QuestInfo _Quest;
+
+        [IsIdentity]
         public int Amount
         {
             get { return _Amount; }
@@ -251,21 +336,6 @@ namespace Library.SystemModels
             }
         }
         private int _Amount;
-
-        public string Task
-        {
-            get { return _Task; }
-            set
-            {
-                if (_Task == value) return;
-
-                var oldValue = _Task;
-                _Task = value;
-
-                OnChanged(oldValue, value, "Task");
-            }
-        }
-        private string _Task;
 
         protected internal override void OnCreated()
         {

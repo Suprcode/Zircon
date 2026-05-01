@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Library.SystemModels
 {
@@ -331,6 +332,11 @@ namespace Library.SystemModels
             Stats.Clear();
             foreach (InstanceInfoStat stat in BuffStats)
                 Stats[stat.Stat] += stat.Amount;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 

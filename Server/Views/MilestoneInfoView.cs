@@ -15,6 +15,7 @@ namespace Server.Views
 
             TypeImageComboBox.Items.AddEnum<MilestoneType>();
             RequiredClassImageComboBox.Items.AddEnum<RequiredClass>();
+            GradeImageComboBox.Items.AddEnum<MilestoneGrade>();
             ItemInfoLookUpEdit.DataSource = SMain.Session.GetCollection<ItemInfo>().Binding;
             MonsterInfoLookUpEdit.DataSource = SMain.Session.GetCollection<MonsterInfo>().Binding;
             RegionLookUpEdit.DataSource = SMain.Session.GetCollection<MapRegion>().Binding;

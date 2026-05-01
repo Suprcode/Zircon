@@ -4270,6 +4270,129 @@ namespace Server.Envir
 
             return null;
         }
+
+        #region Milestones
+
+        private static Dictionary<CharacterInfo, Dictionary<(MilestoneType, int), UserMilestoneLog>> MilestoneLogCache = [];
+
+        private static int GetSecondaryId(MilestoneType type, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null)
+        {
+            int index = -1;
+
+            switch (type)
+            {
+                case MilestoneType.Region:
+                    index = region?.Index ?? 0;
+                    break;
+                case MilestoneType.InstanceJoin:
+                    index = instance?.Index ?? 0;
+                    break;
+                case MilestoneType.MonsterKilled:
+                case MilestoneType.MonsterDeath:
+                case MilestoneType.MonsterDamageTaken:
+                case MilestoneType.MonsterDamageDone:
+                    //case MilestoneType.MonsterSeen:
+                    index = monster?.Index ?? 0;
+                    break;
+                case MilestoneType.PlayerKilled:
+                case MilestoneType.PlayerDeath:
+                case MilestoneType.PlayerDamageTaken:
+                case MilestoneType.PlayerDamageDone:
+                    index = player?.Index ?? 0;
+                    break;
+                case MilestoneType.ItemGained:
+                case MilestoneType.ItemUsed:
+                    index = item?.Index ?? 0;
+                    break;
+                case MilestoneType.CurrencyGain:
+                    index = currency?.Index ?? 0;
+                    break;
+                case MilestoneType.QuestComplete:
+                    index = quest?.Index ?? 0;
+                    break;
+            }
+
+            return index;
+        }
+
+        public static void LogMilestone(CharacterInfo character, MilestoneType type, long amount = 1, bool setAmount = false, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null)
+        {
+            if (!MilestoneLogCache.TryGetValue(character, out Dictionary<(MilestoneType, int), UserMilestoneLog> cache))
+            {
+                MilestoneLogCache[character] = [];
+            }
+
+            int secondaryId = GetSecondaryId(type, player, item, monster, currency, region, instance, quest);
+            var key = (type, secondaryId);
+
+            if (!cache.TryGetValue(key, out var log))
+            {
+                switch (type)
+                {
+                    case MilestoneType.Region:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Region == region);
+                        break;
+                    case MilestoneType.InstanceJoin:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Instance == instance);
+                        break;
+                    case MilestoneType.MonsterKilled:
+                    case MilestoneType.MonsterDeath:
+                    case MilestoneType.MonsterDamageDone:
+                    case MilestoneType.MonsterDamageTaken:
+                        //case MilestoneType.MonsterSeen:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Monster == monster);
+                        break;
+                    case MilestoneType.PlayerKilled:
+                    case MilestoneType.PlayerDeath:
+                    case MilestoneType.PlayerDamageDone:
+                    case MilestoneType.PlayerDamageTaken:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Player == player);
+                        break;
+                    case MilestoneType.ItemGained:
+                    case MilestoneType.ItemUsed:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
+                        break;
+                    case MilestoneType.CurrencyGain:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Currency == currency);
+                        break;
+                    case MilestoneType.QuestComplete:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Quest == quest);
+                        break;
+                    default:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type);
+                        break;
+                }
+
+                if (log == null)
+                {
+                    log = SEnvir.UserMilestoneLogList.CreateNewObject();
+                    log.Character = character;
+                    log.Type = type;
+                    log.Item = item;
+                    log.Monster = monster;
+                    log.Currency = currency;
+                    log.Region = region;
+                    log.Instance = instance;
+                    log.Player = player;
+                    log.Quest = quest;
+                    log.Count = 0;
+                    character.MilestoneLogs.Add(log);
+                }
+                cache[key] = log;
+            }
+
+            if (setAmount)
+                log.Count = amount;
+            else
+                log.Count += amount;
+
+            if (character.Player != null)
+            {
+                character.Player.CheckMilestones(log, type);
+            }
+        }
+
+        #endregion
     }
 
     public class WebCommand

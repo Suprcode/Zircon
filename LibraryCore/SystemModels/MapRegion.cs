@@ -177,7 +177,11 @@ namespace Library.SystemModels
                 foreach (Point p in PointRegion)
                     PointList.Add(p);
             }
+        }
 
+        public override string ToString()
+        {
+            return $"{Map?.Description} - {Description}";
         }
     }
 }

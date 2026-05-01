@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Numerics;
 using C = Library.Network.ClientPackets;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
@@ -1441,6 +1442,8 @@ namespace Server.Envir
             friend.FriendedCharacter = info;
             friend.FriendName = info.CharacterName;
 
+            Player.LogMilestone(MilestoneType.FriendAdd, Player.Character.Friends.Count, true);
+
             Enqueue(new S.FriendAdd { Info = friend.ToClientInfo(), ObserverPacket = false });
         }
 
@@ -1513,13 +1516,6 @@ namespace Server.Envir
             Player.BundleConfirm(p);
         }
 
-        public void Process(C.MilestoneActive p)
-        {
-            if (Stage != GameStage.Game) return;
-
-            Player.MilestoneActive(p);
-        }
-
         public void Process(C.MilestoneNotify p)
         {
             if (Stage != GameStage.Game) return;
@@ -1532,6 +1528,19 @@ namespace Server.Envir
 
                 Player.Enqueue(new S.UserMilestones { Milestones = items });
             }
+        }
+
+        public void Process(C.MilestoneActive p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.MilestoneActive(p);
+        }
+
+        public void Process(C.MilestoneClaim p)
+        {
+            if (Stage != GameStage.Game) return;
+            Player.MilestoneClaim(p);
         }
     }
 

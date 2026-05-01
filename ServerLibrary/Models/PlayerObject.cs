@@ -51,7 +51,7 @@ namespace Server.Models
         public MirGender Gender => Character.Gender;
         public MirClass Class => Character.Class;
 
-        public string MilestoneTitle => Character.Milestones.FirstOrDefault(x => x.Active)?.Info.Title;
+        public UserMilestone ActiveMilestone => Character.Milestones.FirstOrDefault(x => x.Active);
 
         public override int CurrentHP
         {
@@ -785,8 +785,8 @@ namespace Server.Models
                 Index = Character.Index,
                 ObjectID = ObjectID,
                 Name = Name,
-                Caption = Character.Caption,
-                MilestoneTitle = MilestoneTitle,
+                Caption = ActiveMilestone?.Info.Title ?? Character.Caption,
+                CaptionOutlineColour = ActiveMilestone?.Info.OutlineColour ?? Color.Black,
                 GuildName = Character.Account.GuildMember?.Guild.GuildName,
                 GuildRank = Character.Account.GuildMember?.Rank,
                 NameColour = NameColour,
@@ -2013,7 +2013,7 @@ namespace Server.Models
             if (Character.Account.Characters.Max(x => x.Level) <= Level)
                 BuffRemove(BuffType.Veteran);
 
-            LogMilestone(MilestoneType.Level, 1);
+            LogMilestone(MilestoneType.Level, Level, true);
 
             ApplyGuildBuff();
         }
@@ -3427,6 +3427,8 @@ namespace Server.Models
                 userQuest.Completed = true;
                 userQuest.DateCompleted = SEnvir.Now;
 
+                LogMilestone(MilestoneType.QuestComplete, 1, quest: quest);
+
                 if (hasChosen)
                     userQuest.SelectedReward = p.ChoiceIndex;
 
@@ -3689,6 +3691,8 @@ namespace Server.Models
                     Mail = mail.ToClientInfo(),
                     ObserverPacket = false,
                 });
+
+            LogMilestone(MilestoneType.MailSent, 1);
         }
 
         #endregion
@@ -3746,7 +3750,6 @@ namespace Server.Models
             if ((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
             if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
             if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
-
 
             if (p.Price <= 0) return; // Buy Out Less than 1
 
@@ -3831,6 +3834,8 @@ namespace Server.Models
             auction.Message = p.Message;
 
             result.Success = true;
+
+            LogMilestone(MilestoneType.MarketConsign, auctionItem.Count, item: auctionItem.Info);
 
             Enqueue(new S.MarketPlaceConsign { Consignments = new List<ClientMarketPlaceInfo> { auction.ToClientInfo(Character.Account) }, ObserverPacket = false });
             Connection.ReceiveChatWithObservers(con => con.Language.ConsignComplete, MessageType.System);
@@ -3935,7 +3940,6 @@ namespace Server.Models
 
             cost *= info.Price;
 
-
             if (p.GuildFunds)
             {
                 if (Character.Account.GuildMember == null)
@@ -4023,7 +4027,6 @@ namespace Server.Models
             gold.Slot = 0;
             mail.HasItem = true;
 
-
             if (info.Account.Connection?.Player != null)
                 info.Account.Connection.Enqueue(new S.MailNew
                 {
@@ -4062,6 +4065,8 @@ namespace Server.Models
             result.Index = info.Index;
             result.Count = info.Item?.Count ?? 0;
             result.Success = true;
+
+            LogMilestone(MilestoneType.MarketPurchase, result.Count, item: info.Item.Info);
 
             AuctionHistoryInfo history = SEnvir.AuctionHistoryInfoList.Binding.FirstOrDefault(x => x.Info == itemInfo.Index && x.PartIndex == partIndex) ?? SEnvir.AuctionHistoryInfoList.CreateNewObject();
 
@@ -4261,7 +4266,6 @@ namespace Server.Models
                 return;
             }
 
-
             GuildInfo info = SEnvir.GuildInfoList.Binding.FirstOrDefault(x => string.Compare(x.GuildName, p.Name, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (info != null)
@@ -4309,6 +4313,8 @@ namespace Server.Models
                     break;
                 }
             }
+
+            LogMilestone(MilestoneType.GuildCreate, 1);
 
             Gold.Amount -= cost;
             GoldChanged();
@@ -4983,11 +4989,13 @@ namespace Server.Models
                 Connection.ReceiveChatWithObservers(con => con.Language.GuildJoinGuild, MessageType.System);
                 return;
             }
+
             if (Character.Account.GuildTime > SEnvir.Now)
             {
                 Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GuildJoinTime, Functions.ToString(Character.Account.GuildTime - SEnvir.Now, true)), MessageType.System);
                 return;
             }
+
             if (GuildInvitation.Character.Account.GuildMember == null)
             {
                 Connection.ReceiveChatWithObservers(con => string.Format(con.Language.GuildJoinGuild, GuildInvitation.Name), MessageType.System);
@@ -5034,6 +5042,8 @@ namespace Server.Models
                 member.Account.Connection.Player.AddAllObjects();
                 member.Account.Connection.Player.ApplyGuildBuff();
             }
+
+            LogMilestone(MilestoneType.GuildJoin, 1);
 
             ApplyCastleBuff();
             ApplyGuildBuff();
@@ -5414,6 +5424,8 @@ namespace Server.Models
 
             if (GroupInvitation.GroupMembers == null)
             {
+                LogMilestone(MilestoneType.GroupCreate, 1);
+
                 GroupInvitation.GroupSwitch(true);
                 GroupInvitation.GroupMembers = new List<PlayerObject> { GroupInvitation };
                 GroupInvitation.Enqueue(new S.GroupMember { ObjectID = GroupInvitation.ObjectID, Name = GroupInvitation.Name }); //<-- Setting group leader?
@@ -5461,6 +5473,11 @@ namespace Server.Models
 
             AddAllObjects();
             ApplyGuildBuff();
+
+            if (GroupMembers[0] != this)
+            {
+                LogMilestone(MilestoneType.GroupJoin, 1);
+            }
 
             GroupInvitation.LFGSettings.NeedUpdate = true;
 
@@ -5807,9 +5824,10 @@ namespace Server.Models
                     item.UserTask = null;
                     item.Flags &= ~UserItemFlags.QuestItem;
 
-
                     item.IsTemporary = true;
                     item.Delete();
+
+                    LogMilestone(MilestoneType.ItemGained, item.Count, item: item.Info);
                     continue;
                 }
 
@@ -5820,6 +5838,8 @@ namespace Server.Models
                     currency.Amount += item.Count;
                     item.IsTemporary = true;
                     item.Delete();
+
+                    LogMilestone(MilestoneType.CurrencyGain, item.Count, currency: currency.Info);
                     continue;
                 }
 
@@ -5850,6 +5870,7 @@ namespace Server.Models
                             item.IsTemporary = true;
                             item.Delete();
                             handled = true;
+                            LogMilestone(MilestoneType.ItemGained, item.Count, item: item.Info);
                             break;
                         }
 
@@ -5867,6 +5888,7 @@ namespace Server.Models
                     item.Slot = i;
                     item.Character = Character;
                     item.IsTemporary = false;
+                    LogMilestone(MilestoneType.ItemGained, item.Count, item: item.Info);
                     break;
                 }
             }
@@ -6816,6 +6838,8 @@ namespace Server.Models
 
                 result.Link.Count = 0;
             }
+
+            LogMilestone(MilestoneType.ItemUsed, useCount, item: item.Info);
 
             if (gainItem != null)
                 GainItem(gainItem);
@@ -9843,6 +9867,8 @@ namespace Server.Models
                     CurrencyChanged(userCurrency);
                 }
 
+                LogMilestone(MilestoneType.ShopBuy, item.Count, item: item.Info);
+
                 GainItem(item);
             }
         }
@@ -9931,6 +9957,8 @@ namespace Server.Models
                 }
                 else
                     item.Count -= link.Count;
+
+                LogMilestone(MilestoneType.ShopSell, link.Count, item: item.Info);
             }
 
             if (p.Links.Count > 0)
@@ -9943,6 +9971,8 @@ namespace Server.Models
 
             p.Success = true;
             userCurrency.Amount += amount;
+
+            LogMilestone(MilestoneType.CurrencyGain, amount, currency: userCurrency.Info);
 
             CurrencyChanged(userCurrency);
         }
@@ -11889,7 +11919,7 @@ namespace Server.Models
             Character.SpentPoints = 0;
             Character.HermitStats.Clear();
 
-            LogMilestone(MilestoneType.Rebirth, 1);
+            LogMilestone(MilestoneType.Rebirth, rebirth, true);
 
             if (Character.Discipline != null)
             {
@@ -15587,7 +15617,7 @@ namespace Server.Models
                     Character.BindPoint = info;
             }
 
-            LogMilestone(MilestoneType.PKPoint, count);
+            LogMilestone(MilestoneType.PKPoint, count, true);
 
             BuffAdd(BuffType.PKPoint, TimeSpan.MaxValue, new Stats { [Stat.PKPoint] = count }, false, false, Config.PKPointTickRate);
         }
@@ -15759,8 +15789,8 @@ namespace Server.Models
                 ObjectID = ObjectID,
 
                 Name = Name,
-                Caption = Caption,
-                MilestoneTitle = MilestoneTitle,
+                Caption = ActiveMilestone?.Info.Title ?? Caption,
+                CaptionOutlineColour = ActiveMilestone?.Info.OutlineColour ?? Color.Black,
                 Gender = Gender,
                 HairType = HairType,
                 HairColour = HairColour,
@@ -15868,7 +15898,7 @@ namespace Server.Models
             }
             else
             {
-
+                LogMilestone(MilestoneType.InstanceJoin, 1, instance: instance);
             }
 
             Enqueue(joinResult);

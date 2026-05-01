@@ -801,4 +801,9 @@ namespace Library.Network.ClientPackets
         public int Index { get; set; }
         public bool Active { get; set; }
     }
+
+    public sealed class MilestoneClaim : Packet
+    {
+        public int Index { get; set; }
+    }
 }

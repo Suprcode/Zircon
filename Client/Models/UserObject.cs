@@ -279,7 +279,7 @@ namespace Client.Models
 
             Name = info.Name;
             Caption = info.Caption;
-            MilestoneTitle = info.MilestoneTitle;
+            CaptionOutlineColour = info.CaptionOutlineColour;
             NameColour = info.NameColour;
 
             Class = info.Class;

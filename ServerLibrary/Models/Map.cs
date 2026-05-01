@@ -562,6 +562,18 @@ namespace Server.Models
                 }
             }
 
+            if (ob.Race == ObjectType.Player)
+            {
+                PlayerObject player = (PlayerObject)ob;
+
+                var newRegions = Regions.Except(player.CurrentCell.Regions);
+
+                foreach (var region in newRegions)
+                {
+                    player.LogMilestone(MilestoneType.Region, 1, region: region);
+                }
+            }
+
             if (Movements == null || Movements.Count == 0)
                 return this;
 

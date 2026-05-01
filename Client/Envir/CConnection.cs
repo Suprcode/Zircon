@@ -4552,7 +4552,7 @@ namespace Client.Envir
 
                 player.Name = p.Name;
                 player.Caption = p.Caption;
-                player.MilestoneTitle = p.MilestoneTitle;
+                player.CaptionOutlineColour = p.CaptionOutlineColour;
                 player.Gender = p.Gender;
                 player.HairType = p.HairType;
                 player.HairColour = p.HairColour;
@@ -5024,6 +5024,13 @@ namespace Client.Envir
             }
         }
 
+        public void Process(S.MilestoneEarned p)
+        {
+            var info = Globals.MilestoneInfoList.Binding.FirstOrDefault(x => x.Index == p.Index);
+            if (info == null) return;
+
+            GameScene.Game.MilestoneAchievedBox.Show(info);
+        }
     }
 }
 

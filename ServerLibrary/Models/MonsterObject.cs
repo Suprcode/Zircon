@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models
@@ -2595,6 +2596,8 @@ namespace Server.Models
 
                     EXPOwner.GainExperience(exp, PlayerTagged, Level);
 
+                    EXPOwner.LogMilestone(MilestoneType.MonsterKilled, 1, monster: MonsterInfo);
+
                     if (GrowthLevel > 0)
                         EXPOwner.GainDisciplineExperience(GrowthLevel);
                 }
@@ -2612,6 +2615,8 @@ namespace Server.Models
                         expfinal /= ExtraExperienceRate;
 
                     player.GainExperience(expfinal, PlayerTagged, Level);
+
+                    player.LogMilestone(MilestoneType.MonsterKilled, 1, monster: MonsterInfo);
 
                     if (GrowthLevel > 0)
                         player.GainDisciplineExperience(GrowthLevel);

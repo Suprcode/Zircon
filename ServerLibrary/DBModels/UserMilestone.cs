@@ -2,6 +2,7 @@
 using Library.SystemModels;
 using MirDB;
 using System;
+using System.Drawing;
 
 namespace Server.DBModels
 {
@@ -39,7 +40,7 @@ namespace Server.DBModels
         }
         private MilestoneType _Type;
 
-        public int Count
+        public long Count
         {
             get { return _Count; }
             set
@@ -52,7 +53,7 @@ namespace Server.DBModels
                 OnChanged(oldValue, value, "Count");
             }
         }
-        private int _Count;
+        private long _Count;
 
         public CharacterInfo Player
         {
@@ -144,6 +145,21 @@ namespace Server.DBModels
         }
         private InstanceInfo _Instance;
 
+        public QuestInfo Quest
+        {
+            get { return _Quest; }
+            set
+            {
+                if (_Quest == value) return;
+
+                var oldValue = _Currency;
+                _Quest = value;
+
+                OnChanged(oldValue, value, "Quest");
+            }
+        }
+        private QuestInfo _Quest;
+
         protected override void OnDeleted()
         {
             Character = null;
@@ -222,24 +238,27 @@ namespace Server.DBModels
         }
         private bool _Active;
 
+        public bool Claimed
+        {
+            get { return _Claimed; }
+            set
+            {
+                if (_Claimed == value) return;
+
+                var oldValue = _Claimed;
+                _Claimed = value;
+
+                OnChanged(oldValue, value, "Claimed");
+            }
+        }
+        private bool _Claimed;
+
         protected override void OnDeleted()
         {
             Info = null;
             Character = null;
 
             base.OnDeleted();
-        }
-
-        public ClientUserMilestone ToClientInfo()
-        {
-            return new ClientUserMilestone
-            {
-                Index = Index,
-                InfoIndex = Info.Index,
-
-                DateEarned = DateEarned,
-                Active = Active
-            };
         }
     }
 }

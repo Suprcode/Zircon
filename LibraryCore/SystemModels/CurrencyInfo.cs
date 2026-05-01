@@ -1,4 +1,6 @@
 ﻿using MirDB;
+using System;
+using System.Xml.Linq;
 
 namespace Library.SystemModels
 {
@@ -103,6 +105,11 @@ namespace Library.SystemModels
             base.OnCreated();
 
             ExchangeRate = 1M;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 

@@ -1,9 +1,9 @@
 ﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
-using Client.Properties;
 using Client.UserModels;
 using Library;
+using Library.Network.ServerPackets;
 using Library.SystemModels;
 using System;
 using System.Collections.Generic;
@@ -1585,7 +1585,16 @@ namespace Client.Scenes.Views
         public MilestoneMenu Menu;
         public DXLabel ActiveTitle;
 
+        public DXTextBox SearchTextBox;
+
+        public DXCheckBox HideCompleteCheckBox;
+        public DXButton ResetTitleButton;
+
         public List<MilestoneContainer> Items = [];
+
+        private bool Initialized;
+        private bool HideComplete;
+        private string SearchText;
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -1615,7 +1624,7 @@ namespace Client.Scenes.Views
 
             SelectedCategoryChanged?.Invoke(this, EventArgs.Empty);
 
-            nValue?.Update();
+            nValue?.Update(HideComplete, SearchText);
 
             nValue?.Visible = true;
         }
@@ -1631,7 +1640,7 @@ namespace Client.Scenes.Views
             };
             Menu.SelectedChanged += (o, e) =>
             {
-                SelectedCategory = Menu.GetAndUpdateSelected();
+                SelectedCategory = Menu.GetAndUpdateSelected(HideComplete, SearchText);
             };
 
             ActiveTitle = new DXLabel
@@ -1644,9 +1653,48 @@ namespace Client.Scenes.Views
                 ForeColour = Color.White
             };
 
-            Add();
-        }
+            SearchTextBox = new DXTextBox
+            {
+                Parent = this,
+                Location = new Point(10, 401),
+                Size = new Size(140, 20),
+            };
+            SearchTextBox.TextBox.TextChanged += (o, e) =>
+            {
+                SearchText = SearchTextBox.TextBox.Text;
 
+                Update();
+            };
+
+            HideCompleteCheckBox = new DXCheckBox
+            {
+                Parent = this,
+                Location = new Point(155, 402),
+                Label = { Text = "Hide Complete" },
+            };
+            HideCompleteCheckBox.CheckedChanged += (o, e) =>
+            {
+                HideComplete = HideCompleteCheckBox.Checked;
+
+                Update();
+            };
+
+            ResetTitleButton = new DXButton
+            {
+                Parent = this,
+                Label = { Text = "Reset Title" },
+                Location = new Point(640, 398),
+                Size = new Size(80, DefaultHeight),
+                Enabled = false
+            };
+            ResetTitleButton.MouseClick += (o, e) =>
+            {
+                var activeMilestone = GameScene.Game.User.Milestones.First(x => x.Active);
+                if (activeMilestone == null) return;
+                CEnvir.Enqueue(new C.MilestoneActive { Index = activeMilestone.Index, Active = false });
+            };
+        }
+                
         #region Methods
 
         private void Add()
@@ -1679,9 +1727,19 @@ namespace Client.Scenes.Views
 
         public void Update()
         {
+            if (!Initialized)
+            {
+                Add();
+                Initialized = true;
+            }
+
+            ResetTitleButton.Enabled = GameScene.Game.User.Milestones.Any(x => x.Active);
+
+            ActiveTitle.Text = GameScene.Game.User.Milestones.FirstOrDefault(x => x.Active)?.Info.Title ?? string.Empty;
+
             if (SelectedCategory != null)
             {
-                SelectedCategory.Update();
+                SelectedCategory.Update(HideComplete, SearchText);
             }
         }
 
@@ -1823,11 +1881,11 @@ namespace Client.Scenes.Views
             MenuScrollBar.MaxValue = Items.Count * ButtonHeight;
         }
 
-        public MilestoneContainer GetAndUpdateSelected()
+        public MilestoneContainer GetAndUpdateSelected(bool hideComplete, string searchText)
         {
             if (Items.TryGetValue(Selected, out MilestoneContainer page))
             {
-                page.Update();
+                page.Update(hideComplete, searchText);
                 return page;
             }
 
@@ -1887,6 +1945,8 @@ namespace Client.Scenes.Views
 
         #endregion
 
+        public bool HideComplete;
+
         public Dictionary<MilestoneInfo, MilestoneItem> Items = [];
 
         public MilestoneContainer(IList<MilestoneInfo> infos)
@@ -1906,6 +1966,8 @@ namespace Client.Scenes.Views
                 ShowBackgroundSlider = false,
             };
 
+            MouseWheel += ScrollBar.DoMouseWheel;
+
             ScrollBar.ValueChanged += (o, e) => UpdateLocations();
 
             CreateItems(infos);
@@ -1919,10 +1981,25 @@ namespace Client.Scenes.Views
 
             foreach (var info in infos)
             {
-                MilestoneItem cell = new MilestoneItem
+                switch (GameScene.Game.User.Class)
+                {
+                    case MirClass.Warrior:
+                        if ((info.RequiredClass & RequiredClass.Warrior) != RequiredClass.Warrior) continue;
+                        break;
+                    case MirClass.Wizard:
+                        if ((info.RequiredClass & RequiredClass.Wizard) != RequiredClass.Wizard) continue;
+                        break;
+                    case MirClass.Taoist:
+                        if ((info.RequiredClass & RequiredClass.Taoist) != RequiredClass.Taoist) continue;
+                        break;
+                    case MirClass.Assassin:
+                        if ((info.RequiredClass & RequiredClass.Assassin) != RequiredClass.Assassin) continue;
+                        break;
+                }
+
+                MilestoneItem cell = new MilestoneItem(info)
                 {
                     Parent = this,
-                    Info = info,
                     Location = new Point(0, k),
                 };
                 Items[info] = cell;
@@ -1936,13 +2013,17 @@ namespace Client.Scenes.Views
             ScrollBar.MaxValue = Items.Count + 1;
         }
 
-        public void Update()
+        public void Update(bool hideComplete, string searchText)
         {
             foreach (DXControl control in Controls)
             {
-                if (control is not MilestoneItem section) continue;
+                if (control is not MilestoneItem item) continue;
 
-                section.Update();
+                item.Update();
+                item.Visible = (!hideComplete || !item.IsComplete) && 
+                    (string.IsNullOrEmpty(searchText) || 
+                    item.Info.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
+                    item.Info.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase));
             }
 
             UpdateLocations();
@@ -1955,7 +2036,9 @@ namespace Client.Scenes.Views
 
             foreach (DXControl control in Controls)
             {
-                if (control is not MilestoneItem) continue;
+                if (control is not MilestoneItem item) continue;
+
+                if (!item.Visible) continue;
 
                 control.Location = new Point(0, y);
                 h += control.Size.Height;
@@ -1998,34 +2081,48 @@ namespace Client.Scenes.Views
         #endregion
     }
 
-    public sealed class MilestoneItem : DXImageControl
+    public sealed class MilestoneItem : DXControl
     {
         public MilestoneInfo Info;
 
         public DXCheckBox ActiveCheckbox;
-        public DXLabel CategoryLabel, TitleLabel, DescriptionLabel, DateAchievedLabel, LevelLabel;
 
-        public DXLabel RequirementLabel1, RequirementLabel2, RequirementLabel3, RequirementLabel4;
+        public DXImageControl BackgroundImage, NoRewardImage;
+        public DXLabel CategoryLabel, TitleLabel, DescriptionLabel, DateAchievedLabel, GradeLabel;
+
+        public DXLabel RequirementLabel;
 
         public DXItemCell ItemCell;
 
-        public MilestoneItem()
+        public bool IsComplete => GameScene.Game.User.Milestones.FirstOrDefault(x => x.Info == Info)?.IsComplete ?? false;
+
+        public MilestoneItem(MilestoneInfo info)
         {
-            Index = 510;
-            LibraryFile = LibraryFile.GameInter2;
             Size = new Size(516, 90);
-            FixedSize = true;
+
+            Info = info;
+
+            BackgroundImage = new DXImageControl
+            {
+                Parent = this,
+                Size = Size,
+                Index = 510,
+                Location = Point.Empty,
+                LibraryFile = LibraryFile.GameInter2,
+                IsControl = false,
+                FixedSize = true
+            };
 
             ActiveCheckbox = new DXCheckBox
             {
                 Parent = this,
-                Location = new Point(22, 7),
+                Location = new Point(22, 7)
             };
             ActiveCheckbox.CheckedChanged += (o, e) =>
             {
-                if (GameScene.Game.User == null || Info == null) return;
                 var userMilestone = GameScene.Game.User.Milestones.FirstOrDefault(x => x.Info == Info);
                 if (userMilestone == null) return;
+
                 userMilestone.Active = ActiveCheckbox.Checked;
                 CEnvir.Enqueue(new C.MilestoneActive { Index = userMilestone.Index, Active = userMilestone.Active });
             };
@@ -2033,12 +2130,13 @@ namespace Client.Scenes.Views
             CategoryLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(35, 6),
+                Location = new Point(35, 7),
                 ForeColour = Color.White,
+                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
                 IsControl = false
             };
 
-            LevelLabel  = new DXLabel
+            GradeLabel  = new DXLabel
             {
                 Parent = this,
                 Location = new Point(8, 75),
@@ -2047,8 +2145,7 @@ namespace Client.Scenes.Views
                 IsControl = false,
                 ForeColour = Color.White,
                 Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
-                DrawFormat = TextFormatFlags.HorizontalCenter,
-                Text = "[Low Class]"
+                DrawFormat = TextFormatFlags.HorizontalCenter
             };
 
             TitleLabel = new DXLabel
@@ -2069,7 +2166,7 @@ namespace Client.Scenes.Views
                 Size = new Size(380, 43),
                 AutoSize = false,
                 ForeColour = Color.White,
-                Font = new Font(Config.FontName, CEnvir.FontSize(8F)),
+                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix,
                 IsControl = false
             };
@@ -2077,41 +2174,36 @@ namespace Client.Scenes.Views
             ItemCell = new DXItemCell
             {
                 Parent = this,
-                Location = new Point(27, 34),
+                Location = new Point(26, 33),
                 FixedBorder = true,
+                Size = new Size(38, 38),
+                FixedBorderColour = true,
                 Border = true,
                 ReadOnly = true,
                 ItemGrid = new ClientUserItem[1],
                 Slot = 0,
-                FixedBorderColour = true,
                 ShowCountLabel = true
             };
-
-            RequirementLabel1 = new DXLabel
+            ItemCell.MouseClick += (o, e) =>
             {
-                Parent = this,
-                Location = new Point(75, 70),
-                Size = new Size(370, 35),
-                AutoSize = false,
-                ForeColour = Color.White,
-                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
-                DrawFormat = TextFormatFlags.HorizontalCenter,
-                IsControl = false,
+                var userMilestone = GameScene.Game.User.Milestones.FirstOrDefault(x => x.Info == Info);
+
+                if (userMilestone == null || !userMilestone.IsComplete) return;
+
+                DXSoundManager.Play(SoundIndex.ItemDefault);
+                CEnvir.Enqueue(new C.MilestoneClaim { Index = userMilestone.Index });
             };
 
-            RequirementLabel2 = new DXLabel
+            NoRewardImage = new DXImageControl
             {
                 Parent = this,
-                Location = new Point(75, 70),
-                Size = new Size(370, 35),
-                AutoSize = false,
-                ForeColour = Color.White,
-                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
-                DrawFormat = TextFormatFlags.HorizontalCenter,
-                IsControl = false,
+                Location = new Point(26, 33),
+                Index = 520,
+                LibraryFile = LibraryFile.GameInter2,
+                Visible = false
             };
 
-            RequirementLabel3 = new DXLabel
+            RequirementLabel = new DXLabel
             {
                 Parent = this,
                 Location = new Point(75, 70),
@@ -2121,18 +2213,7 @@ namespace Client.Scenes.Views
                 Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
                 DrawFormat = TextFormatFlags.HorizontalCenter,
                 IsControl = false,
-            };
-
-            RequirementLabel4 = new DXLabel
-            {
-                Parent = this,
-                Location = new Point(75, 70),
-                Size = new Size(370, 35),
-                AutoSize = false,
-                ForeColour = Color.White,
-                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
-                DrawFormat = TextFormatFlags.HorizontalCenter,
-                IsControl = false,
+                Visible = true
             };
 
             DateAchievedLabel = new DXLabel
@@ -2143,8 +2224,17 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 ForeColour = Color.Goldenrod,
                 DrawFormat = TextFormatFlags.HorizontalCenter,
-                IsControl = false,
+                IsControl = false
             };
+
+            CategoryLabel.Text = Info.Category;
+            TitleLabel.Text = Info.Title;
+            DescriptionLabel.Text = Info.Description;
+            ItemCell.ItemGrid[0] = Info.Reward != null ? new ClientUserItem(Info.Reward, Info.RewardAmount) : null;
+            ItemCell.GrayScale = true;
+            NoRewardImage.Visible = Info.Reward == null;
+            GradeLabel.Text = $"[{Info.Grade}]";
+            GradeLabel.OutlineColour = Info.OutlineColour;
         }
 
         public void Update()
@@ -2154,140 +2244,73 @@ namespace Client.Scenes.Views
             var userMilestone = GameScene.Game.User.Milestones.FirstOrDefault(x => x.Info == Info);
 
             var started = userMilestone != null;
-            var earned = userMilestone != null && userMilestone.DateEarned > DateTime.MinValue;
+            var earned = userMilestone != null && userMilestone.IsComplete;
 
-            CategoryLabel.Text = Info.Category;
-            TitleLabel.Text = Info.Title;
-            DescriptionLabel.Text = Info.Description;
-            ItemCell.ItemGrid[0] = Info.Reward != null ? new ClientUserItem(Info.Reward, Info.RewardAmount) : null;
+            Color foreColor = Color.White;
 
             if (earned)
             {
-                Index = 510;
+                BackgroundImage.Index = 510;
                 DateAchievedLabel.Text = userMilestone.DateEarned.ToString("yyyy.MM.dd");
                 ActiveCheckbox.Enabled = true;
+                ItemCell.GrayScale = false;
                 ActiveCheckbox.SetSilentState(userMilestone.Active);
+                ItemCell.Visible = Info.Reward != null && !userMilestone.Claimed;
+                NoRewardImage.Visible = Info.Reward == null || userMilestone.Claimed;
+                foreColor = Color.White;
 
-                RequirementLabel1.Text = "Completed";
-                RequirementLabel1.Location = new Point(75, 70);
-                RequirementLabel1.Size = new Size(370, 35);
-                RequirementLabel2.Visible = false;
-                RequirementLabel3.Visible = false;
-                RequirementLabel4.Visible = false;
+                if (!string.IsNullOrEmpty(Info.Task))
+                {
+                    RequirementLabel.Text = $"{Info.Task}: Complete";
+                }
+                else
+                {
+                    RequirementLabel.Text = "Complete";
+                }
             }
             else if (started)
             {
-                Index = 511;
+                BackgroundImage.Index = 511;
                 DateAchievedLabel.Text = string.Empty;
                 ActiveCheckbox.Enabled = false;
+                foreColor = Color.LightGray;
 
-                switch (Info.Tasks.Count)
+                var currentCount = userMilestone.Tasks.Sum(x => x.Count);
+                var totalCount = Info.Tasks.Sum(x => x.Amount);
+
+                if (Info.ShowCount && totalCount > 0)
                 {
-                    case 0:
-                        RequirementLabel1.Visible = false;
-                        RequirementLabel2.Visible = false;
-                        RequirementLabel3.Visible = false;
-                        RequirementLabel4.Visible = false;
-                        break;
-                    case 1:
-                        var task = Info.Tasks[0];
-                        var userTaskCount = userMilestone.Tasks.FirstOrDefault(x => x.Info == task)?.Count ?? 0;
-
-                        RequirementLabel1.Text = $"Progress1: {userTaskCount}/{task.Amount}";
-                        RequirementLabel1.Location = new Point(75, 70);
-                        RequirementLabel1.Size = new Size(370, 35);
-                        RequirementLabel1.Visible = true;
-                        RequirementLabel2.Visible = false;
-                        RequirementLabel3.Visible = false;
-                        RequirementLabel4.Visible = false;
-                        break;
-                    case 2:
-                        {
-                            var task1 = Info.Tasks[0];
-                            var userTaskCount1 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task1)?.Count ?? 0;
-                            var task2 = Info.Tasks[1];
-                            var userTaskCount2 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task2)?.Count ?? 0;
-
-                            RequirementLabel1.Text = $"Progress1: {userTaskCount1}/{task1.Amount}";
-                            RequirementLabel2.Text = $"Progress2: {userTaskCount2}/{task2.Amount}";
-                            RequirementLabel1.Location = new Point(75, 70);
-                            RequirementLabel1.Size = new Size(185, 35);
-                            RequirementLabel1.Visible = true;
-                            RequirementLabel2.Location = new Point(260, 70);
-                            RequirementLabel2.Size = new Size(185, 35);
-                            RequirementLabel2.Visible = true;
-                            RequirementLabel3.Visible = false;
-                            RequirementLabel4.Visible = false;
-                        }
-                        break;
-                    case 3:
-                        {
-                            var task1 = Info.Tasks[0];
-                            var userTaskCount1 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task1)?.Count ?? 0;
-                            var task2 = Info.Tasks[1];
-                            var userTaskCount2 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task2)?.Count ?? 0;
-                            var task3 = Info.Tasks[2];
-                            var userTaskCount3 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task3)?.Count ?? 0;
-
-                            RequirementLabel1.Text = $"Progress1: {userTaskCount1}/{task1.Amount}";
-                            RequirementLabel2.Text = $"Progress2: {userTaskCount2}/{task2.Amount}";
-                            RequirementLabel3.Text = $"Progress3: {userTaskCount3}/{task3.Amount}";
-                            RequirementLabel1.Location = new Point(75, 70);
-                            RequirementLabel1.Size = new Size(120, 35);
-                            RequirementLabel1.Visible = true;
-                            RequirementLabel2.Location = new Point(197, 70);
-                            RequirementLabel2.Size = new Size(120, 35);
-                            RequirementLabel2.Visible = true;
-                            RequirementLabel3.Location = new Point(319, 70);
-                            RequirementLabel3.Size = new Size(120, 35);
-                            RequirementLabel3.Visible = true;
-                            RequirementLabel4.Visible = false;
-                        }
-                        break;
-                    case 4:
-                        {
-                            var task1 = Info.Tasks[0];
-                            var userTaskCount1 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task1)?.Count ?? 0;
-                            var task2 = Info.Tasks[1];
-                            var userTaskCount2 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task2)?.Count ?? 0;
-                            var task3 = Info.Tasks[2];
-                            var userTaskCount3 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task3)?.Count ?? 0;
-                            var task4 = Info.Tasks[3];
-                            var userTaskCount4 = userMilestone.Tasks.FirstOrDefault(x => x.Info == task4)?.Count ?? 0;
-
-                            RequirementLabel1.Text = $"Progress1: {userTaskCount1}/{task1.Amount}";
-                            RequirementLabel2.Text = $"Progress2: {userTaskCount2}/{task2.Amount}";
-                            RequirementLabel3.Text = $"Progress3: {userTaskCount3}/{task3.Amount}";
-                            RequirementLabel4.Text = $"Progress4: {userTaskCount4}/{task4.Amount}";
-                            RequirementLabel1.Location = new Point(75, 70);
-                            RequirementLabel1.Size = new Size(92, 35);
-                            RequirementLabel1.Visible = true;
-                            RequirementLabel2.Location = new Point(167, 70);
-                            RequirementLabel2.Size = new Size(92, 35);
-                            RequirementLabel2.Visible = true;
-                            RequirementLabel3.Location = new Point(259, 70);
-                            RequirementLabel3.Size = new Size(92, 35);
-                            RequirementLabel3.Visible = true;
-                            RequirementLabel4.Location = new Point(351, 70);
-                            RequirementLabel4.Size = new Size(92, 35);
-                            RequirementLabel4.Visible = true;
-                        }
-                        break;
+                    if (!string.IsNullOrWhiteSpace(Info.Task))
+                    {
+                        RequirementLabel.Text = $"{Info.Task}: {currentCount}/{totalCount}";
+                    }
+                    else
+                    {
+                        RequirementLabel.Text = $"Tasks: {currentCount}/{totalCount}";
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(Info.Task))
+                    {
+                        RequirementLabel.Text = Info.Task;
+                    }
+                    else if (currentCount > 0)
+                    {
+                        RequirementLabel.Text = "In Progress";
+                    }
+                    else
+                    {
+                        RequirementLabel.Text = "Not Started";
+                    }
                 }
             }
-            else
-            {
-                Index = 511;
-                DateAchievedLabel.Text = string.Empty;
-                ActiveCheckbox.Enabled = false;
 
-                RequirementLabel1.Text = "Not Started";
-                RequirementLabel1.Location = new Point(75, 70);
-                RequirementLabel1.Size = new Size(370, 35);
-                RequirementLabel2.Visible = false;
-                RequirementLabel3.Visible = false;
-                RequirementLabel4.Visible = false;
-            }
+            TitleLabel.ForeColour = foreColor;
+            DescriptionLabel.ForeColour = foreColor;
+            CategoryLabel.ForeColour = foreColor;
+            GradeLabel.ForeColour = foreColor;
+            RequirementLabel.ForeColour = foreColor;
         }
     }
 
@@ -2329,7 +2352,7 @@ namespace Client.Scenes.Views
 
     public sealed class MilestoneAchievedDialog : DXControl
     {
-        public DXLabel Title;
+        public DXLabel Label, Title;
 
         public DXImageControl Background, LeftEnd, RightEnd;
         public DXAnimatedControl Animation;
@@ -2346,11 +2369,25 @@ namespace Client.Scenes.Views
             Background = new DXImageControl
             {
                 Parent = this,
-                Index = 500,
-                LibraryFile = LibraryFile.GameInter2,
+                Index = 294,
+                LibraryFile = LibraryFile.Interface,
                 Location = new Point((Size.Width - backgroundSize.Width) / 2, (Size.Height - backgroundSize.Height) / 2),
                 IsControl = false
             };
+
+            Label = new DXLabel
+            {
+                Parent = this,
+                Size = new Size(150, 25),
+                Text = "Title Achieved",
+                Font = new Font("MS Sans Serif", CEnvir.FontSize(11F), FontStyle.Bold),
+                AutoSize = true,
+                ForeColour = Color.FromArgb(122, 60, 55),
+                Outline = false,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                IsControl = false
+            };
+            Label.Location = new Point(((Size.Width - Label.Size.Width) / 2) + 20, ((Size.Height - Label.Size.Height) / 2) - 15);
 
             LeftEnd = new DXImageControl
             {
@@ -2371,9 +2408,10 @@ namespace Client.Scenes.Views
             Animation = new DXAnimatedControl
             {
                 Parent = this,
-                Loop = true,
+                Animated = false,
+                Loop = false,
                 LibraryFile = LibraryFile.GameInter2,
-                AnimationDelay = TimeSpan.FromMilliseconds(1400),
+                AnimationDelay = TimeSpan.FromMilliseconds(2000),
                 Location = new Point(295, 224),
                 BaseIndex = 550,
                 FrameCount = 19,
@@ -2381,9 +2419,9 @@ namespace Client.Scenes.Views
                 IsControl = false,
                 UseOffSet = true
             };
-            Animation.AfterAnimationLoop += (o, e) =>
+            Animation.AfterAnimation += (o, e) =>
             {
-                //Visible = false;
+                Visible = false;
             };
 
             Title = new DXLabel
@@ -2395,18 +2433,22 @@ namespace Client.Scenes.Views
                 DrawFormat = TextFormatFlags.HorizontalCenter,
                 IsControl = false
             };
-
-            //Show(null);
         }
 
         public void Show(MilestoneInfo info)
         {
             Visible = true;
-            Title.Text = "Butcher in Disguise";
+            Title.Text = info.Title;
+            Title.OutlineColour = info.OutlineColour;
 
             Title.Location = new Point(((Size.Width - Title.Size.Width) / 2) + 20, ((Size.Height - Title.Size.Height) / 2) + 10);
-            LeftEnd.Location = new Point(Title.DisplayArea.Left - LeftEnd.Size.Width + 15, Title.Location.Y - 5);
-            RightEnd.Location = new Point(Title.DisplayArea.Right - 15, Title.Location.Y - 5);
+            LeftEnd.Location = new Point(Title.Location.X - LeftEnd.Size.Width + 15, Title.Location.Y - 5);
+            RightEnd.Location = new Point(Title.Location.X + Title.Size.Width - 15, Title.Location.Y - 5);
+
+            Animation.AnimationStart = DateTime.MinValue;
+            Animation.Animated = true;
+
+            DXSoundManager.Play(SoundIndex.QuestComplete);
         }
     }
 }

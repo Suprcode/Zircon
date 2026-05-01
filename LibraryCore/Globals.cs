@@ -340,7 +340,7 @@ namespace Library
         public string Name { get; set; }
 
         public string Caption { get; set; }
-        public string MilestoneTitle { get; set; }
+        public Color CaptionOutlineColour { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
         public string GuildRank { get; set; }
@@ -1214,8 +1214,8 @@ namespace Library
         public int Index { get; set; }
         public int InfoIndex { get; set; }
         public MilestoneInfo Info;
-        public int Count { get; set; }
         public bool Active { get; set; }
+        public bool Claimed { get; set; }
         public DateTime DateEarned { get; set; }
 
         public List<ClientUserMilestoneTask> Tasks { get; set; }
@@ -1225,6 +1225,9 @@ namespace Library
 
         [IgnorePropertyPacket]
         public DateTime LastUpdated { get; set; }
+
+        [IgnorePropertyPacket]
+        public bool IsComplete => DateEarned > DateTime.MinValue;
 
         [CompleteObject]
         public void Complete()
@@ -1237,7 +1240,7 @@ namespace Library
     {
         public int InfoTaskIndex { get; set; }
         public MilestoneInfoTask Info;
-        public int Count { get; set; }
+        public long Count { get; set; }
 
         [CompleteObject]
         public void Complete()

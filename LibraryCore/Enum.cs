@@ -1869,7 +1869,12 @@ namespace Library
         Region = 2
     }
 
-    //Low, Medium, High grades - Blue or red colour
+    public enum MilestoneGrade
+    {
+        Low = 1,
+        Medium = 2,
+        High = 3
+    }
 
     public enum MilestoneType
     {
@@ -1880,13 +1885,14 @@ namespace Library
         Die = 6,
         Level = 7,
         Poisoned = 8, //todo
-        Quest = 10, //todo
         Marry = 11,
         Divorce = 12,
         Trade = 13,
         Rebirth = 15,
         PKPoint = 16,
-        Ranking = 17, //todo //reverse amount
+        Ranking = 17, //todo
+
+        QuestComplete = 20, //need to track quest type too - "daily", "story" etc
 
         MineCast = 30,
         MineCatch = 31,
@@ -1895,28 +1901,29 @@ namespace Library
         FishingCatch = 41,
         FishingFail = 42,
 
-        //All below TODO
-
         //Tracked by Region
         Region = 50,
 
-        //Track by Instance
         InstanceJoin = 60,
 
+        //TODO
         //Tracked by Monster
         MonsterKilled = 100,
         MonsterDeath = 101,
-        MonsterDamage = 102,
-        MonsterSeen = 103,
+        MonsterDamageTaken = 102,
+        MonsterDamageDone = 103,
+        //MonsterSeen = 104,
 
+        //TODO
         //Tracked by Player
         PlayerKilled = 110,
         PlayerDeath = 111,
-        PlayerDamage = 112,
+        PlayerDamageTaken = 112,
+        PlayerDamageDone = 113,
 
-        //Tracked by Item
+        //Track by Item
         ItemGained = 120,
-        ItemUsed = 121, //poison/amulet/others
+        ItemUsed = 121,
 
         CompanionAdopt = 130,
 
@@ -1924,15 +1931,15 @@ namespace Library
         CurrencyGain = 140,
 
         //Track by Item
-        ShopPurchase = 150,
+        ShopBuy = 150,
         ShopSell = 151,
-        ShopRepair = 152,
-        ShopRefine = 153,
 
         MailSent = 160,
 
+        //Track by item
         MarketConsign = 170,
         MarketPurchase = 171,
+        MarketSell = 172, //todo
 
         GuildJoin = 180,
         GuildCreate = 181,
@@ -1940,7 +1947,16 @@ namespace Library
         GroupJoin = 190,
         GroupCreate = 191,
 
-        FriendAdd = 200
+        FriendAdd = 200,
+
+        //TODO
+        //Track by Magic
+        SkillLearn = 210,
+        SkillLevel = 211,
+
+        //TODO
+        PetTame = 220,
+        PetSummon = 221,
     }
 
     public enum MovementEffect

@@ -5,7 +5,6 @@ using Server.Envir;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -13,159 +12,79 @@ namespace Server.Models
 {
     public partial class PlayerObject
     {
-        private readonly Dictionary<(MilestoneType, int), UserMilestoneLog> _milestoneLogCache = new();
-
         private readonly Dictionary<int, ClientUserMilestone> _clientMilestoneCache = new();
 
         public bool ReceiveMilestoneUpdates;
 
-        private static int GetSecondaryId(MilestoneType type, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null)
+        public void LogMilestone(MilestoneType type, long amount = 1, bool setAmount = false, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null)
         {
-            int index = -1;
-
-            switch (type)
-            {
-                case MilestoneType.Region:
-                    index = region?.Index ?? 0;
-                    break;
-                case MilestoneType.InstanceJoin:
-                    index = instance?.Index ?? 0;
-                    break;
-                case MilestoneType.MonsterKilled:
-                case MilestoneType.MonsterDeath:
-                case MilestoneType.MonsterDamage:
-                case MilestoneType.MonsterSeen:
-                    index = monster?.Index ?? 0;
-                    break;
-                case MilestoneType.PlayerKilled:
-                case MilestoneType.PlayerDeath:
-                case MilestoneType.PlayerDamage:
-                    index = player?.Index ?? 0;
-                    break;
-                case MilestoneType.ItemGained:
-                case MilestoneType.ItemUsed:
-                    index = item?.Index ?? 0;
-                    break;
-                case MilestoneType.CurrencyGain:
-                    index = currency?.Index ?? 0;
-                    break;
-            }
-
-            return index;
+            SEnvir.LogMilestone(Character, type, amount, setAmount, player, item, monster, currency, region, instance, quest);
         }
 
-        public void LogMilestone(MilestoneType type, int amount = 1, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null)
+        public void CheckMilestones(UserMilestoneLog log, MilestoneType type)
         {
-            int secondaryId = GetSecondaryId(type, player, item, monster, currency, region, instance);
-            var key = (type, secondaryId);
-
-            if (!_milestoneLogCache.TryGetValue(key, out var log))
-            {
-                switch (type)
-                {
-                    case MilestoneType.Region:
-                        log = Character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Region == region);
-                        break;
-                    case MilestoneType.InstanceJoin:
-                        log = Character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Instance == instance);
-                        break;
-                    case MilestoneType.MonsterKilled:
-                    case MilestoneType.MonsterDeath:
-                    case MilestoneType.MonsterDamage:
-                    case MilestoneType.MonsterSeen:
-                        log = Character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Monster == monster);
-                        break;
-                    case MilestoneType.PlayerKilled:
-                    case MilestoneType.PlayerDeath:
-                    case MilestoneType.PlayerDamage:
-                        log = Character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Player == player);
-                        break;
-                    case MilestoneType.ItemGained:
-                    case MilestoneType.ItemUsed:
-                        log = Character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
-                        break;
-                    case MilestoneType.CurrencyGain:
-                        log = Character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Currency == currency);
-                        break;
-                    default:
-                        log = Character.MilestoneLogs.FirstOrDefault(x => x.Type == type);
-                        break;
-                }
-
-                if (log == null)
-                {
-                    log = SEnvir.UserMilestoneLogList.CreateNewObject();
-                    log.Character = Character;
-                    log.Type = type;
-                    log.Item = item;
-                    log.Monster = monster;
-                    log.Currency = currency;
-                    log.Region = region;
-                    log.Instance = instance;
-                    log.Player = player;
-                    log.Count = 0;
-                    Character.MilestoneLogs.Add(log);
-                }
-                _milestoneLogCache[key] = log;
-            }
-
-            log.Count += amount;
-            CheckMilestones(log);
-
             // Update client milestone cache for all MilestoneInfo entries of this type.
-            foreach (var info in SEnvir.MilestoneInfoList.Binding.Where(i => i.Type == type))
+            foreach (var info in SEnvir.MilestoneInfoList.Binding)
             {
+                if (!info.Tasks.Any(x => x.Type == type)) continue;
+
                 if (_clientMilestoneCache.TryGetValue(info.Index, out var cached) && cached.DateEarned > DateTime.Now)
                     continue;
 
                 UpdateClientMilestoneCacheForInfo(info);
             }
 
-            //if (ReceiveMilestoneUpdates)
-            //{
-            //    SendMilestones(type);
-            //}
-        }
-
-        private void CheckMilestones(UserMilestoneLog log)
-        {
             foreach (MilestoneInfo info in SEnvir.MilestoneInfoList.Binding)
             {
-                if (info.Type != log.Type) continue;
                 if (Character.Milestones.Any(x => x.Info == info)) continue;
 
                 if (!MatchesRequiredClass(info.RequiredClass)) continue;
 
-                List<UserMilestoneLog> logs = new List<UserMilestoneLog>();
-                
+                // Only milestones touched by this log type can have changed, but all tasks must
+                // still be complete before the milestone is awarded.
+                if (!info.Tasks.Any(x => x.Type == log.Type)) continue;
+
                 bool meetsAllTasks = true;
 
                 foreach (var task in info.Tasks)
                 {
-                    var taskLogs = Character.MilestoneLogs.Where(x => x.Type == info.Type &&
+                    var taskCount = Character.MilestoneLogs.Where(x => x.Type == task.Type &&
                                                             (task.Item == null || x.Item == task.Item) &&
                                                             (task.Monster == null || x.Monster == task.Monster) &&
                                                             (task.Currency == null || x.Currency == task.Currency) &&
                                                             (task.Region == null || x.Region == task.Region) &&
-                                                            (task.Instance == null || x.Instance == task.Instance));
+                                                            (task.Instance == null || x.Instance == task.Instance) &&
+                                                            (task.Quest == null || x.Quest == task.Quest))
+                                                            .Sum(x => x.Count);
 
-                    if (task.Amount > 0 && taskLogs.Sum(x => x.Count) < task.Amount)
-                    {
-                        meetsAllTasks = false;
-                        break;
+                    switch (task.Type)
+                    {      
+                        case MilestoneType.Ranking: //Ranking needs to reverse the count
+                            if (task.Amount > 0 && taskCount >= task.Amount)
+                            {
+                                meetsAllTasks = false;
+                            }
+                            break;
+                        default:
+                            if (task.Amount > 0 && taskCount < task.Amount)
+                            {
+                                meetsAllTasks = false;
+                            }
+                            break;
                     }
 
-                    logs.AddRange(taskLogs);
+                    if (!meetsAllTasks) break;
                 }
 
-                if (!meetsAllTasks || !logs.Any()) continue;
+                if (!meetsAllTasks) continue;
 
                 UserMilestone milestone = SEnvir.UserMilestoneList.CreateNewObject();
                 milestone.Character = Character;
                 milestone.Info = info;
                 milestone.DateEarned = Time.Now;
                 Character.Milestones.Add(milestone);
-                Connection.ReceiveChatWithObservers(con => $"{info.Title} has been earned!", MessageType.System);
+
+                Enqueue(new S.MilestoneEarned { Index = info.Index });
 
                 // Update cache for the earned milestone info.
                 UpdateClientMilestoneCacheForInfo(info);
@@ -219,6 +138,39 @@ namespace Server.Models
             SendChangeUpdate();
         }
 
+        public void MilestoneClaim(C.MilestoneClaim p)
+        {
+            var userMilestone = Character.Milestones.FirstOrDefault(x => x.Index == p.Index);
+            if (userMilestone == null) return;
+
+            if (userMilestone.Info.Reward == null || userMilestone.Info.RewardAmount <= 0) return;
+
+            if (userMilestone.Claimed) return;
+
+            ItemCheck check = new ItemCheck(userMilestone.Info.Reward, userMilestone.Info.RewardAmount, UserItemFlags.Bound | UserItemFlags.Worthless, TimeSpan.Zero);
+
+            if (CanGainItems(false, check))
+            {
+                UserItem item = SEnvir.CreateFreshItem(check);
+
+                GainItem(item);
+
+                userMilestone.Claimed = true;
+
+                UpdateClientMilestoneCacheForInfo(userMilestone.Info);
+
+                var items = GetClientUserMilestones(true);
+                Enqueue(new S.UserMilestones { Milestones = items });
+                SendChangeUpdate();
+
+                Connection.ReceiveChatWithObservers(con => $"Milestone reward claimed: {userMilestone.Info.Reward.ItemName} x{userMilestone.Info.RewardAmount}", MessageType.System);
+            }
+            else
+            {
+                Connection.ReceiveChatWithObservers(con => string.Format("Not enough inventory space to claim milestone reward."), MessageType.System);
+            }
+        }
+
         public List<ClientUserMilestone> GetClientUserMilestones(bool updatedOnly = false)
         {
             var list = new List<ClientUserMilestone>();
@@ -250,6 +202,7 @@ namespace Server.Models
                     InfoIndex = info.Index,
                     DateEarned = userMilestone.DateEarned,
                     Active = userMilestone.Active,
+                    Claimed = userMilestone.Claimed,
                     LastUpdated = Time.Now,
                     Tasks = []
                 };
@@ -271,24 +224,11 @@ namespace Server.Models
             {
                 List<UserMilestoneLog> logs = new List<UserMilestoneLog>();
 
-                foreach (var task in info.Tasks)
-                {
-                    var taskLogs = Character.MilestoneLogs.Where(x => x.Type == info.Type &&
-                                                            (task.Item == null || x.Item == task.Item) &&
-                                                            (task.Monster == null || x.Monster == task.Monster) &&
-                                                            (task.Currency == null || x.Currency == task.Currency) &&
-                                                            (task.Region == null || x.Region == task.Region) &&
-                                                            (task.Instance == null || x.Instance == task.Instance));
-                    logs.AddRange(taskLogs);
-                }
-
-                var count = logs.Sum(x => x.Count);
-
                 var item = new ClientUserMilestone
                 {
                     InfoIndex = info.Index,
-                    Count = count,
                     DateEarned = DateTime.MinValue,
+                    Claimed = false,
                     Active = false,
                     Tasks = [],
                     LastUpdated = Time.Now
@@ -296,10 +236,25 @@ namespace Server.Models
 
                 foreach (var task in info.Tasks)
                 {
+                    var taskLogs = Character.MilestoneLogs.Where(x => x.Type == task.Type &&
+                                                            (task.Item == null || x.Item == task.Item) &&
+                                                            (task.Monster == null || x.Monster == task.Monster) &&
+                                                            (task.Currency == null || x.Currency == task.Currency) &&
+                                                            (task.Region == null || x.Region == task.Region) &&
+                                                            (task.Instance == null || x.Instance == task.Instance) &&
+                                                            (task.Quest == null || x.Quest == task.Quest));
+                    logs.AddRange(taskLogs);
+
+                    var count = task.Type switch
+                    {
+                        MilestoneType.Ranking => taskLogs.Sum(x => x.Count), //Ranking needs to show actual rank
+                        _ => Math.Min(task.Amount, taskLogs.Sum(x => x.Count)),
+                    };
+
                     var taskItem = new ClientUserMilestoneTask
                     {
                         InfoTaskIndex = task.Index,
-                        Count = task.Amount
+                        Count = count
                     };
 
                     item.Tasks.Add(taskItem);
@@ -309,7 +264,7 @@ namespace Server.Models
             }
         }
 
-        public ClientUserMilestone GetClientUserMilestone(MilestoneInfo info)
+        private ClientUserMilestone GetClientUserMilestone(MilestoneInfo info)
         {
             if (_clientMilestoneCache.TryGetValue(info.Index, out var cached))
                 return cached;

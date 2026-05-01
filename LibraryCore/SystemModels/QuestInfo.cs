@@ -1,4 +1,5 @@
 ﻿using MirDB;
+using System.Xml.Linq;
 
 namespace Library.SystemModels
 {
@@ -147,6 +148,11 @@ namespace Library.SystemModels
             requirement.Quest = this;
             requirement.QuestParameter = this;
         }
+
+        public override string ToString()
+        {
+            return QuestName;
+        }
     }
 
     public sealed class QuestReward : DBObject
@@ -266,7 +272,6 @@ namespace Library.SystemModels
             Class = RequiredClass.All;
         }
     }
-
 
 
     public sealed class QuestRequirement : DBObject
