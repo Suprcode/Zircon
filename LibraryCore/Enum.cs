@@ -1907,6 +1907,7 @@ namespace Library
         SkillLearn = 60,
         SkillLevel = 61, //Set
 
+        //Tracked by Monster
         PetTame = 70,
         PetSummon = 71,
 

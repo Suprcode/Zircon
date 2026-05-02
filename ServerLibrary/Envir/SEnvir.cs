@@ -4340,6 +4340,10 @@ namespace Server.Envir
                 case MilestoneType.SkillLevel:
                     index = magic?.Index ?? 0;
                     break;
+                case MilestoneType.PetTame:
+                case MilestoneType.PetSummon:
+                    index = monster?.Index ?? 0;
+                    break;
                 case MilestoneType.MineCatch:
                     index = item?.Index ?? 0;
                     break;
@@ -4407,6 +4411,10 @@ namespace Server.Envir
                     case MilestoneType.SkillLearn:
                     case MilestoneType.SkillLevel:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Magic == magic);
+                        break;
+                    case MilestoneType.PetTame:
+                    case MilestoneType.PetSummon:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Monster == monster);
                         break;
                     case MilestoneType.MineCatch:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
