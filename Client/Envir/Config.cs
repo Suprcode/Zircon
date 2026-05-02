@@ -122,8 +122,9 @@ namespace Client.Envir
         public static Color TargetMonsterLowLevelColour { get; set; } = Color.LimeGreen;
         public static Color TargetMonsterSameLevelColour { get; set; } = Color.Yellow;
         public static Color TargetMonsterHighLevelColour { get; set; } = Color.Red;
-        public static Color TargetPlayerFriendlyColour { get; set; } = Color.Aquamarine;
+        public static Color TargetMonsterFriendlyColour { get; set; } = Color.Cyan;
+        public static Color TargetPlayerFriendlyColour { get; set; } = Color.Cyan;
         public static Color TargetPlayerEnemyColour { get; set; } = Color.Red;
-        public static Color TargetNPCColour { get; set; } = Color.Aquamarine;
+        public static Color TargetNPCColour { get; set; } = Color.Cyan;
     }
 }

@@ -10,15 +10,18 @@ using S = Library.Network.ServerPackets;
 
 namespace Server.Models
 {
+    //TODO - Add to quest tracker
+    //TODO - Add account based reward claim
+    //TODO - Task description getter
     public partial class PlayerObject
     {
         private readonly Dictionary<int, ClientUserMilestone> _clientMilestoneCache = new();
 
         public bool ReceiveMilestoneUpdates;
 
-        public void LogMilestone(MilestoneType type, long amount = 1, bool setAmount = false, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null)
+        public void LogMilestone(MilestoneType type, long amount = 1, bool setAmount = false, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null, MagicInfo magic = null)
         {
-            SEnvir.LogMilestone(Character, type, amount, setAmount, player, item, monster, currency, region, instance, quest);
+            SEnvir.LogMilestone(Character, type, amount, setAmount, player, item, monster, currency, region, instance, quest, magic);
         }
 
         public void CheckMilestones(UserMilestoneLog log, MilestoneType type)
@@ -38,7 +41,7 @@ namespace Server.Models
             {
                 if (Character.Milestones.Any(x => x.Info == info)) continue;
 
-                if (!MatchesRequiredClass(info.RequiredClass)) continue;
+                if (!MatchesRequiredClass(Class, info.RequiredClass)) continue;
 
                 // Only milestones touched by this log type can have changed, but all tasks must
                 // still be complete before the milestone is awarded.
@@ -49,18 +52,20 @@ namespace Server.Models
                 foreach (var task in info.Tasks)
                 {
                     var taskCount = Character.MilestoneLogs.Where(x => x.Type == task.Type &&
+                                                            (task.Class == RequiredClass.None || task.Class == RequiredClass.All || MatchesRequiredClass(x.Character?.Class, task.Class)) &&
                                                             (task.Item == null || x.Item == task.Item) &&
                                                             (task.Monster == null || x.Monster == task.Monster) &&
                                                             (task.Currency == null || x.Currency == task.Currency) &&
                                                             (task.Region == null || x.Region == task.Region) &&
                                                             (task.Instance == null || x.Instance == task.Instance) &&
-                                                            (task.Quest == null || x.Quest == task.Quest))
+                                                            (task.Quest == null || x.Quest == task.Quest) &&
+                                                            (task.Magic == null || x.Magic == task.Magic))
                                                             .Sum(x => x.Count);
 
                     switch (task.Type)
                     {      
                         case MilestoneType.Ranking: //Ranking needs to reverse the count
-                            if (task.Amount > 0 && taskCount >= task.Amount)
+                            if (task.Amount > 0 && taskCount > task.Amount)
                             {
                                 meetsAllTasks = false;
                             }
@@ -91,9 +96,11 @@ namespace Server.Models
             }
         }
 
-        private bool MatchesRequiredClass(RequiredClass requiredClass)
+        private bool MatchesRequiredClass(MirClass? @class, RequiredClass requiredClass)
         {
-            switch (Class)
+            if (@class == null) return false;
+
+            switch (@class)
             {
                 case MirClass.Warrior:
                     if ((requiredClass & RequiredClass.Warrior) != RequiredClass.Warrior) return false;
@@ -242,7 +249,8 @@ namespace Server.Models
                                                             (task.Currency == null || x.Currency == task.Currency) &&
                                                             (task.Region == null || x.Region == task.Region) &&
                                                             (task.Instance == null || x.Instance == task.Instance) &&
-                                                            (task.Quest == null || x.Quest == task.Quest));
+                                                            (task.Quest == null || x.Quest == task.Quest) &&
+                                                            (task.Magic == null || x.Magic == task.Magic));
                     logs.AddRange(taskLogs);
 
                     var count = task.Type switch

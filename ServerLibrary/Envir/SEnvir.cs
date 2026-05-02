@@ -565,8 +565,9 @@ namespace Server.Envir
 
         public static void RankingSort(CharacterInfo character, bool updateLead = true, bool initialSetup = false)
         {
-            //Only works on Increasing EXP, still need to do Rebirth or loss of exp ranking update.
             bool changed = false;
+            int rank = initialSetup ? 0 : GetRankingPosition(character.RankingNode);
+            Dictionary<CharacterInfo, int> changedRanks = null;
 
             LinkedListNode<CharacterInfo> node;
 
@@ -577,37 +578,81 @@ namespace Server.Envir
 
                 if (!initialSetup)
                 {
-                    SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.All);
-
-                    if (character.Class == node.Value.Class)
-                    {
-                        switch (character.Class)
-                        {
-                            case MirClass.Warrior:
-                                SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.Warrior);
-                                break;
-                            case MirClass.Wizard:
-                                SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.Wizard);
-                                break;
-                            case MirClass.Taoist:
-                                SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.Taoist);
-                                break;
-                            case MirClass.Assassin:
-                                SwapRankPosition(character.RankChange, node.Value.RankChange, RequiredClass.Assassin);
-                                break;
-                        }
-                    }
+                    SwapRankPosition(character, node.Value);
+                    changedRanks ??= new Dictionary<CharacterInfo, int>();
+                    changedRanks[character] = rank - 1;
+                    changedRanks[node.Value] = rank;
                 }
 
                 changed = true;
 
                 Rankings.Remove(character.RankingNode);
                 Rankings.AddBefore(node, character.RankingNode);
+                rank--;
+            }
+
+            while ((node = character.RankingNode.Next) != null)
+            {
+                if (node.Value.Level < character.Level) break;
+                if (node.Value.Level == character.Level && node.Value.Experience <= character.Experience) break;
+
+                if (!initialSetup)
+                {
+                    SwapRankPosition(node.Value, character);
+                    changedRanks ??= new Dictionary<CharacterInfo, int>();
+                    changedRanks[character] = rank + 1;
+                    changedRanks[node.Value] = rank;
+                }
+
+                changed = true;
+
+                Rankings.Remove(character.RankingNode);
+                Rankings.AddAfter(node, character.RankingNode);
+                rank++;
+            }
+
+            if (changedRanks != null)
+            {
+                foreach (KeyValuePair<CharacterInfo, int> changedRank in changedRanks)
+                    LogMilestone(changedRank.Key, MilestoneType.Ranking, changedRank.Value, true);
             }
 
             if (!updateLead || (TopRankings.Count >= 20 && !changed)) return; //5 * 4
 
             UpdateLead();
+        }
+
+        private static int GetRankingPosition(LinkedListNode<CharacterInfo> node)
+        {
+            int rank = 1;
+
+            while ((node = node.Previous) != null)
+                rank++;
+
+            return rank;
+        }
+
+        private static void SwapRankPosition(CharacterInfo rankIncrease, CharacterInfo rankDecrease)
+        {
+            SwapRankPosition(rankIncrease.RankChange, rankDecrease.RankChange, RequiredClass.All);
+
+            if (rankIncrease.Class != rankDecrease.Class) return;
+
+            switch (rankIncrease.Class)
+            {
+                case MirClass.Warrior:
+                    SwapRankPosition(rankIncrease.RankChange, rankDecrease.RankChange, RequiredClass.Warrior);
+                    break;
+                case MirClass.Wizard:
+                    SwapRankPosition(rankIncrease.RankChange, rankDecrease.RankChange, RequiredClass.Wizard);
+                    break;
+                case MirClass.Taoist:
+                    SwapRankPosition(rankIncrease.RankChange, rankDecrease.RankChange, RequiredClass.Taoist);
+                    break;
+                case MirClass.Assassin:
+                    SwapRankPosition(rankIncrease.RankChange, rankDecrease.RankChange, RequiredClass.Assassin);
+                    break;
+            }
         }
 
         private static void SwapRankPosition(Dictionary<RequiredClass, int> rankA, Dictionary<RequiredClass, int> rankB, RequiredClass cls)
@@ -4275,7 +4320,7 @@ namespace Server.Envir
 
         private static Dictionary<CharacterInfo, Dictionary<(MilestoneType, int), UserMilestoneLog>> MilestoneLogCache = [];
 
-        private static int GetSecondaryId(MilestoneType type, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null)
+        private static int GetSecondaryId(MilestoneType type, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null, MagicInfo magic = null)
         {
             int index = -1;
 
@@ -4287,21 +4332,21 @@ namespace Server.Envir
                 case MilestoneType.InstanceJoin:
                     index = instance?.Index ?? 0;
                     break;
-                case MilestoneType.MonsterKilled:
+                case MilestoneType.MonsterKill:
                 case MilestoneType.MonsterDeath:
-                case MilestoneType.MonsterDamageTaken:
+                case MilestoneType.MonsterDamageTake:
                 case MilestoneType.MonsterDamageDone:
                     //case MilestoneType.MonsterSeen:
                     index = monster?.Index ?? 0;
                     break;
-                case MilestoneType.PlayerKilled:
+                case MilestoneType.PlayerKill:
                 case MilestoneType.PlayerDeath:
-                case MilestoneType.PlayerDamageTaken:
+                case MilestoneType.PlayerDamageTake:
                 case MilestoneType.PlayerDamageDone:
                     index = player?.Index ?? 0;
                     break;
-                case MilestoneType.ItemGained:
-                case MilestoneType.ItemUsed:
+                case MilestoneType.ItemGain:
+                case MilestoneType.ItemUse:
                     index = item?.Index ?? 0;
                     break;
                 case MilestoneType.CurrencyGain:
@@ -4310,16 +4355,20 @@ namespace Server.Envir
                 case MilestoneType.QuestComplete:
                     index = quest?.Index ?? 0;
                     break;
+                case MilestoneType.SkillLearn:
+                case MilestoneType.SkillLevel:
+                    index = magic?.Index ?? 0;
+                    break;
             }
 
             return index;
         }
 
-        public static void LogMilestone(CharacterInfo character, MilestoneType type, long amount = 1, bool setAmount = false, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null)
+        public static void LogMilestone(CharacterInfo character, MilestoneType type, long amount = 1, bool setAmount = false, CharacterInfo player = null, ItemInfo item = null, MonsterInfo monster = null, CurrencyInfo currency = null, MapRegion region = null, InstanceInfo instance = null, QuestInfo quest = null, MagicInfo magic = null)
         {
             if (!MilestoneLogCache.TryGetValue(character, out Dictionary<(MilestoneType, int), UserMilestoneLog> cache))
             {
-                MilestoneLogCache[character] = [];
+                MilestoneLogCache[character] = cache = [];
             }
 
             int secondaryId = GetSecondaryId(type, player, item, monster, currency, region, instance, quest);
@@ -4335,21 +4384,21 @@ namespace Server.Envir
                     case MilestoneType.InstanceJoin:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Instance == instance);
                         break;
-                    case MilestoneType.MonsterKilled:
+                    case MilestoneType.MonsterKill:
                     case MilestoneType.MonsterDeath:
                     case MilestoneType.MonsterDamageDone:
-                    case MilestoneType.MonsterDamageTaken:
+                    case MilestoneType.MonsterDamageTake:
                         //case MilestoneType.MonsterSeen:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Monster == monster);
                         break;
-                    case MilestoneType.PlayerKilled:
+                    case MilestoneType.PlayerKill:
                     case MilestoneType.PlayerDeath:
                     case MilestoneType.PlayerDamageDone:
-                    case MilestoneType.PlayerDamageTaken:
+                    case MilestoneType.PlayerDamageTake:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Player == player);
                         break;
-                    case MilestoneType.ItemGained:
-                    case MilestoneType.ItemUsed:
+                    case MilestoneType.ItemGain:
+                    case MilestoneType.ItemUse:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
                         break;
                     case MilestoneType.CurrencyGain:
@@ -4357,6 +4406,10 @@ namespace Server.Envir
                         break;
                     case MilestoneType.QuestComplete:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Quest == quest);
+                        break;
+                    case MilestoneType.SkillLearn:
+                    case MilestoneType.SkillLevel:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Magic == magic);
                         break;
                     default:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type);
@@ -4375,6 +4428,7 @@ namespace Server.Envir
                     log.Instance = instance;
                     log.Player = player;
                     log.Quest = quest;
+                    log.Magic = magic;
                     log.Count = 0;
                     character.MilestoneLogs.Add(log);
                 }

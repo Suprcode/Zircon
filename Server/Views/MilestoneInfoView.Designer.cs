@@ -45,6 +45,8 @@ namespace Server.Views
             InstanceInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             gridColumn22 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
+            QuestInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             MilestoneInfoGridControl = new DevExpress.XtraGrid.GridControl();
             MilestoneInfoGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -56,6 +58,7 @@ namespace Server.Views
             gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
+            GradeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
@@ -64,7 +67,8 @@ namespace Server.Views
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             TypeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
-            GradeImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
+            gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
+            MagicInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             ((System.ComponentModel.ISupportInitialize)MilestoneInfoTaskGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)RequiredClassImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemInfoLookUpEdit).BeginInit();
@@ -72,16 +76,18 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)RegionLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CurrencyInfoLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InstanceInfoLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)QuestInfoLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MilestoneInfoGridControl).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MilestoneInfoGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)GradeImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).BeginInit();
             ((System.ComponentModel.ISupportInitialize)TypeImageComboBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)GradeImageComboBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MagicInfoLookUpEdit).BeginInit();
             SuspendLayout();
             // 
             // MilestoneInfoTaskGridView
             // 
-            MilestoneInfoTaskGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn16, gridColumn17, gridColumn18, gridColumn19, gridColumn20, gridColumn21, gridColumn22, gridColumn5 });
+            MilestoneInfoTaskGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { gridColumn16, gridColumn17, gridColumn18, gridColumn19, gridColumn20, gridColumn21, gridColumn22, gridColumn5, gridColumn9, gridColumn10 });
             MilestoneInfoTaskGridView.GridControl = MilestoneInfoGridControl;
             MilestoneInfoTaskGridView.Name = "MilestoneInfoTaskGridView";
             MilestoneInfoTaskGridView.OptionsView.EnableAppearanceEvenRow = true;
@@ -196,7 +202,7 @@ namespace Server.Views
             gridColumn22.FieldName = "Amount";
             gridColumn22.Name = "gridColumn22";
             gridColumn22.Visible = true;
-            gridColumn22.VisibleIndex = 7;
+            gridColumn22.VisibleIndex = 9;
             // 
             // gridColumn5
             // 
@@ -204,6 +210,22 @@ namespace Server.Views
             gridColumn5.Name = "gridColumn5";
             gridColumn5.Visible = true;
             gridColumn5.VisibleIndex = 0;
+            // 
+            // gridColumn9
+            // 
+            gridColumn9.ColumnEdit = QuestInfoLookUpEdit;
+            gridColumn9.FieldName = "Quest";
+            gridColumn9.Name = "gridColumn9";
+            gridColumn9.Visible = true;
+            gridColumn9.VisibleIndex = 7;
+            // 
+            // QuestInfoLookUpEdit
+            // 
+            QuestInfoLookUpEdit.AutoHeight = false;
+            QuestInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            QuestInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("QuestName", "Quest Name"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("QuestType", "Quest Type") });
+            QuestInfoLookUpEdit.Name = "QuestInfoLookUpEdit";
+            QuestInfoLookUpEdit.NullText = "[Quest is null]";
             // 
             // MilestoneInfoGridControl
             // 
@@ -215,7 +237,7 @@ namespace Server.Views
             MilestoneInfoGridControl.MainView = MilestoneInfoGridView;
             MilestoneInfoGridControl.MenuManager = ribbon;
             MilestoneInfoGridControl.Name = "MilestoneInfoGridControl";
-            MilestoneInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { TypeImageComboBox, ItemInfoLookUpEdit, MonsterInfoLookUpEdit, RegionLookUpEdit, RequiredClassImageComboBox, CurrencyInfoLookUpEdit, InstanceInfoLookUpEdit, GradeImageComboBox });
+            MilestoneInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { TypeImageComboBox, ItemInfoLookUpEdit, MonsterInfoLookUpEdit, RegionLookUpEdit, RequiredClassImageComboBox, CurrencyInfoLookUpEdit, InstanceInfoLookUpEdit, GradeImageComboBox, QuestInfoLookUpEdit, MagicInfoLookUpEdit });
             MilestoneInfoGridControl.Size = new System.Drawing.Size(851, 335);
             MilestoneInfoGridControl.TabIndex = 2;
             MilestoneInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { MilestoneInfoGridView, MilestoneInfoTaskGridView });
@@ -302,6 +324,12 @@ namespace Server.Views
             gridColumn8.Visible = true;
             gridColumn8.VisibleIndex = 2;
             // 
+            // GradeImageComboBox
+            // 
+            GradeImageComboBox.AutoHeight = false;
+            GradeImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            GradeImageComboBox.Name = "GradeImageComboBox";
+            // 
             // ribbon
             // 
             ribbon.ExpandCollapseItem.Id = 0;
@@ -367,11 +395,21 @@ namespace Server.Views
             TypeImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             TypeImageComboBox.Name = "TypeImageComboBox";
             // 
-            // GradeImageComboBox
+            // gridColumn10
             // 
-            GradeImageComboBox.AutoHeight = false;
-            GradeImageComboBox.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            GradeImageComboBox.Name = "GradeImageComboBox";
+            gridColumn10.ColumnEdit = MagicInfoLookUpEdit;
+            gridColumn10.FieldName = "Magic";
+            gridColumn10.Name = "gridColumn10";
+            gridColumn10.Visible = true;
+            gridColumn10.VisibleIndex = 8;
+            // 
+            // MagicInfoLookUpEdit
+            // 
+            MagicInfoLookUpEdit.AutoHeight = false;
+            MagicInfoLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            MagicInfoLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Name") });
+            MagicInfoLookUpEdit.Name = "MagicInfoLookUpEdit";
+            MagicInfoLookUpEdit.NullText = "[Magic is null]";
             // 
             // MilestoneInfoView
             // 
@@ -390,11 +428,13 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)RegionLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)CurrencyInfoLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)InstanceInfoLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)QuestInfoLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)MilestoneInfoGridControl).EndInit();
             ((System.ComponentModel.ISupportInitialize)MilestoneInfoGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)GradeImageComboBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)ribbon).EndInit();
             ((System.ComponentModel.ISupportInitialize)TypeImageComboBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)GradeImageComboBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MagicInfoLookUpEdit).EndInit();
             ResumeLayout(false);
             PerformLayout();
 
@@ -437,5 +477,9 @@ namespace Server.Views
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn8;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox GradeImageComboBox;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit QuestInfoLookUpEdit;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn10;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit MagicInfoLookUpEdit;
     }
 }

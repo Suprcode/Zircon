@@ -3071,6 +3071,8 @@ namespace Server.Models
             companion.Hunger = 100;
             companion.Name = p.Name;
 
+            LogMilestone(MilestoneType.CompanionAdopt, 1);
+
             result.UserCompanion = companion.ToClientInfo();
         }
 
@@ -3692,7 +3694,7 @@ namespace Server.Models
                     ObserverPacket = false,
                 });
 
-            LogMilestone(MilestoneType.MailSent, 1);
+            LogMilestone(MilestoneType.MailSend, 1);
         }
 
         #endregion
@@ -3935,7 +3937,6 @@ namespace Server.Models
                 return;
             }
 
-
             long cost = p.Count;
 
             cost *= info.Price;
@@ -4067,6 +4068,7 @@ namespace Server.Models
             result.Success = true;
 
             LogMilestone(MilestoneType.MarketPurchase, result.Count, item: info.Item.Info);
+            SEnvir.LogMilestone(info.Character, MilestoneType.MarketSell, result.Count, item: info.Item.Info);
 
             AuctionHistoryInfo history = SEnvir.AuctionHistoryInfoList.Binding.FirstOrDefault(x => x.Info == itemInfo.Index && x.PartIndex == partIndex) ?? SEnvir.AuctionHistoryInfoList.CreateNewObject();
 
@@ -5827,7 +5829,7 @@ namespace Server.Models
                     item.IsTemporary = true;
                     item.Delete();
 
-                    LogMilestone(MilestoneType.ItemGained, item.Count, item: item.Info);
+                    LogMilestone(MilestoneType.ItemGain, item.Count, item: item.Info);
                     continue;
                 }
 
@@ -5870,7 +5872,7 @@ namespace Server.Models
                             item.IsTemporary = true;
                             item.Delete();
                             handled = true;
-                            LogMilestone(MilestoneType.ItemGained, item.Count, item: item.Info);
+                            LogMilestone(MilestoneType.ItemGain, item.Count, item: item.Info);
                             break;
                         }
 
@@ -5888,7 +5890,7 @@ namespace Server.Models
                     item.Slot = i;
                     item.Character = Character;
                     item.IsTemporary = false;
-                    LogMilestone(MilestoneType.ItemGained, item.Count, item: item.Info);
+                    LogMilestone(MilestoneType.ItemGain, item.Count, item: item.Info);
                     break;
                 }
             }
@@ -6839,7 +6841,7 @@ namespace Server.Models
                 result.Link.Count = 0;
             }
 
-            LogMilestone(MilestoneType.ItemUsed, useCount, item: item.Info);
+            LogMilestone(MilestoneType.ItemUse, useCount, item: item.Info);
 
             if (gainItem != null)
                 GainItem(gainItem);
@@ -9867,7 +9869,7 @@ namespace Server.Models
                     CurrencyChanged(userCurrency);
                 }
 
-                LogMilestone(MilestoneType.ShopBuy, item.Count, item: item.Info);
+                LogMilestone(MilestoneType.ShopPurchase, item.Count, item: item.Info);
 
                 GainItem(item);
             }
@@ -13239,13 +13241,13 @@ namespace Server.Models
                                 continue;
                             }
 
-                            LogMilestone(MilestoneType.Harvest, 1);
-
                             if (ob.HarvestCount > 0)
                             {
                                 ob.HarvestCount--;
                                 continue;
                             }
+
+                            LogMilestone(MilestoneType.Harvest, 1);
 
                             if (items != null)
                             {
@@ -13680,17 +13682,21 @@ namespace Server.Models
                 }
             }
 
-            switch (distance)
+            if (Horse != HorseType.None)
             {
-                case 1:
-                    LogMilestone(MilestoneType.Walk, 1);
-                    break;
-                case 2:
-                    LogMilestone(MilestoneType.Run, 1);
-                    break;
-                case 3:
-                    LogMilestone(MilestoneType.Ride, 1);
-                    break;
+                LogMilestone(MilestoneType.Ride, distance);
+            }
+            else
+            {
+                switch (distance)
+                {
+                    case 1:
+                        LogMilestone(MilestoneType.Walk, 1);
+                        break;
+                    case 2:
+                        LogMilestone(MilestoneType.Run, 2);
+                        break;
+                }
             }
 
             Direction = direction;
@@ -14025,7 +14031,7 @@ namespace Server.Models
                         UserItem item = SEnvir.CreateDropItem(check);
                         GainItem(item);
 
-                        LogMilestone(MilestoneType.MineCatch, 1);
+                        LogMilestone(MilestoneType.MineCatch, item.Count, item: item.Info);
 
                         if (info.Quantity > 0)
                         {
@@ -15128,6 +15134,8 @@ namespace Server.Models
                 magic.Level++;
                 RefreshStats();
 
+                LogMilestone(MilestoneType.SkillLevel, magic.Level, true, magic: magic.Info);
+
                 for (int i = Pets.Count - 1; i >= 0; i--)
                     Pets[i].RefreshStats();
             }
@@ -15262,10 +15270,16 @@ namespace Server.Models
                 switch (LastHitter.Race)
                 {
                     case ObjectType.Player:
-                        attacker = (PlayerObject)LastHitter;
+                        var playerAttacker = (PlayerObject)LastHitter;
+                        attacker = playerAttacker;
+                        LogMilestone(MilestoneType.PlayerDeath, 1, player: playerAttacker.Character);
+                        attacker.LogMilestone(MilestoneType.PlayerKill, 1, player: playerAttacker.Character);
                         break;
                     case ObjectType.Monster:
-                        attacker = ((MonsterObject)LastHitter).PetOwner;
+                        var monsterAttacker = (MonsterObject)LastHitter;
+                        attacker = monsterAttacker.PetOwner;
+                        LogMilestone(MilestoneType.MonsterDeath, 1, monster: monsterAttacker.MonsterInfo);
+                        attacker?.LogMilestone(MilestoneType.PlayerPetKill, 1, player: attacker.Character);
                         break;
                 }
             }
@@ -16411,6 +16425,8 @@ namespace Server.Models
                 SetupMagic(uMagic);
 
                 uFocus.Magics.Add(uMagic);
+
+                LogMilestone(MilestoneType.SkillLearn, 1, magic: mInfo);
 
                 Enqueue(new S.NewMagic { Magic = uMagic.ToClientInfo() });
             }

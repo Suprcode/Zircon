@@ -2596,7 +2596,7 @@ namespace Server.Models
 
                     EXPOwner.GainExperience(exp, PlayerTagged, Level);
 
-                    EXPOwner.LogMilestone(MilestoneType.MonsterKilled, 1, monster: MonsterInfo);
+                    EXPOwner.LogMilestone(MilestoneType.MonsterKill, 1, monster: MonsterInfo);
 
                     if (GrowthLevel > 0)
                         EXPOwner.GainDisciplineExperience(GrowthLevel);
@@ -2616,7 +2616,7 @@ namespace Server.Models
 
                     player.GainExperience(expfinal, PlayerTagged, Level);
 
-                    player.LogMilestone(MilestoneType.MonsterKilled, 1, monster: MonsterInfo);
+                    player.LogMilestone(MilestoneType.MonsterKill, 1, monster: MonsterInfo);
 
                     if (GrowthLevel > 0)
                         player.GainDisciplineExperience(GrowthLevel);

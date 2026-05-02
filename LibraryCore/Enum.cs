@@ -1882,81 +1882,79 @@ namespace Library
         Run = 1,
         Ride = 2,
         Harvest = 3,
-        Die = 6,
-        Level = 7,
-        Poisoned = 8, //todo
-        Marry = 11,
-        Divorce = 12,
-        Trade = 13,
-        Rebirth = 15,
-        PKPoint = 16,
-        Ranking = 17, //todo
+        Die = 4,
+        Level = 5, //Set
+        Marry = 6,
+        Divorce = 7,
+        Trade = 8,
+        Rebirth = 9, //Set
+        PKPoint = 10, //Set
+        Ranking = 11, //Set //Reverse
 
-        QuestComplete = 20, //need to track quest type too - "daily", "story" etc
+        //Tracked by Item
+        ItemGain = 20,
+        ItemUse = 21,
 
-        MineCast = 30,
-        MineCatch = 31,
+        //Tracked by Currency
+        CurrencyGain = 30,
 
-        FishingCast = 40,
-        FishingCatch = 41,
-        FishingFail = 42,
+        //Tracked by Quest
+        QuestComplete = 40,
+
+        CompanionAdopt = 50,
+
+        //Tracked by Magic
+        SkillLearn = 60,
+        SkillLevel = 61, //Set
+
+        PetTame = 70,
+        PetSummon = 71,
+
+        GuildJoin = 80,
+        GuildCreate = 81,
+
+        GroupJoin = 90,
+        GroupCreate = 91,
+
+        MailSend = 100,
+
+        FriendAdd = 110, //Set
+
+        MineCast = 120,
+        MineCatch = 121, //Tracked by Item
+
+        FishingCast = 130,
+        FishingCatch = 131,
+        FishingFail = 132,
+
+        //Tracked by Instance
+        InstanceJoin = 140,
 
         //Tracked by Region
-        Region = 50,
+        Region = 150,
 
-        InstanceJoin = 60,
+        //Tracked by Item
+        ShopPurchase = 160,
+        ShopSell = 161,
 
-        //TODO
-        //Tracked by Monster
-        MonsterKilled = 100,
-        MonsterDeath = 101,
-        MonsterDamageTaken = 102,
-        MonsterDamageDone = 103,
-        //MonsterSeen = 104,
-
-        //TODO
-        //Tracked by Player
-        PlayerKilled = 110,
-        PlayerDeath = 111,
-        PlayerDamageTaken = 112,
-        PlayerDamageDone = 113,
-
-        //Track by Item
-        ItemGained = 120,
-        ItemUsed = 121,
-
-        CompanionAdopt = 130,
-
-        //Track by Currency
-        CurrencyGain = 140,
-
-        //Track by Item
-        ShopBuy = 150,
-        ShopSell = 151,
-
-        MailSent = 160,
-
-        //Track by item
+        //Tracked by item
         MarketConsign = 170,
         MarketPurchase = 171,
-        MarketSell = 172, //todo
+        MarketSell = 172,
 
-        GuildJoin = 180,
-        GuildCreate = 181,
+        //Tracked by Monster
+        MonsterKill = 180,
+        MonsterDeath = 181,
+        MonsterDamageDone = 182, //todo
+        MonsterDamageTake = 183, //todo
+        MonsterPetKill = 184, //todo
 
-        GroupJoin = 190,
-        GroupCreate = 191,
-
-        FriendAdd = 200,
-
-        //TODO
-        //Track by Magic
-        SkillLearn = 210,
-        SkillLevel = 211,
-
-        //TODO
-        PetTame = 220,
-        PetSummon = 221,
+        //Tracked by Player
+        PlayerKill = 190,
+        PlayerDeath = 191,
+        PlayerDamageDone = 192, //todo
+        PlayerDamageTake = 193, //todo
+        PlayerPetKill = 194,
     }
 
     public enum MovementEffect

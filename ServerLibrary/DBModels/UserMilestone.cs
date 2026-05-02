@@ -152,13 +152,28 @@ namespace Server.DBModels
             {
                 if (_Quest == value) return;
 
-                var oldValue = _Currency;
+                var oldValue = _Quest;
                 _Quest = value;
 
                 OnChanged(oldValue, value, "Quest");
             }
         }
         private QuestInfo _Quest;
+
+        public MagicInfo Magic
+        {
+            get { return _Magic; }
+            set
+            {
+                if (_Magic == value) return;
+
+                var oldValue = _Magic;
+                _Magic = value;
+
+                OnChanged(oldValue, value, "Magic");
+            }
+        }
+        private MagicInfo _Magic;
 
         protected override void OnDeleted()
         {

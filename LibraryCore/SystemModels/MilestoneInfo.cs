@@ -322,6 +322,22 @@ namespace Library.SystemModels
         private QuestInfo _Quest;
 
         [IsIdentity]
+        public MagicInfo Magic
+        {
+            get { return _Magic; }
+            set
+            {
+                if (_Magic == value) return;
+
+                var oldValue = _Magic;
+                _Magic = value;
+
+                OnChanged(oldValue, value, "Magic");
+            }
+        }
+        private MagicInfo _Magic;
+
+        [IsIdentity]
         public int Amount
         {
             get { return _Amount; }

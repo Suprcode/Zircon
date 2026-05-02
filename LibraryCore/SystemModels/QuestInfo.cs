@@ -1,5 +1,4 @@
 ﻿using MirDB;
-using System.Xml.Linq;
 
 namespace Library.SystemModels
 {
@@ -272,7 +271,6 @@ namespace Library.SystemModels
             Class = RequiredClass.All;
         }
     }
-
 
     public sealed class QuestRequirement : DBObject
     {

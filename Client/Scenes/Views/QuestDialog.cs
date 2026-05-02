@@ -3,7 +3,6 @@ using Client.Envir;
 using Client.Models;
 using Client.UserModels;
 using Library;
-using Library.Network.ServerPackets;
 using Library.SystemModels;
 using System;
 using System.Collections.Generic;
@@ -1703,7 +1702,7 @@ namespace Client.Scenes.Views
 
             var grouped = Globals.MilestoneInfoList.Binding.GroupBy(x => x.Category);
 
-            foreach (var group in grouped)
+            foreach (var group in grouped.OrderBy(x => x.Key))
             {
                 Add(group.Key, group.ToList());
             }
@@ -2009,8 +2008,6 @@ namespace Client.Scenes.Views
             }
 
             ScrollBar.Value = 0;
-
-            ScrollBar.MaxValue = Items.Count + 1;
         }
 
         public void Update(bool hideComplete, string searchText)
@@ -2034,16 +2031,22 @@ namespace Client.Scenes.Views
             int y = -(ScrollBar.Value * 95) + 4;
             int h = 0;
 
+            int count = 0;
+
             foreach (DXControl control in Controls)
             {
                 if (control is not MilestoneItem item) continue;
 
                 if (!item.Visible) continue;
 
+                count++;
+
                 control.Location = new Point(0, y);
                 h += control.Size.Height;
                 y += control.Size.Height + 5;
             }
+
+            ScrollBar.MaxValue = count + 1;
         }
 
         #endregion
@@ -2156,19 +2159,19 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.HorizontalCenter,
-                IsControl = false
+                IsControl = false,
             };
 
             DescriptionLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(70, 32),
+                Location = new Point(74, 32),
                 Size = new Size(380, 43),
                 AutoSize = false,
                 ForeColour = Color.White,
                 Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix,
-                IsControl = false
+                IsControl = false,
             };
 
             ItemCell = new DXItemCell

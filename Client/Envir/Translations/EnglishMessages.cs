@@ -210,6 +210,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowTargetColoursTabMonsterLowLabel { get; set; } = "Monster (Low)";
         public override string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; } = "Monster (Same)";
         public override string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; } = "Monster (High)";
+        public override string CommonControlConfigWindowTargetColoursTabMonsterFriendlyLabel { get; set; } = "Monster (Friendly)";
         public override string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; } = "NPC";
         public override string CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel { get; set; } = "Player (Friendly)";
         public override string CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel { get; set; } = "Player (Enemy)";

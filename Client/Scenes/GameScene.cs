@@ -4292,10 +4292,9 @@ namespace Client.Scenes
             else
                 text = questInfo.ProgressText; //Current
 
-
-            text = text.Replace("[PLAYERNAME]", User.Name);
-            text = text.Replace("[STARTNAME]", questInfo.StartNPC.NPCName);
-            text = text.Replace("[FINISHNAME]", questInfo.FinishNPC.NPCName);
+            text = text.Replace("[PLAYERNAME]", User.Name, StringComparison.OrdinalIgnoreCase);
+            text = text.Replace("[STARTNAME]", questInfo.StartNPC.NPCName, StringComparison.OrdinalIgnoreCase);
+            text = text.Replace("[FINISHNAME]", questInfo.FinishNPC.NPCName, StringComparison.OrdinalIgnoreCase);
 
             return text;
 

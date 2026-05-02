@@ -566,10 +566,10 @@ namespace Server.Models
             {
                 PlayerObject player = (PlayerObject)ob;
 
-                var newRegions = Regions.Except(player.CurrentCell.Regions);
-
-                foreach (var region in newRegions)
+                foreach (var region in Regions.Except(player.CurrentCell.Regions))
                 {
+                    if (region.RegionType != RegionType.None && region.RegionType != RegionType.Area) continue;
+
                     player.LogMilestone(MilestoneType.Region, 1, region: region);
                 }
             }

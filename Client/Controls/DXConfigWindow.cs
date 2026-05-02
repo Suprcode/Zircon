@@ -46,7 +46,7 @@ namespace Client.Controls
         public DXButton ResetColoursButton;
 
         //Target Outline Colours
-        public DXColourControl TargetMonsterLowLevelColourBox, TargetMonsterSameLevelColourBox, TargetMonsterHighLevelColourBox, TargetPlayerEnemyColourBox, TargetPlayerFriendlyColourBox, TargetNPCColourBox;
+        public DXColourControl TargetMonsterLowLevelColourBox, TargetMonsterSameLevelColourBox, TargetMonsterHighLevelColourBox, TargetMonsterFriendlyColourBox, TargetPlayerEnemyColourBox, TargetPlayerFriendlyColourBox, TargetNPCColourBox;
         public DXButton ResetTargetColoursButton;
 
         private DXButton CloseButton;
@@ -167,6 +167,7 @@ namespace Client.Controls
             TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
             TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
             TargetMonsterHighLevelColourBox.BackColour = Config.TargetMonsterHighLevelColour;
+            TargetMonsterFriendlyColourBox.BackColour = Config.TargetMonsterFriendlyColour;
             TargetNPCColourBox.BackColour = Config.TargetNPCColour;
             TargetPlayerFriendlyColourBox.BackColour = Config.TargetPlayerFriendlyColour;
             TargetPlayerEnemyColourBox.BackColour = Config.TargetPlayerEnemyColour;
@@ -770,6 +771,10 @@ namespace Client.Controls
             TargetMonsterHighLevelColourBox.BackColourChanged += (o, e) => Config.TargetMonsterHighLevelColour = TargetMonsterHighLevelColourBox.BackColour;
             targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterHighLabel, TargetMonsterHighLevelColourBox);
 
+            TargetMonsterFriendlyColourBox = new DXColourControl { AllowNoColour = true };
+            TargetMonsterFriendlyColourBox.BackColourChanged += (o, e) => Config.TargetMonsterFriendlyColour = TargetMonsterFriendlyColourBox.BackColour;
+            targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabMonsterFriendlyLabel, TargetMonsterFriendlyColourBox);
+
             TargetPlayerFriendlyColourBox = new DXColourControl { AllowNoColour = true };
             TargetPlayerFriendlyColourBox.BackColourChanged += (o, e) => Config.TargetPlayerFriendlyColour = TargetPlayerFriendlyColourBox.BackColour;
             targetColoursSection.AddControl(CEnvir.Language.CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel, TargetPlayerFriendlyColourBox);
@@ -794,6 +799,9 @@ namespace Client.Controls
                 TargetMonsterLowLevelColourBox.BackColour = Color.LimeGreen;
                 TargetMonsterSameLevelColourBox.BackColour = Color.Yellow;
                 TargetMonsterHighLevelColourBox.BackColour = Color.Red;
+                TargetMonsterFriendlyColourBox.BackColour = Color.Cyan;
+                TargetPlayerFriendlyColourBox.BackColour = Color.Cyan;
+                TargetPlayerEnemyColourBox.BackColour = Color.Red;
                 TargetNPCColourBox.BackColour = Color.Cyan;
             };
             targetColoursSection.AddControl("", ResetTargetColoursButton);

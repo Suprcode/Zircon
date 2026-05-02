@@ -208,6 +208,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowTargetColoursTabMonsterLowLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterFriendlyLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel { get; set; }
