@@ -2433,6 +2433,11 @@ namespace Server.Models
                 }
             }
 
+            player?.LogMilestone(MilestoneType.MonsterDamageDone, power, monster: MonsterInfo);
+
+            if (Dead && attacker is MonsterObject { PetOwner: not null } petAttacker)
+                petAttacker.PetOwner.LogMilestone(MilestoneType.MonsterPetKill, 1, monster: MonsterInfo);
+
             if (Dead) return power;
 
             if (CanAttackTarget(attacker) && PetOwner == null || Target == null)

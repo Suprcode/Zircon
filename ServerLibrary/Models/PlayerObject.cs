@@ -14904,6 +14904,14 @@ namespace Server.Models
             else
                 ChangeHP(-power);
 
+            if (attacker is MonsterObject monsterAttacker)
+                LogMilestone(MilestoneType.MonsterDamageTake, power, monster: monsterAttacker.MonsterInfo);
+            else if (attacker is PlayerObject playerAttacker)
+            {
+                LogMilestone(MilestoneType.PlayerDamageTake, power, player: playerAttacker.Character);
+                playerAttacker.LogMilestone(MilestoneType.PlayerDamageDone, power, player: Character);
+            }
+
             LastHitter = null;
 
             if (canReflect && CanAttackTarget(attacker) && attacker.Race != ObjectType.Player)

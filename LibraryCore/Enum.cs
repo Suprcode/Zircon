@@ -1924,7 +1924,7 @@ namespace Library
         MineCatch = 121, //Tracked by Item
 
         FishingCast = 130,
-        FishingCatch = 131,
+        FishingCatch = 131, //Tracked by Item
         FishingFail = 132,
 
         //Tracked by Instance
@@ -1937,7 +1937,7 @@ namespace Library
         ShopPurchase = 160,
         ShopSell = 161,
 
-        //Tracked by item
+        //Tracked by Item
         MarketConsign = 170,
         MarketPurchase = 171,
         MarketSell = 172,
@@ -1945,15 +1945,15 @@ namespace Library
         //Tracked by Monster
         MonsterKill = 180,
         MonsterDeath = 181,
-        MonsterDamageDone = 182, //todo
-        MonsterDamageTake = 183, //todo
-        MonsterPetKill = 184, //todo
+        MonsterDamageDone = 182,
+        MonsterDamageTake = 183,
+        MonsterPetKill = 184,
 
         //Tracked by Player
         PlayerKill = 190,
         PlayerDeath = 191,
-        PlayerDamageDone = 192, //todo
-        PlayerDamageTake = 193, //todo
+        PlayerDamageDone = 192,
+        PlayerDamageTake = 193,
         PlayerPetKill = 194,
     }
 

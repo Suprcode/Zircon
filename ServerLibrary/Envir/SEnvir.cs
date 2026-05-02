@@ -4326,25 +4326,6 @@ namespace Server.Envir
 
             switch (type)
             {
-                case MilestoneType.Region:
-                    index = region?.Index ?? 0;
-                    break;
-                case MilestoneType.InstanceJoin:
-                    index = instance?.Index ?? 0;
-                    break;
-                case MilestoneType.MonsterKill:
-                case MilestoneType.MonsterDeath:
-                case MilestoneType.MonsterDamageTake:
-                case MilestoneType.MonsterDamageDone:
-                    //case MilestoneType.MonsterSeen:
-                    index = monster?.Index ?? 0;
-                    break;
-                case MilestoneType.PlayerKill:
-                case MilestoneType.PlayerDeath:
-                case MilestoneType.PlayerDamageTake:
-                case MilestoneType.PlayerDamageDone:
-                    index = player?.Index ?? 0;
-                    break;
                 case MilestoneType.ItemGain:
                 case MilestoneType.ItemUse:
                     index = item?.Index ?? 0;
@@ -4358,6 +4339,41 @@ namespace Server.Envir
                 case MilestoneType.SkillLearn:
                 case MilestoneType.SkillLevel:
                     index = magic?.Index ?? 0;
+                    break;
+                case MilestoneType.MineCatch:
+                    index = item?.Index ?? 0;
+                    break;
+                case MilestoneType.FishingCatch:
+                    index = item?.Index ?? 0;
+                    break;
+                case MilestoneType.InstanceJoin:
+                    index = instance?.Index ?? 0;
+                    break;
+                case MilestoneType.Region:
+                    index = region?.Index ?? 0;
+                    break;
+                case MilestoneType.ShopPurchase:
+                case MilestoneType.ShopSell:
+                    index = item?.Index ?? 0;
+                    break;
+                case MilestoneType.MarketConsign:
+                case MilestoneType.MarketPurchase:
+                case MilestoneType.MarketSell:
+                    index = item?.Index ?? 0;
+                    break;
+                case MilestoneType.MonsterKill:
+                case MilestoneType.MonsterDeath:
+                case MilestoneType.MonsterDamageTake:
+                case MilestoneType.MonsterDamageDone:
+                case MilestoneType.MonsterPetKill:
+                    index = monster?.Index ?? 0;
+                    break;
+                case MilestoneType.PlayerKill:
+                case MilestoneType.PlayerDeath:
+                case MilestoneType.PlayerDamageTake:
+                case MilestoneType.PlayerDamageDone:
+                case MilestoneType.PlayerPetKill:
+                    index = player?.Index ?? 0;
                     break;
             }
 
@@ -4378,25 +4394,6 @@ namespace Server.Envir
             {
                 switch (type)
                 {
-                    case MilestoneType.Region:
-                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Region == region);
-                        break;
-                    case MilestoneType.InstanceJoin:
-                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Instance == instance);
-                        break;
-                    case MilestoneType.MonsterKill:
-                    case MilestoneType.MonsterDeath:
-                    case MilestoneType.MonsterDamageDone:
-                    case MilestoneType.MonsterDamageTake:
-                        //case MilestoneType.MonsterSeen:
-                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Monster == monster);
-                        break;
-                    case MilestoneType.PlayerKill:
-                    case MilestoneType.PlayerDeath:
-                    case MilestoneType.PlayerDamageDone:
-                    case MilestoneType.PlayerDamageTake:
-                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Player == player);
-                        break;
                     case MilestoneType.ItemGain:
                     case MilestoneType.ItemUse:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
@@ -4410,6 +4407,41 @@ namespace Server.Envir
                     case MilestoneType.SkillLearn:
                     case MilestoneType.SkillLevel:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Magic == magic);
+                        break;
+                    case MilestoneType.MineCatch:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
+                        break;
+                    case MilestoneType.FishingCast:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
+                        break;
+                    case MilestoneType.InstanceJoin:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Instance == instance);
+                        break;
+                    case MilestoneType.Region:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Region == region);
+                        break;
+                    case MilestoneType.ShopPurchase:
+                    case MilestoneType.ShopSell:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
+                        break;
+                    case MilestoneType.MarketConsign:
+                    case MilestoneType.MarketPurchase:
+                    case MilestoneType.MarketSell:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Item == item);
+                        break;
+                    case MilestoneType.MonsterKill:
+                    case MilestoneType.MonsterDeath:
+                    case MilestoneType.MonsterDamageDone:
+                    case MilestoneType.MonsterDamageTake:
+                    case MilestoneType.MonsterPetKill:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Monster == monster);
+                        break;
+                    case MilestoneType.PlayerKill:
+                    case MilestoneType.PlayerDeath:
+                    case MilestoneType.PlayerDamageDone:
+                    case MilestoneType.PlayerDamageTake:
+                    case MilestoneType.PlayerPetKill:
+                        log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type && x.Player == player);
                         break;
                     default:
                         log = character.MilestoneLogs.FirstOrDefault(x => x.Type == type);
