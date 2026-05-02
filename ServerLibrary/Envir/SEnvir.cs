@@ -4387,7 +4387,7 @@ namespace Server.Envir
                 MilestoneLogCache[character] = cache = [];
             }
 
-            int secondaryId = GetSecondaryId(type, player, item, monster, currency, region, instance, quest);
+            int secondaryId = GetSecondaryId(type, player, item, monster, currency, region, instance, quest, magic);
             var key = (type, secondaryId);
 
             if (!cache.TryGetValue(key, out var log))

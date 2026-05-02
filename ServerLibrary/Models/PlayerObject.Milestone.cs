@@ -244,6 +244,7 @@ namespace Server.Models
                 foreach (var task in info.Tasks)
                 {
                     var taskLogs = Character.MilestoneLogs.Where(x => x.Type == task.Type &&
+                                                            (task.Class == RequiredClass.None || task.Class == RequiredClass.All || MatchesRequiredClass(x.Character?.Class, task.Class)) &&
                                                             (task.Item == null || x.Item == task.Item) &&
                                                             (task.Monster == null || x.Monster == task.Monster) &&
                                                             (task.Currency == null || x.Currency == task.Currency) &&

@@ -15281,13 +15281,13 @@ namespace Server.Models
                         var playerAttacker = (PlayerObject)LastHitter;
                         attacker = playerAttacker;
                         LogMilestone(MilestoneType.PlayerDeath, 1, player: playerAttacker.Character);
-                        attacker.LogMilestone(MilestoneType.PlayerKill, 1, player: playerAttacker.Character);
+                        attacker.LogMilestone(MilestoneType.PlayerKill, 1, player: Character);
                         break;
                     case ObjectType.Monster:
                         var monsterAttacker = (MonsterObject)LastHitter;
                         attacker = monsterAttacker.PetOwner;
                         LogMilestone(MilestoneType.MonsterDeath, 1, monster: monsterAttacker.MonsterInfo);
-                        attacker?.LogMilestone(MilestoneType.PlayerPetKill, 1, player: attacker.Character);
+                        attacker?.LogMilestone(MilestoneType.PlayerPetKill, 1, player: Character);
                         break;
                 }
             }
