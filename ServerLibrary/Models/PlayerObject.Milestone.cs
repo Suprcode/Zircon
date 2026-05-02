@@ -16,6 +16,9 @@ namespace Server.Models
     public partial class PlayerObject
     {
         private readonly Dictionary<int, ClientUserMilestone> _clientMilestoneCache = new();
+        private readonly HashSet<int> _dirtyClientMilestoneCache = [];
+        private static Dictionary<MilestoneType, List<MilestoneInfo>> _milestoneInfosByTaskType;
+        private static int _milestoneInfoIndexCount = -1;
 
         public bool ReceiveMilestoneUpdates;
 
@@ -24,28 +27,50 @@ namespace Server.Models
             SEnvir.LogMilestone(Character, type, amount, setAmount, player, item, monster, currency, region, instance, quest, magic);
         }
 
-        public void CheckMilestones(UserMilestoneLog log, MilestoneType type)
+        private static List<MilestoneInfo> GetMilestoneInfosForTaskType(MilestoneType type)
         {
-            // Update client milestone cache for all MilestoneInfo entries of this type.
-            foreach (var info in SEnvir.MilestoneInfoList.Binding)
+            var infos = SEnvir.MilestoneInfoList.Binding;
+
+            if (_milestoneInfosByTaskType == null || _milestoneInfoIndexCount != infos.Count)
             {
-                if (!info.Tasks.Any(x => x.Type == type)) continue;
+                _milestoneInfoIndexCount = infos.Count;
+                _milestoneInfosByTaskType = new Dictionary<MilestoneType, List<MilestoneInfo>>();
 
-                if (_clientMilestoneCache.TryGetValue(info.Index, out var cached) && cached.DateEarned > DateTime.Now)
-                    continue;
+                foreach (var info in infos)
+                {
+                    foreach (var taskType in info.Tasks.Select(x => x.Type).Distinct())
+                    {
+                        if (!_milestoneInfosByTaskType.TryGetValue(taskType, out var milestones))
+                        {
+                            milestones = new List<MilestoneInfo>();
+                            _milestoneInfosByTaskType[taskType] = milestones;
+                        }
 
-                UpdateClientMilestoneCacheForInfo(info);
+                        milestones.Add(info);
+                    }
+                }
             }
 
-            foreach (MilestoneInfo info in SEnvir.MilestoneInfoList.Binding)
+            return _milestoneInfosByTaskType.TryGetValue(type, out var result) ? result : [];
+        }
+
+        public void CheckMilestones(MilestoneType type)
+        {
+            var milestoneInfos = GetMilestoneInfosForTaskType(type);
+
+            foreach (var info in milestoneInfos)
+            {
+                if (_clientMilestoneCache.TryGetValue(info.Index, out var cached) && cached.DateEarned > DateTime.MinValue && cached.DateEarned < DateTime.Now)
+                    continue;
+
+                _dirtyClientMilestoneCache.Add(info.Index);
+            }
+
+            foreach (MilestoneInfo info in milestoneInfos)
             {
                 if (Character.Milestones.Any(x => x.Info == info)) continue;
 
                 if (!MatchesRequiredClass(Class, info.RequiredClass)) continue;
-
-                // Only milestones touched by this log type can have changed, but all tasks must
-                // still be complete before the milestone is awarded.
-                if (!info.Tasks.Any(x => x.Type == log.Type)) continue;
 
                 bool meetsAllTasks = true;
 
@@ -184,6 +209,10 @@ namespace Server.Models
 
             foreach (var info in SEnvir.MilestoneInfoList.Binding)
             {
+                if (updatedOnly && !_dirtyClientMilestoneCache.Contains(info.Index) &&
+                    _clientMilestoneCache.TryGetValue(info.Index, out var cached) && cached.LastSent > cached.LastUpdated)
+                    continue;
+
                 var item = GetClientUserMilestone(info);
 
                 if (updatedOnly && item.LastSent > item.LastUpdated)
@@ -199,6 +228,8 @@ namespace Server.Models
 
         private void UpdateClientMilestoneCacheForInfo(MilestoneInfo info)
         {
+            _dirtyClientMilestoneCache.Remove(info.Index);
+
             var userMilestone = Character.Milestones.FirstOrDefault(x => x.Info == info);
 
             if (userMilestone != null)
@@ -275,7 +306,7 @@ namespace Server.Models
 
         private ClientUserMilestone GetClientUserMilestone(MilestoneInfo info)
         {
-            if (_clientMilestoneCache.TryGetValue(info.Index, out var cached))
+            if (!_dirtyClientMilestoneCache.Contains(info.Index) && _clientMilestoneCache.TryGetValue(info.Index, out var cached))
                 return cached;
 
             UpdateClientMilestoneCacheForInfo(info);

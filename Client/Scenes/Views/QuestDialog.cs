@@ -2209,8 +2209,8 @@ namespace Client.Scenes.Views
             RequirementLabel = new DXLabel
             {
                 Parent = this,
-                Location = new Point(75, 70),
-                Size = new Size(370, 35),
+                Location = new Point(74, 70),
+                Size = new Size(380, 35),
                 AutoSize = false,
                 ForeColour = Color.White,
                 Font = new Font(Config.FontName, CEnvir.FontSize(7F)),

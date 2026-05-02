@@ -4482,7 +4482,7 @@ namespace Server.Envir
 
             if (character.Player != null)
             {
-                character.Player.CheckMilestones(log, type);
+                character.Player.CheckMilestones(type);
             }
         }
 
