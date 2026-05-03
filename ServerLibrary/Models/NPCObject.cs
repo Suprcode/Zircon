@@ -136,7 +136,8 @@ namespace Server.Models
 
                         long gold = ob.Gold.Amount + action.IntParameter1;
 
-                        ob.Gold.Amount = (long)gold;
+                        ob.Gold.Amount = gold;
+                        ob.LogMilestone(MilestoneType.CurrencyGain, action.IntParameter1, currency: ob.Gold.Info);
                         ob.GoldChanged();
 
                         break;
@@ -217,6 +218,7 @@ namespace Server.Models
                             var amount = userCurrency.Amount + action.IntParameter1;
 
                             userCurrency.Amount = amount;
+                            ob.LogMilestone(MilestoneType.CurrencyGain, action.IntParameter1, currency: userCurrency.Info);
                             ob.CurrencyChanged(userCurrency);
                         }
                         break;

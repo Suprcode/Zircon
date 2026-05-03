@@ -201,7 +201,8 @@ namespace Client.Scenes.Views
                 Parent = TabControl,
                 Border = false,
                 BackColour = Color.Empty,
-                Location = new Point(0, 22)
+                Location = new Point(0, 22),
+                Visible = false
             };
             MissionTab.TabButton.MouseClick += (o, e) =>
             {
@@ -1407,6 +1408,7 @@ namespace Client.Scenes.Views
             {
                 type = UserQuest.Quest.QuestType;
                 icon = UserQuest.IsComplete ? Library.QuestIcon.Complete : Library.QuestIcon.Incomplete;
+                TrackBox.Visible = true;
             }
             else if (QuestInfo != null)
             {
@@ -1514,7 +1516,7 @@ namespace Client.Scenes.Views
             TrackBox = new DXCheckBox
             {
                 Parent = this,
-                Location = new Point(45, 3),
+                Location = new Point(315, 2),
             };
 
 
@@ -2281,7 +2283,7 @@ namespace Client.Scenes.Views
                 var currentCount = userMilestone.Tasks.Sum(x => x.Count);
                 var totalCount = Info.Tasks.Sum(x => x.Amount);
 
-                if (Info.ShowCount && totalCount > 0)
+                if (Info.ShowCount && currentCount > 0 && totalCount > 0)
                 {
                     if (!string.IsNullOrWhiteSpace(Info.Task))
                     {
