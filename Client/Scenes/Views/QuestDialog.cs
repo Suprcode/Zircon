@@ -183,7 +183,7 @@ namespace Client.Scenes.Views
 
             MilestoneTab = new MilestoneTab
             {
-                TabButton = { Label = { Text = "Milestones" }, },
+                TabButton = { Label = { Text = CEnvir.Language.QuestDialogMilestonesTab }, },
                 Parent = TabControl,
                 Border = false,
                 BackColour = Color.Empty,
@@ -197,7 +197,7 @@ namespace Client.Scenes.Views
 
             MissionTab = new MissionTab
             {
-                TabButton = { Label = { Text = "Mission" }, Visible = false },
+                TabButton = { Label = { Text = CEnvir.Language.QuestDialogMissionsTab }, Visible = false },
                 Parent = TabControl,
                 Border = false,
                 BackColour = Color.Empty,
@@ -1670,7 +1670,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Location = new Point(155, 402),
-                Label = { Text = "Hide Complete" },
+                Label = { Text = CEnvir.Language.QuestDialogMilestonesHideCompleteLabel },
             };
             HideCompleteCheckBox.CheckedChanged += (o, e) =>
             {
@@ -1682,7 +1682,7 @@ namespace Client.Scenes.Views
             ResetTitleButton = new DXButton
             {
                 Parent = this,
-                Label = { Text = "Reset Title" },
+                Label = { Text = CEnvir.Language.QuestDialogMilestonesResetTitleButtonLabel },
                 Location = new Point(640, 398),
                 Size = new Size(80, DefaultHeight),
                 Enabled = false
@@ -1699,7 +1699,7 @@ namespace Client.Scenes.Views
 
         private void Add()
         {
-            Add("All Milestones", Globals.MilestoneInfoList.Binding);
+            Add(CEnvir.Language.QuestDialogMilestonesAllCategory, Globals.MilestoneInfoList.Binding);
 
             var grouped = Globals.MilestoneInfoList.Binding.GroupBy(x => x.Category);
 
@@ -2529,8 +2529,8 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Size = new Size(150, 25),
-                Text = "Title Achieved",
-                Font = new Font("MS Sans Serif", CEnvir.FontSize(11F), FontStyle.Bold),
+                Text = CEnvir.Language.QuestDialogMilestonesTitleAchievedLabel,
+                Font = new Font(Config.FontName, CEnvir.FontSize(11F), FontStyle.Bold),
                 AutoSize = true,
                 ForeColour = Color.FromArgb(122, 60, 55),
                 Outline = false,

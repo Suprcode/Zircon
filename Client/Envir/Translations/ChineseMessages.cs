@@ -710,6 +710,12 @@ namespace Client.Envir.Translations
         public override string QuestDialogCurrentTab { get; set; } = "当前的";
         public override string QuestDialogAvailableTab { get; set; } = "可用的";
         public override string QuestDialogCompletedTab { get; set; } = "完成的";
+        public override string QuestDialogMilestonesTab { get; set; } = "Milestones";
+        public override string QuestDialogMissionsTab { get; set; } = "Missions";
+        public override string QuestDialogMilestonesHideCompleteLabel { get; set; } = "隐藏已完成";
+        public override string QuestDialogMilestonesResetTitleButtonLabel { get; set; } = "重置称号";
+        public override string QuestDialogMilestonesAllCategory { get; set; } = "全部里程碑";
+        public override string QuestDialogMilestonesTitleAchievedLabel { get; set; } = "称号达成";
         public override string QuestTabDetailsLabel { get; set; } = "详情";
         public override string QuestTabShowQuestTrackerLabel { get; set; } = "Show Quest Tracker";
         public override string QuestTabTasksLabel { get; set; } = "任务";

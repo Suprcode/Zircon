@@ -711,6 +711,12 @@ namespace Client.Envir.Translations
         public override string QuestDialogCurrentTab { get; set; } = "Current";
         public override string QuestDialogAvailableTab { get; set; } = "Available";
         public override string QuestDialogCompletedTab { get; set; } = "Completed";
+        public override string QuestDialogMilestonesTab { get; set; } = "Milestones";
+        public override string QuestDialogMissionsTab { get; set; } = "Missions";
+        public override string QuestDialogMilestonesHideCompleteLabel { get; set; } = "Hide Complete";
+        public override string QuestDialogMilestonesResetTitleButtonLabel { get; set; } = "Reset Title";
+        public override string QuestDialogMilestonesAllCategory { get; set; } = "All Milestones";
+        public override string QuestDialogMilestonesTitleAchievedLabel { get; set; } = "Title Achieved";
         public override string QuestTabDetailsLabel { get; set; } = "Details";
         public override string QuestTabShowQuestTrackerLabel { get; set; } = "Show Quest Tracker";
         public override string QuestTabTasksLabel { get; set; } = "Tasks";
