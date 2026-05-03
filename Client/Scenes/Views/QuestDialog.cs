@@ -1753,7 +1753,55 @@ namespace Client.Scenes.Views
 
             if (disposing)
             {
+                Items.Clear();
+                Items = null;
 
+                Initialized = false;
+                HideComplete = false;
+                SearchText = null;
+
+                _SelectedCategory = null;
+                SelectedCategoryChanged = null;
+
+                if (Menu != null)
+                {
+                    if (!Menu.IsDisposed)
+                        Menu.Dispose();
+
+                    Menu = null;
+                }
+
+                if (ActiveTitle != null)
+                {
+                    if (!ActiveTitle.IsDisposed)
+                        ActiveTitle.Dispose();
+
+                    ActiveTitle = null;
+                }
+
+                if (SearchTextBox != null)
+                {
+                    if (!SearchTextBox.IsDisposed)
+                        SearchTextBox.Dispose();
+
+                    SearchTextBox = null;
+                }
+
+                if (HideCompleteCheckBox != null)
+                {
+                    if (!HideCompleteCheckBox.IsDisposed)
+                        HideCompleteCheckBox.Dispose();
+
+                    HideCompleteCheckBox = null;
+                }
+
+                if (ResetTitleButton != null)
+                {
+                    if (!ResetTitleButton.IsDisposed)
+                        ResetTitleButton.Dispose();
+
+                    ResetTitleButton = null;
+                }
             }
         }
 
@@ -1911,6 +1959,7 @@ namespace Client.Scenes.Views
                 }
 
                 _Selected = null;
+                SelectedChanged = null;
 
                 foreach (KeyValuePair<DXButton, MilestoneContainer> pair in Items)
                 {
@@ -2067,6 +2116,9 @@ namespace Client.Scenes.Views
 
                     ScrollBar = null;
                 }
+
+                Title = null;
+                HideComplete = false;
 
                 foreach (KeyValuePair<MilestoneInfo, MilestoneItem> pair in Items)
                 {
@@ -2316,6 +2368,100 @@ namespace Client.Scenes.Views
             GradeLabel.ForeColour = foreColor;
             RequirementLabel.ForeColour = foreColor;
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                Info = null;
+
+                if (ActiveCheckbox != null)
+                {
+                    if (!ActiveCheckbox.IsDisposed)
+                        ActiveCheckbox.Dispose();
+
+                    ActiveCheckbox = null;
+                }
+
+                if (BackgroundImage != null)
+                {
+                    if (!BackgroundImage.IsDisposed)
+                        BackgroundImage.Dispose();
+
+                    BackgroundImage = null;
+                }
+
+                if (NoRewardImage != null)
+                {
+                    if (!NoRewardImage.IsDisposed)
+                        NoRewardImage.Dispose();
+
+                    NoRewardImage = null;
+                }
+
+                if (CategoryLabel != null)
+                {
+                    if (!CategoryLabel.IsDisposed)
+                        CategoryLabel.Dispose();
+
+                    CategoryLabel = null;
+                }
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
+                if (DescriptionLabel != null)
+                {
+                    if (!DescriptionLabel.IsDisposed)
+                        DescriptionLabel.Dispose();
+
+                    DescriptionLabel = null;
+                }
+
+                if (DateAchievedLabel != null)
+                {
+                    if (!DateAchievedLabel.IsDisposed)
+                        DateAchievedLabel.Dispose();
+
+                    DateAchievedLabel = null;
+                }
+
+                if (GradeLabel != null)
+                {
+                    if (!GradeLabel.IsDisposed)
+                        GradeLabel.Dispose();
+
+                    GradeLabel = null;
+                }
+
+                if (RequirementLabel != null)
+                {
+                    if (!RequirementLabel.IsDisposed)
+                        RequirementLabel.Dispose();
+
+                    RequirementLabel = null;
+                }
+
+                if (ItemCell != null)
+                {
+                    if (!ItemCell.IsDisposed)
+                        ItemCell.Dispose();
+
+                    ItemCell = null;
+                }
+            }
+        }
+
+        #endregion
     }
 
     #endregion
@@ -2454,5 +2600,65 @@ namespace Client.Scenes.Views
 
             DXSoundManager.Play(SoundIndex.QuestComplete);
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (Label != null)
+                {
+                    if (!Label.IsDisposed)
+                        Label.Dispose();
+
+                    Label = null;
+                }
+
+                if (Title != null)
+                {
+                    if (!Title.IsDisposed)
+                        Title.Dispose();
+
+                    Title = null;
+                }
+
+                if (Background != null)
+                {
+                    if (!Background.IsDisposed)
+                        Background.Dispose();
+
+                    Background = null;
+                }
+
+                if (LeftEnd != null)
+                {
+                    if (!LeftEnd.IsDisposed)
+                        LeftEnd.Dispose();
+
+                    LeftEnd = null;
+                }
+
+                if (RightEnd != null)
+                {
+                    if (!RightEnd.IsDisposed)
+                        RightEnd.Dispose();
+
+                    RightEnd = null;
+                }
+
+                if (Animation != null)
+                {
+                    if (!Animation.IsDisposed)
+                        Animation.Dispose();
+
+                    Animation = null;
+                }
+            }
+        }
+
+        #endregion
     }
 }
