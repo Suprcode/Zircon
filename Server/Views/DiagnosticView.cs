@@ -1,4 +1,4 @@
-﻿using DevExpress.XtraBars;
+using DevExpress.XtraBars;
 using DevExpress.XtraGrid.Views.Grid;
 using Library.Network;
 using System;
@@ -33,7 +33,6 @@ namespace Server.Views
             DiagnosticGridView.OptionsSelection.MultiSelectMode = GridMultiSelectMode.CellSelect;
         }
 
-
         private void DiagnosticButton_DownChanged(object sender, ItemClickEventArgs e)
         {
             BaseConnection.Monitor = DiagnosticButton.Down;
@@ -51,5 +50,4 @@ namespace Server.Views
             }
         }
     }
-
 }

@@ -2068,6 +2068,8 @@ namespace Server.Envir
 
             freshItem.ExpireTime = item.ExpireTime;
 
+            ItemSetup(item);
+
             foreach (UserItemStat stat in item.AddedStats)
                 freshItem.AddStat(stat.Stat, stat.Amount, stat.StatSource);
             freshItem.StatsChanged();
@@ -2088,6 +2090,8 @@ namespace Server.Envir
 
             check.Count -= item.Count;
 
+            ItemSetup(item);
+
             return item;
         }
         public static UserItem CreateFreshItem(ItemInfo info)
@@ -2100,6 +2104,8 @@ namespace Server.Envir
             item.CurrentDurability = info.Durability;
             item.MaxDurability = info.Durability;
 
+            ItemSetup(item);
+
             return item;
         }
         public static UserItem CreateDropItem(ItemCheck check, int chance = 15)
@@ -2108,6 +2114,8 @@ namespace Server.Envir
 
             item.Flags = check.Flags;
             item.ExpireTime = check.ExpireTime;
+
+            ItemSetup(item);
 
             if (IsCurrencyItem(item.Info) || item.Info.ItemEffect == ItemEffect.Experience)
                 item.Count = check.Count;
@@ -2124,6 +2132,8 @@ namespace Server.Envir
 
             item.Info = info;
             item.MaxDurability = info.Durability;
+
+            ItemSetup(item);
 
             item.Colour = Color.FromArgb(Random.Next(256), Random.Next(256), Random.Next(256));
 
@@ -2158,12 +2168,6 @@ namespace Server.Envir
                     case ItemType.Shoes:
                         UpgradeShoes(item);
                         break;
-                    case ItemType.Bundle:
-                        UpgradeBundle(item);
-                        break;
-                    case ItemType.LootBox:
-                        UpgradeLootBox(item);
-                        break;
                 }
                 item.StatsChanged();
             }
@@ -2194,9 +2198,22 @@ namespace Server.Envir
                     break;
             }
 
-
             return item;
         }
+
+        private static void ItemSetup(UserItem item)
+        {
+            switch (item.Info.ItemType)
+            {
+                case ItemType.Bundle:
+                    UpgradeBundle(item);
+                    break;
+                case ItemType.LootBox:
+                    UpgradeLootBox(item);
+                    break;
+            }
+        }
+
         public static ItemInfo GetItemInfo(string name)
         {
             for (int i = 0; i < ItemInfoList.Count; i++)

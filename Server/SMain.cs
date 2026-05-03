@@ -473,9 +473,6 @@ namespace Server
             ShowView(typeof(BaseStatView));
         }
 
-
-
-
         #region Idle Check
         private static bool AppStillIdle
         {
@@ -572,6 +569,11 @@ namespace Server
         private void DiagnosticButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
         {
             ShowView(typeof(DiagnosticView));
+        }
+
+        private void OrphanDiagnosticsButton_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)
+        {
+            ShowView(typeof(OrphanDiagnosticView));
         }
 
         private void navBarItem3_LinkClicked(object sender, DevExpress.XtraNavBar.NavBarLinkEventArgs e)

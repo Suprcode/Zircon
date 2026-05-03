@@ -87,6 +87,7 @@
             PaymentButton = new DevExpress.XtraNavBar.NavBarItem();
             StoreSalesButton = new DevExpress.XtraNavBar.NavBarItem();
             DiagnosticButton = new DevExpress.XtraNavBar.NavBarItem();
+            OrphanDiagnosticsButton = new DevExpress.XtraNavBar.NavBarItem();
             ConquestStatsButton = new DevExpress.XtraNavBar.NavBarItem();
             UserMailButton = new DevExpress.XtraNavBar.NavBarItem();
             NPCDataButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -200,11 +201,11 @@
             navBarControl1.ActiveGroup = navBarGroup1;
             navBarControl1.Dock = System.Windows.Forms.DockStyle.Left;
             navBarControl1.Groups.AddRange(new DevExpress.XtraNavBar.NavBarGroup[] { navBarGroup1, navBarGroup4, navBarGroup5, navBarGroup8, navBarGroup7, navBarGroup6, navBarGroup3 });
-            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, MilestoneInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton, BundleInfoButton, LootBoxInfoButton, HelpInfoButton });
+            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, MilestoneInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, OrphanDiagnosticsButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton, BundleInfoButton, LootBoxInfoButton, HelpInfoButton });
             navBarControl1.Location = new System.Drawing.Point(0, 144);
             navBarControl1.Name = "navBarControl1";
             navBarControl1.OptionsNavPane.ExpandedWidth = 144;
-            navBarControl1.Size = new System.Drawing.Size(144, 688);
+            navBarControl1.Size = new System.Drawing.Size(144, 690);
             navBarControl1.TabIndex = 1;
             navBarControl1.Text = "navBarControl1";
             // 
@@ -497,8 +498,9 @@
             // navBarGroup3
             // 
             navBarGroup3.Caption = "Management";
+            navBarGroup3.Expanded = true;
             navBarGroup3.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup3.ImageOptions.SmallImage");
-            navBarGroup3.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(AccountInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CharacterInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(UserDropButton), new DevExpress.XtraNavBar.NavBarItemLink(PaymentButton), new DevExpress.XtraNavBar.NavBarItemLink(StoreSalesButton), new DevExpress.XtraNavBar.NavBarItemLink(DiagnosticButton), new DevExpress.XtraNavBar.NavBarItemLink(ConquestStatsButton), new DevExpress.XtraNavBar.NavBarItemLink(UserMailButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCDataButton) });
+            navBarGroup3.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(AccountInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(CharacterInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(UserDropButton), new DevExpress.XtraNavBar.NavBarItemLink(PaymentButton), new DevExpress.XtraNavBar.NavBarItemLink(StoreSalesButton), new DevExpress.XtraNavBar.NavBarItemLink(DiagnosticButton), new DevExpress.XtraNavBar.NavBarItemLink(OrphanDiagnosticsButton), new DevExpress.XtraNavBar.NavBarItemLink(ConquestStatsButton), new DevExpress.XtraNavBar.NavBarItemLink(UserMailButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCDataButton) });
             navBarGroup3.Name = "navBarGroup3";
             // 
             // AccountInfoButton
@@ -542,6 +544,14 @@
             DiagnosticButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("DiagnosticButton.ImageOptions.SmallImage");
             DiagnosticButton.Name = "DiagnosticButton";
             DiagnosticButton.LinkClicked += DiagnosticButton_LinkClicked;
+            // 
+            // OrphanDiagnosticsButton
+            // 
+            OrphanDiagnosticsButton.Caption = "Orphan Diagnostics";
+            OrphanDiagnosticsButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("OrphanDiagnosticsButton.ImageOptions.LargeImage");
+            OrphanDiagnosticsButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("OrphanDiagnosticsButton.ImageOptions.SmallImage");
+            OrphanDiagnosticsButton.Name = "OrphanDiagnosticsButton";
+            OrphanDiagnosticsButton.LinkClicked += OrphanDiagnosticsButton_LinkClicked;
             // 
             // ConquestStatsButton
             // 
@@ -677,9 +687,9 @@
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            barDockControlBottom.Location = new System.Drawing.Point(0, 832);
+            barDockControlBottom.Location = new System.Drawing.Point(0, 834);
             barDockControlBottom.Manager = BManager;
-            barDockControlBottom.Size = new System.Drawing.Size(1294, 27);
+            barDockControlBottom.Size = new System.Drawing.Size(1294, 25);
             // 
             // barDockControlLeft
             // 
@@ -687,7 +697,7 @@
             barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             barDockControlLeft.Location = new System.Drawing.Point(0, 0);
             barDockControlLeft.Manager = BManager;
-            barDockControlLeft.Size = new System.Drawing.Size(0, 832);
+            barDockControlLeft.Size = new System.Drawing.Size(0, 834);
             // 
             // barDockControlRight
             // 
@@ -695,7 +705,7 @@
             barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
             barDockControlRight.Location = new System.Drawing.Point(1294, 0);
             barDockControlRight.Manager = BManager;
-            barDockControlRight.Size = new System.Drawing.Size(0, 832);
+            barDockControlRight.Size = new System.Drawing.Size(0, 834);
             // 
             // InterfaceTimer
             // 
@@ -793,6 +803,7 @@
         private DevExpress.XtraNavBar.NavBarItem StoreSalesButton;
         private DevExpress.XtraBars.BarStaticItem ConDelay;
         private DevExpress.XtraNavBar.NavBarItem DiagnosticButton;
+        private DevExpress.XtraNavBar.NavBarItem OrphanDiagnosticsButton;
         private DevExpress.XtraBars.BarStaticItem SaveDelay;
         private DevExpress.XtraNavBar.NavBarItem ConquestStatsButton;
         private DevExpress.XtraNavBar.NavBarItem UserMailButton;
