@@ -1,4 +1,5 @@
 ﻿using Library;
+using Library.Network.ClientPackets;
 using Library.SystemModels;
 using Server.DBModels;
 using Server.Envir.Commands.Exceptions;
@@ -29,11 +30,18 @@ namespace Server.Envir.Commands.Command.Admin
             {
                 var currency = player.GetCurrency(item);
 
+                // Store the original amount before modification
+                long originalAmount = currency.Amount;
+
+                // Apply the increase with overflow protection
                 if (currency.Amount > long.MaxValue - value)
                     currency.Amount = long.MaxValue;
                 else
                     currency.Amount += value;
 
+                long actualIncrease = currency.Amount - originalAmount;
+
+                player.LogMilestone(MilestoneType.CurrencyGain, actualIncrease, currency: player.Character.Account.HuntGold.Info);
                 player.CurrencyChanged(currency);
                 return;
             }

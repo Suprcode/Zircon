@@ -66,6 +66,7 @@
             NPCInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             NPCPageButton = new DevExpress.XtraNavBar.NavBarItem();
             QuestInfoButton = new DevExpress.XtraNavBar.NavBarItem();
+            MilestoneInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             StoreInfoButton = new DevExpress.XtraNavBar.NavBarItem();
             navBarGroup7 = new DevExpress.XtraNavBar.NavBarGroup();
             ItemInfoButton = new DevExpress.XtraNavBar.NavBarItem();
@@ -123,7 +124,7 @@
             // ribbonControl1
             // 
             ribbonControl1.ExpandCollapseItem.Id = 0;
-            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, ribbonControl1.SearchEditItem, skinRibbonGalleryBarItem1, StartServerButton, StopServerButton });
+            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, skinRibbonGalleryBarItem1, StartServerButton, StopServerButton });
             ribbonControl1.Location = new System.Drawing.Point(0, 0);
             ribbonControl1.MaxItemId = 9;
             ribbonControl1.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
@@ -199,11 +200,11 @@
             navBarControl1.ActiveGroup = navBarGroup1;
             navBarControl1.Dock = System.Windows.Forms.DockStyle.Left;
             navBarControl1.Groups.AddRange(new DevExpress.XtraNavBar.NavBarGroup[] { navBarGroup1, navBarGroup4, navBarGroup5, navBarGroup8, navBarGroup7, navBarGroup6, navBarGroup3 });
-            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton, BundleInfoButton, LootBoxInfoButton, HelpInfoButton });
+            navBarControl1.Items.AddRange(new DevExpress.XtraNavBar.NavBarItem[] { LogNavButton, ChatLogButton, ConfigButton, MapInfoButton, MonsterInfoButton, ItemInfoButton, InstanceInfoButton, NPCInfoButton, NPCPageButton, MagicInfoButton, AccountInfoButton, CharacterInfoButton, MovementInfoButton, ItemInfoStatButton, MonsterInfoStatButton, SetInfoButton, StoreInfoButton, BaseStatButton, SafeZoneInfoButton, RespawnInfoButton, MapRegionButton, DropInfoButton, UserDropButton, QuestInfoButton, MilestoneInfoButton, CompanionInfoButton, EventInfoButton, CastleInfoButton, PaymentButton, StoreSalesButton, DiagnosticButton, ConquestStatsButton, UserMailButton, WeaponCraftInfoButton, CurrencyInfoButton, FishingInfoButton, FameInfoButton, DisciplineInfoButton, NPCDataButton, BundleInfoButton, LootBoxInfoButton, HelpInfoButton });
             navBarControl1.Location = new System.Drawing.Point(0, 144);
             navBarControl1.Name = "navBarControl1";
             navBarControl1.OptionsNavPane.ExpandedWidth = 144;
-            navBarControl1.Size = new System.Drawing.Size(144, 690);
+            navBarControl1.Size = new System.Drawing.Size(144, 688);
             navBarControl1.TabIndex = 1;
             navBarControl1.Text = "navBarControl1";
             // 
@@ -366,7 +367,7 @@
             navBarGroup8.Caption = "NPC";
             navBarGroup8.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("navBarGroup8.ImageOptions.LargeImage");
             navBarGroup8.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("navBarGroup8.ImageOptions.SmallImage");
-            navBarGroup8.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(NPCInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCPageButton), new DevExpress.XtraNavBar.NavBarItemLink(QuestInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(StoreInfoButton) });
+            navBarGroup8.ItemLinks.AddRange(new DevExpress.XtraNavBar.NavBarItemLink[] { new DevExpress.XtraNavBar.NavBarItemLink(NPCInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(NPCPageButton), new DevExpress.XtraNavBar.NavBarItemLink(QuestInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(MilestoneInfoButton), new DevExpress.XtraNavBar.NavBarItemLink(StoreInfoButton) });
             navBarGroup8.Name = "navBarGroup8";
             // 
             // NPCInfoButton
@@ -389,6 +390,14 @@
             QuestInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("QuestInfoButton.ImageOptions.SmallImage");
             QuestInfoButton.Name = "QuestInfoButton";
             QuestInfoButton.LinkClicked += QuestInfoButton_LinkClicked;
+            // 
+            // MilestoneInfoButton
+            // 
+            MilestoneInfoButton.Caption = "Milestone Info";
+            MilestoneInfoButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("MilestoneInfoButton.ImageOptions.LargeImage");
+            MilestoneInfoButton.ImageOptions.SmallImage = (System.Drawing.Image)resources.GetObject("MilestoneInfoButton.ImageOptions.SmallImage");
+            MilestoneInfoButton.Name = "MilestoneInfoButton";
+            MilestoneInfoButton.LinkClicked += MilestoneInfoButton_LinkClicked;
             // 
             // StoreInfoButton
             // 
@@ -668,9 +677,9 @@
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            barDockControlBottom.Location = new System.Drawing.Point(0, 834);
+            barDockControlBottom.Location = new System.Drawing.Point(0, 832);
             barDockControlBottom.Manager = BManager;
-            barDockControlBottom.Size = new System.Drawing.Size(1294, 25);
+            barDockControlBottom.Size = new System.Drawing.Size(1294, 27);
             // 
             // barDockControlLeft
             // 
@@ -678,7 +687,7 @@
             barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             barDockControlLeft.Location = new System.Drawing.Point(0, 0);
             barDockControlLeft.Manager = BManager;
-            barDockControlLeft.Size = new System.Drawing.Size(0, 834);
+            barDockControlLeft.Size = new System.Drawing.Size(0, 832);
             // 
             // barDockControlRight
             // 
@@ -686,7 +695,7 @@
             barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
             barDockControlRight.Location = new System.Drawing.Point(1294, 0);
             barDockControlRight.Manager = BManager;
-            barDockControlRight.Size = new System.Drawing.Size(0, 834);
+            barDockControlRight.Size = new System.Drawing.Size(0, 832);
             // 
             // InterfaceTimer
             // 
@@ -775,6 +784,7 @@
         private DevExpress.XtraNavBar.NavBarItem DropInfoButton;
         private DevExpress.XtraNavBar.NavBarItem UserDropButton;
         private DevExpress.XtraNavBar.NavBarItem QuestInfoButton;
+        private DevExpress.XtraNavBar.NavBarItem MilestoneInfoButton;
         private DevExpress.XtraNavBar.NavBarItem CompanionInfoButton;
         private DevExpress.XtraNavBar.NavBarItem EventInfoButton;
         private DevExpress.XtraNavBar.NavBarItem MonsterInfoStatButton;

@@ -210,6 +210,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowTargetColoursTabMonsterLowLabel { get; set; } = "Monster (Low)";
         public override string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; } = "Monster (Same)";
         public override string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; } = "Monster (High)";
+        public override string CommonControlConfigWindowTargetColoursTabMonsterFriendlyLabel { get; set; } = "Monster (Friendly)";
         public override string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; } = "NPC";
         public override string CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel { get; set; } = "Player (Friendly)";
         public override string CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel { get; set; } = "Player (Enemy)";
@@ -710,6 +711,12 @@ namespace Client.Envir.Translations
         public override string QuestDialogCurrentTab { get; set; } = "Current";
         public override string QuestDialogAvailableTab { get; set; } = "Available";
         public override string QuestDialogCompletedTab { get; set; } = "Completed";
+        public override string QuestDialogMilestonesTab { get; set; } = "Milestones";
+        public override string QuestDialogMissionsTab { get; set; } = "Missions";
+        public override string QuestDialogMilestonesHideCompleteLabel { get; set; } = "Hide Complete";
+        public override string QuestDialogMilestonesResetTitleButtonLabel { get; set; } = "Reset Title";
+        public override string QuestDialogMilestonesAllCategory { get; set; } = "All Milestones";
+        public override string QuestDialogMilestonesTitleAchievedLabel { get; set; } = "Title Achieved";
         public override string QuestTabDetailsLabel { get; set; } = "Details";
         public override string QuestTabShowQuestTrackerLabel { get; set; } = "Show Quest Tracker";
         public override string QuestTabTasksLabel { get; set; } = "Tasks";

@@ -2606,12 +2606,21 @@ namespace Client.Models
             {
                 const int levelDiff = 2;
 
-                var result = (GameScene.Game.User.Level - MonsterInfo.Level) switch
+                Color result;
+
+                if (PetOwner == GameScene.Game.User.Name)
                 {
-                    > levelDiff => Config.TargetMonsterLowLevelColour,
-                    <= levelDiff and >= 0 => Config.TargetMonsterSameLevelColour,
-                    _ => Config.TargetMonsterHighLevelColour
-                };
+                    result = Config.TargetMonsterFriendlyColour;
+                }
+                else
+                {
+                    result = (GameScene.Game.User.Level - MonsterInfo.Level) switch
+                    {
+                        > levelDiff => Config.TargetMonsterLowLevelColour,
+                        <= levelDiff and >= 0 => Config.TargetMonsterSameLevelColour,
+                        _ => Config.TargetMonsterHighLevelColour
+                    };
+                }
 
                 if (result != Color.FromArgb(0, 0, 0, 0))
                 {

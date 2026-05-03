@@ -259,7 +259,7 @@ namespace Library.Network.ServerPackets
     {
         public uint ObjectID { get; set; }
         public BuffType Type { get; set; }
-        public int Extra { get;set; }
+        public int Extra { get; set; }
     }
     public sealed class ObjectBuffRemove : Packet
     {
@@ -1304,6 +1304,7 @@ namespace Library.Network.ServerPackets
         public uint ObjectID { get; set; }
         public string Name { get; set; }
         public string Caption { get; set; }
+        public Color CaptionOutlineColour { get; set; }
         public MirGender Gender { get; set; }
         public int HairType { get; set; }
 
@@ -1416,6 +1417,16 @@ namespace Library.Network.ServerPackets
     public sealed class BundleClose : Packet
     {
 
+    }
+
+    public sealed class UserMilestones : Packet
+    {
+        public List<ClientUserMilestone> Milestones { get; set; }
+    }
+
+    public sealed class MilestoneEarned : Packet
+    {
+        public int Index { get; set; }
     }
 }
 

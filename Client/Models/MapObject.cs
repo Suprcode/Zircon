@@ -131,6 +131,21 @@ namespace Client.Models
             }
         }
         private string _Caption;
+
+        public virtual Color CaptionOutlineColour
+        {
+            get { return _CaptionOutlineColour; }
+            set
+            {
+                if (_CaptionOutlineColour == value) return;
+
+                _CaptionOutlineColour = value;
+
+                NameChanged();
+            }
+        }
+        private Color _CaptionOutlineColour;
+
         public virtual string Title
         {
             get { return _Title; }
@@ -5318,7 +5333,7 @@ namespace Client.Models
                     BackColour = Color.Empty,
                     ForeColour = NameColour,
                     Outline = true,
-                    OutlineColour = Color.Black,
+                    OutlineColour = CaptionOutlineColour,
                     Text = Caption,
                     IsControl = false,
                     IsVisible = true,

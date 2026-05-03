@@ -375,7 +375,7 @@ namespace Client.Controls
                 RenderingPipelineManager.EnableGrayscaleEffect();
             }
 
-            PresentTexture(image.Image, FixedSize ? null : Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+            PresentTexture(image.Image, Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
 
             if (GrayScale)
             {

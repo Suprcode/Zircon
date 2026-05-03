@@ -105,7 +105,6 @@ namespace Client.Scenes.Views
 
         #endregion
 
-
         #region SelectedLFG
 
         public GroupLFGRow SelectedLFG
@@ -138,7 +137,6 @@ namespace Client.Scenes.Views
 
         #endregion
 
-
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
             if (IsVisible)
@@ -146,6 +144,13 @@ namespace Client.Scenes.Views
 
             if (Settings != null)
                 Settings.Visible = nValue;
+
+            if (IsVisible)
+            {
+                UpdateList();
+            }
+
+            CEnvir.Enqueue(new C.GroupNotify { Receive = IsVisible });
 
             base.OnIsVisibleChanged(oValue, nValue);
         }
@@ -399,8 +404,6 @@ namespace Client.Scenes.Views
                 Hint = "Settings"
             };
 
-            VisibleChanged += GroupDialog_VisibleChanged;
-
             LFGNameLabel = new DXLabel
             {
                 Text = "Group Name",
@@ -569,16 +572,6 @@ namespace Client.Scenes.Views
         private void LFGScrollBar_ValueChanged(object sender, EventArgs e)
         {
             RefreshList();
-        }
-
-        private void GroupDialog_VisibleChanged(object sender, EventArgs e)
-        {
-            if (Visible)
-            {
-                UpdateList();
-            }
-
-            CEnvir.Enqueue(new C.GroupNotify { Receive = Visible });
         }
 
         #region Methods

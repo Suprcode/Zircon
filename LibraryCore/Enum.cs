@@ -5,44 +5,44 @@ namespace Library
 {
     public enum MirGender : byte
     {
-        Male,
-        Female
+        Male = 0,
+        Female = 1
     }
 
     public enum MirClass : byte
     {
-        Warrior,
-        Wizard,
-        Taoist,
-        Assassin,
+        Warrior = 0,
+        Wizard = 1,
+        Taoist = 2,
+        Assassin = 3,
     }
 
     public enum AttackMode : byte
     {
         [Description("Attack: Peaceful")]
-        Peace,
+        Peace = 0,
         [Description("Attack: Group")]
-        Group,
+        Group = 1,
         [Description("Attack: Guild")]
-        Guild,
+        Guild = 2,
         [Description("Attack: War, Red, Brown")]
-        WarRedBrown,
+        WarRedBrown = 3,
         [Description("Attack: All")]
-        All
+        All = 4
     }
 
     public enum PetMode : byte
     {
         [Description("Pet: Move, Attack")]
-        Both,
+        Both = 0,
         [Description("Pet: Move")]
-        Move,
+        Move = 1,
         [Description("Pet: Attack")]
-        Attack,
+        Attack = 2,
         [Description("Pet: PvP")]
-        PvP,
+        PvP = 3,
         [Description("Pet: None")]
-        None,
+        None = 4,
     }
 
     public enum MirDirection : byte
@@ -1867,6 +1867,95 @@ namespace Library
         KillMonster = 0,
         GainItem = 1,
         Region = 2
+    }
+
+    public enum MilestoneGrade
+    {
+        Low = 1,
+        Medium = 2,
+        High = 3
+    }
+
+    public enum MilestoneType
+    {
+        Walk = 0,
+        Run = 1,
+        Ride = 2,
+        Harvest = 3,
+        Die = 4,
+        Level = 5, //Set
+        Marry = 6,
+        Divorce = 7,
+        Trade = 8,
+        Rebirth = 9, //Set
+        PKPoint = 10, //Set
+        Ranking = 11, //Set //Reverse
+
+        //Tracked by Item
+        ItemGain = 20,
+        ItemUse = 21,
+
+        //Tracked by Currency
+        CurrencyGain = 30,
+
+        //Tracked by Quest
+        QuestComplete = 40,
+
+        CompanionAdopt = 50,
+
+        //Tracked by Magic
+        SkillLearn = 60,
+        SkillLevel = 61, //Set
+
+        //Tracked by Monster
+        PetTame = 70,
+        PetSummon = 71,
+
+        GuildJoin = 80,
+        GuildCreate = 81,
+
+        GroupJoin = 90,
+        GroupCreate = 91,
+
+        MailSend = 100,
+
+        FriendAdd = 110, //Set
+
+        MineCast = 120,
+        MineCatch = 121, //Tracked by Item
+
+        FishingCast = 130,
+        FishingCatch = 131, //Tracked by Item
+        FishingFail = 132,
+
+        //Tracked by Instance
+        InstanceJoin = 140,
+
+        //Tracked by Region
+        Region = 150,
+
+        //Tracked by Item
+        ShopPurchase = 160,
+        ShopSell = 161,
+
+        //Tracked by Item
+        MarketConsign = 170,
+        MarketPurchase = 171,
+        MarketSell = 172,
+
+        //Tracked by Monster
+        MonsterKill = 180,
+        MonsterDeath = 181,
+        MonsterDamageDone = 182,
+        MonsterDamageTake = 183,
+        MonsterPetKill = 184,
+
+        //Tracked by Player
+        PlayerKill = 190,
+        PlayerDeath = 191,
+        PlayerDamageDone = 192,
+        PlayerDamageTake = 193,
+        PlayerPetKill = 194,
     }
 
     public enum MovementEffect

@@ -192,6 +192,30 @@ namespace Client.Controls
 
         #endregion
 
+        #region Gray Scale
+
+        public bool GrayScale
+        {
+            get => _GrayScale;
+            set
+            {
+                if (_GrayScale == value) return;
+
+                bool oldValue = _GrayScale;
+                _GrayScale = value;
+
+                OnGrayScaleChanged(oldValue, value);
+            }
+        }
+        private bool _GrayScale = false;
+        public event EventHandler<EventArgs> GrayScaleChanged;
+        public void OnGrayScaleChanged(bool oValue, bool nValue)
+        {
+            GrayScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region Locked
 
         public bool Locked
@@ -690,6 +714,11 @@ namespace Client.Controls
                     MirImage image = Library.CreateImage(drawIndex, ImageType.Image);
                     if (image != null)
                     {
+                        if (GrayScale)
+                        {
+                            RenderingPipelineManager.EnableGrayscaleEffect();
+                        }
+
                         Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
                         area.Offset((Size.Width - image.Width) / 2, (Size.Height - image.Height) / 2);
                         ItemInfo info = Item.Info;
@@ -700,6 +729,11 @@ namespace Client.Controls
                         }
                         else
                             PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
+
+                        if (GrayScale)
+                        {
+                            RenderingPipelineManager.DisableSpriteShaderEffect();
+                        }
                     }
                 }
             }

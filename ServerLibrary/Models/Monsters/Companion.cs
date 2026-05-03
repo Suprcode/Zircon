@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using static System.Collections.Specialized.BitVector32;
 using S = Library.Network.ServerPackets;
 
 namespace Server.Models.Monsters
@@ -777,6 +778,7 @@ namespace Server.Models.Monsters
                     currency.Amount += item.Count;
                     item.IsTemporary = true;
                     item.Delete();
+                    CompanionOwner.LogMilestone(MilestoneType.CurrencyGain, item.Count, currency: currency.Info);
                     continue;
                 }
 

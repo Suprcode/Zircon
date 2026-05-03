@@ -19,6 +19,8 @@ namespace Client.Scenes.Views
 
         public DXTabControl TabControl;
         public QuestTab AvailableTab, CurrentTab, CompletedTab;
+        public MilestoneTab MilestoneTab;
+        public MissionTab MissionTab;
 
         public DXLabel TitleLabel;
         public DXButton CloseButton;
@@ -100,7 +102,7 @@ namespace Client.Scenes.Views
         public QuestDialog()
         {
             LibraryFile = LibraryFile.Interface;
-            Index = 214;
+            Index = 291;
             Movable = true;
             Sort = true;
             DropShadow = true;
@@ -133,7 +135,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Size = new Size(732, 459),
                 Location = new Point(0, 21),
-                MarginLeft = 18
+                MarginLeft = 18,
             };
 
             CurrentTab = new QuestTab
@@ -146,6 +148,10 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty,
                 Location = new Point(0, 22)
             };
+            CurrentTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 291;
+            };
 
             AvailableTab = new QuestTab
             {
@@ -156,15 +162,50 @@ namespace Client.Scenes.Views
                 BackColour = Color.Empty,
                 Location = new Point(0, 22)
             };
+            AvailableTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 291;
+            };
 
             CompletedTab = new QuestTab
             {
-                TabButton = { Label = { Text = CEnvir.Language.QuestDialogCompletedTab } },
+                TabButton = { Label = { Text = CEnvir.Language.QuestDialogCompletedTab }, Visible = false },
                 Parent = TabControl,
                 Border = false,
                 ShowTrackerBox = { Visible = false },
                 BackColour = Color.Empty,
                 Location = new Point(0, 22)
+            };
+            CompletedTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 291;
+            };
+
+            MilestoneTab = new MilestoneTab
+            {
+                TabButton = { Label = { Text = CEnvir.Language.QuestDialogMilestonesTab }, },
+                Parent = TabControl,
+                Border = false,
+                BackColour = Color.Empty,
+                Location = new Point(0, 22),
+            };
+            MilestoneTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 292;
+                MilestoneTab.Update();
+            };
+
+            MissionTab = new MissionTab
+            {
+                TabButton = { Label = { Text = CEnvir.Language.QuestDialogMissionsTab }, Visible = false },
+                Parent = TabControl,
+                Border = false,
+                BackColour = Color.Empty,
+                Location = new Point(0, 22)
+            };
+            MissionTab.TabButton.MouseClick += (o, e) =>
+            {
+                Index = 293;
             };
         }
 
@@ -294,6 +335,16 @@ namespace Client.Scenes.Views
             }
         }
 
+        public void RefreshMilestones()
+        {
+            if (!Visible) return;
+
+            if (TabControl.SelectedTab == MilestoneTab)
+            {
+                MilestoneTab.Update();
+            }
+        }
+
         #endregion
 
         #region IDisposable
@@ -357,6 +408,8 @@ namespace Client.Scenes.Views
 
         #endregion
     }
+
+    #region Quest
 
     public sealed class QuestTab : DXTab
     {
@@ -1354,6 +1407,7 @@ namespace Client.Scenes.Views
             {
                 type = UserQuest.Quest.QuestType;
                 icon = UserQuest.IsComplete ? Library.QuestIcon.Complete : Library.QuestIcon.Incomplete;
+                TrackBox.Visible = true;
             }
             else if (QuestInfo != null)
             {
@@ -1461,7 +1515,7 @@ namespace Client.Scenes.Views
             TrackBox = new DXCheckBox
             {
                 Parent = this,
-                Location = new Point(45, 3),
+                Location = new Point(315, 2),
             };
 
 
@@ -1522,4 +1576,1089 @@ namespace Client.Scenes.Views
         #endregion
     }
 
+    #endregion
+
+    #region Milestone
+
+    public sealed class MilestoneTab : DXTab
+    {
+        public MilestoneMenu Menu;
+        public DXLabel ActiveTitle;
+
+        public DXTextBox SearchTextBox;
+
+        public DXCheckBox HideCompleteCheckBox;
+        public DXButton ResetTitleButton;
+
+        public List<MilestoneContainer> Items = [];
+
+        private bool Initialized;
+        private bool HideComplete;
+        private string SearchText;
+
+        public override void OnIsVisibleChanged(bool oValue, bool nValue)
+        {
+            CEnvir.Enqueue(new C.MilestoneNotify { Receive = IsVisible });
+
+            base.OnIsVisibleChanged(oValue, nValue);
+        }
+
+        #region Selected
+
+        public MilestoneContainer SelectedCategory
+        {
+            get => _SelectedCategory;
+            private set
+            {
+                MilestoneContainer oldValue = _SelectedCategory;
+                _SelectedCategory = value;
+
+                OnSelectedCategoryChanged(oldValue, value);
+            }
+        }
+        private MilestoneContainer _SelectedCategory;
+        public event EventHandler<EventArgs> SelectedCategoryChanged;
+        public void OnSelectedCategoryChanged(MilestoneContainer oValue, MilestoneContainer nValue)
+        {
+            oValue?.Visible = false;
+
+            SelectedCategoryChanged?.Invoke(this, EventArgs.Empty);
+
+            nValue?.Update(HideComplete, SearchText);
+
+            nValue?.Visible = true;
+        }
+
+        #endregion
+
+        public MilestoneTab()
+        {
+            Menu = new MilestoneMenu
+            {
+                Parent = this,
+                Location = new Point(13, 40),
+            };
+            Menu.SelectedChanged += (o, e) =>
+            {
+                SelectedCategory = Menu.GetAndUpdateSelected(HideComplete, SearchText);
+            };
+
+            ActiveTitle = new DXLabel
+            {
+                Parent = this,
+                Size = new Size(165, 18),
+                Location = new Point(12, 12),
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                ForeColour = Color.White
+            };
+
+            SearchTextBox = new DXTextBox
+            {
+                Parent = this,
+                Location = new Point(10, 401),
+                Size = new Size(140, 20),
+            };
+            SearchTextBox.TextBox.TextChanged += (o, e) =>
+            {
+                SearchText = SearchTextBox.TextBox.Text;
+
+                Update();
+            };
+
+            HideCompleteCheckBox = new DXCheckBox
+            {
+                Parent = this,
+                Location = new Point(155, 402),
+                Label = { Text = CEnvir.Language.QuestDialogMilestonesHideCompleteLabel },
+            };
+            HideCompleteCheckBox.CheckedChanged += (o, e) =>
+            {
+                HideComplete = HideCompleteCheckBox.Checked;
+
+                Update();
+            };
+
+            ResetTitleButton = new DXButton
+            {
+                Parent = this,
+                Label = { Text = CEnvir.Language.QuestDialogMilestonesResetTitleButtonLabel },
+                Location = new Point(640, 398),
+                Size = new Size(80, DefaultHeight),
+                Enabled = false
+            };
+            ResetTitleButton.MouseClick += (o, e) =>
+            {
+                var activeMilestone = GameScene.Game.User.Milestones.First(x => x.Active);
+                if (activeMilestone == null) return;
+                CEnvir.Enqueue(new C.MilestoneActive { Index = activeMilestone.Index, Active = false });
+            };
+        }
+                
+        #region Methods
+
+        private void Add()
+        {
+            Add(CEnvir.Language.QuestDialogMilestonesAllCategory, Globals.MilestoneInfoList.Binding);
+
+            var grouped = Globals.MilestoneInfoList.Binding.GroupBy(x => x.Category);
+
+            foreach (var group in grouped.OrderBy(x => x.Key))
+            {
+                Add(group.Key, group.ToList());
+            }
+        }
+
+        private void Add(string category, IList<MilestoneInfo> info)
+        {
+            var page = new MilestoneContainer(info)
+            {
+                Title = category,
+                Parent = this,
+                Size = new Size(536, 385),
+                Location = new Point(188, 5),
+                Visible = false,
+            };
+
+            Items.Add(page);
+
+            Menu.Add(page);
+        }
+
+        public void Update()
+        {
+            if (!Initialized)
+            {
+                Add();
+                Initialized = true;
+            }
+
+            ResetTitleButton.Enabled = GameScene.Game.User.Milestones.Any(x => x.Active);
+
+            ActiveTitle.Text = GameScene.Game.User.Milestones.FirstOrDefault(x => x.Active)?.Info.Title ?? string.Empty;
+
+            if (SelectedCategory != null)
+            {
+                SelectedCategory.Update(HideComplete, SearchText);
+            }
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                Items.Clear();
+                Items = null;
+
+                Initialized = false;
+                HideComplete = false;
+                SearchText = null;
+
+                _SelectedCategory = null;
+                SelectedCategoryChanged = null;
+
+                if (Menu != null)
+                {
+                    if (!Menu.IsDisposed)
+                        Menu.Dispose();
+
+                    Menu = null;
+                }
+
+                if (ActiveTitle != null)
+                {
+                    if (!ActiveTitle.IsDisposed)
+                        ActiveTitle.Dispose();
+
+                    ActiveTitle = null;
+                }
+
+                if (SearchTextBox != null)
+                {
+                    if (!SearchTextBox.IsDisposed)
+                        SearchTextBox.Dispose();
+
+                    SearchTextBox = null;
+                }
+
+                if (HideCompleteCheckBox != null)
+                {
+                    if (!HideCompleteCheckBox.IsDisposed)
+                        HideCompleteCheckBox.Dispose();
+
+                    HideCompleteCheckBox = null;
+                }
+
+                if (ResetTitleButton != null)
+                {
+                    if (!ResetTitleButton.IsDisposed)
+                        ResetTitleButton.Dispose();
+
+                    ResetTitleButton = null;
+                }
+            }
+        }
+
+        #endregion
+
+    }
+
+    public sealed class MilestoneMenu : DXControl
+    {
+        #region Properties
+
+        public DXVScrollBar MenuScrollBar;
+
+        #region Selected
+
+        public DXButton Selected
+        {
+            get => _Selected;
+            private set
+            {
+                DXButton oldValue = _Selected;
+                _Selected = value;
+
+                OnSelectedChanged(oldValue, value);
+            }
+        }
+        private DXButton _Selected;
+        public event EventHandler<EventArgs> SelectedChanged;
+        public void OnSelectedChanged(DXButton oValue, DXButton nValue)
+        {
+            SelectedChanged?.Invoke(this, EventArgs.Empty);
+
+            if (oValue != null)
+            {
+                oValue.Label.ForeColour = Constants.InactiveTabColour;
+                oValue.Index = 521;
+                oValue.HoverIndex = 521;
+            }
+
+            if (nValue != null)
+            {
+                nValue.Label.ForeColour = Constants.ActiveTabColour;
+                nValue.Index = 522;
+                nValue.HoverIndex = 522;
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        public Dictionary<DXButton, MilestoneContainer> Items = [];
+
+        private const int ButtonHeight = 26;
+
+        public MilestoneMenu()
+        {
+            Size = new Size(165, 345);
+
+            MenuScrollBar = new DXVScrollBar
+            {
+                Parent = this,
+                BackColour = Color.Empty,
+                Location = new Point(145, 0),
+                Size = new Size(20, 345),
+                MinValue = 0,
+                VisibleSize = Size.Height,
+                Change = ButtonHeight,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = true,
+                Border = false,
+                Visible = false
+            };
+
+            MenuScrollBar.ValueChanged += (o, e) => UpdateLocations(-MenuScrollBar.Value);
+        }
+
+        #region Methods
+
+        public void UpdateLocations(int value)
+        {
+            int y = value + 3;
+
+            foreach (DXControl control in Controls)
+            {
+                if (control is DXButton)
+                {
+                    control.Location = new Point(0, y);
+                    y += ButtonHeight;
+                }
+            }
+        }
+
+        public void Add(MilestoneContainer page)
+        {
+            int y = (Items.Count * ButtonHeight) + 3;
+
+            var button = new DXButton
+            {
+                Index = 521,
+                HoverIndex = 522,
+                PressedIndex = 522,
+                LibraryFile = LibraryFile.GameInter2,
+                Size = new Size(164, 24),
+                Parent = this,
+                Location = new Point(2, y),
+                Label = { Text = page.Title, ForeColour = Constants.InactiveTabColour }
+            };
+            button.MouseClick += (o, e) =>
+            {
+                Selected = (DXButton)o;
+            };
+
+            button.MouseWheel += MenuScrollBar.DoMouseWheel;
+
+            Items.Add(button, page);
+
+            if (Items.Count == 1)
+            {
+                Selected = button;
+            }
+
+            MenuScrollBar.MaxValue = Items.Count * ButtonHeight;
+        }
+
+        public MilestoneContainer GetAndUpdateSelected(bool hideComplete, string searchText)
+        {
+            if (Items.TryGetValue(Selected, out MilestoneContainer page))
+            {
+                page.Update(hideComplete, searchText);
+                return page;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (MenuScrollBar != null)
+                {
+                    if (!MenuScrollBar.IsDisposed)
+                        MenuScrollBar.Dispose();
+
+                    MenuScrollBar = null;
+                }
+
+                _Selected = null;
+                SelectedChanged = null;
+
+                foreach (KeyValuePair<DXButton, MilestoneContainer> pair in Items)
+                {
+                    if (pair.Value != null)
+                    {
+                        if (!pair.Value.IsDisposed)
+                            pair.Value.Dispose();
+                    }
+
+                    if (pair.Key != null)
+                    {
+                        if (!pair.Key.IsDisposed)
+                            pair.Key.Dispose();
+                    }
+                }
+
+                Items.Clear();
+                Items = null;
+            }
+        }
+
+        #endregion
+    }
+
+    public sealed class MilestoneContainer : DXControl
+    {
+        #region Properties
+
+        public string Title { get; set; }
+
+        public DXVScrollBar ScrollBar;
+
+        #endregion
+
+        public bool HideComplete;
+
+        public Dictionary<MilestoneInfo, MilestoneItem> Items = [];
+
+        public MilestoneContainer(IList<MilestoneInfo> infos)
+        {
+            ScrollBar = new DXVScrollBar
+            {
+                Parent = this,
+                BackColour = Color.Empty,
+                Location = new Point(516, 0),
+                Size = new Size(20, 385),
+                VisibleSize = 5,
+                Change = 1,
+                Border = false,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = false,
+            };
+
+            MouseWheel += ScrollBar.DoMouseWheel;
+
+            ScrollBar.ValueChanged += (o, e) => UpdateLocations();
+
+            CreateItems(infos);
+        }
+
+        #region Methods
+
+        public void CreateItems(IList<MilestoneInfo> infos)
+        {
+            int k = 0;
+
+            foreach (var info in infos)
+            {
+                switch (GameScene.Game.User.Class)
+                {
+                    case MirClass.Warrior:
+                        if ((info.RequiredClass & RequiredClass.Warrior) != RequiredClass.Warrior) continue;
+                        break;
+                    case MirClass.Wizard:
+                        if ((info.RequiredClass & RequiredClass.Wizard) != RequiredClass.Wizard) continue;
+                        break;
+                    case MirClass.Taoist:
+                        if ((info.RequiredClass & RequiredClass.Taoist) != RequiredClass.Taoist) continue;
+                        break;
+                    case MirClass.Assassin:
+                        if ((info.RequiredClass & RequiredClass.Assassin) != RequiredClass.Assassin) continue;
+                        break;
+                }
+
+                MilestoneItem cell = new MilestoneItem(info)
+                {
+                    Parent = this,
+                    Location = new Point(0, k),
+                };
+                Items[info] = cell;
+                cell.MouseWheel += ScrollBar.DoMouseWheel;
+
+                k += 95;
+            }
+
+            ScrollBar.Value = 0;
+        }
+
+        public void Update(bool hideComplete, string searchText)
+        {
+            foreach (DXControl control in Controls)
+            {
+                if (control is not MilestoneItem item) continue;
+
+                item.Update();
+                item.Visible = (!hideComplete || !item.IsComplete) && 
+                    (string.IsNullOrEmpty(searchText) || 
+                    item.Info.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
+                    item.Info.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+            }
+
+            UpdateLocations();
+        }
+
+        public void UpdateLocations()
+        {
+            int y = -(ScrollBar.Value * 95) + 4;
+            int h = 0;
+
+            int count = 0;
+
+            foreach (DXControl control in Controls)
+            {
+                if (control is not MilestoneItem item) continue;
+
+                if (!item.Visible) continue;
+
+                count++;
+
+                control.Location = new Point(0, y);
+                h += control.Size.Height;
+                y += control.Size.Height + 5;
+            }
+
+            ScrollBar.MaxValue = count + 1;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (ScrollBar != null)
+                {
+                    if (!ScrollBar.IsDisposed)
+                        ScrollBar.Dispose();
+
+                    ScrollBar = null;
+                }
+
+                Title = null;
+                HideComplete = false;
+
+                foreach (KeyValuePair<MilestoneInfo, MilestoneItem> pair in Items)
+                {
+                    if (pair.Value != null)
+                    {
+                        if (!pair.Value.IsDisposed)
+                            pair.Value.Dispose();
+                    }
+                }
+
+                Items.Clear();
+                Items = null;
+            }
+        }
+
+        #endregion
+    }
+
+    public sealed class MilestoneItem : DXControl
+    {
+        public MilestoneInfo Info;
+
+        public DXCheckBox ActiveCheckbox;
+
+        public DXImageControl BackgroundImage, NoRewardImage;
+        public DXLabel CategoryLabel, TitleLabel, DescriptionLabel, DateAchievedLabel, GradeLabel;
+
+        public DXLabel RequirementLabel;
+
+        public DXItemCell ItemCell;
+
+        public bool IsComplete => GameScene.Game.User.Milestones.FirstOrDefault(x => x.Info == Info)?.IsComplete ?? false;
+
+        public MilestoneItem(MilestoneInfo info)
+        {
+            Size = new Size(516, 90);
+
+            Info = info;
+
+            BackgroundImage = new DXImageControl
+            {
+                Parent = this,
+                Size = Size,
+                Index = 510,
+                Location = Point.Empty,
+                LibraryFile = LibraryFile.GameInter2,
+                IsControl = false,
+                FixedSize = true
+            };
+
+            ActiveCheckbox = new DXCheckBox
+            {
+                Parent = this,
+                Location = new Point(22, 7)
+            };
+            ActiveCheckbox.CheckedChanged += (o, e) =>
+            {
+                var userMilestone = GameScene.Game.User.Milestones.FirstOrDefault(x => x.Info == Info);
+                if (userMilestone == null) return;
+
+                userMilestone.Active = ActiveCheckbox.Checked;
+                CEnvir.Enqueue(new C.MilestoneActive { Index = userMilestone.Index, Active = userMilestone.Active });
+            };
+
+            CategoryLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(35, 7),
+                ForeColour = Color.White,
+                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
+                IsControl = false
+            };
+
+            GradeLabel  = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(8, 75),
+                Size = new Size (75, 14),
+                AutoSize = false,
+                IsControl = false,
+                ForeColour = Color.White,
+                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
+                DrawFormat = TextFormatFlags.HorizontalCenter
+            };
+
+            TitleLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(120, 14),
+                Size  = new Size(288, 17),
+                AutoSize = false,
+                ForeColour = Color.White,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                IsControl = false,
+            };
+
+            DescriptionLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(74, 32),
+                Size = new Size(380, 43),
+                AutoSize = false,
+                ForeColour = Color.White,
+                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix,
+                IsControl = false,
+            };
+
+            ItemCell = new DXItemCell
+            {
+                Parent = this,
+                Location = new Point(26, 33),
+                FixedBorder = true,
+                Size = new Size(38, 38),
+                FixedBorderColour = true,
+                Border = true,
+                ReadOnly = true,
+                ItemGrid = new ClientUserItem[1],
+                Slot = 0,
+                ShowCountLabel = true
+            };
+            ItemCell.MouseClick += (o, e) =>
+            {
+                var userMilestone = GameScene.Game.User.Milestones.FirstOrDefault(x => x.Info == Info);
+
+                if (userMilestone == null || !userMilestone.IsComplete) return;
+
+                DXSoundManager.Play(SoundIndex.ItemDefault);
+                CEnvir.Enqueue(new C.MilestoneClaim { Index = userMilestone.Index });
+            };
+
+            NoRewardImage = new DXImageControl
+            {
+                Parent = this,
+                Location = new Point(26, 33),
+                Index = 520,
+                LibraryFile = LibraryFile.GameInter2,
+                Visible = false
+            };
+
+            RequirementLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(74, 70),
+                Size = new Size(380, 35),
+                AutoSize = false,
+                ForeColour = Color.White,
+                Font = new Font(Config.FontName, CEnvir.FontSize(7F)),
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                IsControl = false,
+                Visible = true
+            };
+
+            DateAchievedLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(438, 70),
+                Size = new Size(70, 15),
+                AutoSize = false,
+                ForeColour = Color.Goldenrod,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                IsControl = false
+            };
+
+            CategoryLabel.Text = Info.Category;
+            TitleLabel.Text = Info.Title;
+            DescriptionLabel.Text = Info.Description;
+            ItemCell.ItemGrid[0] = Info.Reward != null ? new ClientUserItem(Info.Reward, Info.RewardAmount) : null;
+            ItemCell.GrayScale = true;
+            NoRewardImage.Visible = Info.Reward == null;
+            GradeLabel.Text = $"[{Info.Grade}]";
+            GradeLabel.OutlineColour = Info.OutlineColour;
+        }
+
+        public void Update()
+        {
+            if (GameScene.Game.User == null) return;
+
+            var userMilestone = GameScene.Game.User.Milestones.FirstOrDefault(x => x.Info == Info);
+
+            var started = userMilestone != null;
+            var earned = userMilestone != null && userMilestone.IsComplete;
+
+            Color foreColor = Color.White;
+
+            if (earned)
+            {
+                BackgroundImage.Index = 510;
+                DateAchievedLabel.Text = userMilestone.DateEarned.ToString("yyyy.MM.dd");
+                ActiveCheckbox.Enabled = true;
+                ItemCell.GrayScale = false;
+                ActiveCheckbox.SetSilentState(userMilestone.Active);
+                ItemCell.Visible = Info.Reward != null && !userMilestone.Claimed;
+                NoRewardImage.Visible = Info.Reward == null || userMilestone.Claimed;
+                foreColor = Color.White;
+
+                if (!string.IsNullOrEmpty(Info.Task))
+                {
+                    RequirementLabel.Text = $"{Info.Task}: Complete";
+                }
+                else
+                {
+                    RequirementLabel.Text = "Complete";
+                }
+            }
+            else if (started)
+            {
+                BackgroundImage.Index = 511;
+                DateAchievedLabel.Text = string.Empty;
+                ActiveCheckbox.Enabled = false;
+                foreColor = Color.LightGray;
+
+                var currentCount = userMilestone.Tasks.Sum(x => x.Count);
+                var totalCount = Info.Tasks.Sum(x => x.Amount);
+
+                if (Info.ShowCount && currentCount > 0 && totalCount > 0)
+                {
+                    if (!string.IsNullOrWhiteSpace(Info.Task))
+                    {
+                        RequirementLabel.Text = $"{Info.Task}: {currentCount}/{totalCount}";
+                    }
+                    else
+                    {
+                        RequirementLabel.Text = $"Tasks: {currentCount}/{totalCount}";
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(Info.Task))
+                    {
+                        RequirementLabel.Text = Info.Task;
+                    }
+                    else if (currentCount > 0)
+                    {
+                        RequirementLabel.Text = "In Progress";
+                    }
+                    else
+                    {
+                        RequirementLabel.Text = "Not Started";
+                    }
+                }
+            }
+
+            TitleLabel.ForeColour = foreColor;
+            DescriptionLabel.ForeColour = foreColor;
+            CategoryLabel.ForeColour = foreColor;
+            GradeLabel.ForeColour = foreColor;
+            RequirementLabel.ForeColour = foreColor;
+        }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                Info = null;
+
+                if (ActiveCheckbox != null)
+                {
+                    if (!ActiveCheckbox.IsDisposed)
+                        ActiveCheckbox.Dispose();
+
+                    ActiveCheckbox = null;
+                }
+
+                if (BackgroundImage != null)
+                {
+                    if (!BackgroundImage.IsDisposed)
+                        BackgroundImage.Dispose();
+
+                    BackgroundImage = null;
+                }
+
+                if (NoRewardImage != null)
+                {
+                    if (!NoRewardImage.IsDisposed)
+                        NoRewardImage.Dispose();
+
+                    NoRewardImage = null;
+                }
+
+                if (CategoryLabel != null)
+                {
+                    if (!CategoryLabel.IsDisposed)
+                        CategoryLabel.Dispose();
+
+                    CategoryLabel = null;
+                }
+
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+
+                if (DescriptionLabel != null)
+                {
+                    if (!DescriptionLabel.IsDisposed)
+                        DescriptionLabel.Dispose();
+
+                    DescriptionLabel = null;
+                }
+
+                if (DateAchievedLabel != null)
+                {
+                    if (!DateAchievedLabel.IsDisposed)
+                        DateAchievedLabel.Dispose();
+
+                    DateAchievedLabel = null;
+                }
+
+                if (GradeLabel != null)
+                {
+                    if (!GradeLabel.IsDisposed)
+                        GradeLabel.Dispose();
+
+                    GradeLabel = null;
+                }
+
+                if (RequirementLabel != null)
+                {
+                    if (!RequirementLabel.IsDisposed)
+                        RequirementLabel.Dispose();
+
+                    RequirementLabel = null;
+                }
+
+                if (ItemCell != null)
+                {
+                    if (!ItemCell.IsDisposed)
+                        ItemCell.Dispose();
+
+                    ItemCell = null;
+                }
+            }
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region Mission
+
+    public sealed class MissionTab : DXTab
+    {
+        public DXLabel TitleLabel;
+
+        public MissionTab()
+        {
+
+        }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (TitleLabel != null)
+                {
+                    if (!TitleLabel.IsDisposed)
+                        TitleLabel.Dispose();
+
+                    TitleLabel = null;
+                }
+            }
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    public sealed class MilestoneAchievedDialog : DXControl
+    {
+        public DXLabel Label, Title;
+
+        public DXImageControl Background, LeftEnd, RightEnd;
+        public DXAnimatedControl Animation;
+
+        public MilestoneAchievedDialog()
+        {
+            Size = new Size(640, 480);
+            IsControl = false;
+
+            CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter2, out var GameInter2Library);
+
+            var backgroundSize = GameInter2Library.GetSize(500);
+
+            Background = new DXImageControl
+            {
+                Parent = this,
+                Index = 294,
+                LibraryFile = LibraryFile.Interface,
+                Location = new Point((Size.Width - backgroundSize.Width) / 2, (Size.Height - backgroundSize.Height) / 2),
+                IsControl = false
+            };
+
+            Label = new DXLabel
+            {
+                Parent = this,
+                Size = new Size(150, 25),
+                Text = CEnvir.Language.QuestDialogMilestonesTitleAchievedLabel,
+                Font = new Font(Config.FontName, CEnvir.FontSize(11F), FontStyle.Bold),
+                AutoSize = true,
+                ForeColour = Color.FromArgb(122, 60, 55),
+                Outline = false,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                IsControl = false
+            };
+            Label.Location = new Point(((Size.Width - Label.Size.Width) / 2) + 20, ((Size.Height - Label.Size.Height) / 2) - 15);
+
+            LeftEnd = new DXImageControl
+            {
+                Parent = this,
+                Index = 501,
+                LibraryFile = LibraryFile.GameInter2,
+                IsControl = false
+            };
+
+            RightEnd = new DXImageControl
+            {
+                Parent = this,
+                Index = 502,
+                LibraryFile = LibraryFile.GameInter2,
+                IsControl = false
+            };
+
+            Animation = new DXAnimatedControl
+            {
+                Parent = this,
+                Animated = false,
+                Loop = false,
+                LibraryFile = LibraryFile.GameInter2,
+                AnimationDelay = TimeSpan.FromMilliseconds(2000),
+                Location = new Point(295, 224),
+                BaseIndex = 550,
+                FrameCount = 19,
+                Blend = true,
+                IsControl = false,
+                UseOffSet = true
+            };
+            Animation.AfterAnimation += (o, e) =>
+            {
+                Visible = false;
+            };
+
+            Title = new DXLabel
+            {
+                Parent = this,
+                Size = new Size(100, 25),
+                AutoSize = true,
+                ForeColour = Color.White,
+                DrawFormat = TextFormatFlags.HorizontalCenter,
+                IsControl = false
+            };
+        }
+
+        public void Show(MilestoneInfo info)
+        {
+            Visible = true;
+            Title.Text = info.Title;
+            Title.OutlineColour = info.OutlineColour;
+
+            Title.Location = new Point(((Size.Width - Title.Size.Width) / 2) + 20, ((Size.Height - Title.Size.Height) / 2) + 10);
+            LeftEnd.Location = new Point(Title.Location.X - LeftEnd.Size.Width + 15, Title.Location.Y - 5);
+            RightEnd.Location = new Point(Title.Location.X + Title.Size.Width - 15, Title.Location.Y - 5);
+
+            Animation.AnimationStart = DateTime.MinValue;
+            Animation.Animated = true;
+
+            DXSoundManager.Play(SoundIndex.QuestComplete);
+        }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (Label != null)
+                {
+                    if (!Label.IsDisposed)
+                        Label.Dispose();
+
+                    Label = null;
+                }
+
+                if (Title != null)
+                {
+                    if (!Title.IsDisposed)
+                        Title.Dispose();
+
+                    Title = null;
+                }
+
+                if (Background != null)
+                {
+                    if (!Background.IsDisposed)
+                        Background.Dispose();
+
+                    Background = null;
+                }
+
+                if (LeftEnd != null)
+                {
+                    if (!LeftEnd.IsDisposed)
+                        LeftEnd.Dispose();
+
+                    LeftEnd = null;
+                }
+
+                if (RightEnd != null)
+                {
+                    if (!RightEnd.IsDisposed)
+                        RightEnd.Dispose();
+
+                    RightEnd = null;
+                }
+
+                if (Animation != null)
+                {
+                    if (!Animation.IsDisposed)
+                        Animation.Dispose();
+
+                    Animation = null;
+                }
+            }
+        }
+
+        #endregion
+    }
 }

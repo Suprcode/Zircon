@@ -208,6 +208,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowTargetColoursTabMonsterLowLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabMonsterSameLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabMonsterHighLabel { get; set; }
+        public abstract string CommonControlConfigWindowTargetColoursTabMonsterFriendlyLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabNPCLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel { get; set; }
         public abstract string CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel { get; set; }
@@ -710,6 +711,12 @@ namespace Client.Envir.Translations
         public abstract string QuestDialogCurrentTab { get; set; }
         public abstract string QuestDialogAvailableTab { get; set; }
         public abstract string QuestDialogCompletedTab { get; set; }
+        public abstract string QuestDialogMilestonesTab { get; set; }
+        public abstract string QuestDialogMissionsTab { get; set; }
+        public abstract string QuestDialogMilestonesHideCompleteLabel { get; set; }
+        public abstract string QuestDialogMilestonesResetTitleButtonLabel { get; set; }
+        public abstract string QuestDialogMilestonesAllCategory { get; set; }
+        public abstract string QuestDialogMilestonesTitleAchievedLabel { get; set; }
         public abstract string QuestTabDetailsLabel { get; set; }
         public abstract string QuestTabShowQuestTrackerLabel { get; set; }
         public abstract string QuestTabTasksLabel { get; set; }

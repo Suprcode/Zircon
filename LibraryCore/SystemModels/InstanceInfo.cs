@@ -332,6 +332,11 @@ namespace Library.SystemModels
             foreach (InstanceInfoStat stat in BuffStats)
                 Stats[stat.Stat] += stat.Amount;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public class InstanceMapInfo : DBObject
