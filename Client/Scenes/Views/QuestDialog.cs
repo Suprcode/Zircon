@@ -197,12 +197,11 @@ namespace Client.Scenes.Views
 
             MissionTab = new MissionTab
             {
-                TabButton = { Label = { Text = "Mission" } },
+                TabButton = { Label = { Text = "Mission" }, Visible = false },
                 Parent = TabControl,
                 Border = false,
                 BackColour = Color.Empty,
-                Location = new Point(0, 22),
-                Visible = false
+                Location = new Point(0, 22)
             };
             MissionTab.TabButton.MouseClick += (o, e) =>
             {

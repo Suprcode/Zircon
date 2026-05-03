@@ -60,7 +60,7 @@ namespace Server.Models
 
             foreach (var info in milestoneInfos)
             {
-                if (_clientMilestoneCache.TryGetValue(info.Index, out var cached) && cached.DateEarned > DateTime.MinValue && cached.DateEarned < DateTime.Now)
+                if (_clientMilestoneCache.TryGetValue(info.Index, out var cached) && cached.DateEarned > DateTime.MinValue)
                     continue;
 
                 _dirtyClientMilestoneCache.Add(info.Index);
