@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode2 = new DevExpress.XtraGrid.GridLevelNode();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NPCInfoView));
             RequirementGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -59,6 +59,7 @@
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ItemInfoLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
+            ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)RequirementGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)RequirementImageComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)QuestInfoLookUpEdit).BeginInit();
@@ -158,16 +159,16 @@
             // NPCInfoGridControl
             // 
             NPCInfoGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            gridLevelNode1.LevelTemplate = RequirementGridView;
-            gridLevelNode1.RelationName = "Requirements";
-            NPCInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1 });
-            NPCInfoGridControl.Location = new System.Drawing.Point(0, 144);
+            gridLevelNode2.LevelTemplate = RequirementGridView;
+            gridLevelNode2.RelationName = "Requirements";
+            NPCInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode2 });
+            NPCInfoGridControl.Location = new System.Drawing.Point(0, 158);
             NPCInfoGridControl.MainView = NPCInfoGridView;
             NPCInfoGridControl.MenuManager = ribbon;
             NPCInfoGridControl.Name = "NPCInfoGridControl";
             NPCInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { RegionLookUpEdit, PageLookUpEdit, RequiredClassImageComboBox, RequirementImageComboBox, QuestInfoLookUpEdit, DaysOfWeekImageComboBox, ItemInfoLookUpEdit, MapIconImageComboBox });
             NPCInfoGridControl.ShowOnlyPredefinedDetails = true;
-            NPCInfoGridControl.Size = new System.Drawing.Size(736, 427);
+            NPCInfoGridControl.Size = new System.Drawing.Size(736, 413);
             NPCInfoGridControl.TabIndex = 2;
             NPCInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { NPCInfoGridView, RequirementGridView });
             // 
@@ -258,12 +259,12 @@
             // ribbon
             // 
             ribbon.ExpandCollapseItem.Id = 0;
-            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, barButtonItem1, ExportButton });
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, SaveButton, barButtonItem1, ExportButton });
             ribbon.Location = new System.Drawing.Point(0, 0);
             ribbon.MaxItemId = 4;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(736, 144);
+            ribbon.Size = new System.Drawing.Size(736, 158);
             // 
             // SaveButton
             // 
@@ -323,6 +324,11 @@
             ItemInfoLookUpEdit.Name = "ItemInfoLookUpEdit";
             ItemInfoLookUpEdit.NullText = "[Reward is null]";
             // 
+            // ribbonPageGroup2
+            // 
+            ribbonPageGroup2.Name = "ribbonPageGroup2";
+            ribbonPageGroup2.Text = "Edit";
+            // 
             // NPCInfoView
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -380,5 +386,6 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox MapIconImageComboBox;
         private DevExpress.XtraGrid.Columns.GridColumn colMapIcon;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
     }
 }

@@ -68,7 +68,7 @@ namespace Server.Models
 
             foreach (MilestoneInfo info in milestoneInfos)
             {
-                if (Character.Milestones.Any(x => x.Info == info)) continue;
+                if (Character.Milestones.Any(x => x.Info.Index == info.Index)) continue;
 
                 if (!MatchesRequiredClass(Class, info.RequiredClass)) continue;
 
@@ -230,7 +230,7 @@ namespace Server.Models
         {
             _dirtyClientMilestoneCache.Remove(info.Index);
 
-            var userMilestone = Character.Milestones.FirstOrDefault(x => x.Info == info);
+            var userMilestone = Character.Milestones.FirstOrDefault(x => x.Info.Index == info.Index);
 
             if (userMilestone != null)
             {

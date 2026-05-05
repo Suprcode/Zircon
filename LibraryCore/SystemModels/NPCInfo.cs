@@ -117,6 +117,11 @@ namespace Library.SystemModels
         [JsonIgnore]
         [IgnoreProperty]
         public CurrentQuest CurrentQuest { get; set; }
+
+        public override string ToString()
+        {
+            return NPCName;
+        }
     }
 
     public sealed class CurrentQuest : IEquatable<CurrentQuest>
@@ -240,6 +245,11 @@ namespace Library.SystemModels
 
         [Association("Values", true)]
         public DBBindingList<NPCValue> Values { get; set; }
+
+        public override string ToString()
+        {
+            return Description;
+        }
     }
 
     public sealed class NPCGood : DBObject

@@ -12,11 +12,9 @@ using Server.Envir;
 using Server.Views;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -299,6 +297,38 @@ namespace Server
             view.OptionsSelection.MultiSelect = true;
             view.OptionsSelection.MultiSelectMode = GridMultiSelectMode.CellSelect;
         }
+
+        public static void InsertRowAfterFocusedObject<T>(GridView view) where T : DBObject, new()
+        {
+            var collection = Session.GetCollection<T>();
+            string title = $"Insert {typeof(T)}";
+
+            if (view.GetFocusedRow() is not T focusedObject)
+            {
+                XtraMessageBox.Show($"Please select a {typeof(T)} to insert after.", title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string description = focusedObject.ToString();
+
+            if (string.IsNullOrWhiteSpace(description))
+                description = focusedObject.Index.ToString();
+
+            DialogResult result = XtraMessageBox.Show($"Do you want to insert row after {description}?", title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            T newObject = Session.InsertObjectAfter<T>(focusedObject.Index);
+
+            view.RefreshData();
+
+            int bindingIndex = collection.Binding.IndexOf(newObject);
+            int rowHandle = view.GetRowHandle(bindingIndex);
+
+            view.FocusedRowHandle = rowHandle;
+            view.SelectRow(rowHandle);
+        }
+
         private static void DeleteRows_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Delete) return;
