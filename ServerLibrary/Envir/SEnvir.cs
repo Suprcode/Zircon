@@ -4142,23 +4142,15 @@ namespace Server.Envir
             return result;
         }
 
-        private static void SetupMapRegions(Map map)
-        {
-            if (map == null || map.Width == 0) return;
-
-            foreach (MapRegion region in map.Info.Regions)
-            {
-                region.CreatePoints(map.Width);
-            }
-        }
-
         private static void FinaliseMapLoad(Map map)
         {
             if (map == null) return;
 
             map.Load();
             map.Setup();
-            SetupMapRegions(map);
+
+            foreach (MapRegion region in map.Info.Regions)
+                region.CreatePoints(map.Width);
 
             CreateSafeZones(map.Instance, map.InstanceSequence, map.Info);
             CreateMovements(map.Instance, map.InstanceSequence, map.Info);
