@@ -117,6 +117,7 @@ namespace Client.Rendering.SharpDXD3D11
         public static SharpDXD3D11SpriteRenderer SpriteRenderer { get; private set; }
 
         private static bool _resetRequested;
+        private static bool _d2dDrawActive;
 
         static SharpDXD3D11Manager()
         {
@@ -425,7 +426,8 @@ namespace Client.Rendering.SharpDXD3D11
 
         public static void FlushSprite()
         {
-            D2DContext?.Flush();
+            if (_d2dDrawActive)
+                D2DContext?.Flush();
         }
 
         public static void MemoryClear()
@@ -516,6 +518,9 @@ namespace Client.Rendering.SharpDXD3D11
             if (CurrentTarget == target)
                 return;
 
+            FlushSprite();
+            Context.PixelShader.SetShaderResource(0, null);
+
             CurrentTarget = target;
             Context.OutputMerger.SetRenderTargets(target.RenderTargetView);
             D2DContext.Target = target.TargetBitmap;
@@ -529,6 +534,7 @@ namespace Client.Rendering.SharpDXD3D11
             RawColor4 clear = new RawColor4(clearColor.R / 255f, clearColor.G / 255f, clearColor.B / 255f, clearColor.A / 255f);
             Context.ClearRenderTargetView(CurrentTarget.RenderTargetView, clear);
             D2DContext.BeginDraw();
+            _d2dDrawActive = true;
             D2DContext.Transform = new RawMatrix3x2 { M11 = 1, M22 = 1 };
             D2DContext.Clear(clear);
         }
@@ -538,7 +544,15 @@ namespace Client.Rendering.SharpDXD3D11
             if (D2DContext == null || SwapChain == null)
                 return;
 
-            D2DContext.EndDraw();
+            try
+            {
+                D2DContext.EndDraw();
+            }
+            finally
+            {
+                _d2dDrawActive = false;
+            }
+
             SwapChain.Present(Config.VSync ? 1 : 0, PresentFlags.None);
         }
 
