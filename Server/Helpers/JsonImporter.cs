@@ -28,8 +28,7 @@ namespace Server
                 Directory.CreateDirectory($"Exports/{typeof(T).Name}");
             }
 
-            ImportReferenceResolver.EnableDeferredResolution = allowDeferredReferences;
-
+            ImportReferenceResolver.SetDeferredResolution(allowDeferredReferences);
             SMain.Session.Save(true);
 
             XtraOpenFileDialog dlg = new()

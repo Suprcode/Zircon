@@ -406,11 +406,6 @@ namespace Client.Envir
                 y += image.OffSetY;
             }
 
-            bool oldBlend = RenderingPipelineManager.IsBlending();
-            float oldRate = RenderingPipelineManager.GetBlendRate();
-            BlendMode oldMode = RenderingPipelineManager.GetBlendMode();
-            RenderingPipelineManager.SetBlend(true, opacity);
-
             float cx = image.Width / 2f;
             float cy = image.Height / 2f;
 
@@ -433,16 +428,10 @@ namespace Client.Envir
                 * rotation   // rotate around pivot
                 * translation; // place in world
 
-            RenderingPipelineManager.DrawTexture(
-                texture,
-                null,
-                final,
-                Vector3.Zero,
-                Vector3.Zero, // IMPORTANT: origin handled explicitly in matrix
-                colour);
+            RenderingPipelineManager.DrawTextureBlend(texture, null, final, System.Numerics.Vector3.Zero, Vector3.Zero, colour, opacity);
 
             CEnvir.DPSCounter++;
-            RenderingPipelineManager.SetBlend(oldBlend, oldRate, oldMode);
+
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
 
@@ -464,24 +453,16 @@ namespace Client.Envir
                 y += image.OffSetY;
             }
 
-            bool oldBlend = RenderingPipelineManager.IsBlending();
-            float oldRate = RenderingPipelineManager.GetBlendRate();
-            BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
-
-            RenderingPipelineManager.SetBlend(true, opacity);
-
             Matrix3x2 scaling = Matrix3x2.CreateScale(size);
             Matrix3x2 rotation = Matrix3x2.CreateRotation(angle);
             Matrix3x2 translation = Matrix3x2.CreateTranslation(x + (image.Width / 2), y + (image.Height / 2));
 
-            var vector = new Vector3(-(image.Width / 2), -(image.Height / 2), 0f);
+            var vector = new Vector3((image.Width / 2F) * -1F, (image.Height / 2F) * -1F, 0F);
 
             Matrix3x2 pipelineTransform = scaling * rotation * translation;
-            RenderingPipelineManager.DrawTexture(texture, null, pipelineTransform, System.Numerics.Vector3.Zero, vector, colour);
+            RenderingPipelineManager.DrawTextureBlend(texture, null, pipelineTransform, System.Numerics.Vector3.Zero, vector, colour, opacity);
 
             CEnvir.DPSCounter++;
-
-            RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
@@ -504,12 +485,6 @@ namespace Client.Envir
                 y += image.OffSetY;
             }
 
-            bool oldBlend = RenderingPipelineManager.IsBlending();
-            float oldRate = RenderingPipelineManager.GetBlendRate();
-            BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
-
-            RenderingPipelineManager.SetBlend(true, opacity);
-
             Matrix3x2 scaling = Matrix3x2.CreateScale(size);
             Matrix3x2 rotation = Matrix3x2.CreateRotation(angle);
             Matrix3x2 translation = Matrix3x2.CreateTranslation(x, y);
@@ -522,11 +497,9 @@ namespace Client.Envir
             // DrawTexture will apply Translate(-Center) * Transform.
             // Result: Translate(-Center) * Scale * Rotate * Translate(Position).
             // This rotates around the center of the image and places it at Position.
-            RenderingPipelineManager.DrawTexture(texture, null, pipelineTransform, vector, System.Numerics.Vector3.Zero, colour);
+            RenderingPipelineManager.DrawTextureBlend(texture, null, pipelineTransform, vector, System.Numerics.Vector3.Zero, colour, opacity);
 
             CEnvir.DPSCounter++;
-
-            RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
@@ -582,16 +555,11 @@ namespace Client.Envir
                 return;
             }
 
-            bool oldBlend = RenderingPipelineManager.IsBlending();
-            float oldRate = RenderingPipelineManager.GetBlendRate();
-            BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
+            var vector = new System.Numerics.Vector3(x, y, 0F);
 
-            RenderingPipelineManager.SetBlend(true, rate);
+            RenderingPipelineManager.DrawTextureBlend(texture, null, Matrix3x2.Identity, System.Numerics.Vector3.Zero, vector, colour, rate);
 
-            RenderingPipelineManager.DrawTexture(texture, null, Matrix3x2.Identity, System.Numerics.Vector3.Zero, new System.Numerics.Vector3(x, y, 0F), colour);
             CEnvir.DPSCounter++;
-
-            RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }

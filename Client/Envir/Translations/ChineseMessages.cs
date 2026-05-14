@@ -154,6 +154,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowUISectionColoursLabel { get; set; } = "Colours";
         public override string CommonControlConfigWindowUISectionTargetColoursLabel { get; set; } = "TargerColours";
         public override string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; } = "全屏";
+        public override string CommonControlConfigWindowGraphicsTabBorderlessLabel { get; set; } = "Borderless";
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "分辨率";
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync";
         public override string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; } = "FPS限制";

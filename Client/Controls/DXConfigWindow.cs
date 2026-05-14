@@ -22,7 +22,7 @@ namespace Client.Controls
         public DXConfigTab GraphicsTab, SoundTab, GameTab, NetworkTab, UITab;
 
         //Graphics
-        public DXCheckBox FullScreenCheckBox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
+        public DXCheckBox FullScreenCheckBox, BorderlessCheckbox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
         private DXComboBox GameSizeComboBox, LanguageComboBox, RenderingPipelineComboBox;
 
         //Sound
@@ -87,10 +87,12 @@ namespace Client.Controls
             if (!IsVisible) return;
 
             FullScreenCheckBox.Enabled = ActiveScene is GameScene;
+            BorderlessCheckbox.Enabled = ActiveScene is GameScene;
             GameSizeComboBox.Enabled = ActiveScene is GameScene;
             RenderingPipelineComboBox.Enabled = ActiveScene is GameScene;
 
             FullScreenCheckBox.Checked = Config.FullScreen;
+            BorderlessCheckbox.Checked = Config.Borderless;
             GameSizeComboBox.ListBox.SelectItem(Config.GameSize);
             VSyncCheckBox.Checked = Config.VSync;
             LimitFPSCheckBox.Checked = Config.LimitFPS;
@@ -352,6 +354,20 @@ namespace Client.Controls
 
             displayGraphicsSection.AddControl("", FullScreenCheckBox);
 
+            BorderlessCheckbox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabBorderlessLabel },
+                LabelBoxPadding = checkboxPadding,
+                Enabled = false
+            };
+            BorderlessCheckbox.CheckedChanged += (o, e) =>
+            {
+                Config.Borderless = BorderlessCheckbox.Checked;
+                RenderingPipelineManager.ResetDevice();
+            };
+
+            displayGraphicsSection.AddControl("", BorderlessCheckbox);
+
             RenderingPipelineComboBox = new DXComboBox
             {
                 Size = new Size(122, DXComboBox.DefaultNormalHeight),
@@ -365,8 +381,8 @@ namespace Client.Controls
                        ? RenderingPipelineComboBox.SelectedItem as string
                        : RenderingPipelineManager.DefaultPipelineIdentifier;
 
-                RenderingPipelineManager.SwitchPipeline(renderingPipeline);
                 Config.RenderingPipeline = renderingPipeline;
+                RenderingPipelineManager.RequestSwitchPipeline(renderingPipeline);
             };
 
             foreach (string pipelineId in RenderingPipelineManager.AvailablePipelineIds.OrderBy(x => x))

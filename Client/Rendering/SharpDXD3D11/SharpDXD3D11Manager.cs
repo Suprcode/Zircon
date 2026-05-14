@@ -168,6 +168,7 @@ namespace Client.Rendering.SharpDXD3D11
             DeviceCreationFlags creationFlags = DeviceCreationFlags.BgraSupport;
             Device = new Device(adapter, creationFlags, new[] { D3DFeatureLevel.Level_11_0 });
             SwapChain = new SwapChain(Factory, Device, swapChainDescription);
+            Factory.MakeWindowAssociation(CEnvir.Target.Handle, WindowAssociationFlags.IgnoreAltEnter);
 
             using (var dxgiDevice = Device.QueryInterface<SharpDX.DXGI.Device>())
             {
@@ -460,6 +461,18 @@ namespace Client.Rendering.SharpDXD3D11
 
         public static void Unload()
         {
+            if (SwapChain != null)
+            {
+                try
+                {
+                    if (SwapChain.IsFullScreen)
+                        SwapChain.IsFullScreen = false;
+                }
+                catch
+                {
+                }
+            }
+
             for (int i = ControlList.Count - 1; i >= 0; i--)
                 ControlList[i].DisposeTexture();
 
@@ -474,6 +487,9 @@ namespace Client.Rendering.SharpDXD3D11
                 SoundList[i].DisposeSoundBuffer();
 
             SoundList.Clear();
+
+            Context?.ClearState();
+            Context?.Flush();
 
             DisposeTargets();
 
@@ -500,6 +516,9 @@ namespace Client.Rendering.SharpDXD3D11
 
             SwapChain?.Dispose();
             SwapChain = null;
+
+            Context?.ClearState();
+            Context?.Flush();
 
             Device?.Dispose();
             Device = null;

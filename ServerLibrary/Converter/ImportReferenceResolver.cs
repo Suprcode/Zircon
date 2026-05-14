@@ -28,7 +28,13 @@ namespace Server
 
         private static readonly List<DeferredReference> PendingReferences = new();
 
-        public static bool EnableDeferredResolution { get; set; } = true;
+        private static bool EnableDeferredResolution { get; set; } = true;
+
+        public static void SetDeferredResolution(bool enabled)
+        {
+            EnableDeferredResolution = enabled;
+            PendingReferences.Clear();
+        }
 
         public static void SetContext(DBObject owner, PropertyInfo property)
         {

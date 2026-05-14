@@ -1,5 +1,6 @@
 ﻿using MirDB;
 using System.Drawing;
+using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
 {
@@ -153,6 +154,7 @@ namespace Library.SystemModels
             ShowCount = true;
         }
 
+        [JsonIgnore]
         [IgnoreProperty]
         public Color OutlineColour
         {

@@ -29,6 +29,7 @@ namespace Client.Rendering.SharpDXD3D9
         public static List<Size> ValidDisplays = new List<Size>();
         private static PresentParameters _parameters;
         public static PresentParameters Parameters => _parameters;
+        private static Direct3D _direct3D;
         public static Device Device { get; private set; }
         public static Sprite Sprite { get; private set; }
         public static Line Line { get; private set; }
@@ -119,11 +120,22 @@ namespace Client.Rendering.SharpDXD3D9
 
         public static void Create()
         {
-            Direct3D direct3D = new Direct3D();
+            if (Device != null || _direct3D != null)
+                Unload();
+
+            ApplyWindowStyle();
+
+            if (CEnvir.Target != null && CEnvir.Target.ClientSize != Config.GameSize)
+                CEnvir.Target.ClientSize = Config.GameSize;
+
+            if (!Config.FullScreen)
+                CenterOnSelectedMonitor();
+
+            _direct3D = new Direct3D();
 
             // Determine the correct adapter index based on the selected monitor index.
             int adapterIndex = 0;// Config.SelectedMonitorIndex;
-            if (adapterIndex < 0 || adapterIndex >= direct3D.Adapters.Count)
+            if (adapterIndex < 0 || adapterIndex >= _direct3D.Adapters.Count)
                 adapterIndex = 0;
             //Config.SelectedMonitorIndex = adapterIndex;
 
@@ -152,11 +164,11 @@ namespace Client.Rendering.SharpDXD3D9
 
                 // Use the determined adapter index when creating the Device.
                 //Debug.WriteLine($"Attempting to create device on Adapter Index: {adapterIndex}");
-                Device = new Device(direct3D, adapterIndex, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing, _parameters);
+                Device = new Device(_direct3D, adapterIndex, DeviceType.Hardware, CEnvir.Target.Handle, CreateFlags.HardwareVertexProcessing | CreateFlags.Multithreaded | CreateFlags.FpuPreserve, _parameters);
 
 
                 // The rest of your code remains unchanged
-                AdapterInformation adapterInfo = direct3D.Adapters[adapterIndex];
+                AdapterInformation adapterInfo = _direct3D.Adapters[adapterIndex];
                 var modes = adapterInfo.GetDisplayModes(Format.X8R8G8B8);
 
                 foreach (DisplayMode mode in modes)
@@ -386,15 +398,6 @@ namespace Client.Rendering.SharpDXD3D9
 
             if (Device != null)
             {
-
-                if (Device.Direct3D != null)
-                {
-                    if (!Device.Direct3D.IsDisposed)
-                    {
-                        Device.Direct3D.Dispose();
-                    }
-                }
-
                 if (!Device.IsDisposed)
                 {
                     Device.Dispose();
@@ -402,6 +405,11 @@ namespace Client.Rendering.SharpDXD3D9
 
                 Device = null;
             }
+
+            if (_direct3D != null && !_direct3D.IsDisposed)
+                _direct3D.Dispose();
+
+            _direct3D = null;
         }
 
         public static void SetSurface(Surface surface)
@@ -526,6 +534,8 @@ namespace Client.Rendering.SharpDXD3D9
 
         public static void ResetDevice()
         {
+            ApplyWindowStyle();
+
             CleanUp();
 
             DeviceLost = true;
@@ -546,6 +556,7 @@ namespace Client.Rendering.SharpDXD3D9
             parameters.BackBufferWidth = CEnvir.Target.ClientSize.Width;
             parameters.BackBufferHeight = CEnvir.Target.ClientSize.Height;
             parameters.PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate;
+            parameters.PresentFlags = PresentFlags.LockableBackBuffer;
 
             Device.Reset(parameters);
             _parameters = parameters;
@@ -665,8 +676,7 @@ namespace Client.Rendering.SharpDXD3D9
             Config.FullScreen = !Config.FullScreen;
             DXConfigWindow.ActiveConfig.FullScreenCheckBox.Checked = Config.FullScreen;
 
-            CEnvir.Target.FormBorderStyle = (Config.FullScreen || Config.Borderless) ? FormBorderStyle.None : FormBorderStyle.FixedDialog;
-            CEnvir.Target.MaximizeBox = false;
+            ApplyWindowStyle();
 
             CEnvir.Target.ClientSize = DXControl.ActiveScene.Size;
             ResetDevice();
@@ -698,6 +708,15 @@ namespace Client.Rendering.SharpDXD3D9
             graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             graphics.TextContrast = 0;
+        }
+
+        private static void ApplyWindowStyle()
+        {
+            if (CEnvir.Target == null)
+                return;
+
+            CEnvir.Target.FormBorderStyle = (Config.FullScreen || Config.Borderless) ? FormBorderStyle.None : FormBorderStyle.FixedDialog;
+            CEnvir.Target.MaximizeBox = false;
         }
 
         public static GdiColor HSLToRGB(float h, float s, float l)
