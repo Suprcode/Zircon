@@ -30,6 +30,7 @@ namespace Client.Envir
         public static bool LimitFPS { get; set; }
         public static bool ExtendedLogin { get; set; }
         public static Size GameSize { get; set; } = IntroSceneSize;
+        public static string DefaultMonitor { get; set; } = string.Empty;
         public static string RenderingPipeline { get; set; } = RenderingPipelineIds.SharpDXD3D9;
         public static TimeSpan CacheDuration { get; set; } = TimeSpan.FromMinutes(30);
         public static string FontName { get; set; } = "MS Sans Serif";

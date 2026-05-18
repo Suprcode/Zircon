@@ -137,6 +137,11 @@ namespace Client.Rendering.SharpDXD3D11
             if (CEnvir.Target != null && CEnvir.Target.ClientSize != Config.GameSize)
                 CEnvir.Target.ClientSize = Config.GameSize;
 
+            if (Config.FullScreen && CEnvir.Target != null)
+                CEnvir.Target.Bounds = new Rectangle(RenderingPipelineManager.GetSelectedScreen().Bounds.Location, Config.GameSize);
+            else
+                CenterOnSelectedMonitor();
+
             using Adapter adapter = Factory.GetAdapter1(0);
             using Output output = adapter.GetOutput(0);
             ModeDescription[] modes = output.GetDisplayModeList(Format.B8G8R8A8_UNorm, DisplayModeEnumerationFlags.Scaling);
@@ -233,7 +238,7 @@ namespace Client.Rendering.SharpDXD3D11
             if (CEnvir.Target != null && CEnvir.Target.ClientSize != size)
             {
                 CEnvir.Target.ClientSize = size;
-                CEnvir.Target.Center();
+                CenterOnSelectedMonitor();
             }
 
             ApplyWindowStyle();
@@ -243,11 +248,15 @@ namespace Client.Rendering.SharpDXD3D11
         public static void SetGameWindowToMonitor(int monitorIndex)
         {
             if (monitorIndex < 0 || monitorIndex >= Screen.AllScreens.Length)
-                monitorIndex = 0;
+                monitorIndex = RenderingPipelineManager.GetSelectedMonitorIndex();
 
             Screen screen = Screen.AllScreens[monitorIndex];
 
-            CEnvir.Target.Location = screen.Bounds.Location;
+            if (Config.FullScreen)
+                CEnvir.Target.Bounds = new Rectangle(screen.Bounds.Location, Config.GameSize);
+            else
+                CenterOnSelectedMonitor();
+
             RequestReset();
         }
 
@@ -256,9 +265,7 @@ namespace Client.Rendering.SharpDXD3D11
             if (CEnvir.Target == null)
                 return;
 
-            int index = 0;
-
-            Screen screen = Screen.AllScreens[index];
+            Screen screen = RenderingPipelineManager.GetSelectedScreen();
             int x = Math.Max(screen.Bounds.X, screen.Bounds.X + (screen.Bounds.Width - CEnvir.Target.Width) / 2);
             int y = Math.Max(screen.Bounds.Y, screen.Bounds.Y + (screen.Bounds.Height - CEnvir.Target.Height) / 2);
             CEnvir.Target.Location = new Point(x, y);

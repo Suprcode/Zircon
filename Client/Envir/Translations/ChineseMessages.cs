@@ -156,6 +156,7 @@ namespace Client.Envir.Translations
         public override string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; } = "全屏";
         public override string CommonControlConfigWindowGraphicsTabBorderlessLabel { get; set; } = "Borderless";
         public override string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; } = "分辨率";
+        public override string CommonControlConfigWindowGraphicsTabDefaultMonitorLabel { get; set; } = "Monitor";
         public override string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; } = "V-Sync";
         public override string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; } = "FPS限制";
         public override string CommonControlConfigWindowGraphicsTabSmoothMoveLabel { get; set; } = "平滑移动";

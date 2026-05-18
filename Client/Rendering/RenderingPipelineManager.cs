@@ -3,7 +3,9 @@ using Client.Envir;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Client.Rendering
@@ -32,6 +34,7 @@ namespace Client.Rendering
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
         private static readonly object GraphicsLock = new();
         private static string _pendingPipelineId;
+        private const int EnumCurrentSettings = -1;
 
         static RenderingPipelineManager()
         {
@@ -46,6 +49,154 @@ namespace Client.Rendering
         public static IReadOnlyCollection<string> AvailablePipelineIds => PipelineFactories.Keys;
         public static bool SupportsMultiplePipelines => PipelineFactories.Count > 1;
         public static bool IsDefaultPipelineOnly => PipelineFactories.Count == 1 && PipelineFactories.ContainsKey(DefaultPipelineId);
+
+        public static IReadOnlyList<DisplayMonitorInfo> GetDisplayMonitors()
+        {
+            Screen[] screens = Screen.AllScreens;
+            List<DisplayMonitorInfo> monitors = new(screens.Length);
+
+            for (int i = 0; i < screens.Length; i++)
+            {
+                Screen screen = screens[i];
+                monitors.Add(new DisplayMonitorInfo(i, screen.DeviceName, screen.Primary, screen.Bounds));
+            }
+
+            return monitors;
+        }
+
+        public static int GetSelectedMonitorIndex()
+        {
+            IReadOnlyList<DisplayMonitorInfo> monitors = GetDisplayMonitors();
+
+            if (monitors.Count == 0)
+                return 0;
+
+            if (!string.IsNullOrWhiteSpace(Config.DefaultMonitor))
+            {
+                DisplayMonitorInfo configuredMonitor = monitors.FirstOrDefault(x => string.Equals(x.DeviceName, Config.DefaultMonitor, StringComparison.OrdinalIgnoreCase));
+
+                if (configuredMonitor != null)
+                    return configuredMonitor.Index;
+            }
+
+            DisplayMonitorInfo primaryMonitor = monitors.FirstOrDefault(x => x.Primary) ?? monitors[0];
+            Config.DefaultMonitor = primaryMonitor.DeviceName;
+            return primaryMonitor.Index;
+        }
+
+        public static DisplayMonitorInfo GetSelectedMonitor()
+        {
+            IReadOnlyList<DisplayMonitorInfo> monitors = GetDisplayMonitors();
+
+            if (monitors.Count == 0)
+                return null;
+
+            int index = GetSelectedMonitorIndex();
+
+            if (index < 0 || index >= monitors.Count)
+                index = 0;
+
+            return monitors[index];
+        }
+
+        public static Screen GetSelectedScreen()
+        {
+            Screen[] screens = Screen.AllScreens;
+
+            if (screens.Length == 0)
+                return Screen.PrimaryScreen;
+
+            int index = GetSelectedMonitorIndex();
+
+            if (index < 0 || index >= screens.Length)
+                index = 0;
+
+            return screens[index];
+        }
+
+        public static Rectangle GetSelectedMonitorDisplayBounds()
+        {
+            return GetMonitorDisplayBounds(GetSelectedScreen());
+        }
+
+        public static Rectangle GetMonitorDisplayBounds(Screen screen)
+        {
+            if (screen == null)
+                return Rectangle.Empty;
+
+            return GetMonitorDisplayBounds(screen.DeviceName, screen.Bounds);
+        }
+
+        public static Rectangle GetMonitorDisplayBounds(string deviceName, Rectangle fallbackBounds)
+        {
+            if (string.IsNullOrWhiteSpace(deviceName))
+                return fallbackBounds;
+
+            DevMode mode = CreateDevMode();
+            if (!EnumDisplaySettings(deviceName, EnumCurrentSettings, ref mode))
+                return fallbackBounds;
+
+            return new Rectangle(mode.dmPositionX, mode.dmPositionY, (int)mode.dmPelsWidth, (int)mode.dmPelsHeight);
+        }
+
+        public static void SelectMonitor(int monitorIndex)
+        {
+            IReadOnlyList<DisplayMonitorInfo> monitors = GetDisplayMonitors();
+
+            if (monitors.Count == 0)
+                return;
+
+            if (monitorIndex < 0 || monitorIndex >= monitors.Count)
+                monitorIndex = monitors.FirstOrDefault(x => x.Primary)?.Index ?? 0;
+
+            Config.DefaultMonitor = monitors[monitorIndex].DeviceName;
+            SetTargetMonitor(monitorIndex);
+        }
+
+        private static DevMode CreateDevMode()
+        {
+            return new DevMode { dmSize = (ushort)Marshal.SizeOf<DevMode>() };
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DevMode devMode);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct DevMode
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string dmDeviceName;
+            public ushort dmSpecVersion;
+            public ushort dmDriverVersion;
+            public ushort dmSize;
+            public ushort dmDriverExtra;
+            public int dmFields;
+            public int dmPositionX;
+            public int dmPositionY;
+            public uint dmDisplayOrientation;
+            public uint dmDisplayFixedOutput;
+            public short dmColor;
+            public short dmDuplex;
+            public short dmYResolution;
+            public short dmTTOption;
+            public short dmCollate;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string dmFormName;
+            public ushort dmLogPixels;
+            public uint dmBitsPerPel;
+            public uint dmPelsWidth;
+            public uint dmPelsHeight;
+            public uint dmDisplayFlags;
+            public uint dmDisplayFrequency;
+            public uint dmICMMethod;
+            public uint dmICMIntent;
+            public uint dmMediaType;
+            public uint dmDitherType;
+            public uint dmReserved1;
+            public uint dmReserved2;
+            public uint dmPanningWidth;
+            public uint dmPanningHeight;
+        }
 
         public static IReadOnlyList<GraphicsAdapterInfo> GetGraphicsAdapters(string pipelineId)
         {
@@ -248,6 +399,10 @@ namespace Client.Rendering
         {
             if (_activePipeline == null)
                 throw new InvalidOperationException("No rendering pipeline has been initialized.");
+
+            IReadOnlyList<DisplayMonitorInfo> monitors = GetDisplayMonitors();
+            if (monitorIndex >= 0 && monitorIndex < monitors.Count)
+                Config.DefaultMonitor = monitors[monitorIndex].DeviceName;
 
             _activePipeline.SetTargetMonitor(monitorIndex);
         }

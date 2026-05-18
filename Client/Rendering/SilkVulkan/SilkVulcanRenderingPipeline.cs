@@ -324,10 +324,6 @@ namespace Client.Rendering.SilkVulkan
 
         public void SetTargetMonitor(int monitorIndex)
         {
-            //if (monitorIndex < 0 || monitorIndex >= Screen.AllScreens.Length)
-                monitorIndex = 0;
-
-            //Config.SelectedMonitorIndex = monitorIndex;
             ApplyWindowStyle();
             ApplyWindowBounds(true);
             ResizeBackBufferIfNeeded(true);
@@ -335,7 +331,15 @@ namespace Client.Rendering.SilkVulkan
 
         public void CenterOnSelectedMonitor()
         {
+            CenterOnSelectedMonitor(false);
+        }
+
+        private void CenterOnSelectedMonitor(bool force)
+        {
             if (_context?.RenderTarget == null)
+                return;
+
+            if (!force && !Config.FullScreen && !Config.Borderless && IsWindowOnVisibleScreen())
                 return;
 
             Screen selectedScreen = GetSelectedScreen();
@@ -357,7 +361,9 @@ namespace Client.Rendering.SilkVulkan
             if (!isGameScene)
                 return;
 
-            ApplyWindowBounds();
+            if (Config.FullScreen || Config.Borderless)
+                ApplyWindowBounds();
+
             ResizeBackBufferIfNeeded(true);
         }
 
@@ -2881,11 +2887,14 @@ namespace Client.Rendering.SilkVulkan
 
             if (Config.FullScreen)
             {
-                if (!ApplyFullscreenDisplayMode())
+                Screen screen = GetSelectedScreen();
+                string deviceName = screen.DeviceName;
+
+                if (!ApplyFullscreenDisplayMode(screen))
                     return false;
 
-                Screen screen = GetSelectedScreen();
-                _context.RenderTarget.Bounds = new Rectangle(screen.Bounds.Location, Config.GameSize);
+                screen = GetScreenByDeviceName(deviceName);
+                _context.RenderTarget.Bounds = RenderingPipelineManager.GetMonitorDisplayBounds(deviceName, screen.Bounds);
                 return true;
             }
 
@@ -2895,14 +2904,13 @@ namespace Client.Rendering.SilkVulkan
                 _context.RenderTarget.ClientSize = Config.GameSize;
 
             if (forceCenter || !IsWindowOnVisibleScreen())
-                CenterOnSelectedMonitor();
+                CenterOnSelectedMonitor(forceCenter);
 
             return true;
         }
 
-        private bool ApplyFullscreenDisplayMode()
+        private bool ApplyFullscreenDisplayMode(Screen screen)
         {
-            Screen screen = GetSelectedScreen();
             string deviceName = screen.DeviceName;
 
             if (_displayModeChanged &&
@@ -2915,7 +2923,7 @@ namespace Client.Rendering.SilkVulkan
             if (!TryGetDisplayMode(deviceName, Config.GameSize, out DevMode mode))
                 return false;
 
-            mode.dmFields |= DmPelsWidth | DmPelsHeight;
+            mode.dmFields = DmPelsWidth | DmPelsHeight;
 
             int result = ChangeDisplaySettingsEx(deviceName, ref mode, IntPtr.Zero, CdsFullscreen, IntPtr.Zero);
             if (result != DispChangeSuccessful)
@@ -2972,16 +2980,18 @@ namespace Client.Rendering.SilkVulkan
 
         private static Screen GetSelectedScreen()
         {
-            //int index = Config.SelectedMonitorIndex;
-            //if (index < 0 || index >= Screen.AllScreens.Length)
-            //{
-            //    index = 0;
-            //    Config.SelectedMonitorIndex = 0;
-            //}
+            return RenderingPipelineManager.GetSelectedScreen();
+        }
 
-            int index = 0;
+        private static Screen GetScreenByDeviceName(string deviceName)
+        {
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                if (string.Equals(screen.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
+                    return screen;
+            }
 
-            return Screen.AllScreens[index];
+            return GetSelectedScreen();
         }
 
         private static DevMode CreateDevMode()

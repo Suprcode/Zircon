@@ -155,6 +155,7 @@ namespace Client.Envir.Translations
         public abstract string CommonControlConfigWindowGraphicsTabFullScreenLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabBorderlessLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabGameSizeLabel { get; set; }
+        public abstract string CommonControlConfigWindowGraphicsTabDefaultMonitorLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabVSyncLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabLimitFPSLabel { get; set; }
         public abstract string CommonControlConfigWindowGraphicsTabSmoothMoveLabel { get; set; }
