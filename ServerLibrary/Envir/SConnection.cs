@@ -761,33 +761,54 @@ namespace Server.Envir
             if (Stage != GameStage.Game && Stage != GameStage.Observer && Stage != GameStage.Login) return;
 
             bool isGM = Account != null && (Account.TempAdmin || Account.Observer);
-
             RankInfo rank = null;
+            int startIndex = 0;
 
             CharacterInfo info = SEnvir.GetCharacter(p.Name);
 
             if (info != null)
             {
-                info.CurrentRank.TryGetValue(RequiredClass.All, out int currentRank);
+                int currentRank = 0;
+                int position = 0;
+
+                foreach (CharacterInfo rankingInfo in SEnvir.Rankings)
+                {
+                    if (rankingInfo.Deleted) continue;
+
+                    position++;
+
+                    if (rankingInfo != info) continue;
+
+                    currentRank = position;
+                    startIndex = Math.Max(0, position - 1);
+                    break;
+                }
+
+                if (currentRank > 0)
+                    info.CurrentRank[RequiredClass.All] = currentRank;
+
                 info.RankChange.TryGetValue(RequiredClass.All, out int positionChange);
 
-                rank = new RankInfo
+                if (currentRank > 0)
                 {
-                    Rank = 0,//currentRank,
-                    Index = info.Index,
-                    Class = info.Class,
-                    Experience = info.Experience,
-                    MaxExperience = info.Level >= Globals.ExperienceList.Count ? 0 : Globals.ExperienceList[info.Level],
-                    Level = info.Level,
-                    Name = info.CharacterName,
-                    Online = info.Player != null,
-                    Observable = info.Observable || isGM,
-                    Rebirth = info.Rebirth,
-                    RankChange = positionChange
-                };
+                    rank = new RankInfo
+                    {
+                        Rank = currentRank,
+                        Index = info.Index,
+                        Class = info.Class,
+                        Experience = info.Experience,
+                        MaxExperience = info.Level >= Globals.ExperienceList.Count ? 0 : Globals.ExperienceList[info.Level],
+                        Level = info.Level,
+                        Name = info.CharacterName,
+                        Online = info.Player != null,
+                        Observable = info.Observable || isGM,
+                        Rebirth = info.Rebirth,
+                        RankChange = positionChange
+                    };
+                }
             }
 
-            Enqueue(new S.RankSearch { Rank = rank });
+            Enqueue(new S.RankSearch { Rank = rank, StartIndex = startIndex });
         }
 
         public void Process(C.ObserverRequest p)

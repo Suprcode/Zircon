@@ -824,6 +824,7 @@ namespace Server.Models
                 TimeOfDayLabel = SEnvir.GetDayCycleLabel(),
 
                 AllowGroup = Character.Account.AllowGroup,
+                AllowTrade = Character.Account.AllowTrade,
 
                 CurrentHP = DisplayHP,
                 CurrentMP = DisplayMP,
@@ -1137,6 +1138,10 @@ namespace Server.Models
 
                 Items = Character.Account.Items.Select(x => x.ToClientInfo()).ToList(),
             });
+
+            if (Level > 0)
+                con.Enqueue(new S.InformMaxExperience { MaxExperience = MaxExperience });
+
             //Send Items
 
             foreach (MapObject ob in VisibleObjects)
@@ -1288,7 +1293,7 @@ namespace Server.Models
         }
         private bool SetBindPoint()
         {
-            if (Character.BindPoint != null && Character.BindPoint.ValidBindPoints.Count > 0)
+            if (Character.BindPoint != null && SEnvir.EnsureSafeZoneBindPoints(Character.BindPoint))
                 return true;
 
             List<SafeZoneInfo> spawnPoints = new List<SafeZoneInfo>();
@@ -1391,8 +1396,7 @@ namespace Server.Models
                 if (SpellList[i].CurrentMap != CurrentMap || !Functions.InRange(SpellList[i].DisplayLocation, CurrentLocation, Config.MaxViewRange))
                     SpellList[i].Despawn();
 
-            if (CurrentCell.SafeZone != null && CurrentCell.SafeZone.ValidBindPoints.Count > 0 && Stats[Stat.PKPoint] < Config.RedPoint)
-                Character.BindPoint = CurrentCell.SafeZone;
+            UpdateBindPoint(CurrentCell.SafeZone);
 
             if (InSafeZone != (CurrentCell.SafeZone != null))
             {
@@ -13651,6 +13655,7 @@ namespace Server.Models
             }
 
             Cell cell = null;
+            SafeZoneInfo traversedSafeZone = null;
 
             for (int i = 1; i <= distance; i++)
             {
@@ -13666,6 +13671,9 @@ namespace Server.Models
                     Enqueue(new S.UserLocation { Direction = Direction, Location = CurrentLocation });
                     return;
                 }
+
+                if (CanBindToSafeZone(cell.SafeZone))
+                    traversedSafeZone = cell.SafeZone;
             }
 
             BuffRemove(BuffType.Invisibility);
@@ -13710,6 +13718,8 @@ namespace Server.Models
             CurrentCell = cell.GetMovement(this);
             PreventSpellCheck = false;
 
+            UpdateBindPoint(traversedSafeZone);
+
             RemoveAllObjects();
             AddAllObjects();
 
@@ -13723,6 +13733,20 @@ namespace Server.Models
 
             Broadcast(new S.ObjectMove { ObjectID = ObjectID, Direction = direction, Location = CurrentLocation, Slow = slow, Distance = distance });
             CheckSpellObjects();
+        }
+
+        private bool CanBindToSafeZone(SafeZoneInfo safeZone)
+        {
+            return safeZone != null &&
+                   safeZone.ValidBindPoints.Count > 0 &&
+                   Stats[Stat.PKPoint] < Config.RedPoint;
+        }
+
+        private void UpdateBindPoint(SafeZoneInfo safeZone)
+        {
+            if (!CanBindToSafeZone(safeZone)) return;
+
+            Character.BindPoint = safeZone;
         }
 
         public void Attack(MirDirection direction, MagicType attackMagic)
@@ -13806,15 +13830,17 @@ namespace Server.Models
                 element = Equipment[(int)EquipmentSlot.Amulet].Info.Stats.GetAffinityElement();
             }
 
-            if (AttackLocation(Functions.Move(CurrentLocation, Direction), magics, true))
+            bool attackSuccess = AttackLocation(Functions.Move(CurrentLocation, Direction), magics, true);
+
+            if (GetMagic(attackMagic, out MagicObject attackMagicObject))
             {
-                if (GetMagic(attackMagic, out MagicObject attackMagicObject))
-                {
+                if (attackSuccess)
                     attackMagicObject.AttackLocationSuccess(attackDelay);
-                }
+
+                attackMagicObject.SecondaryAttackLocation(magics);
             }
 
-            if (GetMagic(validMagic, out MagicObject validMagicObject))
+            if (validMagic != attackMagic && GetMagic(validMagic, out MagicObject validMagicObject))
             {
                 validMagicObject.SecondaryAttackLocation(magics);
             }
