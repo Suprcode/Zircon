@@ -13840,11 +13840,6 @@ namespace Server.Models
                 attackMagicObject.SecondaryAttackLocation(magics);
             }
 
-            if (validMagic != attackMagic && GetMagic(validMagic, out MagicObject validMagicObject))
-            {
-                validMagicObject.SecondaryAttackLocation(magics);
-            }
-
             BuffRemove(BuffType.Transparency);
 
             if (!GetMagic(MagicType.Stealth, out Stealth stealth) || !stealth.CheckCloak())
