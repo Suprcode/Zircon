@@ -432,6 +432,9 @@ namespace Client.Scenes.Views
             Size size = new Size(3, 3);
             Color colour = Color.White;
             string name = ob.Name;
+            bool isGroupMember = GameScene.Game.GroupBox.Members.Any(x => x.ObjectID == ob.ObjectID);
+
+            control.Visible = true;
 
             if (ob.MonsterInfo != null)
             {
@@ -527,14 +530,14 @@ namespace Client.Scenes.Views
                         }
                     };
                 }
-                else if (GameScene.Game.Observer)
-                {
-                    control.Visible = false;
-                }
-                else if (GameScene.Game.GroupBox.Members.Any(x => x.ObjectID == ob.ObjectID))
+                else if (isGroupMember)
                 {
                     colour = Color.Lime;
                     size = new Size(4, 4);
+                }
+                else if (GameScene.Game.Observer)
+                {
+                    control.Visible = false;
                 }
                 else if (GameScene.Game.Partner != null && GameScene.Game.Partner.ObjectID == ob.ObjectID)
                 {

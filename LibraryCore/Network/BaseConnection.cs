@@ -10,7 +10,8 @@ namespace Library.Network
     public abstract class BaseConnection
     {
         public static Dictionary<string, DiagnosticValue> Diagnostics = new Dictionary<string, DiagnosticValue>();
-        public static Dictionary<Type, MethodInfo> PacketMethods = new Dictionary<Type, MethodInfo>();
+        public static Dictionary<(Type ConnectionType, Type PacketType), MethodInfo> PacketMethods = new Dictionary<(Type ConnectionType, Type PacketType), MethodInfo>();
+        private static readonly object PacketMethodsLock = new object();
         public static bool Monitor;
 
         public bool Connected { get; set; }
@@ -315,12 +316,25 @@ namespace Library.Network
 
             DateTime start = Time.Now;
 
+            Type connectionType = GetType();
+            (Type ConnectionType, Type PacketType) key = (connectionType, p.PacketType);
+
             MethodInfo info;
-            if (!PacketMethods.TryGetValue(p.PacketType, out info))
-                PacketMethods[p.PacketType] = info = GetType().GetMethod("Process", new[] { p.PacketType });
+            lock (PacketMethodsLock)
+            {
+                if (!PacketMethods.TryGetValue(key, out info))
+                {
+                    info = connectionType.GetMethod("Process", new[] { p.PacketType });
+                    if (info != null)
+                        PacketMethods[key] = info;
+                }
+            }
 
             if (info == null)
-                throw new NotImplementedException($"Not Implemented Exception: Method Process({p.PacketType}).");
+            {
+                ProcessUnhandledPacket(p);
+                return;
+            }
 
             info.Invoke(this, new object[] { p });
 
@@ -341,6 +355,11 @@ namespace Library.Network
 
             if (p.Length > value.LargestSize)
                 value.LargestSize = p.Length;
+        }
+
+        protected virtual void ProcessUnhandledPacket(Packet p)
+        {
+            throw new NotImplementedException($"Not Implemented Exception: Method Process({p.PacketType}).");
         }
 
         public void UpdateTimeOut()

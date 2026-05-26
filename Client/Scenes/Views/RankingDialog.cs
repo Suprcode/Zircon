@@ -72,6 +72,8 @@ namespace Client.Scenes.Views
 
 
 
+            RefreshSelectedRows();
+
             StartIndexChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -101,6 +103,8 @@ namespace Client.Scenes.Views
 
             foreach (RankingLine line in Lines)
                 line.Loading = true;
+
+            SelectedRow = null;
 
             FilterClassChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -132,6 +136,7 @@ namespace Client.Scenes.Views
             foreach (RankingLine line in Lines)
                 line.Loading = true;
 
+            SelectedRow = null;
 
             OnlineOnlyChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -180,24 +185,36 @@ namespace Client.Scenes.Views
             }
         }
         private RankingLine _SelectedRow;
+        private RankInfo _SelectedRank;
+        private int _SelectedStartIndex = -1;
         public event EventHandler<EventArgs> SelectedRowChanged;
         public void OnSelectedRowChanged(RankingLine oValue, RankingLine nValue)
         {
-            if (oValue != null)
-                oValue.Selected = false;
-
             if (nValue != null && nValue.Rank != null)
-                nValue.Selected = true;
+            {
+                _SelectedRank = nValue.Rank;
+                _SelectedStartIndex = GetLineStartIndex(nValue);
+            }
+            else
+            {
+                _SelectedRank = null;
+                _SelectedStartIndex = -1;
+            }
 
-            ObserveButton.Enabled = SelectedRow != null && SelectedRow.Rank.Online && SelectedRow.Rank.Observable;
+            RefreshSelectedRows();
 
-            if (GameScene.Game != null && SelectedRow == null)
+            ObserveButton.Enabled = _SelectedRank != null && _SelectedRank.Online && _SelectedRank.Observable;
+
+            if (GameScene.Game != null && _SelectedRank == null)
                 ClearInformation();
 
             SelectedRowChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
+
+        public RankInfo SelectedRank => _SelectedRank;
+        public int SelectedStartIndex => _SelectedStartIndex;
 
         public DateTime UpdateTime;
 
@@ -742,7 +759,7 @@ namespace Client.Scenes.Views
             };
             ObserveButton.MouseClick += (o, e) =>
             {
-                if (SelectedRow == null)
+                if (_SelectedRank == null)
                     return;
 
                 if (GameScene.Game != null && CEnvir.Now < GameScene.Game.User.CombatTime.AddSeconds(10) && !GameScene.Game.Observer)
@@ -751,7 +768,9 @@ namespace Client.Scenes.Views
                     return;
                 }
 
-                CEnvir.Enqueue(new C.ObserverRequest { Name = SelectedRow.Rank.Name });
+                ScrollToRank(_SelectedRank);
+
+                CEnvir.Enqueue(new C.ObserverRequest { Name = _SelectedRank.Name });
             };
 
             RankPanelList = new DXControl
@@ -780,7 +799,6 @@ namespace Client.Scenes.Views
             ScrollBar.ValueChanged += (o, e) =>
             {
                 StartIndex = ScrollBar.Value;
-                SelectedRow = null;
             };
             MouseWheel += ScrollBar.DoMouseWheel;
 
@@ -1051,6 +1069,14 @@ namespace Client.Scenes.Views
         public void Update(S.RankSearch p)
         {
             SearchLine.Rank = p.Rank;
+
+            if (p.Rank != null)
+            {
+                _SelectedStartIndex = p.StartIndex;
+                SelectRank(p.Rank);
+            }
+            else
+                SelectedRow = null;
         }
 
         public void Update(S.Rankings p)
@@ -1060,11 +1086,104 @@ namespace Client.Scenes.Views
             if (p.Class != FilterClass || p.OnlineOnly != OnlineOnly) return;
 
             ScrollBar.MaxValue = p.Total;
+            ScrollBar.Value = p.StartIndex;
 
             for (int i = 0; i < Lines.Length; i++)
             {
                 Lines[i].Loading = false;
                 Lines[i].Rank = i >= p.Ranks.Count ? null : p.Ranks[i];
+            }
+
+            RefreshSelectedRows();
+        }
+
+        public void SelectRank(RankInfo rank)
+        {
+            SelectRank(rank, _SelectedStartIndex);
+        }
+
+        public void SelectRank(RankInfo rank, int startIndex)
+        {
+            if (rank != null && rank.Rank <= 0)
+            {
+                RankInfo visibleRank = Lines?.Select(x => x?.Rank).FirstOrDefault(x => x != null && x.Index == rank.Index);
+
+                if (visibleRank != null)
+                    rank = visibleRank;
+            }
+
+            _SelectedRank = rank;
+            _SelectedStartIndex = rank == null ? -1 : startIndex;
+            RefreshSelectedRows();
+
+            ObserveButton.Enabled = _SelectedRank != null && _SelectedRank.Online && _SelectedRank.Observable;
+        }
+
+        public void InspectSelectedRank()
+        {
+            if (GameScene.Game == null || _SelectedRank == null) return;
+
+            CEnvir.Enqueue(new C.Inspect { Index = _SelectedRank.Index, Ranking = true });
+        }
+
+        public void SetScrollIndex(int startIndex)
+        {
+            startIndex = Math.Max(0, startIndex);
+
+            if (ScrollBar.MaxValue > ScrollBar.VisibleSize)
+            {
+                startIndex = Math.Min(startIndex, ScrollBar.MaxValue - ScrollBar.VisibleSize);
+                ScrollBar.Value = startIndex;
+            }
+
+            StartIndex = startIndex;
+        }
+
+        private void ScrollToRank(RankInfo rank)
+        {
+            if (rank == null) return;
+
+            int startIndex = _SelectedStartIndex >= 0 ? _SelectedStartIndex : Math.Max(0, rank.Rank - 1);
+
+            SetScrollIndex(startIndex);
+        }
+
+        private int GetLineStartIndex(RankingLine line)
+        {
+            if (line == null) return -1;
+
+            if (line == SearchLine) return _SelectedStartIndex;
+
+            for (int i = 0; i < Lines.Length; i++)
+                if (Lines[i] == line)
+                    return StartIndex + i;
+
+            return -1;
+        }
+
+        private void RefreshSelectedRows()
+        {
+            _SelectedRow = null;
+
+            if (SearchLine != null)
+            {
+                SearchLine.Selected = _SelectedRank != null && SearchLine.Rank != null && SearchLine.Rank.Index == _SelectedRank.Index;
+
+                if (SearchLine.Selected)
+                    _SelectedRow = SearchLine;
+            }
+
+            if (Lines != null)
+            {
+                foreach (RankingLine line in Lines)
+                {
+                    if (line == null) continue;
+
+                    line.Selected = _SelectedRank != null && line.Rank != null && line.Rank.Index == _SelectedRank.Index;
+
+                    if (line.Selected)
+                        _SelectedRow = line;
+                }
             }
         }
 
@@ -1162,6 +1281,8 @@ namespace Client.Scenes.Views
                 OnlineOnlyChanged = null;
 
                 _SelectedRow = null;
+                _SelectedRank = null;
+                _SelectedStartIndex = -1;
                 SelectedRowChanged = null;
 
                 UpdateTime = DateTime.MinValue;
