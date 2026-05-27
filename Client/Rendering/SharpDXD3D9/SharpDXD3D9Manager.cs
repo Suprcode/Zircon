@@ -795,7 +795,6 @@ namespace Client.Rendering.SharpDXD3D9
         {
             return Config.FullScreen &&
                    screen != null &&
-                   !screen.Primary &&
                    TryGetDisplayMode(screen.DeviceName, Config.GameSize, out _);
         }
 
@@ -803,7 +802,6 @@ namespace Client.Rendering.SharpDXD3D9
         {
             return Config.FullScreen &&
                    screen != null &&
-                   !screen.Primary &&
                    _displayModeChanged &&
                    string.Equals(_displayModeDeviceName, screen.DeviceName, StringComparison.OrdinalIgnoreCase) &&
                    _displayModeSize == Config.GameSize;
