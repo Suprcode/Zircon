@@ -117,6 +117,7 @@ namespace Client.Rendering.SharpDXD3D11
         public static SharpDXD3D11SpriteRenderer SpriteRenderer { get; private set; }
 
         private static bool _resetRequested;
+        private static bool _d2dDrawActive;
         private static readonly DisplayModeManager _displayMode = new DisplayModeManager();
         private static System.Windows.Forms.Timer _postTogglePlacementTimer;
 
