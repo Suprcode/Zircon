@@ -168,8 +168,6 @@ namespace Client.Rendering.SharpDXD3D9
 
             if (!Config.FullScreen)
                 SharpDXD3D9Manager.RequestReset();
-            else
-                SharpDXD3D9Manager.CenterOnSelectedMonitor();
         }
 
         public IReadOnlyList<Size> GetSupportedResolutions()

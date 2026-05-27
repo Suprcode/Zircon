@@ -22,8 +22,8 @@ namespace Client.Controls
         public DXConfigTab GraphicsTab, SoundTab, GameTab, NetworkTab, UITab;
 
         //Graphics
-        public DXCheckBox FullScreenCheckBox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
-        private DXComboBox GameSizeComboBox, LanguageComboBox, RenderingPipelineComboBox;
+        public DXCheckBox FullScreenCheckBox, BorderlessCheckbox, VSyncCheckBox, LimitFPSCheckBox, ClipMouseCheckBox, DebugLabelCheckBox, SmoothMoveCheckBox;
+        private DXComboBox GameSizeComboBox, DefaultMonitorComboBox, LanguageComboBox, RenderingPipelineComboBox;
 
         //Sound
         public DXCheckBox BackgroundSoundBox;
@@ -87,11 +87,15 @@ namespace Client.Controls
             if (!IsVisible) return;
 
             FullScreenCheckBox.Enabled = ActiveScene is GameScene;
+            BorderlessCheckbox.Enabled = ActiveScene is GameScene;
             GameSizeComboBox.Enabled = ActiveScene is GameScene;
+            DefaultMonitorComboBox.Enabled = ActiveScene is GameScene;
             RenderingPipelineComboBox.Enabled = ActiveScene is GameScene;
 
             FullScreenCheckBox.Checked = Config.FullScreen;
+            BorderlessCheckbox.Checked = Config.Borderless;
             GameSizeComboBox.ListBox.SelectItem(Config.GameSize);
+            DefaultMonitorComboBox.ListBox.SelectItem(RenderingPipelineManager.GetSelectedMonitor());
             VSyncCheckBox.Checked = Config.VSync;
             LimitFPSCheckBox.Checked = Config.LimitFPS;
             SmoothMoveCheckBox.Checked = Config.SmoothMove;
@@ -345,12 +349,26 @@ namespace Client.Controls
                     if (!Config.FullScreen)
                     {
                         CEnvir.Target.ClientSize = Config.GameSize;
-                        CEnvir.Target.Center();
+                        RenderingPipelineManager.CenterOnSelectedMonitor();
                     }
                 }
             };
 
             displayGraphicsSection.AddControl("", FullScreenCheckBox);
+
+            BorderlessCheckbox = new DXCheckBox
+            {
+                Label = { Text = CEnvir.Language.CommonControlConfigWindowGraphicsTabBorderlessLabel },
+                LabelBoxPadding = checkboxPadding,
+                Enabled = false
+            };
+            BorderlessCheckbox.CheckedChanged += (o, e) =>
+            {
+                Config.Borderless = BorderlessCheckbox.Checked;
+                RenderingPipelineManager.ResetDevice();
+            };
+
+            displayGraphicsSection.AddControl("", BorderlessCheckbox);
 
             RenderingPipelineComboBox = new DXComboBox
             {
@@ -365,8 +383,8 @@ namespace Client.Controls
                        ? RenderingPipelineComboBox.SelectedItem as string
                        : RenderingPipelineManager.DefaultPipelineIdentifier;
 
-                RenderingPipelineManager.SwitchPipeline(renderingPipeline);
                 Config.RenderingPipeline = renderingPipeline;
+                RenderingPipelineManager.RequestSwitchPipeline(renderingPipeline);
             };
 
             foreach (string pipelineId in RenderingPipelineManager.AvailablePipelineIds.OrderBy(x => x))
@@ -409,6 +427,31 @@ namespace Client.Controls
                 };
 
             displayGraphicsSection.AddControl(CEnvir.Language.CommonControlConfigWindowGraphicsTabGameSizeLabel, GameSizeComboBox);
+
+            DefaultMonitorComboBox = new DXComboBox
+            {
+                Size = new Size(122, DXComboBox.DefaultNormalHeight),
+                Border = false,
+                Background = { Visible = true },
+                Enabled = false
+            };
+            DefaultMonitorComboBox.SelectedItemChanged += (o, e) =>
+            {
+                if (DefaultMonitorComboBox.SelectedItem is not DisplayMonitorInfo monitor)
+                    return;
+
+                RenderingPipelineManager.SelectMonitor(monitor.Index);
+            };
+
+            foreach (DisplayMonitorInfo monitor in RenderingPipelineManager.GetDisplayMonitors())
+                new DXListBoxItem
+                {
+                    Parent = DefaultMonitorComboBox.ListBox,
+                    Label = { Text = monitor.DisplayName },
+                    Item = monitor
+                };
+
+            displayGraphicsSection.AddControl(CEnvir.Language.CommonControlConfigWindowGraphicsTabDefaultMonitorLabel, DefaultMonitorComboBox);
 
             VSyncCheckBox = new DXCheckBox
             {
@@ -1124,6 +1167,14 @@ namespace Client.Controls
                         GameSizeComboBox.Dispose();
 
                     GameSizeComboBox = null;
+                }
+
+                if (DefaultMonitorComboBox != null)
+                {
+                    if (!DefaultMonitorComboBox.IsDisposed)
+                        DefaultMonitorComboBox.Dispose();
+
+                    DefaultMonitorComboBox = null;
                 }
 
                 if (RenderingPipelineComboBox != null)

@@ -13,6 +13,7 @@ using Sentry;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -31,6 +32,8 @@ namespace Client.Envir
         private static DateTime _FPSTime;
         private static int FPSCounter;
         private static int FPSCount;
+        private static readonly long LimitFPSTicks = Stopwatch.Frequency / 60;
+        private static long _nextLimitedFrameTicks;
 
         public static int DPSCounter;
         private static int DPSCount;
@@ -151,12 +154,44 @@ namespace Client.Envir
 
         public static void GameLoop()
         {
+            if (RenderingPipelineManager.ApplyPendingPipelineSwitch())
+                return;
+
             UpdateGame();
             RenderGame();
 
             if (Config.LimitFPS)
-                Thread.Sleep(1);
+                LimitFrameRate();
+            else
+                _nextLimitedFrameTicks = 0;
         }
+
+        private static void LimitFrameRate()
+        {
+            long now = Stopwatch.GetTimestamp();
+
+            if (_nextLimitedFrameTicks == 0 || _nextLimitedFrameTicks < now - LimitFPSTicks)
+                _nextLimitedFrameTicks = now + LimitFPSTicks;
+
+            while (true)
+            {
+                now = Stopwatch.GetTimestamp();
+                long remainingTicks = _nextLimitedFrameTicks - now;
+
+                if (remainingTicks <= 0)
+                    break;
+
+                int remainingMilliseconds = (int)(remainingTicks * 1000 / Stopwatch.Frequency);
+
+                if (remainingMilliseconds > 1)
+                    Thread.Sleep(remainingMilliseconds - 1);
+                else
+                    Thread.Sleep(0);
+            }
+
+            _nextLimitedFrameTicks += LimitFPSTicks;
+        }
+
         private static void UpdateGame()
         {
             Now = Time.Now;

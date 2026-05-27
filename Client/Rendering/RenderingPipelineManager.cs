@@ -1,7 +1,9 @@
+using Client.Controls;
 using Client.Envir;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 
@@ -30,11 +32,14 @@ namespace Client.Rendering
         private static float _fallbackLineWidth = 1F;
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
         private static readonly object GraphicsLock = new();
+        private static string _pendingPipelineId;
 
         static RenderingPipelineManager()
         {
             FallbackGraphics = Graphics.FromHwnd(IntPtr.Zero);
             ConfigureFallbackGraphics(FallbackGraphics);
+
+            PipelineFactories[RenderingPipelineIds.SilkVulkan] = () => new SilkVulkan.SilkVulkanRenderingPipeline();
         }
 
         public static string DefaultPipelineIdentifier => DefaultPipelineId;
@@ -42,6 +47,107 @@ namespace Client.Rendering
         public static IReadOnlyCollection<string> AvailablePipelineIds => PipelineFactories.Keys;
         public static bool SupportsMultiplePipelines => PipelineFactories.Count > 1;
         public static bool IsDefaultPipelineOnly => PipelineFactories.Count == 1 && PipelineFactories.ContainsKey(DefaultPipelineId);
+
+        public static IReadOnlyList<DisplayMonitorInfo> GetDisplayMonitors()
+        {
+            Screen[] screens = Screen.AllScreens;
+            List<DisplayMonitorInfo> monitors = new(screens.Length);
+
+            for (int i = 0; i < screens.Length; i++)
+            {
+                Screen screen = screens[i];
+                monitors.Add(new DisplayMonitorInfo(i, screen.DeviceName, screen.Primary, screen.Bounds));
+            }
+
+            return monitors;
+        }
+
+        public static int GetSelectedMonitorIndex()
+        {
+            IReadOnlyList<DisplayMonitorInfo> monitors = GetDisplayMonitors();
+
+            if (monitors.Count == 0)
+                return 0;
+
+            if (!string.IsNullOrWhiteSpace(Config.DefaultMonitor))
+            {
+                DisplayMonitorInfo configuredMonitor = monitors.FirstOrDefault(x => string.Equals(x.DeviceName, Config.DefaultMonitor, StringComparison.OrdinalIgnoreCase));
+
+                if (configuredMonitor != null)
+                    return configuredMonitor.Index;
+            }
+
+            DisplayMonitorInfo primaryMonitor = monitors.FirstOrDefault(x => x.Primary) ?? monitors[0];
+            Config.DefaultMonitor = primaryMonitor.DeviceName;
+            return primaryMonitor.Index;
+        }
+
+        public static DisplayMonitorInfo GetSelectedMonitor()
+        {
+            IReadOnlyList<DisplayMonitorInfo> monitors = GetDisplayMonitors();
+
+            if (monitors.Count == 0)
+                return null;
+
+            int index = GetSelectedMonitorIndex();
+
+            if (index < 0 || index >= monitors.Count)
+                index = 0;
+
+            return monitors[index];
+        }
+
+        public static Screen GetSelectedScreen()
+        {
+            Screen[] screens = Screen.AllScreens;
+
+            if (screens.Length == 0)
+                return Screen.PrimaryScreen;
+
+            int index = GetSelectedMonitorIndex();
+
+            if (index < 0 || index >= screens.Length)
+                index = 0;
+
+            return screens[index];
+        }
+
+        public static Rectangle GetSelectedMonitorDisplayBounds()
+        {
+            return GetMonitorDisplayBounds(GetSelectedScreen());
+        }
+
+        public static Rectangle GetMonitorDisplayBounds(Screen screen)
+        {
+            return DisplayModeManager.GetBounds(screen);
+        }
+
+        public static Rectangle GetMonitorDisplayBounds(string deviceName, Rectangle fallbackBounds)
+        {
+            return DisplayModeManager.GetBounds(deviceName, fallbackBounds);
+        }
+
+        public static void SelectMonitor(int monitorIndex)
+        {
+            IReadOnlyList<DisplayMonitorInfo> monitors = GetDisplayMonitors();
+
+            if (monitors.Count == 0)
+                return;
+
+            if (monitorIndex < 0 || monitorIndex >= monitors.Count)
+                monitorIndex = monitors.FirstOrDefault(x => x.Primary)?.Index ?? 0;
+
+            Config.DefaultMonitor = monitors[monitorIndex].DeviceName;
+            SetTargetMonitor(monitorIndex);
+        }
+
+        public static IReadOnlyList<GraphicsAdapterInfo> GetGraphicsAdapters(string pipelineId)
+        {
+            if (string.Equals(pipelineId, RenderingPipelineIds.SilkVulkan, StringComparison.OrdinalIgnoreCase))
+                return SilkVulkan.SilkVulkanRenderingPipeline.GetAvailableGraphicsAdapters();
+
+            return Array.Empty<GraphicsAdapterInfo>();
+        }
 
         public static string NormalizePipelineId(string pipelineId)
         {
@@ -114,9 +220,75 @@ namespace Client.Rendering
 
             if (string.Equals(ActivePipelineId, pipelineId, StringComparison.OrdinalIgnoreCase)) return;
 
+            InvalidateAllControlTextures();
             Shutdown();
 
             InitializeWithFallback(pipelineId, _context);
+        }
+
+        public static void RequestSwitchPipeline(string pipelineId)
+        {
+            string normalizedPipelineId = NormalizePipelineId(pipelineId);
+            _pendingPipelineId = string.Equals(ActivePipelineId, normalizedPipelineId, StringComparison.OrdinalIgnoreCase)
+                ? null
+                : normalizedPipelineId;
+        }
+
+        public static bool ApplyPendingPipelineSwitch()
+        {
+            if (string.IsNullOrWhiteSpace(_pendingPipelineId))
+                return false;
+
+            string pipelineId = _pendingPipelineId;
+            _pendingPipelineId = null;
+
+            if (string.Equals(ActivePipelineId, pipelineId, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            string previousPipelineId = ActivePipelineId;
+            try
+            {
+                InvalidateAllControlTextures();
+                Shutdown();
+
+                string activePipelineId = InitializeWithFallback(pipelineId, _context);
+                Config.RenderingPipeline = activePipelineId;
+            }
+            catch (Exception ex)
+            {
+                CEnvir.SaveException(ex);
+
+                if (string.IsNullOrWhiteSpace(previousPipelineId))
+                    throw;
+
+                string restoredPipelineId = InitializeWithFallback(previousPipelineId, _context);
+                Config.RenderingPipeline = restoredPipelineId;
+            }
+
+            return true;
+        }
+
+        private static void InvalidateAllControlTextures()
+        {
+            HashSet<DXControl> visited = new();
+            InvalidateControlTree(DXControl.ActiveScene, visited);
+
+            foreach (DXControl messageBox in DXControl.MessageBoxList.ToArray())
+                InvalidateControlTree(messageBox, visited);
+
+            InvalidateControlTree(DXControl.MouseControl, visited);
+            InvalidateControlTree(DXControl.FocusControl, visited);
+        }
+
+        private static void InvalidateControlTree(DXControl control, HashSet<DXControl> visited)
+        {
+            if (control == null || !visited.Add(control))
+                return;
+
+            control.DisposeTexture();
+
+            foreach (DXControl child in control.Controls.ToArray())
+                InvalidateControlTree(child, visited);
         }
 
         public static void Shutdown()
@@ -170,6 +342,10 @@ namespace Client.Rendering
         {
             if (_activePipeline == null)
                 throw new InvalidOperationException("No rendering pipeline has been initialized.");
+
+            IReadOnlyList<DisplayMonitorInfo> monitors = GetDisplayMonitors();
+            if (monitorIndex >= 0 && monitorIndex < monitors.Count)
+                Config.DefaultMonitor = monitors[monitorIndex].DeviceName;
 
             _activePipeline.SetTargetMonitor(monitorIndex);
         }
@@ -371,6 +547,35 @@ namespace Client.Rendering
             if (_activePipeline != null)
             {
                 _activePipeline.DrawLine(points, colour);
+            }
+        }
+
+        public static void DrawTextureBlend(RenderTexture texture, Rectangle? sourceRectangle, Matrix3x2 transform, Vector3 center, Vector3 translation, Color colour, float blendRate, BlendMode mode = BlendMode.NORMAL)
+        {
+            if (!texture.IsValid)
+                throw new ArgumentException("A valid texture handle is required.", nameof(texture));
+
+            if (_activePipeline == null)
+                throw new InvalidOperationException("No rendering pipeline has been initialized.");
+
+            if (_activePipeline is SilkVulkan.SilkVulkanRenderingPipeline vulkanPipeline)
+            {
+                vulkanPipeline.DrawTextureBlend(texture, sourceRectangle, transform, center, translation, colour, blendRate, mode);
+                return;
+            }
+
+            bool oldBlend = _activePipeline.IsBlending();
+            float oldRate = _activePipeline.GetBlendRate();
+            BlendMode oldMode = _activePipeline.GetBlendMode();
+
+            try
+            {
+                _activePipeline.SetBlend(true, blendRate, mode);
+                _activePipeline.DrawTexture(texture, sourceRectangle, transform, center, translation, colour);
+            }
+            finally
+            {
+                _activePipeline.SetBlend(oldBlend, oldRate, oldMode);
             }
         }
 

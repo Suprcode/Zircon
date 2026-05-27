@@ -623,7 +623,7 @@ namespace Server
 
         protected static string[] SplitIdentityValue(string value)
         {
-            return value.Split('/');
+            return value?.Split('/') ?? [];
         }
 
         protected string JoinIdentityValues(string[] values)
