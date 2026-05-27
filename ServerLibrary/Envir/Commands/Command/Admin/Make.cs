@@ -18,6 +18,13 @@ namespace Server.Envir.Commands.Command.Admin
             if (vals.Length < PARAMS_LENGTH)
                 ThrowNewInvalidParametersException();
 
+            if (vals.Length > 3)
+            {
+                player = SEnvir.GetPlayerByCharacter(vals[3]);
+                if (player == null)
+                    throw new UserCommandException(string.Format("Could not find player: {0}", vals[3]));
+            }
+
             ItemInfo item = SEnvir.GetItemInfo(vals[1]);
             if (item == null)
                 throw new UserCommandException(string.Format("Could not find item: {0}", vals[1]));

@@ -491,6 +491,7 @@ namespace Client.Rendering.SharpDXD3D11
 
             _context.Draw(4, 0);
 
+            _context.PixelShader.SetShaderResource(0, null);
             _context.PixelShader.SetConstantBuffer(1, null);
             _context.OutputMerger.SetBlendState(null, null, -1);
         }

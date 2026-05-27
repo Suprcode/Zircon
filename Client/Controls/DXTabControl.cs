@@ -1004,7 +1004,6 @@ namespace Client.Controls
         #region IDisposable
         protected override void Dispose(bool disposing)
         {
-            (Parent as DXTabControl)?.SetNewTab();
 
             base.Dispose(disposing);
 

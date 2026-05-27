@@ -3488,9 +3488,15 @@ namespace Client.Envir
             CEnvir.FillStorage(p.Items, true);
 
             int index = 0;
+            RankInfo selectedRank = null;
+            int selectedStartIndex = -1;
 
             if (GameScene.Game != null)
+            {
                 index = GameScene.Game.RankingBox.StartIndex;
+                selectedRank = GameScene.Game.RankingBox.SelectedRank;
+                selectedStartIndex = GameScene.Game.RankingBox.SelectedStartIndex;
+            }
 
             DXControl.ActiveScene.Dispose();
 
@@ -3519,7 +3525,9 @@ namespace Client.Envir
 
             GameScene.Game.BuffBox.BuffsChanged();
 
-            GameScene.Game.RankingBox.StartIndex = index;
+            GameScene.Game.RankingBox.SetScrollIndex(index);
+            GameScene.Game.RankingBox.SelectRank(selectedRank, selectedStartIndex);
+            GameScene.Game.RankingBox.InspectSelectedRank();
 
             GameScene.Game.CompanionBox.RefreshFilter();
 

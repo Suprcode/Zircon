@@ -85,5 +85,10 @@ namespace Library.SystemModels
         private bool _Border;
 
         public List<Point> ValidBindPoints = new List<Point>();
+
+        public override string ToString()
+        {
+            return BindRegion?.Map?.Description;
+        }
     }
 }

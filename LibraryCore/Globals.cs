@@ -386,6 +386,7 @@ namespace Library
         public TimeOfDay TimeOfDay { get; set; }
         public string TimeOfDayLabel { get; set; }
         public bool AllowGroup { get; set; }
+        public bool AllowTrade { get; set; }
 
         public List<ClientFriendInfo> Friends { get; set; }
 

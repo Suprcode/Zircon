@@ -744,15 +744,15 @@ namespace Server.Envir
 
                 Parallel.ForEach(Maps, x => x.Value.Load());
 
-                foreach (Map map in Maps.Values)
-                    map.Setup();
-
                 Parallel.ForEach(MapRegionList.Binding, x =>
                 {
                     if (!Maps.TryGetValue(x.Map, out Map map)) return;
 
                     x.CreatePoints(map.Width);
                 });
+
+                foreach (Map map in Maps.Values)
+                    map.Setup();
 
                 CreateSafeZones();
                 CreateMovements();
@@ -1137,29 +1137,40 @@ namespace Server.Envir
                 if (info.BindRegion == null || instance != null) continue;
                 if (targetMap != null && info.BindRegion.Map != targetMap) continue;
 
-                Map bindMap = GetMap(info.BindRegion.Map);
+                EnsureSafeZoneBindPoints(info);
+            }
+        }
 
-                if (bindMap == null)
+        public static bool EnsureSafeZoneBindPoints(SafeZoneInfo info)
+        {
+            if (info == null) return false;
+            if (info.ValidBindPoints.Count > 0) return true;
+            if (info.BindRegion == null) return false;
+
+            Map bindMap = GetMap(info.BindRegion.Map);
+
+            if (bindMap == null)
+            {
+                Log($"[Safe Zone] Bad Bind Map, Map: {info.Region?.ServerDescription ?? info.BindRegion.ServerDescription}");
+
+                return false;
+            }
+
+            foreach (Point point in info.BindRegion.PointList)
+            {
+                Cell cell = bindMap.GetCell(point);
+
+                if (cell == null)
                 {
-                    Log($"[Safe Zone] Bad Bind Map, Map: {info.Region.ServerDescription}");
-
+                    Log($"[Safe Zone] Bad Location, Region: {info.BindRegion.ServerDescription}, X: {point.X}, Y: {point.Y}.");
                     continue;
                 }
 
-                foreach (Point point in info.BindRegion.PointList)
-                {
-                    Cell cell = bindMap.GetCell(point);
-
-                    if (cell == null)
-                    {
-                        Log($"[Safe Zone] Bad Location, Region: {info.BindRegion.ServerDescription}, X: {point.X}, Y: {point.Y}.");
-                        continue;
-                    }
-
-                    if (!info.ValidBindPoints.Contains(point))
-                        info.ValidBindPoints.Add(point);
-                }
+                if (!info.ValidBindPoints.Contains(point))
+                    info.ValidBindPoints.Add(point);
             }
+
+            return info.ValidBindPoints.Count > 0;
         }
 
         private static void CreateStartZones()
@@ -1347,7 +1358,6 @@ namespace Server.Envir
 
             EnvirThread = null;
         }
-
 
         public static void EnvirLoop()
         {
@@ -1996,7 +2006,6 @@ namespace Server.Envir
                 $"Next: {ordered[next].Key} ({Range(nextStart, nextEnd)})\r\n\r\n" +
                 $"After: {ordered[after].Key} ({Range(afterStart, afterEnd)})";
         }
-
 
         /// <summary>
         /// Calculates light level between two times.
@@ -4147,10 +4156,11 @@ namespace Server.Envir
             if (map == null) return;
 
             map.Load();
-            map.Setup();
 
             foreach (MapRegion region in map.Info.Regions)
                 region.CreatePoints(map.Width);
+
+            map.Setup();
 
             CreateSafeZones(map.Instance, map.InstanceSequence, map.Info);
             CreateMovements(map.Instance, map.InstanceSequence, map.Info);

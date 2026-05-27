@@ -397,17 +397,31 @@ namespace Client.Scenes.Views
                         if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
                         {
                             blend = cell.FrontAnimationBlend;
-                            index += Animation % cell.FrontAnimationCount;
+                            int frameCount = cell.FrontAnimationCount;
+                            if (frameCount > 0)
+                            {
+                                index += Animation % frameCount;
+                            }
                         }
 
                         Size s = cell.FrontLibrary.GetSize(index);
 
-                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
+                        bool cellSized = (s.Width == CellWidth && s.Height == CellHeight) ||
+                                         (s.Width == CellWidth * 2 && s.Height == CellHeight * 2);
+
+                        if (!cellSized)
                         {
                             if (!blend)
                                 cell.FrontLibrary.Draw(index, drawX, drawY - s.Height, Color.White, false, 1F, ImageType.Image);
                             else
                                 cell.FrontLibrary.DrawBlend(index, drawX, drawY - s.Height, Color.White, false, 0.5F, ImageType.Image);
+                        }
+                        else
+                        {
+                            if (!blend)
+                                cell.FrontLibrary.Draw(index, drawX, drawY - CellHeight, Color.White, false, 1F, ImageType.Image);
+                            else
+                                cell.FrontLibrary.DrawBlend(index, drawX, drawY - CellHeight, Color.White, false, 0.5F, ImageType.Image);
                         }
                     }
                 }
