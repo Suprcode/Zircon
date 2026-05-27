@@ -117,6 +117,7 @@ namespace Client.Rendering.SharpDXD3D11
         public static SharpDXD3D11SpriteRenderer SpriteRenderer { get; private set; }
 
         private static bool _resetRequested;
+        private static System.Windows.Forms.Timer _postTogglePlacementTimer;
 
         static SharpDXD3D11Manager()
         {
@@ -220,12 +221,16 @@ namespace Client.Rendering.SharpDXD3D11
             if (SwapChain == null)
                 return;
 
-            bool isFullScreen = SwapChain.IsFullScreen;
-            SwapChain.IsFullScreen = !isFullScreen;
+            bool enteringFullScreen = !SwapChain.IsFullScreen;
+            Screen selectedScreen = RenderingPipelineManager.GetSelectedScreen();
+            Point? cursorOffset = CaptureCursorOffset(selectedScreen);
+
+            SwapChain.IsFullScreen = enteringFullScreen;
             Config.FullScreen = SwapChain.IsFullScreen;
             DXConfigWindow.ActiveConfig.FullScreenCheckBox.Checked = Config.FullScreen;
             ApplyWindowStyle();
             RequestReset();
+            ApplyPostTogglePlacement(Config.FullScreen, selectedScreen, cursorOffset);
         }
 
         public static void SetResolution(Size size)
@@ -262,13 +267,114 @@ namespace Client.Rendering.SharpDXD3D11
 
         public static void CenterOnSelectedMonitor()
         {
+            CenterWindowOnScreen(RenderingPipelineManager.GetSelectedScreen());
+        }
+
+        private static void CenterWindowOnScreen(Screen screen)
+        {
             if (CEnvir.Target == null)
                 return;
 
-            Screen screen = RenderingPipelineManager.GetSelectedScreen();
-            int x = Math.Max(screen.Bounds.X, screen.Bounds.X + (screen.Bounds.Width - CEnvir.Target.Width) / 2);
-            int y = Math.Max(screen.Bounds.Y, screen.Bounds.Y + (screen.Bounds.Height - CEnvir.Target.Height) / 2);
+            screen = string.IsNullOrEmpty(screen?.DeviceName) ? RenderingPipelineManager.GetSelectedScreen() : GetScreenByDeviceName(screen.DeviceName);
+
+            Size size = DXControl.ActiveScene?.Size ?? Config.GameSize;
+            if (!Config.FullScreen && CEnvir.Target.ClientSize != size)
+                CEnvir.Target.ClientSize = size;
+
+            Rectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen);
+            int x = Math.Max(bounds.X, bounds.X + (bounds.Width - CEnvir.Target.Width) / 2);
+            int y = Math.Max(bounds.Y, bounds.Y + (bounds.Height - CEnvir.Target.Height) / 2);
             CEnvir.Target.Location = new Point(x, y);
+        }
+
+        private static Screen GetScreenByDeviceName(string deviceName)
+        {
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                if (string.Equals(screen.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
+                    return screen;
+            }
+
+            return RenderingPipelineManager.GetSelectedScreen();
+        }
+
+        private static Point? CaptureCursorOffset(Screen screen)
+        {
+            if (screen == null || screen.Primary)
+                return null;
+
+            Rectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen);
+            Point position = Cursor.Position;
+
+            if (!bounds.Contains(position))
+                return new Point(bounds.Width / 2, bounds.Height / 2);
+
+            return new Point(position.X - bounds.X, position.Y - bounds.Y);
+        }
+
+        private static void RestoreCursorToScreen(Screen screen, Point? cursorOffset)
+        {
+            if (screen == null || !cursorOffset.HasValue)
+                return;
+
+            screen = GetScreenByDeviceName(screen.DeviceName);
+            Rectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen);
+
+            int x = bounds.X + Math.Max(0, Math.Min(cursorOffset.Value.X, bounds.Width - 1));
+            int y = bounds.Y + Math.Max(0, Math.Min(cursorOffset.Value.Y, bounds.Height - 1));
+            SetCursorPos(x, y);
+        }
+
+        private static void ApplyPostTogglePlacement(bool fullScreen, Screen screen, Point? cursorOffset)
+        {
+            ApplyTogglePlacement(fullScreen, screen, cursorOffset);
+
+            if (CEnvir.Target == null || CEnvir.Target.IsDisposed || !CEnvir.Target.IsHandleCreated)
+                return;
+
+            try
+            {
+                CEnvir.Target.BeginInvoke((MethodInvoker)(() =>
+                {
+                    ApplyTogglePlacement(fullScreen, screen, cursorOffset);
+                    QueuePostTogglePlacement(fullScreen, screen, cursorOffset);
+                }));
+            }
+            catch
+            {
+                QueuePostTogglePlacement(fullScreen, screen, cursorOffset);
+            }
+        }
+
+        private static void QueuePostTogglePlacement(bool fullScreen, Screen screen, Point? cursorOffset)
+        {
+            if (CEnvir.Target == null || CEnvir.Target.IsDisposed)
+                return;
+
+            _postTogglePlacementTimer?.Stop();
+            _postTogglePlacementTimer?.Dispose();
+
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer { Interval = 150 };
+            timer.Tick += (o, e) =>
+            {
+                timer.Stop();
+                timer.Dispose();
+                if (_postTogglePlacementTimer == timer)
+                    _postTogglePlacementTimer = null;
+
+                ApplyTogglePlacement(fullScreen, screen, cursorOffset);
+            };
+
+            _postTogglePlacementTimer = timer;
+            timer.Start();
+        }
+
+        private static void ApplyTogglePlacement(bool fullScreen, Screen screen, Point? cursorOffset)
+        {
+            if (!fullScreen)
+                CenterWindowOnScreen(screen);
+
+            RestoreCursorToScreen(screen, cursorOffset);
         }
 
         private static void ApplyWindowStyle()
@@ -1098,5 +1204,8 @@ namespace Client.Rendering.SharpDXD3D11
                 _ => Format.B8G8R8A8_UNorm
             };
         }
+
+        [DllImport("User32.dll")]
+        private static extern bool SetCursorPos(int x, int y);
     }
 }

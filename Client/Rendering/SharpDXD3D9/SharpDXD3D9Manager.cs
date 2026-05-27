@@ -31,6 +31,14 @@ namespace Client.Rendering.SharpDXD3D9
         public static PresentParameters Parameters => _parameters;
         private static Direct3D _direct3D;
         private static int _adapterIndex;
+        private const int CdsFullscreen = 0x00000004;
+        private const int DispChangeSuccessful = 0;
+        private const int DmPelsWidth = 0x00080000;
+        private const int DmPelsHeight = 0x00100000;
+        private static bool _displayModeChanged;
+        private static string _displayModeDeviceName;
+        private static Size _displayModeSize;
+        private static System.Windows.Forms.Timer _postTogglePlacementTimer;
         public static Device Device { get; private set; }
         public static Sprite Sprite { get; private set; }
         public static Line Line { get; private set; }
@@ -140,7 +148,7 @@ namespace Client.Rendering.SharpDXD3D9
             {
                 _parameters = new PresentParameters
                 {
-                    Windowed = !Config.FullScreen,
+                    Windowed = ShouldUseWindowedPresentation(),
                     SwapEffect = SwapEffect.Discard,
                     BackBufferFormat = Format.X8R8G8B8,
                     PresentationInterval = Config.VSync ? PresentInterval.Default : PresentInterval.Immediate,
@@ -404,6 +412,8 @@ namespace Client.Rendering.SharpDXD3D9
                 _direct3D.Dispose();
 
             _direct3D = null;
+
+            RestoreDisplayMode();
         }
 
         public static void SetSurface(Surface surface)
@@ -547,7 +557,7 @@ namespace Client.Rendering.SharpDXD3D9
                 return;
             }
 
-            parameters.Windowed = !Config.FullScreen;
+            parameters.Windowed = ShouldUseWindowedPresentation();
             Size backBufferSize = GetBackBufferSize();
             parameters.BackBufferWidth = backBufferSize.Width;
             parameters.BackBufferHeight = backBufferSize.Height;
@@ -573,12 +583,7 @@ namespace Client.Rendering.SharpDXD3D9
 
         public static void CenterOnSelectedMonitor()
         {
-            Screen selectedScreen = RenderingPipelineManager.GetSelectedScreen();
-
-            GdiRectangle bounds = selectedScreen.Bounds;
-            int x = bounds.X + (bounds.Width - CEnvir.Target.Width) / 2;
-            int y = bounds.Y + (bounds.Height - CEnvir.Target.Height) / 2;
-            CEnvir.Target.Location = new GdiPoint(x, y);
+            CenterWindowOnScreen(RenderingPipelineManager.GetSelectedScreen());
         }
 
         public static void SetGameWindowToMonitor(int monitorIndex)
@@ -679,7 +684,11 @@ namespace Client.Rendering.SharpDXD3D9
         {
             if (CEnvir.Target == null) return;
 
-            Config.FullScreen = !Config.FullScreen;
+            bool enteringFullScreen = !Config.FullScreen;
+            Screen selectedScreen = RenderingPipelineManager.GetSelectedScreen();
+            GdiPoint? cursorOffset = CaptureCursorOffset(selectedScreen);
+
+            Config.FullScreen = enteringFullScreen;
             DXConfigWindow.ActiveConfig.FullScreenCheckBox.Checked = Config.FullScreen;
 
             ApplyWindowStyle();
@@ -688,10 +697,12 @@ namespace Client.Rendering.SharpDXD3D9
             if (Config.FullScreen && _adapterIndex != GetSelectedAdapterIndex())
             {
                 Create();
+                ApplyPostTogglePlacement(Config.FullScreen, selectedScreen, cursorOffset);
                 return;
             }
 
             ResetDevice();
+            ApplyPostTogglePlacement(Config.FullScreen, selectedScreen, cursorOffset);
         }
 
         public static void SetResolution(Size size)
@@ -738,9 +749,22 @@ namespace Client.Rendering.SharpDXD3D9
 
             if (Config.FullScreen)
             {
-                CEnvir.Target.Bounds = RenderingPipelineManager.GetSelectedMonitorDisplayBounds();
+                Screen selectedScreen = RenderingPipelineManager.GetSelectedScreen();
+
+                if (CanUseWindowedFullScreenPresentation(selectedScreen) && ApplyFullscreenDisplayMode(selectedScreen))
+                {
+                    string deviceName = selectedScreen.DeviceName;
+                    selectedScreen = GetScreenByDeviceName(deviceName);
+                    CEnvir.Target.Bounds = RenderingPipelineManager.GetMonitorDisplayBounds(deviceName, selectedScreen.Bounds);
+                    return;
+                }
+
+                RestoreDisplayMode();
+                CEnvir.Target.Bounds = RenderingPipelineManager.GetMonitorDisplayBounds(selectedScreen);
                 return;
             }
+
+            RestoreDisplayMode();
 
             Size size = DXControl.ActiveScene?.Size ?? Config.GameSize;
             if (CEnvir.Target.ClientSize != size)
@@ -757,6 +781,203 @@ namespace Client.Rendering.SharpDXD3D9
 
             Size size = CEnvir.Target.ClientSize;
             return new Size(Math.Max(size.Width, 1), Math.Max(size.Height, 1));
+        }
+
+        private static bool ShouldUseWindowedPresentation()
+        {
+            if (!Config.FullScreen)
+                return true;
+
+            return IsWindowedFullScreenDisplayModeActive(RenderingPipelineManager.GetSelectedScreen());
+        }
+
+        private static bool CanUseWindowedFullScreenPresentation(Screen screen)
+        {
+            return Config.FullScreen &&
+                   screen != null &&
+                   !screen.Primary &&
+                   TryGetDisplayMode(screen.DeviceName, Config.GameSize, out _);
+        }
+
+        private static bool IsWindowedFullScreenDisplayModeActive(Screen screen)
+        {
+            return Config.FullScreen &&
+                   screen != null &&
+                   !screen.Primary &&
+                   _displayModeChanged &&
+                   string.Equals(_displayModeDeviceName, screen.DeviceName, StringComparison.OrdinalIgnoreCase) &&
+                   _displayModeSize == Config.GameSize;
+        }
+
+        private static bool ApplyFullscreenDisplayMode(Screen screen)
+        {
+            string deviceName = screen.DeviceName;
+
+            if (_displayModeChanged &&
+                string.Equals(_displayModeDeviceName, deviceName, StringComparison.OrdinalIgnoreCase) &&
+                _displayModeSize == Config.GameSize)
+                return true;
+
+            RestoreDisplayMode();
+
+            if (!TryGetDisplayMode(deviceName, Config.GameSize, out DevMode mode))
+                return false;
+
+            mode.dmFields = DmPelsWidth | DmPelsHeight;
+
+            int result = ChangeDisplaySettingsEx(deviceName, ref mode, IntPtr.Zero, CdsFullscreen, IntPtr.Zero);
+            if (result != DispChangeSuccessful)
+                return false;
+
+            _displayModeChanged = true;
+            _displayModeDeviceName = deviceName;
+            _displayModeSize = Config.GameSize;
+            return true;
+        }
+
+        private static bool TryGetDisplayMode(string deviceName, Size size, out DevMode displayMode)
+        {
+            for (int modeIndex = 0; ; modeIndex++)
+            {
+                DevMode mode = CreateDevMode();
+                if (!EnumDisplaySettings(deviceName, modeIndex, ref mode))
+                    break;
+
+                if (mode.dmPelsWidth != (uint)size.Width || mode.dmPelsHeight != (uint)size.Height)
+                    continue;
+
+                displayMode = mode;
+                return true;
+            }
+
+            displayMode = default;
+            return false;
+        }
+
+        private static void RestoreDisplayMode()
+        {
+            if (!_displayModeChanged)
+                return;
+
+            ChangeDisplaySettingsEx(_displayModeDeviceName, IntPtr.Zero, IntPtr.Zero, 0, IntPtr.Zero);
+            _displayModeChanged = false;
+            _displayModeDeviceName = null;
+            _displayModeSize = Size.Empty;
+        }
+
+        private static Screen GetScreenByDeviceName(string deviceName)
+        {
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                if (string.Equals(screen.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
+                    return screen;
+            }
+
+            return RenderingPipelineManager.GetSelectedScreen();
+        }
+
+        private static DevMode CreateDevMode()
+        {
+            return new DevMode { dmSize = (ushort)Marshal.SizeOf<DevMode>() };
+        }
+
+        private static void CenterWindowOnScreen(Screen screen)
+        {
+            if (CEnvir.Target == null)
+                return;
+
+            screen = string.IsNullOrEmpty(screen?.DeviceName) ? RenderingPipelineManager.GetSelectedScreen() : GetScreenByDeviceName(screen.DeviceName);
+
+            Size size = DXControl.ActiveScene?.Size ?? Config.GameSize;
+            if (!Config.FullScreen && CEnvir.Target.ClientSize != size)
+                CEnvir.Target.ClientSize = size;
+
+            GdiRectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen.DeviceName, screen.Bounds);
+            int x = bounds.X + (bounds.Width - CEnvir.Target.Width) / 2;
+            int y = bounds.Y + (bounds.Height - CEnvir.Target.Height) / 2;
+            CEnvir.Target.Location = new GdiPoint(x, y);
+        }
+
+        private static GdiPoint? CaptureCursorOffset(Screen screen)
+        {
+            if (screen == null || screen.Primary)
+                return null;
+
+            GdiRectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen);
+            GdiPoint position = Cursor.Position;
+
+            if (!bounds.Contains(position))
+                return new GdiPoint(bounds.Width / 2, bounds.Height / 2);
+
+            return new GdiPoint(position.X - bounds.X, position.Y - bounds.Y);
+        }
+
+        private static void RestoreCursorToScreen(Screen screen, GdiPoint? cursorOffset)
+        {
+            if (screen == null || !cursorOffset.HasValue)
+                return;
+
+            screen = GetScreenByDeviceName(screen.DeviceName);
+            GdiRectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen.DeviceName, screen.Bounds);
+
+            int x = bounds.X + Math.Max(0, Math.Min(cursorOffset.Value.X, bounds.Width - 1));
+            int y = bounds.Y + Math.Max(0, Math.Min(cursorOffset.Value.Y, bounds.Height - 1));
+            SetCursorPos(x, y);
+        }
+
+        private static void ApplyPostTogglePlacement(bool fullScreen, Screen screen, GdiPoint? cursorOffset)
+        {
+            ApplyTogglePlacement(fullScreen, screen, cursorOffset);
+
+            if (CEnvir.Target == null || CEnvir.Target.IsDisposed || !CEnvir.Target.IsHandleCreated)
+                return;
+
+            try
+            {
+                CEnvir.Target.BeginInvoke((MethodInvoker)(() =>
+                {
+                    ApplyTogglePlacement(fullScreen, screen, cursorOffset);
+                    QueuePostTogglePlacement(fullScreen, screen, cursorOffset);
+                }));
+            }
+            catch
+            {
+                QueuePostTogglePlacement(fullScreen, screen, cursorOffset);
+            }
+        }
+
+        private static void QueuePostTogglePlacement(bool fullScreen, Screen screen, GdiPoint? cursorOffset)
+        {
+            if (CEnvir.Target == null || CEnvir.Target.IsDisposed)
+                return;
+
+            _postTogglePlacementTimer?.Stop();
+            _postTogglePlacementTimer?.Dispose();
+
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer { Interval = 150 };
+            timer.Tick += (o, e) =>
+            {
+                timer.Stop();
+                timer.Dispose();
+                if (_postTogglePlacementTimer == timer)
+                    _postTogglePlacementTimer = null;
+
+                ApplyTogglePlacement(fullScreen, screen, cursorOffset);
+            };
+
+            _postTogglePlacementTimer = timer;
+            timer.Start();
+        }
+
+        private static void ApplyTogglePlacement(bool fullScreen, Screen screen, GdiPoint? cursorOffset)
+        {
+            if (fullScreen)
+                RestoreCursorToScreen(screen, cursorOffset);
+            else
+            {
+                CenterWindowOnScreen(screen);
+                RestoreCursorToScreen(screen, cursorOffset);
+            }
         }
 
         private static int GetSelectedAdapterIndex()
@@ -813,6 +1034,55 @@ namespace Client.Rendering.SharpDXD3D9
             if (t < 1f / 2f) return q;
             if (t < 2f / 3f) return p + (q - p) * (2f / 3f - t) * 6f;
             return p;
+        }
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        private static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DevMode devMode);
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        private static extern int ChangeDisplaySettingsEx(string deviceName, ref DevMode devMode, IntPtr hwnd, int flags, IntPtr lParam);
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        private static extern int ChangeDisplaySettingsEx(string deviceName, IntPtr devMode, IntPtr hwnd, int flags, IntPtr lParam);
+
+        [DllImport("User32.dll")]
+        private static extern bool SetCursorPos(int x, int y);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct DevMode
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string dmDeviceName;
+            public ushort dmSpecVersion;
+            public ushort dmDriverVersion;
+            public ushort dmSize;
+            public ushort dmDriverExtra;
+            public int dmFields;
+            public int dmPositionX;
+            public int dmPositionY;
+            public uint dmDisplayOrientation;
+            public uint dmDisplayFixedOutput;
+            public short dmColor;
+            public short dmDuplex;
+            public short dmYResolution;
+            public short dmTTOption;
+            public short dmCollate;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string dmFormName;
+            public ushort dmLogPixels;
+            public uint dmBitsPerPel;
+            public uint dmPelsWidth;
+            public uint dmPelsHeight;
+            public uint dmDisplayFlags;
+            public uint dmDisplayFrequency;
+            public uint dmICMMethod;
+            public uint dmICMIntent;
+            public uint dmMediaType;
+            public uint dmDitherType;
+            public uint dmReserved1;
+            public uint dmReserved2;
+            public uint dmPanningWidth;
+            public uint dmPanningHeight;
         }
     }
 

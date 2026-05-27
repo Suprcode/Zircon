@@ -164,7 +164,16 @@ namespace Client.Rendering.SilkVulkan
                     loop();
             }
 
+            void ApplyStartupPlacement(object sender, EventArgs args)
+            {
+                form.Shown -= ApplyStartupPlacement;
+                ApplyWindowStyle();
+                ApplyWindowBounds(true);
+                ResizeBackBufferIfNeeded(true);
+            }
+
             Application.Idle += Tick;
+            form.Shown += ApplyStartupPlacement;
             try
             {
                 Application.Run(form);
@@ -172,6 +181,7 @@ namespace Client.Rendering.SilkVulkan
             finally
             {
                 Application.Idle -= Tick;
+                form.Shown -= ApplyStartupPlacement;
             }
         }
 
@@ -339,13 +349,15 @@ namespace Client.Rendering.SilkVulkan
             if (_context?.RenderTarget == null)
                 return;
 
-            if (!force && !Config.FullScreen && !Config.Borderless && IsWindowOnVisibleScreen())
+            Screen selectedScreen = GetSelectedScreen();
+
+            if (!force && !Config.FullScreen && !Config.Borderless && IsWindowOnScreen(selectedScreen))
                 return;
 
-            Screen selectedScreen = GetSelectedScreen();
-            Rectangle bounds = selectedScreen.Bounds;
+            Rectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(selectedScreen);
             int x = bounds.X + (bounds.Width - _context.RenderTarget.Width) / 2;
             int y = bounds.Y + (bounds.Height - _context.RenderTarget.Height) / 2;
+            _context.RenderTarget.StartPosition = FormStartPosition.Manual;
             _context.RenderTarget.Location = new Point(x, y);
         }
 
@@ -2894,6 +2906,7 @@ namespace Client.Rendering.SilkVulkan
                     return false;
 
                 screen = GetScreenByDeviceName(deviceName);
+                _context.RenderTarget.StartPosition = FormStartPosition.Manual;
                 _context.RenderTarget.Bounds = RenderingPipelineManager.GetMonitorDisplayBounds(deviceName, screen.Bounds);
                 return true;
             }
@@ -2903,7 +2916,7 @@ namespace Client.Rendering.SilkVulkan
             if (_context.RenderTarget.ClientSize != Config.GameSize)
                 _context.RenderTarget.ClientSize = Config.GameSize;
 
-            if (forceCenter || !IsWindowOnVisibleScreen())
+            if (forceCenter || !IsWindowOnScreen(GetSelectedScreen()))
                 CenterOnSelectedMonitor(forceCenter);
 
             return true;
@@ -2965,17 +2978,15 @@ namespace Client.Rendering.SilkVulkan
             _displayModeSize = Size.Empty;
         }
 
-        private bool IsWindowOnVisibleScreen()
+        private bool IsWindowOnScreen(Screen screen)
         {
+            if (screen == null)
+                return false;
+
             Rectangle currentBounds = _context.RenderTarget.Bounds;
+            Rectangle screenBounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen);
 
-            foreach (Screen screen in Screen.AllScreens)
-            {
-                if (screen.WorkingArea.IntersectsWith(currentBounds))
-                    return true;
-            }
-
-            return false;
+            return screenBounds.IntersectsWith(currentBounds);
         }
 
         private static Screen GetSelectedScreen()

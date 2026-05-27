@@ -9,3 +9,5 @@ licenses.licx
 /NuGet.Config
 /.dotnet/.dotnet
 /artifacts/client-build
+/Client/artifacts/codex-build/Client
+/LibraryCore/artifacts/codex-build/Client
