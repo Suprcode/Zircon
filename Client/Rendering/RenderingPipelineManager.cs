@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Client.Rendering
@@ -34,7 +33,6 @@ namespace Client.Rendering
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
         private static readonly object GraphicsLock = new();
         private static string _pendingPipelineId;
-        private const int EnumCurrentSettings = -1;
 
         static RenderingPipelineManager()
         {
@@ -121,22 +119,12 @@ namespace Client.Rendering
 
         public static Rectangle GetMonitorDisplayBounds(Screen screen)
         {
-            if (screen == null)
-                return Rectangle.Empty;
-
-            return GetMonitorDisplayBounds(screen.DeviceName, screen.Bounds);
+            return DisplayModeManager.GetBounds(screen);
         }
 
         public static Rectangle GetMonitorDisplayBounds(string deviceName, Rectangle fallbackBounds)
         {
-            if (string.IsNullOrWhiteSpace(deviceName))
-                return fallbackBounds;
-
-            DevMode mode = CreateDevMode();
-            if (!EnumDisplaySettings(deviceName, EnumCurrentSettings, ref mode))
-                return fallbackBounds;
-
-            return new Rectangle(mode.dmPositionX, mode.dmPositionY, (int)mode.dmPelsWidth, (int)mode.dmPelsHeight);
+            return DisplayModeManager.GetBounds(deviceName, fallbackBounds);
         }
 
         public static void SelectMonitor(int monitorIndex)
@@ -151,51 +139,6 @@ namespace Client.Rendering
 
             Config.DefaultMonitor = monitors[monitorIndex].DeviceName;
             SetTargetMonitor(monitorIndex);
-        }
-
-        private static DevMode CreateDevMode()
-        {
-            return new DevMode { dmSize = (ushort)Marshal.SizeOf<DevMode>() };
-        }
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DevMode devMode);
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct DevMode
-        {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string dmDeviceName;
-            public ushort dmSpecVersion;
-            public ushort dmDriverVersion;
-            public ushort dmSize;
-            public ushort dmDriverExtra;
-            public int dmFields;
-            public int dmPositionX;
-            public int dmPositionY;
-            public uint dmDisplayOrientation;
-            public uint dmDisplayFixedOutput;
-            public short dmColor;
-            public short dmDuplex;
-            public short dmYResolution;
-            public short dmTTOption;
-            public short dmCollate;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string dmFormName;
-            public ushort dmLogPixels;
-            public uint dmBitsPerPel;
-            public uint dmPelsWidth;
-            public uint dmPelsHeight;
-            public uint dmDisplayFlags;
-            public uint dmDisplayFrequency;
-            public uint dmICMMethod;
-            public uint dmICMIntent;
-            public uint dmMediaType;
-            public uint dmDitherType;
-            public uint dmReserved1;
-            public uint dmReserved2;
-            public uint dmPanningWidth;
-            public uint dmPanningHeight;
         }
 
         public static IReadOnlyList<GraphicsAdapterInfo> GetGraphicsAdapters(string pipelineId)

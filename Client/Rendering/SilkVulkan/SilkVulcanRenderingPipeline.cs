@@ -32,11 +32,6 @@ namespace Client.Rendering.SilkVulkan
         private const int LightHeight = 768;
         private const int PoisonSize = 6;
         private const uint MaxSpriteBatchInstances = 8192;
-        private const int EnumCurrentSettings = -1;
-        private const int CdsFullscreen = 0x00000004;
-        private const int DispChangeSuccessful = 0;
-        private const int DmPelsWidth = 0x00080000;
-        private const int DmPelsHeight = 0x00100000;
         private const ulong DynamicVertexBufferSize = 16 * 1024 * 1024;
         private const uint MaxTextureDescriptors = 8192;
         private static readonly Size MinimumResolution = new Size(1024, 768);
@@ -111,9 +106,7 @@ namespace Client.Rendering.SilkVulkan
         private float _spriteBatchBlendRate;
         private ulong _spriteBatchOffset;
         private uint _spriteBatchInstanceCount;
-        private bool _displayModeChanged;
-        private string _displayModeDeviceName;
-        private Size _displayModeSize;
+        private readonly DisplayModeManager _displayMode = new DisplayModeManager();
 
         public string Id => RenderingPipelineIds.SilkVulkan;
 
@@ -381,38 +374,7 @@ namespace Client.Rendering.SilkVulkan
 
         public IReadOnlyList<Size> GetSupportedResolutions()
         {
-            List<Size> sizes = new List<Size>();
-            Screen screen = GetSelectedScreen();
-
-            for (int modeIndex = 0; ; modeIndex++)
-            {
-                DevMode mode = CreateDevMode();
-                if (!EnumDisplaySettings(screen.DeviceName, modeIndex, ref mode))
-                    break;
-
-                Size size = new Size((int)mode.dmPelsWidth, (int)mode.dmPelsHeight);
-                if (size.Width < MinimumResolution.Width || size.Height < MinimumResolution.Height)
-                    continue;
-
-                if (!sizes.Contains(size))
-                    sizes.Add(size);
-            }
-
-            if (sizes.Count == 0)
-            {
-                foreach (Screen fallbackScreen in Screen.AllScreens)
-                {
-                    Size size = fallbackScreen.Bounds.Size;
-                    if (size.Width >= MinimumResolution.Width && size.Height >= MinimumResolution.Height && !sizes.Contains(size))
-                        sizes.Add(size);
-                }
-            }
-
-            if (!sizes.Contains(Config.GameSize))
-                sizes.Add(Config.GameSize);
-
-            sizes.Sort((s1, s2) => (s1.Width * s1.Height).CompareTo(s2.Width * s2.Height));
-            return sizes;
+            return DisplayModeManager.GetSupportedSizes(GetSelectedScreen(), MinimumResolution, Config.GameSize);
         }
 
         public Size MeasureText(string text, Font font)
@@ -900,7 +862,7 @@ namespace Client.Rendering.SilkVulkan
 
         public void Shutdown()
         {
-            RestoreDisplayMode();
+            _displayMode.Restore();
 
             if (_device.Handle != IntPtr.Zero)
                 _vk.DeviceWaitIdle(_device);
@@ -2902,16 +2864,16 @@ namespace Client.Rendering.SilkVulkan
                 Screen screen = GetSelectedScreen();
                 string deviceName = screen.DeviceName;
 
-                if (!ApplyFullscreenDisplayMode(screen))
+                if (!_displayMode.Apply(screen, Config.GameSize))
                     return false;
 
-                screen = GetScreenByDeviceName(deviceName);
+                screen = DisplayModeManager.GetScreenByDeviceName(deviceName, GetSelectedScreen());
                 _context.RenderTarget.StartPosition = FormStartPosition.Manual;
                 _context.RenderTarget.Bounds = RenderingPipelineManager.GetMonitorDisplayBounds(deviceName, screen.Bounds);
                 return true;
             }
 
-            RestoreDisplayMode();
+            _displayMode.Restore();
 
             if (_context.RenderTarget.ClientSize != Config.GameSize)
                 _context.RenderTarget.ClientSize = Config.GameSize;
@@ -2920,62 +2882,6 @@ namespace Client.Rendering.SilkVulkan
                 CenterOnSelectedMonitor(forceCenter);
 
             return true;
-        }
-
-        private bool ApplyFullscreenDisplayMode(Screen screen)
-        {
-            string deviceName = screen.DeviceName;
-
-            if (_displayModeChanged &&
-                string.Equals(_displayModeDeviceName, deviceName, StringComparison.OrdinalIgnoreCase) &&
-                _displayModeSize == Config.GameSize)
-                return true;
-
-            RestoreDisplayMode();
-
-            if (!TryGetDisplayMode(deviceName, Config.GameSize, out DevMode mode))
-                return false;
-
-            mode.dmFields = DmPelsWidth | DmPelsHeight;
-
-            int result = ChangeDisplaySettingsEx(deviceName, ref mode, IntPtr.Zero, CdsFullscreen, IntPtr.Zero);
-            if (result != DispChangeSuccessful)
-                return false;
-
-            _displayModeChanged = true;
-            _displayModeDeviceName = deviceName;
-            _displayModeSize = Config.GameSize;
-            return true;
-        }
-
-        private static bool TryGetDisplayMode(string deviceName, Size size, out DevMode displayMode)
-        {
-            for (int modeIndex = 0; ; modeIndex++)
-            {
-                DevMode mode = CreateDevMode();
-                if (!EnumDisplaySettings(deviceName, modeIndex, ref mode))
-                    break;
-
-                if (mode.dmPelsWidth != (uint)size.Width || mode.dmPelsHeight != (uint)size.Height)
-                    continue;
-
-                displayMode = mode;
-                return true;
-            }
-
-            displayMode = default;
-            return false;
-        }
-
-        private void RestoreDisplayMode()
-        {
-            if (!_displayModeChanged)
-                return;
-
-            ChangeDisplaySettingsEx(_displayModeDeviceName, IntPtr.Zero, IntPtr.Zero, 0, IntPtr.Zero);
-            _displayModeChanged = false;
-            _displayModeDeviceName = null;
-            _displayModeSize = Size.Empty;
         }
 
         private bool IsWindowOnScreen(Screen screen)
@@ -2992,22 +2898,6 @@ namespace Client.Rendering.SilkVulkan
         private static Screen GetSelectedScreen()
         {
             return RenderingPipelineManager.GetSelectedScreen();
-        }
-
-        private static Screen GetScreenByDeviceName(string deviceName)
-        {
-            foreach (Screen screen in Screen.AllScreens)
-            {
-                if (string.Equals(screen.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
-                    return screen;
-            }
-
-            return GetSelectedScreen();
-        }
-
-        private static DevMode CreateDevMode()
-        {
-            return new DevMode { dmSize = (ushort)Marshal.SizeOf<DevMode>() };
         }
 
         private static byte* ToUtf8(string value)
@@ -3270,15 +3160,6 @@ namespace Client.Rendering.SilkVulkan
         [DllImport("User32.dll", CharSet = CharSet.Auto)]
         private static extern bool PeekMessage(out PeekMsg msg, IntPtr hWnd, uint messageFilterMin, uint messageFilterMax, uint flags);
 
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        private static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DevMode devMode);
-
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        private static extern int ChangeDisplaySettingsEx(string deviceName, ref DevMode devMode, IntPtr hwnd, int flags, IntPtr lParam);
-
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        private static extern int ChangeDisplaySettingsEx(string deviceName, IntPtr devMode, IntPtr hwnd, int flags, IntPtr lParam);
-
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
 
@@ -3392,43 +3273,6 @@ namespace Client.Rendering.SilkVulkan
                     InFlightFence = default;
                 }
             }
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct DevMode
-        {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string dmDeviceName;
-            public ushort dmSpecVersion;
-            public ushort dmDriverVersion;
-            public ushort dmSize;
-            public ushort dmDriverExtra;
-            public int dmFields;
-            public int dmPositionX;
-            public int dmPositionY;
-            public uint dmDisplayOrientation;
-            public uint dmDisplayFixedOutput;
-            public short dmColor;
-            public short dmDuplex;
-            public short dmYResolution;
-            public short dmTTOption;
-            public short dmCollate;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string dmFormName;
-            public ushort dmLogPixels;
-            public uint dmBitsPerPel;
-            public uint dmPelsWidth;
-            public uint dmPelsHeight;
-            public uint dmDisplayFlags;
-            public uint dmDisplayFrequency;
-            public uint dmICMMethod;
-            public uint dmICMIntent;
-            public uint dmMediaType;
-            public uint dmDitherType;
-            public uint dmReserved1;
-            public uint dmReserved2;
-            public uint dmPanningWidth;
-            public uint dmPanningHeight;
         }
 
         [StructLayout(LayoutKind.Sequential)]

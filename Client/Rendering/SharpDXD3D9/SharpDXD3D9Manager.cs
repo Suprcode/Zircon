@@ -31,13 +31,7 @@ namespace Client.Rendering.SharpDXD3D9
         public static PresentParameters Parameters => _parameters;
         private static Direct3D _direct3D;
         private static int _adapterIndex;
-        private const int CdsFullscreen = 0x00000004;
-        private const int DispChangeSuccessful = 0;
-        private const int DmPelsWidth = 0x00080000;
-        private const int DmPelsHeight = 0x00100000;
-        private static bool _displayModeChanged;
-        private static string _displayModeDeviceName;
-        private static Size _displayModeSize;
+        private static readonly DisplayModeManager _displayMode = new DisplayModeManager();
         private static System.Windows.Forms.Timer _postTogglePlacementTimer;
         public static Device Device { get; private set; }
         public static Sprite Sprite { get; private set; }
@@ -413,7 +407,7 @@ namespace Client.Rendering.SharpDXD3D9
 
             _direct3D = null;
 
-            RestoreDisplayMode();
+            _displayMode.Restore();
         }
 
         public static void SetSurface(Surface surface)
@@ -751,20 +745,20 @@ namespace Client.Rendering.SharpDXD3D9
             {
                 Screen selectedScreen = RenderingPipelineManager.GetSelectedScreen();
 
-                if (CanUseWindowedFullScreenPresentation(selectedScreen) && ApplyFullscreenDisplayMode(selectedScreen))
+                if (Config.FullScreen && _displayMode.Apply(selectedScreen, Config.GameSize))
                 {
                     string deviceName = selectedScreen.DeviceName;
-                    selectedScreen = GetScreenByDeviceName(deviceName);
+                    selectedScreen = DisplayModeManager.GetScreenByDeviceName(deviceName, RenderingPipelineManager.GetSelectedScreen());
                     CEnvir.Target.Bounds = RenderingPipelineManager.GetMonitorDisplayBounds(deviceName, selectedScreen.Bounds);
                     return;
                 }
 
-                RestoreDisplayMode();
+                _displayMode.Restore();
                 CEnvir.Target.Bounds = RenderingPipelineManager.GetMonitorDisplayBounds(selectedScreen);
                 return;
             }
 
-            RestoreDisplayMode();
+            _displayMode.Restore();
 
             Size size = DXControl.ActiveScene?.Size ?? Config.GameSize;
             if (CEnvir.Target.ClientSize != size)
@@ -788,95 +782,7 @@ namespace Client.Rendering.SharpDXD3D9
             if (!Config.FullScreen)
                 return true;
 
-            return IsWindowedFullScreenDisplayModeActive(RenderingPipelineManager.GetSelectedScreen());
-        }
-
-        private static bool CanUseWindowedFullScreenPresentation(Screen screen)
-        {
-            return Config.FullScreen &&
-                   screen != null &&
-                   TryGetDisplayMode(screen.DeviceName, Config.GameSize, out _);
-        }
-
-        private static bool IsWindowedFullScreenDisplayModeActive(Screen screen)
-        {
-            return Config.FullScreen &&
-                   screen != null &&
-                   _displayModeChanged &&
-                   string.Equals(_displayModeDeviceName, screen.DeviceName, StringComparison.OrdinalIgnoreCase) &&
-                   _displayModeSize == Config.GameSize;
-        }
-
-        private static bool ApplyFullscreenDisplayMode(Screen screen)
-        {
-            string deviceName = screen.DeviceName;
-
-            if (_displayModeChanged &&
-                string.Equals(_displayModeDeviceName, deviceName, StringComparison.OrdinalIgnoreCase) &&
-                _displayModeSize == Config.GameSize)
-                return true;
-
-            RestoreDisplayMode();
-
-            if (!TryGetDisplayMode(deviceName, Config.GameSize, out DevMode mode))
-                return false;
-
-            mode.dmFields = DmPelsWidth | DmPelsHeight;
-
-            int result = ChangeDisplaySettingsEx(deviceName, ref mode, IntPtr.Zero, CdsFullscreen, IntPtr.Zero);
-            if (result != DispChangeSuccessful)
-                return false;
-
-            _displayModeChanged = true;
-            _displayModeDeviceName = deviceName;
-            _displayModeSize = Config.GameSize;
-            return true;
-        }
-
-        private static bool TryGetDisplayMode(string deviceName, Size size, out DevMode displayMode)
-        {
-            for (int modeIndex = 0; ; modeIndex++)
-            {
-                DevMode mode = CreateDevMode();
-                if (!EnumDisplaySettings(deviceName, modeIndex, ref mode))
-                    break;
-
-                if (mode.dmPelsWidth != (uint)size.Width || mode.dmPelsHeight != (uint)size.Height)
-                    continue;
-
-                displayMode = mode;
-                return true;
-            }
-
-            displayMode = default;
-            return false;
-        }
-
-        private static void RestoreDisplayMode()
-        {
-            if (!_displayModeChanged)
-                return;
-
-            ChangeDisplaySettingsEx(_displayModeDeviceName, IntPtr.Zero, IntPtr.Zero, 0, IntPtr.Zero);
-            _displayModeChanged = false;
-            _displayModeDeviceName = null;
-            _displayModeSize = Size.Empty;
-        }
-
-        private static Screen GetScreenByDeviceName(string deviceName)
-        {
-            foreach (Screen screen in Screen.AllScreens)
-            {
-                if (string.Equals(screen.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
-                    return screen;
-            }
-
-            return RenderingPipelineManager.GetSelectedScreen();
-        }
-
-        private static DevMode CreateDevMode()
-        {
-            return new DevMode { dmSize = (ushort)Marshal.SizeOf<DevMode>() };
+            return _displayMode.IsActive(RenderingPipelineManager.GetSelectedScreen(), Config.GameSize);
         }
 
         private static void CenterWindowOnScreen(Screen screen)
@@ -884,7 +790,9 @@ namespace Client.Rendering.SharpDXD3D9
             if (CEnvir.Target == null)
                 return;
 
-            screen = string.IsNullOrEmpty(screen?.DeviceName) ? RenderingPipelineManager.GetSelectedScreen() : GetScreenByDeviceName(screen.DeviceName);
+            screen = string.IsNullOrEmpty(screen?.DeviceName)
+                ? RenderingPipelineManager.GetSelectedScreen()
+                : DisplayModeManager.GetScreenByDeviceName(screen.DeviceName, RenderingPipelineManager.GetSelectedScreen());
 
             Size size = DXControl.ActiveScene?.Size ?? Config.GameSize;
             if (!Config.FullScreen && CEnvir.Target.ClientSize != size)
@@ -915,7 +823,7 @@ namespace Client.Rendering.SharpDXD3D9
             if (screen == null || !cursorOffset.HasValue)
                 return;
 
-            screen = GetScreenByDeviceName(screen.DeviceName);
+            screen = DisplayModeManager.GetScreenByDeviceName(screen.DeviceName, RenderingPipelineManager.GetSelectedScreen());
             GdiRectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen.DeviceName, screen.Bounds);
 
             int x = bounds.X + Math.Max(0, Math.Min(cursorOffset.Value.X, bounds.Width - 1));
@@ -1034,54 +942,8 @@ namespace Client.Rendering.SharpDXD3D9
             return p;
         }
 
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        private static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DevMode devMode);
-
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        private static extern int ChangeDisplaySettingsEx(string deviceName, ref DevMode devMode, IntPtr hwnd, int flags, IntPtr lParam);
-
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        private static extern int ChangeDisplaySettingsEx(string deviceName, IntPtr devMode, IntPtr hwnd, int flags, IntPtr lParam);
-
         [DllImport("User32.dll")]
         private static extern bool SetCursorPos(int x, int y);
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct DevMode
-        {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string dmDeviceName;
-            public ushort dmSpecVersion;
-            public ushort dmDriverVersion;
-            public ushort dmSize;
-            public ushort dmDriverExtra;
-            public int dmFields;
-            public int dmPositionX;
-            public int dmPositionY;
-            public uint dmDisplayOrientation;
-            public uint dmDisplayFixedOutput;
-            public short dmColor;
-            public short dmDuplex;
-            public short dmYResolution;
-            public short dmTTOption;
-            public short dmCollate;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string dmFormName;
-            public ushort dmLogPixels;
-            public uint dmBitsPerPel;
-            public uint dmPelsWidth;
-            public uint dmPelsHeight;
-            public uint dmDisplayFlags;
-            public uint dmDisplayFrequency;
-            public uint dmICMMethod;
-            public uint dmICMIntent;
-            public uint dmMediaType;
-            public uint dmDitherType;
-            public uint dmReserved1;
-            public uint dmReserved2;
-            public uint dmPanningWidth;
-            public uint dmPanningHeight;
-        }
     }
 
 }
