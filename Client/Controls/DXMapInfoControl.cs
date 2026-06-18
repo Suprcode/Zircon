@@ -176,7 +176,8 @@ namespace Client.Controls
 
                     RenderTexture scratchHandle = RenderingPipelineManager.GetScratchTexture();
 
-                    PresentTexture(scratchHandle, Parent, Rectangle.Inflate(DisplayArea, inflation, inflation), Color.White, this);
+                    DXControl clipControl = Parent ?? this;
+                    PresentTexture(scratchHandle, Parent, Rectangle.Inflate(DisplayArea, inflation, inflation), Color.White, clipControl);
                     drew = true;
                 }
             }

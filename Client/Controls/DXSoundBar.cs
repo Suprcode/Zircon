@@ -94,11 +94,9 @@ namespace Client.Controls
 
                 if (percent == 0) return;
 
-                MirImage image = OuterBar.Library.CreateImage(InnerBarIndex, ImageType.Image);
+                if (!OuterBar.Library.TryGetTexture(InnerBarIndex, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, OuterBar, new Rectangle(InnerBar.DisplayArea.X, InnerBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, InnerBar);
+                PresentTexture(texture, sourceRectangle, OuterBar, new Rectangle(InnerBar.DisplayArea.X, InnerBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, InnerBar);
             };
 
             ScrollBar = new DXHScrollBar

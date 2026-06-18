@@ -301,11 +301,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(4375, ImageType.Image);
+                if (!library.TryGetTexture(4375, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HealthBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HealthBar);
             };
 
             HealthLabel = new DXLabel
@@ -394,11 +392,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(4310, ImageType.Image);
+                if (!library.TryGetTexture(4310, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X, ExperienceBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(ExperienceBar.DisplayArea.X, ExperienceBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
             };
 
             ExperienceLabel = new DXLabel
@@ -445,11 +441,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(4311, ImageType.Image);
+                if (!library.TryGetTexture(4311, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(HungerBar.DisplayArea.X, HungerBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HungerBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(HungerBar.DisplayArea.X, HungerBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HungerBar);
             };
 
             HungerLabel = new DXLabel
@@ -697,11 +691,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(4312, ImageType.Image);
+                if (!library.TryGetTexture(4312, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(WeightBar.DisplayArea.X, WeightBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, WeightBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(WeightBar.DisplayArea.X, WeightBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, WeightBar);
             };
 
             WeightLabel = new DXLabel

@@ -70,6 +70,8 @@ namespace Client.Scenes.Views
 
             buffs.Sort((x1, x2) => x2.RemainingTime.CompareTo(x1.RemainingTime));
 
+            Size = new Size(3 + Math.Min(6, Math.Max(1, buffs.Count)) * 27, 3 + Math.Max(1, 1 + (buffs.Count - 1) / 6) * 27);
+
             foreach (ClientBuffInfo buff in buffs)
             {
                 DXImageControl icon;
@@ -256,8 +258,6 @@ namespace Client.Scenes.Views
 
             for (int i = 0; i < buffs.Count; i++)
                 Icons[buffs[i]].Location = new Point(3 + (i % 6) * 27, 3 + (i / 6) * 27);
-
-            Size = new Size(3 + Math.Min(6, Math.Max(1, Icons.Count)) * 27, 3 + Math.Max(1, 1 + (Icons.Count - 1) / 6) * 27);
         }
 
         private string GetBuffHint(ClientBuffInfo buff)

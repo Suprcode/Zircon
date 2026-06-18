@@ -21,8 +21,57 @@ namespace Client.Rendering.SharpDXD3D11
         private UnPremultiply _unpremultiplyEffect;
         private ColorMatrix _lightTintEffect;
         private Premultiply _premultiplyEffect;
+        private readonly List<SharpDXD3D11SpriteRenderer.SpriteBatchItem> _spriteBatch = new(2048);
+        private readonly List<Texture2D> _spriteBatchTextures = new(SharpDXD3D11SpriteRenderer.MaxBatchTextures);
+        private readonly List<LineBatchItem> _lineBatch = new(2048);
+        private readonly Dictionary<LineBrushKey, SolidColorBrush> _lineBrushes = new();
+        private BlendMode _spriteBatchBlendMode;
+        private float _spriteBatchBlendRate;
 
         public string Id => RenderingPipelineIds.SharpDXD3D11;
+
+        private readonly struct LineBatchItem
+        {
+            public IReadOnlyList<LinePoint> Points { get; }
+            public Color Colour { get; }
+            public float Width { get; }
+            public float Opacity { get; }
+
+            public LineBatchItem(IReadOnlyList<LinePoint> points, Color colour, float width, float opacity)
+            {
+                Points = points;
+                Colour = colour;
+                Width = width;
+                Opacity = opacity;
+            }
+        }
+
+        private readonly struct LineBrushKey : IEquatable<LineBrushKey>
+        {
+            private readonly int _argb;
+            private readonly int _opacity;
+
+            public LineBrushKey(Color colour, float opacity)
+            {
+                _argb = colour.ToArgb();
+                _opacity = Math.Clamp((int)MathF.Round(opacity * 255F), 0, 255);
+            }
+
+            public bool Equals(LineBrushKey other)
+            {
+                return _argb == other._argb && _opacity == other._opacity;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is LineBrushKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(_argb, _opacity);
+            }
+        }
 
         public void Initialize(RenderingPipelineContext context)
         {
@@ -93,6 +142,8 @@ namespace Client.Rendering.SharpDXD3D11
 
                 drawScene();
 
+                EndSpriteBatch("FrameEnd");
+                FlushLineBatch();
                 SharpDXD3D11Manager.EndDraw();
                 return true;
             }
@@ -230,19 +281,55 @@ namespace Client.Rendering.SharpDXD3D11
             if (SharpDXD3D11Manager.D2DContext == null)
                 return;
 
-            using SolidColorBrush brush = new SolidColorBrush(SharpDXD3D11Manager.D2DContext, ToRawColor(colour, SharpDXD3D11Manager.Opacity));
+            LinePoint[] copy = new LinePoint[points.Count];
+            for (int i = 0; i < points.Count; i++)
+                copy[i] = points[i];
 
-            for (int i = 0; i < points.Count - 1; i++)
-            {
-                LinePoint start = points[i];
-                LinePoint end = points[i + 1];
-
-                var p0 = new RawVector2(Snap(start.X), Snap(start.Y));
-                var p1 = new RawVector2(Snap(end.X), Snap(end.Y));
-
-                SharpDXD3D11Manager.D2DContext.DrawLine(p0, p1, brush, _lineWidth);
-            }
+            _lineBatch.Add(new LineBatchItem(copy, colour, _lineWidth, SharpDXD3D11Manager.Opacity));
         }
+
+        private void FlushLineBatch()
+        {
+            if (_lineBatch.Count == 0 || SharpDXD3D11Manager.D2DContext == null)
+                return;
+
+            EndSpriteBatch("LineBatch");
+
+            foreach (LineBatchItem item in _lineBatch)
+            {
+                SolidColorBrush brush = GetLineBrush(item.Colour, item.Opacity);
+
+                for (int i = 0; i < item.Points.Count - 1; i++)
+                {
+                    LinePoint start = item.Points[i];
+                    LinePoint end = item.Points[i + 1];
+
+                    var p0 = new RawVector2(Snap(start.X), Snap(start.Y));
+                    var p1 = new RawVector2(Snap(end.X), Snap(end.Y));
+
+                    SharpDXD3D11Manager.D2DContext.DrawLine(p0, p1, brush, item.Width);
+                }
+            }
+
+            _lineBatch.Clear();
+        }
+
+        private SolidColorBrush GetLineBrush(Color colour, float opacity)
+        {
+            LineBrushKey key = new LineBrushKey(colour, opacity);
+            if (_lineBrushes.TryGetValue(key, out SolidColorBrush brush) && brush != null && !brush.IsDisposed)
+                return brush;
+
+            brush = new SolidColorBrush(SharpDXD3D11Manager.D2DContext, ToRawColor(colour, opacity));
+            _lineBrushes[key] = brush;
+            return brush;
+        }
+
+        public void FlushLines()
+        {
+            FlushLineBatch();
+        }
+
         private static float Snap(float v)
         {
             return (float)Math.Floor(v) + 0.5f;
@@ -253,17 +340,123 @@ namespace Client.Rendering.SharpDXD3D11
             if (!texture.IsValid)
                 return;
 
+            QueueSprite(texture, sourceRectangle, destinationRectangle, colour);
+        }
+
+        public void QueueSprite(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, Color colour)
+        {
+            if (!texture.IsValid)
+                return;
+
+            if (IsScratchTexture(texture))
+            {
+                EndSpriteBatch("ScratchTexture");
+                DrawTextureImmediate(texture, sourceRectangle, destinationRectangle, colour);
+                return;
+            }
+
+            if (_lineBatch.Count > 0)
+                FlushLineBatch();
+
+            RenderingPipelineManager.SpriteShaderEffectRequest? shaderEffect = RenderingPipelineManager.GetSpriteShaderEffect();
+
+            if (!Config.UseD3D11SpriteBatch ||
+                shaderEffect.HasValue ||
+                SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
+            {
+                EndSpriteBatch(null);
+                DrawTextureImmediate(texture, sourceRectangle, destinationRectangle, colour);
+                return;
+            }
+
+            Texture2D d3dTex = GetTexture2D(texture);
+            if (d3dTex == null || SharpDXD3D11Manager.SpriteRenderer == null)
+            {
+                EndSpriteBatch(null);
+                DrawTextureImmediate(texture, sourceRectangle, destinationRectangle, colour);
+                return;
+            }
+
+            const BlendMode blendMode = BlendMode.NONE;
+            const float blendRate = 1f;
+
+            if (_spriteBatch.Count > 0 &&
+                (_spriteBatchBlendMode != blendMode ||
+                 Math.Abs(_spriteBatchBlendRate - blendRate) > float.Epsilon))
+            {
+                EndSpriteBatch("BlendState");
+            }
+
+            int textureSlot = _spriteBatchTextures.IndexOf(d3dTex);
+            if (textureSlot < 0)
+            {
+                if (_spriteBatchTextures.Count >= SharpDXD3D11SpriteRenderer.MaxBatchTextures)
+                {
+                    EndSpriteBatch("TextureSlots");
+                }
+
+                _spriteBatchTextures.Add(d3dTex);
+                textureSlot = _spriteBatchTextures.Count - 1;
+            }
+
+            _spriteBatchBlendMode = blendMode;
+            _spriteBatchBlendRate = blendRate;
+
+            Texture2DDescription textureDescription = d3dTex.Description;
+            _spriteBatch.Add(new SharpDXD3D11SpriteRenderer.SpriteBatchItem(
+                destinationRectangle,
+                sourceRectangle,
+                colour,
+                SharpDXD3D11Manager.Opacity,
+                textureSlot,
+                textureDescription.Width,
+                textureDescription.Height));
+
+            if (_spriteBatch.Count >= 2048)
+                EndSpriteBatch("Capacity");
+        }
+
+        public void EndSpriteBatch()
+        {
+            EndSpriteBatch("Explicit");
+        }
+
+        private void EndSpriteBatch(string reason)
+        {
+            if (_spriteBatch.Count == 0 || _spriteBatchTextures.Count == 0 || SharpDXD3D11Manager.SpriteRenderer == null)
+            {
+                _spriteBatch.Clear();
+                _spriteBatchTextures.Clear();
+                return;
+            }
+
+            SharpDXD3D11Manager.D2DContext?.Flush();
+
+            var targetTexture = SharpDXD3D11Manager.CurrentTarget?.Texture;
+            if (targetTexture != null)
+            {
+                var targetDescription = targetTexture.Description;
+                Size targetSize = new Size(targetDescription.Width, targetDescription.Height);
+
+                SharpDXD3D11Manager.SpriteRenderer.DrawBatch(_spriteBatchTextures, targetSize, _spriteBatch, _spriteBatchBlendMode, _spriteBatchBlendRate);
+            }
+
+            _spriteBatch.Clear();
+            _spriteBatchTextures.Clear();
+        }
+
+        private void DrawTextureImmediate(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, Color colour)
+        {
+            if (!texture.IsValid)
+                return;
+
             if (TryDrawSpriteEffect(texture, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity))
                 return;
 
+            Texture2D d3dTex = GetTexture2D(texture);
+
             if (SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
             {
-                // Use Custom D3D11 Renderer for specific blend modes
-                Texture2D d3dTex = null;
-
-                if (texture.NativeHandle is SharpD3D11TextureResource texRes) d3dTex = texRes.Texture;
-                else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
-
                 if (d3dTex != null)
                 {
                     SharpDXD3D11Manager.FlushSprite(); // Ensure D2D is flushed
@@ -283,6 +476,11 @@ namespace Client.Rendering.SharpDXD3D11
             }
 
             Bitmap1 bitmap = GetBitmap(texture);
+            if (bitmap == null)
+            {
+                DrawTextureWithSpriteRenderer(d3dTex, destinationRectangle, sourceRectangle, colour, Matrix3x2.Identity, BlendMode.NONE, 1F);
+                return;
+            }
 
             if (SharpDXD3D11Manager.D2DContext == null)
                 return;
@@ -317,10 +515,13 @@ namespace Client.Rendering.SharpDXD3D11
             finalTransform.M31 += translation.X;
             finalTransform.M32 += translation.Y;
 
-            Texture2D d3dTex = null;
+            Texture2D d3dTex = GetTexture2D(texture);
 
-            if (texture.NativeHandle is SharpD3D11TextureResource texRes) d3dTex = texRes.Texture;
-            else if (texture.NativeHandle is SharpD3D11RenderTarget renderTarget) d3dTex = renderTarget.Texture;
+            if (TryQueueSimpleTransformedSprite(texture, sourceRectangle, finalTransform, colour, d3dTex))
+                return;
+
+            EndSpriteBatch("Transform");
+            FlushLineBatch();
 
             if (d3dTex != null)
             {
@@ -373,6 +574,17 @@ namespace Client.Rendering.SharpDXD3D11
             }
 
             Bitmap1 bitmap = GetBitmap(texture);
+            if (bitmap == null)
+            {
+                float w = d3dTex.Description.Width;
+                float h = d3dTex.Description.Height;
+                float drawW = sourceRectangle.HasValue ? sourceRectangle.Value.Width : w;
+                float drawH = sourceRectangle.HasValue ? sourceRectangle.Value.Height : h;
+                RectangleF geom = new RectangleF(0, 0, drawW, drawH);
+
+                DrawTextureWithSpriteRenderer(d3dTex, geom, sourceRectangle, colour, finalTransform, BlendMode.NONE, 1F);
+                return;
+            }
 
             if (SharpDXD3D11Manager.D2DContext == null)
                 return;
@@ -393,13 +605,69 @@ namespace Client.Rendering.SharpDXD3D11
                 ? new RawRectangleF(sourceRectangle.Value.Left, sourceRectangle.Value.Top, sourceRectangle.Value.Right, sourceRectangle.Value.Bottom)
                 : (RawRectangleF?)null;
 
-            DrawBitmap(bitmap, null, source, colour);
+            RawRectangleF? destination = sourceRectangle.HasValue
+                ? new RawRectangleF(0, 0, sourceRectangle.Value.Width, sourceRectangle.Value.Height)
+                : (RawRectangleF?)null;
+
+            DrawBitmap(bitmap, destination, source, colour);
 
             SharpDXD3D11Manager.D2DContext.Transform = new RawMatrix3x2
             {
                 M11 = 1,
                 M22 = 1
             };
+        }
+
+        private static bool IsScratchTexture(RenderTexture texture)
+        {
+            return SharpDXD3D11Manager.ScratchTarget != null &&
+                   ReferenceEquals(texture.NativeHandle, SharpDXD3D11Manager.ScratchTarget);
+        }
+
+        private static void DrawTextureWithSpriteRenderer(Texture2D texture, RectangleF destination, Rectangle? source, Color colour, Matrix3x2 transform, BlendMode blendMode, float blendRate)
+        {
+            if (texture == null || SharpDXD3D11Manager.SpriteRenderer == null)
+                return;
+
+            SharpDXD3D11Manager.FlushSprite();
+            SharpDXD3D11Manager.SpriteRenderer.Draw(
+                texture,
+                destination,
+                source,
+                colour,
+                transform,
+                blendMode,
+                SharpDXD3D11Manager.Opacity,
+                blendRate);
+        }
+
+        private bool TryQueueSimpleTransformedSprite(RenderTexture texture, Rectangle? sourceRectangle, Matrix3x2 transform, Color colour, Texture2D d3dTex)
+        {
+            if (d3dTex == null ||
+                RenderingPipelineManager.GetSpriteShaderEffect().HasValue ||
+                SharpDXD3D11Manager.Blending && SharpDXD3D11Manager.BlendMode != BlendMode.NONE)
+            {
+                return false;
+            }
+
+            const float epsilon = 0.0001F;
+            if (Math.Abs(transform.M12) > epsilon ||
+                Math.Abs(transform.M21) > epsilon ||
+                transform.M11 <= epsilon ||
+                transform.M22 <= epsilon)
+            {
+                return false;
+            }
+
+            Rectangle source = sourceRectangle ?? new Rectangle(0, 0, d3dTex.Description.Width, d3dTex.Description.Height);
+            RectangleF destination = new RectangleF(
+                transform.M31,
+                transform.M32,
+                source.Width * transform.M11,
+                source.Height * transform.M22);
+
+            QueueSprite(texture, source, destination, colour);
+            return true;
         }
 
         private bool TryDrawSpriteEffect(RenderTexture texture, RectangleF geometry, Rectangle? sourceRectangle, Color colour, Matrix3x2 transform)
@@ -524,6 +792,12 @@ namespace Client.Rendering.SharpDXD3D11
             if (surface.NativeHandle is not SharpD3D11RenderTarget target)
                 throw new ArgumentException("Surface handle must wrap a Direct3D11 render target.", nameof(surface));
 
+            if (ReferenceEquals(SharpDXD3D11Manager.CurrentTarget, target))
+                return;
+
+            EndSpriteBatch("SetSurface");
+            FlushLineBatch();
+
             SharpDXD3D11Manager.SetRenderTarget(target);
         }
 
@@ -565,6 +839,9 @@ namespace Client.Rendering.SharpDXD3D11
 
         public void Clear(RenderClearFlags flags, Color colour, float z, int stencil, params Rectangle[] regions)
         {
+            EndSpriteBatch("Clear");
+            FlushLineBatch();
+
             if (SharpDXD3D11Manager.Context == null || SharpDXD3D11Manager.CurrentTarget == null)
                 return;
 
@@ -603,6 +880,8 @@ namespace Client.Rendering.SharpDXD3D11
 
         public void FlushSprite()
         {
+            EndSpriteBatch("FlushSprite");
+            FlushLineBatch();
             SharpDXD3D11Manager.D2DContext?.Flush();
         }
 
@@ -729,6 +1008,10 @@ namespace Client.Rendering.SharpDXD3D11
 
         public void Shutdown()
         {
+            foreach (SolidColorBrush brush in _lineBrushes.Values)
+                brush?.Dispose();
+
+            _lineBrushes.Clear();
             SharpDXD3D11Manager.Unload();
         }
 
@@ -742,11 +1025,24 @@ namespace Client.Rendering.SharpDXD3D11
             };
         }
 
+        private static Texture2D GetTexture2D(RenderTexture texture)
+        {
+            return texture.NativeHandle switch
+            {
+                SharpD3D11TextureResource dxTexture => dxTexture.Texture,
+                SharpD3D11RenderTarget renderTarget => renderTarget.Texture,
+                _ => null
+            };
+        }
+
         private void DrawBitmap(Bitmap1 bitmap, RawRectangleF? destination, RawRectangleF? source, Color colour)
         {
             var ctx = SharpDXD3D11Manager.D2DContext;
             if (ctx == null)
                 return;
+
+            if (_lineBatch.Count > 0)
+                FlushLineBatch();
 
             float opacity = SharpDXD3D11Manager.Opacity * (colour.A / 255f);
             float colorScale = 1f;
@@ -809,7 +1105,11 @@ namespace Client.Rendering.SharpDXD3D11
 
                 SharpDX.Direct2D1.Image effectOutput = _tintEffect.Output;
 
-                ctx.DrawImage(effectOutput, null, source, interpolation, compositeMode);
+                RawVector2? targetOffset = source.HasValue
+                    ? new RawVector2(0f, 0f)
+                    : (RawVector2?)null;
+
+                ctx.DrawImage(effectOutput, targetOffset, source, interpolation, compositeMode);
 
                 // restore whatever the pipeline had before
                 ctx.Transform = originalTransform;
@@ -818,17 +1118,18 @@ namespace Client.Rendering.SharpDXD3D11
             }
             else
             {
-                RawMatrix3x2 originalTransform = ctx.Transform;
-
                 if (destination.HasValue)
                 {
-                    RawRectangleF destRect = destination.Value;
-                    RawMatrix3x2 local = CreateImageTransform(destRect, source, bitmap.PixelSize);
-                    ctx.Transform = Multiply(originalTransform, local);
+                    ctx.DrawBitmap(bitmap, destination.Value, opacity, ToBitmapInterpolationMode(interpolation), source);
                 }
+                else
+                {
+                    RawVector2? targetOffset = source.HasValue
+                        ? new RawVector2(0f, 0f)
+                        : (RawVector2?)null;
 
-                ctx.DrawImage(bitmap, null, source, interpolation, compositeMode);
-                ctx.Transform = originalTransform;
+                    ctx.DrawImage(bitmap, targetOffset, source, interpolation, compositeMode);
+                }
             }
         }
 
@@ -883,7 +1184,11 @@ namespace Client.Rendering.SharpDXD3D11
                 SharpDX.Direct2D1.Image output = _premultiplyEffect.Output;
 
                 ctx.PrimitiveBlend = PrimitiveBlend.Add;
-                ctx.DrawImage(output, null, source, interpolation, CompositeMode.SourceOver);
+                RawVector2? targetOffset = source.HasValue
+                    ? new RawVector2(0f, 0f)
+                    : (RawVector2?)null;
+
+                ctx.DrawImage(output, targetOffset, source, interpolation, CompositeMode.SourceOver);
 
                 _unpremultiplyEffect.SetInput(0, null, true);
                 _lightTintEffect.SetInputEffect(0, null, true);
@@ -978,6 +1283,13 @@ namespace Client.Rendering.SharpDXD3D11
         private static bool RequiresBlendFactorTint(BlendMode mode)
         {
             return mode == BlendMode.INVLIGHT || mode == BlendMode.HIGHLIGHT;
+        }
+
+        private static BitmapInterpolationMode ToBitmapInterpolationMode(InterpolationMode interpolation)
+        {
+            return interpolation == InterpolationMode.NearestNeighbor
+                ? BitmapInterpolationMode.NearestNeighbor
+                : BitmapInterpolationMode.Linear;
         }
 
     }

@@ -1,4 +1,4 @@
-﻿using ManagedSquish;
+using ManagedSquish;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,12 +7,13 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LibraryEditor
 {
-    public sealed class MLibrary
+    public sealed class CrystalLibraryV1
     {
         public const int LibVersion = 1;
         public static bool Load = true;
@@ -26,7 +27,7 @@ namespace LibraryEditor
         private BinaryReader _reader;
         private FileStream _stream;
 
-        public MLibrary(string filename)
+        public CrystalLibraryV1(string filename)
         {
             FileName = filename;
             Initialize();
@@ -130,31 +131,39 @@ namespace LibraryEditor
             }
         }
 
-        public void ToMLibrary(bool useBlackKeyTransparency = false)
+        public void ToMLibrary(bool useBlackKeyTransparency = false, IProgress<LibraryProgress> progress = null, CancellationToken cancellationToken = default, LibraryConversionOptions conversionOptions = null)
         {
-            string fileName = Path.ChangeExtension(FileName, ".Zl");
+            conversionOptions ??= LibraryConversionOptions.Default;
+            string fileName = Mir3Library.GetConvertedLibraryPath(FileName);
+            string displayName = Path.GetFileName(FileName);
 
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
             Mir3Library library = new Mir3Library(fileName, useBlackKeyTransparency)
             {
-                Version = Mir3Library.LIBRARY_VERSION
+                Version = Mir3Library.COMPRESSED_LIBRARY_VERSION,
+                ContainerCompression = conversionOptions.ContainerCompression
             };
 
             library.Images.AddRange(Enumerable.Repeat(new Mir3Library.Mir3Image(library.Version), Images.Count));
 
-            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
+            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8, CancellationToken = cancellationToken };
+            int completed = 0;
 
             try
             {
                 Parallel.For(0, Images.Count, options, i =>
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     MImage image = Images[i];
                     if (image.HasMask)
                         library.Images[i] = new Mir3Library.Mir3Image(image.Image, null, image.MaskImage, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
                     else
                         library.Images[i] = new Mir3Library.Mir3Image(image.Image, library.Version, library.UseBlackKeyTransparency) { OffSetX = image.X, OffSetY = image.Y, ShadowOffSetX = image.ShadowX, ShadowOffSetY = image.ShadowY };
+
+                    int value = System.Threading.Interlocked.Increment(ref completed);
+                    progress?.Report(new LibraryProgress($"Converting {displayName} ({value}/{Images.Count})", value, Images.Count));
                 });
             }
             catch (System.Exception)
@@ -163,6 +172,26 @@ namespace LibraryEditor
             }
             finally
             {
+                if (conversionOptions.BuildAtlasMetadata)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    library.SetRuntimePreferenceForAllImages(conversionOptions.IndividualRuntimePreference, conversionOptions.StorePngSourceImages, progress, displayName, cancellationToken);
+
+                    bool buildShadowAtlas = conversionOptions.BuildShadowAtlasMetadata || library.CountAtlasLayerEntries(ZlAtlasLayer.Shadow) > 100;
+                    bool buildOverlayAtlas = conversionOptions.BuildOverlayAtlasMetadata || library.CountAtlasLayerEntries(ZlAtlasLayer.Overlay) > 100;
+                    library.BuildAtlasMetadata(conversionOptions.AtlasPageSize, 2, conversionOptions.AtlasGroupImageCount, conversionOptions.RuntimePreference, progress, displayName, true, buildShadowAtlas, buildOverlayAtlas);
+                }
+                else
+                {
+                    library.SetRuntimePreferenceForAllImages(conversionOptions.IndividualRuntimePreference, conversionOptions.StorePngSourceImages, progress, displayName, cancellationToken);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                progress?.Report(new LibraryProgress($"Saving {Path.GetFileName(fileName)}", 0, 0, true)
+                {
+                    CountText = "Writing compressed ZL v2 container",
+                    GroupText = "Saving and compressing payloads"
+                });
                 library.Save(fileName);
             }
 

@@ -489,6 +489,44 @@ namespace Client.Controls
             return visible;
         }
 
+        protected override void DrawChildControls()
+        {
+            DrawTabChild(LeftTabButton);
+            DrawTabChild(RightTabButton);
+
+            foreach (DXButton button in TabButtons)
+                DrawTabChild(button);
+
+            bool selectedTabDrawn = false;
+
+            foreach (DXControl control in Controls)
+            {
+                if (control == SelectedTab)
+                {
+                    DrawTabChild(SelectedTab);
+                    selectedTabDrawn = true;
+                    continue;
+                }
+
+                if (control is DXTab) continue;
+                if (control == LeftTabButton || control == RightTabButton) continue;
+                if (control is DXButton button && TabButtons.Contains(button)) continue;
+
+                DrawTabChild(control);
+            }
+
+            if (!selectedTabDrawn)
+                DrawTabChild(SelectedTab);
+        }
+
+        private static void DrawTabChild(DXControl control)
+        {
+            if (control == null || !control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                return;
+
+            control.Draw();
+        }
+
         #endregion
 
         #region IDisposable

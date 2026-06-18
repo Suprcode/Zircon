@@ -27,6 +27,8 @@ using DrawingBitmap = System.Drawing.Bitmap;
 using DrawingInterpolationMode = System.Drawing.Drawing2D.InterpolationMode;
 using DrawingPixelFormat = System.Drawing.Imaging.PixelFormat;
 using Factory = SharpDX.DXGI.Factory1;
+using GdiRectangle = System.Drawing.Rectangle;
+using GdiPoint = System.Drawing.Point;
 
 namespace Client.Rendering.SharpDXD3D11
 {
@@ -287,11 +289,13 @@ namespace Client.Rendering.SharpDXD3D11
             if (!Config.FullScreen && CEnvir.Target.ClientSize != size)
                 CEnvir.Target.ClientSize = size;
 
-            Rectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen);
-            int x = Math.Max(bounds.X, bounds.X + (bounds.Width - CEnvir.Target.Width) / 2);
-            int y = Math.Max(bounds.Y, bounds.Y + (bounds.Height - CEnvir.Target.Height) / 2);
+            GdiRectangle bounds = screen.Bounds;
+
+            int x = bounds.Left + (bounds.Width - CEnvir.Target.Width) / 2;
+            int y = bounds.Top + (bounds.Height - CEnvir.Target.Height) / 2;
+
             CEnvir.Target.StartPosition = FormStartPosition.Manual;
-            CEnvir.Target.Location = new Point(x, y);
+            CEnvir.Target.Location = new GdiPoint(x, y);
         }
 
         private static Point? CaptureCursorOffset(Screen screen)
@@ -586,6 +590,12 @@ namespace Client.Rendering.SharpDXD3D11
 
             for (int i = ControlList.Count - 1; i >= 0; i--)
             {
+                if (ControlList[i].IsVisible)
+                {
+                    ControlList[i].RefreshTextureExpiry();
+                    continue;
+                }
+
                 if (CEnvir.Now < ControlList[i].ExpireTime)
                     continue;
 
@@ -795,10 +805,20 @@ namespace Client.Rendering.SharpDXD3D11
                 OptionFlags = ResourceOptionFlags.None
             });
 
-            using Surface surface = texture.QueryInterface<Surface>();
-            Bitmap1 bitmap = new Bitmap1(D2DContext, surface, new BitmapProperties1(new D2D1PixelFormat(dxFormat, D2D1AlphaMode.Premultiplied), 96, 96, BitmapOptions.None));
+            Bitmap1 bitmap = null;
+            if (IsD2DBitmapFormat(format))
+            {
+                using Surface surface = texture.QueryInterface<Surface>();
+                bitmap = new Bitmap1(D2DContext, surface, new BitmapProperties1(new D2D1PixelFormat(dxFormat, D2D1AlphaMode.Premultiplied), 96, 96, BitmapOptions.None));
+            }
 
             return new SharpD3D11TextureResource(format, texture, staging, bitmap);
+        }
+
+        private static bool IsD2DBitmapFormat(RenderTextureFormat format)
+        {
+            return format == RenderTextureFormat.A8R8G8B8 ||
+                   format == RenderTextureFormat.Bgra32;
         }
 
         public static void ReleaseTexture(SharpD3D11TextureResource texture)
@@ -813,9 +833,10 @@ namespace Client.Rendering.SharpDXD3D11
 
             MapMode mapMode = mode == TextureLockMode.ReadOnly ? MapMode.Read : MapMode.Write;
 
-            // Block-compressed handler (DXT1 / DXT5)
+            // Block-compressed handler (DXT1 / DXT5 / BC7)
             if ((texture.Format == RenderTextureFormat.Dxt1 ||
-                 texture.Format == RenderTextureFormat.Dxt5) &&
+                 texture.Format == RenderTextureFormat.Dxt5 ||
+                 texture.Format == RenderTextureFormat.Bc7) &&
                 mode != TextureLockMode.ReadOnly)
             {
                 return CreateBlockCompressedWriteLock(texture, mapMode);
@@ -825,15 +846,13 @@ namespace Client.Rendering.SharpDXD3D11
             if (mode == TextureLockMode.ReadOnly)
                 Context.CopyResource(texture.Texture, texture.StagingTexture);
 
-            // Map staging texture
-            D3D11DataBox box = Context.MapSubresource(texture.StagingTexture, 0, mapMode, D3D11MapFlags.None);
-
             int width = texture.Texture.Description.Width;
             int height = texture.Texture.Description.Height;
 
             // A8R8G8B8 WRITE PATH (row-by-row safe)
             if (mode != TextureLockMode.ReadOnly &&
-                texture.Format == RenderTextureFormat.A8R8G8B8)
+                (texture.Format == RenderTextureFormat.A8R8G8B8 ||
+                 texture.Format == RenderTextureFormat.Bgra32))
             {
                 int rowSize = width * 4;
                 int totalSize = rowSize * height;
@@ -847,6 +866,9 @@ namespace Client.Rendering.SharpDXD3D11
                 {
                     try
                     {
+                        if (texture.Format == RenderTextureFormat.Bgra32)
+                            PremultiplyAlpha(buffer, width, height);
+
                         // Re-map for writing the final data into staging
                         D3D11DataBox writeBox = Context.MapSubresource(
                             texture.StagingTexture, 0, mapMode, D3D11MapFlags.None);
@@ -881,6 +903,7 @@ namespace Client.Rendering.SharpDXD3D11
 
             // All other formats OR read-only path:
             // Direct pointer access into mapped staging texture.
+            D3D11DataBox box = Context.MapSubresource(texture.StagingTexture, 0, mapMode, D3D11MapFlags.None);
             return TextureLock.From(box.DataPointer, box.RowPitch, () =>
             {
                 Context.UnmapSubresource(texture.StagingTexture, 0);
@@ -892,7 +915,6 @@ namespace Client.Rendering.SharpDXD3D11
 
         private static TextureLock CreateBlockCompressedWriteLock(SharpD3D11TextureResource texture, MapMode mapMode)
         {
-            // Texture dimensions in pixels
             int width = texture.Texture.Description.Width;
             int height = texture.Texture.Description.Height;
 
@@ -1143,6 +1165,11 @@ namespace Client.Rendering.SharpDXD3D11
             return new Size(_backBufferTarget.Texture.Description.Width, _backBufferTarget.Texture.Description.Height);
         }
 
+        public static bool IsBackBufferTarget(SharpD3D11RenderTarget target)
+        {
+            return target != null && ReferenceEquals(target, _backBufferTarget);
+        }
+
         public static void ClearColourPalette()
         {
             ColourPallete?.Dispose();
@@ -1243,8 +1270,10 @@ namespace Client.Rendering.SharpDXD3D11
             return format switch
             {
                 RenderTextureFormat.A8R8G8B8 => Format.B8G8R8A8_UNorm,
+                RenderTextureFormat.Bgra32 => Format.B8G8R8A8_UNorm,
                 RenderTextureFormat.Dxt1 => Format.BC1_UNorm,
                 RenderTextureFormat.Dxt5 => Format.BC3_UNorm,
+                RenderTextureFormat.Bc7 => Format.BC7_UNorm,
                 _ => Format.B8G8R8A8_UNorm
             };
         }

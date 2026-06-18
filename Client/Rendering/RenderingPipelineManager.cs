@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Client.Rendering
@@ -31,6 +32,7 @@ namespace Client.Rendering
         private static SpriteShaderEffectRequest? _spriteShaderEffect;
         private static float _fallbackLineWidth = 1F;
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
+        private static RenderTexture _solidFillTexture;
         private static readonly object GraphicsLock = new();
         private static string _pendingPipelineId;
 
@@ -44,6 +46,7 @@ namespace Client.Rendering
 
         public static string DefaultPipelineIdentifier => DefaultPipelineId;
         public static string ActivePipelineId => _activePipeline?.Id;
+        public static bool SupportsCachedRenderTargets => _activePipeline?.SupportsCachedRenderTargets ?? false;
         public static IReadOnlyCollection<string> AvailablePipelineIds => PipelineFactories.Keys;
         public static bool SupportsMultiplePipelines => PipelineFactories.Count > 1;
         public static bool IsDefaultPipelineOnly => PipelineFactories.Count == 1 && PipelineFactories.ContainsKey(DefaultPipelineId);
@@ -278,6 +281,9 @@ namespace Client.Rendering
 
             InvalidateControlTree(DXControl.MouseControl, visited);
             InvalidateControlTree(DXControl.FocusControl, visited);
+
+            foreach (MirLibrary library in CEnvir.LibraryList.Values)
+                library?.DisposeTextures();
         }
 
         private static void InvalidateControlTree(DXControl control, HashSet<DXControl> visited)
@@ -295,6 +301,12 @@ namespace Client.Rendering
         {
             if (_activePipeline == null)
                 return;
+
+            if (_solidFillTexture.IsValid)
+            {
+                _activePipeline.ReleaseTexture(_solidFillTexture);
+                _solidFillTexture = default;
+            }
 
             _activePipeline.Shutdown();
             _activePipeline = null;
@@ -550,6 +562,11 @@ namespace Client.Rendering
             }
         }
 
+        public static void FlushLines()
+        {
+            _activePipeline?.FlushLines();
+        }
+
         public static void DrawTextureBlend(RenderTexture texture, Rectangle? sourceRectangle, Matrix3x2 transform, Vector3 center, Vector3 translation, Color colour, float blendRate, BlendMode mode = BlendMode.NORMAL)
         {
             if (!texture.IsValid)
@@ -607,6 +624,27 @@ namespace Client.Rendering
             _activePipeline.DrawTexture(texture, sourceRectangle, transform, center, translation, colour);
         }
 
+        public static void BeginSpriteBatch()
+        {
+            _activePipeline?.BeginSpriteBatch();
+        }
+
+        public static void QueueSprite(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, Color colour)
+        {
+            if (!texture.IsValid)
+                throw new ArgumentException("A valid texture handle is required.", nameof(texture));
+
+            if (_activePipeline == null)
+                throw new InvalidOperationException("No rendering pipeline has been initialized.");
+
+            _activePipeline.QueueSprite(texture, sourceRectangle, destinationRectangle, colour);
+        }
+
+        public static void EndSpriteBatch()
+        {
+            _activePipeline?.EndSpriteBatch();
+        }
+
         public static RenderSurface GetCurrentSurface()
         {
             if (_activePipeline == null)
@@ -651,6 +689,31 @@ namespace Client.Rendering
                 throw new InvalidOperationException("No rendering pipeline has been initialized.");
 
             _activePipeline.ColorFill(surface, rectangle, colorFill);
+        }
+
+        public static void FillRectangle(Rectangle rectangle, Color colour)
+        {
+            if (rectangle.Width <= 0 || rectangle.Height <= 0 || colour.A == 0)
+                return;
+
+            RenderTexture texture = GetSolidFillTexture();
+            DrawTexture(texture, new Rectangle(0, 0, 1, 1), new RectangleF(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height), colour);
+        }
+
+        private static RenderTexture GetSolidFillTexture()
+        {
+            if (_solidFillTexture.IsValid)
+                return _solidFillTexture;
+
+            _solidFillTexture = CreateTexture(new Size(1, 1), RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
+
+            byte[] whitePixel = { 255, 255, 255, 255 };
+            using (TextureLock textureLock = LockTexture(_solidFillTexture, TextureLockMode.Discard))
+            {
+                Marshal.Copy(whitePixel, 0, textureLock.DataPointer, whitePixel.Length);
+            }
+
+            return _solidFillTexture;
         }
 
         public static RenderTargetResource CreateRenderTarget(Size size)
@@ -830,7 +893,9 @@ namespace Client.Rendering
                 throw new ArgumentException("A valid texture handle is required.", nameof(texture));
 
             if (_activePipeline != null)
+            {
                 return _activePipeline.LockTexture(texture, mode);
+            }
 
             throw new InvalidOperationException("Rendering pipeline is not initialized.");
         }
@@ -914,6 +979,12 @@ namespace Client.Rendering
             for (int i = FallbackControlCache.Count - 1; i >= 0; i--)
             {
                 ITextureCacheItem control = FallbackControlCache[i];
+                if (control is DXControl dxControl && dxControl.IsVisible)
+                {
+                    dxControl.RefreshTextureExpiry();
+                    continue;
+                }
+
                 if (now < control.ExpireTime)
                     continue;
 

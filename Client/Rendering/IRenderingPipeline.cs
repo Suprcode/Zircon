@@ -16,6 +16,8 @@ namespace Client.Rendering
 
         bool RenderFrame(Action drawScene);
 
+        bool SupportsCachedRenderTargets => true;
+
         void ToggleFullScreen();
 
         void SetResolution(Size size);
@@ -58,9 +60,26 @@ namespace Client.Rendering
 
         void DrawLine(IReadOnlyList<LinePoint> points, Color colour);
 
+        void FlushLines()
+        {
+        }
+
         void DrawTexture(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, Color colour);
 
         void DrawTexture(RenderTexture texture, Rectangle? sourceRectangle, Matrix3x2 transform, Vector3 center, Vector3 translation, Color colour);
+
+        void BeginSpriteBatch()
+        {
+        }
+
+        void QueueSprite(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, Color colour)
+        {
+            DrawTexture(texture, sourceRectangle, destinationRectangle, colour);
+        }
+
+        void EndSpriteBatch()
+        {
+        }
 
         RenderSurface GetCurrentSurface();
 

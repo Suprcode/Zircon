@@ -31,6 +31,7 @@ namespace Client.Rendering.SharpDXD3D9
         private TextureFilterMode _currentFilter = TextureFilterMode.Point;
 
         public string Id => RenderingPipelineIds.SharpDXD3D9;
+        public bool SupportsCachedRenderTargets => false;
 
         public void Initialize(RenderingPipelineContext context)
         {
@@ -267,6 +268,7 @@ namespace Client.Rendering.SharpDXD3D9
                 converted[i] = new DxVector2(point.X, point.Y);
             }
 
+            SharpDXD3D9Manager.Sprite.Flush();
             SharpDXD3D9Manager.Line.Draw(converted, ToDxColor(colour));
         }
 
@@ -493,6 +495,9 @@ namespace Client.Rendering.SharpDXD3D9
 
             if (surface.NativeHandle is not Surface dxSurface)
                 throw new ArgumentException("Surface handle must wrap a SharpDX surface instance.", nameof(surface));
+
+            if (SharpDXD3D9Manager.CurrentSurface == dxSurface)
+                return;
 
             SharpDXD3D9Manager.SetSurface(dxSurface);
         }
@@ -754,8 +759,10 @@ namespace Client.Rendering.SharpDXD3D9
             return format switch
             {
                 RenderTextureFormat.A8R8G8B8 => Format.A8R8G8B8,
+                RenderTextureFormat.Bgra32 => Format.A8R8G8B8,
                 RenderTextureFormat.Dxt1 => Format.Dxt1,
                 RenderTextureFormat.Dxt5 => Format.Dxt5,
+                RenderTextureFormat.Bc7 => throw new NotSupportedException("BC7 textures require a DirectX 11 capable renderer."),
                 _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
             };
         }

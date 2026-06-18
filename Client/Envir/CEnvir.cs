@@ -258,10 +258,9 @@ namespace Client.Envir
                 connectionText = $"Ping: {Connection.Ping}, Sent: {sent}, Received: {received}";
             }
 
-            if (Config.FullScreen)
+            if (Config.FullScreen || Config.Borderless)
             {
                 DXControl.DebugLabel.Text = debugText;
-
                 DXControl.DebugLabel.IsVisible = Config.DebugLabel;
                 DXControl.PingLabel.IsVisible = Config.DebugLabel;
 
@@ -338,10 +337,10 @@ namespace Client.Envir
                 return;
             }
 
-            if (RenderingPipelineManager.RenderFrame(() => DXControl.ActiveScene?.Draw()))
-            {
+            static void drawScene() => DXControl.ActiveScene?.Draw();
+
+            if (RenderingPipelineManager.RenderFrame(drawScene))
                 FPSCounter++;
-            }
         }
 
         public static void ReturnToLogin()

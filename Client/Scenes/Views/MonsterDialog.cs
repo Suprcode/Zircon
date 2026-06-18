@@ -69,6 +69,9 @@ namespace Client.Scenes.Views
             ExpandButton.Index = Expanded ? 44 : 46;
 
             Size = Expanded ? new Size(Size.Width, 175) : new Size(Size.Width, 54);
+            if (DetailsPanel != null)
+                DetailsPanel.Visible = Expanded;
+
             Config.MonsterBoxExpanded = Expanded;
 
             ExpandedChanged?.Invoke(this, EventArgs.Empty);
@@ -82,6 +85,7 @@ namespace Client.Scenes.Views
         public DXLabel FireResistLabel, IceResistLabel, LightningResistLabel, WindResistLabel, HolyResistLabel, DarkResistLabel, PhantomResistLabel, PhysicalResistLabel;
         public DXImageControl AttackSpeedIcon, MovementSpeedIcon, TamableIcon, UndeadIcon, GrowthIcon;
         public DXButton ExpandButton;
+        public DXControl DetailsPanel;
 
 
         public override WindowType Type => WindowType.MonsterBox;
@@ -195,11 +199,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = lib.CreateImage(5430, ImageType.Image);
+                if (!lib.TryGetTexture(5430, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(panel.DisplayArea.X, panel.DisplayArea.Y + 2, (int)(image.Width * percent), image.Height), Color.White, panel);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(panel.DisplayArea.X, panel.DisplayArea.Y + 2, (int)(image.Width * percent), image.Height), Color.White, panel);
             };
 
 
@@ -235,7 +237,7 @@ namespace Client.Scenes.Views
             };
             ExpandButton.MouseClick += (o, e) => Expanded = !Expanded;
 
-            panel2 = new DXControl
+            DetailsPanel = new DXControl
             {
                 Size = new Size(Size.Width - 10, 110),
                 Location = new Point(5, 60),
@@ -250,7 +252,7 @@ namespace Client.Scenes.Views
 
             DXLabel label = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 IsControl = false,
                 Text = CEnvir.Language.CommonStatusAC + ":"
             };
@@ -258,14 +260,14 @@ namespace Client.Scenes.Views
 
             ACLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(36, 5),
                 ForeColour = Color.White,
             };
 
             label = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 IsControl = false,
                 Text = CEnvir.Language.CommonStatusMR + ":"
             };
@@ -273,13 +275,13 @@ namespace Client.Scenes.Views
 
             MRLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(125, 5),
                 ForeColour = Color.White,
             };
             label = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 IsControl = false,
                 Text = CEnvir.Language.CommonStatusDC + ":"
             };
@@ -287,14 +289,14 @@ namespace Client.Scenes.Views
 
             DCLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(36, 22),
                 ForeColour = Color.White,
             };
 
             DXImageControl icon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1510,
                 Location = new Point(5, 39),
@@ -303,14 +305,14 @@ namespace Client.Scenes.Views
 
             FireResistLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(icon.Location.X + icon.Size.Width, 41),
                 Tag = icon,
             };
 
             icon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1511,
                 Location = new Point(icon.Location.X + 43, 39),
@@ -319,14 +321,14 @@ namespace Client.Scenes.Views
 
             IceResistLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(icon.Location.X + icon.Size.Width, 41),
                 Tag = icon,
             };
 
             icon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1512,
                 Location = new Point(icon.Location.X + 43, 39),
@@ -335,14 +337,14 @@ namespace Client.Scenes.Views
 
             LightningResistLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(icon.Location.X + icon.Size.Width, 41),
                 Tag = icon,
             };
 
             icon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1513,
                 Location = new Point(icon.Location.X + 43, 39),
@@ -351,7 +353,7 @@ namespace Client.Scenes.Views
 
             WindResistLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(icon.Location.X + icon.Size.Width, 41),
                 Tag = icon,
             };
@@ -359,7 +361,7 @@ namespace Client.Scenes.Views
 
             icon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1514,
                 Location = new Point(5, 63),
@@ -368,14 +370,14 @@ namespace Client.Scenes.Views
 
             HolyResistLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(icon.Location.X + icon.Size.Width, 65),
                 Tag = icon,
             };
 
             icon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1515,
                 Location = new Point(icon.Location.X + 43, 63),
@@ -384,14 +386,14 @@ namespace Client.Scenes.Views
 
             DarkResistLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(icon.Location.X + icon.Size.Width, 65),
                 Tag = icon,
             };
 
             icon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1516,
                 Location = new Point(icon.Location.X + 43, 63),
@@ -400,14 +402,14 @@ namespace Client.Scenes.Views
 
             PhantomResistLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(icon.Location.X + icon.Size.Width, 65),
                 Tag = icon,
             };
 
             icon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.GameInter,
                 Index = 1517,
                 Location = new Point(icon.Location.X + 43, 63),
@@ -416,14 +418,14 @@ namespace Client.Scenes.Views
 
             PhysicalResistLabel = new DXLabel
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 Location = new Point(icon.Location.X + icon.Size.Width, 65),
                 Tag = icon,
             };
 
             AttackSpeedIcon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 590,
                 Location = new Point(5, 87),
@@ -432,7 +434,7 @@ namespace Client.Scenes.Views
 
             MovementSpeedIcon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 620,
                 Location = new Point(AttackSpeedIcon.Location.X + AttackSpeedIcon.Size.Width + 2, 87),
@@ -441,7 +443,7 @@ namespace Client.Scenes.Views
 
             TamableIcon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 631,
                 Location = new Point(MovementSpeedIcon.Location.X + MovementSpeedIcon.Size.Width + 2, 87),
@@ -450,7 +452,7 @@ namespace Client.Scenes.Views
 
             UndeadIcon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 634,
                 Location = new Point(TamableIcon.Location.X + TamableIcon.Size.Width + 2, 87),
@@ -459,7 +461,7 @@ namespace Client.Scenes.Views
 
             GrowthIcon = new DXImageControl
             {
-                Parent = panel2,
+                Parent = DetailsPanel,
                 LibraryFile = LibraryFile.ProgUse,
                 Index = 630, //TODO - Find new icon!
                 Location = new Point(UndeadIcon.Location.X + UndeadIcon.Size.Width + 2, 87),
@@ -468,6 +470,7 @@ namespace Client.Scenes.Views
             };
 
             Expanded = Config.MonsterBoxExpanded;
+            DetailsPanel.Visible = Expanded;
         }
 
         #region Methods

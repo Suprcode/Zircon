@@ -347,9 +347,14 @@ namespace Client.Rendering.SilkVulkan
             if (!force && !Config.FullScreen && !Config.Borderless && IsWindowOnScreen(selectedScreen))
                 return;
 
-            Rectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(selectedScreen);
+            if (!Config.FullScreen && _context.RenderTarget.ClientSize != Config.GameSize)
+                _context.RenderTarget.ClientSize = Config.GameSize;
+
+            Rectangle bounds = selectedScreen.Bounds;
+
             int x = bounds.X + (bounds.Width - _context.RenderTarget.Width) / 2;
             int y = bounds.Y + (bounds.Height - _context.RenderTarget.Height) / 2;
+
             _context.RenderTarget.StartPosition = FormStartPosition.Manual;
             _context.RenderTarget.Location = new Point(x, y);
         }
@@ -2886,7 +2891,7 @@ namespace Client.Rendering.SilkVulkan
 
         private bool IsWindowOnScreen(Screen screen)
         {
-            if (screen == null)
+            if (screen == null || _context?.RenderTarget == null)
                 return false;
 
             Rectangle currentBounds = _context.RenderTarget.Bounds;

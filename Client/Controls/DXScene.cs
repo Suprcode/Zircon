@@ -29,7 +29,6 @@ namespace Client.Controls
             if (DebugLabel == null || PingLabel == null) return;
 
             DebugLabel.Location = new Point(Location.X + 5, Location.Y + 5);
-
             PingLabel.Location = new Point(Location.X + 5, Location.Y + 19);
         }
 
@@ -178,13 +177,20 @@ namespace Client.Controls
                 });
             */
 
-            DebugLabel.Draw();
+            if (DebugLabel.IsVisible)
+            {
+                DebugLabel.Draw();
+            }
 
             if (!string.IsNullOrEmpty(HintLabel.Text))
+            {
                 HintLabel.Draw();
+            }
 
-            if (!string.IsNullOrEmpty(PingLabel.Text))
+            if (PingLabel.IsVisible && !string.IsNullOrEmpty(PingLabel.Text))
+            {
                 PingLabel.Draw();
+            }
         }
 
         protected internal sealed override void CheckIsVisible()

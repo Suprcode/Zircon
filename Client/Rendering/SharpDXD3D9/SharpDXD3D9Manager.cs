@@ -359,6 +359,12 @@ namespace Client.Rendering.SharpDXD3D9
         {
             for (int i = ControlList.Count - 1; i >= 0; i--)
             {
+                if (ControlList[i].IsVisible)
+                {
+                    ControlList[i].RefreshTextureExpiry();
+                    continue;
+                }
+
                 if (CEnvir.Now < ControlList[i].ExpireTime)
                 {
                     continue;
@@ -798,9 +804,11 @@ namespace Client.Rendering.SharpDXD3D9
             if (!Config.FullScreen && CEnvir.Target.ClientSize != size)
                 CEnvir.Target.ClientSize = size;
 
-            GdiRectangle bounds = RenderingPipelineManager.GetMonitorDisplayBounds(screen.DeviceName, screen.Bounds);
+            GdiRectangle bounds = screen.Bounds;
             int x = bounds.X + (bounds.Width - CEnvir.Target.Width) / 2;
             int y = bounds.Y + (bounds.Height - CEnvir.Target.Height) / 2;
+
+            CEnvir.Target.StartPosition = FormStartPosition.Manual;
             CEnvir.Target.Location = new GdiPoint(x, y);
         }
 

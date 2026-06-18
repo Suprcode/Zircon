@@ -344,6 +344,21 @@ namespace Client.Controls
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
+
+        internal void DrawTextureTo(RectangleF destination)
+        {
+            if (!DrawTexture) return;
+
+            if (!TextureValid)
+                CreateTexture();
+
+            if (!ControlTexture.IsValid || TextureSize.Width <= 0 || TextureSize.Height <= 0)
+                return;
+
+            RenderingPipelineManager.DrawTexture(ControlTexture, new Rectangle(Point.Empty, TextureSize), destination, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75));
+
+            ExpireTime = CEnvir.Now + Config.CacheDuration;
+        }
         #endregion
 
         #region IDisposable

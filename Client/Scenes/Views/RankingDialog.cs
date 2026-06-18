@@ -1630,7 +1630,7 @@ namespace Client.Scenes.Views
         public RankingLine()
         {
             Size = new Size(288, 22);
-            DrawTexture = true;
+            DrawTexture = false;
             BackColour = Color.Empty;
 
             OnlineImage = new DXImageControl
@@ -1689,6 +1689,13 @@ namespace Client.Scenes.Views
         }
 
         #region Methods
+
+        protected override void DrawControl()
+        {
+            if (BackColour == Color.Empty) return;
+
+            RenderingPipelineManager.FillRectangle(DisplayArea, BackColour);
+        }
 
         public override void OnMouseClick(MouseEventArgs e)
         {

@@ -677,13 +677,12 @@ namespace Client.Controls
             if (LootBoxLocked)
             {
                 CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter2, out Library);
-                MirImage image = Library.CreateImage(2930, ImageType.Image);
-                if (image != null)
+                if (Library.TryGetTexture(2930, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle))
                 {
                     Rectangle area = new Rectangle(DisplayArea.X, DisplayArea.Y, image.Width, image.Height);
                     area.Offset((Size.Width - image.Width) / 2, (Size.Height - image.Height) / 2);
                     ItemInfo info = Item.Info;
-                    PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
                 }
 
                 base.DrawControl();
@@ -711,8 +710,7 @@ namespace Client.Controls
 
                 if (!Hidden)
                 {
-                    MirImage image = Library.CreateImage(drawIndex, ImageType.Image);
-                    if (image != null)
+                    if (Library.TryGetTexture(drawIndex, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle))
                     {
                         if (GrayScale)
                         {
@@ -725,10 +723,10 @@ namespace Client.Controls
                         if (info.ItemEffect == ItemEffect.ItemPart && Item.AddedStats[Stat.ItemIndex] > 0)
                         {
                             info = Globals.ItemInfoList.Binding.First(x => x.Index == Item.AddedStats[Stat.ItemIndex]);
-                            PresentTexture(image.Image, this, area, Item.Count >= info.PartCount ? Color.White : Color.Gray, this);
+                            PresentTexture(texture, sourceRectangle, this, area, Item.Count >= info.PartCount ? Color.White : Color.Gray, this);
                         }
                         else
-                            PresentTexture(image.Image, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
+                            PresentTexture(texture, sourceRectangle, this, area, Item.Count > 0 ? Color.White : Color.Gray, this);
 
                         if (GrayScale)
                         {
@@ -740,22 +738,22 @@ namespace Client.Controls
 
             if (InterfaceLibrary != null)
             {
-                MirImage image = InterfaceLibrary.CreateImage(47, ImageType.Image);
+                InterfaceLibrary.TryGetTexture(47, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle);
 
                 if (Item != null && Item.New && image != null)
-                    PresentTexture(image.Image, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
-                image = InterfaceLibrary.CreateImage(48, ImageType.Image);
+                InterfaceLibrary.TryGetTexture(48, ImageType.Image, out image, out texture, out sourceRectangle);
                 if (Item != null && (Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked && image != null && !Hidden && GridType != GridType.Inspect)
-                    PresentTexture(image.Image, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, new Rectangle(DisplayArea.X + 1, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
-                image = InterfaceLibrary.CreateImage(49, ImageType.Image);
+                InterfaceLibrary.TryGetTexture(49, ImageType.Image, out image, out texture, out sourceRectangle);
                 if (Item != null && GameScene.Game != null && !GameScene.Game.CanUseItem(Item) && image != null && !Hidden && GridType != GridType.Inspect)
-                    PresentTexture(image.Image, this, new Rectangle(DisplayArea.Right - 12, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, new Rectangle(DisplayArea.Right - 12, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
 
-                image = InterfaceLibrary.CreateImage(103, ImageType.Image);
+                InterfaceLibrary.TryGetTexture(103, ImageType.Image, out image, out texture, out sourceRectangle);
                 if (Item != null && GameScene.Game != null && image != null && Item.Info.ItemEffect == ItemEffect.ItemPart)
-                    PresentTexture(image.Image, this, new Rectangle(DisplayArea.Right - 16, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
+                    PresentTexture(texture, sourceRectangle, this, new Rectangle(DisplayArea.Right - 16, DisplayArea.Y + 1, image.Width, image.Height), Item.Count > 0 ? Color.White : Color.Gray, this);
             }
 
             base.DrawControl();
