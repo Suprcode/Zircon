@@ -17,6 +17,8 @@ namespace Client.Rendering
         bool RenderFrame(Action drawScene);
 
         bool SupportsCachedRenderTargets => true;
+        bool SupportsAtlasTextures => false;
+        bool SupportsBc7Textures => false;
 
         void ToggleFullScreen();
 

@@ -35,7 +35,7 @@ namespace Client.Controls
 
         public DXMapInfoControl()
         {
-            DrawTexture = true;
+            DrawTexture = false;
             PassThrough = false;
         }
 
@@ -138,6 +138,19 @@ namespace Client.Controls
             if (DrawBorderAnimation()) return;
 
             base.DrawBorder();
+        }
+
+        protected override void DrawControl()
+        {
+            Rectangle area = Rectangle.Intersect(ClipArea, DisplayArea);
+            if (area.Width <= 0 || area.Height <= 0 || BackColour.A == 0) return;
+
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
+            RenderingPipelineManager.SetOpacity(Opacity);
+
+            RenderingPipelineManager.FillRectangle(area, IsEnabled ? BackColour : Color.FromArgb(75, 75, 75));
+
+            RenderingPipelineManager.SetOpacity(oldOpacity);
         }
 
         private bool DrawBorderAnimation()

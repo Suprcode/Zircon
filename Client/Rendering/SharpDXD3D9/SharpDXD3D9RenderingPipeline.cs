@@ -32,6 +32,8 @@ namespace Client.Rendering.SharpDXD3D9
 
         public string Id => RenderingPipelineIds.SharpDXD3D9;
         public bool SupportsCachedRenderTargets => false;
+        public bool SupportsAtlasTextures => false;
+        public bool SupportsBc7Textures => false;
 
         public void Initialize(RenderingPipelineContext context)
         {

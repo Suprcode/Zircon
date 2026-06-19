@@ -463,12 +463,11 @@ namespace Client.Scenes.Views
 
                     if (control.Controls.Count == 0) // This is disgusting but its cheap
                     {
-                        new DXControl
+                        new DXMapInfoControl
                         {
                             Parent = control,
                             Location = new Point(1, 1),
                             BackColour = colour,
-                            DrawTexture = true,
                             Size = new Size(3, 3)
                         };
                     }

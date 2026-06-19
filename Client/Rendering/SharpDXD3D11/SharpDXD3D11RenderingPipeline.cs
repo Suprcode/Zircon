@@ -29,6 +29,8 @@ namespace Client.Rendering.SharpDXD3D11
         private float _spriteBatchBlendRate;
 
         public string Id => RenderingPipelineIds.SharpDXD3D11;
+        public bool SupportsAtlasTextures => true;
+        public bool SupportsBc7Textures => true;
 
         private readonly struct LineBatchItem
         {

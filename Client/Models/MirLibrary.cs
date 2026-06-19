@@ -341,7 +341,7 @@ namespace Client.Envir
                 return false;
             }
 
-            if (!string.Equals(Config.RenderingPipeline, RenderingPipelineIds.SharpDXD3D11, StringComparison.OrdinalIgnoreCase))
+            if (!RenderingPipelineManager.SupportsAtlasTextures)
             {
                 return false;
             }
@@ -1044,10 +1044,10 @@ namespace Client.Envir
             if (preference == ZlRuntimeTexturePreference.Dxt1 && hasBc7)
                 return RenderTextureFormat.Dxt1;
 
-            if (preference == ZlRuntimeTexturePreference.Dxt5 && hasBc7)
+            if (preference == ZlRuntimeTexturePreference.Dxt5 && hasFallback)
                 return RenderTextureFormat.Dxt5;
 
-            if ((preference == ZlRuntimeTexturePreference.Bc7 || preference == ZlRuntimeTexturePreference.Bc7Dxt5) && hasBc7)
+            if ((preference == ZlRuntimeTexturePreference.Bc7 || preference == ZlRuntimeTexturePreference.Bc7Dxt5) && hasBc7 && RenderingPipelineManager.SupportsBc7Textures)
                 return RenderTextureFormat.Bc7;
 
             if (preference == ZlRuntimeTexturePreference.Bc7Dxt5 && hasFallback)
@@ -1625,16 +1625,19 @@ namespace Client.Envir
 
     private static RenderTextureFormat ResolveRuntimeFormat(ZlImageCodec codec, ZlRuntimeTexturePreference preference, bool hasBc7, bool hasFallback)
     {
+        if (codec == ZlImageCodec.Bc7 && !RenderingPipelineManager.SupportsBc7Textures)
+            return hasFallback ? RenderTextureFormat.Dxt5 : RenderTextureFormat.Bgra32;
+
         if (codec != ZlImageCodec.Png)
             return ConvertFormat(codec);
 
         if (preference == ZlRuntimeTexturePreference.Dxt1 && hasBc7)
             return RenderTextureFormat.Dxt1;
 
-        if (preference == ZlRuntimeTexturePreference.Dxt5 && hasBc7)
+        if (preference == ZlRuntimeTexturePreference.Dxt5 && hasFallback)
             return RenderTextureFormat.Dxt5;
 
-        if ((preference == ZlRuntimeTexturePreference.Bc7 || preference == ZlRuntimeTexturePreference.Bc7Dxt5) && hasBc7)
+        if ((preference == ZlRuntimeTexturePreference.Bc7 || preference == ZlRuntimeTexturePreference.Bc7Dxt5) && hasBc7 && RenderingPipelineManager.SupportsBc7Textures)
             return RenderTextureFormat.Bc7;
 
         if (preference == ZlRuntimeTexturePreference.Bc7Dxt5 && hasFallback)

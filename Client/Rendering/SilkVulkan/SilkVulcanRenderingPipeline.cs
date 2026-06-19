@@ -109,6 +109,8 @@ namespace Client.Rendering.SilkVulkan
         private readonly DisplayModeManager _displayMode = new DisplayModeManager();
 
         public string Id => RenderingPipelineIds.SilkVulkan;
+        public bool SupportsAtlasTextures => true;
+        public bool SupportsBc7Textures => false;
 
         internal static void ForceNextSwapchainFifoPresentMode()
         {

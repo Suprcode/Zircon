@@ -47,6 +47,8 @@ namespace Client.Rendering
         public static string DefaultPipelineIdentifier => DefaultPipelineId;
         public static string ActivePipelineId => _activePipeline?.Id;
         public static bool SupportsCachedRenderTargets => _activePipeline?.SupportsCachedRenderTargets ?? false;
+        public static bool SupportsAtlasTextures => _activePipeline?.SupportsAtlasTextures ?? false;
+        public static bool SupportsBc7Textures => _activePipeline?.SupportsBc7Textures ?? false;
         public static IReadOnlyCollection<string> AvailablePipelineIds => PipelineFactories.Keys;
         public static bool SupportsMultiplePipelines => PipelineFactories.Count > 1;
         public static bool IsDefaultPipelineOnly => PipelineFactories.Count == 1 && PipelineFactories.ContainsKey(DefaultPipelineId);
