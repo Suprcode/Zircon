@@ -15,8 +15,9 @@ namespace Client.Rendering
         private const string DefaultPipelineId = RenderingPipelineIds.SharpDXD3D11;
         private static readonly Dictionary<string, Func<IRenderingPipeline>> PipelineFactories = new(StringComparer.OrdinalIgnoreCase)
         {
-            { RenderingPipelineIds.SharpDXD3D9, () => new SharpDXD3D9.SharpDXD3D9RenderingPipeline() },
-            { RenderingPipelineIds.SharpDXD3D11, () => new SharpDXD3D11.SharpDXD3D11RenderingPipeline() }
+            //{ RenderingPipelineIds.SharpDXD3D9, () => new SharpDXD3D9.SharpDXD3D9RenderingPipeline() },
+            { RenderingPipelineIds.SharpDXD3D11, () => new SharpDXD3D11.SharpDXD3D11RenderingPipeline() },
+            { RenderingPipelineIds.SilkVulkan, () => new SilkVulkan.SilkVulkanRenderingPipeline() }
         };
 
         private static IRenderingPipeline _activePipeline;
@@ -40,8 +41,6 @@ namespace Client.Rendering
         {
             FallbackGraphics = Graphics.FromHwnd(IntPtr.Zero);
             ConfigureFallbackGraphics(FallbackGraphics);
-
-            PipelineFactories[RenderingPipelineIds.SilkVulkan] = () => new SilkVulkan.SilkVulkanRenderingPipeline();
         }
 
         public static string DefaultPipelineIdentifier => DefaultPipelineId;

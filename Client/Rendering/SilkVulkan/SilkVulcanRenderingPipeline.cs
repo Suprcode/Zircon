@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Helpers;
 using Silk.NET.Core;
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -34,6 +35,10 @@ namespace Client.Rendering.SilkVulkan
         private const uint MaxSpriteBatchInstances = 8192;
         private const ulong DynamicVertexBufferSize = 16 * 1024 * 1024;
         private const uint MaxTextureDescriptors = 8192;
+        private const string TextureVertexShaderFileName = "Texture.vert";
+        private const string TextureFragmentShaderFileName = "Texture.frag";
+        private const string LineVertexShaderFileName = "Line.vert";
+        private const string LineFragmentShaderFileName = "Line.frag";
         private static readonly Size MinimumResolution = new Size(1024, 768);
         private static bool _forceNextSwapchainFifoPresentMode;
 
@@ -225,7 +230,7 @@ namespace Client.Rendering.SilkVulkan
                 CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo
                 {
                     SType = StructureType.CommandBufferBeginInfo,
-                    Flags = CommandBufferUsageFlags.CommandBufferUsageOneTimeSubmitBit
+                    Flags = CommandBufferUsageFlags.OneTimeSubmitBit
                 };
                 Check(_vk.BeginCommandBuffer(_activeCommandBuffer, in beginInfo), "begin Vulkan command buffer");
 
@@ -234,10 +239,10 @@ namespace Client.Rendering.SilkVulkan
                 drawScene();
                 EndRenderPass();
 
-                TransitionTarget(_currentBackBufferTarget, VkImageLayout.PresentSrcKhr, AccessFlags.AccessColorAttachmentWriteBit, 0, PipelineStageFlags.PipelineStageColorAttachmentOutputBit, PipelineStageFlags.PipelineStageBottomOfPipeBit);
+                TransitionTarget(_currentBackBufferTarget, VkImageLayout.PresentSrcKhr, AccessFlags.ColorAttachmentWriteBit, 0, PipelineStageFlags.ColorAttachmentOutputBit, PipelineStageFlags.BottomOfPipeBit);
                 Check(_vk.EndCommandBuffer(_activeCommandBuffer), "end Vulkan command buffer");
 
-                PipelineStageFlags waitStage = PipelineStageFlags.PipelineStageColorAttachmentOutputBit;
+                PipelineStageFlags waitStage = PipelineStageFlags.ColorAttachmentOutputBit;
                 VkSemaphore imageAvailableSemaphore = frame.ImageAvailableSemaphore;
                 VkSemaphore renderFinishedSemaphore = frame.RenderFinishedSemaphore;
                 CommandBuffer commandBuffer = _activeCommandBuffer;
@@ -459,7 +464,7 @@ namespace Client.Rendering.SilkVulkan
             float alpha = color.A / 255F;
             ClearAttachment attachment = new ClearAttachment
             {
-                AspectMask = ImageAspectFlags.ImageAspectColorBit,
+                AspectMask = ImageAspectFlags.ColorBit,
                 ColorAttachment = 0,
                 ClearValue = CreateClearValue(color.R / 255F * alpha, color.G / 255F * alpha, color.B / 255F * alpha, alpha)
             };
@@ -530,7 +535,7 @@ namespace Client.Rendering.SilkVulkan
                 Viewport = new Vector2(_currentTarget.Size.Width, _currentTarget.Size.Height),
                 Colour = new Vector4(colour.R / 255F, colour.G / 255F, colour.B / 255F, colour.A / 255F * _opacity)
             };
-            _vk.CmdPushConstants(_activeCommandBuffer, _linePipelineLayout, ShaderStageFlags.ShaderStageVertexBit | ShaderStageFlags.ShaderStageFragmentBit, 0, (uint)sizeof(PushConstants), &push);
+            _vk.CmdPushConstants(_activeCommandBuffer, _linePipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(PushConstants), &push);
 
             Buffer buffer = _activeFrame.VertexBuffer.Buffer;
             _vk.CmdBindVertexBuffers(_activeCommandBuffer, 0, 1, in buffer, in offset);
@@ -641,7 +646,7 @@ namespace Client.Rendering.SilkVulkan
             float alpha = colour.A / 255F * _opacity;
             ClearAttachment attachment = new ClearAttachment
             {
-                AspectMask = ImageAspectFlags.ImageAspectColorBit,
+                AspectMask = ImageAspectFlags.ColorBit,
                 ColorAttachment = 0,
                 ClearValue = CreateClearValue(colour.R / 255F * alpha, colour.G / 255F * alpha, colour.B / 255F * alpha, alpha)
             };
@@ -1296,7 +1301,7 @@ namespace Client.Rendering.SilkVulkan
             for (uint i = 0; i < memoryProperties.MemoryHeapCount; i++)
             {
                 MemoryHeap heap = memoryProperties.MemoryHeaps[(int)i];
-                if ((heap.Flags & MemoryHeapFlags.MemoryHeapDeviceLocalBit) != 0)
+                if ((heap.Flags & MemoryHeapFlags.DeviceLocalBit) != 0)
                     deviceLocalMemory += heap.Size;
             }
 
@@ -1336,7 +1341,7 @@ namespace Client.Rendering.SilkVulkan
 
             for (uint i = 0; i < families.Length; i++)
             {
-                if ((families[i].QueueFlags & QueueFlags.QueueGraphicsBit) == 0)
+                if ((families[i].QueueFlags & QueueFlags.GraphicsBit) == 0)
                     continue;
 
                 Bool32 presentSupported = false;
@@ -1427,7 +1432,7 @@ namespace Client.Rendering.SilkVulkan
             {
                 SType = StructureType.CommandPoolCreateInfo,
                 QueueFamilyIndex = _graphicsQueueFamilyIndex,
-                Flags = CommandPoolCreateFlags.CommandPoolCreateResetCommandBufferBit
+                Flags = CommandPoolCreateFlags.ResetCommandBufferBit
             };
             Check(_vk.CreateCommandPool(_device, in framePoolInfo, null, out _frameCommandPool), "create Vulkan frame command pool");
 
@@ -1435,7 +1440,7 @@ namespace Client.Rendering.SilkVulkan
             {
                 SType = StructureType.CommandPoolCreateInfo,
                 QueueFamilyIndex = _graphicsQueueFamilyIndex,
-                Flags = CommandPoolCreateFlags.CommandPoolCreateTransientBit
+                Flags = CommandPoolCreateFlags.TransientBit
             };
             Check(_vk.CreateCommandPool(_device, in uploadPoolInfo, null, out _uploadCommandPool), "create Vulkan upload command pool");
         }
@@ -1447,7 +1452,7 @@ namespace Client.Rendering.SilkVulkan
                 Binding = 0,
                 DescriptorCount = 1,
                 DescriptorType = DescriptorType.CombinedImageSampler,
-                StageFlags = ShaderStageFlags.ShaderStageFragmentBit
+                StageFlags = ShaderStageFlags.FragmentBit
             };
             DescriptorSetLayoutCreateInfo textureLayoutInfo = new DescriptorSetLayoutCreateInfo
             {
@@ -1480,7 +1485,7 @@ namespace Client.Rendering.SilkVulkan
             DescriptorPoolCreateInfo poolInfo = new DescriptorPoolCreateInfo
             {
                 SType = StructureType.DescriptorPoolCreateInfo,
-                Flags = DescriptorPoolCreateFlags.DescriptorPoolCreateFreeDescriptorSetBit,
+                Flags = DescriptorPoolCreateFlags.FreeDescriptorSetBit,
                 MaxSets = MaxTextureDescriptors + (uint)MaxFramesInFlight,
                 PoolSizeCount = 2,
                 PPoolSizes = poolSizes
@@ -1520,7 +1525,7 @@ namespace Client.Rendering.SilkVulkan
                 };
                 Check(_vk.AllocateCommandBuffers(_device, in allocateInfo, out CommandBuffer commandBuffer), "allocate Vulkan command buffer");
 
-                SilkVulkanBufferResource vertexBuffer = CreateBuffer(DynamicVertexBufferSize, BufferUsageFlags.BufferUsageVertexBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+                SilkVulkanBufferResource vertexBuffer = CreateBuffer(DynamicVertexBufferSize, BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
 
                 SemaphoreCreateInfo semaphoreInfo = new SemaphoreCreateInfo { SType = StructureType.SemaphoreCreateInfo };
                 Check(_vk.CreateSemaphore(_device, in semaphoreInfo, null, out VkSemaphore imageAvailable), "create Vulkan image semaphore");
@@ -1529,7 +1534,7 @@ namespace Client.Rendering.SilkVulkan
                 FenceCreateInfo fenceInfo = new FenceCreateInfo
                 {
                     SType = StructureType.FenceCreateInfo,
-                    Flags = FenceCreateFlags.FenceCreateSignaledBit
+                    Flags = FenceCreateFlags.SignaledBit
                 };
                 Check(_vk.CreateFence(_device, in fenceInfo, null, out Fence fence), "create Vulkan frame fence");
 
@@ -1558,10 +1563,10 @@ namespace Client.Rendering.SilkVulkan
                 ImageColorSpace = surfaceFormat.ColorSpace,
                 ImageExtent = extent,
                 ImageArrayLayers = 1,
-                ImageUsage = ImageUsageFlags.ImageUsageColorAttachmentBit,
+                ImageUsage = ImageUsageFlags.ColorAttachmentBit,
                 ImageSharingMode = SharingMode.Exclusive,
                 PreTransform = capabilities.CurrentTransform,
-                CompositeAlpha = CompositeAlphaFlagsKHR.CompositeAlphaOpaqueBitKhr,
+                CompositeAlpha = CompositeAlphaFlagsKHR.OpaqueBitKhr,
                 PresentMode = presentMode,
                 Clipped = true,
                 OldSwapchain = _swapchain
@@ -1592,7 +1597,7 @@ namespace Client.Rendering.SilkVulkan
 
             foreach (SurfaceFormatKHR format in formats)
             {
-                if (format.Format == Format.B8G8R8A8Unorm && format.ColorSpace == ColorSpaceKHR.ColorSpaceSrgbNonlinearKhr)
+                if (format.Format == Format.B8G8R8A8Unorm && format.ColorSpace == ColorSpaceKHR.SpaceSrgbNonlinearKhr)
                     return format;
             }
 
@@ -1611,25 +1616,25 @@ namespace Client.Rendering.SilkVulkan
             _forceNextSwapchainFifoPresentMode = false;
 
             if (forceFifo || (Config.VSync && Config.FullScreen))
-                return PresentModeKHR.PresentModeFifoKhr;
+                return PresentModeKHR.FifoKhr;
 
             // Windowed mailbox is still tear-free, but avoids FIFO blocking during renderer handoff.
             foreach (PresentModeKHR mode in modes)
             {
-                if (mode == PresentModeKHR.PresentModeMailboxKhr)
+                if (mode == PresentModeKHR.MailboxKhr)
                     return mode;
             }
 
             if (Config.VSync)
-                return PresentModeKHR.PresentModeFifoKhr;
+                return PresentModeKHR.FifoKhr;
 
             foreach (PresentModeKHR mode in modes)
             {
-                if (mode == PresentModeKHR.PresentModeImmediateKhr)
+                if (mode == PresentModeKHR.ImmediateKhr)
                     return mode;
             }
 
-            return PresentModeKHR.PresentModeFifoKhr;
+            return PresentModeKHR.FifoKhr;
         }
 
         private Extent2D ChooseSwapExtent(SurfaceCapabilitiesKHR capabilities)
@@ -1650,7 +1655,7 @@ namespace Client.Rendering.SilkVulkan
             AttachmentDescription colourAttachment = new AttachmentDescription
             {
                 Format = _swapchainFormat,
-                Samples = SampleCountFlags.SampleCount1Bit,
+                Samples = SampleCountFlags.Count1Bit,
                 LoadOp = AttachmentLoadOp.Load,
                 StoreOp = AttachmentStoreOp.Store,
                 StencilLoadOp = AttachmentLoadOp.DontCare,
@@ -1698,10 +1703,10 @@ namespace Client.Rendering.SilkVulkan
 
         private void CreateGraphicsPipelines()
         {
-            byte[] textureVertexShader = SilkVulkanShaderCompiler.Compile(TextureVertexShaderSource, ShaderKind.VertexShader, "vulkan_texture.vert");
-            byte[] textureFragmentShader = SilkVulkanShaderCompiler.Compile(TextureFragmentShaderSource, ShaderKind.FragmentShader, "vulkan_texture.frag");
-            byte[] lineVertexShader = SilkVulkanShaderCompiler.Compile(LineVertexShaderSource, ShaderKind.VertexShader, "vulkan_line.vert");
-            byte[] lineFragmentShader = SilkVulkanShaderCompiler.Compile(LineFragmentShaderSource, ShaderKind.FragmentShader, "vulkan_line.frag");
+            byte[] textureVertexShader = CompileShaderFromFile(TextureVertexShaderFileName, ShaderKind.VertexShader);
+            byte[] textureFragmentShader = CompileShaderFromFile(TextureFragmentShaderFileName, ShaderKind.FragmentShader);
+            byte[] lineVertexShader = CompileShaderFromFile(LineVertexShaderFileName, ShaderKind.VertexShader);
+            byte[] lineFragmentShader = CompileShaderFromFile(LineFragmentShaderFileName, ShaderKind.FragmentShader);
 
             ShaderModule textureVertexModule = CreateShaderModule(textureVertexShader);
             ShaderModule textureFragmentModule = CreateShaderModule(textureFragmentShader);
@@ -1712,7 +1717,7 @@ namespace Client.Rendering.SilkVulkan
             {
                 PushConstantRange pushConstantRange = new PushConstantRange
                 {
-                    StageFlags = ShaderStageFlags.ShaderStageVertexBit | ShaderStageFlags.ShaderStageFragmentBit,
+                    StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
                     Offset = 0,
                     Size = (uint)sizeof(PushConstants)
                 };
@@ -1755,6 +1760,35 @@ namespace Client.Rendering.SilkVulkan
             }
         }
 
+        private static byte[] CompileShaderFromFile(string fileName, ShaderKind shaderKind)
+        {
+            string shaderPath = FindShaderPath(fileName);
+
+            if (string.IsNullOrEmpty(shaderPath) || !File.Exists(shaderPath))
+                throw new FileNotFoundException($"Vulkan shader file '{fileName}' was not found.", shaderPath);
+
+            string source = File.ReadAllText(shaderPath);
+            return SilkVulkanShaderCompiler.Compile(source, shaderKind, fileName);
+        }
+
+        private static string FindShaderPath(string fileName)
+        {
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
+
+            string[] candidates = new[]
+            {
+                Path.Combine(baseDirectory, "Rendering", "SilkVulkan", "Shaders", fileName)
+            };
+
+            foreach (string candidate in candidates)
+            {
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+
+            return null;
+        }
+
         private Pipeline CreateTexturePipeline(ShaderModule vertexModule, ShaderModule fragmentModule, ClientBlendMode blendMode)
         {
             PipelineColorBlendAttachmentState blendAttachment = CreateBlendAttachment(blendMode);
@@ -1776,14 +1810,14 @@ namespace Client.Rendering.SilkVulkan
                 shaderStages[0] = new PipelineShaderStageCreateInfo
                 {
                     SType = StructureType.PipelineShaderStageCreateInfo,
-                    Stage = ShaderStageFlags.ShaderStageVertexBit,
+                    Stage = ShaderStageFlags.VertexBit,
                     Module = vertexModule,
                     PName = entryPoint
                 };
                 shaderStages[1] = new PipelineShaderStageCreateInfo
                 {
                     SType = StructureType.PipelineShaderStageCreateInfo,
-                    Stage = ShaderStageFlags.ShaderStageFragmentBit,
+                    Stage = ShaderStageFlags.FragmentBit,
                     Module = fragmentModule,
                     PName = entryPoint
                 };
@@ -1818,7 +1852,7 @@ namespace Client.Rendering.SilkVulkan
                 {
                     SType = StructureType.PipelineRasterizationStateCreateInfo,
                     PolygonMode = PolygonMode.Fill,
-                    CullMode = CullModeFlags.CullModeNone,
+                    CullMode = CullModeFlags.None,
                     FrontFace = FrontFace.Clockwise,
                     LineWidth = 1F
                 };
@@ -1826,7 +1860,7 @@ namespace Client.Rendering.SilkVulkan
                 PipelineMultisampleStateCreateInfo multisampling = new PipelineMultisampleStateCreateInfo
                 {
                     SType = StructureType.PipelineMultisampleStateCreateInfo,
-                    RasterizationSamples = SampleCountFlags.SampleCount1Bit
+                    RasterizationSamples = SampleCountFlags.Count1Bit
                 };
 
                 PipelineColorBlendStateCreateInfo colorBlending = new PipelineColorBlendStateCreateInfo
@@ -1939,10 +1973,10 @@ namespace Client.Rendering.SilkVulkan
                 BlendEnable = true,
                 ColorBlendOp = BlendOp.Add,
                 AlphaBlendOp = BlendOp.Add,
-                ColorWriteMask = ColorComponentFlags.ColorComponentRBit |
-                                 ColorComponentFlags.ColorComponentGBit |
-                                 ColorComponentFlags.ColorComponentBBit |
-                                 ColorComponentFlags.ColorComponentABit
+                ColorWriteMask = ColorComponentFlags.RBit |
+                                 ColorComponentFlags.GBit |
+                                 ColorComponentFlags.BBit |
+                                 ColorComponentFlags.ABit
             };
 
             switch (blendMode)
@@ -2018,14 +2052,14 @@ namespace Client.Rendering.SilkVulkan
         private SilkVulkanTextureResource CreateTextureCore(Size size, RenderTextureFormat format, bool flipVerticallyWhenSampling = false, bool keepCpuData = false, bool transitionToReadable = true)
         {
             Size safeSize = new Size(Math.Max(size.Width, 1), Math.Max(size.Height, 1));
-            VkImage image = CreateImage(safeSize, Format.B8G8R8A8Unorm, ImageUsageFlags.ImageUsageSampledBit | ImageUsageFlags.ImageUsageTransferDstBit | ImageUsageFlags.ImageUsageColorAttachmentBit);
-            DeviceMemory memory = AllocateAndBindImageMemory(image, MemoryPropertyFlags.MemoryPropertyDeviceLocalBit);
+            VkImage image = CreateImage(safeSize, Format.B8G8R8A8Unorm, ImageUsageFlags.SampledBit | ImageUsageFlags.TransferDstBit | ImageUsageFlags.ColorAttachmentBit);
+            DeviceMemory memory = AllocateAndBindImageMemory(image, MemoryPropertyFlags.DeviceLocalBit);
             ImageView view = CreateImageView(image, Format.B8G8R8A8Unorm);
             SilkVulkanTextureResource resource = new SilkVulkanTextureResource(_vk, _device, safeSize, format, image, memory, view, null, VkImageLayout.Undefined, true, keepCpuData, flipVerticallyWhenSampling);
             AllocateTextureDescriptor(resource);
 
             if (transitionToReadable)
-                TransitionTextureImmediate(resource, VkImageLayout.ShaderReadOnlyOptimal, 0, AccessFlags.AccessShaderReadBit, PipelineStageFlags.PipelineStageTopOfPipeBit, PipelineStageFlags.PipelineStageFragmentShaderBit);
+                TransitionTextureImmediate(resource, VkImageLayout.ShaderReadOnlyOptimal, 0, AccessFlags.ShaderReadBit, PipelineStageFlags.TopOfPipeBit, PipelineStageFlags.FragmentShaderBit);
 
             return resource;
         }
@@ -2077,7 +2111,7 @@ namespace Client.Rendering.SilkVulkan
                 Tiling = ImageTiling.Optimal,
                 InitialLayout = VkImageLayout.Undefined,
                 Usage = usage,
-                Samples = SampleCountFlags.SampleCount1Bit,
+                Samples = SampleCountFlags.Count1Bit,
                 SharingMode = SharingMode.Exclusive
             };
             Check(_vk.CreateImage(_device, in createInfo, null, out VkImage image), "create Vulkan image");
@@ -2102,7 +2136,7 @@ namespace Client.Rendering.SilkVulkan
                 Format = format,
                 SubresourceRange = new ImageSubresourceRange
                 {
-                    AspectMask = ImageAspectFlags.ImageAspectColorBit,
+                    AspectMask = ImageAspectFlags.ColorBit,
                     BaseMipLevel = 0,
                     LevelCount = 1,
                     BaseArrayLayer = 0,
@@ -2207,7 +2241,7 @@ namespace Client.Rendering.SilkVulkan
         private void UploadTexture(SilkVulkanTextureResource resource, byte[] data)
         {
             ulong uploadSize = (ulong)data.Length;
-            SilkVulkanBufferResource staging = CreateBuffer(uploadSize, BufferUsageFlags.BufferUsageTransferSrcBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+            SilkVulkanBufferResource staging = CreateBuffer(uploadSize, BufferUsageFlags.TransferSrcBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
             Marshal.Copy(data, 0, staging.MappedPointer, data.Length);
 
             if (_frameActive && _activeFrame != null && _activeCommandBuffer.Handle != 0)
@@ -2230,13 +2264,13 @@ namespace Client.Rendering.SilkVulkan
 
         private void RecordTextureUpload(CommandBuffer commandBuffer, SilkVulkanTextureResource resource, Buffer stagingBuffer)
         {
-            TransitionTexture(commandBuffer, resource, VkImageLayout.TransferDstOptimal, 0, AccessFlags.AccessTransferWriteBit, PipelineStageFlags.PipelineStageTopOfPipeBit, PipelineStageFlags.PipelineStageTransferBit);
+            TransitionTexture(commandBuffer, resource, VkImageLayout.TransferDstOptimal, 0, AccessFlags.TransferWriteBit, PipelineStageFlags.TopOfPipeBit, PipelineStageFlags.TransferBit);
 
             BufferImageCopy region = new BufferImageCopy
             {
                 ImageSubresource = new ImageSubresourceLayers
                 {
-                    AspectMask = ImageAspectFlags.ImageAspectColorBit,
+                    AspectMask = ImageAspectFlags.ColorBit,
                     MipLevel = 0,
                     BaseArrayLayer = 0,
                     LayerCount = 1
@@ -2244,7 +2278,7 @@ namespace Client.Rendering.SilkVulkan
                 ImageExtent = new Extent3D((uint)resource.Size.Width, (uint)resource.Size.Height, 1)
             };
             _vk.CmdCopyBufferToImage(commandBuffer, stagingBuffer, resource.Image, VkImageLayout.TransferDstOptimal, 1, in region);
-            TransitionTexture(commandBuffer, resource, VkImageLayout.ShaderReadOnlyOptimal, AccessFlags.AccessTransferWriteBit, AccessFlags.AccessShaderReadBit, PipelineStageFlags.PipelineStageTransferBit, PipelineStageFlags.PipelineStageFragmentShaderBit);
+            TransitionTexture(commandBuffer, resource, VkImageLayout.ShaderReadOnlyOptimal, AccessFlags.TransferWriteBit, AccessFlags.ShaderReadBit, PipelineStageFlags.TransferBit, PipelineStageFlags.FragmentShaderBit);
         }
 
         private void LoadTextures()
@@ -2308,7 +2342,7 @@ namespace Client.Rendering.SilkVulkan
                 return;
 
             EndRenderPass();
-            TransitionTarget(target, VkImageLayout.ColorAttachmentOptimal, 0, AccessFlags.AccessColorAttachmentWriteBit, PipelineStageFlags.PipelineStageTopOfPipeBit, PipelineStageFlags.PipelineStageColorAttachmentOutputBit);
+            TransitionTarget(target, VkImageLayout.ColorAttachmentOptimal, 0, AccessFlags.ColorAttachmentWriteBit, PipelineStageFlags.TopOfPipeBit, PipelineStageFlags.ColorAttachmentOutputBit);
 
             ClearValue clearValue = CreateClearValue(0F, 0F, 0F, 0F);
             RenderPassBeginInfo beginInfo = new RenderPassBeginInfo
@@ -2405,7 +2439,7 @@ namespace Client.Rendering.SilkVulkan
                 Image = image,
                 SubresourceRange = new ImageSubresourceRange
                 {
-                    AspectMask = ImageAspectFlags.ImageAspectColorBit,
+                    AspectMask = ImageAspectFlags.ColorBit,
                     BaseMipLevel = 0,
                     LevelCount = 1,
                     BaseArrayLayer = 0,
@@ -2421,7 +2455,7 @@ namespace Client.Rendering.SilkVulkan
 
             FlushSpriteBatch();
             EndRenderPass();
-            TransitionTexture(_activeCommandBuffer, resource, VkImageLayout.ShaderReadOnlyOptimal, AccessFlags.AccessColorAttachmentWriteBit, AccessFlags.AccessShaderReadBit, PipelineStageFlags.PipelineStageColorAttachmentOutputBit, PipelineStageFlags.PipelineStageFragmentShaderBit);
+            TransitionTexture(_activeCommandBuffer, resource, VkImageLayout.ShaderReadOnlyOptimal, AccessFlags.ColorAttachmentWriteBit, AccessFlags.ShaderReadBit, PipelineStageFlags.ColorAttachmentOutputBit, PipelineStageFlags.FragmentShaderBit);
         }
 
         private void QueueSprite(SilkVulkanTextureResource resource, ClientBlendMode blendMode, float blendRate, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float u0, float u1, float v0, float v1, Vector4 colour)
@@ -2477,7 +2511,7 @@ namespace Client.Rendering.SilkVulkan
             BindTexturePipeline(blendMode, blendRate);
             BindTexture(resource);
 
-            _vk.CmdPushConstants(_activeCommandBuffer, _texturePipelineLayout, ShaderStageFlags.ShaderStageVertexBit | ShaderStageFlags.ShaderStageFragmentBit, 0, (uint)sizeof(PushConstants), &push);
+            _vk.CmdPushConstants(_activeCommandBuffer, _texturePipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(PushConstants), &push);
 
             Buffer buffer = _activeFrame.VertexBuffer.Buffer;
             _vk.CmdBindVertexBuffers(_activeCommandBuffer, 0, 1, in buffer, in offset);
@@ -2506,7 +2540,7 @@ namespace Client.Rendering.SilkVulkan
                 OutlineColour = Vector4.Zero,
                 Effect = Vector4.Zero
             };
-            _vk.CmdPushConstants(_activeCommandBuffer, _texturePipelineLayout, ShaderStageFlags.ShaderStageVertexBit | ShaderStageFlags.ShaderStageFragmentBit, 0, (uint)sizeof(PushConstants), &push);
+            _vk.CmdPushConstants(_activeCommandBuffer, _texturePipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(PushConstants), &push);
 
             Buffer buffer = _activeFrame.VertexBuffer.Buffer;
             _vk.CmdBindVertexBuffers(_activeCommandBuffer, 0, 1, in buffer, in _spriteBatchOffset);
@@ -2735,7 +2769,7 @@ namespace Client.Rendering.SilkVulkan
                 CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo
                 {
                     SType = StructureType.CommandBufferBeginInfo,
-                    Flags = CommandBufferUsageFlags.CommandBufferUsageOneTimeSubmitBit
+                    Flags = CommandBufferUsageFlags.OneTimeSubmitBit
                 };
                 Check(_vk.BeginCommandBuffer(commandBuffer, in beginInfo), "begin Vulkan upload command buffer");
                 record(commandBuffer);
@@ -3293,171 +3327,5 @@ namespace Client.Rendering.SilkVulkan
             private readonly Point p;
         }
 
-        private const string TextureVertexShaderSource = @"
-#version 450
-layout(location = 0) in vec4 iPositionX;
-layout(location = 1) in vec4 iPositionY;
-layout(location = 2) in vec4 iTexCoordU;
-layout(location = 3) in vec4 iTexCoordV;
-layout(location = 4) in vec4 iColour;
-layout(push_constant) uniform PushConstants
-{
-    vec2 uViewport;
-    vec4 uTint;
-    vec4 uSource;
-    vec4 uOutlineColour;
-    vec4 uEffect;
-} pushConstants;
-layout(location = 0) out vec2 vTexCoord;
-layout(location = 1) out vec4 vColour;
-layout(location = 2) out vec2 vScreenPos;
-void main()
-{
-    int corner = gl_VertexIndex == 0 ? 0 :
-                 gl_VertexIndex == 1 ? 1 :
-                 gl_VertexIndex == 2 ? 2 :
-                 gl_VertexIndex == 3 ? 0 :
-                 gl_VertexIndex == 4 ? 2 : 3;
-    vec2 position = vec2(iPositionX[corner], iPositionY[corner]);
-    vec2 ndc = vec2((position.x / pushConstants.uViewport.x) * 2.0 - 1.0,
-                    (position.y / pushConstants.uViewport.y) * 2.0 - 1.0);
-    gl_Position = vec4(ndc, 0.0, 1.0);
-    vTexCoord = vec2(iTexCoordU[corner], iTexCoordV[corner]);
-    vColour = iColour;
-    vScreenPos = position;
-}";
-
-        private const string TextureFragmentShaderSource = @"
-#version 450
-layout(set = 0, binding = 0) uniform sampler2D uTexture;
-layout(push_constant) uniform PushConstants
-{
-    vec2 uViewport;
-    vec4 uTint;
-    vec4 uSource;
-    vec4 uOutlineColour;
-    vec4 uEffect;
-} pushConstants;
-layout(location = 0) in vec2 vTexCoord;
-layout(location = 1) in vec4 vColour;
-layout(location = 2) in vec2 vScreenPos;
-layout(location = 0) out vec4 outColour;
-
-bool InsideSource(vec2 uv)
-{
-    vec2 sourceMin = min(pushConstants.uSource.xy, pushConstants.uSource.zw);
-    vec2 sourceMax = max(pushConstants.uSource.xy, pushConstants.uSource.zw);
-    return uv.x >= sourceMin.x && uv.x <= sourceMax.x &&
-           uv.y >= sourceMin.y && uv.y <= sourceMax.y;
-}
-
-vec4 SampleSprite(vec2 uv)
-{
-    if (!InsideSource(uv))
-        return vec4(0.0);
-
-    return texture(uTexture, uv);
-}
-
-void main()
-{
-    int effectMode = int(pushConstants.uEffect.x + 0.5);
-
-    if (effectMode == 2)
-    {
-        vec4 center = SampleSprite(vTexCoord);
-        if (center.a > 0.01)
-            discard;
-
-        vec2 textureSize = max(pushConstants.uEffect.zw, vec2(1.0));
-        float thickness = max(pushConstants.uEffect.y, 1.0);
-        vec2 texel = 1.0 / textureSize;
-        int radius = int(ceil(thickness));
-
-        for (int y = -radius; y <= radius; y++)
-        {
-            for (int x = -radius; x <= radius; x++)
-            {
-                vec2 offset = vec2(float(x), float(y));
-                if (dot(offset, offset) > (thickness + 0.5) * (thickness + 0.5))
-                    continue;
-
-                if (SampleSprite(vTexCoord + offset * texel).a > 0.01)
-                {
-                    float alpha = pushConstants.uOutlineColour.a * vColour.a;
-                    outColour = vec4(pushConstants.uOutlineColour.rgb * alpha, alpha);
-                    return;
-                }
-            }
-        }
-
-        discard;
-    }
-
-    if (effectMode == 3)
-    {
-        vec4 bounds = pushConstants.uSource;
-        vec2 boundsMin = min(bounds.xy, bounds.zw);
-        vec2 boundsMax = max(bounds.xy, bounds.zw);
-
-        float distLeft = boundsMin.x - vScreenPos.x;
-        float distTop = boundsMin.y - vScreenPos.y;
-        float distRight = vScreenPos.x - boundsMax.x;
-        float distBottom = vScreenPos.y - boundsMax.y;
-        float shadowDistance = max(max(distLeft, distTop), max(distRight, distBottom));
-
-        if (shadowDistance <= 0.0)
-            discard;
-
-        float shadowSize = max(pushConstants.uEffect.y, 0.0001);
-        float maxAlpha = pushConstants.uEffect.z;
-        float alpha = clamp(1.0 - shadowDistance / shadowSize, 0.0, 1.0) * maxAlpha * pushConstants.uOutlineColour.a * vColour.a;
-
-        outColour = vec4(pushConstants.uOutlineColour.rgb * alpha, alpha);
-        return;
-    }
-
-    vec4 texel = texture(uTexture, vTexCoord);
-
-    if (effectMode == 1)
-    {
-        float gray = dot(texel.rgb, vec3(0.299, 0.587, 0.114));
-        outColour = vec4(vec3(gray) * vColour.rgb * vColour.a,
-                         texel.a * vColour.a);
-        return;
-    }
-
-    outColour = vec4(texel.rgb * vColour.rgb * vColour.a,
-                     texel.a * vColour.a);
-}";
-
-        private const string LineVertexShaderSource = @"
-#version 450
-layout(location = 0) in vec2 aPosition;
-layout(push_constant) uniform PushConstants
-{
-    vec2 uViewport;
-    vec4 uColour;
-} pushConstants;
-void main()
-{
-    vec2 ndc = vec2((aPosition.x / pushConstants.uViewport.x) * 2.0 - 1.0,
-                    (aPosition.y / pushConstants.uViewport.y) * 2.0 - 1.0);
-    gl_Position = vec4(ndc, 0.0, 1.0);
-}";
-
-        private const string LineFragmentShaderSource = @"
-#version 450
-layout(push_constant) uniform PushConstants
-{
-    vec2 uViewport;
-    vec4 uColour;
-} pushConstants;
-layout(location = 0) out vec4 outColour;
-void main()
-{
-    outColour = vec4(pushConstants.uColour.rgb * pushConstants.uColour.a,
-                     pushConstants.uColour.a);
-}";
     }
 }

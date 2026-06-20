@@ -899,6 +899,52 @@ namespace LibraryEditor
                 return Math.Min(GetGroupMaximum(groupNumber), Math.Max(0, imageIndex - GetGroupStart(groupNumber) + 1));
             }
 
+            bool HasAtlasLayerEntry(int imageIndex)
+            {
+                Mir3Image image = Images[imageIndex];
+                Bitmap source = GetAtlasLayerBitmap(image, layer);
+                Size sourceSize = GetAtlasLayerSize(image, layer);
+                return source != null && sourceSize.Width > 0 && sourceSize.Height > 0;
+            }
+
+            int GetRunEnd(int runStart)
+            {
+                int runEnd = runStart;
+                while (runEnd < Images.Count && HasAtlasLayerEntry(runEnd))
+                    runEnd++;
+
+                return runEnd;
+            }
+
+            bool CanPlaceRunOnCurrentPage(int runStart, int runEnd)
+            {
+                int runX = x;
+                int runY = y;
+                int runRowHeight = rowHeight;
+
+                for (int runIndex = runStart; runIndex < runEnd; runIndex++)
+                {
+                    Size sourceSize = GetAtlasLayerSize(Images[runIndex], layer);
+                    int paddedWidth = sourceSize.Width + padding * 2;
+                    int paddedHeight = sourceSize.Height + padding * 2;
+
+                    if (runX + paddedWidth > pageSize)
+                    {
+                        runX = padding;
+                        runY += runRowHeight + padding;
+                        runRowHeight = 0;
+                    }
+
+                    if (runY + paddedHeight > pageSize)
+                        return false;
+
+                    runX += paddedWidth;
+                    runRowHeight = Math.Max(runRowHeight, paddedHeight);
+                }
+
+                return true;
+            }
+
             void FinishPage()
             {
                 if (!pageHasImages)
@@ -925,6 +971,14 @@ namespace LibraryEditor
 
             for (int imageIndex = 0; imageIndex < Images.Count; imageIndex++)
             {
+                bool isGapSplitRunStart = groupImageCount == 0 && HasAtlasLayerEntry(imageIndex) && (imageIndex == 0 || !HasAtlasLayerEntry(imageIndex - 1));
+                if (isGapSplitRunStart && pageHasImages)
+                {
+                    int runEnd = GetRunEnd(imageIndex);
+                    if (!CanPlaceRunOnCurrentPage(imageIndex, runEnd))
+                        FinishPage();
+                }
+
                 if (groupImageCount > 0)
                 {
                     int nextGroup = imageIndex / groupImageCount;
