@@ -1,7 +1,7 @@
 ﻿using Client.Controls;
 using Client.Envir.Translations;
 using Client.Models;
-using Client.Rendering;
+using Shared.Rendering;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Client.UserModels;

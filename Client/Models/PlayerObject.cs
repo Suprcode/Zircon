@@ -1,6 +1,6 @@
 ﻿using Client.Envir;
 using Client.Models.Player;
-using Client.Rendering;
+using Shared.Rendering;
 using Client.Scenes;
 using Library;
 using System;

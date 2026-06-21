@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows.Forms;
 
 namespace LibraryEditor
@@ -75,9 +75,9 @@ namespace LibraryEditor
         {
             return _individualRuntimeComboBox.SelectedIndex switch
             {
+                0 => ZlRuntimeTexturePreference.SourceType,
                 1 => ZlRuntimeTexturePreference.Dxt1,
                 2 => ZlRuntimeTexturePreference.Bc7,
-                3 => ZlRuntimeTexturePreference.SourceType,
                 _ => ZlRuntimeTexturePreference.None,
             };
         }

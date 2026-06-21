@@ -68,6 +68,9 @@
     <Content Include="lizard.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharedRendering\SharedRendering.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="BCnEncoder.Net" Version="2.3.0" />
     <PackageReference Include="Ionic.Zlib.Core" Version="1.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />

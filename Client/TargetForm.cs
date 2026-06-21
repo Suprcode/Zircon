@@ -1,7 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
 using Client.Models;
-using Client.Rendering;
 using Client.Scenes;
 using Library;
 using SharpDX.Windows;

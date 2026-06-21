@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -35,7 +35,6 @@ namespace LibraryEditor
 
         private void InitializeComponent()
         {
-            components = new Container();
             _buildAtlasCheckBox = new CheckBox();
             _buildShadowAtlasCheckBox = new CheckBox();
             _buildOverlayAtlasCheckBox = new CheckBox();
@@ -59,8 +58,6 @@ namespace LibraryEditor
             // 
             // _buildAtlasCheckBox
             // 
-            _buildAtlasCheckBox.Checked = true;
-            _buildAtlasCheckBox.CheckState = CheckState.Checked;
             _buildAtlasCheckBox.Location = new Point(16, 18);
             _buildAtlasCheckBox.Name = "_buildAtlasCheckBox";
             _buildAtlasCheckBox.Size = new Size(160, 22);
@@ -119,7 +116,7 @@ namespace LibraryEditor
             // _individualRuntimeComboBox
             // 
             _individualRuntimeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            _individualRuntimeComboBox.Items.AddRange(new object[] { "No individual runtime", "DXT1", "BC7", "Source" });
+            _individualRuntimeComboBox.Items.AddRange(new object[] { "Source", "DXT1", "BC7" });
             _individualRuntimeComboBox.Location = new Point(156, 126);
             _individualRuntimeComboBox.Name = "_individualRuntimeComboBox";
             _individualRuntimeComboBox.Size = new Size(180, 23);

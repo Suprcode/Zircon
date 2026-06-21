@@ -11,9 +11,6 @@
    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Silk.NET.Shaderc" Version="2.23.0" />
-    <PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />
-    <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.23.0" />
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.6" />
   </ItemGroup>
   <PropertyGroup>  
@@ -46,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
+    <ProjectReference Include="..\SharedRendering\SharedRendering.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zircon.ico" />
@@ -70,40 +68,5 @@
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Rendering\SharpDXD3D11\Shaders\DropShadowD3D11.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SharpDXD3D11\Shaders\GrayscaleD3D11.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SharpDXD3D11\Shaders\OutlineD3D11.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SharpDXD3D11\Shaders\SpriteD3D11.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SharpDXD3D9\Shaders\DropShadowD3D9.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SharpDXD3D9\Shaders\GrayscaleD3D9.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SharpDXD3D9\Shaders\OutlineD3D9.hlsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SilkVulkan\Shaders\Line.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SilkVulkan\Shaders\Line.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SilkVulkan\Shaders\Texture.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Rendering\SilkVulkan\Shaders\Texture.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

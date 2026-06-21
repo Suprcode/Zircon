@@ -1,6 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using Client.Scenes.Views.Character;
 using Client.UserModels;
 using Library;
@@ -1539,7 +1539,7 @@ namespace Client.Scenes.Views
                 }
                 else
                 {
-                    ChangeLabel.Text = $"{(change > 0 ? "▲" : "▼")}{Math.Abs(Rank.RankChange)}";
+                    ChangeLabel.Text = $"{(change > 0 ? "?" : "?")}{Math.Abs(Rank.RankChange)}";
                     ChangeLabel.ForeColour = change > 0 ? Color.OrangeRed : Color.DodgerBlue;
                 }
 

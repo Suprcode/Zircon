@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -40,7 +40,6 @@ namespace LibraryEditor
 
         private void InitializeComponent()
         {
-            components = new Container();
             _fileListBox = new ListBox();
             _buildAtlasCheckBox = new CheckBox();
             _buildShadowAtlasCheckBox = new CheckBox();
@@ -72,13 +71,11 @@ namespace LibraryEditor
             _fileListBox.HorizontalScrollbar = true;
             _fileListBox.Location = new Point(16, 38);
             _fileListBox.Name = "_fileListBox";
-            _fileListBox.Size = new Size(528, 120);
+            _fileListBox.Size = new Size(528, 109);
             _fileListBox.TabIndex = 2;
             // 
             // _buildAtlasCheckBox
             // 
-            _buildAtlasCheckBox.Checked = true;
-            _buildAtlasCheckBox.CheckState = CheckState.Checked;
             _buildAtlasCheckBox.Location = new Point(16, 178);
             _buildAtlasCheckBox.Name = "_buildAtlasCheckBox";
             _buildAtlasCheckBox.Size = new Size(160, 22);
@@ -112,8 +109,8 @@ namespace LibraryEditor
             _atlasGroupNumeric.Name = "_atlasGroupNumeric";
             _atlasGroupNumeric.Size = new Size(120, 23);
             _atlasGroupNumeric.TabIndex = 13;
-            _atlasGroupNumeric.ValueChanged += SummaryControl_Changed;
             _atlasGroupNumeric.TextChanged += SummaryControl_Changed;
+            _atlasGroupNumeric.ValueChanged += SummaryControl_Changed;
             // 
             // _atlasPageSizeNumeric
             // 
@@ -130,7 +127,7 @@ namespace LibraryEditor
             // _individualRuntimeComboBox
             // 
             _individualRuntimeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            _individualRuntimeComboBox.Items.AddRange(new object[] { "No individual runtime", "DXT1", "BC7", "Source" });
+            _individualRuntimeComboBox.Items.AddRange(new object[] { "Source", "DXT1", "BC7" });
             _individualRuntimeComboBox.Location = new Point(156, 254);
             _individualRuntimeComboBox.Name = "_individualRuntimeComboBox";
             _individualRuntimeComboBox.Size = new Size(180, 23);
@@ -159,7 +156,6 @@ namespace LibraryEditor
             // 
             // _summaryLabel
             // 
-            _summaryLabel.AutoEllipsis = false;
             _summaryLabel.Location = new Point(352, 198);
             _summaryLabel.Name = "_summaryLabel";
             _summaryLabel.Size = new Size(190, 236);
@@ -300,10 +296,6 @@ namespace LibraryEditor
             ((ISupportInitialize)_atlasGroupNumeric).EndInit();
             ((ISupportInitialize)_atlasPageSizeNumeric).EndInit();
             ResumeLayout(false);
-
-            _individualRuntimeComboBox.SelectedIndex = 0;
-            _runtimeComboBox.SelectedIndex = 0;
-            _compressionComboBox.SelectedIndex = 0;
         }
     }
 }

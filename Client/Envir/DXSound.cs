@@ -1,4 +1,4 @@
-﻿using Client.Rendering;
+﻿using Shared.Rendering;
 using SharpDX.DirectSound;
 using System;
 using System.Collections.Generic;

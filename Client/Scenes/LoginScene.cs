@@ -1,6 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using Client.Scenes.Views;
 using Client.UserModels;
 using Library;

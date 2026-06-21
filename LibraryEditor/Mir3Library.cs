@@ -1,4 +1,4 @@
-using ManagedSquish;
+﻿using ManagedSquish;
 using BCnEncoder.Shared;
 using System;
 using System.Collections.Generic;
@@ -17,54 +17,6 @@ using BcPixelFormat = BCnEncoder.Encoder.PixelFormat;
 
 namespace LibraryEditor
 {
-
-    public enum ImageType
-    {
-        Image,
-        Shadow,
-        Overlay,
-    }
-
-    public enum ZlImageCodec : byte
-    {
-        Dxt1,
-        Dxt5,
-        Bgra32,
-        Bc7,
-        Png,
-    }
-
-    public enum ZlRuntimeTexturePreference : byte
-    {
-        None,
-        Bgra32,
-        Bc7Dxt5,
-        Bc7,
-        Dxt1,
-        Dxt5,
-        SourceType,
-    }
-
-    public enum ZlContainerCompression : byte
-    {
-        None,
-        DeflateFast,
-        DeflateBest,
-    }
-
-    public enum ZlEntryType : byte
-    {
-        ImagePayload = 1,
-        AtlasPagePayload = 4,
-    }
-
-    public enum ZlAtlasLayer : byte
-    {
-        Image,
-        Shadow,
-        Overlay,
-    }
-
     public sealed class Mir3Library
     {
         /// <summary>
@@ -1576,16 +1528,18 @@ namespace LibraryEditor
 
             public Mir3AtlasPage(BinaryReader reader)
             {
-                Id = reader.ReadInt32();
-                Position = reader.ReadInt32();
-                Width = reader.ReadInt16();
-                Height = reader.ReadInt16();
-                Layer = (ZlAtlasLayer)reader.ReadByte();
-                Codec = (ZlImageCodec)reader.ReadByte();
-                StoredDataSize = reader.ReadInt32();
-                RuntimePreference = (ZlRuntimeTexturePreference)reader.ReadByte();
-                Bc7DataSize = reader.ReadInt32();
-                FallbackDataSize = reader.ReadInt32();
+                ZlAtlasPageMetadata metadata = ZlAtlasPageMetadata.Read(reader);
+
+                Id = metadata.Id;
+                Position = metadata.Position;
+                Width = metadata.Width;
+                Height = metadata.Height;
+                Layer = metadata.Layer;
+                Codec = metadata.Codec;
+                StoredDataSize = metadata.DataSize;
+                RuntimePreference = metadata.RuntimePreference;
+                Bc7DataSize = metadata.Bc7DataSize;
+                FallbackDataSize = metadata.FallbackDataSize;
             }
 
             public void SaveHeader(BinaryWriter writer)
@@ -1671,31 +1625,6 @@ namespace LibraryEditor
                 }
 
                 return bitmap;
-            }
-        }
-
-        private sealed class Zl2Entry
-        {
-            public ZlEntryType Type;
-            public int Id;
-            public int UncompressedSize;
-            public int CompressedSize;
-            public long Offset;
-            public ZlContainerCompression Compression;
-            public ZlImageCodec Codec;
-
-            public static Zl2Entry Read(BinaryReader reader)
-            {
-                return new Zl2Entry
-                {
-                    Type = (ZlEntryType)reader.ReadByte(),
-                    Id = reader.ReadInt32(),
-                    UncompressedSize = reader.ReadInt32(),
-                    CompressedSize = reader.ReadInt32(),
-                    Offset = reader.ReadInt64(),
-                    Compression = (ZlContainerCompression)reader.ReadByte(),
-                    Codec = (ZlImageCodec)reader.ReadByte()
-                };
             }
         }
 
@@ -1932,58 +1861,48 @@ namespace LibraryEditor
 
             public Mir3Image(BinaryReader reader, int version)
             {
-                Version = version;
+                ZlImageMetadata metadata = ZlImageMetadata.Read(reader, version);
 
-                Position = reader.ReadInt32();
-
-                Width = reader.ReadInt16();
-                Height = reader.ReadInt16();
-                OffSetX = reader.ReadInt16();
-                OffSetY = reader.ReadInt16();
-
-                ShadowType = reader.ReadByte();
-                ShadowWidth = reader.ReadInt16();
-                ShadowHeight = reader.ReadInt16();
-                ShadowOffSetX = reader.ReadInt16();
-                ShadowOffSetY = reader.ReadInt16();
-
-                OverlayWidth = reader.ReadInt16();
-                OverlayHeight = reader.ReadInt16();
-
-                ImageCodec = GetDefaultCodec(Version);
-                ShadowCodec = ImageCodec;
-                OverlayCodec = ImageCodec;
-                ImageRuntimePreference = GetDefaultRuntimePreference(ImageCodec);
-                ShadowRuntimePreference = ImageRuntimePreference;
-                OverlayRuntimePreference = ImageRuntimePreference;
-                ImageRuntimePreference = GetDefaultRuntimePreference(ImageCodec);
-                ShadowRuntimePreference = ImageRuntimePreference;
-                OverlayRuntimePreference = ImageRuntimePreference;
-                SourceRectangle = new Rectangle(0, 0, Width, Height);
+                Version = metadata.Version;
+                Position = metadata.Position;
+                Width = metadata.Width;
+                Height = metadata.Height;
+                OffSetX = metadata.OffSetX;
+                OffSetY = metadata.OffSetY;
+                ShadowType = metadata.ShadowType;
+                ShadowWidth = metadata.ShadowWidth;
+                ShadowHeight = metadata.ShadowHeight;
+                ShadowOffSetX = metadata.ShadowOffSetX;
+                ShadowOffSetY = metadata.ShadowOffSetY;
+                OverlayWidth = metadata.OverlayWidth;
+                OverlayHeight = metadata.OverlayHeight;
+                AtlasPage = metadata.AtlasPage;
+                ShadowAtlasPage = metadata.ShadowAtlasPage;
+                OverlayAtlasPage = metadata.OverlayAtlasPage;
+                SourceRectangle = metadata.SourceRectangle;
+                VisibleBounds = metadata.VisibleBounds;
+                ImageCodec = metadata.ImageCodec;
+                ShadowCodec = metadata.ShadowCodec;
+                OverlayCodec = metadata.OverlayCodec;
+                ImageRuntimePreference = metadata.ImageRuntimePreference;
+                ShadowRuntimePreference = metadata.ShadowRuntimePreference;
+                OverlayRuntimePreference = metadata.OverlayRuntimePreference;
+                StoredImageDataSize = metadata.StoredImageDataSize;
+                ImageBc7DataSize = metadata.ImageBc7DataSize;
+                ImageFallbackDataSize = metadata.ImageFallbackDataSize;
+                StoredShadowDataSize = metadata.StoredShadowDataSize;
+                ShadowBc7DataSize = metadata.ShadowBc7DataSize;
+                ShadowFallbackDataSize = metadata.ShadowFallbackDataSize;
+                StoredOverlayDataSize = metadata.StoredOverlayDataSize;
+                OverlayBc7DataSize = metadata.OverlayBc7DataSize;
+                OverlayFallbackDataSize = metadata.OverlayFallbackDataSize;
 
                 if (Version < 2)
-                    return;
-
-                AtlasPage = reader.ReadInt32();
-                SourceRectangle = new Rectangle(reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16());
-                VisibleBounds = new Rectangle(reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16());
-                ImageCodec = (ZlImageCodec)reader.ReadByte();
-                ShadowCodec = (ZlImageCodec)reader.ReadByte();
-                OverlayCodec = (ZlImageCodec)reader.ReadByte();
-
-                ImageRuntimePreference = (ZlRuntimeTexturePreference)reader.ReadByte();
-                ShadowRuntimePreference = (ZlRuntimeTexturePreference)reader.ReadByte();
-                OverlayRuntimePreference = (ZlRuntimeTexturePreference)reader.ReadByte();
-
-                StoredImageDataSize = reader.ReadInt32();
-                ImageBc7DataSize = reader.ReadInt32();
-                ImageFallbackDataSize = reader.ReadInt32();
-                StoredShadowDataSize = reader.ReadInt32();
-                ShadowBc7DataSize = reader.ReadInt32();
-                ShadowFallbackDataSize = reader.ReadInt32();
-                StoredOverlayDataSize = reader.ReadInt32();
-                OverlayBc7DataSize = reader.ReadInt32();
-                OverlayFallbackDataSize = reader.ReadInt32();
+                {
+                    ImageRuntimePreference = GetDefaultRuntimePreference(ImageCodec);
+                    ShadowRuntimePreference = ImageRuntimePreference;
+                    OverlayRuntimePreference = ImageRuntimePreference;
+                }
             }
 
             public void SetVersion(int version, ZlImageCodec? codecOverride = null)

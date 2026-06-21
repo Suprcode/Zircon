@@ -2,7 +2,7 @@
 using Client.Envir;
 using Client.Models;
 using Client.Models.Particles;
-using Client.Rendering;
+using Shared.Rendering;
 using Library;
 using Library.SystemModels;
 using System;
