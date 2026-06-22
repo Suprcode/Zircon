@@ -26,9 +26,6 @@ namespace LibraryEditor
         /// </summary>
         public const int LIBRARY_VERSION = 1;
         public const int COMPRESSED_LIBRARY_VERSION = 2;
-        private static readonly byte[] CompressedContainerSignature = Encoding.ASCII.GetBytes("ZL2");
-        private static readonly int CompressedContainerHeaderByteCount = CompressedContainerSignature.Length + sizeof(int) * 5 + sizeof(byte) * 2 + sizeof(short) + sizeof(long) * 2;
-        private const int CompressedContainerHasAtlasFlag = 1;
 
         public int Version;
 
@@ -119,10 +116,10 @@ namespace LibraryEditor
 
         private bool TryReadCompressedContainer()
         {
-            if (_bReader.BaseStream.Length < CompressedContainerHeaderByteCount)
+            if (_bReader.BaseStream.Length < ZlContainerHeader.ByteCount)
                 return false;
 
-            if (!ReadCompressedContainerSignature(_bReader))
+            if (!ZlContainerHeader.ReadSignature(_bReader))
                 return false;
 
             Version = _bReader.ReadInt32();
@@ -171,7 +168,7 @@ namespace LibraryEditor
                 }
 
                 AtlasPages.Clear();
-                if ((flags & CompressedContainerHasAtlasFlag) != 0 && reader.BaseStream.Position < reader.BaseStream.Length)
+                if ((flags & ZlContainerHeader.HasAtlasFlag) != 0 && reader.BaseStream.Position < reader.BaseStream.Length)
                 {
                     int metadataAtlasCount = reader.ReadInt32();
                     int expectedAtlasCount = atlasCount > 0 ? atlasCount : metadataAtlasCount;
@@ -196,21 +193,6 @@ namespace LibraryEditor
                 CreateImage(i, ImageType.Image);
                 CreateImage(i, ImageType.Shadow);
                 CreateImage(i, ImageType.Overlay);
-            }
-
-            return true;
-        }
-
-        private static bool ReadCompressedContainerSignature(BinaryReader reader)
-        {
-            byte[] signature = reader.ReadBytes(CompressedContainerSignature.Length);
-            if (signature.Length != CompressedContainerSignature.Length)
-                return false;
-
-            for (int i = 0; i < CompressedContainerSignature.Length; i++)
-            {
-                if (signature[i] != CompressedContainerSignature[i])
-                    return false;
             }
 
             return true;
@@ -514,12 +496,12 @@ namespace LibraryEditor
                 using (FileStream fileStream = File.Create(path))
                 using (BinaryWriter writer = new BinaryWriter(fileStream))
                 {
-                    writer.Write(CompressedContainerSignature);
+                    writer.Write(ZlContainerHeader.Signature);
                     writer.Write(Version);
                     writer.Write(Images.Count);
                     writer.Write(atlasPageHeaderCount);
                     writer.Write((byte)compression);
-                    writer.Write((byte)(atlasPageHeaderCount > 0 ? CompressedContainerHasAtlasFlag : 0));
+                    writer.Write((byte)(atlasPageHeaderCount > 0 ? ZlContainerHeader.HasAtlasFlag : 0));
                     writer.Write((short)0);
 
                     long headerPatchOffset = fileStream.Position;
@@ -1063,10 +1045,10 @@ namespace LibraryEditor
             string sourceText = storePngSourceImages ? "existing PNG source where present" : "runtime-only";
             return preference switch
             {
+                ZlRuntimeTexturePreference.Source => "Preserving source texture type where possible",
                 ZlRuntimeTexturePreference.Dxt1 => $"Encoding {sourceText} + DXT1 textures",
                 ZlRuntimeTexturePreference.Dxt5 => $"Encoding {sourceText} + DXT5 textures",
                 ZlRuntimeTexturePreference.Bc7 => $"Encoding {sourceText} + BC7 textures",
-                ZlRuntimeTexturePreference.SourceType => "Preserving source texture type where possible",
                 _ => storePngSourceImages ? "Preserving existing PNG source textures" : "Encoding runtime textures",
             };
         }
@@ -1964,7 +1946,7 @@ namespace LibraryEditor
 
             public void SetStorageOptions(bool storePngSourceImages, ZlRuntimeTexturePreference runtimePreference)
             {
-                if (runtimePreference == ZlRuntimeTexturePreference.SourceType)
+                if (runtimePreference == ZlRuntimeTexturePreference.Source)
                     runtimePreference = ZlRuntimeTexturePreference.Bc7;
 
                 ZlImageCodec runtimeCodec = GetPrimaryRuntimeCodec(runtimePreference);
@@ -2654,7 +2636,7 @@ namespace LibraryEditor
 
             private static bool ShouldWriteRuntimeTexture(ZlImageCodec codec, ZlRuntimeTexturePreference preference)
             {
-                return codec == ZlImageCodec.Png && (preference == ZlRuntimeTexturePreference.Bc7 || preference == ZlRuntimeTexturePreference.Dxt1 || preference == ZlRuntimeTexturePreference.Dxt5);
+                return codec == ZlImageCodec.Png && (preference == ZlRuntimeTexturePreference.Bc7 || preference == ZlRuntimeTexturePreference.Bc7Dxt5 || preference == ZlRuntimeTexturePreference.Dxt1 || preference == ZlRuntimeTexturePreference.Dxt5);
             }
 
             private static bool ShouldWritePrimaryPayload(ZlImageCodec codec, ZlRuntimeTexturePreference preference)
@@ -2668,6 +2650,7 @@ namespace LibraryEditor
                 {
                     ZlRuntimeTexturePreference.Dxt1 => ZlImageCodec.Dxt1,
                     ZlRuntimeTexturePreference.Dxt5 => ZlImageCodec.Dxt5,
+                    ZlRuntimeTexturePreference.Bc7Dxt5 => ZlImageCodec.Bc7,
                     ZlRuntimeTexturePreference.Bc7 => ZlImageCodec.Bc7,
                     _ => ZlImageCodec.Bgra32,
                 };

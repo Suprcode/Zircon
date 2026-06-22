@@ -49,7 +49,7 @@ namespace LibraryEditor
         {
             return _individualRuntimeComboBox.SelectedIndex switch
             {
-                0 => ZlRuntimeTexturePreference.SourceType,
+                0 => ZlRuntimeTexturePreference.Source,
                 1 => ZlRuntimeTexturePreference.Dxt1,
                 2 => ZlRuntimeTexturePreference.Bc7,
                 _ => ZlRuntimeTexturePreference.None,

@@ -192,7 +192,7 @@ namespace LibraryEditor
 
         private void ApplyIndividualStorageOptions(Mir3Library library, LibraryConversionOptions conversionOptions, IProgress<LibraryProgress> progress, string displayName, CancellationToken cancellationToken)
         {
-            if (conversionOptions.IndividualRuntimePreference != ZlRuntimeTexturePreference.SourceType)
+            if (conversionOptions.IndividualRuntimePreference != ZlRuntimeTexturePreference.Source)
             {
                 library.SetRuntimePreferenceForAllImages(conversionOptions.IndividualRuntimePreference, conversionOptions.StorePngSourceImages, progress, displayName, cancellationToken);
                 return;

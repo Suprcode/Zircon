@@ -10,8 +10,24 @@ namespace LibraryEditor
         public ConversionOptionsDialog()
         {
             InitializeComponent();
+            SelectDefaultOptions();
             UpdateAtlasControls();
             UpdateSummary();
+        }
+
+        private void SelectDefaultOptions()
+        {
+            SelectComboBoxDefault(_individualRuntimeComboBox, 0);
+            SelectComboBoxDefault(_runtimeComboBox, 0);
+            SelectComboBoxDefault(_compressionComboBox, 0);
+        }
+
+        private static void SelectComboBoxDefault(ComboBox comboBox, int selectedIndex)
+        {
+            if (comboBox.Items.Count == 0 || comboBox.SelectedIndex >= 0)
+                return;
+
+            comboBox.SelectedIndex = Math.Min(selectedIndex, comboBox.Items.Count - 1);
         }
 
         private void AddButton_Click(object sender, EventArgs e)
@@ -64,10 +80,11 @@ namespace LibraryEditor
         {
             switch (_runtimeComboBox.SelectedIndex)
             {
-                case 1:
-                    return ZlRuntimeTexturePreference.Bgra32;
+                case 0:
                 default:
                     return ZlRuntimeTexturePreference.Bc7;
+                case 1:
+                    return ZlRuntimeTexturePreference.Bgra32;
             }
         }
 
@@ -75,7 +92,7 @@ namespace LibraryEditor
         {
             return _individualRuntimeComboBox.SelectedIndex switch
             {
-                0 => ZlRuntimeTexturePreference.SourceType,
+                0 => ZlRuntimeTexturePreference.Source,
                 1 => ZlRuntimeTexturePreference.Dxt1,
                 2 => ZlRuntimeTexturePreference.Bc7,
                 _ => ZlRuntimeTexturePreference.None,
@@ -86,12 +103,13 @@ namespace LibraryEditor
         {
             switch (_compressionComboBox.SelectedIndex)
             {
+                case 0:
+                default:
+                    return ZlContainerCompression.DeflateBest;
                 case 1:
                     return ZlContainerCompression.DeflateFast;
                 case 2:
                     return ZlContainerCompression.None;
-                default:
-                    return ZlContainerCompression.DeflateBest;
             }
         }
 
@@ -123,9 +141,9 @@ namespace LibraryEditor
 
             string individualText = _individualRuntimeComboBox.SelectedIndex switch
             {
+                0 => "Source: preserves the source texture codec where possible; ideal for WTL-derived runtime libraries.",
                 1 => "DXT1: ideal for opaque tiles or images without alpha.",
                 2 => "BC7: best quality for standalone DX11 textures.",
-                3 => "Source: preserves the source texture codec where possible; ideal for WTL-derived runtime libraries.",
                 _ => "Individual runtime: none; relies on atlas or PNG decode."
             };
 

@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 
 namespace Shared.Envir
 {
@@ -19,7 +20,7 @@ namespace Shared.Envir
         Bc7,
         Dxt1,
         Dxt5,
-        SourceType,
+        Source,
     }
 
     public enum ZlContainerCompression : byte
@@ -40,6 +41,41 @@ namespace Shared.Envir
         Image,
         Shadow,
         Overlay,
+    }
+
+    public static class ZlContainerHeader
+    {
+        public static readonly byte[] Signature = Encoding.ASCII.GetBytes("ZL2");
+
+        public static readonly int ByteCount =
+            Signature.Length +
+            sizeof(int) +  // Version
+            sizeof(int) +  // Image count
+            sizeof(int) +  // Atlas page count
+            sizeof(byte) + // Default payload compression
+            sizeof(byte) + // Flags
+            sizeof(short) + // Reserved
+            sizeof(long) + // Metadata offset
+            sizeof(int) +  // Metadata size
+            sizeof(long) + // Index offset
+            sizeof(int);   // Index size
+
+        public const int HasAtlasFlag = 1;
+
+        public static bool ReadSignature(BinaryReader reader)
+        {
+            byte[] signature = reader.ReadBytes(Signature.Length);
+            if (signature.Length != Signature.Length)
+                return false;
+
+            for (int i = 0; i < Signature.Length; i++)
+            {
+                if (signature[i] != Signature[i])
+                    return false;
+            }
+
+            return true;
+        }
     }
 
     public sealed class Zl2Entry

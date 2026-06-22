@@ -8,7 +8,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 
 namespace Shared.Rendering
@@ -36,9 +35,6 @@ namespace Shared.Rendering
         public int AtlasGroupImageCount;
         public int AtlasPageSize;
         private readonly Dictionary<int, Zl2Entry> _zl2Entries = new Dictionary<int, Zl2Entry>();
-        private static readonly byte[] CompressedContainerSignature = Encoding.ASCII.GetBytes("ZL2");
-        private static readonly int CompressedContainerHeaderByteCount = CompressedContainerSignature.Length + sizeof(int) * 5 + sizeof(byte) * 2 + sizeof(short) + sizeof(long) * 2;
-        private const int CompressedContainerHasAtlasFlag = 1;
 
         public MirLibrary(string fileName)
         {
@@ -106,10 +102,10 @@ namespace Shared.Rendering
 
         private bool TryReadCompressedContainer()
         {
-            if (_BReader.BaseStream.Length < CompressedContainerHeaderByteCount)
+            if (_BReader.BaseStream.Length < ZlContainerHeader.ByteCount)
                 return false;
 
-            if (!ReadCompressedContainerSignature(_BReader))
+            if (!ZlContainerHeader.ReadSignature(_BReader))
                 return false;
 
             Version = _BReader.ReadInt32();
@@ -156,7 +152,7 @@ namespace Shared.Rendering
                     };
                 }
 
-                if ((flags & CompressedContainerHasAtlasFlag) != 0 && reader.BaseStream.Position < reader.BaseStream.Length)
+                if ((flags & ZlContainerHeader.HasAtlasFlag) != 0 && reader.BaseStream.Position < reader.BaseStream.Length)
                 {
                     int metadataAtlasCount = reader.ReadInt32();
                     int expectedAtlasCount = atlasCount > 0 ? atlasCount : metadataAtlasCount;
@@ -172,21 +168,6 @@ namespace Shared.Rendering
                 }
 
                 ReadAtlasLayerMappings(reader);
-            }
-
-            return true;
-        }
-
-        private static bool ReadCompressedContainerSignature(BinaryReader reader)
-        {
-            byte[] signature = reader.ReadBytes(CompressedContainerSignature.Length);
-            if (signature.Length != CompressedContainerSignature.Length)
-                return false;
-
-            for (int i = 0; i < CompressedContainerSignature.Length; i++)
-            {
-                if (signature[i] != CompressedContainerSignature[i])
-                    return false;
             }
 
             return true;
