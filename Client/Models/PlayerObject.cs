@@ -1363,36 +1363,141 @@ namespace Client.Models
 
         public override bool MouseOver(Point p)
         {
-            if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            Point local = new Point(p.X - DrawX, p.Y - DrawY);
+
+            if (MouseOverVisiblePixel(local))
                 return true;
 
-            if (HairType >= 0 && HairLibrary != null && HairLibrary.VisiblePixel(HairFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            return MouseOverVisibleBounds(local);
+        }
+
+        private bool MouseOverVisiblePixel(Point local)
+        {
+            bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
+
+            if (IsHorseAnimation())
+            {
+                switch (HorseShape)
+                {
+                    case 0:
+                        if (HorseLibrary != null && HorseLibrary.VisiblePixel(HorseFrame, local, false, true))
+                            return true;
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        if (HorseShapeLibrary != null && HorseShapeLibrary.VisiblePixel(HorseFrame, local, false, true))
+                            return true;
+                        break;
+                    default:
+                        if (HorseShapeLibrary != null && HorseShapeLibrary.VisiblePixel(DrawFrame, local, false, true))
+                            return true;
+                        break;
+                }
+            }
+
+            if (!hideBody && DrawWeapon && WeaponLibrary1 != null && WeaponLibrary1.VisiblePixel(WeaponFrame, local, false, true))
                 return true;
 
-            if (HelmetShape >= 0 && HelmetLibrary != null && HelmetLibrary.VisiblePixel(HelmetFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (!hideBody && DrawWeapon && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, local, false, true))
                 return true;
 
-            if (LibraryWeaponShape >= 0 && WeaponLibrary1 != null && WeaponLibrary1.VisiblePixel(WeaponFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (!hideBody && ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, local, false, true))
                 return true;
 
-            if (LibraryWeaponShape >= 0 && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, local, false, true))
                 return true;
 
-            if (ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
+            if (!HideHead)
+            {
+                if (HelmetShape > 0)
+                {
+                    if (HelmetLibrary != null && HelmetLibrary.VisiblePixel(HelmetFrame, local, false, true))
+                        return true;
+                }
+                else if (HairType > 0 && HairLibrary != null && HairLibrary.VisiblePixel(HairFrame, local, false, true))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool MouseOverVisibleBounds(Point local)
+        {
+            bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
+
+            if (IsHorseAnimation())
+            {
+                switch (HorseShape)
+                {
+                    case 0:
+                        if (PointOverImageBounds(HorseLibrary, HorseFrame, local))
+                            return true;
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        if (PointOverImageBounds(HorseShapeLibrary, HorseFrame, local))
+                            return true;
+                        break;
+                    default:
+                        if (PointOverImageBounds(HorseShapeLibrary, DrawFrame, local))
+                            return true;
+                        break;
+                }
+            }
+
+            if (!hideBody && DrawWeapon && PointOverImageBounds(WeaponLibrary1, WeaponFrame, local))
                 return true;
 
+            if (!hideBody && DrawWeapon && PointOverImageBounds(WeaponLibrary2, WeaponFrame, local))
+                return true;
+
+            if (!hideBody && ShieldShape >= 0 && PointOverImageBounds(ShieldLibrary, ShieldFrame, local))
+                return true;
+
+            if (PointOverImageBounds(BodyLibrary, ArmourFrame, local))
+                return true;
+
+            if (!HideHead)
+            {
+                if (HelmetShape > 0)
+                    return PointOverImageBounds(HelmetLibrary, HelmetFrame, local);
+
+                if (HairType > 0)
+                    return PointOverImageBounds(HairLibrary, HairFrame, local);
+            }
+
+            return false;
+        }
+
+        private bool IsHorseAnimation()
+        {
             switch (CurrentAnimation)
             {
                 case MirAnimation.HorseStanding:
                 case MirAnimation.HorseWalking:
                 case MirAnimation.HorseRunning:
                 case MirAnimation.HorseStruck:
-                    if (HorseLibrary != null && HorseLibrary.VisiblePixel(HorseFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true))
-                        return true;
-                    break;
+                    return true;
+                default:
+                    return false;
             }
+        }
 
-            return false;
+        private static bool PointOverImageBounds(MirLibrary library, int frame, Point local)
+        {
+            MirImage image = library?.GetImage(frame);
+            if (image == null) return false;
+
+            Rectangle bounds = image.GetVisibleBounds();
+            if (bounds.Width <= 0 || bounds.Height <= 0) return false;
+
+            bounds.Offset(image.OffSetX, image.OffSetY);
+
+            return bounds.Contains(local);
         }
 
         public override void PlayStruckSound()
