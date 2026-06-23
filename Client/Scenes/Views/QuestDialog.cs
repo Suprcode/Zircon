@@ -1167,6 +1167,13 @@ namespace Client.Scenes.Views
                 SelectedEntry = firstEntry;
 
             UpdateScrollBar();
+            RefreshLineLayout();
+        }
+
+        private void RefreshLineLayout()
+        {
+            UpdateDisplayArea();
+            UpdateClipAreaTree();
         }
         #endregion
 
@@ -1247,12 +1254,11 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> ExpandedChanged;
         public void OnExpandedChanged(bool oValue, bool nValue)
         {
-            ExpandedChanged?.Invoke(this, EventArgs.Empty);
-
-
             ExpandButton.Index = Expanded ? 4871 : 4870;
 
             Map.Expanded = Expanded;
+
+            ExpandedChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

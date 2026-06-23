@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using Library;
 using System;
 using System.Drawing;
@@ -331,9 +331,7 @@ namespace Client.Controls
             BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
             float previousOpacity = RenderingPipelineManager.GetOpacity();
 
-            MirImage image = Library.CreateImage(Index, ImageType.Image);
-
-            if (image?.Image == null)
+            if (!Library.TryGetTexture(Index, ImageType.Image, out MirImage image, out RenderTexture texture, out Rectangle? sourceRectangle))
             {
                 return;
             }
@@ -349,10 +347,9 @@ namespace Client.Controls
 
             Rectangle drawArea = DisplayArea;
 
-            RectangleF? shadowBounds = null;
-
-            if (image.ImageValid)
+            if (DropShadow)
             {
+                RectangleF? shadowBounds = null;
                 Rectangle visibleBounds = image.GetVisibleBounds();
 
                 if (visibleBounds.Width > 0 && visibleBounds.Height > 0)
@@ -363,10 +360,7 @@ namespace Client.Controls
                         visibleBounds.Width,
                         visibleBounds.Height);
                 }
-            }
 
-            if (DropShadow)
-            {
                 RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
             }
 
@@ -375,7 +369,7 @@ namespace Client.Controls
                 RenderingPipelineManager.EnableGrayscaleEffect();
             }
 
-            PresentTexture(image.Image, Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+            PresentTexture(texture, sourceRectangle, Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
 
             if (GrayScale)
             {

@@ -46,9 +46,7 @@ namespace Client.Scenes.Views
                 if (maxExperience <= 0) return;
 
                 //Get percent.
-                MirImage image = barLibrary.CreateImage(56, ImageType.Image);
-
-                if (image == null) return;
+                if (!barLibrary.TryGetTexture(56, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
                 int x = (ExperienceBar.Size.Width - image.Width) / 2;
                 int y = (ExperienceBar.Size.Height - image.Height) / 2;
@@ -60,7 +58,7 @@ namespace Client.Scenes.Views
 
 
 
-                PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y - 1, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y - 1, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
             };
 
             HealthBar = new DXControl
@@ -79,11 +77,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = barLibrary.CreateImage(52, ImageType.Image);
+                if (!barLibrary.TryGetTexture(52, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HealthBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HealthBar);
             };
             ManaBar = new DXControl
             {
@@ -101,11 +97,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = barLibrary.CreateImage(54, ImageType.Image);
+                if (!barLibrary.TryGetTexture(54, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(ManaBar.DisplayArea.X, ManaBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ManaBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(ManaBar.DisplayArea.X, ManaBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ManaBar);
             };
 
             FocusBar = new DXImageControl
@@ -127,11 +121,9 @@ namespace Client.Scenes.Views
 
                 var glow = CEnvir.Now.Second % 2 == 0 && percent == 1;
 
-                MirImage image = barLibrary.CreateImage(glow ? 59 : 58, ImageType.Image);
+                if (!barLibrary.TryGetTexture(glow ? 59 : 58, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(FocusBar.DisplayArea.X, FocusBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, FocusBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(FocusBar.DisplayArea.X, FocusBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, FocusBar);
             };
 
             CharacterButton = new DXButton

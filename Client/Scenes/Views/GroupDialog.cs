@@ -843,9 +843,8 @@ namespace Client.Scenes.Views
 
                 if (!GameScene.Game.DataDictionary.TryGetValue(objectID, out ClientObjectData data)) return;
 
-                MirImage backImage = barLibrary.CreateImage(316, ImageType.Image);
-
-                PresentTexture(backImage.Image, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)backImage.Width, backImage.Height), Color.White, HealthBar);
+                if (barLibrary.TryGetTexture(316, ImageType.Image, out MirImage backImage, out var backTexture, out var backSourceRectangle))
+                    PresentTexture(backTexture, backSourceRectangle, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)backImage.Width, backImage.Height), Color.White, HealthBar);
 
                 if (data.Health <= 0)
                 {
@@ -859,11 +858,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = barLibrary.CreateImage(315, ImageType.Image);
+                if (!barLibrary.TryGetTexture(315, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HealthBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(HealthBar.DisplayArea.X, HealthBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HealthBar);
             };
 
             //BuffBox = new BuffDialog

@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -341,6 +341,21 @@ namespace Client.Controls
             PresentTexture(ControlTexture, Parent, DisplayArea, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75), this);
 
             RenderingPipelineManager.SetOpacity(oldOpacity);
+
+            ExpireTime = CEnvir.Now + Config.CacheDuration;
+        }
+
+        internal void DrawTextureTo(RectangleF destination)
+        {
+            if (!DrawTexture) return;
+
+            if (!TextureValid)
+                CreateTexture();
+
+            if (!ControlTexture.IsValid || TextureSize.Width <= 0 || TextureSize.Height <= 0)
+                return;
+
+            RenderingPipelineManager.DrawTexture(ControlTexture, new Rectangle(Point.Empty, TextureSize), destination, IsEnabled ? Color.White : Color.FromArgb(75, 75, 75));
 
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }

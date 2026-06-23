@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -35,7 +35,7 @@ namespace Client.Controls
 
         public DXMapInfoControl()
         {
-            DrawTexture = true;
+            DrawTexture = false;
             PassThrough = false;
         }
 
@@ -140,6 +140,19 @@ namespace Client.Controls
             base.DrawBorder();
         }
 
+        protected override void DrawControl()
+        {
+            Rectangle area = Rectangle.Intersect(ClipArea, DisplayArea);
+            if (area.Width <= 0 || area.Height <= 0 || BackColour.A == 0) return;
+
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
+            RenderingPipelineManager.SetOpacity(Opacity);
+
+            RenderingPipelineManager.FillRectangle(area, IsEnabled ? BackColour : Color.FromArgb(75, 75, 75));
+
+            RenderingPipelineManager.SetOpacity(oldOpacity);
+        }
+
         private bool DrawBorderAnimation()
         {
             if (_activeAnimations.Count == 0) return false;
@@ -176,7 +189,8 @@ namespace Client.Controls
 
                     RenderTexture scratchHandle = RenderingPipelineManager.GetScratchTexture();
 
-                    PresentTexture(scratchHandle, Parent, Rectangle.Inflate(DisplayArea, inflation, inflation), Color.White, this);
+                    DXControl clipControl = Parent ?? this;
+                    PresentTexture(scratchHandle, Parent, Rectangle.Inflate(DisplayArea, inflation, inflation), Color.White, clipControl);
                     drew = true;
                 }
             }

@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using Library;
 using System;
 using System.Collections.Generic;
@@ -171,6 +171,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> AllowDragOutChanged;
         public virtual void OnAllowDragOutChanged(bool oValue, bool nValue)
         {
+            UpdateClipAreaTree();
             AllowDragOutChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -414,11 +415,17 @@ namespace Client.Controls
             }
         }
         private Rectangle _DisplayArea;
+        public Rectangle ClipArea { get; private set; }
         public event EventHandler<EventArgs> DisplayAreaChanged;
         public virtual void OnDisplayAreaChanged(Rectangle oValue, Rectangle nValue)
         {
+            UpdateClipArea();
+
             foreach (DXControl control in Controls)
+            {
                 control.UpdateDisplayArea();
+                control.UpdateClipAreaTree();
+            }
 
             UpdateBorderInformation();
             DisplayAreaChanged?.Invoke(this, EventArgs.Empty);
@@ -552,6 +559,30 @@ namespace Client.Controls
             }
 
             IsControlChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region HideWhenClipped
+
+        public bool HideWhenClipped
+        {
+            get => _HideWhenClipped;
+            set
+            {
+                if (_HideWhenClipped == value) return;
+
+                bool oldValue = _HideWhenClipped;
+                _HideWhenClipped = value;
+
+                OnHideWhenClippedChanged(oldValue, value);
+            }
+        }
+        private bool _HideWhenClipped;
+        public event EventHandler<EventArgs> HideWhenClippedChanged;
+        public virtual void OnHideWhenClippedChanged(bool oValue, bool nValue)
+        {
+            HideWhenClippedChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -997,6 +1028,7 @@ namespace Client.Controls
             else
                 CEnvir.Target.ResumeLayout();
 
+            UpdateClipAreaTree();
             IsMovingChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -1038,6 +1070,11 @@ namespace Client.Controls
         public Size TextureSize { get; set; }
         public RenderSurface ControlSurface { get; private set; }
         public DateTime ExpireTime { get; protected set; }
+
+        public void RefreshTextureExpiry()
+        {
+            ExpireTime = CEnvir.Now + Config.CacheDuration;
+        }
 
         protected virtual void CreateTexture()
         {
@@ -1168,6 +1205,27 @@ BorderInformation = new[]
                 area.Offset(Parent.DisplayArea.Location);
 
             DisplayArea = area;
+        }
+
+        protected internal void UpdateClipAreaTree()
+        {
+            UpdateClipArea();
+
+            foreach (DXControl control in Controls)
+                control.UpdateClipAreaTree();
+        }
+
+        private void UpdateClipArea()
+        {
+            Rectangle sceneArea = ActiveScene?.DisplayArea ?? DisplayArea;
+
+            if (Parent == null || Parent.IsMoving && Parent.AllowDragOut)
+            {
+                ClipArea = Rectangle.Intersect(sceneArea, DisplayArea);
+                return;
+            }
+
+            ClipArea = Rectangle.Intersect(Parent.ClipArea, DisplayArea);
         }
         public virtual void ResolutionChanged()
         {
@@ -1662,6 +1720,7 @@ BorderInformation = new[]
         public virtual void Draw()
         {
             if (!IsVisible || DisplayArea.Width <= 0 || DisplayArea.Height <= 0) return;
+            if (HideWhenClipped && !ClipArea.Contains(DisplayArea)) return;
 
             OnBeforeDraw();
             DrawControl();
@@ -1695,24 +1754,26 @@ BorderInformation = new[]
                 RenderingPipelineManager.SetLineWidth(BorderSize);
             }
 
-            RenderSurface old = RenderingPipelineManager.GetCurrentSurface();
-            RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
+            Rectangle area = DisplayArea;
+            LinePoint[] border = new[]
+            {
+                new LinePoint(area.Left - 1, area.Top - 1),
+                new LinePoint(area.Right, area.Top - 1),
+                new LinePoint(area.Right, area.Bottom),
+                new LinePoint(area.Left - 1, area.Bottom),
+                new LinePoint(area.Left - 1, area.Top - 1)
+            };
 
-            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
-
-            RenderingPipelineManager.DrawLine(BorderInformation, BorderColour);
-
-            RenderingPipelineManager.SetSurface(old);
-
-            RenderTexture scratchHandle = RenderingPipelineManager.GetScratchTexture();
-
-            PresentTexture(scratchHandle, Parent, Rectangle.Inflate(DisplayArea, 1, 1), Color.White, this);
+            RenderingPipelineManager.DrawLine(border, BorderColour);
         }
 
         protected virtual void DrawChildControls()
         {
             foreach (DXControl control in Controls)
             {
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                    continue;
+
                 control.Draw();
             }
         }
@@ -1741,8 +1802,48 @@ BorderInformation = new[]
 
         public static void PresentTexture(RenderTexture texture, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f, bool intersectParent = true)
         {
+            PresentTexture(texture, null, parent, displayArea, colour, control, offX, offY, scale, intersectParent);
+        }
+
+        public static void PresentTexture(RenderTexture texture, Rectangle? sourceRectangle, DXControl parent, Rectangle displayArea, Color colour, DXControl control, int offX = 0, int offY = 0, float scale = 1.0f, bool intersectParent = true)
+        {
             if (!texture.IsValid)
                 return;
+
+            if (intersectParent && control != null && scale == 1.0f && offX == 0 && offY == 0)
+            {
+                Rectangle clippedArea = Rectangle.Intersect(control.ClipArea, displayArea);
+                if (clippedArea.Width <= 0 || clippedArea.Height <= 0)
+                    return;
+
+                Rectangle clippedTextureArea = new Rectangle(
+                    clippedArea.X - displayArea.X,
+                    clippedArea.Y - displayArea.Y,
+                    clippedArea.Width,
+                    clippedArea.Height);
+
+                if (clippedTextureArea.Width <= 0 || clippedTextureArea.Height <= 0)
+                    return;
+
+                if (sourceRectangle.HasValue)
+                {
+                    Rectangle source = sourceRectangle.Value;
+                    int sourceOffsetX = clippedTextureArea.X;
+                    int sourceOffsetY = clippedTextureArea.Y;
+
+                    clippedTextureArea = new Rectangle(
+                        source.X + sourceOffsetX,
+                        source.Y + sourceOffsetY,
+                        Math.Min(clippedTextureArea.Width, source.Width - sourceOffsetX),
+                        Math.Min(clippedTextureArea.Height, source.Height - sourceOffsetY));
+
+                    if (clippedTextureArea.Width <= 0 || clippedTextureArea.Height <= 0)
+                        return;
+                }
+
+                RenderingPipelineManager.DrawTexture(texture, clippedTextureArea, clippedArea, colour);
+                return;
+            }
 
             float uiScale = 1f;// control.UiScale;
             float finalScale = scale * uiScale;
@@ -1803,6 +1904,22 @@ BorderInformation = new[]
 
             if (textureArea.Width <= 0 || textureArea.Height <= 0)
                 return;
+
+            if (sourceRectangle.HasValue)
+            {
+                Rectangle source = sourceRectangle.Value;
+                int sourceOffsetX = textureArea.X;
+                int sourceOffsetY = textureArea.Y;
+
+                textureArea = new Rectangle(
+                    source.X + sourceOffsetX,
+                    source.Y + sourceOffsetY,
+                    Math.Min(textureArea.Width, source.Width - sourceOffsetX),
+                    Math.Min(textureArea.Height, source.Height - sourceOffsetY));
+
+                if (textureArea.Width <= 0 || textureArea.Height <= 0)
+                    return;
+            }
 
             float destinationX = scaledTextureArea.X + offX * uiScale;
             float destinationY = scaledTextureArea.Y + offY * uiScale;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -31,6 +32,8 @@ namespace LibraryEditor
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
             this.DragDrop += new DragEventHandler(Form1_DragDrop);
+            AddAtlasMenuItems();
+
             if (Program.openFileWith.Length > 0 &&
                 File.Exists(Program.openFileWith))
             {
@@ -40,6 +43,7 @@ namespace LibraryEditor
 
                 // Show .Lib path in application title.
                 this.Text = OpenLibraryDialog.FileName.ToString();
+                UpdateLibraryVersionLabel();
 
                 PreviewListView.SelectedIndices.Clear();
 
@@ -49,6 +53,101 @@ namespace LibraryEditor
                 radioButtonImage.Enabled = true;
                 radioButtonShadow.Enabled = true;
                 radioButtonOverlay.Enabled = true;
+            }
+        }
+
+        private void AddAtlasMenuItems()
+        {
+            ToolStripMenuItem validateAtlasMenuItem = new ToolStripMenuItem("Validate ZL Atlas Metadata")
+            {
+                ToolTipText = "Check that generated atlas page/source metadata is internally consistent."
+            };
+            validateAtlasMenuItem.Click += validateAtlasToolStripMenuItem_Click;
+
+            ToolStripMenuItem exportAtlasMenuItem = new ToolStripMenuItem("Export ZL Atlas Debug Pages")
+            {
+                ToolTipText = "Export atlas page PNGs and rectangle overlays for visual validation."
+            };
+            exportAtlasMenuItem.Click += exportAtlasToolStripMenuItem_Click;
+
+            functionsToolStripMenuItem.DropDownItems.Add(new ToolStripSeparator());
+            functionsToolStripMenuItem.DropDownItems.Add(validateAtlasMenuItem);
+            functionsToolStripMenuItem.DropDownItems.Add(exportAtlasMenuItem);
+        }
+
+        private void validateAtlasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_library == null) return;
+
+            string report = _library.ValidateAtlasMetadata();
+            toolStripStatusLabel.ForeColor = report.StartsWith("Atlas metadata valid")
+                ? SystemColors.ControlText
+                : Color.Red;
+            toolStripStatusLabel.Text = report.Split(new[] { Environment.NewLine }, StringSplitOptions.None)[0];
+            MessageBox.Show(report, "ZL Atlas Validation");
+        }
+
+        private void exportAtlasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_library == null) return;
+
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
+            {
+                dialog.Description = "Choose where to export atlas debug PNGs.";
+                dialog.SelectedPath = GetDefaultAtlasDebugDirectory();
+
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+
+                string reportPath = _library.ExportAtlasDebugPages(dialog.SelectedPath);
+                toolStripStatusLabel.ForeColor = SystemColors.ControlText;
+                toolStripStatusLabel.Text = $"Exported atlas debug pages. Report: {Path.GetFileName(reportPath)}";
+                MessageBox.Show($"Atlas debug pages exported to:{Environment.NewLine}{dialog.SelectedPath}", "ZL Atlas Debug Export");
+            }
+        }
+
+
+        private void PrepareSaveDialogForCurrentLibrary()
+        {
+            if (string.IsNullOrEmpty(_library.FileName))
+                return;
+
+            string directory = Path.GetDirectoryName(_library.FileName);
+            if (!string.IsNullOrEmpty(directory))
+                SaveLibraryDialog.InitialDirectory = directory;
+
+            SaveLibraryDialog.FileName = Path.GetFileName(_library.FileName);
+        }
+
+        private string GetDefaultAtlasDebugDirectory()
+        {
+            if (_library == null || string.IsNullOrEmpty(_library.FileName))
+                return Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+            string directory = Path.GetDirectoryName(_library.FileName);
+            if (string.IsNullOrEmpty(directory))
+                return Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+            return Path.Combine(directory, "AtlasDebug", Path.GetFileNameWithoutExtension(_library.FileName));
+        }
+
+        private async Task RunModalProgressAsync(string title, Action<IProgress<LibraryProgress>, CancellationToken> work)
+        {
+            using (CancellationTokenSource cancellation = new CancellationTokenSource())
+            using (ProgressDialog dialog = new ProgressDialog(title))
+            {
+                dialog.CancelRequested += (_, _) => cancellation.Cancel();
+                Progress<LibraryProgress> progress = new Progress<LibraryProgress>(dialog.Report);
+                _ = dialog.Handle;
+                Task task = Task.Run(() => work(progress, cancellation.Token), cancellation.Token);
+
+                _ = task.ContinueWith(_ =>
+                {
+                    if (dialog.IsHandleCreated && !dialog.IsDisposed)
+                        dialog.BeginInvoke(new Action(dialog.Close));
+                }, TaskScheduler.Default);
+
+                dialog.ShowDialog(this);
+                await task;
             }
         }
 
@@ -131,6 +230,190 @@ namespace LibraryEditor
             OffSetYTextBox.Text = string.Empty;
             OffSetXTextBox.BackColor = SystemColors.Window;
             OffSetYTextBox.BackColor = SystemColors.Window;
+            UpdateLibraryVersionLabel();
+        }
+
+        private void UpdateLibraryVersionLabel(Mir3Library.Mir3Image image = null)
+        {
+            string libraryText = GetLibraryVersionText(image, false);
+            string atlasText = GetAtlasText(image, false);
+
+            LibraryVersionLabel.Text = libraryText;
+            AtlasLabel.Text = atlasText;
+            toolTip.SetToolTip(LibraryVersionLabel, GetLibraryVersionText(image, true));
+            toolTip.SetToolTip(AtlasLabel, GetAtlasText(image, true));
+        }
+
+        private string GetLibraryVersionText(Mir3Library.Mir3Image image, bool fullText)
+        {
+            if (_library == null)
+                return "<None>";
+
+            if (image == null)
+                return "<No Format>";
+
+            switch (_library.Version)
+            {
+                case 0:
+                    return "ZL v0 (DXT1)";
+                case Mir3Library.LIBRARY_VERSION:
+                    return "ZL v1 (DXT5)";
+                case Mir3Library.COMPRESSED_LIBRARY_VERSION:
+                    string typeText = GetCompressedLibraryTypeText(image, fullText);
+                    return fullText
+                        ? "ZL v2 compressed (" + typeText + ")"
+                        : "ZL v2 (" + (typeText.EndsWith(" Only") ? typeText : typeText.Replace(" ", string.Empty)) + ")";
+                default:
+                    return "ZL v" + _library.Version;
+            }
+        }
+
+        private string GetCompressedLibraryTypeText(Mir3Library.Mir3Image image, bool fullText)
+        {
+            string sourceText = GetSelectedSourceCodecText(image);
+            string atlasText = GetSelectedAtlasRuntimeText(image);
+
+            if (string.IsNullOrEmpty(atlasText))
+                return GetLibraryTypeText(image);
+
+            return fullText
+                ? $"{sourceText} source + {atlasText} atlas"
+                : $"{sourceText} + {atlasText}";
+        }
+
+        private string GetSelectedSourceCodecText(Mir3Library.Mir3Image image)
+        {
+            if (image == null)
+                return "PNG";
+
+            if (!SelectedLayerHasPayload(image))
+                return "<No Format>";
+
+            if (radioButtonShadow.Checked)
+                return image.ShadowCodec.ToString();
+
+            if (radioButtonOverlay.Checked)
+                return image.OverlayCodec.ToString();
+
+            return image.ImageCodec.ToString();
+        }
+
+        private string GetSelectedAtlasRuntimeText(Mir3Library.Mir3Image image)
+        {
+            int selectedPage = GetSelectedAtlasPage(image);
+            if (selectedPage < 0 || _library?.AtlasPages == null || selectedPage >= _library.AtlasPages.Count)
+                return null;
+
+            Mir3Library.Mir3AtlasPage page = _library.AtlasPages[selectedPage];
+            if (page == null)
+                return null;
+
+            if (page.Bc7DataSize > 0 || page.RuntimePreference == ZlRuntimeTexturePreference.Bc7)
+                return "BC7";
+
+            if (page.FallbackDataSize > 0 || page.RuntimePreference == ZlRuntimeTexturePreference.Bc7Dxt5)
+                return "BC7/DXT5";
+
+            return page.Codec == ZlImageCodec.Png ? "BGRA32" : page.Codec.ToString();
+        }
+
+        private string GetLibraryTypeText(Mir3Library.Mir3Image image)
+        {
+            if (image == null)
+                return "<No Format>";
+
+            if (!SelectedLayerHasPayload(image))
+                return "<No Format>";
+
+            ZlImageCodec codec = image.ImageCodec;
+            ZlRuntimeTexturePreference preference = image.ImageRuntimePreference;
+
+            if (radioButtonShadow.Checked)
+            {
+                codec = image.ShadowCodec;
+                preference = image.ShadowRuntimePreference;
+            }
+            else if (radioButtonOverlay.Checked)
+            {
+                codec = image.OverlayCodec;
+                preference = image.OverlayRuntimePreference;
+            }
+
+            if (preference == ZlRuntimeTexturePreference.Bc7)
+                return codec == ZlImageCodec.Bc7 ? "BC7 Only" : codec + " + BC7";
+
+            if (preference == ZlRuntimeTexturePreference.Bc7Dxt5)
+                return codec + " + BC7/DXT5";
+
+            if (preference == ZlRuntimeTexturePreference.Dxt1)
+                return codec == ZlImageCodec.Dxt1 ? "DXT1" : codec + " + DXT1";
+
+            if (preference == ZlRuntimeTexturePreference.Dxt5)
+                return codec == ZlImageCodec.Dxt5 ? "DXT5" : codec + " + DXT5";
+
+            if (image.DataSize == 0)
+                return "<No Format>";
+
+            return codec + " + " + preference;
+        }
+
+        private bool SelectedLayerHasPayload(Mir3Library.Mir3Image image)
+        {
+            if (image == null)
+                return false;
+
+            if (radioButtonShadow.Checked)
+            {
+                return image.ShadowWidth > 0 &&
+                       image.ShadowHeight > 0 &&
+                       (image.ShadowDataSize > 0 || image.ShadowBc7DataSize > 0 || image.ShadowFallbackDataSize > 0 || image.ShadowAtlasPage >= 0);
+            }
+
+            if (radioButtonOverlay.Checked)
+            {
+                return image.OverlayWidth > 0 &&
+                       image.OverlayHeight > 0 &&
+                       (image.OverlayDataSize > 0 || image.OverlayBc7DataSize > 0 || image.OverlayFallbackDataSize > 0 || image.OverlayAtlasPage >= 0);
+            }
+
+            return image.Width > 0 &&
+                   image.Height > 0 &&
+                   (image.ImageDataSize > 0 || image.ImageBc7DataSize > 0 || image.ImageFallbackDataSize > 0 || image.AtlasPage >= 0);
+        }
+
+        private string GetAtlasText(Mir3Library.Mir3Image image, bool fullText)
+        {
+            if (_library == null)
+                return "<None>";
+
+            int atlasCount = _library.AtlasPages?.Count ?? 0;
+            if (atlasCount == 0)
+                return "No";
+
+            int selectedPage = GetSelectedAtlasPage(image);
+            if (selectedPage >= 0)
+            {
+                if (fullText)
+                    return $"Yes ({atlasCount} pages, selected page {selectedPage})";
+
+                return $"{atlasCount} pages, p{selectedPage}";
+            }
+
+            return fullText ? $"Yes ({atlasCount} pages)" : $"{atlasCount} pages";
+        }
+
+        private int GetSelectedAtlasPage(Mir3Library.Mir3Image image)
+        {
+            if (image == null)
+                return -1;
+
+            if (radioButtonShadow.Checked)
+                return image.ShadowAtlasPage;
+
+            if (radioButtonOverlay.Checked)
+                return image.OverlayAtlasPage;
+
+            return image.AtlasPage;
         }
 
         private void PreviewListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -141,7 +424,8 @@ namespace LibraryEditor
                 return;
             }
 
-            _selectedImage = _library.GetImage(PreviewListView.SelectedIndices[0]);
+            int selectedIndex = PreviewListView.SelectedIndices[0];
+            _selectedImage = _library.GetImage(selectedIndex);
 
             if (_selectedImage == null)
             {
@@ -186,6 +470,8 @@ namespace LibraryEditor
                 ImageBox.Image = _selectedImage.OverlayImage;
             }
 
+            UpdateLibraryVersionLabel(_selectedImage);
+
             // Keep track of what image/s are selected.
             if (PreviewListView.SelectedIndices.Count > 1)
             {
@@ -213,7 +499,8 @@ namespace LibraryEditor
                 return;
             }
 
-            _indexList.Add(e.ItemIndex, ImageList.Images.Count);
+            index = ImageList.Images.Count;
+            _indexList.Add(e.ItemIndex, index);
             if (radioButtonImage.Checked)
                 ImageList.Images.Add(_library.GetPreview(e.ItemIndex, ImageType.Image));
             else if (radioButtonShadow.Checked)
@@ -283,20 +570,35 @@ namespace LibraryEditor
             _library = new Mir3Library(SaveLibraryDialog.FileName);
             PreviewListView.VirtualListSize = 0;
             _library.Save(SaveLibraryDialog.FileName);
+            UpdateLibraryVersionLabel();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenLibraryDialog.ShowDialog() != DialogResult.OK) return;
-            MessageBox.Show(OpenLibraryDialog.FileName);
             ClearInterface();
+            PreviewListView.VirtualListSize = 0;
             ImageList.Images.Clear();
             PreviewListView.Items.Clear();
             _indexList.Clear();
 
             if (_library != null) _library.Close();
-            _library = new Mir3Library(OpenLibraryDialog.FileName);
+            try
+            {
+                _library = new Mir3Library(OpenLibraryDialog.FileName);
+            }
+            catch (Exception ex)
+            {
+                _library = null;
+                PreviewListView.VirtualListSize = 0;
+                toolStripStatusLabel.ForeColor = Color.Red;
+                toolStripStatusLabel.Text = "Failed to open library.";
+                MessageBox.Show(this, ex.Message, "Open Library", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             PreviewListView.VirtualListSize = _library.Images.Count;
+            UpdateLibraryVersionLabel();
 
             // Show .Lib path in application title.
             this.Text = OpenLibraryDialog.FileName.ToString();
@@ -311,19 +613,147 @@ namespace LibraryEditor
             radioButtonOverlay.Enabled = true;
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
-            _library.Save(_library.FileName);
+
+            LibrarySaveOptions options = ShowSaveOptionsDialog();
+            if (options == null) return;
+
+            try
+            {
+                await RunModalProgressAsync("Saving Library", (progress, token) =>
+                {
+                    token.ThrowIfCancellationRequested();
+                    progress.Report(new LibraryProgress("Saving " + Path.GetFileName(_library.FileName), isMarquee: true));
+                    SaveCurrentLibrary(_library.FileName, options, progress, token);
+                });
+
+                OnLibrarySaved(_library.FileName, options);
+            }
+            catch (OperationCanceledException)
+            {
+                toolStripStatusLabel.Text = "Save cancelled.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
+
+            LibrarySaveOptions options = ShowSaveOptionsDialog();
+            if (options == null) return;
+
+            PrepareSaveDialogForCurrentLibrary();
             if (SaveLibraryDialog.ShowDialog() != DialogResult.OK) return;
 
-            _library._fileName = SaveLibraryDialog.FileName;
-            _library.Save(_library._fileName);
+            try
+            {
+                _library._fileName = SaveLibraryDialog.FileName;
+                await RunModalProgressAsync("Saving Library", (progress, token) =>
+                {
+                    token.ThrowIfCancellationRequested();
+                    progress.Report(new LibraryProgress("Saving " + Path.GetFileName(SaveLibraryDialog.FileName), isMarquee: true));
+                    SaveCurrentLibrary(_library._fileName, options, progress, token);
+                });
+
+                OnLibrarySaved(_library._fileName, options);
+            }
+            catch (OperationCanceledException)
+            {
+                toolStripStatusLabel.Text = "Save cancelled.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private LibrarySaveOptions ShowSaveOptionsDialog()
+        {
+            using (SaveOptionsDialog dialog = new SaveOptionsDialog(CountShadowEntries(_library), CountOverlayEntries(_library)))
+            {
+                return dialog.ShowDialog(this) == DialogResult.OK ? dialog.Options : null;
+            }
+        }
+
+        private void SaveCurrentLibrary(string path, LibrarySaveOptions options, IProgress<LibraryProgress> progress, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            _library.Version = Mir3Library.COMPRESSED_LIBRARY_VERSION;
+            _library.ContainerCompression = options.ContainerCompression;
+
+            foreach (Mir3Library.Mir3Image image in _library.Images)
+            {
+                token.ThrowIfCancellationRequested();
+                image?.SetVersion(Mir3Library.COMPRESSED_LIBRARY_VERSION);
+            }
+
+            _library.SetRuntimePreferenceForAllImages(options.IndividualRuntimePreference, options.StorePngSourceImages, progress, Path.GetFileName(path), token);
+
+            if (options.BuildAtlasMetadata)
+            {
+                _library.BuildAtlasMetadata(options.AtlasPageSize, 2, options.AtlasGroupImageCount, options.AtlasRuntimePreference, progress, Path.GetFileName(path), true, options.BuildShadowAtlasMetadata, options.BuildOverlayAtlasMetadata);
+            }
+            else
+            {
+                ClearAtlasMetadata();
+            }
+
+            token.ThrowIfCancellationRequested();
+            _library.Save(path);
+        }
+
+        private void ClearAtlasMetadata()
+        {
+            _library.AtlasPages.Clear();
+            _library.AtlasGroupImageCount = 0;
+            _library.AtlasPageSize = 0;
+
+            foreach (Mir3Library.Mir3Image image in _library.Images)
+            {
+                if (image == null)
+                    continue;
+
+                image.AtlasPage = -1;
+                image.ShadowAtlasPage = -1;
+                image.OverlayAtlasPage = -1;
+                image.SourceRectangle = Rectangle.Empty;
+                image.ShadowSourceRectangle = Rectangle.Empty;
+                image.OverlaySourceRectangle = Rectangle.Empty;
+                image.VisibleBounds = Rectangle.Empty;
+            }
+        }
+
+        private static int CountShadowEntries(Mir3Library library)
+        {
+            return library?.CountAtlasLayerEntries(ZlAtlasLayer.Shadow) ?? 0;
+        }
+
+        private static int CountOverlayEntries(Mir3Library library)
+        {
+            return library?.CountAtlasLayerEntries(ZlAtlasLayer.Overlay) ?? 0;
+        }
+
+        private void OnLibrarySaved(string path, LibrarySaveOptions options)
+        {
+            toolStripStatusLabel.ForeColor = SystemColors.ControlText;
+            toolStripStatusLabel.Text = options.BuildAtlasMetadata
+                ? $"Saved ZL v2 with atlas metadata using {options.ContainerCompression}."
+                : $"Saved ZL v2 without atlas metadata using {options.ContainerCompression}.";
+
+            if (!string.IsNullOrEmpty(_library.LastCompressionReport))
+                toolStripStatusLabel.Text += $" Report: {Path.GetFileName(path)}.report.txt";
+
+            _library.FileName = path;
+            _library._fileName = path;
+            Text = path;
+            UpdateLibraryVersionLabel(_selectedImage);
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -353,60 +783,132 @@ namespace LibraryEditor
             PreviewListView.VirtualListSize -= removeList.Count;
         }
 
-        private void convertToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void convertToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (OpenWeMadeDialog.ShowDialog() != DialogResult.OK) return;
+            LibraryConversionOptions options;
+            using (ConversionOptionsDialog dialog = new ConversionOptionsDialog())
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
 
-            toolStripProgressBar.Maximum = OpenWeMadeDialog.FileNames.Length;
+                options = dialog.Options;
+            }
+
+            toolStripProgressBar.Maximum = options.FileNames.Length;
             toolStripProgressBar.Value = 0;
 
             try
             {
-                ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 1 };
-                Parallel.For(0, OpenWeMadeDialog.FileNames.Length, options, i =>
-                            {
-                                if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]).ToUpper() == ".WTL")
-                                {
-                                    WTLLibrary WTLlib = new WTLLibrary(OpenWeMadeDialog.FileNames[i]);
-                                    WTLlib.ToMLibrary();
-                                }
-                                else if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]).ToUpper() == ".LIB")
-                                {
-                                    FileStream stream = new FileStream(OpenWeMadeDialog.FileNames[i], FileMode.Open, FileAccess.ReadWrite);
-                                    BinaryReader reader = new BinaryReader(stream);
-                                    int CurrentVersion = reader.ReadInt32();
-                                    stream.Close();
-                                    stream.Dispose();
-                                    reader.Dispose();
-                                    if (CurrentVersion == 1)
-                                    {
-                                        MLibrary v1Lib = new MLibrary(OpenWeMadeDialog.FileNames[i]);
-                                        v1Lib.ToMLibrary();
-                                    }
-                                    else
-                                    {
-                                        MLibraryV2 v2Lib = new MLibraryV2(OpenWeMadeDialog.FileNames[i]);
-                                        v2Lib.ToMLibrary();
-                                    }
-                                }
-                                else
-                                {
-                                    WeMadeLibrary WILlib = new WeMadeLibrary(OpenWeMadeDialog.FileNames[i]);
-                                    WILlib.ToMLibrary();
-                                }
-                                toolStripProgressBar.Value++;
-                            });
+                await RunModalProgressAsync("Converting Libraries", (progress, token) =>
+                {
+                    string[] fileNames = options.FileNames;
+                    for (int i = 0; i < fileNames.Length; i++)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        string fileName = fileNames[i];
+                        string displayName = Path.GetFileName(fileName);
+                        IProgress<LibraryProgress> fileProgress = new FileProgress(progress, i, fileNames.Length, displayName);
+
+                        fileProgress.Report(new LibraryProgress($"Converting {displayName}", 0, 0, true));
+                        ConvertLibrary(fileName, options, fileProgress, token);
+                        progress.Report(new LibraryProgress($"Converted {displayName}", 1, 1)
+                        {
+                            CountText = "Complete",
+                            OverallValue = i + 1,
+                            OverallMaximum = fileNames.Length,
+                            OverallText = $"File {i + 1:N0} of {fileNames.Length:N0}: {displayName}",
+                            GroupText = options.BuildAtlasMetadata ? "Atlas complete" : "Runtime textures complete"
+                        });
+                    }
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                toolStripProgressBar.Value = 0;
+                toolStripStatusLabel.Text = "Conversion cancelled.";
+                return;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
+                return;
             }
 
             toolStripProgressBar.Value = 0;
 
             MessageBox.Show(string.Format("Successfully converted {0} {1}",
-                (OpenWeMadeDialog.FileNames.Length).ToString(),
-                (OpenWeMadeDialog.FileNames.Length > 1) ? "libraries" : "library"));
+                (options.FileNames.Length).ToString(),
+                (options.FileNames.Length > 1) ? "libraries" : "library"));
+        }
+
+        private void ConvertLibrary(string fileName, LibraryConversionOptions options, IProgress<LibraryProgress> progress, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            string extension = Path.GetExtension(fileName).ToUpper();
+
+            if (extension == ".WTL")
+            {
+                WTLLibrary WTLlib = new WTLLibrary(fileName);
+                WTLlib.ToMLibrary(false, progress, token, options);
+            }
+            else if (extension == ".LIB")
+            {
+                int currentVersion;
+                using (FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                using (BinaryReader reader = new BinaryReader(stream))
+                {
+                    currentVersion = reader.ReadInt32();
+                }
+
+                if (currentVersion == 1)
+                {
+                    CrystalLibraryV1 v1Lib = new CrystalLibraryV1(fileName);
+                    v1Lib.ToMLibrary(false, progress, token, options);
+                }
+                else
+                {
+                    CrystalLibraryV2 v2Lib = new CrystalLibraryV2(fileName);
+                    v2Lib.ToMLibrary(false, progress, token, options);
+                }
+            }
+            else
+            {
+                WeMadeLibrary WILlib = new WeMadeLibrary(fileName);
+                WILlib.ToMLibrary(false, progress, token, options);
+            }
+        }
+
+        private sealed class FileProgress : IProgress<LibraryProgress>
+        {
+            private readonly IProgress<LibraryProgress> _inner;
+            private readonly int _fileIndex;
+            private readonly int _fileCount;
+            private readonly string _fileName;
+
+            public FileProgress(IProgress<LibraryProgress> inner, int fileIndex, int fileCount, string fileName)
+            {
+                _inner = inner;
+                _fileIndex = fileIndex;
+                _fileCount = fileCount;
+                _fileName = fileName;
+            }
+
+            public void Report(LibraryProgress value)
+            {
+                if (value == null)
+                    return;
+
+                if (value.OverallMaximum <= 0)
+                    value.OverallMaximum = _fileCount;
+
+                if (value.OverallValue <= 0)
+                    value.OverallValue = _fileIndex;
+
+                if (string.IsNullOrEmpty(value.OverallText))
+                    value.OverallText = $"File {_fileIndex + 1:N0} of {_fileCount:N0}: {_fileName}";
+
+                _inner.Report(value);
+            }
         }
 
         private void copyToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -456,13 +958,13 @@ namespace LibraryEditor
 
             OpenLibraryDialog.Multiselect = false;
 
-            MLibraryV2.Load = false;
+            CrystalLibraryV2.Load = false;
 
             int count = 0;
 
             for (int i = 0; i < OpenLibraryDialog.FileNames.Length; i++)
             {
-                MLibraryV2 library = new MLibraryV2(OpenLibraryDialog.FileNames[i]);
+                CrystalLibraryV2 library = new CrystalLibraryV2(OpenLibraryDialog.FileNames[i]);
 
                 for (int x = 0; x < library.Count; x++)
                 {
@@ -473,7 +975,7 @@ namespace LibraryEditor
                 library.Close();
             }
 
-            MLibraryV2.Load = true;
+            CrystalLibraryV2.Load = true;
             MessageBox.Show(count.ToString());
         }
 
@@ -1197,12 +1699,12 @@ namespace LibraryEditor
                         reader.Dispose();
                         if (CurrentVersion == 1)
                         {
-                            MLibrary v1Lib = new MLibrary(file);
+                            CrystalLibraryV1 v1Lib = new CrystalLibraryV1(file);
                             v1Lib.MergeToMLibrary(_library, newImages);
                         }
                         else
                         {
-                            MLibraryV2 v2Lib = new MLibraryV2(file);
+                            CrystalLibraryV2 v2Lib = new CrystalLibraryV2(file);
                             v2Lib.MergeToMLibrary(_library, newImages);
                         }
                     }

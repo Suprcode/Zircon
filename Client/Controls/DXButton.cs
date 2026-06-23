@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using Library;
 using System;
 using System.Drawing;
@@ -9,6 +9,10 @@ namespace Client.Controls
 {
     public class DXButton : DXImageControl
     {
+        private RenderTargetResource _generatedButtonRenderTarget;
+        private Size _generatedButtonTextureSize;
+        private ButtonType _generatedButtonTextureType;
+
         #region Properites
 
         #region HasFocus
@@ -129,6 +133,8 @@ namespace Client.Controls
         public event EventHandler<EventArgs> ButtonTypeChanged;
         public virtual void OnButtonTypeChanged(ButtonType oValue, ButtonType nValue)
         {
+            InvalidateGeneratedButtonTexture();
+
             if (Label == null) return;
             switch (nValue)
             {
@@ -210,6 +216,9 @@ namespace Client.Controls
         {
             base.OnDisplayAreaChanged(oValue, nValue);
 
+            if (oValue.Size != nValue.Size)
+                InvalidateGeneratedButtonTexture();
+
             if (Label == null) return;
 
             Label.Size = DisplayArea.Size;
@@ -258,54 +267,21 @@ namespace Client.Controls
         protected override void DrawMirTexture()
         {
             RenderTexture texture = default;
-
-            float previousOpacity = RenderingPipelineManager.GetOpacity();
+            Rectangle? sourceRectangle = null;
 
             if (Library == null)
             {
-                RenderingPipelineManager.SetOpacity(Opacity);
-
-                RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
-                RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
-                RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
-
-                switch (ButtonType)
+                if (!RenderingPipelineManager.SupportsCachedRenderTargets)
                 {
-                    case ButtonType.Default:
-                        DrawDefault();
-                        break;
-                    case ButtonType.SelectedTab:
-                        DrawSelectedTab();
-                        break;
-                    case ButtonType.DeselectedTab:
-                        DrawDeselectedTab();
-                        break;
-                    case ButtonType.SmallButton:
-                        DrawSmallButton();
-                        break;
-                    case ButtonType.AddButton:
-                        InterfaceLibrary.Draw(241, 0, 0, Color.White, false, 1F, ImageType.Image);
-                        break;
-                    case ButtonType.RemoveButton:
-                        InterfaceLibrary.Draw(242, 0, 0, Color.White, false, 1F, ImageType.Image);
-                        break;
-                    case ButtonType.LFGButton:
-                        InterfaceLibrary.Draw(243, 0, 0, Color.White, false, 1F, ImageType.Image);
-                        break;
-                    case ButtonType.OptionsButton:
-                        InterfaceLibrary.Draw(245, 0, 0, Color.White, false, 1F, ImageType.Image);
-                        break;
+                    DrawGeneratedButtonWithScratchSurface();
+                    return;
                 }
 
-                RenderingPipelineManager.SetSurface(oldSurface);
-
-                RenderTexture scratchHandle = RenderingPipelineManager.GetScratchTexture();
-
-                texture = scratchHandle;
+                texture = GetGeneratedButtonTexture();
             }
             else
             {
-                var index = Index;
+                int index = Index;
 
                 if (HoverIndex > 0 && MouseControl == this && IsEnabled && CanBePressed)
                     index = HoverIndex;
@@ -316,6 +292,10 @@ namespace Client.Controls
                 if (index > 0)
                 {
                     MirImage image = Library.CreateImage(index, ImageType.Image);
+
+                    if (image?.Image == null || !image.Image.IsValid)
+                        return;
+
                     texture = image.Image;
                     image.ExpireTime = CEnvir.Now + Config.CacheDuration;
                 }
@@ -326,6 +306,7 @@ namespace Client.Controls
             bool oldBlend = RenderingPipelineManager.IsBlending();
             float oldRate = RenderingPipelineManager.GetBlendRate();
             BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
+            float previousOpacity = RenderingPipelineManager.GetOpacity();
 
             if (Blend)
             {
@@ -336,15 +317,55 @@ namespace Client.Controls
                 RenderingPipelineManager.SetOpacity(Opacity);
             }
 
-            PresentTexture(texture, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0);
+            PresentTexture(texture, sourceRectangle, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0);
 
             if (Blend)
             {
                 RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
             }
             else
-                RenderingPipelineManager.SetOpacity(1F);
+                RenderingPipelineManager.SetOpacity(previousOpacity);
 
+        }
+
+        private void DrawGeneratedButtonWithScratchSurface()
+        {
+            if (InterfaceLibrary == null)
+                return;
+
+            bool oldBlend = RenderingPipelineManager.IsBlending();
+            float oldRate = RenderingPipelineManager.GetBlendRate();
+            BlendMode previousBlendMode = RenderingPipelineManager.GetBlendMode();
+            float previousOpacity = RenderingPipelineManager.GetOpacity();
+
+            RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(RenderingPipelineManager.GetScratchSurface());
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
+
+            DrawGeneratedButtonParts();
+
+            RenderingPipelineManager.SetSurface(oldSurface);
+
+            if (Blend)
+            {
+                RenderingPipelineManager.SetBlend(true, ImageOpacity, BlendMode);
+            }
+            else
+            {
+                RenderingPipelineManager.SetOpacity(Opacity);
+            }
+
+            RenderTexture scratchHandle = RenderingPipelineManager.GetScratchTexture();
+            PresentTexture(scratchHandle, Parent, DisplayArea, ForeColour, this, 0, Pressed ? 1 : 0);
+
+            if (Blend)
+            {
+                RenderingPipelineManager.SetBlend(oldBlend, oldRate, previousBlendMode);
+            }
+            else
+            {
+                RenderingPipelineManager.SetOpacity(previousOpacity);
+            }
         }
 
         public override void OnFocus()
@@ -438,6 +459,82 @@ namespace Client.Controls
             InterfaceLibrary.Draw(42, Size.Width - s.Width, 0, Color.White, false, 1F, ImageType.Image);
         }
 
+        private RenderTexture GetGeneratedButtonTexture()
+        {
+            if (Size.Width <= 0 || Size.Height <= 0 || InterfaceLibrary == null)
+                return default;
+
+            if (!_generatedButtonRenderTarget.IsValid ||
+                _generatedButtonTextureSize != Size ||
+                _generatedButtonTextureType != ButtonType)
+            {
+                InvalidateGeneratedButtonTexture();
+
+                _generatedButtonRenderTarget = RenderingPipelineManager.CreateRenderTarget(Size);
+                _generatedButtonTextureSize = Size;
+                _generatedButtonTextureType = ButtonType;
+
+                RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+                RenderingPipelineManager.SetSurface(_generatedButtonRenderTarget.Surface);
+                RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0, 0, 0, 0), 0f, 0);
+
+                DrawGeneratedButtonParts();
+
+                RenderingPipelineManager.SetSurface(oldSurface);
+            }
+
+            return _generatedButtonRenderTarget.Texture;
+        }
+
+        private void DrawGeneratedButtonParts()
+        {
+            switch (ButtonType)
+            {
+                case ButtonType.Default:
+                    DrawDefault();
+                    break;
+                case ButtonType.SelectedTab:
+                    DrawSelectedTab();
+                    break;
+                case ButtonType.DeselectedTab:
+                    DrawDeselectedTab();
+                    break;
+                case ButtonType.SmallButton:
+                    DrawSmallButton();
+                    break;
+                case ButtonType.AddButton:
+                    InterfaceLibrary.Draw(241, 0, 0, Color.White, false, 1F, ImageType.Image);
+                    break;
+                case ButtonType.RemoveButton:
+                    InterfaceLibrary.Draw(242, 0, 0, Color.White, false, 1F, ImageType.Image);
+                    break;
+                case ButtonType.LFGButton:
+                    InterfaceLibrary.Draw(243, 0, 0, Color.White, false, 1F, ImageType.Image);
+                    break;
+                case ButtonType.OptionsButton:
+                    InterfaceLibrary.Draw(245, 0, 0, Color.White, false, 1F, ImageType.Image);
+                    break;
+            }
+        }
+
+        private void InvalidateGeneratedButtonTexture()
+        {
+            if (_generatedButtonRenderTarget.IsValid)
+            {
+                RenderingPipelineManager.ReleaseRenderTarget(_generatedButtonRenderTarget);
+                _generatedButtonRenderTarget = default;
+            }
+
+            _generatedButtonTextureSize = Size.Empty;
+            _generatedButtonTextureType = default;
+        }
+
+        public override void DisposeTexture()
+        {
+            InvalidateGeneratedButtonTexture();
+            base.DisposeTexture();
+        }
+
         #endregion
 
         #region IDisposable
@@ -455,6 +552,8 @@ namespace Client.Controls
 
                 _HoverIndex = 0;
                 _PressedIndex = 0;
+
+                InvalidateGeneratedButtonTexture();
 
                 if (Label != null)
                 {

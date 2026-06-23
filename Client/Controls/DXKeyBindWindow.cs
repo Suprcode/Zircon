@@ -572,6 +572,13 @@ namespace Client.Controls
             }
 
             UpdateScrollBar();
+            RefreshLineLayout();
+        }
+
+        private void RefreshLineLayout()
+        {
+            UpdateDisplayArea();
+            UpdateClipAreaTree();
         }
 
         #endregion
@@ -660,6 +667,8 @@ namespace Client.Controls
 
         public KeyBindTreeHeader()
         {
+            HideWhenClipped = true;
+
             ExpandButton = new DXButton
             {
                 Parent = this,
@@ -801,6 +810,7 @@ namespace Client.Controls
         public KeyBindTreeEntry()
         {
             DrawTexture = true;
+            HideWhenClipped = true;
             BackColour = Color.FromArgb(25, 20, 0);
 
             BorderColour = Color.FromArgb(198, 166, 99);

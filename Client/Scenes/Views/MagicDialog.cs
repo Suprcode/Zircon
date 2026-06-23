@@ -798,9 +798,7 @@ namespace Client.Scenes.Views
             if (!MapObject.User.Magics.TryGetValue(Info, out magic)) return;
 
             //Get percent.
-            MirImage image = ExperienceBar.Library.CreateImage(812, ImageType.Image);
-
-            if (image == null) return;
+            if (!ExperienceBar.Library.TryGetTexture(812, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
             int x = (ExperienceBar.Size.Width - image.Width) / 2;
             int y = (ExperienceBar.Size.Height - image.Height) / 2;
@@ -832,7 +830,7 @@ namespace Client.Scenes.Views
 
             if (percent == 0) return;
 
-            PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
+            PresentTexture(texture, sourceRectangle, this, new Rectangle(ExperienceBar.DisplayArea.X + x, ExperienceBar.DisplayArea.Y + y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
         }
 
         public void Refresh()

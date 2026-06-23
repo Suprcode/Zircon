@@ -90,7 +90,10 @@ namespace Client.Controls
             Size = new Size(Size.Width, Showing ? Math.Min(ListBox.ScrollBar.MaxValue + NormalHeight + 2, DropDownHeight) : NormalHeight);
 
             if (ListBox != null)
+            {
                 ListBox.Visible = Showing;
+                ListBox.UpdateClipAreaTree();
+            }
 
             ShowingChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -142,6 +145,8 @@ namespace Client.Controls
 
             if (Showing)
                 ListBox.Size = new Size(Size.Width, Size.Height - NormalHeight - 2);
+
+            ListBox.UpdateClipAreaTree();
         }
 
         #endregion

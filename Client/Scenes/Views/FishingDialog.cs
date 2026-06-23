@@ -370,11 +370,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(232, ImageType.Image);
+                if (!library.TryGetTexture(232, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(ProgressBar.DisplayArea.X, ProgressBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ProgressBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(ProgressBar.DisplayArea.X, ProgressBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ProgressBar);
             };
 
             MovingPointer = new DXImageControl

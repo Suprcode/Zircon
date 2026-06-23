@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using Client.Scenes;
 using Client.UserModels;
 using Library;
@@ -1708,6 +1708,27 @@ namespace Client.Controls
             }
         }
 
+        protected override void DrawChildControls()
+        {
+            foreach (DXConfigSection section in Sections)
+                DrawConfigChild(section);
+
+            foreach (DXControl control in Controls)
+            {
+                if (control is DXConfigSection) continue;
+
+                DrawConfigChild(control);
+            }
+        }
+
+        private static void DrawConfigChild(DXControl control)
+        {
+            if (control == null || !control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                return;
+
+            control.Draw();
+        }
+
         #region IDisposable
 
         protected override void Dispose(bool disposing)
@@ -1738,6 +1759,7 @@ namespace Client.Controls
 
         public DXImageControl HeaderImage, FooterImage;
         public List<DXImageControl> BodyImages = new();
+        private int _activeBodyImageCount;
 
         public List<ConfigControl> ConfigControls = new();
 
@@ -1751,6 +1773,7 @@ namespace Client.Controls
         {
             Size = new Size(348, 30);
             PassThrough = true;
+            ApplyRenderingMode();
 
             HeaderImage = new DXImageControl
             {
@@ -1770,8 +1793,7 @@ namespace Client.Controls
                     LibraryFile = LibraryFile.GameInter,
                     Parent = this,
                     IsControl = false,
-                    PassThrough = true,
-                    Visible = false
+                    PassThrough = true
                 });
             }
 
@@ -1795,6 +1817,8 @@ namespace Client.Controls
                 Font = new Font(Config.FontName, CEnvir.FontSize(9F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
             };
+
+            ApplyRenderingMode();
         }
 
         public void AddControl(string label, DXControl control)
@@ -1819,6 +1843,7 @@ namespace Client.Controls
                 Control = control
             });
 
+            ApplyRenderingMode();
             UpdateControlLocations();
         }
 
@@ -1851,6 +1876,7 @@ namespace Client.Controls
 
             int rowCount = (int)Math.Ceiling(ConfigControls.Count / (double)Columns);
             int bodyCount = rowCount * 5;
+            _activeBodyImageCount = bodyCount;
 
             HeaderImage.Location = new Point(0, 0);
 
@@ -1866,7 +1892,6 @@ namespace Client.Controls
                         Parent = this,
                         IsControl = false,
                         PassThrough = true,
-                        Visible = false
                     });
 
                     var firstIndex = Controls.IndexOf(BodyImages[0]);
@@ -1875,13 +1900,76 @@ namespace Client.Controls
                     Controls.Insert(firstIndex, img);
                 }
 
-                BodyImages[i].Visible = true;
                 BodyImages[i].Location = new Point(0, imageY);
 
                 imageY += BodyImages[i].Size.Height;
             }
 
             FooterImage.Location = new Point(0, imageY);
+            ApplyRenderingMode();
+        }
+
+        protected override void OnBeforeDraw()
+        {
+            ApplyRenderingMode();
+            base.OnBeforeDraw();
+        }
+
+        private void ApplyRenderingMode()
+        {
+            bool useCachedTexture = RenderingPipelineManager.SupportsCachedRenderTargets;
+
+            DrawTexture = useCachedTexture;
+
+            if (HeaderImage != null) HeaderImage.Visible = !useCachedTexture;
+            if (FooterImage != null) FooterImage.Visible = !useCachedTexture;
+            if (TitleLabel != null) TitleLabel.Visible = !useCachedTexture;
+
+            for (int i = 0; i < BodyImages.Count; i++)
+                BodyImages[i].Visible = !useCachedTexture && i < _activeBodyImageCount;
+
+            foreach (ConfigControl control in ConfigControls)
+                control.Label.Visible = !useCachedTexture;
+        }
+
+        protected override void OnClearTexture()
+        {
+            if (!DrawTexture) return;
+
+            base.OnClearTexture();
+
+            DrawSectionBackgroundImage(HeaderImage);
+
+            foreach (DXImageControl image in BodyImages)
+                DrawSectionBackgroundImage(image);
+
+            DrawSectionBackgroundImage(FooterImage);
+
+            DrawSectionLabel(TitleLabel);
+
+            foreach (ConfigControl control in ConfigControls)
+                DrawSectionLabel(control.Label);
+        }
+
+        private static void DrawSectionBackgroundImage(DXImageControl image)
+        {
+            if (image?.Library == null || image.Index < 0) return;
+
+            if (!image.Library.TryGetTexture(image.Index, ImageType.Image, out MirImage mirImage, out RenderTexture texture, out Rectangle? sourceRectangle))
+                return;
+
+            Rectangle source = sourceRectangle ?? new Rectangle(0, 0, mirImage.Width, mirImage.Height);
+            if (source.Width <= 0 || source.Height <= 0) return;
+
+            RectangleF destination = new RectangleF(image.Location.X, image.Location.Y, source.Width, source.Height);
+            RenderingPipelineManager.DrawTexture(texture, source, destination, Color.White);
+        }
+
+        private static void DrawSectionLabel(DXLabel label)
+        {
+            if (label == null || label.Size.Width <= 0 || label.Size.Height <= 0) return;
+
+            label.DrawTextureTo(new RectangleF(label.Location.X, label.Location.Y, label.Size.Width, label.Size.Height));
         }
 
         private void LayoutSingleColumnControls(ref int y, int controlHeight)
@@ -1957,6 +2045,35 @@ namespace Client.Controls
                 labelAlignX = 0;
                 controlAlignX = (Size.Width - control.Size.Width) / 2;
             }
+        }
+
+        protected override void DrawChildControls()
+        {
+            if (!DrawTexture)
+            {
+                base.DrawChildControls();
+                return;
+            }
+
+            foreach (ConfigControl control in ConfigControls)
+                DrawConfigChild(control.Control);
+
+            foreach (DXControl control in Controls)
+            {
+                if (control == HeaderImage || control == FooterImage || control == TitleLabel) continue;
+                if (control is DXImageControl image && BodyImages.Contains(image)) continue;
+                if (ConfigControls.Any(x => x.Label == control || x.Control == control)) continue;
+
+                DrawConfigChild(control);
+            }
+        }
+
+        private static void DrawConfigChild(DXControl control)
+        {
+            if (control == null || !control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                return;
+
+            control.Draw();
         }
 
         #region IDisposable

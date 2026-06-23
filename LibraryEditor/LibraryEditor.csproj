@@ -33,14 +33,45 @@
     <None Remove="Resources\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="ConversionOptionsDialog.cs" />
+    <Compile Update="ConversionOptionsDialog.Designer.cs">
+      <DependentUpon>ConversionOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Update="SaveOptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SaveOptionsDialog.Designer.cs">
+      <DependentUpon>SaveOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Update="ProgressDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ProgressDialog.Designer.cs">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </Compile>
     <Compile Update="FixedListView.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="ConversionOptionsDialog.resx">
+      <DependentUpon>ConversionOptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="SaveOptionsDialog.resx">
+      <DependentUpon>SaveOptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="ProgressDialog.resx">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="lizard.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharedRendering\SharedRendering.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BCnEncoder.Net" Version="2.3.0" />
     <PackageReference Include="Ionic.Zlib.Core" Version="1.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>

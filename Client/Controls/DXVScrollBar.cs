@@ -1,5 +1,5 @@
 ﻿using Client.Envir;
-using Client.Rendering;
+using Shared.Rendering;
 using Library;
 using System;
 using System.Drawing;
@@ -222,55 +222,67 @@ namespace Client.Controls
 
         #region Methods
 
-        protected override void OnClearTexture()
+        protected override void DrawControl()
         {
-            base.OnClearTexture();
+            base.DrawControl();
 
-            if (ShowBackgroundSlider)
+            DrawBackgroundSlider();
+        }
+
+        private void DrawBackgroundSlider()
+        {
+            if (!ShowBackgroundSlider)
+                return;
+
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary library)) return;
+
+            if (!library.TryGetTexture(59, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
+
+            const int sectionHeight = 20;
+
+            int topHeight = Math.Min(sectionHeight, Size.Height);
+            Rectangle source = GetSourceRectangle(sourceRectangle, 0, 0, image.Width, topHeight);
+            Rectangle destination = new(DisplayArea.X + 2, DisplayArea.Y, Size.Width, topHeight);
+
+            PresentTexture(texture, source, Parent, destination, Color.White, this);
+
+            int middleHeight = Math.Max(0, Size.Height - topHeight - sectionHeight);
+            int middleSourceHeight = Math.Max(0, image.Height - sectionHeight * 2);
+
+            if (middleHeight > 0 && middleSourceHeight > 0)
             {
-                if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Interface, out MirLibrary library)) return;
+                source = GetSourceRectangle(sourceRectangle, 0, sectionHeight, image.Width, middleSourceHeight);
 
-                MirImage image = library.CreateImage(59, ImageType.Image);
-
-                if (image == null || !image.Image.IsValid) return;
-
-                const int sectionHeight = 20;
-
-                int topHeight = Math.Min(sectionHeight, Size.Height);
-                Rectangle source = new(0, 0, image.Width, topHeight);
-                RectangleF destination = new(2, 0, Size.Width, topHeight);
-
-                RenderingPipelineManager.DrawTexture(image.Image, source, destination, Color.White);
-
-                int middleHeight = Math.Max(0, Size.Height - topHeight - sectionHeight);
-                int middleSourceHeight = Math.Max(0, image.Height - sectionHeight * 2);
-
-                if (middleHeight > 0 && middleSourceHeight > 0)
+                int y = sectionHeight;
+                while (middleHeight > 0)
                 {
-                    source = new Rectangle(0, sectionHeight, image.Width, middleSourceHeight);
+                    int drawHeight = Math.Min(middleSourceHeight, middleHeight);
+                    destination = new Rectangle(DisplayArea.X + 2, DisplayArea.Y + y, Size.Width, drawHeight);
 
-                    int y = sectionHeight;
-                    while (middleHeight > 0)
-                    {
-                        int drawHeight = Math.Min(middleSourceHeight, middleHeight);
-                        destination = new(2, y, Size.Width, drawHeight);
+                    PresentTexture(texture, new Rectangle(source.X, source.Y, source.Width, drawHeight), Parent, destination, Color.White, this);
 
-                        RenderingPipelineManager.DrawTexture(image.Image, new(source.X, source.Y, source.Width, drawHeight), destination, Color.White);
-
-                        y += drawHeight;
-                        middleHeight -= drawHeight;
-                    }
-                }
-
-                int bottomHeight = Math.Min(sectionHeight, Size.Height - topHeight);
-                if (bottomHeight > 0)
-                {
-                    source = new(0, image.Height - sectionHeight, image.Width, bottomHeight);
-                    destination = new(2, Size.Height - bottomHeight, Size.Width, bottomHeight);
-
-                    RenderingPipelineManager.DrawTexture(image.Image, source, destination, Color.White);
+                    y += drawHeight;
+                    middleHeight -= drawHeight;
                 }
             }
+
+            int bottomHeight = Math.Min(sectionHeight, Size.Height - topHeight);
+            if (bottomHeight > 0)
+            {
+                source = GetSourceRectangle(sourceRectangle, 0, image.Height - sectionHeight, image.Width, bottomHeight);
+                destination = new Rectangle(DisplayArea.X + 2, DisplayArea.Bottom - bottomHeight, Size.Width, bottomHeight);
+
+                PresentTexture(texture, source, Parent, destination, Color.White, this);
+            }
+        }
+
+        private static Rectangle GetSourceRectangle(Rectangle? baseSource, int x, int y, int width, int height)
+        {
+            if (!baseSource.HasValue)
+                return new Rectangle(x, y, width, height);
+
+            Rectangle source = baseSource.Value;
+            return new Rectangle(source.X + x, source.Y + y, width, height);
         }
 
         private void UpdateScrollBar()

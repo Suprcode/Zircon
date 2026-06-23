@@ -1,9 +1,9 @@
-﻿using Library;
+using Library;
 using Library.SystemModels;
 using Server.Envir;
-using Server.Extensions;
 using Server.Views.DirectX;
-using SharpDX.Direct3D9;
+using Shared.Envir;
+using Shared.Rendering;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,15 +14,8 @@ using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Threading;
 using System.Windows.Forms;
-using Blend = SharpDX.Direct3D9.Blend;
-using Color4 = SharpDX.Color4;
-using D3DResultCode = SharpDX.Direct3D9.ResultCode;
-using DataRectangle = SharpDX.DataRectangle;
-using Matrix = SharpDX.Matrix;
-using Result = SharpDX.Result;
-
+using Matrix = System.Numerics.Matrix3x2;
 namespace Server.Views
 {
     public partial class MapViewer : DevExpress.XtraBars.Ribbon.RibbonForm
@@ -158,6 +151,7 @@ namespace Server.Views
                 Size = DXPanel.ClientSize,
             };
 
+            DXPanel.SizeChanged += DXPanel_SizeChanged;
             DXPanel.MouseWheel += DXPanel_MouseWheel;
 
             UpdateScrollBars();
@@ -171,9 +165,19 @@ namespace Server.Views
             if (Manager == null) return;
 
             Manager.ResetDevice();
+            if (Map != null)
+                Map.Size = DXPanel.ClientSize;
+
+
+            UpdateScrollBars();
+        }
+
+        private void DXPanel_SizeChanged(object sender, EventArgs e)
+        {
+            if (Manager == null || Map == null) return;
+
+            Manager.ResetDevice();
             Map.Size = DXPanel.ClientSize;
-
-
             UpdateScrollBars();
         }
 
@@ -200,34 +204,13 @@ namespace Server.Views
         {
             try
             {
-                if (Manager.DeviceLost)
+                RenderingPipelineManager.RenderFrame(() =>
                 {
-                    Manager.AttemptReset();
-                    return;
-                }
-
-                Manager.Device.Clear(ClearFlags.Target, Color.Black, 1, 0);
-                Manager.Device.BeginScene();
-                Manager.Sprite.Begin(SpriteFlags.AlphaBlend);
-                Manager.SetSurface(Manager.MainSurface);
-
-                Map.Draw();
-
-                Manager.Sprite.End();
-                Manager.Device.EndScene();
-                Manager.Device.Present();
-
-            }
-            catch (SharpDX.SharpDXException ex)
-            {
-                if (ex.ResultCode == D3DResultCode.DeviceLost)
-                {
-                    Manager.DeviceLost = true;
-                }
-                else
-                {
-                    Manager.AttemptRecovery();
-                }
+                    Manager.RefreshMainSurface();
+                    RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 1, 0);
+                    Manager.SetSurface(Manager.MainSurface);
+                    Map.Draw();
+                });
             }
             catch (Exception ex)
             {
@@ -395,26 +378,23 @@ namespace Server.Views.DirectX
 
         public Dictionary<LibraryFile, MirLibrary> LibraryList = new Dictionary<LibraryFile, MirLibrary>();
 
-        public PresentParameters Parameters { get; private set; }
-        public Device Device { get; private set; }
-        public Sprite Sprite { get; private set; }
-        public Line Line { get; private set; }
+        public MapViewerSprite Sprite { get; private set; }
+        public MapViewerLine Line { get; private set; }
 
-        public Surface CurrentSurface { get; private set; }
-        public Surface MainSurface { get; private set; }
+        public RenderSurface CurrentSurface { get; private set; }
+        public RenderSurface MainSurface { get; private set; }
 
         public float Opacity { get; private set; } = 1F;
 
         public bool Blending { get; private set; }
         public float BlendRate { get; private set; } = 1F;
 
-        public bool DeviceLost { get; set; }
-
         public List<MirImage> TextureList { get; } = new List<MirImage>();
 
-        public Texture AttributeTexture;
+        public RenderTexture AttributeTexture;
 
         public MapControl Map;
+        private bool _pipelineInitialized;
 
         public DXManager(Control target)
         {
@@ -428,245 +408,117 @@ namespace Server.Views.DirectX
             {
                 if (!File.Exists(Path.Combine(Config.ClientPath, pair.Value))) continue;
 
-                LibraryList[pair.Key] = new MirLibrary(Path.Combine(Config.ClientPath, pair.Value), this);
+                LibraryList[pair.Key] = new MirLibrary(Path.Combine(Config.ClientPath, pair.Value));
             }
         }
 
         public void Create()
         {
-            Parameters = new PresentParameters
+            RenderingPipelineManager.Initialize(RenderingPipelineIds.SharpDXD3D11, new RenderingPipelineContext(Target, new RenderingHostSettings
             {
-                Windowed = true,
-                SwapEffect = SwapEffect.Discard,
-                BackBufferFormat = Format.X8R8G8B8,
-                PresentationInterval = PresentInterval.Default,
-                BackBufferWidth = Target.ClientSize.Width,
-                BackBufferHeight = Target.ClientSize.Height,
-                PresentFlags = PresentFlags.LockableBackBuffer,
-            };
-
-            Direct3D direct3D = new Direct3D();
-
-            Device = new Device(direct3D, 0, DeviceType.Hardware, Target.Handle, CreateFlags.HardwareVertexProcessing, Parameters);
+                Now = () => SEnvir.Now,
+                SaveException = ex => SEnvir.SaveError(ex.ToString()),
+                GetActiveSceneSize = () => Target.ClientSize,
+                GetGameSize = () => Target.ClientSize,
+                SetGameSize = _ => { },
+                GetFullScreen = () => false,
+                SetFullScreen = _ => { },
+                GetBorderless = () => false,
+                SetBorderless = _ => { },
+                GetVSync = () => true,
+                SetVSync = _ => { },
+                GetRenderingPipeline = () => RenderingPipelineIds.SharpDXD3D11,
+                SetRenderingPipeline = _ => { },
+                GetUseD3D11SpriteBatch = () => true,
+                SetUseD3D11SpriteBatch = _ => { },
+            }));
+            _pipelineInitialized = true;
 
             LoadTextures();
         }
 
-        private unsafe void LoadTextures()
+        private void LoadTextures()
         {
-            Sprite = new Sprite(Device);
-            Line = new Line(Device) { Width = 1F };
+            Sprite = new MapViewerSprite();
+            Line = new MapViewerLine { Width = 1F };
 
-            MainSurface = Device.GetBackBuffer(0, 0);
+            MainSurface = RenderingPipelineManager.GetCurrentSurface();
             CurrentSurface = MainSurface;
-            Device.SetRenderTarget(0, MainSurface);
 
-            AttributeTexture = new Texture(Device, 48, 32, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+            AttributeTexture = RenderingPipelineManager.CreateTexture(new Size(48, 32), RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
+            byte[] data = new byte[48 * 32 * 4];
 
-            DataRectangle rect = AttributeTexture.LockRectangle(0, LockFlags.Discard);
+            for (int i = 0; i < data.Length; i += 4)
+            {
+                data[i] = 255;
+                data[i + 1] = 255;
+                data[i + 2] = 255;
+                data[i + 3] = 255;
+            }
 
-            int* data = (int*)rect.DataPointer;
-
-            for (int y = 0; y < 32; y++)
-                for (int x = 0; x < 48; x++)
-                    data[y * 48 + x] = -1;
-
-            AttributeTexture.UnlockRectangle(0);
+            using (TextureLock textureLock = RenderingPipelineManager.LockTexture(AttributeTexture, TextureLockMode.Discard))
+                System.Runtime.InteropServices.Marshal.Copy(data, 0, textureLock.DataPointer, data.Length);
 
         }
-        private void CleanUp()
+        
+        public void SetSurface(RenderSurface surface)
         {
-            if (Sprite != null)
-            {
-                if (!Sprite.IsDisposed)
-                    Sprite.Dispose();
+            if (CurrentSurface.Equals(surface)) return;
 
-                Sprite = null;
-            }
-
-            if (Line != null)
-            {
-                if (!Line.IsDisposed)
-                    Line.Dispose();
-
-                Line = null;
-            }
-
-            if (CurrentSurface != null)
-            {
-                if (!CurrentSurface.IsDisposed)
-                    CurrentSurface.Dispose();
-
-                CurrentSurface = null;
-            }
-
-            if (AttributeTexture != null)
-            {
-                if (!AttributeTexture.IsDisposed)
-                    AttributeTexture.Dispose();
-
-                AttributeTexture = null;
-            }
-
-
-            Map?.DisposeTexture();
-
-            for (int i = TextureList.Count - 1; i >= 0; i--)
-                TextureList[i].DisposeTexture();
-        }
-
-        public void SetSurface(Surface surface)
-        {
-            if (CurrentSurface == surface) return;
-
-            Sprite.Flush();
+            Sprite?.Flush();
             CurrentSurface = surface;
-            Device.SetRenderTarget(0, surface);
+            RenderingPipelineManager.SetSurface(surface);
+        }
+
+        public void RestoreMainSurface()
+        {
+            if (!MainSurface.IsValid)
+                return;
+
+            Sprite?.Flush();
+            CurrentSurface = MainSurface;
+            RenderingPipelineManager.SetSurface(MainSurface);
+        }
+
+        public void RefreshMainSurface()
+        {
+            MainSurface = RenderingPipelineManager.GetCurrentSurface();
+            CurrentSurface = MainSurface;
         }
         public void SetOpacity(float opacity)
         {
-            Device.SetSamplerState(0, SamplerState.MagFilter, 0);
-
             if (Opacity == opacity)
                 return;
 
-            Sprite.Flush();
-            Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-
-            if (opacity >= 1 || opacity < 0)
-            {
-                Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-                Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-                Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.One);
-                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb(255, 255, 255, 255).ToArgb());
-            }
-            else
-            {
-                Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
-                Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseBlendFactor);
-                Device.SetRenderState(RenderState.SourceBlendAlpha, Blend.SourceAlpha);
-                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb((byte)(255 * opacity), (byte)(255 * opacity),
-                    (byte)(255 * opacity), (byte)(255 * opacity)).ToArgb());
-            }
-
             Opacity = opacity;
-            Sprite.Flush();
+            RenderingPipelineManager.SetOpacity(opacity);
         }
         public void SetBlend(bool value, float rate = 1F)
         {
-            if (value == Blending) return;
+            if (value == Blending && Math.Abs(rate - BlendRate) < 0.0001F) return;
 
             Blending = value;
-            BlendRate = 1F;
-            Sprite.Flush();
-
-            Sprite.End();
-            if (Blending)
-            {
-                Sprite.Begin(SpriteFlags.DoNotSaveState);
-                Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-
-                Device.SetRenderState(RenderState.SourceBlend, Blend.BlendFactor);
-                Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
-                Device.SetRenderState(RenderState.BlendFactor, System.Drawing.Color.FromArgb((byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate), (byte)(255 * rate)).ToArgb());
-            }
-            else
-            {
-                Sprite.Begin(SpriteFlags.AlphaBlend);
-            }
-
-
-            Device.SetRenderTarget(0, CurrentSurface);
+            BlendRate = rate;
+            RenderingPipelineManager.SetBlend(value, rate);
         }
         public void SetColour(int colour)
         {
-            Sprite.Flush();
-
-            if (colour == 0)
-            {
-                Device.SetTextureStageState(0, TextureStage.ColorOperation, TextureOperation.Modulate);
-                Device.SetTextureStageState(0, TextureStage.ColorArg1, TextureArgument.Texture);
-            }
-            else
-            {
-
-                Device.SetTextureStageState(0, TextureStage.ColorOperation, TextureOperation.SelectArg1);
-                Device.SetTextureStageState(0, TextureStage.ColorArg1, TextureArgument.Current);
-            }
-
-            Sprite.Flush();
         }
 
         public void ResetDevice()
         {
-            CleanUp();
-
-            DeviceLost = true;
-
-            if (Target.ClientSize.Width == 0 || Target.ClientSize.Height == 0) return;
-
-            PresentParameters parameters = Parameters;
-
-            if (parameters.BackBufferWidth == 0 || parameters.BackBufferHeight == 0)
-                return;
-
-            parameters.BackBufferWidth = Target.ClientSize.Width;
-            parameters.BackBufferHeight = Target.ClientSize.Height;
-
-            Device.Reset(parameters);
-            Parameters = parameters;
-            LoadTextures();
+            Map?.DisposeTexture();
+            RenderingPipelineManager.ResetDevice();
+            MainSurface = RenderingPipelineManager.GetCurrentSurface();
+            CurrentSurface = MainSurface;
         }
         public void AttemptReset()
         {
-            try
-            {
-                Result result = Device.TestCooperativeLevel();
-
-                if (result.Code == D3DResultCode.DeviceLost.Code) return;
-
-                if (result.Code == D3DResultCode.DeviceNotReset.Code)
-                {
-                    ResetDevice();
-                    return;
-                }
-
-                if (result.Code != D3DResultCode.Success.Code) return;
-
-                DeviceLost = false;
-            }
-            catch (Exception ex)
-            {
-                SEnvir.SaveError(ex.ToString());
-            }
         }
         public void AttemptRecovery()
         {
-            try
-            {
-                Sprite.End();
-            }
-            catch
-            {
-            }
-
-            try
-            {
-                Device.EndScene();
-            }
-            catch
-            {
-            }
-
-            try
-            {
-                MainSurface = Device.GetBackBuffer(0, 0);
-                CurrentSurface = MainSurface;
-                Device.SetRenderTarget(0, MainSurface);
-            }
-            catch
-            {
-            }
+            MainSurface = RenderingPipelineManager.GetCurrentSurface();
+            CurrentSurface = MainSurface;
         }
 
         public static void ConfigureGraphics(Graphics graphics)
@@ -690,53 +542,12 @@ namespace Server.Views.DirectX
             {
                 IsDisposed = true;
 
-                Parameters = default;
-                if (Sprite != null)
-                {
-                    if (!Sprite.IsDisposed)
-                        Sprite.Dispose();
-
-                    Sprite = null;
-                }
-
-                if (Line != null)
-                {
-                    if (!Line.IsDisposed)
-                        Line.Dispose();
-
-                    Line = null;
-                }
-
-                if (CurrentSurface != null)
-                {
-                    if (!CurrentSurface.IsDisposed)
-                        CurrentSurface.Dispose();
-
-                    CurrentSurface = null;
-                }
-
-                if (MainSurface != null)
-                {
-                    if (!MainSurface.IsDisposed)
-                        MainSurface.Dispose();
-
-                    MainSurface = null;
-                }
-
-                if (Device != null)
-                {
-                    if (!Device.IsDisposed)
-                        Device.Dispose();
-
-                    Device = null;
-                }
-                if (AttributeTexture != null)
-                {
-                    if (!AttributeTexture.IsDisposed)
-                        AttributeTexture.Dispose();
-
-                    AttributeTexture = null;
-                }
+                RenderingPipelineManager.ReleaseTexture(AttributeTexture);
+                AttributeTexture = default;
+                Sprite = null;
+                Line = null;
+                CurrentSurface = default;
+                MainSurface = default;
 
                 Map?.DisposeTexture();
 
@@ -752,7 +563,12 @@ namespace Server.Views.DirectX
                 Opacity = 0;
                 Blending = false;
                 BlendRate = 0;
-                DeviceLost = false;
+
+                if (_pipelineInitialized)
+                {
+                    RenderingPipelineManager.Shutdown();
+                    _pipelineInitialized = false;
+                }
 
 
             }
@@ -773,743 +589,55 @@ namespace Server.Views.DirectX
 
     }
 
-    public sealed class MirLibrary : IDisposable
+    public sealed class MapViewerSprite
     {
-        public readonly object LoadLocker = new object();
+        public Matrix Transform = Matrix.Identity;
 
-        public string FileName;
-
-        private FileStream _FStream;
-        private BinaryReader _BReader;
-
-        public bool Loaded, Loading;
-
-        public MirImage[] Images;
-
-        public readonly DXManager Manager;
-
-        public MirLibrary(string fileName, DXManager manager)
+        public void Flush()
         {
-            _FStream = File.OpenRead(fileName);
-            _BReader = new BinaryReader(_FStream);
-
-            Manager = manager;
+            RenderingPipelineManager.FlushSprite();
         }
-        public void ReadLibrary()
-        {
-            lock (LoadLocker)
-            {
-                if (Loading) return;
-                Loading = true;
-            }
 
-            if (_BReader == null)
-            {
-                Loaded = true;
+        public void Draw(RenderTexture texture, Vector3 center, Vector3 position, Color colour)
+        {
+            Draw(texture, null, center, position, colour);
+        }
+
+        public void Draw(RenderTexture texture, Rectangle source, Vector3 center, Vector3 position, Color colour)
+        {
+            Draw(texture, (Rectangle?)source, center, position, colour);
+        }
+
+        public void Draw(RenderTexture texture, Rectangle? source, Vector3 center, Vector3 position, Color colour)
+        {
+            if (!texture.IsValid)
                 return;
-            }
 
-            using (MemoryStream mstream = new MemoryStream(_BReader.ReadBytes(_BReader.ReadInt32())))
-            using (BinaryReader reader = new BinaryReader(mstream))
-            {
-                int value = reader.ReadInt32();
-
-                int count = value & 0x1FFFFFF;
-                var version = (value >> 25) & 0x7F;
-
-                if (version == 0)
-                {
-                    count = value;
-                }
-
-                Images = new MirImage[count];
-
-                for (int i = 0; i < Images.Length; i++)
-                {
-                    if (!reader.ReadBoolean()) continue;
-
-                    Images[i] = new MirImage(reader, Manager, version);
-                }
-            }
-
-
-            Loaded = true;
+            Matrix transform = Matrix.CreateTranslation(position.X, position.Y) * Transform;
+            RenderingPipelineManager.DrawTexture(texture, source, transform, center, Vector3.Zero, colour);
         }
-
-
-        public Size GetSize(int index)
-        {
-            if (!CheckImage(index)) return Size.Empty;
-
-            return new Size(Images[index].Width, Images[index].Height);
-        }
-        public Point GetOffSet(int index)
-        {
-            if (!CheckImage(index)) return Point.Empty;
-
-            return new Point(Images[index].OffSetX, Images[index].OffSetY);
-        }
-        public MirImage GetImage(int index)
-        {
-            if (!CheckImage(index)) return null;
-
-            return Images[index];
-        }
-        public MirImage CreateImage(int index, ImageType type)
-        {
-            if (!CheckImage(index)) return null;
-
-            MirImage image = Images[index];
-
-            Texture texture;
-
-            switch (type)
-            {
-                case ImageType.Image:
-                    if (!image.ImageValid) image.CreateImage(_BReader);
-                    texture = image.Image;
-                    break;
-                case ImageType.Shadow:
-                    if (!image.ShadowValid) image.CreateShadow(_BReader);
-                    texture = image.Shadow;
-                    break;
-                case ImageType.Overlay:
-                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
-                    texture = image.Overlay;
-                    break;
-                default:
-                    return null;
-            }
-
-            if (texture == null) return null;
-
-            return image;
-        }
-
-        private bool CheckImage(int index)
-        {
-            if (!Loaded) ReadLibrary();
-
-            while (!Loaded)
-                Thread.Sleep(1);
-
-            return index >= 0 && index < Images.Length && Images[index] != null;
-        }
-
-        public bool VisiblePixel(int index, Point location, bool accurate = true, bool offSet = false)
-        {
-            if (!CheckImage(index)) return false;
-
-            MirImage image = Images[index];
-
-            if (offSet)
-                location = new Point(location.X - image.OffSetX, location.Y - image.OffSetY);
-
-            return image.VisiblePixel(location, accurate);
-        }
-
-        public void Draw(int index, float x, float y, Color colour, Rectangle area, float opacity, ImageType type, byte shadow = 0)
-        {
-            Draw(index, x, y, colour.ToColor4(), area, opacity, type, shadow);
-        }
-
-        public void Draw(int index, float x, float y, Color4 colour, Rectangle area, float opacity, ImageType type, byte shadow = 0)
-        {
-            if (!CheckImage(index)) return;
-
-            MirImage image = Images[index];
-
-            Texture texture;
-
-            float oldOpacity = Manager.Opacity;
-            switch (type)
-            {
-                case ImageType.Image:
-                    if (!image.ImageValid) image.CreateImage(_BReader);
-                    texture = image.Image;
-                    break;
-                case ImageType.Shadow:
-                    if (!image.ShadowValid) image.CreateShadow(_BReader);
-                    texture = image.Shadow;
-
-                    if (texture == null)
-                    {
-                        if (!image.ImageValid) image.CreateImage(_BReader);
-                        texture = image.Image;
-
-                        switch (image.ShadowType)
-                        {
-                            case 177:
-                            case 176:
-                            case 49:
-                                Matrix m = Matrix.Scaling(1F, 0.5f, 0);
-
-                                m.M21 = -0.50F;
-                                Manager.Sprite.Transform = m * Matrix.Translation(x + image.Height / 2, y, 0);
-
-                                Manager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
-                                if (oldOpacity != 0.5F) Manager.SetOpacity(0.5F);
-
-                                Manager.Sprite.Draw(texture, Vector3.Zero, Vector3.Zero, Color.Black);
-
-                                Manager.SetOpacity(oldOpacity);
-                                Manager.Sprite.Transform = Matrix.Identity;
-                                Manager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
-
-                                image.ExpireTime = SEnvir.Now.AddMinutes(10);
-                                break;
-                            case 50:
-                                if (oldOpacity != 0.5F) Manager.SetOpacity(0.5F);
-
-                                Manager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), Color.Black);
-
-                                Manager.SetOpacity(oldOpacity);
-
-                                image.ExpireTime = SEnvir.Now.AddMinutes(10);
-                                break;
-                        }
-
-
-
-                        return;
-                    }
-                    break;
-                case ImageType.Overlay:
-                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
-                    texture = image.Overlay;
-                    break;
-                default:
-                    return;
-            }
-
-            if (texture == null) return;
-
-            Manager.SetOpacity(opacity);
-
-            Manager.Sprite.Draw(texture, area, Vector3.Zero, new Vector3(x, y, 0), colour);
-
-            Manager.SetOpacity(oldOpacity);
-
-            image.ExpireTime = SEnvir.Now.AddMinutes(10);
-        }
-        public void Draw(int index, float x, float y, Color colour, bool useOffSet, float opacity, ImageType type)
-        {
-            Draw(index, x, y, colour.ToColor4(), useOffSet, opacity, type);
-        }
-
-        public void Draw(int index, float x, float y, Color4 colour, bool useOffSet, float opacity, ImageType type)
-        {
-            if (!CheckImage(index)) return;
-
-            MirImage image = Images[index];
-
-            Texture texture;
-
-            float oldOpacity = Manager.Opacity;
-            switch (type)
-            {
-                case ImageType.Image:
-                    if (!image.ImageValid) image.CreateImage(_BReader);
-                    texture = image.Image;
-                    if (useOffSet)
-                    {
-                        x += image.OffSetX;
-                        y += image.OffSetY;
-                    }
-                    break;
-                case ImageType.Shadow:
-                    if (!image.ShadowValid) image.CreateShadow(_BReader);
-                    texture = image.Shadow;
-
-                    if (useOffSet)
-                    {
-                        x += image.ShadowOffSetX;
-                        y += image.ShadowOffSetY;
-                    }
-
-
-                    if (texture == null)
-                    {
-                        if (!image.ImageValid) image.CreateImage(_BReader);
-                        texture = image.Image;
-
-                        switch (image.ShadowType)
-                        {
-                            case 177:
-                            case 176:
-                            case 49:
-                                Matrix m = Matrix.Scaling(1F, 0.5f, 0);
-
-                                m.M21 = -0.50F;
-                                Manager.Sprite.Transform = m * Matrix.Translation(x + image.Height / 2, y, 0);
-
-                                Manager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
-                                if (oldOpacity != 0.5F) Manager.SetOpacity(0.5F);
-
-                                Manager.Sprite.Draw(texture, Vector3.Zero, Vector3.Zero, Color.Black);
-
-                                Manager.SetOpacity(oldOpacity);
-                                Manager.Sprite.Transform = Matrix.Identity;
-                                Manager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
-
-                                image.ExpireTime = SEnvir.Now.AddMinutes(10);
-                                break;
-                            case 50:
-                                if (oldOpacity != 0.5F) Manager.SetOpacity(0.5F);
-
-                                Manager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), Color.Black);
-
-                                Manager.SetOpacity(oldOpacity);
-
-                                image.ExpireTime = SEnvir.Now.AddMinutes(10);
-                                break;
-                        }
-
-
-
-                        return;
-                    }
-
-                    break;
-                case ImageType.Overlay:
-                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
-                    texture = image.Overlay;
-
-                    if (useOffSet)
-                    {
-                        x += image.OffSetX;
-                        y += image.OffSetY;
-                    }
-                    break;
-                default:
-                    return;
-            }
-
-            if (texture == null) return;
-
-            Manager.SetOpacity(opacity);
-
-            Manager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), colour);
-
-            Manager.SetOpacity(oldOpacity);
-
-            image.ExpireTime = SEnvir.Now.AddMinutes(10);
-        }
-        public void DrawBlend(int index, float x, float y, Color colour, bool useOffSet, float rate, ImageType type, byte shadow = 0)
-        {
-            DrawBlend(index, x, y, colour.ToColor4(), useOffSet, rate, type, shadow);
-        }
-
-        public void DrawBlend(int index, float x, float y, Color4 colour, bool useOffSet, float rate, ImageType type, byte shadow = 0)
-        {
-            if (!CheckImage(index)) return;
-
-            MirImage image = Images[index];
-
-            Texture texture;
-
-            switch (type)
-            {
-                case ImageType.Image:
-                    if (!image.ImageValid) image.CreateImage(_BReader);
-                    texture = image.Image;
-                    if (useOffSet)
-                    {
-                        x += image.OffSetX;
-                        y += image.OffSetY;
-                    }
-                    break;
-                case ImageType.Shadow:
-                    return;
-                case ImageType.Overlay:
-                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
-                    texture = image.Overlay;
-
-                    if (useOffSet)
-                    {
-                        x += image.OffSetX;
-                        y += image.OffSetY;
-                    }
-                    break;
-                default:
-                    return;
-            }
-            if (texture == null) return;
-
-
-            bool oldBlend = Manager.Blending;
-            float oldRate = Manager.BlendRate;
-
-            Manager.SetBlend(true, rate);
-
-            Manager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), colour);
-
-            Manager.SetBlend(oldBlend, oldRate);
-
-            image.ExpireTime = SEnvir.Now.AddMinutes(10);
-        }
-
-
-        #region IDisposable Support
-
-        public bool IsDisposed { get; private set; }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                IsDisposed = true;
-
-                if (Images != null)
-                {
-                    foreach (MirImage image in Images)
-                        image?.Dispose();
-                }
-
-
-                Images = null;
-
-
-                _FStream?.Dispose();
-                _FStream = null;
-
-                _BReader?.Dispose();
-                _BReader = null;
-
-                Loading = false;
-                Loaded = false;
-            }
-
-        }
-
-        ~MirLibrary()
-        {
-            Dispose(false);
-        }
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
-
     }
 
-    public sealed class MirImage : IDisposable
+    public sealed class MapViewerLine
     {
-        public int Version;
-        public int Position;
-
-        public DXManager Manager;
-
-        #region Texture
-
-        public short Width;
-        public short Height;
-        public short OffSetX;
-        public short OffSetY;
-        public byte ShadowType;
-        public Texture Image;
-        public bool ImageValid { get; private set; }
-        public unsafe byte* ImageData;
-        public int ImageDataSize
+        public float Width
         {
-            get
-            {
-                int w = Width + (4 - Width % 4) % 4;
-                int h = Height + (4 - Height % 4) % 4;
-
-                if (Version > 0)
-                {
-                    return w * h;
-                }
-                else
-                {
-                    return w * h / 2;
-                }
-            }
-        }
-        #endregion
-
-        #region Shadow
-        public short ShadowWidth;
-        public short ShadowHeight;
-
-        public short ShadowOffSetX;
-        public short ShadowOffSetY;
-
-        public Texture Shadow;
-        public bool ShadowValid { get; private set; }
-        public unsafe byte* ShadowData;
-        public int ShadowDataSize
-        {
-            get
-            {
-                int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
-                int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
-
-                if (Version > 0)
-                {
-                    return w * h;
-                }
-                else
-                {
-                    return w * h / 2;
-                }
-            }
-        }
-        #endregion
-
-        #region Overlay
-        public short OverlayWidth;
-        public short OverlayHeight;
-
-        public Texture Overlay;
-        public bool OverlayValid { get; private set; }
-        public unsafe byte* OverlayData;
-        public int OverlayDataSize
-        {
-            get
-            {
-                int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
-                int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
-
-                if (Version > 0)
-                {
-                    return w * h;
-                }
-                else
-                {
-                    return w * h / 2;
-                }
-            }
-        }
-        #endregion
-
-        private Format DrawFormat
-        {
-            get
-            {
-                return Version switch
-                {
-                    0 => Format.Dxt1,
-                    _ => Format.Dxt5,
-                };
-            }
+            get { return RenderingPipelineManager.GetLineWidth(); }
+            set { RenderingPipelineManager.SetLineWidth(value); }
         }
 
-        public DateTime ExpireTime;
-
-        public MirImage(BinaryReader reader, DXManager manager, int version)
+        public void Draw(IReadOnlyList<Vector2> points, Color colour)
         {
-            Version = version;
-            Position = reader.ReadInt32();
+            if (points == null || points.Count == 0)
+                return;
 
-            Width = reader.ReadInt16();
-            Height = reader.ReadInt16();
-            OffSetX = reader.ReadInt16();
-            OffSetY = reader.ReadInt16();
+            List<LinePoint> linePoints = new List<LinePoint>(points.Count);
+            foreach (Vector2 point in points)
+                linePoints.Add(new LinePoint(point.X, point.Y));
 
-            ShadowType = reader.ReadByte();
-            ShadowWidth = reader.ReadInt16();
-            ShadowHeight = reader.ReadInt16();
-            ShadowOffSetX = reader.ReadInt16();
-            ShadowOffSetY = reader.ReadInt16();
-
-            OverlayWidth = reader.ReadInt16();
-            OverlayHeight = reader.ReadInt16();
-
-            Manager = manager;
+            RenderingPipelineManager.DrawLine(linePoints, colour);
         }
-
-        public unsafe bool VisiblePixel(Point p, bool acurrate)
-        {
-            if (p.X < 0 || p.Y < 0 || !ImageValid || ImageData == null) return false;
-
-            int w = Width + (4 - Width % 4) % 4;
-            int h = Height + (4 - Height % 4) % 4;
-
-            if (p.X >= w || p.Y >= h)
-                return false;
-
-            int x = (p.X - p.X % 4) / 4;
-            int y = (p.Y - p.Y % 4) / 4;
-            int index = (y * (w / 4) + x) * 8;
-
-            int col0 = ImageData[index + 1] << 8 | ImageData[index], col1 = ImageData[index + 3] << 8 | ImageData[index + 2];
-
-            if (col0 == 0 && col1 == 0) return false;
-
-            if (!acurrate || col1 < col0) return true;
-
-            x = p.X % 4;
-            y = p.Y % 4;
-            x *= 2;
-
-            return (ImageData[index + 4 + y] & 1 << x) >> x != 1 || (ImageData[index + 4 + y] & 1 << x + 1) >> x + 1 != 1;
-        }
-
-
-        public unsafe void DisposeTexture()
-        {
-            if (Image != null && !Image.IsDisposed)
-                Image.Dispose();
-
-            if (Shadow != null && !Shadow.IsDisposed)
-                Shadow.Dispose();
-
-            if (Overlay != null && !Overlay.IsDisposed)
-                Overlay.Dispose();
-
-            ImageData = null;
-            ShadowData = null;
-            OverlayData = null;
-
-            Image = null;
-            Shadow = null;
-            Overlay = null;
-
-            ImageValid = false;
-            ShadowValid = false;
-            OverlayValid = false;
-
-            ExpireTime = DateTime.MinValue;
-
-            Manager.TextureList.Remove(this);
-        }
-
-        public unsafe void CreateImage(BinaryReader reader)
-        {
-            if (Position == 0) return;
-
-            int w = Width + (4 - Width % 4) % 4;
-            int h = Height + (4 - Height % 4) % 4;
-
-            if (w == 0 || h == 0) return;
-
-            Image = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
-            DataRectangle rect = Image.LockRectangle(0, LockFlags.Discard);
-            ImageData = (byte*)rect.DataPointer;
-
-            lock (reader)
-            {
-                reader.BaseStream.Seek(Position, SeekOrigin.Begin);
-                byte[] buffer = reader.ReadBytes(ImageDataSize);
-                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
-            }
-
-            Image.UnlockRectangle(0);
-
-            ImageValid = true;
-            ExpireTime = SEnvir.Now.AddMinutes(30);
-            Manager.TextureList.Add(this);
-        }
-        public unsafe void CreateShadow(BinaryReader reader)
-        {
-            if (Position == 0) return;
-
-            if (!ImageValid)
-                CreateImage(reader);
-
-            int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
-            int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
-
-            if (w == 0 || h == 0) return;
-
-            Shadow = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
-            DataRectangle rect = Shadow.LockRectangle(0, LockFlags.Discard);
-            ShadowData = (byte*)rect.DataPointer;
-
-            lock (reader)
-            {
-                reader.BaseStream.Seek(Position + ImageDataSize, SeekOrigin.Begin);
-                byte[] buffer = reader.ReadBytes(ShadowDataSize);
-                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
-            }
-
-            Shadow.UnlockRectangle(0);
-
-            ShadowValid = true;
-        }
-        public unsafe void CreateOverlay(BinaryReader reader)
-        {
-            if (Position == 0) return;
-
-            if (!ImageValid)
-                CreateImage(reader);
-
-            int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
-            int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
-
-            if (w == 0 || h == 0) return;
-
-            Overlay = new Texture(Manager.Device, w, h, 1, Usage.None, DrawFormat, Pool.Managed);
-            DataRectangle rect = Overlay.LockRectangle(0, LockFlags.Discard);
-            OverlayData = (byte*)rect.DataPointer;
-
-            lock (reader)
-            {
-                reader.BaseStream.Seek(Position + ImageDataSize + ShadowDataSize, SeekOrigin.Begin);
-                byte[] buffer = reader.ReadBytes(OverlayDataSize);
-                SharpDX.Utilities.Write(rect.DataPointer, buffer, 0, buffer.Length);
-            }
-
-            Overlay.UnlockRectangle(0);
-
-            OverlayValid = true;
-        }
-
-
-        #region IDisposable Support
-
-        public bool IsDisposed { get; private set; }
-
-        public void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                IsDisposed = true;
-
-                Position = 0;
-
-                Width = 0;
-                Height = 0;
-                OffSetX = 0;
-                OffSetY = 0;
-
-                ShadowWidth = 0;
-                ShadowHeight = 0;
-                ShadowOffSetX = 0;
-                ShadowOffSetY = 0;
-
-                OverlayWidth = 0;
-                OverlayHeight = 0;
-            }
-
-        }
-
-        public void Dispose()
-        {
-            Dispose(!IsDisposed);
-            GC.SuppressFinalize(this);
-        }
-        ~MirImage()
-        {
-            Dispose(false);
-        }
-
-        #endregion
-
     }
-
-    public enum ImageType
-    {
-        Image,
-        Shadow,
-        Overlay,
-    }
-
 
     public class MapControl : IDisposable
     {
@@ -1819,26 +947,28 @@ namespace Server.Views.DirectX
 
         #region Texture
         public bool TextureValid { get; set; }
-        public Texture ControlTexture { get; set; }
+        public RenderTexture ControlTexture { get; set; }
         public Size TextureSize { get; set; }
-        public Surface ControlSurface { get; set; }
+        public RenderSurface ControlSurface { get; set; }
+        public RenderTargetResource ControlRenderTarget { get; set; }
         public DateTime ExpireTime { get; protected set; }
 
         protected virtual void CreateTexture()
         {
-            if (ControlTexture == null || Size != TextureSize)
+            if (!ControlTexture.IsValid || Size != TextureSize)
             {
                 DisposeTexture();
                 TextureSize = Size;
-                ControlTexture = new Texture(Manager.Device, TextureSize.Width, TextureSize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default); ;
-                ControlSurface = ControlTexture.GetSurfaceLevel(0);
+                ControlRenderTarget = RenderingPipelineManager.CreateRenderTarget(TextureSize);
+                ControlTexture = ControlRenderTarget.Texture;
+                ControlSurface = ControlRenderTarget.Surface;
                 Manager.Map = this;
             }
 
-            Surface previous = Manager.CurrentSurface;
+            RenderSurface previous = Manager.CurrentSurface;
             Manager.SetSurface(ControlSurface);
 
-            Manager.Device.Clear(ClearFlags.Target, Color.Black, 0, 0);
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 0, 0);
 
             OnClearTexture();
 
@@ -1855,21 +985,15 @@ namespace Server.Views.DirectX
         }
         public virtual void DisposeTexture()
         {
-            if (ControlTexture != null)
-            {
-                if (!ControlTexture.IsDisposed)
-                    ControlTexture.Dispose();
+            bool wasCurrentSurface = ControlSurface.IsValid && Manager.CurrentSurface.Equals(ControlSurface);
 
-                ControlTexture = null;
-            }
+            if (wasCurrentSurface)
+                Manager.RestoreMainSurface();
 
-            if (ControlSurface != null)
-            {
-                if (!ControlSurface.IsDisposed)
-                    ControlSurface.Dispose();
-
-                ControlSurface = null;
-            }
+            RenderingPipelineManager.ReleaseRenderTarget(ControlRenderTarget);
+            ControlRenderTarget = default;
+            ControlTexture = default;
+            ControlSurface = default;
 
             TextureSize = Size.Empty;
             ExpireTime = DateTime.MinValue;
@@ -1914,19 +1038,24 @@ namespace Server.Views.DirectX
             int minY = Math.Max(0, StartY - 1);
             int maxY = Math.Min(Height - 1, StartY + (int)Math.Ceiling(Size.Height / CellHeight));
 
-            Matrix scale = Matrix.Scaling(Zoom, Zoom, 1);
+            TextureFilterMode oldTextureFilter = RenderingPipelineManager.GetTextureFilter();
+            RenderingPipelineManager.SetTextureFilter(Zoom < 1F ? TextureFilterMode.Linear : TextureFilterMode.Point);
+
+            Matrix scale = Matrix.CreateScale(Zoom, Zoom);
 
             for (int y = minY; y <= maxY; y++)
             {
                 if (y % 2 != 0) continue;
 
                 float drawY = (y - StartY) * BaseCellHeight;
+                float scaledDrawY = drawY * Zoom;
 
                 for (int x = minX; x <= maxX; x++)
                 {
                     if (x % 2 != 0) continue;
 
                     float drawX = (x - StartX) * BaseCellWidth;
+                    float scaledDrawX = drawX * Zoom;
 
                     Cell tile = Cells[x, y];
 
@@ -1937,19 +1066,19 @@ namespace Server.Views.DirectX
 
                     if (!Manager.LibraryList.TryGetValue(file, out library)) continue;
 
-                    Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY, 0), scale);
-
-                    library.Draw(tile.BackImage, 0, 0, Color.White, false, 1F, ImageType.Image);
+                    library.Draw(tile.BackImage, scaledDrawX, scaledDrawY, Color.White, false, 1F, ImageType.Image, Zoom);
                 }
             }
 
             for (int y = minY; y <= maxY; y++)
             {
                 float drawY = (y - StartY + 1) * BaseCellHeight;
+                float scaledDrawY = drawY * Zoom;
 
                 for (int x = minX; x <= maxX; x++)
                 {
                     float drawX = (x - StartX) * BaseCellWidth;
+                    float scaledDrawX = drawX * Zoom;
 
                     Cell cell = Cells[x, y];
 
@@ -1965,11 +1094,9 @@ namespace Server.Views.DirectX
 
                         Size s = library.GetSize(index);
 
-                        if ((s.Width == CellWidth && s.Height == CellHeight) || (s.Width == CellWidth * 2 && s.Height == CellHeight * 2))
+                        if ((s.Width == BaseCellWidth && s.Height == BaseCellHeight) || (s.Width == BaseCellWidth * 2 && s.Height == BaseCellHeight * 2))
                         {
-                            Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY - BaseCellHeight, 0), scale);
-
-                            library.Draw(index, 0, 0, Color.White, false, 1F, ImageType.Image);
+                            library.Draw(index, scaledDrawX, scaledDrawY - BaseCellHeight * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
                         }
                     }
 
@@ -1983,11 +1110,9 @@ namespace Server.Views.DirectX
 
                         Size s = library.GetSize(index);
 
-                        if ((s.Width == CellWidth && s.Height == CellHeight) || (s.Width == CellWidth * 2 && s.Height == CellHeight * 2))
+                        if ((s.Width == BaseCellWidth && s.Height == BaseCellHeight) || (s.Width == BaseCellWidth * 2 && s.Height == BaseCellHeight * 2))
                         {
-                            Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY - BaseCellHeight, 0), scale);
-
-                            library.Draw(index, 0, 0, Color.White, false, 1F, ImageType.Image);
+                            library.Draw(index, scaledDrawX, scaledDrawY - BaseCellHeight * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
                         }
                     }
                 }
@@ -1997,10 +1122,12 @@ namespace Server.Views.DirectX
             for (int y = minY; y <= maxY; y++)
             {
                 float drawY = (y - StartY + 1) * BaseCellHeight;
+                float scaledDrawY = drawY * Zoom;
 
                 for (int x = minX; x <= maxX; x++)
                 {
                     float drawX = (x - StartX) * BaseCellWidth;
+                    float scaledDrawX = drawX * Zoom;
 
                     Cell cell = Cells[x, y];
 
@@ -2020,14 +1147,12 @@ namespace Server.Views.DirectX
 
                         Size s = library.GetSize(index);
 
-                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
+                        if ((s.Width != BaseCellWidth || s.Height != BaseCellHeight) && (s.Width != BaseCellWidth * 2 || s.Height != BaseCellHeight * 2))
                         {
-                            Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY - s.Height, 0), scale);
-
                             if (!blend)
-                                library.Draw(index, 0, 0, Color.White, false, 1F, ImageType.Image);
+                                library.Draw(index, scaledDrawX, scaledDrawY - s.Height * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
                             else
-                                library.DrawBlend(index, 0, 0, Color.White, false, 0.5F, ImageType.Image);
+                                library.DrawBlend(index, Zoom, Color.White, scaledDrawX, scaledDrawY - s.Height * Zoom, 0F, 0.5F, ImageType.Image);
                         }
                     }
 
@@ -2046,14 +1171,12 @@ namespace Server.Views.DirectX
                         Size s = library.GetSize(index);
 
 
-                        if ((s.Width != CellWidth || s.Height != CellHeight) && (s.Width != CellWidth * 2 || s.Height != CellHeight * 2))
+                        if ((s.Width != BaseCellWidth || s.Height != BaseCellHeight) && (s.Width != BaseCellWidth * 2 || s.Height != BaseCellHeight * 2))
                         {
-                            Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY - s.Height, 0), scale);
-
                             if (!blend)
-                                library.Draw(index, 0, 0, Color.White, false, 1F, ImageType.Image);
+                                library.Draw(index, scaledDrawX, scaledDrawY - s.Height * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
                             else
-                                library.DrawBlend(index, 0, 0, Color.White, false, 0.5F, ImageType.Image);
+                                library.DrawBlend(index, Zoom, Color.White, scaledDrawX, scaledDrawY - s.Height * Zoom, 0F, 0.5F, ImageType.Image);
                         }
                     }
                 }
@@ -2081,7 +1204,7 @@ namespace Server.Views.DirectX
                     {
                         if (!DrawAttributes) continue;
 
-                        Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY, 0), scale);
+                        Manager.Sprite.Transform = Matrix.CreateTranslation(drawX, drawY) * scale;
 
                         //markLibrary.Draw(59, 0, 0, Color.White, false, 1F, ImageType.Image);
                         Manager.Sprite.Draw(Manager.AttributeTexture, Vector3.Zero, Vector3.Zero, Color.Red);
@@ -2091,7 +1214,7 @@ namespace Server.Views.DirectX
                         if (!DrawSelection) continue;
                         if (!Selection.Contains(new Point(x, y))) continue;
 
-                        Manager.Sprite.Transform = Matrix.Multiply(Matrix.Translation(drawX, drawY, 0), scale);
+                        Manager.Sprite.Transform = Matrix.CreateTranslation(drawX, drawY) * scale;
 
                         Manager.Sprite.Draw(Manager.AttributeTexture, Vector3.Zero, Vector3.Zero, Color.Yellow);
 
@@ -2130,6 +1253,7 @@ namespace Server.Views.DirectX
 
 
 
+            RenderingPipelineManager.SetTextureFilter(oldTextureFilter);
             Manager.Sprite.Transform = Matrix.Identity;
         }
 
@@ -2214,21 +1338,15 @@ namespace Server.Views.DirectX
             {
                 IsDisposed = true;
 
-                if (ControlTexture != null)
-                {
-                    if (!ControlTexture.IsDisposed)
-                        ControlTexture.Dispose();
+                bool wasCurrentSurface = ControlSurface.IsValid && Manager.CurrentSurface.Equals(ControlSurface);
 
-                    ControlTexture = null;
-                }
+                if (wasCurrentSurface)
+                    Manager.RestoreMainSurface();
 
-                if (ControlSurface != null)
-                {
-                    if (!ControlSurface.IsDisposed)
-                        ControlSurface.Dispose();
-
-                    ControlSurface = null;
-                }
+                RenderingPipelineManager.ReleaseRenderTarget(ControlRenderTarget);
+                ControlRenderTarget = default;
+                ControlTexture = default;
+                ControlSurface = default;
 
                 _Size = Size.Empty;
 

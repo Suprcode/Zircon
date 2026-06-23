@@ -34,7 +34,6 @@
   <ItemGroup>
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.Desktop" Version="4.2.0" />
-    <PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
     <PackageReference Include="SharpDX.DirectSound" Version="4.2.0" />
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
@@ -42,6 +41,7 @@
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
     <ProjectReference Include="..\PluginCore\PluginCore.csproj" />
     <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj" />
+    <ProjectReference Include="..\SharedRendering\SharedRendering.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />

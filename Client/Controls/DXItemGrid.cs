@@ -1,4 +1,4 @@
-﻿using Client.Rendering;
+﻿using Shared.Rendering;
 using Library;
 using System;
 using System.Drawing;

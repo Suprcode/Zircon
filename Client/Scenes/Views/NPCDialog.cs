@@ -2,6 +2,7 @@
 using Client.Envir;
 using Client.Extensions;
 using Client.Models;
+using Shared.Rendering;
 using Client.UserModels;
 using Library;
 using Library.SystemModels;
@@ -35,13 +36,14 @@ namespace Client.Scenes.Views
         private string CurrentPageSay;
         private bool Rolling = true;
 
-        private DXImageControl HeaderImage, FooterImage;
-        private DXImageControl[] RowImages = new DXImageControl[6];
         private DXVScrollBar ScrollBar;
+        private int _visibleRowCount;
+        private int _footerY = _HeaderHeight;
 
         private const int _HeaderHeight = 140;
         private const int _FooterHeight = 64;
         private const int _RowHeight = 20;
+        private const int _MaxRowCount = 6;
 
         public override WindowType Type => WindowType.None;
 
@@ -140,37 +142,8 @@ namespace Client.Scenes.Views
             Sort = true;
             DropShadow = true;
             HasFooter = false;
-
-            HeaderImage = new DXImageControl
-            {
-                Parent = this,
-                Index = 380,
-                LibraryFile = LibraryFile.GameInter,
-                Location = new Point(0, 0),
-                IsControl = false
-            };
-
-            for (int i = 0; i < RowImages.Length; i++)
-            {
-                RowImages[i] = new DXImageControl
-                {
-                    Parent = this,
-                    Index = 381,
-                    LibraryFile = LibraryFile.GameInter,
-                    Location = new Point(0, _HeaderHeight + i * _RowHeight),
-                    IsControl = false,
-                    Visible = false
-                };
-            }
-
-            FooterImage = new DXImageControl
-            {
-                Parent = this,
-                Index = 382,
-                LibraryFile = LibraryFile.GameInter,
-                Location = new Point(0, _HeaderHeight),
-                IsControl = false
-            };
+            HasTitle = false;
+            DrawTexture = false;
 
             PageTextContainer = new DXControl
             {
@@ -233,6 +206,50 @@ namespace Client.Scenes.Views
 
         #region Methods
 
+        public override void Draw()
+        {
+            if (!IsVisible || Size.Width == 0 || Size.Height == 0) return;
+
+            OnBeforeDraw();
+            DrawNPCFrame();
+            RenderingPipelineManager.FlushSprite();
+            OnBeforeChildrenDraw();
+            DrawChildControls();
+            DrawBorder();
+            OnAfterDraw();
+        }
+
+        protected override void DrawChildControls()
+        {
+            foreach (DXControl control in Controls)
+            {
+                if (control == TitleLabel) continue;
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0) continue;
+
+                control.Draw();
+            }
+        }
+
+        private void DrawNPCFrame()
+        {
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary library)) return;
+
+            DrawNPCFrameImage(library, 380, Point.Empty);
+
+            for (int i = 0; i < _visibleRowCount; i++)
+                DrawNPCFrameImage(library, 381, new Point(0, _HeaderHeight + i * _RowHeight));
+
+            DrawNPCFrameImage(library, 382, new Point(0, _footerY));
+        }
+
+        private void DrawNPCFrameImage(MirLibrary library, int index, Point location)
+        {
+            Size size = library.GetSize(index);
+            if (size.Width <= 0 || size.Height <= 0) return;
+
+            library.Draw(index, DisplayArea.X + location.X, DisplayArea.Y + location.Y, Color.White, new Rectangle(Point.Empty, size), 1F, ImageType.Image);
+        }
+
         private void SetSize(int pageTextHeight)
         {
             var overflow = pageTextHeight - _HeaderHeight - _FooterHeight + 35 + 45;
@@ -240,21 +257,18 @@ namespace Client.Scenes.Views
 
             if (overflow > 0)
             {
-                additionalRowCount = Math.Min(overflow / _RowHeight, RowImages.Length);
+                additionalRowCount = Math.Min(overflow / _RowHeight, _MaxRowCount);
             }
 
-            for (int i = 0; i < RowImages.Length; i++)
-            {
-                RowImages[i].Visible = additionalRowCount > i;
-            }
-
-            FooterImage.Location = new Point(0, _HeaderHeight + additionalRowCount * _RowHeight);
+            _visibleRowCount = additionalRowCount;
+            _footerY = _HeaderHeight + additionalRowCount * _RowHeight;
 
             Size = new Size(380, _HeaderHeight + _FooterHeight + additionalRowCount * _RowHeight);
 
             PageText.Size = new Size(350, pageTextHeight);
-            PageTextContainer.Size = new Size(350, Size.Height - 45 - 14);
-            ScrollBar.Size = new Size(14, Size.Height - 45 - 14);
+            int textViewportHeight = Math.Max(0, Size.Height - PageTextContainer.Location.Y - 14);
+            PageTextContainer.Size = new Size(350, textViewportHeight);
+            ScrollBar.Size = new Size(14, Math.Max(0, Size.Height - ScrollBar.Location.Y - 14));
 
             ScrollBar.MaxValue = PageText.Size.Height - PageTextContainer.Size.Height + 14;
         }
@@ -283,6 +297,10 @@ namespace Client.Scenes.Views
             int height = DXLabel.GetHeight(PageText, PageText.Size.Width).Height;
             SetSize(height);
             ProcessText(CurrentPageSay);
+            ScrollBar.Value = 0;
+            ScrollBar_ValueChanged(ScrollBar, EventArgs.Empty);
+            PageText.UpdateDisplayArea();
+            PageText.UpdateClipAreaTree();
 
             Opened = true;
 
@@ -565,38 +583,6 @@ namespace Client.Scenes.Views
                         PageText.Dispose();
 
                     PageText = null;
-                }
-
-                if (HeaderImage != null)
-                {
-                    if (!HeaderImage.IsDisposed)
-                        HeaderImage.Dispose();
-
-                    HeaderImage = null;
-                }
-
-                if (FooterImage != null)
-                {
-                    if (!FooterImage.IsDisposed)
-                        FooterImage.Dispose();
-
-                    FooterImage = null;
-                }
-
-                if (RowImages != null)
-                {
-                    for (int i = 0; i < RowImages.Length; i++)
-                    {
-                        if (RowImages[i] != null)
-                        {
-                            if (!RowImages[i].IsDisposed)
-                                RowImages[i].Dispose();
-
-                            RowImages[i] = null;
-                        }
-                    }
-
-                    RowImages = null;
                 }
 
                 if (CloseButton != null)
@@ -4432,11 +4418,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(4310, ImageType.Image);
+                if (!library.TryGetTexture(4310, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(ExperienceBar.DisplayArea.X, ExperienceBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(ExperienceBar.DisplayArea.X, ExperienceBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, ExperienceBar);
             };
 
             HungerBar = new DXControl
@@ -4460,11 +4444,9 @@ namespace Client.Scenes.Views
 
                 if (percent == 0) return;
 
-                MirImage image = library.CreateImage(4311, ImageType.Image);
+                if (!library.TryGetTexture(4311, ImageType.Image, out MirImage image, out var texture, out var sourceRectangle)) return;
 
-                if (image == null) return;
-
-                PresentTexture(image.Image, this, new Rectangle(HungerBar.DisplayArea.X, HungerBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HungerBar);
+                PresentTexture(texture, sourceRectangle, this, new Rectangle(HungerBar.DisplayArea.X, HungerBar.DisplayArea.Y, (int)(image.Width * percent), image.Height), Color.White, HungerBar);
             };
 
             NameLabel = new DXLabel

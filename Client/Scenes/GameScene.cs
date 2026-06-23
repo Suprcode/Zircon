@@ -3660,13 +3660,19 @@ namespace Client.Scenes
             }
 
             if (ItemLabel != null && !ItemLabel.IsDisposed)
+            {
                 ItemLabel.Draw();
+            }
 
             if (MagicLabel != null && !MagicLabel.IsDisposed)
+            {
                 MagicLabel.Draw();
+            }
 
             if (FameLabel != null && !FameLabel.IsDisposed)
+            {
                 FameLabel.Draw();
+            }
         }
 
         public void Displacement(MirDirection direction, Point location, bool clearQueue = false)
