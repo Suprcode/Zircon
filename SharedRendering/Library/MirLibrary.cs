@@ -357,14 +357,26 @@ namespace Shared.Rendering
                 return false;
             }
 
-            texture = page.Texture;
             sourceRectangle = image.GetAtlasSourceRectangle(type);
-            if (sourceRectangle.Width <= 0 || sourceRectangle.Height <= 0)
+            if (!IsValidAtlasSourceRectangle(sourceRectangle, image, type, page))
             {
                 return false;
             }
 
+            texture = page.Texture;
             return true;
+        }
+
+        private static bool IsValidAtlasSourceRectangle(Rectangle sourceRectangle, MirImage image, ImageType type, MirAtlasPage page)
+        {
+            if (sourceRectangle.X < 0 || sourceRectangle.Y < 0 || sourceRectangle.Width <= 0 || sourceRectangle.Height <= 0)
+                return false;
+
+            if (sourceRectangle.Right > page.Width || sourceRectangle.Bottom > page.Height)
+                return false;
+
+            Size expectedSize = image.GetLayerSize(type);
+            return sourceRectangle.Width == expectedSize.Width && sourceRectangle.Height == expectedSize.Height;
         }
 
         private static ZlAtlasLayer GetAtlasLayer(ImageType type)
@@ -830,12 +842,7 @@ namespace Shared.Rendering
                 case ImageType.Shadow:
                     return;
                 case ImageType.Overlay:
-                    if (!image.OverlayValid)
-                    {
-                        image.CreateOverlay(_BReader, ReadCompressedPayload);
-                    }
-
-                    texture = image.Overlay;
+                    texture = GetRenderTexture(image, type, out sourceRectangle);
 
                     if (useOffSet)
                     {
@@ -1254,6 +1261,16 @@ namespace Shared.Rendering
                 ImageType.Shadow => ShadowSourceRectangle,
                 ImageType.Overlay => OverlaySourceRectangle,
                 _ => SourceRectangle,
+            };
+        }
+
+        public Size GetLayerSize(ImageType type)
+        {
+            return type switch
+            {
+                ImageType.Shadow => new Size(ShadowWidth, ShadowHeight),
+                ImageType.Overlay => new Size(OverlayWidth, OverlayHeight),
+                _ => new Size(Width, Height),
             };
         }
 
