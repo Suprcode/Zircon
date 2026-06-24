@@ -3501,7 +3501,13 @@ namespace Server.Envir
 
 
 
-            EmailService.SendActivationEmail(account);
+            if (IsServerMachineIPAddress(con.IPAddress))
+            {
+                account.Activated = true;
+                account.ActivationKey = null;
+            }
+            else
+                EmailService.SendActivationEmail(account);
 
             con.Enqueue(new S.NewAccount { Result = NewAccountResult.Success });
 
