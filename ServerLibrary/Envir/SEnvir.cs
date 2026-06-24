@@ -3408,7 +3408,7 @@ namespace Server.Envir
                 return;
             }
 
-            var list = AccountInfoList.Binding.Where(e => e.CreationIP == con.IPAddress).ToList();
+            var list = IsServerMachineIPAddress(con.IPAddress) ? [] : AccountInfoList.Binding.Where(e => e.CreationIP == con.IPAddress).ToList();
             int nowcount = 0;
             int todaycount = 0;
 
@@ -3501,12 +3501,37 @@ namespace Server.Envir
 
 
 
-            EmailService.SendActivationEmail(account);
+            if (IsServerMachineIPAddress(con.IPAddress))
+            {
+                account.Activated = true;
+                account.ActivationKey = null;
+            }
+            else
+                EmailService.SendActivationEmail(account);
 
             con.Enqueue(new S.NewAccount { Result = NewAccountResult.Success });
 
             Log($"[Account Created] Account: {account.EMailAddress}, IP Address: {con.IPAddress}, Security: {p.CheckSum}");
         }
+
+        private static bool IsServerMachineIPAddress(string ipAddress)
+        {
+            if (!IPAddress.TryParse(ipAddress, out IPAddress address)) return false;
+
+            if (IPAddress.IsLoopback(address)) return true;
+
+            if (IPAddress.TryParse(Config.IPAddress, out IPAddress serverAddress) && address.Equals(serverAddress)) return true;
+
+            try
+            {
+                return Dns.GetHostAddresses(Dns.GetHostName()).Any(hostAddress => hostAddress.Equals(address));
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static void ChangePassword(C.ChangePassword p, SConnection con)
         {
             if (!Config.AllowChangePassword)
