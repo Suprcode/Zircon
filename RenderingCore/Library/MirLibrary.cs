@@ -287,6 +287,7 @@ namespace Shared.Rendering
                     {
                         image.CreateImage(_BReader, ReadCompressedPayload);
                     }
+                    sourceRectangle = new Rectangle(0, 0, image.Width, image.Height);
                     return image.Image;
                 case ImageType.Shadow:
                     if (TryGetAtlasTexture(image, type, out RenderTexture shadowAtlasTexture, out Rectangle shadowAtlasSource))
@@ -299,6 +300,7 @@ namespace Shared.Rendering
                     {
                         image.CreateShadow(_BReader, ReadCompressedPayload);
                     }
+                    sourceRectangle = new Rectangle(0, 0, image.ShadowWidth, image.ShadowHeight);
                     return image.Shadow;
                 case ImageType.Overlay:
                     if (TryGetAtlasTexture(image, type, out RenderTexture overlayAtlasTexture, out Rectangle overlayAtlasSource))
@@ -311,6 +313,7 @@ namespace Shared.Rendering
                     {
                         image.CreateOverlay(_BReader, ReadCompressedPayload);
                     }
+                    sourceRectangle = new Rectangle(0, 0, image.OverlayWidth, image.OverlayHeight);
                     return image.Overlay;
                 default:
                     return default;
