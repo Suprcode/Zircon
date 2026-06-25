@@ -43,7 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibraryCore\LibraryCore.csproj" />
-    <ProjectReference Include="..\SharedRendering\SharedRendering.csproj" />
+    <ProjectReference Include="..\RenderingCore\RenderingCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zircon.ico" />

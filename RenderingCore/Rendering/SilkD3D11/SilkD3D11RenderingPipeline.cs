@@ -1052,7 +1052,7 @@ namespace Shared.Rendering.SilkD3D11
                 Path.Combine(baseDirectory, "Rendering", "SilkD3D11", "Shaders", fileName),
                 Path.Combine(AppContext.BaseDirectory, "Rendering", "SilkD3D11", "Shaders", fileName),
                 Path.Combine("Rendering", "SilkD3D11", "Shaders", fileName),
-                Path.Combine("SharedRendering", "Rendering", "SilkD3D11", "Shaders", fileName)
+                Path.Combine("RenderingCore", "Rendering", "SilkD3D11", "Shaders", fileName)
             };
 
             foreach (string candidate in candidates)

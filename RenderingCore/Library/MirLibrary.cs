@@ -1,5 +1,5 @@
 using Shared.Envir;
-using SharedRendering.LibraryFormat;
+using RenderingCore.LibraryFormat;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

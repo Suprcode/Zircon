@@ -6,7 +6,6 @@ namespace LibraryEditor
 {
     partial class SaveOptionsDialog
     {
-        private IContainer components;
         private CheckBox _buildAtlasCheckBox;
         private CheckBox _buildShadowAtlasCheckBox;
         private CheckBox _buildOverlayAtlasCheckBox;
@@ -27,9 +26,6 @@ namespace LibraryEditor
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
-                components.Dispose();
-
             base.Dispose(disposing);
         }
 

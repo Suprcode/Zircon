@@ -31,7 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugin", "Plugin", "{1B4B2D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryEditor", "LibraryEditor\LibraryEditor.csproj", "{80CD53D9-39A8-4B5C-9845-F264F8C2C8BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedRendering", "SharedRendering\SharedRendering.csproj", "{F9218128-CC1E-4F24-A924-CBA229FDAA20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderingCore", "RenderingCore\RenderingCore.csproj", "{F9218128-CC1E-4F24-A924-CBA229FDAA20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
