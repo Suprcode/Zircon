@@ -24,8 +24,6 @@ namespace Server.Views
         public DXManager Manager;
         public MapControl Map;
 
-        public DateTime AnimationTime;
-
         #region MapRegion
 
         [Browsable(false)]
@@ -150,7 +148,6 @@ namespace Server.Views
             {
                 Size = DXPanel.ClientSize,
             };
-
             DXPanel.SizeChanged += DXPanel_SizeChanged;
             DXPanel.MouseWheel += DXPanel_MouseWheel;
 
@@ -183,18 +180,15 @@ namespace Server.Views
 
         public void Process()
         {
+            if (Map == null || Manager == null)
+                return;
+
             UpdateEnvironment();
             RenderEnvironment();
         }
 
         private void UpdateEnvironment()
         {
-            if (SEnvir.Now > AnimationTime && Map != null)
-            {
-                AnimationTime = SEnvir.Now.AddMilliseconds(100);
-                Map.Animation++;
-            }
-
             MapSizeLabel.Caption = string.Format(@"Map Size: {0},{1}", Map.Width, Map.Height);
             PositionLabel.Caption = string.Format(@"Position: {0},{1}", Map.MouseLocation.X, Map.MouseLocation.Y);
             SelectedCellsLabel.Caption = string.Format(@"Selected Cells: {0}", Map.Selection.Count);
@@ -204,13 +198,16 @@ namespace Server.Views
         {
             try
             {
-                RenderingPipelineManager.RenderFrame(() =>
+                using (Manager.ActivatePipeline())
                 {
-                    Manager.RefreshMainSurface();
-                    RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 1, 0);
-                    Manager.SetSurface(Manager.MainSurface);
-                    Map.Draw();
-                });
+                    RenderingPipelineManager.RenderFrame(() =>
+                    {
+                        Manager.RefreshMainSurface();
+                        RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 1, 0);
+                        Manager.SetSurface(Manager.MainSurface);
+                        Map.Draw();
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -394,7 +391,7 @@ namespace Server.Views.DirectX
         public RenderTexture AttributeTexture;
 
         public MapControl Map;
-        private bool _pipelineInitialized;
+        private RenderingPipelineManager.PipelineSession _pipelineSession;
 
         public DXManager(Control target)
         {
@@ -414,7 +411,7 @@ namespace Server.Views.DirectX
 
         public void Create()
         {
-            RenderingPipelineManager.Initialize(RenderingPipelineIds.SharpDXD3D11, new RenderingPipelineContext(Target, new RenderingHostSettings
+            _pipelineSession = RenderingPipelineManager.CreateSession(RenderingPipelineIds.SilkDXD3D11, new RenderingPipelineContext(Target, new RenderingHostSettings
             {
                 Now = () => SEnvir.Now,
                 SaveException = ex => SEnvir.SaveError(ex.ToString()),
@@ -427,37 +424,47 @@ namespace Server.Views.DirectX
                 SetBorderless = _ => { },
                 GetVSync = () => true,
                 SetVSync = _ => { },
-                GetRenderingPipeline = () => RenderingPipelineIds.SharpDXD3D11,
+                GetRenderingPipeline = () => RenderingPipelineIds.SilkDXD3D11,
                 SetRenderingPipeline = _ => { },
                 GetUseD3D11SpriteBatch = () => true,
                 SetUseD3D11SpriteBatch = _ => { },
             }));
-            _pipelineInitialized = true;
 
             LoadTextures();
         }
 
+        public IDisposable ActivatePipeline()
+        {
+            if (_pipelineSession == null)
+                throw new InvalidOperationException("Rendering pipeline has not been initialized.");
+
+            return _pipelineSession.Activate();
+        }
+
         private void LoadTextures()
         {
-            Sprite = new MapViewerSprite();
-            Line = new MapViewerLine { Width = 1F };
-
-            MainSurface = RenderingPipelineManager.GetCurrentSurface();
-            CurrentSurface = MainSurface;
-
-            AttributeTexture = RenderingPipelineManager.CreateTexture(new Size(48, 32), RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
-            byte[] data = new byte[48 * 32 * 4];
-
-            for (int i = 0; i < data.Length; i += 4)
+            using (ActivatePipeline())
             {
-                data[i] = 255;
-                data[i + 1] = 255;
-                data[i + 2] = 255;
-                data[i + 3] = 255;
-            }
+                Sprite = new MapViewerSprite();
+                Line = new MapViewerLine { Width = 1F };
 
-            using (TextureLock textureLock = RenderingPipelineManager.LockTexture(AttributeTexture, TextureLockMode.Discard))
-                System.Runtime.InteropServices.Marshal.Copy(data, 0, textureLock.DataPointer, data.Length);
+                MainSurface = RenderingPipelineManager.GetCurrentSurface();
+                CurrentSurface = MainSurface;
+
+                AttributeTexture = RenderingPipelineManager.CreateTexture(new Size(48, 32), RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
+                byte[] data = new byte[48 * 32 * 4];
+
+                for (int i = 0; i < data.Length; i += 4)
+                {
+                    data[i] = 255;
+                    data[i + 1] = 255;
+                    data[i + 2] = 255;
+                    data[i + 3] = 255;
+                }
+
+                using (TextureLock textureLock = RenderingPipelineManager.LockTexture(AttributeTexture, TextureLockMode.Discard))
+                    System.Runtime.InteropServices.Marshal.Copy(data, 0, textureLock.DataPointer, data.Length);
+            }
 
         }
         
@@ -507,18 +514,24 @@ namespace Server.Views.DirectX
 
         public void ResetDevice()
         {
-            Map?.DisposeTexture();
-            RenderingPipelineManager.ResetDevice();
-            MainSurface = RenderingPipelineManager.GetCurrentSurface();
-            CurrentSurface = MainSurface;
+            using (ActivatePipeline())
+            {
+                Map?.DisposeTexture();
+                RenderingPipelineManager.ResetDevice();
+                MainSurface = RenderingPipelineManager.GetCurrentSurface();
+                CurrentSurface = MainSurface;
+            }
         }
         public void AttemptReset()
         {
         }
         public void AttemptRecovery()
         {
-            MainSurface = RenderingPipelineManager.GetCurrentSurface();
-            CurrentSurface = MainSurface;
+            using (ActivatePipeline())
+            {
+                MainSurface = RenderingPipelineManager.GetCurrentSurface();
+                CurrentSurface = MainSurface;
+            }
         }
 
         public static void ConfigureGraphics(Graphics graphics)
@@ -542,14 +555,20 @@ namespace Server.Views.DirectX
             {
                 IsDisposed = true;
 
-                RenderingPipelineManager.ReleaseTexture(AttributeTexture);
-                AttributeTexture = default;
-                Sprite = null;
-                Line = null;
-                CurrentSurface = default;
-                MainSurface = default;
+                if (_pipelineSession != null)
+                {
+                    using (ActivatePipeline())
+                    {
+                        RenderingPipelineManager.ReleaseTexture(AttributeTexture);
+                        AttributeTexture = default;
+                        Sprite = null;
+                        Line = null;
+                        CurrentSurface = default;
+                        MainSurface = default;
 
-                Map?.DisposeTexture();
+                        Map?.DisposeTexture();
+                    }
+                }
 
                 if (Graphics != null)
                 {
@@ -564,11 +583,8 @@ namespace Server.Views.DirectX
                 Blending = false;
                 BlendRate = 0;
 
-                if (_pipelineInitialized)
-                {
-                    RenderingPipelineManager.Shutdown();
-                    _pipelineInitialized = false;
-                }
+                _pipelineSession?.Dispose();
+                _pipelineSession = null;
 
 
             }
@@ -968,11 +984,28 @@ namespace Server.Views.DirectX
             RenderSurface previous = Manager.CurrentSurface;
             Manager.SetSurface(ControlSurface);
 
-            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 0, 0);
+            try
+            {
+                RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 0, 0);
 
-            OnClearTexture();
+                TextureFilterMode oldTextureFilter = RenderingPipelineManager.GetTextureFilter();
+                RenderingPipelineManager.SetTextureFilter(Zoom < 1F ? TextureFilterMode.Linear : TextureFilterMode.Point);
 
-            Manager.SetSurface(previous);
+                try
+                {
+                    OnClearTexture();
+                }
+                finally
+                {
+                    Manager.Sprite.Flush();
+                    RenderingPipelineManager.SetTextureFilter(oldTextureFilter);
+                }
+            }
+            finally
+            {
+                Manager.SetSurface(previous);
+            }
+
             TextureValid = true;
         }
         protected virtual void OnClearTexture()
@@ -983,6 +1016,7 @@ namespace Server.Views.DirectX
 
             //DrawPlacements();
         }
+
         public virtual void DisposeTexture()
         {
             bool wasCurrentSurface = ControlSurface.IsValid && Manager.CurrentSurface.Equals(ControlSurface);
@@ -1010,7 +1044,18 @@ namespace Server.Views.DirectX
         {
             if (Size.Width <= 0 || Size.Height <= 0) return;
 
-            DrawControl();
+            TextureFilterMode oldTextureFilter = RenderingPipelineManager.GetTextureFilter();
+            RenderingPipelineManager.SetTextureFilter(Zoom < 1F ? TextureFilterMode.Linear : TextureFilterMode.Point);
+
+            try
+            {
+                DrawFloor();
+            }
+            finally
+            {
+                Manager.Sprite.Flush();
+                RenderingPipelineManager.SetTextureFilter(oldTextureFilter);
+            }
         }
         protected virtual void DrawControl()
         {
@@ -1038,223 +1083,156 @@ namespace Server.Views.DirectX
             int minY = Math.Max(0, StartY - 1);
             int maxY = Math.Min(Height - 1, StartY + (int)Math.Ceiling(Size.Height / CellHeight));
 
-            TextureFilterMode oldTextureFilter = RenderingPipelineManager.GetTextureFilter();
-            RenderingPipelineManager.SetTextureFilter(Zoom < 1F ? TextureFilterMode.Linear : TextureFilterMode.Point);
-
             Matrix scale = Matrix.CreateScale(Zoom, Zoom);
 
-            for (int y = minY; y <= maxY; y++)
+            try
             {
-                if (y % 2 != 0) continue;
-
-                float drawY = (y - StartY) * BaseCellHeight;
-                float scaledDrawY = drawY * Zoom;
-
-                for (int x = minX; x <= maxX; x++)
+                for (int y = minY; y <= maxY; y++)
                 {
-                    if (x % 2 != 0) continue;
+                    if (y % 2 != 0) continue;
 
-                    float drawX = (x - StartX) * BaseCellWidth;
-                    float scaledDrawX = drawX * Zoom;
+                    float drawY = (y - StartY) * BaseCellHeight;
+                    float scaledDrawY = drawY * Zoom;
 
-                    Cell tile = Cells[x, y];
-
-                    MirLibrary library;
-                    LibraryFile file;
-
-                    if (!Libraries.KROrder.TryGetValue(tile.BackFile, out file)) continue;
-
-                    if (!Manager.LibraryList.TryGetValue(file, out library)) continue;
-
-                    library.Draw(tile.BackImage, scaledDrawX, scaledDrawY, Color.White, false, 1F, ImageType.Image, Zoom);
-                }
-            }
-
-            for (int y = minY; y <= maxY; y++)
-            {
-                float drawY = (y - StartY + 1) * BaseCellHeight;
-                float scaledDrawY = drawY * Zoom;
-
-                for (int x = minX; x <= maxX; x++)
-                {
-                    float drawX = (x - StartX) * BaseCellWidth;
-                    float scaledDrawX = drawX * Zoom;
-
-                    Cell cell = Cells[x, y];
-
-                    MirLibrary library;
-                    LibraryFile file;
-
-                    if (Libraries.KROrder.TryGetValue(cell.MiddleFile, out file) && file != LibraryFile.Tilesc && Manager.LibraryList.TryGetValue(file, out library))
+                    for (int x = minX; x <= maxX; x++)
                     {
-                        int index = cell.MiddleImage - 1;
+                        if (x % 2 != 0) continue;
 
-                        if (cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255)
-                            continue; //   index += GameScene.Game.MapControl.Animation % cell.MiddleAnimationFrame;
+                        float drawX = (x - StartX) * BaseCellWidth;
+                        float scaledDrawX = drawX * Zoom;
 
-                        Size s = library.GetSize(index);
+                        Cell tile = Cells[x, y];
 
-                        if ((s.Width == BaseCellWidth && s.Height == BaseCellHeight) || (s.Width == BaseCellWidth * 2 && s.Height == BaseCellHeight * 2))
-                        {
-                            library.Draw(index, scaledDrawX, scaledDrawY - BaseCellHeight * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
-                        }
+                        if (!Libraries.KROrder.TryGetValue(tile.BackFile, out LibraryFile file)) continue;
+                        if (!Manager.LibraryList.TryGetValue(file, out MirLibrary library)) continue;
+
+                        library.Draw(tile.BackImage, scaledDrawX, scaledDrawY, Color.White, false, 1F, ImageType.Image, Zoom);
                     }
+                }
 
+                maxY = Math.Min(Height - 1, StartY + 20 + (int)Math.Ceiling(Size.Height / CellHeight));
+                for (int y = minY; y <= maxY; y++)
+                {
+                    float drawY = (y - StartY + 1) * BaseCellHeight;
+                    float scaledDrawY = drawY * Zoom;
 
-                    if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc && Manager.LibraryList.TryGetValue(file, out library))
+                    for (int x = minX; x <= maxX; x++)
                     {
-                        int index = cell.FrontImage - 1;
+                        float drawX = (x - StartX) * BaseCellWidth;
+                        float scaledDrawX = drawX * Zoom;
 
-                        if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
-                            continue; //  index += GameScene.Game.MapControl.Animation % cell.FrontAnimationFrame;
+                        Cell cell = Cells[x, y];
 
-                        Size s = library.GetSize(index);
-
-                        if ((s.Width == BaseCellWidth && s.Height == BaseCellHeight) || (s.Width == BaseCellWidth * 2 && s.Height == BaseCellHeight * 2))
+                        if (Libraries.KROrder.TryGetValue(cell.MiddleFile, out LibraryFile file) && file != LibraryFile.Tilesc && Manager.LibraryList.TryGetValue(file, out MirLibrary library))
                         {
-                            library.Draw(index, scaledDrawX, scaledDrawY - BaseCellHeight * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
+                            int index = cell.MiddleImage - 1;
+                            bool blend = false;
+
+                            if (cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255)
+                            {
+                                blend = cell.MiddleAnimationBlend;
+                                index += Animation % cell.MiddleAnimationCount;
+                            }
+
+                            DrawMapLayer(library, index, blend, scaledDrawX, scaledDrawY);
+                        }
+
+                        if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc && Manager.LibraryList.TryGetValue(file, out library))
+                        {
+                            int index = cell.FrontImage - 1;
+                            bool blend = false;
+
+                            if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
+                            {
+                                blend = cell.FrontAnimationBlend;
+                                index += Animation % cell.FrontAnimationCount;
+                            }
+
+                            DrawMapLayer(library, index, blend, scaledDrawX, scaledDrawY);
                         }
                     }
                 }
-            }
 
-            maxY = Math.Min(Height - 1, StartY + 20 + (int)Math.Ceiling(Size.Height / CellHeight));
-            for (int y = minY; y <= maxY; y++)
-            {
-                float drawY = (y - StartY + 1) * BaseCellHeight;
-                float scaledDrawY = drawY * Zoom;
+                maxY = Math.Min(Height - 1, StartY + (int)Math.Ceiling(Size.Height / CellHeight));
 
-                for (int x = minX; x <= maxX; x++)
+                if (DrawAttributes || DrawSelection)
                 {
-                    float drawX = (x - StartX) * BaseCellWidth;
-                    float scaledDrawX = drawX * Zoom;
-
-                    Cell cell = Cells[x, y];
-
-                    MirLibrary library;
-                    LibraryFile file;
-
-                    if (Libraries.KROrder.TryGetValue(cell.MiddleFile, out file) && file != LibraryFile.Tilesc && Manager.LibraryList.TryGetValue(file, out library))
+                    Manager.SetOpacity(0.35F);
+                    for (int y = minY; y <= maxY; y++)
                     {
-                        int index = cell.MiddleImage - 1;
+                        float drawY = (y - StartY) * BaseCellHeight;
 
-                        bool blend = false;
-                        if (cell.MiddleAnimationFrame > 1 && cell.MiddleAnimationFrame < 255)
+                        for (int x = minX; x <= maxX; x++)
                         {
-                            index += Animation % (cell.MiddleAnimationFrame & 0x4F);
-                            blend = (cell.MiddleAnimationFrame & 0x50) > 0;
-                        }
+                            float drawX = (x - StartX) * BaseCellWidth;
 
-                        Size s = library.GetSize(index);
+                            Cell tile = Cells[x, y];
 
-                        if ((s.Width != BaseCellWidth || s.Height != BaseCellHeight) && (s.Width != BaseCellWidth * 2 || s.Height != BaseCellHeight * 2))
-                        {
-                            if (!blend)
-                                library.Draw(index, scaledDrawX, scaledDrawY - s.Height * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
+                            if (tile.Flag != AttributeSelection)
+                            {
+                                if (!DrawAttributes) continue;
+
+                                Manager.Sprite.Transform = Matrix.CreateTranslation(drawX, drawY) * scale;
+                                Manager.Sprite.Draw(Manager.AttributeTexture, Vector3.Zero, Vector3.Zero, Color.Red);
+                            }
                             else
-                                library.DrawBlend(index, Zoom, Color.White, scaledDrawX, scaledDrawY - s.Height * Zoom, 0F, 0.5F, ImageType.Image);
+                            {
+                                if (!DrawSelection) continue;
+                                if (!Selection.Contains(new Point(x, y))) continue;
+
+                                Manager.Sprite.Transform = Matrix.CreateTranslation(drawX, drawY) * scale;
+                                Manager.Sprite.Draw(Manager.AttributeTexture, Vector3.Zero, Vector3.Zero, Color.Yellow);
+                            }
                         }
                     }
-
-
-                    if (Libraries.KROrder.TryGetValue(cell.FrontFile, out file) && file != LibraryFile.Tilesc && Manager.LibraryList.TryGetValue(file, out library))
-                    {
-                        int index = cell.FrontImage - 1;
-
-                        bool blend = false;
-                        if (cell.FrontAnimationFrame > 1 && cell.FrontAnimationFrame < 255)
-                        {
-                            index += Animation % (cell.FrontAnimationFrame & 0x4F);
-                            blend = (cell.MiddleAnimationFrame & 0x50) > 0;
-                        }
-
-                        Size s = library.GetSize(index);
-
-
-                        if ((s.Width != BaseCellWidth || s.Height != BaseCellHeight) && (s.Width != BaseCellWidth * 2 || s.Height != BaseCellHeight * 2))
-                        {
-                            if (!blend)
-                                library.Draw(index, scaledDrawX, scaledDrawY - s.Height * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
-                            else
-                                library.DrawBlend(index, Zoom, Color.White, scaledDrawX, scaledDrawY - s.Height * Zoom, 0F, 0.5F, ImageType.Image);
-                        }
-                    }
+                    Manager.Sprite.Flush();
                 }
-            }
 
-            //Invalid Tile = 59
-            //Selected Tile = 58
-
-
-            maxY = Math.Min(Height - 1, StartY + (int)Math.Ceiling(Size.Height / CellHeight));
-
-
-            Manager.SetOpacity(0.35F);
-            for (int y = minY; y <= maxY; y++)
-            {
-                float drawY = (y - StartY) * BaseCellHeight;
-
-                for (int x = minX; x <= maxX; x++)
+                Manager.SetOpacity(1F);
+                if (Border)
                 {
-                    float drawX = (x - StartX) * BaseCellWidth;
-
-                    Cell tile = Cells[x, y];
-
-                    if (tile.Flag != AttributeSelection)
-                    {
-                        if (!DrawAttributes) continue;
-
-                        Manager.Sprite.Transform = Matrix.CreateTranslation(drawX, drawY) * scale;
-
-                        //markLibrary.Draw(59, 0, 0, Color.White, false, 1F, ImageType.Image);
-                        Manager.Sprite.Draw(Manager.AttributeTexture, Vector3.Zero, Vector3.Zero, Color.Red);
-                    }
-                    else
-                    {
-                        if (!DrawSelection) continue;
-                        if (!Selection.Contains(new Point(x, y))) continue;
-
-                        Manager.Sprite.Transform = Matrix.CreateTranslation(drawX, drawY) * scale;
-
-                        Manager.Sprite.Draw(Manager.AttributeTexture, Vector3.Zero, Vector3.Zero, Color.Yellow);
-
-                        //markLibrary.Draw(58, 0, 0, Color.Lime, false, 1F, ImageType.Image);
-                        //If Selected.
-                    }
-                }
-            }
-            Manager.Sprite.Flush();
-
-            Manager.SetOpacity(1F);
-            if (Border)
-            {
-                Manager.Line.Draw(new[]
-                {
-                    new Vector2((MouseLocation.X - StartX)*CellWidth, (MouseLocation.Y - StartY)*CellHeight),
-                    new Vector2((MouseLocation.X - StartX)*CellWidth + CellWidth, (MouseLocation.Y - StartY)*CellHeight),
-                    new Vector2((MouseLocation.X - StartX)*CellWidth + CellWidth, (MouseLocation.Y - StartY)*CellHeight + CellHeight),
-                    new Vector2((MouseLocation.X - StartX)*CellWidth, (MouseLocation.Y - StartY)*CellHeight + CellHeight),
-                    new Vector2((MouseLocation.X - StartX)*CellWidth, (MouseLocation.Y - StartY)*CellHeight),
-                }, Color.Lime);
-
-
-                if (Radius > 0)
                     Manager.Line.Draw(new[]
                     {
-                        new Vector2((MouseLocation.X - StartX - Radius)*CellWidth, (MouseLocation.Y - StartY - Radius)*CellHeight),
-                        new Vector2((MouseLocation.X - StartX + Radius)*CellWidth + CellWidth, (MouseLocation.Y - StartY- Radius)*CellHeight),
-                        new Vector2((MouseLocation.X - StartX + Radius)*CellWidth + CellWidth, (MouseLocation.Y - StartY + Radius)*CellHeight + CellHeight),
-                        new Vector2((MouseLocation.X - StartX - Radius)*CellWidth, (MouseLocation.Y - StartY + Radius)*CellHeight + CellHeight),
-                        new Vector2((MouseLocation.X - StartX - Radius)*CellWidth, (MouseLocation.Y - StartY - Radius)*CellHeight),
+                        new Vector2((MouseLocation.X - StartX)*CellWidth, (MouseLocation.Y - StartY)*CellHeight),
+                        new Vector2((MouseLocation.X - StartX)*CellWidth + CellWidth, (MouseLocation.Y - StartY)*CellHeight),
+                        new Vector2((MouseLocation.X - StartX)*CellWidth + CellWidth, (MouseLocation.Y - StartY)*CellHeight + CellHeight),
+                        new Vector2((MouseLocation.X - StartX)*CellWidth, (MouseLocation.Y - StartY)*CellHeight + CellHeight),
+                        new Vector2((MouseLocation.X - StartX)*CellWidth, (MouseLocation.Y - StartY)*CellHeight),
                     }, Color.Lime);
+
+
+                    if (Radius > 0)
+                        Manager.Line.Draw(new[]
+                        {
+                            new Vector2((MouseLocation.X - StartX - Radius)*CellWidth, (MouseLocation.Y - StartY - Radius)*CellHeight),
+                            new Vector2((MouseLocation.X - StartX + Radius)*CellWidth + CellWidth, (MouseLocation.Y - StartY- Radius)*CellHeight),
+                            new Vector2((MouseLocation.X - StartX + Radius)*CellWidth + CellWidth, (MouseLocation.Y - StartY + Radius)*CellHeight + CellHeight),
+                            new Vector2((MouseLocation.X - StartX - Radius)*CellWidth, (MouseLocation.Y - StartY + Radius)*CellHeight + CellHeight),
+                            new Vector2((MouseLocation.X - StartX - Radius)*CellWidth, (MouseLocation.Y - StartY - Radius)*CellHeight),
+                        }, Color.Lime);
+                }
+            }
+            finally
+            {
+                Manager.Sprite.Transform = Matrix.Identity;
+            }
+        }
+
+        private void DrawMapLayer(MirLibrary library, int index, bool blend, float scaledDrawX, float scaledDrawY)
+        {
+            Size size = library.GetSize(index);
+
+            if ((size.Width != CellWidth || size.Height != CellHeight) && (size.Width != CellWidth * 2 || size.Height != CellHeight * 2))
+            {
+                if (blend)
+                    library.DrawBlend(index, Zoom, Color.White, scaledDrawX, scaledDrawY - size.Height * Zoom, 0F, 0.5F, ImageType.Image);
+                else
+                    library.Draw(index, scaledDrawX, scaledDrawY - size.Height * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
+
+                return;
             }
 
-
-
-
-
-            RenderingPipelineManager.SetTextureFilter(oldTextureFilter);
-            Manager.Sprite.Transform = Matrix.Identity;
+            library.Draw(index, scaledDrawX, scaledDrawY - BaseCellHeight * Zoom, Color.White, false, 1F, ImageType.Image, Zoom);
         }
 
         public void Load(string fileName)
@@ -1506,6 +1484,11 @@ namespace Server.Views.DirectX
 
         public sealed class Cell
         {
+            private const int FrontFrameMask = 0x0F;
+            private const int FrontBlendBit = 0x80;
+            private const int MiddleFrameMask = 0x0F;
+            private const int MiddleBlendBit = 0x80;
+
             public int BackFile;
             public int BackImage;
 
@@ -1517,9 +1500,13 @@ namespace Server.Views.DirectX
 
             public int FrontAnimationFrame;
             public int FrontAnimationTick;
+            public int FrontAnimationCount => FrontAnimationFrame & FrontFrameMask;
+            public bool FrontAnimationBlend => (FrontAnimationFrame & FrontBlendBit) != 0;
 
             public int MiddleAnimationFrame;
             public int MiddleAnimationTick;
+            public int MiddleAnimationCount => MiddleAnimationFrame & MiddleFrameMask;
+            public bool MiddleAnimationBlend => (MiddleAnimationFrame & MiddleBlendBit) != 0;
 
             public int Light;
 

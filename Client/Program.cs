@@ -1,6 +1,5 @@
 ﻿using Client.Controls;
 using Client.Envir;
-using Shared.Rendering;
 using Client.Scenes;
 using Library;
 using Sentry;

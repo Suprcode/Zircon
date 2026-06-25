@@ -68,7 +68,7 @@
     <Content Include="lizard.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharedRendering\SharedRendering.csproj" />
+    <ProjectReference Include="..\RenderingCore\RenderingCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BCnEncoder.Net" Version="2.3.0" />

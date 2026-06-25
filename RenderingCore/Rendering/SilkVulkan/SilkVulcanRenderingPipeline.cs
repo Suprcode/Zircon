@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -529,7 +530,7 @@ namespace Shared.Rendering.SilkVulkan
             PushConstants push = new PushConstants
             {
                 Viewport = new Vector2(_currentTarget.Size.Width, _currentTarget.Size.Height),
-                Colour = new Vector4(colour.R / 255F, colour.G / 255F, colour.B / 255F, colour.A / 255F * _opacity)
+                Colour = ToColourVector(colour, colour.A / 255F * _opacity)
             };
             _vk.CmdPushConstants(_activeCommandBuffer, _linePipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(PushConstants), &push);
 
@@ -550,7 +551,12 @@ namespace Shared.Rendering.SilkVulkan
 
             Rectangle source = sourceRectangle ?? new Rectangle(0, 0, resource.Size.Width, resource.Size.Height);
             RectangleF destination = new RectangleF(0, 0, source.Width, source.Height);
-            Matrix3x2 finalTransform = Matrix3x2.CreateTranslation(translation.X - center.X, translation.Y - center.Y) * transform;
+            Matrix3x2 finalTransform = transform;
+            if (center != Vector3.Zero)
+                finalTransform = Matrix3x2.CreateTranslation(-center.X, -center.Y) * finalTransform;
+
+            finalTransform.M31 += translation.X;
+            finalTransform.M32 += translation.Y;
             DrawTextureCore(texture, source, destination, finalTransform, colour);
         }
 
@@ -819,6 +825,22 @@ namespace Shared.Rendering.SilkVulkan
             }
         }
 
+        public void InvalidateTextureCaches()
+        {
+            ITextureCacheItem[] controls = _controlCache
+                .Select(x => x.TryGetTarget(out ITextureCacheItem control) ? control : null)
+                .Where(x => x != null)
+                .ToArray();
+
+            foreach (ITextureCacheItem control in controls)
+                control.DisposeTexture();
+
+            foreach (ITextureCacheItem texture in _textureCache.ToArray())
+                texture?.DisposeTexture();
+
+            _controlCache.RemoveAll(x => !x.TryGetTarget(out _));
+        }
+
         public IReadOnlyList<ISoundCacheItem> GetRegisteredSoundCaches()
         {
             if (_soundCache.Count == 0)
@@ -1006,7 +1028,7 @@ namespace Shared.Rendering.SilkVulkan
             if (_blending && _blendMode != ClientBlendMode.NONE && AppliesBlendRateToVertexColour(_blendMode))
                 opacity *= _blendRate;
 
-            Vector4 vertexColour = new Vector4(colour.R / 255F, colour.G / 255F, colour.B / 255F, opacity);
+            Vector4 vertexColour = ToColourVector(colour, opacity);
 
             SpriteShaderEffectRequest? effect = RenderingPipelineManager.GetSpriteShaderEffect();
             if (effect.HasValue)
@@ -1017,7 +1039,7 @@ namespace Shared.Rendering.SilkVulkan
                 {
                     case SpriteShaderEffectKind.Grayscale:
                         DrawSpriteImmediate(resource, blendMode, GetBlendConstantRate(blendMode), p0, p1, p2, p3, u0, u1, v0, v1, vertexColour,
-                            CreateTexturePushConstants(1, sourceUv, Vector4.Zero, 0F, resource.Size));
+                            CreateTexturePushConstants(SpriteEffectMode.Grayscale, sourceUv, Vector4.Zero, 0F, resource.Size));
                         return;
                     case SpriteShaderEffectKind.Outline:
                         OutlineEffectSettings outline = effect.Value.Outline;
@@ -1048,9 +1070,9 @@ namespace Shared.Rendering.SilkVulkan
                         }
 
                         Color outlineColour = outline.Colour;
-                        Vector4 outlineVector = new Vector4(outlineColour.R / 255F, outlineColour.G / 255F, outlineColour.B / 255F, outlineColour.A / 255F);
+                        Vector4 outlineVector = ToColourVector(outlineColour);
                         DrawSpriteImmediate(resource, blendMode, GetBlendConstantRate(blendMode), op0, op1, op2, op3, ou0, ou1, ov0, ov1, vertexColour,
-                            CreateTexturePushConstants(2, sourceUv, outlineVector, thickness, resource.Size));
+                            CreateTexturePushConstants(SpriteEffectMode.Outline, sourceUv, outlineVector, thickness, resource.Size));
                         break;
                     case SpriteShaderEffectKind.DropShadow:
                         DropShadowEffectSettings dropShadow = effect.Value.DropShadow;
@@ -1065,11 +1087,11 @@ namespace Shared.Rendering.SilkVulkan
 
                         RectangleF shadowBounds = dropShadow.VisibleBounds ?? destinationRectangle;
                         Color shadowColour = dropShadow.Colour;
-                        Vector4 shadowVector = new Vector4(shadowColour.R / 255F, shadowColour.G / 255F, shadowColour.B / 255F, shadowColour.A / 255F);
+                        Vector4 shadowVector = ToColourVector(shadowColour);
                         Vector4 shadowBoundsVector = new Vector4(shadowBounds.Left, shadowBounds.Top, shadowBounds.Right, shadowBounds.Bottom);
 
                         DrawSpriteImmediate(resource, ClientBlendMode.NONE, 0F, sp0, sp1, sp2, sp3, u0, u1, v0, v1, vertexColour,
-                            CreateTexturePushConstants(3, shadowBoundsVector, shadowVector, shadowWidth, dropShadow.StartOpacity));
+                            CreateTexturePushConstants(SpriteEffectMode.DropShadow, shadowBoundsVector, shadowVector, shadowWidth, dropShadow.StartOpacity));
                         break;
                 }
             }
@@ -2589,7 +2611,7 @@ namespace Shared.Rendering.SilkVulkan
             _spriteBatchInstanceCount = 0;
         }
 
-        private PushConstants CreateTexturePushConstants(float effectMode, Vector4 sourceUv, Vector4 outlineColour, float outlineThickness, Size textureSize)
+        private PushConstants CreateTexturePushConstants(SpriteEffectMode effectMode, Vector4 sourceUv, Vector4 outlineColour, float outlineThickness, Size textureSize)
         {
             return new PushConstants
             {
@@ -2597,11 +2619,11 @@ namespace Shared.Rendering.SilkVulkan
                 Colour = Vector4.One,
                 SourceUv = sourceUv,
                 OutlineColour = outlineColour,
-                Effect = new Vector4(effectMode, outlineThickness, textureSize.Width, textureSize.Height)
+                Effect = new Vector4((float)effectMode, outlineThickness, textureSize.Width, textureSize.Height)
             };
         }
 
-        private PushConstants CreateTexturePushConstants(float effectMode, Vector4 effectData, Vector4 effectColour, float effectWidth, float effectOpacity)
+        private PushConstants CreateTexturePushConstants(SpriteEffectMode effectMode, Vector4 effectData, Vector4 effectColour, float effectWidth, float effectOpacity)
         {
             return new PushConstants
             {
@@ -2609,7 +2631,7 @@ namespace Shared.Rendering.SilkVulkan
                 Colour = Vector4.One,
                 SourceUv = effectData,
                 OutlineColour = effectColour,
-                Effect = new Vector4(effectMode, effectWidth, effectOpacity, 0F)
+                Effect = new Vector4((float)effectMode, effectWidth, effectOpacity, 0F)
             };
         }
 
@@ -2881,6 +2903,12 @@ namespace Shared.Rendering.SilkVulkan
                 }
             };
         }
+
+        private static Vector4 ToColourVector(Color colour) =>
+            new(colour.R / 255F, colour.G / 255F, colour.B / 255F, colour.A / 255F);
+
+        private static Vector4 ToColourVector(Color colour, float alpha) =>
+            new(colour.R / 255F, colour.G / 255F, colour.B / 255F, alpha);
 
         private static ClearRect ToClearRect(Rectangle region, Size targetSize)
         {

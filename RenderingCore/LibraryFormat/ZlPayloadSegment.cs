@@ -1,7 +1,7 @@
 ﻿using Shared.Envir;
 using Shared.Rendering;
 
-namespace SharedRendering.LibraryFormat
+namespace RenderingCore.LibraryFormat
 {
     internal readonly struct ZlPayloadSegment
     {

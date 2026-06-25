@@ -6,7 +6,6 @@ namespace LibraryEditor
 {
     partial class ConversionOptionsDialog
     {
-        private IContainer components;
         private ListBox _fileListBox;
         private CheckBox _buildAtlasCheckBox;
         private CheckBox _buildShadowAtlasCheckBox;
@@ -32,9 +31,6 @@ namespace LibraryEditor
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
-                components.Dispose();
-
             base.Dispose(disposing);
         }
 
