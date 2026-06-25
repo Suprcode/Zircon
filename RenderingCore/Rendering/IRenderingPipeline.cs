@@ -123,6 +123,10 @@ namespace Shared.Rendering
 
         void MemoryClear();
 
+        void InvalidateTextureCaches()
+        {
+        }
+
         IReadOnlyList<ISoundCacheItem> GetRegisteredSoundCaches();
 
         RenderTexture GetColourPaletteTexture();

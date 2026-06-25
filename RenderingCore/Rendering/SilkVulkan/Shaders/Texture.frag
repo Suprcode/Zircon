@@ -42,26 +42,33 @@ void main()
         vec2 textureSize = max(pushConstants.uEffect.zw, vec2(1.0));
         float thickness = max(pushConstants.uEffect.y, 1.0);
         vec2 texel = 1.0 / textureSize;
+        bool hasNeighbour = false;
+        float minNeighbourDistance = thickness + 1.0;
         int radius = int(ceil(thickness));
 
         for (int y = -radius; y <= radius; y++)
         {
             for (int x = -radius; x <= radius; x++)
             {
-                vec2 offset = vec2(float(x), float(y));
-                if (dot(offset, offset) > (thickness + 0.5) * (thickness + 0.5))
+                if (x == 0 && y == 0)
                     continue;
 
-                if (SampleSprite(vTexCoord + offset * texel).a > 0.01)
+                vec2 offset = vec2(float(x), float(y));
+                if (SampleSprite(vTexCoord + offset * texel).a > 0.05)
                 {
-                    float alpha = pushConstants.uOutlineColour.a * vColour.a;
-                    outColour = vec4(pushConstants.uOutlineColour.rgb * alpha, alpha);
-                    return;
+                    hasNeighbour = true;
+                    minNeighbourDistance = min(minNeighbourDistance, length(offset));
                 }
             }
         }
 
-        discard;
+        if (!hasNeighbour)
+            discard;
+
+        float falloff = thickness <= 1.0 ? 0.0 : clamp((minNeighbourDistance - 1.0) / max(1.0, thickness - 1.0), 0.0, 1.0);
+        float outlineAlpha = mix(1.0, 0.5, falloff) * pushConstants.uOutlineColour.a * vColour.a;
+        outColour = vec4(pushConstants.uOutlineColour.rgb * outlineAlpha, outlineAlpha);
+        return;
     }
 
     if (effectMode == 3)

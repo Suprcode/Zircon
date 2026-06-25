@@ -319,10 +319,12 @@ namespace Shared.Rendering
 
             if (string.Equals(ActivePipelineId, pipelineId, StringComparison.OrdinalIgnoreCase)) return;
 
+            RenderingPipelineContext context = _context ?? throw new InvalidOperationException("No rendering pipeline context is available.");
+
             InvalidateAllControlTextures();
             Shutdown();
 
-            InitializeWithFallback(pipelineId, _context);
+            InitializeWithFallback(pipelineId, context);
         }
 
         public static void RequestSwitchPipeline(string pipelineId)
@@ -345,23 +347,26 @@ namespace Shared.Rendering
                 return false;
 
             string previousPipelineId = ActivePipelineId;
+            RenderingPipelineContext context = _context ?? throw new InvalidOperationException("No rendering pipeline context is available.");
+            RenderingHostSettings settings = context.Settings;
+
             try
             {
                 InvalidateAllControlTextures();
                 Shutdown();
 
-                string activePipelineId = InitializeWithFallback(pipelineId, _context);
-                Settings.RenderingPipeline = activePipelineId;
+                string activePipelineId = InitializeWithFallback(pipelineId, context);
+                settings.RenderingPipeline = activePipelineId;
             }
             catch (Exception ex)
             {
-                Settings.ReportException(ex);
+                settings.ReportException(ex);
 
                 if (string.IsNullOrWhiteSpace(previousPipelineId))
                     throw;
 
-                string restoredPipelineId = InitializeWithFallback(previousPipelineId, _context);
-                Settings.RenderingPipeline = restoredPipelineId;
+                string restoredPipelineId = InitializeWithFallback(previousPipelineId, context);
+                settings.RenderingPipeline = restoredPipelineId;
             }
 
             return true;
@@ -369,6 +374,7 @@ namespace Shared.Rendering
 
         private static void InvalidateAllControlTextures()
         {
+            _activePipeline?.InvalidateTextureCaches();
             Settings.InvalidateRenderCaches?.Invoke();
         }
 

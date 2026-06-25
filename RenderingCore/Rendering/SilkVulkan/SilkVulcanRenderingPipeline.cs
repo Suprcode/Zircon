@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -822,6 +823,22 @@ namespace Shared.Rendering.SilkVulkan
 
                 sound.DisposeSoundBuffer();
             }
+        }
+
+        public void InvalidateTextureCaches()
+        {
+            ITextureCacheItem[] controls = _controlCache
+                .Select(x => x.TryGetTarget(out ITextureCacheItem control) ? control : null)
+                .Where(x => x != null)
+                .ToArray();
+
+            foreach (ITextureCacheItem control in controls)
+                control.DisposeTexture();
+
+            foreach (ITextureCacheItem texture in _textureCache.ToArray())
+                texture?.DisposeTexture();
+
+            _controlCache.RemoveAll(x => !x.TryGetTarget(out _));
         }
 
         public IReadOnlyList<ISoundCacheItem> GetRegisteredSoundCaches()
