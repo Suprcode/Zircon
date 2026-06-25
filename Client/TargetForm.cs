@@ -3,7 +3,6 @@ using Client.Envir;
 using Client.Models;
 using Client.Scenes;
 using Library;
-using SharpDX.Windows;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -14,13 +13,15 @@ using Font = System.Drawing.Font;
 
 namespace Client
 {
-    public sealed class TargetForm : RenderForm
+    public sealed class TargetForm : Form
     {
         public bool Resizing { get; private set; }
 
-        public TargetForm() : base(Globals.ClientName)
+        public TargetForm()
         {
+            Text = Globals.ClientName;
             AutoScaleMode = AutoScaleMode.None;
+            BackColor = Color.Black;
 
             AutoScaleDimensions = new SizeF(96F, 96F);
 

@@ -39,7 +39,7 @@ namespace Shared.Rendering
         public Action<bool> SetUseD3D11SpriteBatch { get; set; }
 
         private string _defaultMonitor = string.Empty;
-        private string _renderingPipeline = RenderingPipelineIds.SharpDXD3D11;
+        private string _renderingPipeline = RenderingPipelineIds.SilkDXD3D11;
         private Size _gameSize = new Size(1024, 768);
         private bool _fullScreen;
         private bool _borderless;

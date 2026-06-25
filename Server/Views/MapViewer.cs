@@ -414,7 +414,7 @@ namespace Server.Views.DirectX
 
         public void Create()
         {
-            RenderingPipelineManager.Initialize(RenderingPipelineIds.SharpDXD3D11, new RenderingPipelineContext(Target, new RenderingHostSettings
+            RenderingPipelineManager.Initialize(RenderingPipelineIds.SilkDXD3D11, new RenderingPipelineContext(Target, new RenderingHostSettings
             {
                 Now = () => SEnvir.Now,
                 SaveException = ex => SEnvir.SaveError(ex.ToString()),
@@ -427,7 +427,7 @@ namespace Server.Views.DirectX
                 SetBorderless = _ => { },
                 GetVSync = () => true,
                 SetVSync = _ => { },
-                GetRenderingPipeline = () => RenderingPipelineIds.SharpDXD3D11,
+                GetRenderingPipeline = () => RenderingPipelineIds.SilkDXD3D11,
                 SetRenderingPipeline = _ => { },
                 GetUseD3D11SpriteBatch = () => true,
                 SetUseD3D11SpriteBatch = _ => { },

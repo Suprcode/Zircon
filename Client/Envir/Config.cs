@@ -31,7 +31,7 @@ namespace Client.Envir
         public static bool ExtendedLogin { get; set; }
         public static Size GameSize { get; set; } = IntroSceneSize;
         public static string DefaultMonitor { get; set; } = string.Empty;
-        public static string RenderingPipeline { get; set; } = RenderingPipelineIds.SharpDXD3D9;
+        public static string RenderingPipeline { get; set; } = RenderingPipelineIds.SilkDXD3D11;
         public static bool UseZlAtlasPages { get; set; } = false;
         public static bool UseD3D11SpriteBatch { get; set; } = false;
         public static TimeSpan CacheDuration { get; set; } = TimeSpan.FromMinutes(30);

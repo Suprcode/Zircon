@@ -6,7 +6,6 @@ using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
 using Library.SystemModels;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -59,8 +58,6 @@ namespace Client.Models
                 GameScene.Game.MapControl.TextureValid = false;
             }
         }
-
-        public static Texture ShadowTexture;
 
         public abstract ObjectType Race { get; }
         public virtual bool Blocking => Visible && !Dead;
