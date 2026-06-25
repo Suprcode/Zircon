@@ -211,7 +211,7 @@ namespace Client.Scenes.Views
             if (!IsVisible || Size.Width == 0 || Size.Height == 0) return;
 
             OnBeforeDraw();
-            DrawNPCFrame();
+            DrawNPCWindow();
             RenderingPipelineManager.FlushSprite();
             OnBeforeChildrenDraw();
             DrawChildControls();
@@ -230,16 +230,56 @@ namespace Client.Scenes.Views
             }
         }
 
-        private void DrawNPCFrame()
+        private void DrawNPCWindow()
+        {
+            if (!WindowValid)
+            {
+                CreateTexture();
+
+                if (!WindowSurface.IsValid)
+                    throw new InvalidOperationException("Window surface is not available.");
+
+                RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+                RenderingPipelineManager.SetSurface(WindowSurface);
+                RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
+
+                DrawNPCFrame(Point.Empty);
+
+                RenderingPipelineManager.SetSurface(oldSurface);
+                WindowValid = true;
+            }
+
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
+
+            if (DropShadow)
+            {
+                Rectangle displayArea = DisplayArea;
+                RectangleF shadowBounds = new RectangleF(displayArea.X, displayArea.Y, displayArea.Width, displayArea.Height);
+
+                RenderingPipelineManager.EnableDropShadowEffect(Color.Black, 8f, 0.5f, shadowBounds);
+            }
+
+            RenderingPipelineManager.SetOpacity(Opacity);
+            PresentTexture(WindowTexture, Parent, DisplayArea, ForeColour, this);
+
+            if (DropShadow)
+            {
+                RenderingPipelineManager.DisableSpriteShaderEffect();
+            }
+
+            RenderingPipelineManager.SetOpacity(oldOpacity);
+        }
+
+        private void DrawNPCFrame(Point origin)
         {
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.GameInter, out MirLibrary library)) return;
 
-            DrawNPCFrameImage(library, 380, Point.Empty);
+            DrawNPCFrameImage(library, 380, origin);
 
             for (int i = 0; i < _visibleRowCount; i++)
-                DrawNPCFrameImage(library, 381, new Point(0, _HeaderHeight + i * _RowHeight));
+                DrawNPCFrameImage(library, 381, new Point(origin.X, origin.Y + _HeaderHeight + i * _RowHeight));
 
-            DrawNPCFrameImage(library, 382, new Point(0, _footerY));
+            DrawNPCFrameImage(library, 382, new Point(origin.X, origin.Y + _footerY));
         }
 
         private void DrawNPCFrameImage(MirLibrary library, int index, Point location)
@@ -247,7 +287,7 @@ namespace Client.Scenes.Views
             Size size = library.GetSize(index);
             if (size.Width <= 0 || size.Height <= 0) return;
 
-            library.Draw(index, DisplayArea.X + location.X, DisplayArea.Y + location.Y, Color.White, new Rectangle(Point.Empty, size), 1F, ImageType.Image);
+            library.Draw(index, location.X, location.Y, Color.White, new Rectangle(Point.Empty, size), 1F, ImageType.Image);
         }
 
         private void SetSize(int pageTextHeight)
