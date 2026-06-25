@@ -205,11 +205,16 @@ namespace Shared.Rendering.SilkD3D11
 
         public void SetResolution(Size size)
         {
+            bool targetAlreadySized = _context.RenderTarget == null || _context.RenderTarget.ClientSize == size || RenderingPipelineManager.HostSettings.FullScreen;
+            if (targetAlreadySized && _backBufferSize == size && RenderingPipelineManager.HostSettings.GameSize == size)
+                return;
+
             RenderingPipelineManager.HostSettings.GameSize = size;
-            if (!RenderingPipelineManager.HostSettings.FullScreen)
+            if (!RenderingPipelineManager.HostSettings.FullScreen && _context.RenderTarget != null && _context.RenderTarget.ClientSize != size)
                 _context.RenderTarget.ClientSize = size;
+
             ApplyWindowStyle();
-            ApplyWindowBounds(true);
+            ApplyWindowBounds(false);
             RequestReset();
         }
 
@@ -231,8 +236,6 @@ namespace Shared.Rendering.SilkD3D11
 
         public void OnSceneChanged(bool isGameScene)
         {
-            if (isGameScene)
-                RequestReset();
         }
 
         public IReadOnlyList<Size> GetSupportedResolutions() =>
@@ -301,7 +304,11 @@ namespace Shared.Rendering.SilkD3D11
             if (points == null || points.Count < 2)
                 return;
 
-            _lineBatch.Add(new LineBatchItem(points, colour, _opacity));
+            LinePoint[] copy = new LinePoint[points.Count];
+            for (int i = 0; i < points.Count; i++)
+                copy[i] = points[i];
+
+            _lineBatch.Add(new LineBatchItem(copy, colour, _lineWidth, _opacity));
         }
 
         public void FlushLines()
@@ -318,16 +325,16 @@ namespace Shared.Rendering.SilkD3D11
                 {
                     LinePoint a = item.Points[i];
                     LinePoint b = item.Points[i + 1];
-                    DrawLineSegment(a, b, item.Colour, item.Opacity);
+                    DrawLineSegment(a, b, item.Colour, item.Width, item.Opacity);
                 }
             }
 
             _lineBatch.Clear();
         }
 
-        private void DrawLineSegment(LinePoint a, LinePoint b, GdiColor colour, float opacity)
+        private void DrawLineSegment(LinePoint a, LinePoint b, GdiColor colour, float width, float opacity)
         {
-            float width = Math.Max(1F, _lineWidth);
+            width = Math.Max(1F, width);
             float half = width * 0.5F;
             float x1 = Snap(a.X);
             float y1 = Snap(a.Y);
@@ -369,6 +376,9 @@ namespace Shared.Rendering.SilkD3D11
 
         public void QueueSprite(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, GdiColor colour)
         {
+            if (_lineBatch.Count > 0)
+                FlushLines();
+
             if (_spriteBatch.Count >= MaxSprites)
                 EndSpriteBatch();
 
@@ -456,6 +466,7 @@ namespace Shared.Rendering.SilkD3D11
                 return;
 
             EndSpriteBatch();
+            FlushLines();
             Vector4 color = ToPremultipliedVector(colour, _opacity);
             if (regions != null && regions.Length > 0)
             {
@@ -636,6 +647,9 @@ namespace Shared.Rendering.SilkD3D11
         {
             if (!TryGetTexture(texture, out SilkD3D11TextureResource resource) || source.Width <= 0 || source.Height <= 0 || destination.Width <= 0 || destination.Height <= 0 || colour.A == 0)
                 return;
+
+            if (_lineBatch.Count > 0)
+                FlushLines();
 
             SpriteEffect? effect = null;
             RenderingPipelineManager.SpriteShaderEffectRequest? request = RenderingPipelineManager.GetSpriteShaderEffect();
@@ -1221,9 +1235,8 @@ namespace Shared.Rendering.SilkD3D11
             Array.Copy(_paletteData, _colourPalette.Data, _paletteData.Length);
             UploadTexture(_colourPalette);
 
-            _lightData = new byte[LightWidth * LightHeight * 4];
+            _lightData ??= LightGenerator.CreateLightData(LightWidth, LightHeight);
             _lightTexture = CreateTextureCore(new Size(LightWidth, LightHeight), RenderTextureFormat.A8R8G8B8, false);
-            Array.Fill<byte>(_lightData, 255);
             Array.Copy(_lightData, _lightTexture.Data, _lightData.Length);
             UploadTexture(_lightTexture);
 
@@ -1550,12 +1563,14 @@ namespace Shared.Rendering.SilkD3D11
         {
             public readonly IReadOnlyList<LinePoint> Points;
             public readonly GdiColor Colour;
+            public readonly float Width;
             public readonly float Opacity;
 
-            public LineBatchItem(IReadOnlyList<LinePoint> points, GdiColor colour, float opacity)
+            public LineBatchItem(IReadOnlyList<LinePoint> points, GdiColor colour, float width, float opacity)
             {
                 Points = points;
                 Colour = colour;
+                Width = width;
                 Opacity = opacity;
             }
         }
