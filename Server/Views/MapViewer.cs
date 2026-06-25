@@ -198,13 +198,16 @@ namespace Server.Views
         {
             try
             {
-                RenderingPipelineManager.RenderFrame(() =>
+                using (Manager.ActivatePipeline())
                 {
-                    Manager.RefreshMainSurface();
-                    RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 1, 0);
-                    Manager.SetSurface(Manager.MainSurface);
-                    Map.Draw();
-                });
+                    RenderingPipelineManager.RenderFrame(() =>
+                    {
+                        Manager.RefreshMainSurface();
+                        RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.Black, 1, 0);
+                        Manager.SetSurface(Manager.MainSurface);
+                        Map.Draw();
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -388,7 +391,7 @@ namespace Server.Views.DirectX
         public RenderTexture AttributeTexture;
 
         public MapControl Map;
-        private bool _pipelineInitialized;
+        private RenderingPipelineManager.PipelineSession _pipelineSession;
 
         public DXManager(Control target)
         {
@@ -408,7 +411,7 @@ namespace Server.Views.DirectX
 
         public void Create()
         {
-            RenderingPipelineManager.Initialize(RenderingPipelineIds.SilkDXD3D11, new RenderingPipelineContext(Target, new RenderingHostSettings
+            _pipelineSession = RenderingPipelineManager.CreateSession(RenderingPipelineIds.SilkDXD3D11, new RenderingPipelineContext(Target, new RenderingHostSettings
             {
                 Now = () => SEnvir.Now,
                 SaveException = ex => SEnvir.SaveError(ex.ToString()),
@@ -426,32 +429,42 @@ namespace Server.Views.DirectX
                 GetUseD3D11SpriteBatch = () => true,
                 SetUseD3D11SpriteBatch = _ => { },
             }));
-            _pipelineInitialized = true;
 
             LoadTextures();
         }
 
+        public IDisposable ActivatePipeline()
+        {
+            if (_pipelineSession == null)
+                throw new InvalidOperationException("Rendering pipeline has not been initialized.");
+
+            return _pipelineSession.Activate();
+        }
+
         private void LoadTextures()
         {
-            Sprite = new MapViewerSprite();
-            Line = new MapViewerLine { Width = 1F };
-
-            MainSurface = RenderingPipelineManager.GetCurrentSurface();
-            CurrentSurface = MainSurface;
-
-            AttributeTexture = RenderingPipelineManager.CreateTexture(new Size(48, 32), RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
-            byte[] data = new byte[48 * 32 * 4];
-
-            for (int i = 0; i < data.Length; i += 4)
+            using (ActivatePipeline())
             {
-                data[i] = 255;
-                data[i + 1] = 255;
-                data[i + 2] = 255;
-                data[i + 3] = 255;
-            }
+                Sprite = new MapViewerSprite();
+                Line = new MapViewerLine { Width = 1F };
 
-            using (TextureLock textureLock = RenderingPipelineManager.LockTexture(AttributeTexture, TextureLockMode.Discard))
-                System.Runtime.InteropServices.Marshal.Copy(data, 0, textureLock.DataPointer, data.Length);
+                MainSurface = RenderingPipelineManager.GetCurrentSurface();
+                CurrentSurface = MainSurface;
+
+                AttributeTexture = RenderingPipelineManager.CreateTexture(new Size(48, 32), RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
+                byte[] data = new byte[48 * 32 * 4];
+
+                for (int i = 0; i < data.Length; i += 4)
+                {
+                    data[i] = 255;
+                    data[i + 1] = 255;
+                    data[i + 2] = 255;
+                    data[i + 3] = 255;
+                }
+
+                using (TextureLock textureLock = RenderingPipelineManager.LockTexture(AttributeTexture, TextureLockMode.Discard))
+                    System.Runtime.InteropServices.Marshal.Copy(data, 0, textureLock.DataPointer, data.Length);
+            }
 
         }
         
@@ -501,18 +514,24 @@ namespace Server.Views.DirectX
 
         public void ResetDevice()
         {
-            Map?.DisposeTexture();
-            RenderingPipelineManager.ResetDevice();
-            MainSurface = RenderingPipelineManager.GetCurrentSurface();
-            CurrentSurface = MainSurface;
+            using (ActivatePipeline())
+            {
+                Map?.DisposeTexture();
+                RenderingPipelineManager.ResetDevice();
+                MainSurface = RenderingPipelineManager.GetCurrentSurface();
+                CurrentSurface = MainSurface;
+            }
         }
         public void AttemptReset()
         {
         }
         public void AttemptRecovery()
         {
-            MainSurface = RenderingPipelineManager.GetCurrentSurface();
-            CurrentSurface = MainSurface;
+            using (ActivatePipeline())
+            {
+                MainSurface = RenderingPipelineManager.GetCurrentSurface();
+                CurrentSurface = MainSurface;
+            }
         }
 
         public static void ConfigureGraphics(Graphics graphics)
@@ -536,14 +555,20 @@ namespace Server.Views.DirectX
             {
                 IsDisposed = true;
 
-                RenderingPipelineManager.ReleaseTexture(AttributeTexture);
-                AttributeTexture = default;
-                Sprite = null;
-                Line = null;
-                CurrentSurface = default;
-                MainSurface = default;
+                if (_pipelineSession != null)
+                {
+                    using (ActivatePipeline())
+                    {
+                        RenderingPipelineManager.ReleaseTexture(AttributeTexture);
+                        AttributeTexture = default;
+                        Sprite = null;
+                        Line = null;
+                        CurrentSurface = default;
+                        MainSurface = default;
 
-                Map?.DisposeTexture();
+                        Map?.DisposeTexture();
+                    }
+                }
 
                 if (Graphics != null)
                 {
@@ -558,11 +583,8 @@ namespace Server.Views.DirectX
                 Blending = false;
                 BlendRate = 0;
 
-                if (_pipelineInitialized)
-                {
-                    RenderingPipelineManager.Shutdown();
-                    _pipelineInitialized = false;
-                }
+                _pipelineSession?.Dispose();
+                _pipelineSession = null;
 
 
             }

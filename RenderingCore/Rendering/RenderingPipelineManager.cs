@@ -13,13 +13,13 @@ namespace Shared.Rendering
         private const string DefaultPipelineId = RenderingPipelineIds.SilkDXD3D11;
         private static readonly Dictionary<string, Func<IRenderingPipeline>> PipelineFactories = new(StringComparer.OrdinalIgnoreCase)
         {
-            //{ RenderingPipelineIds.SharpDXD3D9, () => new SharpDXD3D9.SharpDXD3D9RenderingPipeline() },
             { RenderingPipelineIds.SilkDXD3D11, () => new SilkD3D11.SilkD3D11RenderingPipeline() },
             { RenderingPipelineIds.SilkVulkan, () => new SilkVulkan.SilkVulkanRenderingPipeline() }
         };
 
         private static IRenderingPipeline _activePipeline;
         private static RenderingPipelineContext _context;
+        private static PipelineSession _activeSession;
         private static readonly Graphics FallbackGraphics;
         private static readonly List<ITextureCacheItem> FallbackControlCache = new();
         private static readonly List<ITextureCacheItem> FallbackTextureCache = new();
@@ -31,7 +31,7 @@ namespace Shared.Rendering
         private static SpriteShaderEffectRequest? _spriteShaderEffect;
         private static float _fallbackLineWidth = 1F;
         private static TextureFilterMode _fallbackTextureFilter = TextureFilterMode.Point;
-        private static RenderTexture _solidFillTexture;
+        private static readonly Dictionary<PipelineSession, RenderTexture> SolidFillTextures = new();
         private static readonly object GraphicsLock = new();
         private static string _pendingPipelineId;
         internal static RenderingHostSettings HostSettings => Settings;
@@ -43,6 +43,64 @@ namespace Shared.Rendering
         {
             FallbackGraphics = Graphics.FromHwnd(IntPtr.Zero);
             ConfigureFallbackGraphics(FallbackGraphics);
+        }
+
+        public sealed class PipelineSession : IDisposable
+        {
+            internal PipelineSession(IRenderingPipeline pipeline, RenderingPipelineContext context)
+            {
+                Pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
+                Context = context ?? throw new ArgumentNullException(nameof(context));
+            }
+
+            internal IRenderingPipeline Pipeline { get; }
+            internal RenderingPipelineContext Context { get; }
+            public string PipelineId => Pipeline.Id;
+            public bool IsDisposed { get; private set; }
+
+            public IDisposable Activate()
+            {
+                if (IsDisposed)
+                    throw new ObjectDisposedException(nameof(PipelineSession));
+
+                return RenderingPipelineManager.Activate(this);
+            }
+
+            public void Dispose()
+            {
+                if (IsDisposed)
+                    return;
+
+                IsDisposed = true;
+                RenderingPipelineManager.DestroySession(this);
+            }
+        }
+
+        private sealed class PipelineActivation : IDisposable
+        {
+            private readonly PipelineSession _previousSession;
+            private readonly IRenderingPipeline _previousPipeline;
+            private readonly RenderingPipelineContext _previousContext;
+            private bool _disposed;
+
+            public PipelineActivation(PipelineSession session)
+            {
+                _previousSession = _activeSession;
+                _previousPipeline = _activePipeline;
+                _previousContext = _context;
+                SetActiveSession(session);
+            }
+
+            public void Dispose()
+            {
+                if (_disposed)
+                    return;
+
+                _disposed = true;
+                _activeSession = _previousSession;
+                _activePipeline = _previousPipeline;
+                _context = _previousContext;
+            }
         }
 
         public static string DefaultPipelineIdentifier => DefaultPipelineId;
@@ -180,44 +238,79 @@ namespace Shared.Rendering
 
         public static void Initialize(string pipelineId, RenderingPipelineContext context)
         {
-            if (_activePipeline != null)
-                throw new InvalidOperationException("A rendering pipeline has already been initialized.");
+            CreateSession(pipelineId, context);
+        }
+
+        public static PipelineSession CreateSession(string pipelineId, RenderingPipelineContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
 
             if (!PipelineFactories.TryGetValue(pipelineId, out Func<IRenderingPipeline> factory))
                 throw new ArgumentException($"Unknown rendering pipeline '{pipelineId}'.", nameof(pipelineId));
 
-            _context = context;
-
-            _activePipeline = factory();
+            IRenderingPipeline pipeline = factory();
+            PipelineSession session = new(pipeline, context);
+            PipelineSession previousSession = _activeSession;
+            IRenderingPipeline previousPipeline = _activePipeline;
+            RenderingPipelineContext previousContext = _context;
             try
             {
-                _activePipeline.Initialize(context);
+                SetActiveSession(session);
+                pipeline.Initialize(context);
+                return session;
             }
             catch
             {
-                _activePipeline = null;
+                if (ReferenceEquals(_activeSession, session))
+                {
+                    _activeSession = previousSession;
+                    _activePipeline = previousPipeline;
+                    _context = previousContext;
+                }
+
+                pipeline.Shutdown();
                 throw;
             }
         }
 
         public static string InitializeWithFallback(string requestedPipelineId, RenderingPipelineContext context)
         {
+            return CreateSessionWithFallback(requestedPipelineId, context).PipelineId;
+        }
+
+        public static PipelineSession CreateSessionWithFallback(string requestedPipelineId, RenderingPipelineContext context)
+        {
             string pipelineToUse = string.IsNullOrWhiteSpace(requestedPipelineId) ? DefaultPipelineId : requestedPipelineId;
 
             try
             {
-                Initialize(pipelineToUse, context);
-                return _activePipeline!.Id;
+                return CreateSession(pipelineToUse, context);
             }
             catch (Exception ex)
             {
-                if (_activePipeline != null || pipelineToUse.Equals(DefaultPipelineId, StringComparison.OrdinalIgnoreCase) || !PipelineFactories.ContainsKey(DefaultPipelineId))
+                if (pipelineToUse.Equals(DefaultPipelineId, StringComparison.OrdinalIgnoreCase) || !PipelineFactories.ContainsKey(DefaultPipelineId))
                     throw;
 
-                Initialize(DefaultPipelineId, context);
+                PipelineSession session = CreateSession(DefaultPipelineId, context);
                 Console.WriteLine($"Falling back to rendering pipeline '{DefaultPipelineId}' after '{pipelineToUse}' failed: {ex.Message}");
-                return _activePipeline!.Id;
+                return session;
             }
+        }
+
+        public static IDisposable Activate(PipelineSession session)
+        {
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+
+            return new PipelineActivation(session);
+        }
+
+        private static void SetActiveSession(PipelineSession session)
+        {
+            _activeSession = session;
+            _activePipeline = session?.Pipeline;
+            _context = session?.Context;
         }
 
         public static void SwitchPipeline(string pipelineId)
@@ -281,17 +374,27 @@ namespace Shared.Rendering
 
         public static void Shutdown()
         {
-            if (_activePipeline == null)
+            if (_activeSession == null)
                 return;
 
-            if (_solidFillTexture.IsValid)
+            _activeSession.Dispose();
+        }
+
+        private static void DestroySession(PipelineSession session)
+        {
+            if (session == null)
+                return;
+
+            if (SolidFillTextures.TryGetValue(session, out RenderTexture solidFillTexture) && solidFillTexture.IsValid)
             {
-                _activePipeline.ReleaseTexture(_solidFillTexture);
-                _solidFillTexture = default;
+                session.Pipeline.ReleaseTexture(solidFillTexture);
+                SolidFillTextures.Remove(session);
             }
 
-            _activePipeline.Shutdown();
-            _activePipeline = null;
+            session.Pipeline.Shutdown();
+
+            if (ReferenceEquals(_activeSession, session))
+                SetActiveSession(null);
         }
 
         public static void RunMessageLoop(Form form, Action loop)
@@ -684,18 +787,22 @@ namespace Shared.Rendering
 
         private static RenderTexture GetSolidFillTexture()
         {
-            if (_solidFillTexture.IsValid)
-                return _solidFillTexture;
+            if (_activeSession == null)
+                throw new InvalidOperationException("No rendering pipeline has been initialized.");
 
-            _solidFillTexture = CreateTexture(new Size(1, 1), RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
+            if (SolidFillTextures.TryGetValue(_activeSession, out RenderTexture solidFillTexture) && solidFillTexture.IsValid)
+                return solidFillTexture;
+
+            solidFillTexture = CreateTexture(new Size(1, 1), RenderTextureFormat.A8R8G8B8, RenderTextureUsage.None, RenderTexturePool.Managed);
 
             byte[] whitePixel = { 255, 255, 255, 255 };
-            using (TextureLock textureLock = LockTexture(_solidFillTexture, TextureLockMode.Discard))
+            using (TextureLock textureLock = LockTexture(solidFillTexture, TextureLockMode.Discard))
             {
                 Marshal.Copy(whitePixel, 0, textureLock.DataPointer, whitePixel.Length);
             }
 
-            return _solidFillTexture;
+            SolidFillTextures[_activeSession] = solidFillTexture;
+            return solidFillTexture;
         }
 
         public static RenderTargetResource CreateRenderTarget(Size size)
