@@ -376,14 +376,13 @@ namespace Shared.Rendering.SilkD3D11
 
         public void QueueSprite(RenderTexture texture, Rectangle sourceRectangle, RectangleF destinationRectangle, GdiColor colour)
         {
-            if (_lineBatch.Count > 0)
-                FlushLines();
+            FlushLinesIfNeeded();
 
             if (_spriteBatch.Count >= MaxSprites)
                 EndSpriteBatch();
 
             if (TryGetTexture(texture, out SilkD3D11TextureResource resource))
-                _spriteBatch.Add(new SpriteBatchItem(resource, sourceRectangle, destinationRectangle, Matrix3x2.Identity, colour, _opacity, _blending ? _blendMode : BlendMode.NONE, _blendRate, null));
+                _spriteBatch.Add(CreateSpriteBatchItem(resource, sourceRectangle, destinationRectangle, Matrix3x2.Identity, colour, _opacity, null));
         }
 
         public void EndSpriteBatch()
@@ -405,6 +404,9 @@ namespace Shared.Rendering.SilkD3D11
         {
             if (surface.NativeHandle is not SilkD3D11RenderTarget target)
                 throw new ArgumentException("Surface handle must wrap a Silk.NET D3D11 render target.", nameof(surface));
+
+            if (ReferenceEquals(_currentTarget, target))
+                return;
 
             EndSpriteBatch();
             FlushLines();
@@ -512,6 +514,7 @@ namespace Shared.Rendering.SilkD3D11
                 return;
 
             EndSpriteBatch();
+            FlushLines();
             _textures.Remove(resource);
             resource.Dispose();
         }
@@ -648,8 +651,7 @@ namespace Shared.Rendering.SilkD3D11
             if (!TryGetTexture(texture, out SilkD3D11TextureResource resource) || source.Width <= 0 || source.Height <= 0 || destination.Width <= 0 || destination.Height <= 0 || colour.A == 0)
                 return;
 
-            if (_lineBatch.Count > 0)
-                FlushLines();
+            FlushLinesIfNeeded();
 
             SpriteEffect? effect = null;
             RenderingPipelineManager.SpriteShaderEffectRequest? request = RenderingPipelineManager.GetSpriteShaderEffect();
@@ -659,16 +661,16 @@ namespace Shared.Rendering.SilkD3D11
                 {
                     case RenderingPipelineManager.SpriteShaderEffectKind.Outline:
                         EndSpriteBatch();
-                        DrawSprite(new SpriteBatchItem(resource, source, destination, transform, request.Value.Outline.Colour, 1F, BlendMode.NONE, 1F, new SpriteEffect(2, request.Value.Outline.Thickness, resource.Size, ToSourceUv(source, resource.Size), null, request.Value.Outline.Thickness, true)));
+                        DrawSprite(CreateSpriteBatchItem(resource, source, destination, transform, request.Value.Outline.Colour, 1F, new SpriteEffect(SpriteEffectMode.Outline, request.Value.Outline.Thickness, resource.Size, ToSourceUv(source, resource.Size), null, request.Value.Outline.Thickness, true), BlendMode.NONE, 1F));
                         break;
                     case RenderingPipelineManager.SpriteShaderEffectKind.Grayscale:
-                        effect = new SpriteEffect(1, 0, resource.Size, Vector4.Zero, null);
+                        effect = new SpriteEffect(SpriteEffectMode.Grayscale, 0, resource.Size, Vector4.Zero, null);
                         break;
                     case RenderingPipelineManager.SpriteShaderEffectKind.DropShadow:
                         RenderingPipelineManager.DropShadowEffectSettings shadow = request.Value.DropShadow;
                         RectangleF shadowBounds = shadow.VisibleBounds ?? destination;
                         EndSpriteBatch();
-                        DrawSprite(new SpriteBatchItem(resource, source, destination, transform, shadow.Colour, _opacity, _blending ? _blendMode : BlendMode.NONE, _blendRate, new SpriteEffect(3, shadow.Width, resource.Size, new Vector4(shadowBounds.Left, shadowBounds.Top, shadowBounds.Right, shadowBounds.Bottom), shadow.StartOpacity, shadow.Width, false)));
+                        DrawSprite(CreateSpriteBatchItem(resource, source, destination, transform, shadow.Colour, _opacity, new SpriteEffect(SpriteEffectMode.DropShadow, shadow.Width, resource.Size, new Vector4(shadowBounds.Left, shadowBounds.Top, shadowBounds.Right, shadowBounds.Bottom), shadow.StartOpacity, shadow.Width, false)));
                         break;
                 }
             }
@@ -676,7 +678,7 @@ namespace Shared.Rendering.SilkD3D11
             if (_spriteBatch.Count >= MaxSprites)
                 EndSpriteBatch();
 
-            _spriteBatch.Add(new SpriteBatchItem(resource, source, destination, transform, colour, _opacity, _blending ? _blendMode : BlendMode.NONE, _blendRate, effect));
+            _spriteBatch.Add(CreateSpriteBatchItem(resource, source, destination, transform, colour, _opacity, effect));
         }
 
         private void DrawSprite(SpriteBatchItem item)
@@ -729,7 +731,29 @@ namespace Shared.Rendering.SilkD3D11
         private void DrawSolidRectangle(RectangleF rectangle, GdiColor colour, float opacity)
         {
             EnsureSolidTexture();
-            DrawSprite(new SpriteBatchItem(_solidWhiteTexture, new Rectangle(0, 0, 1, 1), rectangle, Matrix3x2.Identity, colour, opacity, BlendMode.NONE, 1F, null));
+            DrawSprite(CreateSpriteBatchItem(_solidWhiteTexture, new Rectangle(0, 0, 1, 1), rectangle, Matrix3x2.Identity, colour, opacity, null, BlendMode.NONE, 1F));
+        }
+
+        private SpriteBatchItem CreateSpriteBatchItem(
+            SilkD3D11TextureResource resource,
+            Rectangle source,
+            RectangleF destination,
+            Matrix3x2 transform,
+            GdiColor colour,
+            float opacity,
+            SpriteEffect? effect,
+            BlendMode? blendMode = null,
+            float? blendRate = null)
+        {
+            return new SpriteBatchItem(resource, source, destination, transform, colour, opacity, blendMode ?? GetActiveBlendMode(), blendRate ?? _blendRate, effect);
+        }
+
+        private BlendMode GetActiveBlendMode() => _blending ? _blendMode : BlendMode.NONE;
+
+        private void FlushLinesIfNeeded()
+        {
+            if (_lineBatch.Count > 0)
+                FlushLines();
         }
 
         private void CreateDevice()
@@ -1232,12 +1256,12 @@ namespace Shared.Rendering.SilkD3D11
                 _paletteData[i * 4 + 2] = (byte)i;
                 _paletteData[i * 4 + 3] = 255;
             }
-            Array.Copy(_paletteData, _colourPalette.Data, _paletteData.Length);
+            Buffer.BlockCopy(_paletteData, 0, _colourPalette.Data, 0, _paletteData.Length);
             UploadTexture(_colourPalette);
 
             _lightData ??= LightGenerator.CreateLightData(LightWidth, LightHeight);
             _lightTexture = CreateTextureCore(new Size(LightWidth, LightHeight), RenderTextureFormat.A8R8G8B8, false);
-            Array.Copy(_lightData, _lightTexture.Data, _lightData.Length);
+            Buffer.BlockCopy(_lightData, 0, _lightTexture.Data, 0, _lightData.Length);
             UploadTexture(_lightTexture);
 
             _poisonTexture = CreateTextureCore(new Size(PoisonSize, PoisonSize), RenderTextureFormat.A8R8G8B8, false);
@@ -1325,14 +1349,14 @@ namespace Shared.Rendering.SilkD3D11
         private EffectConstants CreateEffectConstants(SpriteBatchItem item)
         {
             SpriteEffect effect = item.Effect ?? default;
-            Vector4 outlineColour = effect.Mode == 0 ? Vector4.Zero : ToColorVector(item.Colour);
-            if (effect.Mode == 3)
+            Vector4 outlineColour = effect.Mode == SpriteEffectMode.None ? Vector4.Zero : ToColorVector(item.Colour);
+            if (effect.Mode == SpriteEffectMode.DropShadow)
             {
                 return new EffectConstants
                 {
                     Source = effect.Source,
                     OutlineColour = outlineColour,
-                    Effect = new Vector4(effect.Mode, effect.Amount, effect.Extra ?? 1F, 0F)
+                    Effect = new Vector4((float)effect.Mode, effect.Amount, effect.Extra ?? 1F, 0F)
                 };
             }
 
@@ -1340,7 +1364,7 @@ namespace Shared.Rendering.SilkD3D11
             {
                 Source = effect.Source == Vector4.Zero ? ToSourceUv(item.Source, item.Texture.Size) : effect.Source,
                 OutlineColour = outlineColour,
-                Effect = new Vector4(effect.Mode, effect.Amount, effect.TextureSize.Width, effect.TextureSize.Height)
+                Effect = new Vector4((float)effect.Mode, effect.Amount, effect.TextureSize.Width, effect.TextureSize.Height)
             };
         }
 
@@ -1351,9 +1375,9 @@ namespace Shared.Rendering.SilkD3D11
 
             return effect.Value.Mode switch
             {
-                1 => _grayscalePixelShader,
-                2 => _outlinePixelShader,
-                3 => _dropShadowPixelShader,
+                SpriteEffectMode.Grayscale => _grayscalePixelShader,
+                SpriteEffectMode.Outline => _outlinePixelShader,
+                SpriteEffectMode.DropShadow => _dropShadowPixelShader,
                 _ => _pixelShader
             };
         }
@@ -1434,12 +1458,6 @@ namespace Shared.Rendering.SilkD3D11
             if (t < 1F / 2F) return q;
             if (t < 2F / 3F) return p + (q - p) * (2F / 3F - t) * 6F;
             return p;
-        }
-
-        private static RectangleF Inflate(RectangleF rect, float amount)
-        {
-            rect.Inflate(amount, amount);
-            return rect;
         }
 
         private static Vector4 ToSourceUv(Rectangle source, Size size) =>
@@ -1539,7 +1557,7 @@ namespace Shared.Rendering.SilkD3D11
 
         private readonly struct SpriteEffect
         {
-            public readonly int Mode;
+            public readonly SpriteEffectMode Mode;
             public readonly float Amount;
             public readonly Size TextureSize;
             public readonly Vector4 Source;
@@ -1547,7 +1565,7 @@ namespace Shared.Rendering.SilkD3D11
             public readonly float GeometryExpand;
             public readonly bool ExpandUvs;
 
-            public SpriteEffect(int mode, float amount, Size textureSize, Vector4 source, float? extra, float geometryExpand = 0F, bool expandUvs = false)
+            public SpriteEffect(SpriteEffectMode mode, float amount, Size textureSize, Vector4 source, float? extra, float geometryExpand = 0F, bool expandUvs = false)
             {
                 Mode = mode;
                 Amount = amount;
