@@ -366,7 +366,12 @@ namespace Shared.Rendering.SilkD3D11
 
             Rectangle source = sourceRectangle ?? new Rectangle(0, 0, resource.Size.Width, resource.Size.Height);
             RectangleF destination = new(0, 0, source.Width, source.Height);
-            Matrix3x2 finalTransform = Matrix3x2.CreateTranslation(translation.X - center.X, translation.Y - center.Y) * transform;
+            Matrix3x2 finalTransform = transform;
+            if (center != Vector3.Zero)
+                finalTransform = Matrix3x2.CreateTranslation(-center.X, -center.Y) * finalTransform;
+
+            finalTransform.M31 += translation.X;
+            finalTransform.M32 += translation.Y;
             DrawTextureCore(texture, source, destination, finalTransform, colour);
         }
 
