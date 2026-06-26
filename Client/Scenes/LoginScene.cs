@@ -188,7 +188,8 @@ namespace Client.Scenes
             {
                 Index = 23,
                 LibraryFile = LibraryFile.Interface1c,
-                Parent = this
+                Parent = this,
+                IntersectParent = false
             };
 
             Logo = new DXImageControl
@@ -199,7 +200,8 @@ namespace Client.Scenes
                 Blend = true,
                 BlendMode = BlendMode.HIGHLIGHT,
                 FixedSize = true,
-                Size = new Size(564, 300)
+                Size = new Size(564, 300),
+                IntersectParent = false
             };
 
             LogoBackground.Location = new Point((Size.Width - LogoBackground.Size.Width) / 2, 25);
@@ -407,31 +409,31 @@ namespace Client.Scenes
 
             if (CEnvir.Loading)
             {
-                SystemDatabaseVersionLabel.Text = "Client Database: Loading";
+                SystemDatabaseVersionLabel.Text = "Database: Loading";
                 SystemDatabaseVersionLabel.ForeColour = Color.Yellow;
             }
             else if (!CEnvir.DatabaseLoadAttempted)
             {
-                SystemDatabaseVersionLabel.Text = "Client Database: Waiting";
+                SystemDatabaseVersionLabel.Text = "Database: Waiting";
                 SystemDatabaseVersionLabel.ForeColour = Color.Yellow;
             }
             else if (!CEnvir.ClientSystemDatabaseExists)
             {
                 SystemDatabaseVersionLabel.Text = string.IsNullOrWhiteSpace(serverVersion)
-                    ? "Client Database: Missing"
-                    : $"Client Database: Missing (Server {serverVersion})";
+                    ? "Database: Missing"
+                    : $"Database: Missing (Server {serverVersion})";
                 SystemDatabaseVersionLabel.ForeColour = Color.Red;
             }
             else if (string.IsNullOrWhiteSpace(clientVersion))
             {
                 SystemDatabaseVersionLabel.Text = string.IsNullOrWhiteSpace(serverVersion)
-                    ? "Client Database: Unversioned"
-                    : $"Client Database: Unversioned (Server {serverVersion})";
+                    ? "Database: Unversioned"
+                    : $"Database: Unversioned (Expected {serverVersion})";
                 SystemDatabaseVersionLabel.ForeColour = Color.Red;
             }
             else if (string.IsNullOrWhiteSpace(serverVersion))
             {
-                SystemDatabaseVersionLabel.Text = $"Client Database: {clientVersion} (Server Version Missing)";
+                SystemDatabaseVersionLabel.Text = $"Database: {clientVersion} (Server Version Missing)";
                 SystemDatabaseVersionLabel.ForeColour = Color.Yellow;
             }
             else
@@ -440,17 +442,17 @@ namespace Client.Scenes
 
                 if (result < 0)
                 {
-                    SystemDatabaseVersionLabel.Text = $"Client Database: {clientVersion} (Outdated, Server {serverVersion})";
+                    SystemDatabaseVersionLabel.Text = $"Database: {clientVersion} (Outdated, Expected {serverVersion})";
                     SystemDatabaseVersionLabel.ForeColour = Color.OrangeRed;
                 }
                 else if (result > 0)
                 {
-                    SystemDatabaseVersionLabel.Text = $"Client Database: {clientVersion} (Newer Than Server {serverVersion})";
+                    SystemDatabaseVersionLabel.Text = $"Database: {clientVersion} (Newer {serverVersion})";
                     SystemDatabaseVersionLabel.ForeColour = Color.Yellow;
                 }
                 else
                 {
-                    SystemDatabaseVersionLabel.Text = $"Client Database: {clientVersion}";
+                    SystemDatabaseVersionLabel.Text = $"Database: {clientVersion}";
                     SystemDatabaseVersionLabel.ForeColour = Color.LimeGreen;
                 }
             }

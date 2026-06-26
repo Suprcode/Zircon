@@ -257,7 +257,7 @@ namespace Client.Controls
 
         #endregion
 
-        public bool IntersectParent;
+        public bool IntersectParent = true;
 
         #region Drop Shadow
 
@@ -369,7 +369,7 @@ namespace Client.Controls
                 RenderingPipelineManager.EnableGrayscaleEffect();
             }
 
-            PresentTexture(texture, sourceRectangle, Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f);
+            PresentTexture(texture, sourceRectangle, Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, 1f, IntersectParent);
 
             if (GrayScale)
             {
