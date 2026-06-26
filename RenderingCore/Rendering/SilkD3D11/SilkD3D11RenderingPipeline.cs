@@ -1417,7 +1417,19 @@ namespace Shared.Rendering.SilkD3D11
             UploadTexture(_lightTexture);
 
             _poisonTexture = CreateTextureCore(new Size(PoisonSize, PoisonSize), RenderTextureFormat.A8R8G8B8, false);
-            Array.Fill<byte>(_poisonTexture.Data, 255);
+            for (int y = 0; y < PoisonSize; y++)
+            {
+                for (int x = 0; x < PoisonSize; x++)
+                {
+                    Color colour = x == 0 || y == 0 || x == PoisonSize - 1 || y == PoisonSize - 1 ? Color.Black : Color.White;
+                    int index = (y * PoisonSize + x) * 4;
+
+                    _poisonTexture.Data[index] = colour.B;
+                    _poisonTexture.Data[index + 1] = colour.G;
+                    _poisonTexture.Data[index + 2] = colour.R;
+                    _poisonTexture.Data[index + 3] = colour.A;
+                }
+            }
             UploadTexture(_poisonTexture);
         }
 
