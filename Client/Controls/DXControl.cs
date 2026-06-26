@@ -421,13 +421,19 @@ namespace Client.Controls
         {
             UpdateClipArea();
 
-            foreach (DXControl control in Controls)
+            if (IsDisposed || Controls == null) return;
+
+            for (int i = 0; i < Controls.Count; i++)
             {
+                DXControl control = Controls[i];
+
+                if (control == null || control.IsDisposed) continue;
+
                 control.UpdateDisplayArea();
-                control.UpdateClipAreaTree();
             }
 
             UpdateBorderInformation();
+
             DisplayAreaChanged?.Invoke(this, EventArgs.Empty);
         }
 
