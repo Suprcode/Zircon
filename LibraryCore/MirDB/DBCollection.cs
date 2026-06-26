@@ -18,6 +18,7 @@ namespace MirDB
         //private SortedDictionary<int, T> Dictionary = new SortedDictionary<int, T>(); //For Obtaining Keys.
 
         private bool VersionValid;
+        private bool CollectionChanged;
         private List<T> SaveList;
 
 
@@ -64,6 +65,7 @@ namespace MirDB
             T ob = CreateNew();
 
             Binding.Add(ob);
+            CollectionChanged = true;
 
             return ob;
         }
@@ -113,6 +115,18 @@ namespace MirDB
 
             }
         }
+        internal override bool HasChanges()
+        {
+            if (ReadOnly) return false;
+
+            if (!VersionValid || CollectionChanged) return true;
+
+            foreach (T ob in Binding)
+                if (!ob.IsTemporary && ob.IsModified)
+                    return true;
+
+            return false;
+        }
 
         internal override void SaveObjects()
         {
@@ -150,6 +164,7 @@ namespace MirDB
                 mStream.Seek(4, SeekOrigin.Begin);
 
                 SaveList = null;
+                CollectionChanged = false;
                 return mStream.ToArray();
             }
 
@@ -170,6 +185,7 @@ namespace MirDB
             int index = FastFind(ob.Index);
 
             if (index >= 0) Binding.RemoveAt(index);
+            CollectionChanged = true;
         }
         private int FastFind(int index)
         {

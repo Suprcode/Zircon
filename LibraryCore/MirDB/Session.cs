@@ -6,7 +6,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Library.SystemModels;
 
 namespace MirDB
 {
@@ -15,6 +17,8 @@ namespace MirDB
         public const string Extension = @".db";
         public const string TempExtension = @".TMP";
         public const string CompressExtension = @".gz";
+        public const string SystemDatabaseInfoName = "System";
+        private static readonly Regex SystemVersionRegex = new Regex(@"^(?<year>\d{4})\.(?<month>\d{2})\.(?<day>\d{2})\.(?<count>\d+)$", RegexOptions.Compiled);
 
         public string Root { get; }
         public SessionMode Mode { get; }
@@ -26,6 +30,8 @@ namespace MirDB
         public string SystemPath => Root + "System" + Extension;
         public string SystemBackupPath => BackupRoot + @"System\";
         public byte[] SystemHeader;
+        public bool SystemDatabaseExists { get; private set; }
+        public string SystemDatabaseVersion { get; private set; }
 
         public string UsersPath => Root + "Users" + Extension;
         public string UsersBackupPath => BackupRoot + @"Users\";
@@ -33,6 +39,7 @@ namespace MirDB
         public Assembly[] Assemblies { get; private set; }
 
         public byte[] UsersHeader;
+        private bool SystemVersionPending;
 
         //internal ConcurrentQueue<DBObject> KeyedObjects = new ConcurrentQueue<DBObject>();
         internal Dictionary<Type, DBRelationship> Relationships = new Dictionary<Type, DBRelationship>();
@@ -133,7 +140,9 @@ namespace MirDB
                 mappings.Clear();
             }
 
-            if (!File.Exists(SystemPath)) return;
+            SystemDatabaseExists = File.Exists(SystemPath);
+
+            if (!SystemDatabaseExists) return;
 
             using (BinaryReader reader = Library.Encryption.GetReader(File.OpenRead(SystemPath)))
             {
@@ -155,6 +164,14 @@ namespace MirDB
 
                 if (loadingTasks.Count > 0)
                     Task.WaitAll(loadingTasks.ToArray());
+            }
+
+            SystemDatabaseVersion = GetSystemDatabaseInfo()?.Version;
+
+            if (string.IsNullOrWhiteSpace(SystemDatabaseVersion) && (Mode & SessionMode.System) == SessionMode.System)
+            {
+                SetSystemVersion(GetNextSystemVersion(SystemDatabaseVersion, DateTime.Now));
+                SystemVersionPending = true;
             }
         }
         private void InitializeUsers()
@@ -206,18 +223,40 @@ namespace MirDB
 
         public void Save(bool commit)
         {
+            bool systemChanged = HasSystemChanges();
+            bool versionAlreadyPending = SystemVersionPending;
+            SystemVersionPending |= systemChanged;
+
+            if ((Mode & SessionMode.System) == SessionMode.System && ((systemChanged && !versionAlreadyPending) || string.IsNullOrWhiteSpace(SystemDatabaseVersion)))
+            {
+                BumpSystemVersion();
+                SystemVersionPending = true;
+            }
+
             Parallel.ForEach(Collections, x => x.Value.SaveObjects());
 
             if (commit)
-                Commit();
+                Commit(SystemVersionPending);
         }
         public void Commit()
         {
-            SaveSystem();
+            if ((Mode & SessionMode.System) == SessionMode.System && string.IsNullOrWhiteSpace(SystemDatabaseVersion))
+            {
+                BumpSystemVersion();
+                Parallel.ForEach(Collections, x => x.Value.SaveObjects());
+                SystemVersionPending = true;
+            }
+
+            Commit(HasSystemChanges() || SystemVersionPending);
+        }
+        private void Commit(bool systemChanged)
+        {
+            SaveSystem(systemChanged);
             SaveUsers();
+            SystemVersionPending = false;
         }
 
-        private void SaveSystem()
+        private void SaveSystem(bool systemChanged)
         {
             if ((Mode & SessionMode.System) != SessionMode.System) return;
 
@@ -388,6 +427,89 @@ namespace MirDB
         private static string ToFileName(DateTime time)
         {
             return $"{time.Year:0000}-{time.Month:00}-{time.Day:00} {time.Hour:00}-{time.Minute:00}";
+        }
+
+        private bool HasSystemChanges()
+        {
+            if ((Mode & SessionMode.System) != SessionMode.System) return false;
+
+            foreach (KeyValuePair<Type, ADBCollection> pair in Collections)
+            {
+                if (!pair.Value.IsSystemData) continue;
+                if (pair.Value.HasChanges()) return true;
+            }
+
+            return false;
+        }
+
+        public string RefreshSystemVersion()
+        {
+            SystemDatabaseExists = File.Exists(SystemPath);
+            SystemDatabaseVersion = ReadSystemVersionFromFile();
+
+            return SystemDatabaseVersion;
+        }
+
+        public void BumpSystemVersion()
+        {
+            SetSystemVersion(GetNextSystemVersion(SystemDatabaseVersion, DateTime.Now));
+        }
+
+        private SystemDatabaseInfo GetSystemDatabaseInfo()
+        {
+            if (Collections == null) return null;
+            if (!Collections.TryGetValue(typeof(SystemDatabaseInfo), out ADBCollection collection)) return null;
+
+            return collection.GetObjects().OfType<SystemDatabaseInfo>().FirstOrDefault(x => x.Name == SystemDatabaseInfoName);
+        }
+
+        private void SetSystemVersion(string version)
+        {
+            if (!Collections.TryGetValue(typeof(SystemDatabaseInfo), out ADBCollection collection)) return;
+
+            SystemDatabaseInfo info = collection.GetObjects().OfType<SystemDatabaseInfo>().FirstOrDefault(x => x.Name == SystemDatabaseInfoName);
+
+            if (info == null)
+            {
+                info = (SystemDatabaseInfo)collection.CreateObject();
+                info.Name = SystemDatabaseInfoName;
+            }
+
+            info.Version = version;
+            SystemDatabaseVersion = version;
+        }
+
+        private string ReadSystemVersionFromFile()
+        {
+            if (!SystemDatabaseExists || Assemblies == null) return null;
+
+            try
+            {
+                Session session = new Session(SessionMode.None, Root, BackupRoot) { BackUp = false };
+                session.Initialize(Assemblies);
+
+                return session.GetSystemDatabaseInfo()?.Version;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static string GetNextSystemVersion(string currentVersion, DateTime time)
+        {
+            int count = 1;
+            Match match = string.IsNullOrWhiteSpace(currentVersion) ? Match.Empty : SystemVersionRegex.Match(currentVersion);
+
+            if (match.Success &&
+                int.Parse(match.Groups["year"].Value) == time.Year &&
+                int.Parse(match.Groups["month"].Value) == time.Month &&
+                int.Parse(match.Groups["day"].Value) == time.Day)
+            {
+                count = int.Parse(match.Groups["count"].Value) + 1;
+            }
+
+            return $"{time.Year:0000}.{time.Month:00}.{time.Day:00}.{count}";
         }
 
         public string ToBackUpFileName(DateTime time)

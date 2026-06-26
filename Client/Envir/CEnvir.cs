@@ -54,10 +54,13 @@ namespace Client.Envir
         public static DBCollection<WindowSetting> WindowSettings;
         public static DBCollection<CastleInfo> CastleInfoList;
         public static MirDB.Session Session;
+        public static string ClientSystemDatabaseVersion, ServerSystemDatabaseVersion;
+        public static bool ClientSystemDatabaseExists;
 
         public static ConcurrentQueue<string> ChatLog = new ConcurrentQueue<string>();
 
         public static bool Loaded;
+        public static bool DatabaseLoadAttempted;
         public static bool Loading { get; private set; }
 
         public static string BuyAddress;
@@ -356,6 +359,11 @@ namespace Client.Envir
 
         public static void LoadDatabase()
         {
+            DatabaseLoadAttempted = true;
+            Loaded = false;
+            ClientSystemDatabaseVersion = null;
+            ClientSystemDatabaseExists = false;
+
             Loading = true;
             Task.Run(() =>
             {
@@ -367,6 +375,11 @@ namespace Client.Envir
                         Assembly.GetAssembly(typeof(ItemInfo)),
                         Assembly.GetAssembly(typeof(WindowSetting))
                     );
+
+                    ClientSystemDatabaseVersion = Session.SystemDatabaseVersion;
+                    ClientSystemDatabaseExists = Session.SystemDatabaseExists;
+
+                    if (!ClientSystemDatabaseExists) return;
 
                     Globals.ItemInfoList = Session.GetCollection<ItemInfo>();
                     Globals.MagicInfoList = Session.GetCollection<MagicInfo>();

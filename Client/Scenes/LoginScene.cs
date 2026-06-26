@@ -96,6 +96,7 @@ namespace Client.Scenes
         public ActivationDialog ActivationBox;
         public RequestActivationKeyDialog RequestActivationBox;
         public RankingDialog RankingBox;
+        public DXLabel SystemDatabaseVersionLabel;
 
         public DXImageControl Logo, LogoBackground;
 
@@ -224,6 +225,18 @@ namespace Client.Scenes
             };
             RankingBox.Location = new Point((Size.Width - RankingBox.Size.Width) / 2, (Size.Height - RankingBox.Size.Height) / 2);
 
+            SystemDatabaseVersionLabel = new DXLabel
+            {
+                Parent = this,
+                BackColour = Color.FromArgb(125, 50, 50, 50),
+                Border = true,
+                BorderColour = Color.Black,
+                DrawFormat = TextFormatFlags.NoPrefix,
+                Outline = false,
+                ForeColour = Color.Yellow,
+            };
+            UpdateSystemDatabaseVersionLabel();
+
             AccountBox = new NewAccountDialog
             {
                 Parent = this,
@@ -270,6 +283,7 @@ namespace Client.Scenes
             base.Process();
 
             Loaded = CEnvir.Loaded;
+            UpdateSystemDatabaseVersionLabel();
 
             if (!CEnvir.Loaded)
             {
@@ -384,6 +398,96 @@ namespace Client.Scenes
             CEnvir.LoadDatabase();
         }
 
+        private void UpdateSystemDatabaseVersionLabel()
+        {
+            if (SystemDatabaseVersionLabel == null || SystemDatabaseVersionLabel.IsDisposed) return;
+
+            string clientVersion = CEnvir.ClientSystemDatabaseVersion;
+            string serverVersion = CEnvir.ServerSystemDatabaseVersion;
+
+            if (CEnvir.Loading)
+            {
+                SystemDatabaseVersionLabel.Text = "Client Database: Loading";
+                SystemDatabaseVersionLabel.ForeColour = Color.Yellow;
+            }
+            else if (!CEnvir.DatabaseLoadAttempted)
+            {
+                SystemDatabaseVersionLabel.Text = "Client Database: Waiting";
+                SystemDatabaseVersionLabel.ForeColour = Color.Yellow;
+            }
+            else if (!CEnvir.ClientSystemDatabaseExists)
+            {
+                SystemDatabaseVersionLabel.Text = string.IsNullOrWhiteSpace(serverVersion)
+                    ? "Client Database: Missing"
+                    : $"Client Database: Missing (Server {serverVersion})";
+                SystemDatabaseVersionLabel.ForeColour = Color.Red;
+            }
+            else if (string.IsNullOrWhiteSpace(clientVersion))
+            {
+                SystemDatabaseVersionLabel.Text = string.IsNullOrWhiteSpace(serverVersion)
+                    ? "Client Database: Unversioned"
+                    : $"Client Database: Unversioned (Server {serverVersion})";
+                SystemDatabaseVersionLabel.ForeColour = Color.Red;
+            }
+            else if (string.IsNullOrWhiteSpace(serverVersion))
+            {
+                SystemDatabaseVersionLabel.Text = $"Client Database: {clientVersion} (Server Version Missing)";
+                SystemDatabaseVersionLabel.ForeColour = Color.Yellow;
+            }
+            else
+            {
+                int result = CompareSystemDatabaseVersions(clientVersion, serverVersion);
+
+                if (result < 0)
+                {
+                    SystemDatabaseVersionLabel.Text = $"Client Database: {clientVersion} (Outdated, Server {serverVersion})";
+                    SystemDatabaseVersionLabel.ForeColour = Color.OrangeRed;
+                }
+                else if (result > 0)
+                {
+                    SystemDatabaseVersionLabel.Text = $"Client Database: {clientVersion} (Newer Than Server {serverVersion})";
+                    SystemDatabaseVersionLabel.ForeColour = Color.Yellow;
+                }
+                else
+                {
+                    SystemDatabaseVersionLabel.Text = $"Client Database: {clientVersion}";
+                    SystemDatabaseVersionLabel.ForeColour = Color.LimeGreen;
+                }
+            }
+
+            SystemDatabaseVersionLabel.Location = new Point(5, Size.Height - SystemDatabaseVersionLabel.Size.Height - 5);
+        }
+
+        private static int CompareSystemDatabaseVersions(string clientVersion, string serverVersion)
+        {
+            int[] clientParts = ParseSystemDatabaseVersion(clientVersion);
+            int[] serverParts = ParseSystemDatabaseVersion(serverVersion);
+
+            if (clientParts == null || serverParts == null)
+                return string.Compare(clientVersion, serverVersion, StringComparison.OrdinalIgnoreCase);
+
+            for (int i = 0; i < clientParts.Length; i++)
+            {
+                int result = clientParts[i].CompareTo(serverParts[i]);
+                if (result != 0) return result;
+            }
+
+            return 0;
+        }
+
+        private static int[] ParseSystemDatabaseVersion(string version)
+        {
+            string[] parts = version?.Split('.');
+            if (parts == null || parts.Length != 4) return null;
+
+            int[] values = new int[4];
+            for (int i = 0; i < parts.Length; i++)
+                if (!int.TryParse(parts[i], out values[i]))
+                    return null;
+
+            return values;
+        }
+
         public void Disconnected()
         {
             _ConnectionAttempt = 0;
@@ -489,6 +593,14 @@ namespace Client.Scenes
                         RankingBox.Dispose();
 
                     RankingBox = null;
+                }
+
+                if (SystemDatabaseVersionLabel != null)
+                {
+                    if (!SystemDatabaseVersionLabel.IsDisposed)
+                        SystemDatabaseVersionLabel.Dispose();
+
+                    SystemDatabaseVersionLabel = null;
                 }
 
                 if (Logo != null)
