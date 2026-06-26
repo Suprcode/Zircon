@@ -11,7 +11,8 @@ struct PS_INPUT
     float4 Pos : SV_POSITION;
     float2 Tex : TEXCOORD0;
     float4 Col : COLOR0;
-    float2 ScreenPos : TEXCOORD1;
+    float TexIndex : TEXCOORD1;
+    float2 ScreenPos : TEXCOORD2;
 };
 
 float4 PS_SHADOW(PS_INPUT input) : SV_Target

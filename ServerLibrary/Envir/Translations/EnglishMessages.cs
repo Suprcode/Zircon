@@ -237,17 +237,17 @@ namespace Server.Envir.Translations
         public override string TradeTargetAlreadyHaveRequest { get; set; } = "{0} already has a trade reqeust.";
         public override string TradeNotAllowed { get; set; } = "{0} wishes to trade with you, but you are not allowing trades. @AllowTrade";
         public override string TradeTargetDead { get; set; } = "You cannot trade a dead person.";
-        public override string TradeRequested { get; set; } = "You have sent a trade request to {0}...";
-        public override string TradeWaiting { get; set; } = "Waiting for Partner to Accept Trade...";
-        public override string TradePartnerWaiting { get; set; } = "Your Partner is waiting for you to Accept Trade...";
-        public override string TradeNoGold { get; set; } = "You do not have enough gold To Trade....";
+        public override string TradeRequested { get; set; } = "You have sent a trade request to {0}.";
+        public override string TradeWaiting { get; set; } = "Waiting for Partner to Accept Trade.";
+        public override string TradePartnerWaiting { get; set; } = "Your Partner is waiting for you to Accept Trade.";
+        public override string TradeNoGold { get; set; } = "You do not have enough gold To Trade.";
         public override string TradePartnerNoGold { get; set; } = "Your partner dose not have enough gold To Trade.";
         public override string TradeTooMuchGold { get; set; } = "You cannot carry this much gold.";
-        public override string TradePartnerTooMuchGold { get; set; } = "Your Partner cannot carry this much gold...";
+        public override string TradePartnerTooMuchGold { get; set; } = "Your Partner cannot carry this much gold.";
         public override string TradeFailedItemsChanged { get; set; } = "Your Items were changed, Trade Failed.";
         public override string TradeFailedPartnerItemsChanged { get; set; } = "{0}'s Items were changed, Trade Failed.";
         public override string TradeNotEnoughSpace { get; set; } = "You cannot Carry this many items, Please make space in your inventory and try again.";
-        public override string TradeComplete { get; set; } = "Trade Complete..";
+        public override string TradeComplete { get; set; } = "Trade Complete.";
 
         public override string NPCFundsGuild { get; set; } = "You cannot use Guild Funds to buy from a merchant because you are not in a guild.";
         public override string NPCFundsPermission { get; set; } = "You cannot use Guild Funds to buy from a merchant because you do not have permission.";

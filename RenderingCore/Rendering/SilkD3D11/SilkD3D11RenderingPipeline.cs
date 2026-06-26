@@ -27,6 +27,7 @@ namespace Shared.Rendering.SilkD3D11
         private const int PoisonSize = 6;
         private const int MaxSprites = 4096;
         private const int MaxVertices = MaxSprites * 6;
+        private const int MaxBatchTextures = 32;
         private const uint DxgiSwapChainFlagAllowModeSwitch = 2;
         private const uint DxgiMwaNoAltEnter = 2;
         private const string SpriteShaderFileName = "SpriteD3D11.hlsl";
@@ -68,6 +69,8 @@ namespace Shared.Rendering.SilkD3D11
         private readonly List<SilkD3D11RenderTarget> _renderTargets = new();
         private readonly List<SpriteBatchItem> _spriteBatch = new(MaxSprites);
         private readonly List<LineBatchItem> _lineBatch = new(1024);
+        private readonly SpriteVertex[] _vertexUpload = new SpriteVertex[MaxVertices];
+        private readonly List<SilkD3D11TextureResource> _batchTextureSlots = new(MaxBatchTextures);
         private readonly Dictionary<BlendMode, ComPtr<ID3D11BlendState>> _blendStates = new();
 
         private RenderingPipelineContext _context;
@@ -396,12 +399,16 @@ namespace Shared.Rendering.SilkD3D11
             if (_spriteBatch.Count == 0)
                 return;
 
-            SpriteBatchItem[] sprites = _spriteBatch.ToArray();
-            _spriteBatch.Clear();
-
             SetD3DRenderTarget(_currentTarget);
-            foreach (SpriteBatchItem item in sprites)
-                DrawSprite(item);
+            for (int i = 0; i < _spriteBatch.Count;)
+            {
+                int count = GetCompatibleSpriteBatchCount(i);
+
+                DrawSprites(_spriteBatch, i, count);
+                i += count;
+            }
+
+            _spriteBatch.Clear();
         }
 
         public RenderSurface GetCurrentSurface() => RenderSurface.From(_currentTarget);
@@ -708,10 +715,93 @@ namespace Shared.Rendering.SilkD3D11
             if (item.Texture.ShaderResourceView.Handle == null)
                 return;
 
-            SpriteVertex* vertices = stackalloc SpriteVertex[6];
-            WriteSpriteVertices(vertices, item);
-            UpdateBuffer(_vertexBuffer, vertices, (uint)(sizeof(SpriteVertex) * 6));
+            fixed (SpriteVertex* vertices = _vertexUpload)
+            {
+                WriteSpriteVertices(vertices, item, 0);
+                UpdateBuffer(_vertexBuffer, vertices, (uint)(sizeof(SpriteVertex) * 6));
+            }
 
+            _batchTextureSlots.Clear();
+            _batchTextureSlots.Add(item.Texture);
+            SubmitSpriteBatch(item, 1, _batchTextureSlots);
+        }
+
+        private void DrawSprites(IReadOnlyList<SpriteBatchItem> items, int start, int count)
+        {
+            if (count <= 0)
+                return;
+
+            SpriteBatchItem item = items[start];
+            if (item.Texture.ShaderResourceView.Handle == null)
+                return;
+
+            _batchTextureSlots.Clear();
+            fixed (SpriteVertex* vertices = _vertexUpload)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    SpriteBatchItem sprite = items[start + i];
+                    int textureIndex = GetOrAddBatchTextureSlot(sprite.Texture);
+                    WriteSpriteVertices(vertices + i * 6, sprite, textureIndex);
+                }
+
+                UpdateBuffer(_vertexBuffer, vertices, (uint)(sizeof(SpriteVertex) * 6 * count));
+            }
+
+            SubmitSpriteBatch(item, count, _batchTextureSlots);
+        }
+
+        private int GetOrAddBatchTextureSlot(SilkD3D11TextureResource texture)
+        {
+            for (int i = 0; i < _batchTextureSlots.Count; i++)
+                if (ReferenceEquals(_batchTextureSlots[i], texture))
+                    return i;
+
+            if (_batchTextureSlots.Count >= MaxBatchTextures)
+                throw new InvalidOperationException("Sprite batch exceeded the available texture slots.");
+
+            _batchTextureSlots.Add(texture);
+            return _batchTextureSlots.Count - 1;
+        }
+
+        private int GetCompatibleSpriteBatchCount(int start)
+        {
+            SpriteBatchItem first = _spriteBatch[start];
+            _batchTextureSlots.Clear();
+            _batchTextureSlots.Add(first.Texture);
+
+            int count = 1;
+            while (start + count < _spriteBatch.Count && count < MaxSprites)
+            {
+                SpriteBatchItem next = _spriteBatch[start + count];
+                if (next.Texture.ShaderResourceView.Handle == null || !CanBatchTogether(first, next))
+                    break;
+
+                if (!HasBatchTextureSlot(next.Texture))
+                {
+                    if (_batchTextureSlots.Count >= MaxBatchTextures)
+                        break;
+
+                    _batchTextureSlots.Add(next.Texture);
+                }
+
+                count++;
+            }
+
+            return count;
+        }
+
+        private bool HasBatchTextureSlot(SilkD3D11TextureResource texture)
+        {
+            for (int i = 0; i < _batchTextureSlots.Count; i++)
+                if (ReferenceEquals(_batchTextureSlots[i], texture))
+                    return true;
+
+            return false;
+        }
+
+        private void SubmitSpriteBatch(SpriteBatchItem item, int spriteCount, IReadOnlyList<SilkD3D11TextureResource> textureSlots)
+        {
             Matrix4x4 projection = Matrix4x4.Identity;
             projection.M11 = 2.0f / _currentTarget.Size.Width;
             projection.M22 = -2.0f / _currentTarget.Size.Height;
@@ -736,18 +826,57 @@ namespace Shared.Rendering.SilkD3D11
             ID3D11Buffer* effectBuffer = _effectBuffer.Handle;
             _deviceContext.VSSetConstantBuffers(0, 1, &matrixBuffer);
             _deviceContext.PSSetConstantBuffers(1, 1, &effectBuffer);
-            ID3D11ShaderResourceView* srv = item.Texture.ShaderResourceView.Handle;
-            _deviceContext.PSSetShaderResources(0, 1, &srv);
+            ID3D11ShaderResourceView** srvs = stackalloc ID3D11ShaderResourceView*[MaxBatchTextures];
+            for (int i = 0; i < MaxBatchTextures; i++)
+                srvs[i] = null;
+
+            for (int i = 0; i < textureSlots.Count && i < MaxBatchTextures; i++)
+                srvs[i] = textureSlots[i].ShaderResourceView.Handle;
+
+            _deviceContext.PSSetShaderResources(0, MaxBatchTextures, srvs);
             ID3D11SamplerState* sampler = (_textureFilter == TextureFilterMode.Linear ? _linearSampler : _pointSampler).Handle;
             _deviceContext.PSSetSamplers(0, 1, &sampler);
 
             ApplyBlendState(item.BlendMode, item.BlendRate);
-            _deviceContext.Draw(6, 0);
+            _deviceContext.Draw((uint)(6 * spriteCount), 0);
 
-            ID3D11ShaderResourceView* nullSrv = null;
-            _deviceContext.PSSetShaderResources(0, 1, &nullSrv);
+            ID3D11ShaderResourceView** nullSrvs = stackalloc ID3D11ShaderResourceView*[MaxBatchTextures];
+            for (int i = 0; i < MaxBatchTextures; i++)
+                nullSrvs[i] = null;
+
+            _deviceContext.PSSetShaderResources(0, MaxBatchTextures, nullSrvs);
             ID3D11Buffer* nullBuffer = null;
             _deviceContext.PSSetConstantBuffers(1, 1, &nullBuffer);
+        }
+
+        private static bool CanBatchTogether(SpriteBatchItem first, SpriteBatchItem next)
+        {
+            if (!HasSameBlendState(first, next))
+                return false;
+
+            if (!HasCompatibleBatchEffect(first.Effect, next.Effect))
+                return false;
+
+            if (first.Effect.HasValue || next.Effect.HasValue)
+                return ReferenceEquals(first.Texture, next.Texture);
+
+            return true;
+        }
+
+        private static bool HasSameBlendState(SpriteBatchItem first, SpriteBatchItem next)
+        {
+            return first.BlendMode == next.BlendMode && Math.Abs(first.BlendRate - next.BlendRate) <= float.Epsilon;
+        }
+
+        private static bool HasCompatibleBatchEffect(SpriteEffect? first, SpriteEffect? next)
+        {
+            if (!first.HasValue && !next.HasValue)
+                return true;
+
+            if (!first.HasValue || !next.HasValue)
+                return false;
+
+            return first.Value.Mode == SpriteEffectMode.Grayscale && next.Value.Mode == SpriteEffectMode.Grayscale;
         }
 
         private void DrawSolidRectangle(RectangleF rectangle, GdiColor colour, float opacity)
@@ -781,12 +910,12 @@ namespace Shared.Rendering.SilkD3D11
         private void CreateDevice()
         {
             D3DFeatureLevel[] levels =
-            {
+            [
                 D3DFeatureLevel.Level111,
                 D3DFeatureLevel.Level110,
                 D3DFeatureLevel.Level101,
                 D3DFeatureLevel.Level100
-            };
+            ];
 
             ID3D11Device* device = null;
             ID3D11DeviceContext* context = null;
@@ -1132,13 +1261,14 @@ namespace Shared.Rendering.SilkD3D11
             byte* color = (byte*)Marshal.StringToHGlobalAnsi("COLOR");
             try
             {
-                InputElementDesc* elements = stackalloc InputElementDesc[3];
+                InputElementDesc* elements = stackalloc InputElementDesc[4];
                 elements[0] = new InputElementDesc(position, 0, Format.FormatR32G32Float, 0, 0, InputClassification.PerVertexData, 0);
                 elements[1] = new InputElementDesc(texcoord, 0, Format.FormatR32G32Float, 0, 8, InputClassification.PerVertexData, 0);
                 elements[2] = new InputElementDesc(color, 0, Format.FormatR32G32B32A32Float, 0, 16, InputClassification.PerVertexData, 0);
+                elements[3] = new InputElementDesc(texcoord, 1, Format.FormatR32Float, 0, 32, InputClassification.PerVertexData, 0);
                 ID3D11InputLayout* inputLayout = null;
                 fixed (byte* vsPointer = vsBlob)
-                    Check(_device.CreateInputLayout(elements, 3, vsPointer, (nuint)vsBlob.Length, &inputLayout), "create D3D11 input layout");
+                    Check(_device.CreateInputLayout(elements, 4, vsPointer, (nuint)vsBlob.Length, &inputLayout), "create D3D11 input layout");
                 _inputLayout = new ComPtr<ID3D11InputLayout>(inputLayout);
             }
             finally
@@ -1326,7 +1456,7 @@ namespace Shared.Rendering.SilkD3D11
             return resource != null;
         }
 
-        private static void WriteSpriteVertices(SpriteVertex* vertices, SpriteBatchItem item)
+        private static void WriteSpriteVertices(SpriteVertex* vertices, SpriteBatchItem item, int textureIndex)
         {
             float left = item.Destination.Left;
             float right = item.Destination.Right;
@@ -1360,12 +1490,12 @@ namespace Shared.Rendering.SilkD3D11
             Vector2 p3 = Vector2.Transform(new Vector2(left, bottom), item.Transform);
             Vector4 colour = ToPremultipliedVector(item.Colour, item.Opacity);
 
-            vertices[0] = new SpriteVertex(p0, new Vector2(u1, v1), colour);
-            vertices[1] = new SpriteVertex(p1, new Vector2(u2, v1), colour);
-            vertices[2] = new SpriteVertex(p2, new Vector2(u2, v2), colour);
+            vertices[0] = new SpriteVertex(p0, new Vector2(u1, v1), colour, textureIndex);
+            vertices[1] = new SpriteVertex(p1, new Vector2(u2, v1), colour, textureIndex);
+            vertices[2] = new SpriteVertex(p2, new Vector2(u2, v2), colour, textureIndex);
             vertices[3] = vertices[0];
             vertices[4] = vertices[2];
-            vertices[5] = new SpriteVertex(p3, new Vector2(u1, v2), colour);
+            vertices[5] = new SpriteVertex(p3, new Vector2(u1, v2), colour, textureIndex);
         }
 
         private EffectConstants CreateEffectConstants(SpriteBatchItem item)
@@ -1533,12 +1663,14 @@ namespace Shared.Rendering.SilkD3D11
             public readonly Vector2 Position;
             public readonly Vector2 TexCoord;
             public readonly Vector4 Colour;
+            public readonly float TextureIndex;
 
-            public SpriteVertex(Vector2 position, Vector2 texCoord, Vector4 colour)
+            public SpriteVertex(Vector2 position, Vector2 texCoord, Vector4 colour, float textureIndex)
             {
                 Position = position;
                 TexCoord = texCoord;
                 Colour = colour;
+                TextureIndex = textureIndex;
             }
         }
 
