@@ -143,6 +143,7 @@ namespace Client.Scenes.Views
                 pair.Value.Dispose();
 
             SchoolTabs.Clear();
+            Magics.Clear();
 
             List<MagicInfo> magics = Globals.MagicInfoList.Binding.ToList();
             magics.Sort((x1, x2) => x1.NeedLevel1.CompareTo(x2.NeedLevel1));

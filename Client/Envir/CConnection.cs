@@ -1834,10 +1834,10 @@ namespace Client.Envir
             MapObject.User.Magics[p.Info].Level = p.Level;
             MapObject.User.Magics[p.Info].Experience = p.Experience;
 
-            if (GameScene.Game.MagicBox?.Magics != null && GameScene.Game.MagicBox.Magics.ContainsKey(p.Info))
+            if (GameScene.Game.MagicBox.Magics.ContainsKey(p.Info))
                 GameScene.Game.MagicBox.Magics[p.Info].Refresh();
 
-            if (GameScene.Game.CharacterBox?.DisciplineMagics != null && GameScene.Game.CharacterBox.DisciplineMagics.ContainsKey(p.Info))
+            if (GameScene.Game.CharacterBox.DisciplineMagics.ContainsKey(p.Info))
                 GameScene.Game.CharacterBox.DisciplineMagics[p.Info].Refresh();
         }
 

@@ -1042,6 +1042,16 @@ namespace Client.Controls
         #region IDisposable
         protected override void Dispose(bool disposing)
         {
+            DXTabControl tabControl = Parent as DXTabControl ?? CurrentTabControl;
+
+            if (disposing && tabControl != null && !tabControl.IsDisposed && TabButton != null)
+            {
+                if (tabControl.SelectedTab == this)
+                    tabControl.SelectedTab = null;
+
+                tabControl.UnregisterTabButton(TabButton);
+                tabControl.TabButtons.Remove(TabButton);
+            }
 
             base.Dispose(disposing);
 
@@ -1067,6 +1077,12 @@ namespace Client.Controls
                 SelectedChanged = null;
                 DrawOtherBorderChanged = null;
                 CurrentTabControlChanged = null;
+
+                if (tabControl != null && !tabControl.IsDisposed)
+                {
+                    tabControl.SetNewTab();
+                    tabControl.TabsChanged();
+                }
             }
         }
         #endregion
