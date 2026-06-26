@@ -232,7 +232,7 @@ namespace Client.Scenes.Views
 
         private void DrawNPCWindow()
         {
-            if (!WindowValid)
+            if (!WindowValid || !WindowTexture.IsValid || !WindowSurface.IsValid)
             {
                 CreateTexture();
 

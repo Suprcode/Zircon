@@ -305,6 +305,7 @@ namespace Client.Controls
 
             WindowTexture = default;
             WindowSurface = default;
+            WindowValid = false;
         }
         private void UpdateLocations()
         {
