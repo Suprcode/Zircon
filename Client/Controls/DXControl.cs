@@ -1755,16 +1755,54 @@ BorderInformation = new[]
             }
 
             Rectangle area = DisplayArea;
-            LinePoint[] border = new[]
-            {
-                new LinePoint(area.Left - 1, area.Top - 1),
-                new LinePoint(area.Right, area.Top - 1),
-                new LinePoint(area.Right, area.Bottom),
-                new LinePoint(area.Left - 1, area.Bottom),
-                new LinePoint(area.Left - 1, area.Top - 1)
-            };
+            Rectangle clipArea = GetBorderClipArea();
 
-            RenderingPipelineManager.DrawLine(border, BorderColour);
+            DrawClippedHorizontalLine(area.Left - 1, area.Right, area.Top - 1, clipArea);
+            DrawClippedVerticalLine(area.Right, area.Top - 1, area.Bottom, clipArea);
+            DrawClippedHorizontalLine(area.Left - 1, area.Right, area.Bottom, clipArea);
+            DrawClippedVerticalLine(area.Left - 1, area.Top - 1, area.Bottom, clipArea);
+        }
+
+        private Rectangle GetBorderClipArea()
+        {
+            Rectangle sceneArea = ActiveScene?.DisplayArea ?? DisplayArea;
+
+            if (Parent == null || Parent.IsMoving && Parent.AllowDragOut)
+                return sceneArea;
+
+            return Parent.ClipArea;
+        }
+
+        private void DrawClippedHorizontalLine(int left, int right, int y, Rectangle clipArea)
+        {
+            if (y < clipArea.Top || y >= clipArea.Bottom) return;
+
+            int clippedLeft = Math.Max(left, clipArea.Left);
+            int clippedRight = Math.Min(right, clipArea.Right - 1);
+
+            if (clippedLeft > clippedRight) return;
+
+            RenderingPipelineManager.DrawLine(new[]
+            {
+                new LinePoint(clippedLeft, y),
+                new LinePoint(clippedRight, y)
+            }, BorderColour);
+        }
+
+        private void DrawClippedVerticalLine(int x, int top, int bottom, Rectangle clipArea)
+        {
+            if (x < clipArea.Left || x >= clipArea.Right) return;
+
+            int clippedTop = Math.Max(top, clipArea.Top);
+            int clippedBottom = Math.Min(bottom, clipArea.Bottom - 1);
+
+            if (clippedTop > clippedBottom) return;
+
+            RenderingPipelineManager.DrawLine(new[]
+            {
+                new LinePoint(x, clippedTop),
+                new LinePoint(x, clippedBottom)
+            }, BorderColour);
         }
 
         protected virtual void DrawChildControls()
