@@ -275,7 +275,7 @@ namespace Client.Envir
             }
             else
             {
-                CEnvir.Target.Text = $"{Globals.ClientName} - {debugText} - {connectionText}";
+                CEnvir.Target.Text = Config.DebugLabel ? $"{Globals.ClientName} - {debugText} - {connectionText}" : Globals.ClientName;
 
                 DXControl.PingLabel.Text = string.Empty;
                 DXControl.DebugLabel.Text = string.Empty;
