@@ -2557,6 +2557,15 @@ namespace Client.Models
         {
             if (BodyLibrary == null || !Visible) return;
 
+            int y = GetBodyDrawY();
+
+            DrawShadow(DrawX, y);
+
+            DrawBody(DrawX, y, MouseObject == this);
+        }
+
+        private int GetBodyDrawY()
+        {
             int y = DrawY;
 
             switch (Image)
@@ -2569,9 +2578,7 @@ namespace Client.Models
                     break;
             }
 
-            DrawShadow(DrawX, y);
-
-            DrawBody(DrawX, y, MouseObject == this);
+            return y;
         }
 
         public void DrawShadow(int x, int y)
@@ -3124,14 +3131,16 @@ namespace Client.Models
         {
             if (!Visible || BodyLibrary == null) return false;
 
+            Point local = new Point(p.X - DrawX, p.Y - GetBodyDrawY());
+
             switch (Image)
             {
                 case MonsterImage.LobsterLord:
-                    return BodyLibrary.VisiblePixel(BodyFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true) ||
-                           BodyLibrary.VisiblePixel(BodyFrame + 1000, new Point(p.X - DrawX, p.Y - DrawY), false, true) ||
-                           BodyLibrary.VisiblePixel(BodyFrame + 2000, new Point(p.X - DrawX, p.Y - DrawY), false, true);
+                    return BodyLibrary.VisiblePixel(BodyFrame, local, false, true) ||
+                           BodyLibrary.VisiblePixel(BodyFrame + 1000, local, false, true) ||
+                           BodyLibrary.VisiblePixel(BodyFrame + 2000, local, false, true);
                 default:
-                    return BodyLibrary.VisiblePixel(BodyFrame, new Point(p.X - DrawX, p.Y - DrawY), false, true);
+                    return BodyLibrary.VisiblePixel(BodyFrame, local, false, true);
             }
 
         }

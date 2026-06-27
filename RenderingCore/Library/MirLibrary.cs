@@ -444,7 +444,10 @@ namespace Shared.Rendering
             if (offSet)
                 location = new Point(location.X - image.OffSetX, location.Y - image.OffSetY);
 
-            return image.VisiblePixel(location, accurate);
+            if (image.ImageValid && image.ImageData != null)
+                return image.VisiblePixel(location, accurate);
+
+            return image.GetVisibleBounds().Contains(location);
         }
 
         public void Draw(int index, float x, float y, Color colour, Rectangle area, float opacity, ImageType type, byte shadow = 0)
