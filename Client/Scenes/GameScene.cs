@@ -212,6 +212,7 @@ namespace Client.Scenes
         public CharacterDialog InspectBox;
         public RankingDialog RankingBox;
         public MarketPlaceDialog MarketPlaceBox;
+        public GameStoreDialog GameStoreBox;
         public DungeonFinderDialog DungeonFinderBox;
         public CommunicationDialog CommunicationBox;
         public TradeDialog TradeBox;
@@ -425,6 +426,7 @@ namespace Client.Scenes
             ConfigBox?.LoadSettings();
             MenuBox?.LoadSettings();          
             HelpBox?.LoadSettings();
+            GameStoreBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -662,6 +664,11 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
             };
+            GameStoreBox = new GameStoreDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
             DungeonFinderBox = new DungeonFinderDialog
             {
                 Parent = this,
@@ -802,6 +809,7 @@ namespace Client.Scenes
             GuildBox.LoadSettings();
             MenuBox.LoadSettings();
             HelpBox.LoadSettings();
+            GameStoreBox.LoadSettings();
         }
 
         #region Methods
@@ -866,6 +874,8 @@ namespace Client.Scenes
             RankingBox.Location = new Point((Size.Width - RankingBox.Size.Width) / 2, (Size.Height - RankingBox.Size.Height) / 2);
 
             MarketPlaceBox.Location = new Point((Size.Width - MarketPlaceBox.Size.Width) / 2, (Size.Height - MarketPlaceBox.Size.Height) / 2);
+
+            GameStoreBox.Location = new Point((Size.Width - GameStoreBox.Size.Width) / 2, (Size.Height - GameStoreBox.Size.Height) / 2);
 
             CommunicationBox.Location = new Point((Size.Width - CommunicationBox.Size.Width) / 2, (Size.Height - CommunicationBox.Size.Height) / 2);
 
@@ -1223,13 +1233,7 @@ namespace Client.Scenes
                         MagicBarBox.Visible = !MagicBarBox.Visible;
                         break;
                     case KeyBindAction.GameStoreWindow:
-                        if (MarketPlaceBox.StoreTab.IsVisible)
-                            MarketPlaceBox.Visible = false;
-                        else
-                        {
-                            MarketPlaceBox.Visible = true;
-                            MarketPlaceBox.StoreTab.TabButton.InvokeMouseClick();
-                        }
+                        GameStoreBox.Visible = !GameStoreBox.Visible;
                         break;
                     case KeyBindAction.DungeonFinderWindow:
                         DungeonFinderBox.Visible = !DungeonFinderBox.Visible;
@@ -4134,6 +4138,7 @@ namespace Client.Scenes
 
             MarketPlaceBox.GameGoldBox.Value = User.GameGold.Amount;
             MarketPlaceBox.HuntGoldBox.Value = User.HuntGold.Amount;
+            GameStoreBox?.RefreshCurrency();
             NPCAdoptCompanionBox.RefreshUnlockButton();
 
             foreach (NPCGoodsCell cell in NPCGoodsBox.Cells)
@@ -4952,6 +4957,14 @@ namespace Client.Scenes
                         MarketPlaceBox.Dispose();
 
                     MarketPlaceBox = null;
+                }
+
+                if (GameStoreBox != null)
+                {
+                    if (!GameStoreBox.IsDisposed)
+                        GameStoreBox.Dispose();
+
+                    GameStoreBox = null;
                 }
 
                 if (CommunicationBox != null)

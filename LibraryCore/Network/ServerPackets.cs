@@ -864,6 +864,22 @@ namespace Library.Network.ServerPackets
     {
     }
 
+    public sealed class GameStoreData : Packet
+    {
+        public List<int> Favourites { get; set; }
+    }
+
+    public sealed class GameStoreFavouriteChanged : Packet
+    {
+        public int Index { get; set; }
+        public bool Favourited { get; set; }
+    }
+
+    public sealed class GameStoreGift : Packet
+    {
+        public GameStoreGiftResult Result { get; set; }
+    }
+
     public sealed class MarketPlaceConsignChanged : Packet
     {
         public int Index { get; set; }

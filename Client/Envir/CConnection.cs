@@ -3626,6 +3626,47 @@ namespace Client.Envir
             GameScene.Game.MarketPlaceBox.StoreBuyButton.Enabled = true;
         }
 
+        public void Process(S.GameStoreData p)
+        {
+            GameScene.Game.GameStoreBox.SetFavourites(p.Favourites);
+        }
+
+        public void Process(S.GameStoreFavouriteChanged p)
+        {
+            GameScene.Game.GameStoreBox.SetFavourite(p.Index, p.Favourited);
+        }
+
+        public void Process(S.GameStoreGift p)
+        {
+            string message;
+            switch (p.Result)
+            {
+                case GameStoreGiftResult.Success:
+                    message = CEnvir.Language.GameStoreGiftSuccess;
+                    break;
+                case GameStoreGiftResult.NotAvailable:
+                    message = CEnvir.Language.GameStoreGiftNotAvailable;
+                    break;
+                case GameStoreGiftResult.InvalidRecipient:
+                    message = CEnvir.Language.GameStoreGiftInvalidRecipient;
+                    break;
+                case GameStoreGiftResult.CannotGiftSelf:
+                    message = CEnvir.Language.GameStoreGiftCannotGiftSelf;
+                    break;
+                case GameStoreGiftResult.MailboxFull:
+                    message = CEnvir.Language.GameStoreGiftMailboxFull;
+                    break;
+                case GameStoreGiftResult.InsufficientFunds:
+                    message = CEnvir.Language.GameStoreGiftInsufficientFunds;
+                    break;
+                default:
+                    message = CEnvir.Language.GameStoreGiftFailed;
+                    break;
+            }
+
+            GameScene.Game.ReceiveChat(message, MessageType.System);
+        }
+
         public void Process(S.MailList p)
         {
             GameScene.Game.CommunicationBox.ReceivedMailList.AddRange(p.Mail);

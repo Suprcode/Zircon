@@ -683,6 +683,13 @@ namespace Client.Envir.Translations
         public abstract string MarketPlaceDialogGameStoreTabBuyingTotalLabel { get; set; }
         public abstract string MarketPlaceDialogGameStoreTabBuyingUseHuntGoldLabel { get; set; }
         public abstract string MarketPlaceDialogGameStoreTabBuyingBuyButtonLabel { get; set; }
+        public abstract string GameStoreGiftSuccess { get; set; }
+        public abstract string GameStoreGiftNotAvailable { get; set; }
+        public abstract string GameStoreGiftInvalidRecipient { get; set; }
+        public abstract string GameStoreGiftCannotGiftSelf { get; set; }
+        public abstract string GameStoreGiftMailboxFull { get; set; }
+        public abstract string GameStoreGiftInsufficientFunds { get; set; }
+        public abstract string GameStoreGiftFailed { get; set; }
 
         public abstract string MonsterDialogUndeadIconHint { get; set; }
         public abstract string MonsterDialogMortalIconHint { get; set; }

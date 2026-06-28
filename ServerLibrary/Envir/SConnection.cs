@@ -999,6 +999,18 @@ namespace Server.Envir
 
             Player.MarketPlaceStoreBuy(p);
         }
+        public void Process(C.GameStoreFavouriteToggle p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GameStoreFavouriteToggle(p);
+        }
+        public void Process(C.GameStoreGift p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GameStoreGift(p);
+        }
 
         public void Process(C.MailOpened p)
         {

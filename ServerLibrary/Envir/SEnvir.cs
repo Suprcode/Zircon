@@ -288,6 +288,7 @@ namespace Server.Envir
         public static DBCollection<CastleInfo> CastleInfoList;
         public static DBCollection<UserConquest> UserConquestList;
         public static DBCollection<GameGoldPayment> GameGoldPaymentList;
+        public static DBCollection<GameStoreFavourite> GameStoreFavouriteList;
         public static DBCollection<GameStoreSale> GameStoreSaleList;
         public static DBCollection<GameNPCList> GameNPCList;
         public static DBCollection<GuildWarInfo> GuildWarInfoList;
@@ -488,6 +489,7 @@ namespace Server.Envir
             UserCompanionList = Session.GetCollection<UserCompanion>();
             CompanionFiltersList = Session.GetCollection<CompanionFilters>();
             UserCompanionUnlockList = Session.GetCollection<UserCompanionUnlock>();
+            GameStoreFavouriteList = Session.GetCollection<GameStoreFavourite>();
             BlockInfoList = Session.GetCollection<BlockInfo>();
             FriendInfoList = Session.GetCollection<FriendInfo>();
             CastleInfoList = Session.GetCollection<CastleInfo>();
@@ -1306,6 +1308,7 @@ namespace Server.Envir
             CastleInfoList = null;
             UserConquestList = null;
             GameGoldPaymentList = null;
+            GameStoreFavouriteList = null;
             GameStoreSaleList = null;
             GameNPCList = null;
             GuildWarInfoList = null;

@@ -683,6 +683,13 @@ namespace Client.Envir.Translations
         public override string MarketPlaceDialogGameStoreTabBuyingTotalLabel { get; set; } = "Total:";
         public override string MarketPlaceDialogGameStoreTabBuyingUseHuntGoldLabel { get; set; } = "Use Hunt Gold:";
         public override string MarketPlaceDialogGameStoreTabBuyingBuyButtonLabel { get; set; } = "Buy";
+        public override string GameStoreGiftSuccess { get; set; } = "Game Store gift sent successfully.";
+        public override string GameStoreGiftNotAvailable { get; set; } = "That Game Store item is not available.";
+        public override string GameStoreGiftInvalidRecipient { get; set; } = "The gift recipient could not be found.";
+        public override string GameStoreGiftCannotGiftSelf { get; set; } = "You cannot send a Game Store gift to yourself.";
+        public override string GameStoreGiftMailboxFull { get; set; } = "The recipient's mailbox is full.";
+        public override string GameStoreGiftInsufficientFunds { get; set; } = "You do not have enough currency for this gift.";
+        public override string GameStoreGiftFailed { get; set; } = "The Game Store gift could not be sent.";
 
         public override string MonsterDialogUndeadIconHint { get; set; } = "Undead";
         public override string MonsterDialogMortalIconHint { get; set; } = "Mortal";

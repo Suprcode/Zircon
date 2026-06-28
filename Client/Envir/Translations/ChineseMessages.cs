@@ -682,6 +682,13 @@ namespace Client.Envir.Translations
         public override string MarketPlaceDialogGameStoreTabBuyingTotalLabel { get; set; } = "总共:";
         public override string MarketPlaceDialogGameStoreTabBuyingUseHuntGoldLabel { get; set; } = "Use Hunt Gold:";
         public override string MarketPlaceDialogGameStoreTabBuyingBuyButtonLabel { get; set; } = "购买";
+        public override string GameStoreGiftSuccess { get; set; } = "游戏商店礼物已成功发送。";
+        public override string GameStoreGiftNotAvailable { get; set; } = "该游戏商店物品当前不可购买。";
+        public override string GameStoreGiftInvalidRecipient { get; set; } = "找不到礼物接收者。";
+        public override string GameStoreGiftCannotGiftSelf { get; set; } = "不能向自己赠送游戏商店礼物。";
+        public override string GameStoreGiftMailboxFull { get; set; } = "接收者的邮箱已满。";
+        public override string GameStoreGiftInsufficientFunds { get; set; } = "没有足够的货币购买此礼物。";
+        public override string GameStoreGiftFailed { get; set; } = "游戏商店礼物发送失败。";
 
         public override string MonsterDialogUndeadIconHint { get; set; } = "Undead";
         public override string MonsterDialogMortalIconHint { get; set; } = "Mortal";

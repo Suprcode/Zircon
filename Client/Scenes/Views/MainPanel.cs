@@ -275,6 +275,8 @@ namespace Client.Scenes.Views
                     GameScene.Game.MarketPlaceBox.Visible = true;
                     GameScene.Game.MarketPlaceBox.StoreTab.TabButton.InvokeMouseClick();
                 }
+
+                GameScene.Game.GameStoreBox.Visible = !GameScene.Game.GameStoreBox.Visible;
             };
 
             #region Image Stat Labels

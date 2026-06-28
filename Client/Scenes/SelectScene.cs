@@ -95,7 +95,6 @@ namespace Client.Scenes
             CharacterAnimation.BeforeDraw += CharacterAnimation_BeforeDraw;
             CharacterAnimation.AfterDraw += CharacterAnimation_AfterDraw;
 
-
             ConfigButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
@@ -109,6 +108,7 @@ namespace Client.Scenes
             {
                 Parent = this,
                 Visible = false,
+
                 NetworkTab = { Enabled = false, TabButton = { Visible = false } },
             };
             ConfigBox.Location = new Point((Size.Width - ConfigBox.Size.Width) / 2, (Size.Height - ConfigBox.Size.Height) / 2);
@@ -116,12 +116,14 @@ namespace Client.Scenes
             SelectBox = new SelectDialog
             {
                 Parent = this,
+                DropShadow = true
             };
             SelectBox.Location = new Point((Size.Width / 2 - SelectBox.Size.Width) / 2, (Size.Height - SelectBox.Size.Height) / 2);
 
             CharacterBox = new NewCharacterDialog
             {
                 Parent = this,
+                DropShadow = true
             };
             CharacterBox.Location = new Point((Size.Width - CharacterBox.Size.Width) / 2, (Size.Height - CharacterBox.Size.Height) / 2);
 

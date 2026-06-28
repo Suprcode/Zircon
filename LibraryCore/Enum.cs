@@ -1566,6 +1566,28 @@ namespace Library
         Favourite
     }
 
+    public enum GameStoreCategory : byte
+    {
+        All,
+        Favourites,
+        NewItems,
+        Equipment,
+        Consumables,
+        Cosmetics,
+        Other
+    }
+
+    public enum GameStoreGiftResult : byte
+    {
+        Success,
+        InvalidItem,
+        NotAvailable,
+        InvalidRecipient,
+        CannotGiftSelf,
+        MailboxFull,
+        InsufficientFunds
+    }
+
     public enum DungeonFinderSort
     {
         Name,
