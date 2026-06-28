@@ -211,7 +211,8 @@ namespace Client.Scenes
         public AutoPotionDialog AutoPotionBox;
         public CharacterDialog InspectBox;
         public RankingDialog RankingBox;
-        public MarketPlaceDialog MarketPlaceBox;
+        public GameStoreDialog GameStoreBox;
+        public ConsignmentDialog ConsignmentBox;
         public DungeonFinderDialog DungeonFinderBox;
         public CommunicationDialog CommunicationBox;
         public TradeDialog TradeBox;
@@ -425,6 +426,8 @@ namespace Client.Scenes
             ConfigBox?.LoadSettings();
             MenuBox?.LoadSettings();          
             HelpBox?.LoadSettings();
+            GameStoreBox?.LoadSettings();
+            ConsignmentBox?.LoadSettings();
 
             LoadChatTabs();
         }
@@ -657,7 +660,12 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false
             };
-            MarketPlaceBox = new MarketPlaceDialog
+            GameStoreBox = new GameStoreDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+            ConsignmentBox = new ConsignmentDialog
             {
                 Parent = this,
                 Visible = false,
@@ -802,6 +810,8 @@ namespace Client.Scenes
             GuildBox.LoadSettings();
             MenuBox.LoadSettings();
             HelpBox.LoadSettings();
+            GameStoreBox.LoadSettings();
+            ConsignmentBox.LoadSettings();
         }
 
         #region Methods
@@ -865,7 +875,9 @@ namespace Client.Scenes
 
             RankingBox.Location = new Point((Size.Width - RankingBox.Size.Width) / 2, (Size.Height - RankingBox.Size.Height) / 2);
 
-            MarketPlaceBox.Location = new Point((Size.Width - MarketPlaceBox.Size.Width) / 2, (Size.Height - MarketPlaceBox.Size.Height) / 2);
+            GameStoreBox.Location = new Point((Size.Width - GameStoreBox.Size.Width) / 2, (Size.Height - GameStoreBox.Size.Height) / 2);
+
+            ConsignmentBox.Location = new Point((Size.Width - ConsignmentBox.Size.Width) / 2, (Size.Height - ConsignmentBox.Size.Height) / 2);
 
             CommunicationBox.Location = new Point((Size.Width - CommunicationBox.Size.Width) / 2, (Size.Height - CommunicationBox.Size.Height) / 2);
 
@@ -1223,13 +1235,7 @@ namespace Client.Scenes
                         MagicBarBox.Visible = !MagicBarBox.Visible;
                         break;
                     case KeyBindAction.GameStoreWindow:
-                        if (MarketPlaceBox.StoreTab.IsVisible)
-                            MarketPlaceBox.Visible = false;
-                        else
-                        {
-                            MarketPlaceBox.Visible = true;
-                            MarketPlaceBox.StoreTab.TabButton.InvokeMouseClick();
-                        }
+                        GameStoreBox.Visible = !GameStoreBox.Visible;
                         break;
                     case KeyBindAction.DungeonFinderWindow:
                         DungeonFinderBox.Visible = !DungeonFinderBox.Visible;
@@ -1270,15 +1276,6 @@ namespace Client.Scenes
                         break;
                     case KeyBindAction.BeltWindow:
                         BeltBox.Visible = !BeltBox.Visible;
-                        break;
-                    case KeyBindAction.MarketPlaceWindow:
-                        if (MarketPlaceBox.ConsignTab.IsVisible || MarketPlaceBox.SearchTab.IsVisible)
-                            MarketPlaceBox.Visible = false;
-                        else
-                        {
-                            MarketPlaceBox.Visible = true;
-                            MarketPlaceBox.SearchTab.TabButton.InvokeMouseClick();
-                        }
                         break;
                     case KeyBindAction.MapMiniWindow:
                         if (!MiniMapBox.Visible)
@@ -3999,7 +3996,7 @@ namespace Client.Scenes
             AttackModeChanged();
             PetModeChanged();
             MagicBarBox.UpdateIcons();
-            MarketPlaceBox.ConsignTab.TabButton.Visible = !Observer;
+
             TradeBox.CloseButton.Enabled = !Observer;
             TradeBox.ConfirmButton.Visible = !Observer;
 
@@ -4132,8 +4129,7 @@ namespace Client.Scenes
             MainPanel.FPLabel.Text = User.GetCurrency(CurrencyType.FP)?.Amount.ToString() ?? "0";
             MainPanel.CPLabel.Text = User.GetCurrency(CurrencyType.CP)?.Amount.ToString() ?? "0";
 
-            MarketPlaceBox.GameGoldBox.Value = User.GameGold.Amount;
-            MarketPlaceBox.HuntGoldBox.Value = User.HuntGold.Amount;
+            GameStoreBox?.RefreshCurrency();
             NPCAdoptCompanionBox.RefreshUnlockButton();
 
             foreach (NPCGoodsCell cell in NPCGoodsBox.Cells)
@@ -4946,12 +4942,20 @@ namespace Client.Scenes
                     RankingBox = null;
                 }
 
-                if (MarketPlaceBox != null)
+                if (GameStoreBox != null)
                 {
-                    if (!MarketPlaceBox.IsDisposed)
-                        MarketPlaceBox.Dispose();
+                    if (!GameStoreBox.IsDisposed)
+                        GameStoreBox.Dispose();
 
-                    MarketPlaceBox = null;
+                    GameStoreBox = null;
+                }
+
+                if (ConsignmentBox != null)
+                {
+                    if (!ConsignmentBox.IsDisposed)
+                        ConsignmentBox.Dispose();
+
+                    ConsignmentBox = null;
                 }
 
                 if (CommunicationBox != null)

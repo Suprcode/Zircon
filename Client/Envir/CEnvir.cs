@@ -651,7 +651,7 @@ namespace Client.Envir
                     bind.Category = "Windows";
                     bind.Key1 = Keys.Z;
                     break;
-                case KeyBindAction.MarketPlaceWindow:
+                case KeyBindAction.UNUSED:
                     bind.Category = "Windows";
                     bind.Key1 = Keys.C;
                     break;

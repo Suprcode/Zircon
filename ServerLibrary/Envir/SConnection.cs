@@ -963,8 +963,12 @@ namespace Server.Envir
                 VisibleResults.Add(info);
             }
 
-
-            Enqueue(new S.MarketPlaceSearch { Count = MPSearchResults.Count, Results = results, ObserverPacket = false });
+            Enqueue(new S.MarketPlaceSearch
+            {
+                Count = MPSearchResults.Count,
+                Results = results,
+                ObserverPacket = false
+            });
         }
         public void Process(C.MarketPlaceSearchIndex p)
         {
@@ -998,6 +1002,18 @@ namespace Server.Envir
             if (Stage != GameStage.Game) return;
 
             Player.MarketPlaceStoreBuy(p);
+        }
+        public void Process(C.GameStoreFavouriteToggle p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GameStoreFavouriteToggle(p);
+        }
+        public void Process(C.GameStoreGift p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.GameStoreGift(p);
         }
 
         public void Process(C.MailOpened p)

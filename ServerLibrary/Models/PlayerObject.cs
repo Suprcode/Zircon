@@ -1074,6 +1074,15 @@ namespace Server.Models
             Enqueue(new S.MarketPlaceConsign { Consignments = Character.Account.Auctions.Select(x => x.ToClientInfo(Character.Account)).ToList(), ObserverPacket = false });
 
             Enqueue(new S.MailList { Mail = Character.Account.Mail.Select(x => x.ToClientInfo()).ToList() });
+            Enqueue(new S.GameStoreData
+            {
+                Favourites = Character.Account.StoreFavourites
+                    .Where(x => x.StoreInfo != null)
+                    .Select(x => x.StoreInfo.Index)
+                    .ToList(),
+                TopItems = GetGameStoreTopItems(),
+                ObserverPacket = false,
+            });
 
 
             if (Character.Account.Characters.Max(x => x.Level) > Level && Character.Rebirth == 0)
@@ -3715,7 +3724,7 @@ namespace Server.Models
 
             if (!ParseLinks(p.Link)) return;
 
-            if (string.IsNullOrEmpty(p.Message) || p.Message.Length > 150) return;
+            if (p.Message != null && p.Message.Length > 150) return;
 
             UserItem[] array;
             switch (p.Link.GridType)
@@ -3759,7 +3768,7 @@ namespace Server.Models
 
             if (p.Price <= 0) return; // Buy Out Less than 1
 
-            int cost = 0;//(int) Math.Min(int.MaxValue, p.Price*Globals.MarketPlaceTax*p.Link.Count + Globals.MarketPlaceFee);
+            int cost = Globals.MarketPlaceFee;
 
             if (Character.Account.Auctions.Count >= Character.Account.HighestLevel() * 3 + Character.Account.StorageSize - Globals.StorageSize)
             {
@@ -3834,10 +3843,11 @@ namespace Server.Models
             auction.Account = Character.Account;
 
             auction.Price = p.Price;
+            auction.ConsignDate = SEnvir.Now;
 
             auction.Item = auctionItem;
             auction.Character = Character;
-            auction.Message = p.Message;
+            auction.Message = p.Message ?? string.Empty;
 
             result.Success = true;
 
@@ -4185,6 +4195,185 @@ namespace Server.Models
             sale.Count = p.Count;
             sale.Price = price;
             sale.HuntGold = p.UseHuntGold;
+
+            BroadcastGameStoreTopItems();
+        }
+
+        public void GameStoreFavouriteToggle(C.GameStoreFavouriteToggle p)
+        {
+            StoreInfo info = SEnvir.StoreInfoList.Binding.FirstOrDefault(x => x.Index == p.Index && x.Item != null);
+            if (info == null) return;
+
+            GameStoreFavourite favourite = Character.Account.StoreFavourites.FirstOrDefault(x => x.StoreInfo == info);
+            bool favourited;
+
+            if (favourite == null)
+            {
+                favourite = SEnvir.GameStoreFavouriteList.CreateNewObject();
+                favourite.Account = Character.Account;
+                favourite.StoreInfo = info;
+                favourited = true;
+            }
+            else
+            {
+                favourite.Delete();
+                favourited = false;
+            }
+
+            Enqueue(new S.GameStoreFavouriteChanged
+            {
+                Index = info.Index,
+                Favourited = favourited,
+                ObserverPacket = false,
+            });
+        }
+
+        public void GameStoreGift(C.GameStoreGift p)
+        {
+            GameStoreGiftResult result = GameStoreGiftResult.InvalidItem;
+
+            if (p.Count <= 0)
+            {
+                EnqueueGameShopGiftResult(result);
+                return;
+            }
+
+            StoreInfo info = SEnvir.StoreInfoList.Binding.FirstOrDefault(x => x.Index == p.Index);
+            if (info?.Item == null)
+            {
+                EnqueueGameShopGiftResult(result);
+                return;
+            }
+
+            if (!info.Available)
+            {
+                EnqueueGameShopGiftResult(GameStoreGiftResult.NotAvailable);
+                return;
+            }
+
+            CharacterInfo recipientCharacter = string.IsNullOrWhiteSpace(p.Recipient) ? null : SEnvir.GetCharacter(p.Recipient);
+            AccountInfo recipient = recipientCharacter?.Account;
+
+            if (recipient == null || SEnvir.IsBlocking(Character.Account, recipient))
+            {
+                EnqueueGameShopGiftResult(GameStoreGiftResult.InvalidRecipient);
+                return;
+            }
+
+            if (recipient == Character.Account && !Character.Account.TempAdmin)
+            {
+                EnqueueGameShopGiftResult(GameStoreGiftResult.CannotGiftSelf);
+                return;
+            }
+
+            if (recipient.Mail.Sum(x => x.Items.Count) >= Globals.MaxMailStorage)
+            {
+                EnqueueGameShopGiftResult(GameStoreGiftResult.MailboxFull);
+                return;
+            }
+
+            p.Count = Math.Min(p.Count, info.Item.StackSize);
+            int price = p.UseHuntGold && info.HuntGoldPrice > 0 ? info.HuntGoldPrice : info.Price;
+            long cost = p.Count * price;
+
+            if (price <= 0 || (!Config.TestServer && cost > (p.UseHuntGold ? HuntGold.Amount : GameGold.Amount)))
+            {
+                EnqueueGameShopGiftResult(GameStoreGiftResult.InsufficientFunds);
+                return;
+            }
+
+            UserItemFlags flags = UserItemFlags.Worthless | UserItemFlags.Locked;
+            TimeSpan duration = TimeSpan.FromSeconds(info.Duration);
+            if (p.UseHuntGold || recipient.HighestLevel() < 40)
+                flags |= UserItemFlags.Bound;
+            if (duration != TimeSpan.Zero)
+                flags |= UserItemFlags.Expirable;
+
+            if (!Config.TestServer)
+            {
+                if (p.UseHuntGold)
+                {
+                    HuntGold.Amount -= (int)cost;
+                    HuntGoldChanged();
+                }
+                else
+                {
+                    GameGold.Amount -= (int)cost;
+                    GameGoldChanged();
+                }
+            }
+
+            MailInfo mail = SEnvir.MailInfoList.CreateNewObject();
+            mail.Account = recipient;
+            mail.Sender = Name;
+            mail.Subject = "Cash Shop Gift";
+            mail.Message = $"{Name} sent you a gift from the Cash Shop.";
+            mail.HasItem = true;
+
+            UserItem item = SEnvir.CreateFreshItem(new ItemCheck(info.Item, p.Count, flags, duration));
+            item.Mail = mail;
+            item.Slot = 0;
+
+            GameStoreSale sale = SEnvir.GameStoreSaleList.CreateNewObject();
+            sale.Item = info.Item;
+            sale.Account = Character.Account;
+            sale.Count = p.Count;
+            sale.Price = price;
+            sale.HuntGold = p.UseHuntGold;
+
+            BroadcastGameStoreTopItems();
+
+            recipient.Connection?.Player?.Enqueue(new S.MailNew
+            {
+                Mail = mail.ToClientInfo(),
+                ObserverPacket = false,
+            });
+
+            EnqueueGameShopGiftResult(GameStoreGiftResult.Success);
+        }
+
+        private void EnqueueGameShopGiftResult(GameStoreGiftResult result)
+        {
+            Enqueue(new S.GameStoreGift { Result = result, ObserverPacket = false });
+        }
+
+        private static List<int> GetGameStoreTopItems()
+        {
+            List<StoreInfo> available = SEnvir.StoreInfoList.Binding
+                .Where(x => x.Item != null && x.Available && (x.Price > 0 || x.HuntGoldPrice > 0))
+                .ToList();
+
+            List<StoreInfo> selected = SEnvir.GameStoreSaleList.Binding
+                .Where(x => x.Item != null)
+                .GroupBy(x => x.Item)
+                .OrderByDescending(x => x.Sum(y => y.Count))
+                .ThenByDescending(x => x.Max(y => y.Date))
+                .Select(x => available.FirstOrDefault(y => y.Item == x.Key))
+                .Where(x => x != null)
+                .Take(5)
+                .ToList();
+
+            if (selected.Count < 5)
+            {
+                HashSet<ItemInfo> selectedItems = selected.Select(x => x.Item).ToHashSet();
+
+                selected.AddRange(available
+                    .Where(x => !selectedItems.Contains(x.Item))
+                    .GroupBy(x => x.Item)
+                    .Select(x => x.First())
+                    .OrderBy(x => Random.Shared.Next())
+                    .Take(5 - selected.Count));
+            }
+
+            return selected.Select(x => x.Index).ToList();
+        }
+
+        private static void BroadcastGameStoreTopItems()
+        {
+            List<int> items = GetGameStoreTopItems();
+
+            foreach (PlayerObject player in SEnvir.Players)
+                player.Enqueue(new S.GameStoreTopItems { Items = items, ObserverPacket = false });
         }
 
         public void MarketPlaceCancelSuperior()

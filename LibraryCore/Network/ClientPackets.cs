@@ -447,6 +447,19 @@ namespace Library.Network.ClientPackets
         public bool UseHuntGold { get; set; }
     }
 
+    public sealed class GameStoreFavouriteToggle : Packet
+    {
+        public int Index { get; set; }
+    }
+
+    public sealed class GameStoreGift : Packet
+    {
+        public int Index { get; set; }
+        public long Count { get; set; }
+        public bool UseHuntGold { get; set; }
+        public string Recipient { get; set; }
+    }
+
 
     public sealed class MailOpened : Packet
     {

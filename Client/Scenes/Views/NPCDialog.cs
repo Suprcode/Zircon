@@ -79,6 +79,9 @@ namespace Client.Scenes.Views
             if (GameScene.Game.NPCCompanionStorageBox != null && !IsVisible)
                 GameScene.Game.NPCCompanionStorageBox.Visible = false;
 
+            if (GameScene.Game.ConsignmentBox != null && !IsVisible)
+                GameScene.Game.ConsignmentBox.Visible = false;
+
             if (GameScene.Game.NPCWeddingRingBox != null && !IsVisible)
                 GameScene.Game.NPCWeddingRingBox.Visible = false;
 
@@ -351,6 +354,7 @@ namespace Client.Scenes.Views
             GameScene.Game.NPCRefineRetrieveBox.Visible = false;
             GameScene.Game.NPCAdoptCompanionBox.Visible = false;
             GameScene.Game.NPCCompanionStorageBox.Visible = false;
+            GameScene.Game.ConsignmentBox.Visible = false;
             GameScene.Game.NPCWeddingRingBox.Visible = false;
             GameScene.Game.NPCItemFragmentBox.Visible = false;
             GameScene.Game.NPCAccessoryUpgradeBox.Visible = false;
@@ -418,6 +422,9 @@ namespace Client.Scenes.Views
                     GameScene.Game.NPCCompanionStorageBox.SelectedIndex = 0;
                     GameScene.Game.NPCAdoptCompanionBox.Visible = true;
                     GameScene.Game.NPCAdoptCompanionBox.Location = new Point(0, Size.Height);
+                    break;
+                case NPCDialogType.Consignment:
+                    GameScene.Game.ConsignmentBox.Visible = true;
                     break;
                 case NPCDialogType.WeddingRing:
                     GameScene.Game.NPCWeddingRingBox.Visible = true;

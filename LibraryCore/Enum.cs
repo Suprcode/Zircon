@@ -552,7 +552,9 @@ namespace Library
         AccessoryRefine,
 
         RollDie,
-        RollYut
+        RollYut,
+
+        Consignment,
     }
 
     public enum MagicSchool
@@ -1564,6 +1566,28 @@ namespace Library
         [Description("Lowest Price")]
         LowestPrice,
         Favourite
+    }
+
+    public enum GameStoreCategory : byte
+    {
+        All,
+        Favourites,
+        NewItems,
+        Equipment,
+        Consumables,
+        Cosmetics,
+        Other
+    }
+
+    public enum GameStoreGiftResult : byte
+    {
+        Success,
+        InvalidItem,
+        NotAvailable,
+        InvalidRecipient,
+        CannotGiftSelf,
+        MailboxFull,
+        InsufficientFunds
     }
 
     public enum DungeonFinderSort
