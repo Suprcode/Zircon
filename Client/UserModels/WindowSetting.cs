@@ -157,6 +157,7 @@ namespace Client.UserModels
         BundleBox,
         LootBoxBox,
         HelpBox,
-        GameStoreBox
+        GameStoreBox,
+        ConsignmentBox
     }
 }

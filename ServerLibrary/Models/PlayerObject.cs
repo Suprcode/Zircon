@@ -1080,6 +1080,7 @@ namespace Server.Models
                     .Where(x => x.StoreInfo != null)
                     .Select(x => x.StoreInfo.Index)
                     .ToList(),
+                TopItems = GetGameStoreTopItems(),
                 ObserverPacket = false,
             });
 
@@ -3723,7 +3724,7 @@ namespace Server.Models
 
             if (!ParseLinks(p.Link)) return;
 
-            if (string.IsNullOrEmpty(p.Message) || p.Message.Length > 150) return;
+            if (p.Message != null && p.Message.Length > 150) return;
 
             UserItem[] array;
             switch (p.Link.GridType)
@@ -3767,7 +3768,7 @@ namespace Server.Models
 
             if (p.Price <= 0) return; // Buy Out Less than 1
 
-            int cost = 0;//(int) Math.Min(int.MaxValue, p.Price*Globals.MarketPlaceTax*p.Link.Count + Globals.MarketPlaceFee);
+            int cost = Globals.MarketPlaceFee;
 
             if (Character.Account.Auctions.Count >= Character.Account.HighestLevel() * 3 + Character.Account.StorageSize - Globals.StorageSize)
             {
@@ -3842,10 +3843,11 @@ namespace Server.Models
             auction.Account = Character.Account;
 
             auction.Price = p.Price;
+            auction.ConsignDate = SEnvir.Now;
 
             auction.Item = auctionItem;
             auction.Character = Character;
-            auction.Message = p.Message;
+            auction.Message = p.Message ?? string.Empty;
 
             result.Success = true;
 
@@ -4193,6 +4195,8 @@ namespace Server.Models
             sale.Count = p.Count;
             sale.Price = price;
             sale.HuntGold = p.UseHuntGold;
+
+            BroadcastGameStoreTopItems();
         }
 
         public void GameStoreFavouriteToggle(C.GameStoreFavouriteToggle p)
@@ -4302,8 +4306,8 @@ namespace Server.Models
             MailInfo mail = SEnvir.MailInfoList.CreateNewObject();
             mail.Account = recipient;
             mail.Sender = Name;
-            mail.Subject = "Game Store Gift";
-            mail.Message = $"{Name} sent you a gift from the Game Store.";
+            mail.Subject = "Cash Shop Gift";
+            mail.Message = $"{Name} sent you a gift from the Cash Shop.";
             mail.HasItem = true;
 
             UserItem item = SEnvir.CreateFreshItem(new ItemCheck(info.Item, p.Count, flags, duration));
@@ -4317,6 +4321,8 @@ namespace Server.Models
             sale.Price = price;
             sale.HuntGold = p.UseHuntGold;
 
+            BroadcastGameStoreTopItems();
+
             recipient.Connection?.Player?.Enqueue(new S.MailNew
             {
                 Mail = mail.ToClientInfo(),
@@ -4329,6 +4335,45 @@ namespace Server.Models
         private void EnqueueGameShopGiftResult(GameStoreGiftResult result)
         {
             Enqueue(new S.GameStoreGift { Result = result, ObserverPacket = false });
+        }
+
+        private static List<int> GetGameStoreTopItems()
+        {
+            List<StoreInfo> available = SEnvir.StoreInfoList.Binding
+                .Where(x => x.Item != null && x.Available && (x.Price > 0 || x.HuntGoldPrice > 0))
+                .ToList();
+
+            List<StoreInfo> selected = SEnvir.GameStoreSaleList.Binding
+                .Where(x => x.Item != null)
+                .GroupBy(x => x.Item)
+                .OrderByDescending(x => x.Sum(y => y.Count))
+                .ThenByDescending(x => x.Max(y => y.Date))
+                .Select(x => available.FirstOrDefault(y => y.Item == x.Key))
+                .Where(x => x != null)
+                .Take(5)
+                .ToList();
+
+            if (selected.Count < 5)
+            {
+                HashSet<ItemInfo> selectedItems = selected.Select(x => x.Item).ToHashSet();
+
+                selected.AddRange(available
+                    .Where(x => !selectedItems.Contains(x.Item))
+                    .GroupBy(x => x.Item)
+                    .Select(x => x.First())
+                    .OrderBy(x => Random.Shared.Next())
+                    .Take(5 - selected.Count));
+            }
+
+            return selected.Select(x => x.Index).ToList();
+        }
+
+        private static void BroadcastGameStoreTopItems()
+        {
+            List<int> items = GetGameStoreTopItems();
+
+            foreach (PlayerObject player in SEnvir.Players)
+                player.Enqueue(new S.GameStoreTopItems { Items = items, ObserverPacket = false });
         }
 
         public void MarketPlaceCancelSuperior()

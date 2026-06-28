@@ -268,14 +268,6 @@ namespace Client.Scenes.Views
             };
             CashShopButton.MouseClick += (o, e) =>
             {
-                if (GameScene.Game.MarketPlaceBox.StoreTab.IsVisible)
-                    GameScene.Game.MarketPlaceBox.Visible = false;
-                else
-                {
-                    GameScene.Game.MarketPlaceBox.Visible = true;
-                    GameScene.Game.MarketPlaceBox.StoreTab.TabButton.InvokeMouseClick();
-                }
-
                 GameScene.Game.GameStoreBox.Visible = !GameScene.Game.GameStoreBox.Visible;
             };
 

@@ -3542,93 +3542,46 @@ namespace Client.Envir
         public void Process(S.MarketPlaceHistory p)
         {
 
-            switch (p.Display)
-            {
-                case 1:
-                    GameScene.Game.MarketPlaceBox.SearchNumberSoldBox.TextBox.Text = p.SaleCount > 0 ? p.SaleCount.ToString("#,##0") : "No Records";
-                    GameScene.Game.MarketPlaceBox.SearchAveragePriceBox.TextBox.Text = p.SaleCount > 0 ? p.AveragePrice.ToString("#,##0") : "No Records";
-                    GameScene.Game.MarketPlaceBox.SearchLastPriceBox.TextBox.Text = p.SaleCount > 0 ? p.LastPrice.ToString("#,##0") : "No Records";
-                    break;
-                case 2:
-                    GameScene.Game.MarketPlaceBox.NumberSoldBox.TextBox.Text = p.SaleCount > 0 ? p.SaleCount.ToString("#,##0") : "No Records";
-                    GameScene.Game.MarketPlaceBox.AveragePriceBox.TextBox.Text = p.SaleCount > 0 ? p.AveragePrice.ToString("#,##0") : "No Records";
-                    GameScene.Game.MarketPlaceBox.LastPriceBox.TextBox.Text = p.SaleCount > 0 ? p.LastPrice.ToString("#,##0") : "No Records";
-                    break;
-
-            }
         }
+
         public void Process(S.MarketPlaceConsign p)
         {
-            GameScene.Game.MarketPlaceBox.ConsignItems.AddRange(p.Consignments);
-            GameScene.Game.MarketPlaceBox.RefreshConsignList();
+            GameScene.Game.ConsignmentBox.AddConsignments(p.Consignments);
         }
         public void Process(S.MarketPlaceSearch p)
         {
-            GameScene.Game.MarketPlaceBox.SearchResults = new ClientMarketPlaceInfo[p.Count];
-
-            for (int i = 0; i < p.Results.Count; i++)
-                GameScene.Game.MarketPlaceBox.SearchResults[i] = p.Results[i];
-
-            GameScene.Game.MarketPlaceBox.RefreshList();
+            GameScene.Game.ConsignmentBox.ApplySearch(p.Count, p.Results);
         }
         public void Process(S.MarketPlaceSearchCount p)
         {
-
-
-            Array.Resize(ref GameScene.Game.MarketPlaceBox.SearchResults, p.Count);
-
-            GameScene.Game.MarketPlaceBox.RefreshList();
+            GameScene.Game.ConsignmentBox.ApplySearchCount(p.Count);
         }
         public void Process(S.MarketPlaceSearchIndex p)
         {
-
-
-            if (GameScene.Game.MarketPlaceBox.SearchResults == null) return;
-
-            GameScene.Game.MarketPlaceBox.SearchResults[p.Index] = p.Result;
-
-            GameScene.Game.MarketPlaceBox.RefreshList();
+            GameScene.Game.ConsignmentBox.ApplySearchIndex(p.Index, p.Result);
         }
         public void Process(S.MarketPlaceConsignChanged p)
         {
-
-
-            ClientMarketPlaceInfo info = GameScene.Game.MarketPlaceBox.ConsignItems.FirstOrDefault(x => x.Index == p.Index);
-
-            if (info == null) return;
-
-            if (p.Count > 0)
-                info.Item.Count = p.Count;
-            else
-                GameScene.Game.MarketPlaceBox.ConsignItems.Remove(info);
-
-            GameScene.Game.MarketPlaceBox.RefreshConsignList();
+            GameScene.Game.ConsignmentBox.ApplyConsignChanged(p.Index, p.Count);
         }
         public void Process(S.MarketPlaceBuy p)
         {
-            GameScene.Game.MarketPlaceBox.BuyButton.Enabled = true;
-
-            if (!p.Success) return;
-
-            ClientMarketPlaceInfo info = GameScene.Game.MarketPlaceBox.SearchResults.FirstOrDefault(x => x != null && x.Index == p.Index);
-
-            if (info == null) return;
-
-            if (p.Count > 0)
-                info.Item.Count = p.Count;
-            else
-                info.Item = null;
-
-            GameScene.Game.MarketPlaceBox.RefreshList();
+            GameScene.Game.ConsignmentBox.ApplyBuy(p.Index, p.Count, p.Success);
         }
         public void Process(S.MarketPlaceStoreBuy p)
         {
-            GameScene.Game.MarketPlaceBox.StoreBuyButton.Enabled = true;
+
         }
 
         public void Process(S.GameStoreData p)
         {
             GameScene.Game.GameStoreBox.SetFavourites(p.Favourites);
+            GameScene.Game.GameStoreBox.TopItems.SetItems(p.TopItems);
+        }
+
+        public void Process(S.GameStoreTopItems p)
+        {
+            GameScene.Game.GameStoreBox.TopItems.SetItems(p.Items);
         }
 
         public void Process(S.GameStoreFavouriteChanged p)

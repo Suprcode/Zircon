@@ -509,6 +509,11 @@ namespace Client.Scenes.Views
                 GameScene.Game.NPCRepairBox.GuildCheckBox.Enabled = false;
 
                 GameScene.Game.NPCRepairBox.GuildStorageButton.Enabled = false;
+
+                GameScene.Game.ConsignmentBox.BuyGuildBox.Enabled = false;
+                GameScene.Game.ConsignmentBox.BuyGuildBox.Checked = false;
+                GameScene.Game.ConsignmentBox.ConsignGuildBox.Enabled = false;
+                GameScene.Game.ConsignmentBox.ConsignGuildBox.Checked = false;
                 return;
             }
 
@@ -533,8 +538,8 @@ namespace Client.Scenes.Views
             //Market, Buy Repair
             GameScene.Game.NPCGoodsBox.GuildCheckBox.Enabled = (GuildInfo.Permission & GuildPermission.FundsMerchant) == GuildPermission.FundsMerchant;
             GameScene.Game.NPCRepairBox.GuildCheckBox.Enabled = (GuildInfo.Permission & GuildPermission.FundsRepair) == GuildPermission.FundsRepair;
-            GameScene.Game.MarketPlaceBox.BuyGuildBox.Enabled = (GuildInfo.Permission & GuildPermission.FundsMarket) == GuildPermission.FundsMarket;
-            GameScene.Game.MarketPlaceBox.ConsignGuildBox.Enabled = (GuildInfo.Permission & GuildPermission.FundsMarket) == GuildPermission.FundsMarket;
+            GameScene.Game.ConsignmentBox.BuyGuildBox.Enabled = (GuildInfo.Permission & GuildPermission.FundsMarket) == GuildPermission.FundsMarket;
+            GameScene.Game.ConsignmentBox.ConsignGuildBox.Enabled = (GuildInfo.Permission & GuildPermission.FundsMarket) == GuildPermission.FundsMarket;
             GameScene.Game.NPCRepairBox.GuildStorageButton.Enabled = (GuildInfo.Permission & GuildPermission.Storage) == GuildPermission.Storage;
 
             if (!GameScene.Game.NPCGoodsBox.GuildCheckBox.Enabled)
@@ -543,11 +548,11 @@ namespace Client.Scenes.Views
             if (!GameScene.Game.NPCRepairBox.GuildCheckBox.Enabled)
                 GameScene.Game.NPCRepairBox.GuildCheckBox.Checked = false;
 
-            if (!GameScene.Game.NPCRepairBox.GuildCheckBox.Enabled)
-            {
-                GameScene.Game.MarketPlaceBox.BuyGuildBox.Checked = false;
-                GameScene.Game.MarketPlaceBox.ConsignGuildBox.Checked = false;
-            }
+            if (!GameScene.Game.ConsignmentBox.BuyGuildBox.Enabled)
+                GameScene.Game.ConsignmentBox.BuyGuildBox.Checked = false;
+
+            if (!GameScene.Game.ConsignmentBox.ConsignGuildBox.Enabled)
+                GameScene.Game.ConsignmentBox.ConsignGuildBox.Checked = false;
         }
 
         public void RefreshCastleControls()

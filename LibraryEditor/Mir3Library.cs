@@ -35,6 +35,10 @@ namespace LibraryEditor
         private FileStream _fStream;
         private BinaryReader _bReader;
         private readonly Dictionary<int, Zl2Entry> _zl2Entries = new Dictionary<int, Zl2Entry>();
+        private ulong? _atlasContentFingerprint;
+        private bool _atlasHasImageLayer;
+        private bool _atlasHasShadowLayer;
+        private bool _atlasHasOverlayLayer;
 
         public List<Mir3Image> Images;
         public List<Mir3AtlasPage> AtlasPages = new List<Mir3AtlasPage>();
@@ -186,14 +190,27 @@ namespace LibraryEditor
                 ReadAtlasLayerMappings(reader);
             }
 
+            foreach (Mir3AtlasPage page in AtlasPages)
+            {
+                if (page == null || page.Position < 0)
+                    continue;
+
+                page.LoadPayload(ReadCompressedPayload(page.Position));
+            }
+
             for (int i = 0; i < Images.Count; i++)
             {
                 if (Images[i] == null) continue;
+
+                if (Images[i].Position >= 0)
+                    Images[i].LoadPayload(ReadCompressedPayload(Images[i].Position));
 
                 CreateImage(i, ImageType.Image);
                 CreateImage(i, ImageType.Shadow);
                 CreateImage(i, ImageType.Overlay);
             }
+
+            CaptureAtlasState();
 
             return true;
         }
@@ -800,6 +817,96 @@ namespace LibraryEditor
 
             if (buildOverlayAtlas)
                 BuildAtlasLayer(ZlAtlasLayer.Overlay, pageSize, padding, groupImageCount, atlasRuntimePreference, progress, progressName, groupCount);
+
+            CaptureAtlasState();
+        }
+
+        public bool CanReuseAtlasMetadata(int pageSize, int groupImageCount, ZlRuntimeTexturePreference runtimePreference, bool buildImageAtlas, bool buildShadowAtlas, bool buildOverlayAtlas)
+        {
+            if (AtlasPages.Count == 0 || !_atlasContentFingerprint.HasValue)
+                return false;
+
+            if (AtlasPageSize != pageSize || AtlasGroupImageCount != groupImageCount ||
+                _atlasHasImageLayer != buildImageAtlas ||
+                _atlasHasShadowLayer != buildShadowAtlas ||
+                _atlasHasOverlayLayer != buildOverlayAtlas)
+                return false;
+
+            foreach (Mir3AtlasPage page in AtlasPages)
+            {
+                if (page == null || page.RuntimePreference != runtimePreference || !page.HasLoadedPayload)
+                    return false;
+            }
+
+            return _atlasContentFingerprint.Value == ComputeAtlasContentFingerprint(buildImageAtlas, buildShadowAtlas, buildOverlayAtlas);
+        }
+
+        private void CaptureAtlasState()
+        {
+            _atlasHasImageLayer = AtlasPages.Exists(x => x != null && x.Layer == ZlAtlasLayer.Image);
+            _atlasHasShadowLayer = AtlasPages.Exists(x => x != null && x.Layer == ZlAtlasLayer.Shadow);
+            _atlasHasOverlayLayer = AtlasPages.Exists(x => x != null && x.Layer == ZlAtlasLayer.Overlay);
+            _atlasContentFingerprint = AtlasPages.Count == 0
+                ? null
+                : ComputeAtlasContentFingerprint(_atlasHasImageLayer, _atlasHasShadowLayer, _atlasHasOverlayLayer);
+        }
+
+        private ulong ComputeAtlasContentFingerprint(bool includeImage, bool includeShadow, bool includeOverlay)
+        {
+            const ulong offsetBasis = 14695981039346656037UL;
+            ulong hash = offsetBasis;
+
+            AddFingerprintValue(ref hash, Images.Count);
+            for (int i = 0; i < Images.Count; i++)
+            {
+                Mir3Image image = Images[i];
+                AddFingerprintValue(ref hash, i);
+                AddBitmapFingerprint(ref hash, includeImage ? image?.Image : null);
+                AddBitmapFingerprint(ref hash, includeShadow ? image?.ShadowImage : null);
+                AddBitmapFingerprint(ref hash, includeOverlay ? image?.OverlayImage : null);
+            }
+
+            return hash;
+        }
+
+        private static void AddBitmapFingerprint(ref ulong hash, Bitmap bitmap)
+        {
+            if (bitmap == null)
+            {
+                AddFingerprintValue(ref hash, -1);
+                return;
+            }
+
+            AddFingerprintValue(ref hash, bitmap.Width);
+            AddFingerprintValue(ref hash, bitmap.Height);
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            try
+            {
+                int byteCount = Math.Abs(data.Stride) * bitmap.Height;
+                byte[] pixels = new byte[byteCount];
+                Marshal.Copy(data.Scan0, pixels, 0, byteCount);
+                for (int i = 0; i < pixels.Length; i++)
+                {
+                    hash ^= pixels[i];
+                    hash *= 1099511628211UL;
+                }
+            }
+            finally
+            {
+                bitmap.UnlockBits(data);
+            }
+        }
+
+        private static void AddFingerprintValue(ref ulong hash, int value)
+        {
+            unchecked
+            {
+                for (int shift = 0; shift < 32; shift += 8)
+                {
+                    hash ^= (byte)(value >> shift);
+                    hash *= 1099511628211UL;
+                }
+            }
         }
 
         private void BuildAtlasLayer(ZlAtlasLayer layer, int pageSize, int padding, int groupImageCount, ZlRuntimeTexturePreference atlasRuntimePreference, IProgress<LibraryProgress> progress, string progressName, int groupCount)
@@ -1503,6 +1610,8 @@ namespace LibraryEditor
             public int Bc7DataSize;
             public int FallbackDataSize;
             public int DataSize => GetPayloadSize(FBytes, StoredDataSize) + GetPayloadSize(Bc7Bytes, Bc7DataSize) + GetPayloadSize(FallbackBytes, FallbackDataSize);
+            public bool HasLoadedPayload => DataSize == 0 ||
+                (GetPayloadSize(FBytes, 0) + GetPayloadSize(Bc7Bytes, 0) + GetPayloadSize(FallbackBytes, 0) == DataSize);
 
             public Mir3AtlasPage()
             {
@@ -1546,6 +1655,27 @@ namespace LibraryEditor
                     writer.Write(Bc7Bytes);
                 if (FallbackBytes != null)
                     writer.Write(FallbackBytes);
+            }
+
+            public void LoadPayload(byte[] payload)
+            {
+                int offset = 0;
+                FBytes = ReadPayloadSegment(payload, ref offset, StoredDataSize);
+                Bc7Bytes = ReadPayloadSegment(payload, ref offset, Bc7DataSize);
+                FallbackBytes = ReadPayloadSegment(payload, ref offset, FallbackDataSize);
+            }
+
+            private static byte[] ReadPayloadSegment(byte[] payload, ref int offset, int count)
+            {
+                if (count <= 0)
+                    return null;
+                if (payload == null || offset < 0 || offset + count > payload.Length)
+                    return null;
+
+                byte[] segment = new byte[count];
+                Buffer.BlockCopy(payload, offset, segment, 0, count);
+                offset += count;
+                return segment;
             }
 
             public static Mir3AtlasPage FromBitmap(int id, Bitmap bitmap, ZlRuntimeTexturePreference runtimePreference, ZlAtlasLayer layer = ZlAtlasLayer.Image)
@@ -1784,6 +1914,7 @@ namespace LibraryEditor
             public byte[] FBytes;
             public byte[] ImageBc7Bytes;
             public byte[] ImageFallbackBytes;
+            private bool _payloadLoaded;
             #endregion
 
             #region Shadow
@@ -1889,6 +2020,9 @@ namespace LibraryEditor
 
             public void SetVersion(int version, ZlImageCodec? codecOverride = null)
             {
+                if (Version == version && !codecOverride.HasValue)
+                    return;
+
                 Version = version;
 
                 if (Version >= 2)
@@ -1947,28 +2081,76 @@ namespace LibraryEditor
             public void SetStorageOptions(bool storePngSourceImages, ZlRuntimeTexturePreference runtimePreference)
             {
                 if (runtimePreference == ZlRuntimeTexturePreference.Source)
-                    runtimePreference = ZlRuntimeTexturePreference.Bc7;
+                    return;
 
-                ZlImageCodec runtimeCodec = GetPrimaryRuntimeCodec(runtimePreference);
-
-                ImageCodec = ShouldKeepExistingPngSource(storePngSourceImages, ImageCodec, FBytes)
-                    ? ZlImageCodec.Png
-                    : runtimeCodec;
-                ShadowCodec = ShouldKeepExistingPngSource(storePngSourceImages, ShadowCodec, ShadowFBytes)
-                    ? ZlImageCodec.Png
-                    : runtimeCodec;
-                OverlayCodec = ShouldKeepExistingPngSource(storePngSourceImages, OverlayCodec, OverlayFBytes)
-                    ? ZlImageCodec.Png
-                    : runtimeCodec;
-                ImageRuntimePreference = runtimePreference;
-                ShadowRuntimePreference = runtimePreference;
-                OverlayRuntimePreference = runtimePreference;
-                RebuildBytes();
+                ReconcileLayer(Image, Width, Height, storePngSourceImages, runtimePreference,
+                    ref ImageCodec, ref ImageRuntimePreference, ref FBytes, ref ImageBc7Bytes, ref ImageFallbackBytes,
+                    ref StoredImageDataSize, ref ImageBc7DataSize, ref ImageFallbackDataSize);
+                ReconcileLayer(ShadowImage, ShadowWidth, ShadowHeight, storePngSourceImages, runtimePreference,
+                    ref ShadowCodec, ref ShadowRuntimePreference, ref ShadowFBytes, ref ShadowBc7Bytes, ref ShadowFallbackBytes,
+                    ref StoredShadowDataSize, ref ShadowBc7DataSize, ref ShadowFallbackDataSize);
+                ReconcileLayer(OverlayImage, OverlayWidth, OverlayHeight, storePngSourceImages, runtimePreference,
+                    ref OverlayCodec, ref OverlayRuntimePreference, ref OverlayFBytes, ref OverlayBc7Bytes, ref OverlayFallbackBytes,
+                    ref StoredOverlayDataSize, ref OverlayBc7DataSize, ref OverlayFallbackDataSize);
             }
 
-            private static bool ShouldKeepExistingPngSource(bool storePngSourceImages, ZlImageCodec codec, byte[] payload)
+            private static void ReconcileLayer(Bitmap bitmap, short width, short height, bool storePngSourceImages, ZlRuntimeTexturePreference requestedPreference,
+                ref ZlImageCodec codec, ref ZlRuntimeTexturePreference currentPreference,
+                ref byte[] primaryBytes, ref byte[] runtimeBytes, ref byte[] fallbackBytes,
+                ref int primarySize, ref int runtimeSize, ref int fallbackSize)
             {
-                return storePngSourceImages && codec == ZlImageCodec.Png && payload != null && payload.Length > 0;
+                if (bitmap == null || width <= 0 || height <= 0)
+                    return;
+
+                ZlImageCodec targetRuntimeCodec = GetPrimaryRuntimeCodec(requestedPreference);
+                byte[] preservedRuntime = FindPayloadForCodec(targetRuntimeCodec, codec, currentPreference, primaryBytes, runtimeBytes, fallbackBytes);
+                if (preservedRuntime == null)
+                    preservedRuntime = EncodeBitmap(bitmap, width, height, targetRuntimeCodec, false);
+
+                byte[] preservedFallback = null;
+                if (ShouldWriteDxtFallback(requestedPreference))
+                {
+                    preservedFallback = FindPayloadForCodec(ZlImageCodec.Dxt5, codec, currentPreference, primaryBytes, runtimeBytes, fallbackBytes)
+                        ?? EncodeBitmap(bitmap, width, height, ZlImageCodec.Dxt5, false);
+                }
+
+                if (storePngSourceImages)
+                {
+                    byte[] pngBytes = codec == ZlImageCodec.Png && primaryBytes != null && primaryBytes.Length > 0
+                        ? primaryBytes
+                        : EncodeBitmap(bitmap, width, height, ZlImageCodec.Png, false);
+                    codec = ZlImageCodec.Png;
+                    primaryBytes = pngBytes;
+                    runtimeBytes = preservedRuntime;
+                    fallbackBytes = preservedFallback;
+                }
+                else
+                {
+                    codec = targetRuntimeCodec;
+                    primaryBytes = preservedRuntime;
+                    runtimeBytes = null;
+                    fallbackBytes = preservedFallback;
+                }
+
+                currentPreference = requestedPreference;
+                primarySize = primaryBytes?.Length ?? 0;
+                runtimeSize = runtimeBytes?.Length ?? 0;
+                fallbackSize = fallbackBytes?.Length ?? 0;
+            }
+
+            private static byte[] FindPayloadForCodec(ZlImageCodec requestedCodec, ZlImageCodec primaryCodec, ZlRuntimeTexturePreference runtimePreference,
+                byte[] primaryBytes, byte[] runtimeBytes, byte[] fallbackBytes)
+            {
+                if (primaryCodec == requestedCodec && primaryBytes != null && primaryBytes.Length > 0)
+                    return primaryBytes;
+
+                if (runtimeBytes != null && runtimeBytes.Length > 0 && GetRuntimeCodec(runtimePreference) == requestedCodec)
+                    return runtimeBytes;
+
+                if (requestedCodec == ZlImageCodec.Dxt5 && fallbackBytes != null && fallbackBytes.Length > 0)
+                    return fallbackBytes;
+
+                return null;
             }
 
             public void SetSourceTypeStorage(
@@ -2206,7 +2388,9 @@ namespace LibraryEditor
 
                 byte[] payload = payloadReader?.Invoke(Position);
                 if (payload != null)
-                    FBytes = ReadPayloadSegment(payload, 0, ImageDataSize);
+                {
+                    LoadPayload(payload);
+                }
                 else
                 {
                     reader.BaseStream.Seek(Position, SeekOrigin.Begin);
@@ -2230,12 +2414,14 @@ namespace LibraryEditor
 
                 if (w == 0 || h == 0) return;
 
-                int offset = ImageDataSize + ImageBc7DataSize + ImageFallbackDataSize;
                 byte[] payload = payloadReader?.Invoke(Position);
                 if (payload != null)
-                    ShadowFBytes = ReadPayloadSegment(payload, offset, ShadowDataSize);
+                {
+                    LoadPayload(payload);
+                }
                 else
                 {
+                    int offset = ImageDataSize + ImageBc7DataSize + ImageFallbackDataSize;
                     reader.BaseStream.Seek(Position + offset, SeekOrigin.Begin);
                     ShadowFBytes = reader.ReadBytes(ShadowDataSize);
                 }
@@ -2257,12 +2443,14 @@ namespace LibraryEditor
 
                 if (w == 0 || h == 0) return;
 
-                int offset = ImageDataSize + ImageBc7DataSize + ImageFallbackDataSize + ShadowDataSize + ShadowBc7DataSize + ShadowFallbackDataSize;
                 byte[] payload = payloadReader?.Invoke(Position);
                 if (payload != null)
-                    OverlayFBytes = ReadPayloadSegment(payload, offset, OverlayDataSize);
+                {
+                    LoadPayload(payload);
+                }
                 else
                 {
+                    int offset = ImageDataSize + ImageBc7DataSize + ImageFallbackDataSize + ShadowDataSize + ShadowBc7DataSize + ShadowFallbackDataSize;
                     reader.BaseStream.Seek(Position + offset, SeekOrigin.Begin);
                     OverlayFBytes = reader.ReadBytes(OverlayDataSize);
                 }
@@ -2279,6 +2467,32 @@ namespace LibraryEditor
                 byte[] segment = new byte[Math.Min(count, payload.Length - offset)];
                 Buffer.BlockCopy(payload, offset, segment, 0, segment.Length);
                 return segment;
+            }
+
+            internal void LoadPayload(byte[] payload)
+            {
+                if (_payloadLoaded || payload == null)
+                    return;
+
+                int offset = 0;
+                FBytes = ReadPayloadSegment(payload, offset, ImageDataSize);
+                offset += ImageDataSize;
+                ImageBc7Bytes = ReadPayloadSegment(payload, offset, ImageBc7DataSize);
+                offset += ImageBc7DataSize;
+                ImageFallbackBytes = ReadPayloadSegment(payload, offset, ImageFallbackDataSize);
+                offset += ImageFallbackDataSize;
+                ShadowFBytes = ReadPayloadSegment(payload, offset, ShadowDataSize);
+                offset += ShadowDataSize;
+                ShadowBc7Bytes = ReadPayloadSegment(payload, offset, ShadowBc7DataSize);
+                offset += ShadowBc7DataSize;
+                ShadowFallbackBytes = ReadPayloadSegment(payload, offset, ShadowFallbackDataSize);
+                offset += ShadowFallbackDataSize;
+                OverlayFBytes = ReadPayloadSegment(payload, offset, OverlayDataSize);
+                offset += OverlayDataSize;
+                OverlayBc7Bytes = ReadPayloadSegment(payload, offset, OverlayBc7DataSize);
+                offset += OverlayBc7DataSize;
+                OverlayFallbackBytes = ReadPayloadSegment(payload, offset, OverlayFallbackDataSize);
+                _payloadLoaded = true;
             }
 
             public void CreatePreview()

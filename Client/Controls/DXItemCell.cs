@@ -2094,9 +2094,9 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
+                            if (GameScene.Game.ConsignmentBox.ConsignItemBox?.IsVisible == true)
                             {
-                                MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
+                                MoveItem(GameScene.Game.ConsignmentBox.ConsignItemBox.ItemGrid);
                                 return;
                             }
 
@@ -2239,9 +2239,9 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
+                            if (GameScene.Game.ConsignmentBox.ConsignItemBox?.IsVisible == true)
                             {
-                                MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
+                                MoveItem(GameScene.Game.ConsignmentBox.ConsignItemBox.ItemGrid);
                                 return;
                             }
 
@@ -2374,9 +2374,9 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
+                            if (GameScene.Game.ConsignmentBox.ConsignItemBox?.IsVisible == true)
                             {
-                                MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
+                                MoveItem(GameScene.Game.ConsignmentBox.ConsignItemBox.ItemGrid);
                                 return;
                             }
 
@@ -2394,9 +2394,9 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.MarketPlaceBox.ConsignTab.IsVisible)
+                            if (GameScene.Game.ConsignmentBox.ConsignItemBox?.IsVisible == true)
                             {
-                                MoveItem(GameScene.Game.MarketPlaceBox.ConsignGrid);
+                                MoveItem(GameScene.Game.ConsignmentBox.ConsignItemBox.ItemGrid);
                                 return;
                             }
 

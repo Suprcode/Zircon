@@ -175,7 +175,7 @@ namespace Client.UserModels
         MagicBarWindow,
         [Description("Ranking Window")]
         RankingWindow,
-        [Description("Game Store Window")]
+        [Description("Cash Shop Window")]
         GameStoreWindow,
         [Description("Dungeon Finder Window")]
         DungeonFinderWindow,
@@ -197,8 +197,8 @@ namespace Client.UserModels
         QuestTrackerWindow,
         [Description("Belt Window")]
         BeltWindow,
-        [Description("Market Place Window")]
-        MarketPlaceWindow,
+        //[Description("UNUSED")]
+        UNUSED,
         [Description("Mini Map Window")]
         MapMiniWindow,
         [Description("Big Map Window")]

@@ -698,7 +698,16 @@ namespace LibraryEditor
 
             if (options.BuildAtlasMetadata)
             {
-                _library.BuildAtlasMetadata(options.AtlasPageSize, 2, options.AtlasGroupImageCount, options.AtlasRuntimePreference, progress, Path.GetFileName(path), true, options.BuildShadowAtlasMetadata, options.BuildOverlayAtlasMetadata);
+                bool reuseAtlas = _library.CanReuseAtlasMetadata(
+                    options.AtlasPageSize,
+                    options.AtlasGroupImageCount,
+                    options.AtlasRuntimePreference,
+                    true,
+                    options.BuildShadowAtlasMetadata,
+                    options.BuildOverlayAtlasMetadata);
+
+                if (!reuseAtlas)
+                    _library.BuildAtlasMetadata(options.AtlasPageSize, 2, options.AtlasGroupImageCount, options.AtlasRuntimePreference, progress, Path.GetFileName(path), true, options.BuildShadowAtlasMetadata, options.BuildOverlayAtlasMetadata);
             }
             else
             {

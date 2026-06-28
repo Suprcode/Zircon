@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
 
@@ -40,7 +39,7 @@ namespace Client.Scenes.Views
         public DXComboBox SortBox;
         public DXTextBox SearchBox;
         public DXButton SearchButton, BuyGameGoldButton, CurrencyToggleButton;
-        public DXLabel GameGoldLabel;
+        public DXLabel TitleLabel, SortLabel, CurrencyLabel, TopFiveLabel, GameGoldLabel;
         public bool UseHuntGold { get; private set; }
         public HashSet<int> Favourites { get; } = new HashSet<int>();
 
@@ -83,8 +82,8 @@ namespace Client.Scenes.Views
 
         public GameStoreDialog()
         {
-            LibraryFile = LibraryFile.GameInter;
-            Index = 4800;
+            LibraryFile = LibraryFile.Interface;
+            Index = 310;
             Movable = true;
             Sort = true;
             DropShadow = true;
@@ -100,6 +99,18 @@ namespace Client.Scenes.Views
             CloseButton.Location = new Point(Size.Width - CloseButton.Size.Width - 3, 3);
             CloseButton.MouseClick += (o, e) => Visible = false;
 
+            TitleLabel = new DXLabel
+            {
+                Parent = this,
+                Text = CEnvir.Language.GameStoreDialogTitle,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((Size.Width - TitleLabel.Size.Width) / 2, 8);
+
             FolderTree = new DXTreeControl
             {
                 Parent = this,
@@ -109,6 +120,15 @@ namespace Client.Scenes.Views
             };
             FolderTree.SelectedNodeChanged += (o, e) => FilterItems(FolderTree.SelectedNode);
 
+            SortLabel = new DXLabel
+            {
+                Parent = this,
+                Text = CEnvir.Language.GameStoreDialogSortByLabel,
+                ForeColour = Color.FromArgb(198, 166, 99),
+                IsControl = false,
+            };
+            SortLabel.Location = new Point(260 - SortLabel.Size.Width, 42);
+
             SortBox = new DXComboBox
             {
                 Parent = this,
@@ -116,10 +136,10 @@ namespace Client.Scenes.Views
                 Border = false,
                 Size = new Size(108, DXComboBox.DefaultNormalHeight),
             };
-            AddSortOption(MarketPlaceStoreSort.Alphabetical, "Name");
-            AddSortOption(MarketPlaceStoreSort.HighestPrice, "Highest Price");
-            AddSortOption(MarketPlaceStoreSort.LowestPrice, "Lowest Price");
-            AddSortOption(MarketPlaceStoreSort.Favourite, "Favourites");
+            AddSortOption(MarketPlaceStoreSort.Alphabetical, CEnvir.Language.GameStoreDialogSortNameLabel);
+            AddSortOption(MarketPlaceStoreSort.HighestPrice, CEnvir.Language.GameStoreDialogSortHighestPriceLabel);
+            AddSortOption(MarketPlaceStoreSort.LowestPrice, CEnvir.Language.GameStoreDialogSortLowestPriceLabel);
+            AddSortOption(MarketPlaceStoreSort.Favourite, CEnvir.Language.GameStoreDialogSortFavouritesLabel);
             SortBox.ListBox.SelectItem(MarketPlaceStoreSort.Alphabetical);
             SortBox.SelectedItemChanged += (o, e) => RefreshItems();
 
@@ -144,7 +164,7 @@ namespace Client.Scenes.Views
                 Location = new Point(530, 40),
                 Size = new Size(68, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
-                Label = { Text = CEnvir.Language.MarketPlaceDialogGameStoreTabSearchButtonLabel },
+                Label = { Text = CEnvir.Language.GameStoreDialogSearchButtonLabel },
             };
             SearchButton.MouseClick += (o, e) => RefreshItems();
 
@@ -153,8 +173,8 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point(199, 67),
                 Size = new Size(409, 432),
+                Favourites = Favourites
             };
-            ItemList.Favourites = Favourites;
             BuildFolderTree();
 
             GameGoldLabel = new DXLabel
@@ -167,13 +187,25 @@ namespace Client.Scenes.Views
                 Size = new Size(164, 18),
             };
 
+            CurrencyLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(10, 354),
+                Size = new Size(172, 20),
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                Text = CEnvir.Language.GameStoreDialogCurrencyLabel,
+                ForeColour = Color.FromArgb(198, 166, 99),
+                IsControl = false,
+            };
+
             BuyGameGoldButton = new DXButton
             {
                 Parent = this,
                 ButtonType = ButtonType.Default,
                 Location = new Point(10, 410),
                 Size = new Size(172, 27),
-                Label = { Text = CEnvir.Language.MarketPlaceDialogGameStoreTabGameGoldRechargeButtonLabel },
+                Label = { Text = CEnvir.Language.GameStoreDialogRechargeButtonLabel },
             };
             BuyGameGoldButton.MouseClick += BuyGameGoldButton_MouseClick;
 
@@ -199,13 +231,22 @@ namespace Client.Scenes.Views
                 Location = new Point(614, 65),
                 Size = new Size(174, 425),
             };
+            TopFiveLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(614, 37),
+                Size = new Size(174, 20),
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                Text = CEnvir.Language.GameStoreDialogTopFiveLabel,
+                ForeColour = Color.FromArgb(198, 166, 99),
+                IsControl = false,
+            };
             TopItems.ItemSelected += info =>
             {
                 SearchBox.TextBox.Text = info.Item.ItemName;
                 ItemList.FilterTo(info);
             };
-            TopItems.PopulateRandomItems();
-
             RefreshItems();
             RefreshCurrency();
         }
@@ -235,8 +276,14 @@ namespace Client.Scenes.Views
                 ? GameScene.Game?.User?.HuntGold?.Amount ?? 0
                 : GameScene.Game?.User?.GameGold?.Amount ?? 0;
 
-            GameGoldLabel.Text = $"{(UseHuntGold ? "Hunt Gold" : "Game Gold")}: {amount:#,##0}";
-            CurrencyToggleButton.Label.Text = UseHuntGold ? "Use Game Gold" : "Use Hunt Gold";
+            string currency = UseHuntGold
+                ? CEnvir.Language.GameStoreDialogHuntGoldLabel
+                : CEnvir.Language.GameStoreDialogGameGoldLabel;
+
+            GameGoldLabel.Text = $"{currency}: {amount:#,##0}";
+            CurrencyToggleButton.Label.Text = UseHuntGold
+                ? CEnvir.Language.GameStoreDialogUseGameGoldLabel
+                : CEnvir.Language.GameStoreDialogUseHuntGoldLabel;
         }
 
         private void BuyGameGoldButton_MouseClick(object sender, MouseEventArgs e)
@@ -244,8 +291,8 @@ namespace Client.Scenes.Views
             if (GameScene.Game.Observer || CEnvir.TestServer) return;
 
             DXMessageBox box = new DXMessageBox(
-                CEnvir.Language.MarketPlaceDialogGameStoreTabGameGoldRechargeButtonConfirmMessage,
-                CEnvir.Language.MarketPlaceDialogGameStoreTabGameGoldRechargeButtonConfirmCaption,
+                CEnvir.Language.GameStoreDialogRechargeConfirmMessage,
+                CEnvir.Language.GameStoreDialogRechargeConfirmCaption,
                 DXMessageBoxButtons.YesNo);
 
             box.YesButton.MouseClick += (o, args) =>
@@ -288,7 +335,7 @@ namespace Client.Scenes.Views
             List<DXTreeNode> nodes = new List<DXTreeNode>();
 
             if (items.Any(x => Favourites.Contains(x.Index)))
-                nodes.Add(new DXTreeNode("Favourites", new GameStoreTreeFilter(GameStoreCategory.Favourites)));
+                nodes.Add(new DXTreeNode(CEnvir.Language.GameStoreDialogFavouritesLabel, new GameStoreTreeFilter(GameStoreCategory.Favourites)));
 
             List<string> filters = items
                 .SelectMany(x => (x.Filter ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
@@ -300,24 +347,24 @@ namespace Client.Scenes.Views
 
             if (filters.Count > 0)
             {
-                DXTreeNode filterNode = new DXTreeNode("Categories", new GameStoreTreeFilter(GameStoreCategory.All, requiresStoreFilter: true));
+                DXTreeNode filterNode = new DXTreeNode(CEnvir.Language.GameStoreDialogCategoriesLabel, new GameStoreTreeFilter(GameStoreCategory.All, requiresStoreFilter: true));
                 foreach (string filter in filters)
                     filterNode.Children.Add(new DXTreeNode(filter, new GameStoreTreeFilter(GameStoreCategory.All, null, filter, true)));
                 nodes.Add(filterNode);
             }
 
             if (items.Count > 0)
-                nodes.Add(new DXTreeNode("New Items", new GameStoreTreeFilter(GameStoreCategory.NewItems)));
+                nodes.Add(new DXTreeNode(CEnvir.Language.GameStoreDialogNewItemsLabel, new GameStoreTreeFilter(GameStoreCategory.NewItems)));
 
-            DXTreeNode allItemsNode = new DXTreeNode("All Items", new GameStoreTreeFilter(GameStoreCategory.All));
-            AddCategoryNode(allItemsNode.Children, items, "Equipment", GameStoreCategory.Equipment, GameStoreItemListControl.IsEquipment);
-            AddCategoryNode(allItemsNode.Children, items, "Consumables", GameStoreCategory.Consumables, GameStoreItemListControl.IsConsumable);
-            AddCategoryNode(allItemsNode.Children, items, "Cosmetics", GameStoreCategory.Cosmetics, GameStoreItemListControl.IsCosmetic);
+            DXTreeNode allItemsNode = new DXTreeNode(CEnvir.Language.GameStoreDialogAllItemsLabel, new GameStoreTreeFilter(GameStoreCategory.All));
+            AddCategoryNode(allItemsNode.Children, items, CEnvir.Language.GameStoreDialogEquipmentLabel, GameStoreCategory.Equipment, GameStoreItemListControl.IsEquipment);
+            AddCategoryNode(allItemsNode.Children, items, CEnvir.Language.GameStoreDialogConsumablesLabel, GameStoreCategory.Consumables, GameStoreItemListControl.IsConsumable);
+            AddCategoryNode(allItemsNode.Children, items, CEnvir.Language.GameStoreDialogCosmeticsLabel, GameStoreCategory.Cosmetics, GameStoreItemListControl.IsCosmetic);
 
             if (items.Any(x => !GameStoreItemListControl.IsEquipment(x.Item.ItemType) &&
                                !GameStoreItemListControl.IsConsumable(x.Item.ItemType) &&
                                !GameStoreItemListControl.IsCosmetic(x.Item.ItemType)))
-                allItemsNode.Children.Add(new DXTreeNode("Other", new GameStoreTreeFilter(GameStoreCategory.Other)));
+                allItemsNode.Children.Add(new DXTreeNode(CEnvir.Language.GameStoreDialogOtherLabel, new GameStoreTreeFilter(GameStoreCategory.Other)));
 
             if (allItemsNode.Children.Count > 0)
             {
@@ -430,6 +477,22 @@ namespace Client.Scenes.Views
             if (GameGoldLabel != null && !GameGoldLabel.IsDisposed)
                 GameGoldLabel.Dispose();
             GameGoldLabel = null;
+
+            if (TitleLabel != null && !TitleLabel.IsDisposed)
+                TitleLabel.Dispose();
+            TitleLabel = null;
+
+            if (SortLabel != null && !SortLabel.IsDisposed)
+                SortLabel.Dispose();
+            SortLabel = null;
+
+            if (CurrencyLabel != null && !CurrencyLabel.IsDisposed)
+                CurrencyLabel.Dispose();
+            CurrencyLabel = null;
+
+            if (TopFiveLabel != null && !TopFiveLabel.IsDisposed)
+                TopFiveLabel.Dispose();
+            TopFiveLabel = null;
 
             Favourites.Clear();
         }
@@ -738,12 +801,13 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Location = new Point(19, 18),
-                FixedBorder = true,
                 Border = false,
                 ReadOnly = true,
                 ItemGrid = new ClientUserItem[1],
                 Slot = 0,
+                FixedBorder = true,
                 FixedBorderColour = true,
+                BorderColour = Color.Empty,
                 ShowCountLabel = false,
             };
 
@@ -788,13 +852,13 @@ namespace Client.Scenes.Views
             }
             QuantityBox.ListBox.SelectItem(1);
 
-            BuyButton = CreateActionButton(4835, new Point(83, 51), "Purchase");
+            BuyButton = CreateActionButton(4835, new Point(83, 51), CEnvir.Language.GameStoreDialogPurchaseHint);
             BuyButton.MouseClick += BuyButton_MouseClick;
 
-            GiftButton = CreateActionButton(4830, new Point(116, 51), "Gift to Player");
+            GiftButton = CreateActionButton(4830, new Point(116, 51), CEnvir.Language.GameStoreDialogGiftHint);
             GiftButton.MouseClick += GiftButton_MouseClick;
 
-            FavouriteButton = CreateActionButton(4855, new Point(151, 51), "Add/Remove Favourite");
+            FavouriteButton = CreateActionButton(4855, new Point(151, 51), CEnvir.Language.GameStoreDialogFavouriteHint);
             FavouriteButton.MouseClick += (o, e) =>
             {
                 if (StoreInfo == null) return;
@@ -875,7 +939,9 @@ namespace Client.Scenes.Views
         {
             bool favourite = StoreInfo != null && GameScene.Game?.GameStoreBox?.Favourites.Contains(StoreInfo.Index) == true;
             FavouriteButton.Index = favourite ? 4857 : 4855;
-            FavouriteButton.Hint = favourite ? "Remove from Favourites" : "Add to Favourites";
+            FavouriteButton.Hint = favourite
+                ? CEnvir.Language.GameStoreDialogRemoveFavouriteHint
+                : CEnvir.Language.GameStoreDialogAddFavouriteHint;
         }
 
         private void RefreshPrice()
@@ -886,7 +952,7 @@ namespace Client.Scenes.Views
                 return;
             }
 
-            PriceLabel.Text = StoreInfo.Available ? GetPrice().ToString("#,##0") : "N/A";
+            PriceLabel.Text = StoreInfo.Available ? GetPrice().ToString("#,##0") : CEnvir.Language.GameStoreDialogUnavailableLabel;
         }
 
         private int GetPrice()
@@ -900,15 +966,13 @@ namespace Client.Scenes.Views
 
             int count = (int?)QuantityBox.SelectedItem ?? 1;
             int price = GetPrice();
-            string currency = UseHuntGold ? "Hunt Gold" : "Game Gold";
+            string currency = UseHuntGold
+                ? CEnvir.Language.GameStoreDialogHuntGoldLabel
+                : CEnvir.Language.GameStoreDialogGameGoldLabel;
             long total = (long)price * count;
-            StringBuilder message = new StringBuilder();
-            message.AppendLine($"Item: {StoreInfo.Item.ItemName} x{count:#,##0}");
-            message.AppendLine();
-            message.AppendLine($"Price: {price:#,##0} {currency} each");
-            message.Append($"Total Cost: {total:#,##0} {currency}");
+            string message = string.Format(CEnvir.Language.GameStoreDialogPurchaseConfirmMessage, StoreInfo.Item.ItemName, count, price, currency, total);
 
-            DXMessageBox box = new DXMessageBox(message.ToString(), "Buy Confirmation", DXMessageBoxButtons.YesNo);
+            DXMessageBox box = new DXMessageBox(message, CEnvir.Language.GameStoreDialogPurchaseConfirmCaption, DXMessageBoxButtons.YesNo);
             box.YesButton.MouseClick += (o, args) =>
             {
                 CEnvir.Enqueue(new C.MarketPlaceStoreBuy
@@ -924,7 +988,7 @@ namespace Client.Scenes.Views
         {
             if (StoreInfo?.Item == null || !StoreInfo.Available || GameScene.Game.Observer) return;
 
-            DXInputWindow window = new DXInputWindow("Enter the character name to receive this gift.", "Gift Game Store Item")
+            DXInputWindow window = new DXInputWindow(CEnvir.Language.GameStoreDialogGiftPrompt, CEnvir.Language.GameStoreDialogGiftCaption)
             {
                 ConfirmButton = { Enabled = false },
                 Modal = true,
@@ -996,31 +1060,40 @@ namespace Client.Scenes.Views
         public GameStoreTopItemsControl()
         {
             Rows = new GameStoreTopItemControl[5];
+            string[] rankLabels =
+            {
+                CEnvir.Language.GameStoreDialogFirstPlaceLabel,
+                CEnvir.Language.GameStoreDialogSecondPlaceLabel,
+                CEnvir.Language.GameStoreDialogThirdPlaceLabel,
+                CEnvir.Language.GameStoreDialogFourthPlaceLabel,
+                CEnvir.Language.GameStoreDialogFifthPlaceLabel,
+            };
 
             for (int i = 0; i < Rows.Length; i++)
             {
                 GameStoreTopItemControl row = new GameStoreTopItemControl
                 {
                     Parent = this,
-                    Location = new Point(0, 4 + i * 87),
+                    Location = new Point(0, 5 + i * 87),
                     Size = new Size(174, i == Rows.Length - 1 ? 73 : 78)
                 };
+                row.RankLabel.Text = rankLabels[i];
                 row.MouseClick += (o, e) => SelectItem(row);
                 row.ItemCell.MouseClick += (o, e) => SelectItem(row);
                 Rows[i] = row;
             }
         }
 
-        public void PopulateRandomItems()
+        public void SetItems(IEnumerable<int> indexes)
         {
-            List<StoreInfo> available = Globals.StoreInfoList?.Binding
-                .Where(x => x.Item != null && x.Price > 0)
-                .OrderBy(x => Random.Shared.Next())
+            List<StoreInfo> items = indexes?
+                .Select(index => Globals.StoreInfoList?.Binding.FirstOrDefault(x => x.Index == index))
+                .Where(x => x?.Item != null)
                 .Take(Rows.Length)
                 .ToList() ?? new List<StoreInfo>();
 
             for (int i = 0; i < Rows.Length; i++)
-                Rows[i].StoreInfo = i < available.Count ? available[i] : null;
+                Rows[i].StoreInfo = i < items.Count ? items[i] : null;
         }
 
         private void SelectItem(GameStoreTopItemControl row)
@@ -1067,15 +1140,28 @@ namespace Client.Scenes.Views
         }
 
         public DXItemCell ItemCell { get; private set; }
+        public DXLabel RankLabel { get; private set; }
         public DXLabel NameLabel { get; private set; }
 
         public GameStoreTopItemControl()
         {
+            RankLabel = new DXLabel
+            {
+                Parent = this,
+                Location = new Point(0, 1),
+                Size = new Size(174, 20),
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
+                ForeColour = Color.CornflowerBlue,
+                IsControl = false,
+            };
+
             ItemCell = new DXItemCell
             {
                 Parent = this,
                 Location = new Point(19, 26),
                 FixedBorder = true,
+                BorderColour = Color.Empty,
                 Border = false,
                 ReadOnly = true,
                 ItemGrid = new ClientUserItem[1],
@@ -1136,6 +1222,10 @@ namespace Client.Scenes.Views
             if (NameLabel != null && !NameLabel.IsDisposed)
                 NameLabel.Dispose();
             NameLabel = null;
+
+            if (RankLabel != null && !RankLabel.IsDisposed)
+                RankLabel.Dispose();
+            RankLabel = null;
         }
     }
 }

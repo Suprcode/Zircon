@@ -881,6 +881,7 @@ namespace Library
         public ClientUserItem Item { get; set; }
 
         public int Price { get; set; }
+        public DateTime ConsignDate { get; set; }
 
         public string Seller { get; set; }
         public string Message { get; set; }

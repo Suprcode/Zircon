@@ -176,6 +176,7 @@ namespace Client.Controls
             TargetPlayerFriendlyColourBox.BackColour = Config.TargetPlayerFriendlyColour;
             TargetPlayerEnemyColourBox.BackColour = Config.TargetPlayerEnemyColour;
         }
+
         public override void OnParentChanged(DXControl oValue, DXControl nValue)
         {
             base.OnParentChanged(oValue, nValue);

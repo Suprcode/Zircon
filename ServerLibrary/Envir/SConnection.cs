@@ -963,8 +963,12 @@ namespace Server.Envir
                 VisibleResults.Add(info);
             }
 
-
-            Enqueue(new S.MarketPlaceSearch { Count = MPSearchResults.Count, Results = results, ObserverPacket = false });
+            Enqueue(new S.MarketPlaceSearch
+            {
+                Count = MPSearchResults.Count,
+                Results = results,
+                ObserverPacket = false
+            });
         }
         public void Process(C.MarketPlaceSearchIndex p)
         {

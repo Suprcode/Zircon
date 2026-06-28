@@ -1,5 +1,6 @@
 ﻿using Library;
 using MirDB;
+using System;
 
 namespace Server.DBModels
 {
@@ -68,6 +69,21 @@ namespace Server.DBModels
         }
         private int _Price;
 
+        public DateTime ConsignDate
+        {
+            get { return _ConsignDate; }
+            set
+            {
+                if (_ConsignDate == value) return;
+
+                var oldValue = _ConsignDate;
+                _ConsignDate = value;
+
+                OnChanged(oldValue, value, "ConsignDate");
+            }
+        }
+        private DateTime _ConsignDate;
+
         public string Message
         {
             get { return _Message; }
@@ -108,6 +124,7 @@ namespace Server.DBModels
                 IsOwner = account == Account,
 
                 Price = Price,
+                ConsignDate = ConsignDate,
             };
         }
 

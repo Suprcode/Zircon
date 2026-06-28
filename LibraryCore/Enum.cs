@@ -552,7 +552,9 @@ namespace Library
         AccessoryRefine,
 
         RollDie,
-        RollYut
+        RollYut,
+
+        Consignment,
     }
 
     public enum MagicSchool

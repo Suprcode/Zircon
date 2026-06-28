@@ -867,6 +867,12 @@ namespace Library.Network.ServerPackets
     public sealed class GameStoreData : Packet
     {
         public List<int> Favourites { get; set; }
+        public List<int> TopItems { get; set; }
+    }
+
+    public sealed class GameStoreTopItems : Packet
+    {
+        public List<int> Items { get; set; }
     }
 
     public sealed class GameStoreFavouriteChanged : Packet
