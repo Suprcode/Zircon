@@ -151,8 +151,9 @@ namespace Client.Scenes.Views
             SearchBox = new DXTextBox
             {
                 Parent = SearchTab,
-                Location = new Point(480, 8),
-                Size = new Size(150, 18),
+                Location = new Point(495, 10),
+                Size = new Size(125, 16),
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular),
                 Border = false,
             };
             SearchBox.TextBox.KeyPress += (o, e) =>
@@ -198,7 +199,7 @@ namespace Client.Scenes.Views
             SearchButton = new DXButton
             {
                 Parent = SearchTab,
-                Location = new Point(637, 6),
+                Location = new Point(637, 8),
                 Size = new Size(70, SmallButtonHeight),
                 ButtonType = ButtonType.SmallButton,
                 Label = { Text = CEnvir.Language.ConsignmentDialogSearchButtonLabel },
