@@ -290,6 +290,22 @@ namespace Client.Scenes.Views
             if (items.Any(x => Favourites.Contains(x.Index)))
                 nodes.Add(new DXTreeNode("Favourites", new GameStoreTreeFilter(GameStoreCategory.Favourites)));
 
+            List<string> filters = items
+                .SelectMany(x => (x.Filter ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (filters.Count > 0)
+            {
+                DXTreeNode filterNode = new DXTreeNode("Categories", new GameStoreTreeFilter(GameStoreCategory.All, requiresStoreFilter: true));
+                foreach (string filter in filters)
+                    filterNode.Children.Add(new DXTreeNode(filter, new GameStoreTreeFilter(GameStoreCategory.All, null, filter, true)));
+                nodes.Add(filterNode);
+            }
+
             if (items.Count > 0)
                 nodes.Add(new DXTreeNode("New Items", new GameStoreTreeFilter(GameStoreCategory.NewItems)));
 
@@ -298,21 +314,6 @@ namespace Client.Scenes.Views
             AddCategoryNode(allItemsNode.Children, items, "Consumables", GameStoreCategory.Consumables, GameStoreItemListControl.IsConsumable);
             AddCategoryNode(allItemsNode.Children, items, "Cosmetics", GameStoreCategory.Cosmetics, GameStoreItemListControl.IsCosmetic);
 
-            List<string> filters = items
-                .SelectMany(x => (x.Filter ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                .Select(x => x.Trim())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            if (filters.Count > 0)
-            {
-                DXTreeNode filterNode = new DXTreeNode("Items", new GameStoreTreeFilter(GameStoreCategory.All, requiresStoreFilter: true));
-                foreach (string filter in filters)
-                    filterNode.Children.Add(new DXTreeNode(filter, new GameStoreTreeFilter(GameStoreCategory.All, null, filter, true)));
-                nodes.Add(filterNode);
-            }
-
             if (items.Any(x => !GameStoreItemListControl.IsEquipment(x.Item.ItemType) &&
                                !GameStoreItemListControl.IsConsumable(x.Item.ItemType) &&
                                !GameStoreItemListControl.IsCosmetic(x.Item.ItemType)))
@@ -320,11 +321,7 @@ namespace Client.Scenes.Views
 
             if (allItemsNode.Children.Count > 0)
             {
-                int itemsIndex = nodes.FindIndex(x => x.Text == "Items");
-                if (itemsIndex < 0)
-                    nodes.Add(allItemsNode);
-                else
-                    nodes.Insert(itemsIndex, allItemsNode);
+                nodes.Add(allItemsNode);
             }
 
             FolderTree.SetNodes(nodes);
