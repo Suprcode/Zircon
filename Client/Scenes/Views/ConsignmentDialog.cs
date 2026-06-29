@@ -19,7 +19,7 @@ namespace Client.Scenes.Views
     {
         public const int VisibleRowCount = 6;
 
-        public DXButton CloseButton, SearchButton, BuyButton, ConsignButton;
+        public DXButton CloseButton, SearchButton, BuyButton, ConsignButton, RemoveListingButton, ShowSalesButton;
         public DXCheckBox BuyGuildBox, ConsignGuildBox;
         public DXLabel TitleLabel, ResultCountLabel, ConsignResultCountLabel;
         public DXLabel SortLabel, ItemTypesLabel, SearchNameLabel, SearchLevelLabel, SearchPriceLabel, SellerLabel;
@@ -37,6 +37,7 @@ namespace Client.Scenes.Views
         public ConsignmentListRow[] ConsignRows;
         public List<ClientMarketPlaceInfo> ConsignItems = new List<ClientMarketPlaceInfo>();
         public ConsignItemDialog ConsignItemBox;
+        public MarketPlaceHistoryDialog SalesBox;
 
         public WindowSetting Settings;
         public WindowType Type => WindowType.ConsignmentBox;
@@ -59,6 +60,7 @@ namespace Client.Scenes.Views
                     _SelectedRow.Selected = true;
 
                 BuyButton.Enabled = !GameScene.Game.Observer && _SelectedRow?.MarketInfo?.Item != null;
+                ShowSalesButton.Enabled = _SelectedRow?.MarketInfo?.Item != null;
             }
         }
 
@@ -76,6 +78,9 @@ namespace Client.Scenes.Views
 
                 if (_SelectedConsignRow != null)
                     _SelectedConsignRow.Selected = true;
+
+                RemoveListingButton.Enabled = _SelectedConsignRow?.MarketInfo?.Item != null;
+                ShowSalesButton.Enabled = _SelectedConsignRow?.MarketInfo?.Item != null;
             }
         }
 
@@ -183,6 +188,7 @@ namespace Client.Scenes.Views
                 };
             }
             SortBox.ListBox.SelectItem(MarketPlaceSort.Newest);
+            SortBox.SelectedItemChanged += (o, e) => Search();
 
             SortLabel = CreateHeaderLabel(SearchTab, new Point(10, 6), new Size(50, 20), CEnvir.Language.ConsignmentDialogSortByLabel);
             ItemTypesLabel = CreateHeaderLabel(SearchTab, new Point(4, 32), new Size(160, 20), CEnvir.Language.ConsignmentDialogItemTypesLabel);
@@ -254,8 +260,8 @@ namespace Client.Scenes.Views
                     Parent = ConsignTab,
                     Location = new Point(14, 58 + i * 42),
                 };
-                ConsignRows[i].MouseClick += (o, e) => CancelConsignment(index);
-                ConsignRows[i].ItemCell.MouseClick += (o, e) => CancelConsignment(index);
+                ConsignRows[i].MouseClick += (o, e) => SelectedConsignRow = ConsignRows[index];
+                ConsignRows[i].ItemCell.MouseClick += (o, e) => SelectedConsignRow = ConsignRows[index];
             }
 
             ConsignScrollBar = new DXVScrollBar
@@ -287,10 +293,21 @@ namespace Client.Scenes.Views
             };
             BuyButton.MouseClick += BuyButton_MouseClick;
 
+            ShowSalesButton = new DXButton
+            {
+                Parent = this,
+                Location = new Point(175, Size.Height - 42),
+                Size = new Size(100, DefaultHeight),
+                ButtonType = ButtonType.Default,
+                Label = { Text = CEnvir.Language.ConsignmentDialogShowSalesButtonLabel },
+                Enabled = false,
+            };
+            ShowSalesButton.MouseClick += ShowSalesButton_MouseClick;
+
             BuyGuildBox = new DXCheckBox
             {
                 Parent = this,
-                Location = new Point(Size.Width - 255, Size.Height - 38),
+                Location = new Point(285, Size.Height - 38),
                 Label = { Text = CEnvir.Language.ConsignmentDialogBuyGuildFundsLabel },
                 Enabled = false,
             };
@@ -305,6 +322,18 @@ namespace Client.Scenes.Views
                 Visible = false,
             };
             ConsignButton.MouseClick += ConsignButton_MouseClick;
+
+            RemoveListingButton = new DXButton
+            {
+                Parent = this,
+                Location = new Point(Size.Width - 210, Size.Height - 42),
+                Size = new Size(100, DefaultHeight),
+                ButtonType = ButtonType.Default,
+                Label = { Text = CEnvir.Language.ConsignmentDialogRemoveListingButtonLabel },
+                Enabled = false,
+                Visible = false,
+            };
+            RemoveListingButton.MouseClick += (o, e) => CancelSelectedConsignment();
 
             ConsignGuildBox = new DXCheckBox
             {
@@ -363,6 +392,7 @@ namespace Client.Scenes.Views
             TabImage.Index = search ? 301 : 302;
             BuyButton.Visible = search;
             ConsignButton.Visible = !search;
+            RemoveListingButton.Visible = !search;
             BuyGuildBox.Visible = search;
             ConsignGuildBox.Visible = !search;
             ResultCountLabel.Visible = search;
@@ -613,15 +643,10 @@ namespace Client.Scenes.Views
             };
         }
 
-        private void CancelConsignment(int rowIndex)
+        private void CancelSelectedConsignment()
         {
-            if (rowIndex < 0 || rowIndex >= ConsignRows.Length) return;
-
-            ConsignmentListRow row = ConsignRows[rowIndex];
-            ClientMarketPlaceInfo info = row.MarketInfo;
+            ClientMarketPlaceInfo info = SelectedConsignRow?.MarketInfo;
             if (info?.Item == null) return;
-
-            SelectedConsignRow = row;
 
             DXItemAmountWindow window = new DXItemAmountWindow(CEnvir.Language.ConsignmentDialogCancelListingCaption, info.Item);
             window.ConfirmButton.MouseClick += (o, e) =>
@@ -630,6 +655,17 @@ namespace Client.Scenes.Views
 
                 CEnvir.Enqueue(new C.MarketPlaceCancelConsign { Index = info.Index, Count = window.Amount });
             };
+        }
+
+        private void ShowSalesButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            ClientUserItem item = SelectedRow?.MarketInfo?.Item ?? SelectedConsignRow?.MarketInfo?.Item;
+            if (item?.Info == null) return;
+
+            if (SalesBox == null || SalesBox.IsDisposed)
+                SalesBox = new MarketPlaceHistoryDialog();
+
+            SalesBox.Show(item);
         }
 
         private void ConsignButton_MouseClick(object sender, MouseEventArgs e)
@@ -655,6 +691,10 @@ namespace Client.Scenes.Views
                 ConsignItemBox.Dispose();
             ConsignItemBox = null;
 
+            if (SalesBox != null && !SalesBox.IsDisposed)
+                SalesBox.Dispose();
+            SalesBox = null;
+
             if (CloseButton != null && !CloseButton.IsDisposed)
                 CloseButton.Dispose();
             CloseButton = null;
@@ -674,6 +714,14 @@ namespace Client.Scenes.Views
             if (ConsignButton != null && !ConsignButton.IsDisposed)
                 ConsignButton.Dispose();
             ConsignButton = null;
+
+            if (RemoveListingButton != null && !RemoveListingButton.IsDisposed)
+                RemoveListingButton.Dispose();
+            RemoveListingButton = null;
+
+            if (ShowSalesButton != null && !ShowSalesButton.IsDisposed)
+                ShowSalesButton.Dispose();
+            ShowSalesButton = null;
 
             if (ConsignGuildBox != null && !ConsignGuildBox.IsDisposed)
                 ConsignGuildBox.Dispose();
@@ -788,6 +836,75 @@ namespace Client.Scenes.Views
             if (TabControl != null && !TabControl.IsDisposed)
                 TabControl.Dispose();
             TabControl = null;
+        }
+    }
+
+    public sealed class MarketPlaceHistoryDialog : DXWindow
+    {
+        private static int _NextDisplay;
+
+        public override WindowType Type => WindowType.ConsignmentBox;
+        public override bool CustomSize => false;
+        public override bool AutomaticVisibility => false;
+
+        public int Display { get; private set; }
+        public int ItemIndex { get; private set; }
+
+        public DXLabel ItemLabel, SaleCountLabel, LastPriceLabel, AveragePriceLabel;
+
+        public MarketPlaceHistoryDialog()
+        {
+            Parent = GameScene.Game;
+            TitleLabel.Text = CEnvir.Language.ConsignmentDialogSalesTitle;
+            SetClientSize(new Size(270, 110));
+            Location = new Point((GameScene.Game.Size.Width - Size.Width) / 2, (GameScene.Game.Size.Height - Size.Height) / 2);
+
+            ItemLabel = CreateLabel(0);
+            SaleCountLabel = CreateLabel(28);
+            LastPriceLabel = CreateLabel(52);
+            AveragePriceLabel = CreateLabel(76);
+        }
+
+        private DXLabel CreateLabel(int y)
+        {
+            return new DXLabel
+            {
+                Parent = this,
+                Location = new Point(ClientArea.X, ClientArea.Y + y),
+                Size = new Size(ClientArea.Width, 20),
+                AutoSize = false,
+                DrawFormat = TextFormatFlags.VerticalCenter,
+                ForeColour = Color.White,
+            };
+        }
+
+        public void Show(ClientUserItem item)
+        {
+            ItemIndex = item.Info.Index;
+            Display = ++_NextDisplay;
+
+            ItemInfo displayInfo = item.Info;
+            int partIndex = item.AddedStats[Stat.ItemIndex];
+            if (item.Info.ItemEffect == ItemEffect.ItemPart)
+                displayInfo = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == partIndex) ?? item.Info;
+
+            ItemLabel.Text = displayInfo.ItemName;
+            SaleCountLabel.Text = CEnvir.Language.ConsignmentDialogSalesLoadingLabel;
+            LastPriceLabel.Text = string.Empty;
+            AveragePriceLabel.Text = string.Empty;
+            Visible = true;
+            BringToFront();
+
+            CEnvir.Enqueue(new C.MarketPlaceHistory { Index = ItemIndex, PartIndex = partIndex, Display = Display });
+        }
+
+        public void Apply(int index, int display, long saleCount, long lastPrice, long averagePrice)
+        {
+            if (index != ItemIndex || display != Display) return;
+
+            SaleCountLabel.Text = string.Format(CEnvir.Language.ConsignmentDialogSalesCountLabel, saleCount);
+            LastPriceLabel.Text = string.Format(CEnvir.Language.ConsignmentDialogSalesLastPriceLabel, lastPrice);
+            AveragePriceLabel.Text = string.Format(CEnvir.Language.ConsignmentDialogSalesAveragePriceLabel, averagePrice);
         }
     }
 

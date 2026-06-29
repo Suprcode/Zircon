@@ -350,7 +350,7 @@ namespace Client.Controls
             if (DropShadow)
             {
                 RectangleF? shadowBounds = null;
-                Rectangle visibleBounds = image.GetVisibleBounds();
+                Rectangle visibleBounds = image.GetShadowVisibleBounds();
 
                 if (visibleBounds.Width > 0 && visibleBounds.Height > 0)
                 {

@@ -3541,7 +3541,7 @@ namespace Client.Envir
 
         public void Process(S.MarketPlaceHistory p)
         {
-
+            GameScene.Game.ConsignmentBox.SalesBox?.Apply(p.Index, p.Display, p.SaleCount, p.LastPrice, p.AveragePrice);
         }
 
         public void Process(S.MarketPlaceConsign p)

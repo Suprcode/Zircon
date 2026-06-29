@@ -703,6 +703,13 @@ namespace Client.Envir.Translations
         public override string ConsignmentDialogConsignButtonLabel { get; set; } = "寄售";
         public override string ConsignmentDialogConsignGuildFundsLabel { get; set; } = "使用行会资金：";
         public override string ConsignmentDialogCancelListingCaption { get; set; } = "取消寄售";
+        public override string ConsignmentDialogRemoveListingButtonLabel { get; set; } = "取消寄售";
+        public override string ConsignmentDialogShowSalesButtonLabel { get; set; } = "销售记录";
+        public override string ConsignmentDialogSalesTitle { get; set; } = "销售记录";
+        public override string ConsignmentDialogSalesLoadingLabel { get; set; } = "加载销售记录...";
+        public override string ConsignmentDialogSalesCountLabel { get; set; } = "已售数量：{0:#,##0}";
+        public override string ConsignmentDialogSalesLastPriceLabel { get; set; } = "最近售价：{0:#,##0}";
+        public override string ConsignmentDialogSalesAveragePriceLabel { get; set; } = "平均售价：{0:#,##0}";
 
         public override string MonsterDialogUndeadIconHint { get; set; } = "Undead";
         public override string MonsterDialogMortalIconHint { get; set; } = "Mortal";

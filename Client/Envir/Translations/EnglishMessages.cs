@@ -704,6 +704,13 @@ namespace Client.Envir.Translations
         public override string ConsignmentDialogConsignButtonLabel { get; set; } = "Consign";
         public override string ConsignmentDialogConsignGuildFundsLabel { get; set; } = "Use Guild Funds:";
         public override string ConsignmentDialogCancelListingCaption { get; set; } = "Cancel Listing";
+        public override string ConsignmentDialogRemoveListingButtonLabel { get; set; } = "Remove Listing";
+        public override string ConsignmentDialogShowSalesButtonLabel { get; set; } = "Show Sales";
+        public override string ConsignmentDialogSalesTitle { get; set; } = "Sales History";
+        public override string ConsignmentDialogSalesLoadingLabel { get; set; } = "Loading sales...";
+        public override string ConsignmentDialogSalesCountLabel { get; set; } = "Items sold: {0:#,##0}";
+        public override string ConsignmentDialogSalesLastPriceLabel { get; set; } = "Last sale price: {0:#,##0}";
+        public override string ConsignmentDialogSalesAveragePriceLabel { get; set; } = "Average sale price: {0:#,##0}";
 
         public override string MonsterDialogUndeadIconHint { get; set; } = "Undead";
         public override string MonsterDialogMortalIconHint { get; set; } = "Mortal";

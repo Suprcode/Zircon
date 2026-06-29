@@ -704,6 +704,13 @@ namespace Client.Envir.Translations
         public abstract string ConsignmentDialogConsignButtonLabel { get; set; }
         public abstract string ConsignmentDialogConsignGuildFundsLabel { get; set; }
         public abstract string ConsignmentDialogCancelListingCaption { get; set; }
+        public abstract string ConsignmentDialogRemoveListingButtonLabel { get; set; }
+        public abstract string ConsignmentDialogShowSalesButtonLabel { get; set; }
+        public abstract string ConsignmentDialogSalesTitle { get; set; }
+        public abstract string ConsignmentDialogSalesLoadingLabel { get; set; }
+        public abstract string ConsignmentDialogSalesCountLabel { get; set; }
+        public abstract string ConsignmentDialogSalesLastPriceLabel { get; set; }
+        public abstract string ConsignmentDialogSalesAveragePriceLabel { get; set; }
 
         public abstract string MonsterDialogUndeadIconHint { get; set; }
         public abstract string MonsterDialogMortalIconHint { get; set; }

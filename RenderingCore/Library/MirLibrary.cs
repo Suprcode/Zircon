@@ -1203,6 +1203,7 @@ namespace Shared.Rendering
         public DateTime ExpireTime { get; set; }
 
         private Rectangle _visibleBounds = default;
+        private Rectangle _shadowVisibleBounds = default;
 
         public MirImage(BinaryReader reader, int version)
         {
@@ -1248,6 +1249,70 @@ namespace Shared.Rendering
             _visibleBounds = VisibleBounds != default ? VisibleBounds : CalculateVisibleBounds();
 
             return _visibleBounds;
+        }
+
+        public Rectangle GetShadowVisibleBounds()
+        {
+            if (_shadowVisibleBounds != default)
+                return _shadowVisibleBounds;
+
+            if (!ImageValid || ImageData == null || Width <= 0 || Height <= 0)
+                return GetVisibleBounds();
+
+            ZlImageCodec codec = _imageDataCodec ?? ImageCodec;
+            byte[] pixels = ImageData;
+
+            if (codec != ZlImageCodec.Bgra32 && codec != ZlImageCodec.Png)
+            {
+                BCnEncoder.Shared.CompressionFormat format;
+                switch (codec)
+                {
+                    case ZlImageCodec.Dxt1:
+                        format = BCnEncoder.Shared.CompressionFormat.Bc1WithAlpha;
+                        break;
+                    case ZlImageCodec.Dxt5:
+                        format = BCnEncoder.Shared.CompressionFormat.Bc3;
+                        break;
+                    case ZlImageCodec.Bc7:
+                        format = BCnEncoder.Shared.CompressionFormat.Bc7;
+                        break;
+                    default:
+                        return GetVisibleBounds();
+                }
+
+                BCnEncoder.Shared.ColorRgba32[] decoded = new BCnEncoder.Decoder.BcDecoder().DecodeRaw(ImageData, Width, Height, format);
+                pixels = new byte[decoded.Length * 4];
+                for (int i = 0; i < decoded.Length; i++)
+                {
+                    int offset = i * 4;
+                    pixels[offset] = decoded[i].b;
+                    pixels[offset + 1] = decoded[i].g;
+                    pixels[offset + 2] = decoded[i].r;
+                    pixels[offset + 3] = decoded[i].a;
+                }
+            }
+
+            int minX = Width, minY = Height, maxX = -1, maxY = -1;
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    int offset = (y * Width + x) * 4;
+                    if (offset + 3 >= pixels.Length || pixels[offset + 3] == 0 ||
+                        (pixels[offset] == 0 && pixels[offset + 1] == 0 && pixels[offset + 2] == 0))
+                        continue;
+
+                    minX = Math.Min(minX, x);
+                    minY = Math.Min(minY, y);
+                    maxX = Math.Max(maxX, x);
+                    maxY = Math.Max(maxY, y);
+                }
+            }
+
+            _shadowVisibleBounds = maxX < minX || maxY < minY
+                ? GetVisibleBounds()
+                : Rectangle.FromLTRB(minX, minY, maxX + 1, maxY + 1);
+            return _shadowVisibleBounds;
         }
 
         public int GetAtlasPage(ImageType type)
@@ -1381,6 +1446,7 @@ namespace Shared.Rendering
             ExpireTime = DateTime.MinValue;
 
             _visibleBounds = Rectangle.Empty;
+            _shadowVisibleBounds = Rectangle.Empty;
 
             RenderingPipelineManager.UnregisterTextureCache(this);
         }
