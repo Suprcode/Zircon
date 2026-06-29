@@ -1036,7 +1036,7 @@ namespace Client.Scenes.Views
         public DXImageControl Header, Body, Footer, ItemContainer;
         public DXButton CloseButton, DownButton, UpButton, ConfirmButton, CancelButton;
         public DXItemGrid ItemGrid;
-        public DXLabel ItemNameLabel, PriceLabel;
+        public DXLabel TitleLabel, ItemNameLabel, PriceLabel;
 
         public int Price
         {
@@ -1060,6 +1060,18 @@ namespace Client.Scenes.Views
             Header = CreatePart(303, Point.Empty);
             Body = CreatePart(304, new Point(0, 60));
             Footer = CreatePart(305, new Point(0, 144));
+
+            TitleLabel = new DXLabel
+            {
+                Parent = this,
+                Text = CEnvir.Language.ConsignmentDialogConsignItemTitle,
+                Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
+                ForeColour = Color.FromArgb(198, 166, 99),
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+            };
+            TitleLabel.Location = new Point((Size.Width - TitleLabel.Size.Width) / 2, 8);
 
             CloseButton = new DXButton
             {
@@ -1235,6 +1247,10 @@ namespace Client.Scenes.Views
             if (CloseButton != null && !CloseButton.IsDisposed)
                 CloseButton.Dispose();
             CloseButton = null;
+
+            if (TitleLabel != null && !TitleLabel.IsDisposed)
+                TitleLabel.Dispose();
+            TitleLabel = null;
 
             if (DownButton != null && !DownButton.IsDisposed)
                 DownButton.Dispose();

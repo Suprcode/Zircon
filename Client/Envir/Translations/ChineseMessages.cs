@@ -701,6 +701,7 @@ namespace Client.Envir.Translations
         public override string ConsignmentDialogBuyButtonLabel { get; set; } = "购买";
         public override string ConsignmentDialogBuyGuildFundsLabel { get; set; } = "使用行会资金：";
         public override string ConsignmentDialogConsignButtonLabel { get; set; } = "寄售";
+        public override string ConsignmentDialogConsignItemTitle { get; set; } = "寄售物品";
         public override string ConsignmentDialogConsignGuildFundsLabel { get; set; } = "使用行会资金：";
         public override string ConsignmentDialogCancelListingCaption { get; set; } = "取消寄售";
         public override string ConsignmentDialogRemoveListingButtonLabel { get; set; } = "取消寄售";

@@ -702,6 +702,7 @@ namespace Client.Envir.Translations
         public override string ConsignmentDialogBuyButtonLabel { get; set; } = "Buy";
         public override string ConsignmentDialogBuyGuildFundsLabel { get; set; } = "Use Guild Funds:";
         public override string ConsignmentDialogConsignButtonLabel { get; set; } = "Consign";
+        public override string ConsignmentDialogConsignItemTitle { get; set; } = "Consign Item";
         public override string ConsignmentDialogConsignGuildFundsLabel { get; set; } = "Use Guild Funds:";
         public override string ConsignmentDialogCancelListingCaption { get; set; } = "Cancel Listing";
         public override string ConsignmentDialogRemoveListingButtonLabel { get; set; } = "Remove Listing";
