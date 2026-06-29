@@ -86,6 +86,8 @@ namespace Client.Controls
 
             if (!IsVisible) return;
 
+            BringToFront();
+
             FullScreenCheckBox.Enabled = ActiveScene is GameScene;
             BorderlessCheckbox.Enabled = ActiveScene is GameScene;
             GameSizeComboBox.Enabled = ActiveScene is GameScene;
