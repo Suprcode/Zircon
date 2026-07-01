@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -459,19 +460,8 @@ namespace LibraryEditor
         {
             var buffer = bReader.ReadBytes(imageLength);
 
-            int w = Width + (4 - Width % 4) % 4;
-            int a = 1;
-            while (true)
-            {
-                a *= 2;
-                if (a >= w)
-                {
-                    w = a;
-                    break;
-                }
-            }
-            int h = Height + (4 - Height % 4) % 4;
-            int e = w * h / 2;
+            int textureWidth = NextPowerOfTwo(AlignToFour(Width));
+            int alignedHeight = AlignToFour(Height);
 
             SquishFlags type;
             switch (textureType)
@@ -495,55 +485,67 @@ namespace LibraryEditor
             }
 
             var decompressedBuffer = textureType != 128 ? Ionic.Zlib.DeflateStream.UncompressBuffer(buffer) : buffer;
-            CaptureSourcePayload(textureType, decompressedBuffer, w, h, outputWidth, outputHeight, isMask);
-            Bitmap bitmap = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            if (textureType >= 128)
+            // Recent WEMADE libraries can store an uncompressed BGRA texture while
+            // retaining the old DXT texture type in the image header.  These textures
+            // pad both dimensions to powers of two; treating their pixels as DXT
+            // blocks produces the characteristic coloured horizontal stripes.
+            int powerOfTwoHeight = NextPowerOfTwo(alignedHeight);
+            int powerOfTwoBgraLength = textureWidth * powerOfTwoHeight * 4;
+            bool isBgraTexture = textureType >= 128 || decompressedBuffer.Length == powerOfTwoBgraLength;
+            int textureHeight = decompressedBuffer.Length == powerOfTwoBgraLength
+                ? powerOfTwoHeight
+                : alignedHeight;
+
+            CaptureSourcePayload(isBgraTexture ? (byte)128 : textureType, decompressedBuffer, textureWidth, textureHeight, outputWidth, outputHeight, isMask);
+            using Bitmap bitmap = new Bitmap(textureWidth, textureHeight, PixelFormat.Format32bppArgb);
+            BitmapData data = bitmap.LockBits(
+                new Rectangle(0, 0, textureWidth, textureHeight),
+                ImageLockMode.WriteOnly,
+                PixelFormat.Format32bppArgb);
+
+            try
             {
-                for (int y = 0; y < h; y++)
+                if (isBgraTexture)
                 {
-                    for (int x = 0; x < w; x++)
+                    int requiredLength = textureWidth * textureHeight * 4;
+                    if (decompressedBuffer.Length < requiredLength)
+                        throw new InvalidDataException($"WTL BGRA texture is truncated. Expected {requiredLength} bytes, found {decompressedBuffer.Length}.");
+
+                    Marshal.Copy(decompressedBuffer, 0, data.Scan0, requiredLength);
+                }
+                else
+                {
+                    fixed (byte* source = decompressedBuffer)
+                        Squish.DecompressImage(data.Scan0, textureWidth, textureHeight, (IntPtr)source, type);
+
+                    byte* dest = (byte*)data.Scan0;
+                    for (int i = 0; i < textureWidth * textureHeight * 4; i += 4)
                     {
-                        var width = w * 4;
-
-                        int b = decompressedBuffer[(y * width) + (x * 4)];
-                        int g = decompressedBuffer[(y * width) + (x * 4) + 1];
-                        int r = decompressedBuffer[(y * width) + (x * 4) + 2];
-                        int al = decompressedBuffer[(y * width) + (x * 4) + 3];
-
-                        bitmap.SetPixel(x, y, Color.FromArgb(al, r, g, b));
+                        // Reverse red and blue after Squish's RGBA output.
+                        byte b = dest[i];
+                        dest[i] = dest[i + 2];
+                        dest[i + 2] = b;
                     }
                 }
             }
-            else
+            finally
             {
-                BitmapData data = bitmap.LockBits(
-                                new Rectangle(0, 0, w, h),
-                                ImageLockMode.WriteOnly,
-                                PixelFormat.Format32bppArgb
-                            );
-
-                fixed (byte* source = decompressedBuffer)
-                    Squish.DecompressImage(data.Scan0, w, h, (IntPtr)source, type);
-
-                byte* dest = (byte*)data.Scan0;
-
-                for (int i = 0; i < w * h * 4; i += 4)
-                {
-                    //Reverse Red/Blue
-                    byte b = dest[i];
-                    dest[i] = dest[i + 2];
-                    dest[i + 2] = b;
-                }
-
                 bitmap.UnlockBits(data);
             }
 
-            Rectangle cloneRect = new Rectangle(0, 0, outputWidth, outputHeight);
-            PixelFormat format = bitmap.PixelFormat;
-            Bitmap cloneBitmap = bitmap.Clone(cloneRect, format);
+            return bitmap.Clone(new Rectangle(0, 0, outputWidth, outputHeight), bitmap.PixelFormat);
+        }
 
-            return cloneBitmap;
+        private static int AlignToFour(int value) => value + (4 - value % 4) % 4;
+
+        private static int NextPowerOfTwo(int value)
+        {
+            int result = 1;
+            while (result < value)
+                result *= 2;
+
+            return result;
         }
 
         public unsafe Bitmap ReadImage(BinaryReader bReader, int imageLength, short outputWidth, short outputHeight, byte textureType, bool isMask)
