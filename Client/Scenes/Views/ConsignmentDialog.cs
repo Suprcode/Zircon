@@ -108,7 +108,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = CEnvir.Language.ConsignmentDialogTitle,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -382,7 +382,7 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Text = text,
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 IsControl = false,
             };
         }
@@ -1066,7 +1066,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = CEnvir.Language.ConsignmentDialogConsignItemTitle,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,

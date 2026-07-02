@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Shared.Rendering;
 using Client.Scenes.Views;
@@ -766,7 +766,7 @@ namespace Client.Scenes
                     Location = new Point(70, 65),
                     Size = new Size(170, 14),
                     Border = false,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                 };
                 EMailTextBox.SetFocus();
                 EMailTextBox.TextBox.TextChanged += EMailTextBox_TextChanged;
@@ -781,7 +781,7 @@ namespace Client.Scenes
                     Location = new Point(357, 65),
                     Size = new Size(170, 14),
                     Border = false,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     Password = true,
                 };
                 PasswordTextBox.TextBox.TextChanged += PasswordTextBox_TextChanged;
@@ -887,7 +887,7 @@ namespace Client.Scenes
                     Sound = SoundIndex.ButtonC,
                 };
                 ForgotPasswordLabel.MouseEnter += (o, e) => ForgotPasswordLabel.ForeColour = Color.White;
-                ForgotPasswordLabel.MouseLeave += (o, e) => ForgotPasswordLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                ForgotPasswordLabel.MouseLeave += (o, e) => ForgotPasswordLabel.ForeColour = Constants.PrimaryColour;
                 ForgotPasswordLabel.Location = new Point(ChangePasswordButton.Location.X + 15, 38);
                 ForgotPasswordLabel.MouseClick += ForgotPasswordLabel_MouseClick;
 
@@ -957,7 +957,7 @@ namespace Client.Scenes
                 EMailValid = !string.IsNullOrEmpty(EMailTextBox.TextBox.Text) && EMailTextBox.TextBox.Text.Length >= 3;
 
                 if (string.IsNullOrEmpty(EMailTextBox.TextBox.Text))
-                    EMailTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    EMailTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     EMailTextBox.BorderColour = EMailValid ? Color.Green : Color.Red;
             }
@@ -966,7 +966,7 @@ namespace Client.Scenes
                 PasswordValid = !string.IsNullOrEmpty(PasswordTextBox.TextBox.Text) && Globals.PasswordRegex.IsMatch(PasswordTextBox.TextBox.Text);
 
                 if (string.IsNullOrEmpty(PasswordTextBox.TextBox.Text))
-                    PasswordTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    PasswordTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     PasswordTextBox.BorderColour = PasswordValid ? Color.Green : Color.Red;
             }
@@ -1603,7 +1603,7 @@ namespace Client.Scenes
                 EMailValid = Globals.EMailRegex.IsMatch(EMailTextBox.TextBox.Text) && EMailTextBox.TextBox.Text.Length <= Globals.MaxEMailLength;
 
                 if (string.IsNullOrEmpty(EMailTextBox.TextBox.Text))
-                    EMailTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    EMailTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     EMailTextBox.BorderColour = EMailValid ? Color.Green : Color.Red;
 
@@ -1614,12 +1614,12 @@ namespace Client.Scenes
                 Password2Valid = Password1Valid && Password1TextBox.TextBox.Text == Password2TextBox.TextBox.Text;
 
                 if (string.IsNullOrEmpty(Password1TextBox.TextBox.Text))
-                    Password1TextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    Password1TextBox.BorderColour = Constants.PrimaryColour;
                 else
                     Password1TextBox.BorderColour = Password1Valid ? Color.Green : Color.Red;
 
                 if (string.IsNullOrEmpty(Password2TextBox.TextBox.Text))
-                    Password2TextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    Password2TextBox.BorderColour = Constants.PrimaryColour;
                 else
                     Password2TextBox.BorderColour = Password2Valid ? Color.Green : Color.Red;
 
@@ -1629,7 +1629,7 @@ namespace Client.Scenes
                 Password2Valid = Password1Valid && Password1TextBox.TextBox.Text == Password2TextBox.TextBox.Text;
 
                 if (string.IsNullOrEmpty(Password2TextBox.TextBox.Text))
-                    Password2TextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    Password2TextBox.BorderColour = Constants.PrimaryColour;
                 else
                     Password2TextBox.BorderColour = Password2Valid ? Color.Green : Color.Red;
 
@@ -1640,7 +1640,7 @@ namespace Client.Scenes
                                 (RealNameTextBox.TextBox.Text.Length >= Globals.MinRealNameLength && RealNameTextBox.TextBox.Text.Length <= Globals.MaxRealNameLength);
 
                 if (string.IsNullOrEmpty(RealNameTextBox.TextBox.Text))
-                    RealNameTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    RealNameTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     RealNameTextBox.BorderColour = RealNameValid ? Color.Green : Color.Red;
 
@@ -1651,7 +1651,7 @@ namespace Client.Scenes
                 BirthDateValid = (!Globals.BirthDateRequired && string.IsNullOrEmpty(BirthDateTextBox.TextBox.Text)) || DateTime.TryParse(BirthDateTextBox.TextBox.Text, out temp);
 
                 if (!Globals.BirthDateRequired && string.IsNullOrEmpty(BirthDateTextBox.TextBox.Text))
-                    BirthDateTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    BirthDateTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     BirthDateTextBox.BorderColour = BirthDateValid ? Color.Green : Color.Red;
 
@@ -1661,7 +1661,7 @@ namespace Client.Scenes
                 ReferralValid = string.IsNullOrEmpty(ReferralTextBox.TextBox.Text) || (Globals.EMailRegex.IsMatch(ReferralTextBox.TextBox.Text) && ReferralTextBox.TextBox.Text.Length <= Globals.MaxEMailLength);
 
                 if (string.IsNullOrEmpty(ReferralTextBox.TextBox.Text))
-                    ReferralTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    ReferralTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     ReferralTextBox.BorderColour = ReferralValid ? Color.Green : Color.Red;
 
@@ -2168,7 +2168,7 @@ namespace Client.Scenes
                 EMailValid = Globals.EMailRegex.IsMatch(EMailTextBox.TextBox.Text) && EMailTextBox.TextBox.Text.Length <= Globals.MaxEMailLength;
 
                 if (string.IsNullOrEmpty(EMailTextBox.TextBox.Text))
-                    EMailTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    EMailTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     EMailTextBox.BorderColour = EMailValid ? Color.Green : Color.Red;
 
@@ -2178,7 +2178,7 @@ namespace Client.Scenes
                 CurrentPasswordValid = Globals.PasswordRegex.IsMatch(CurrentPasswordTextBox.TextBox.Text);
 
                 if (string.IsNullOrEmpty(CurrentPasswordTextBox.TextBox.Text))
-                    CurrentPasswordTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    CurrentPasswordTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     CurrentPasswordTextBox.BorderColour = CurrentPasswordValid ? Color.Green : Color.Red;
             }
@@ -2188,12 +2188,12 @@ namespace Client.Scenes
                 NewPassword2Valid = NewPassword1Valid && NewPassword1TextBox.TextBox.Text == NewPassword2TextBox.TextBox.Text;
 
                 if (string.IsNullOrEmpty(NewPassword1TextBox.TextBox.Text))
-                    NewPassword1TextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    NewPassword1TextBox.BorderColour = Constants.PrimaryColour;
                 else
                     NewPassword1TextBox.BorderColour = NewPassword1Valid ? Color.Green : Color.Red;
 
                 if (string.IsNullOrEmpty(NewPassword2TextBox.TextBox.Text))
-                    NewPassword2TextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    NewPassword2TextBox.BorderColour = Constants.PrimaryColour;
                 else
                     NewPassword2TextBox.BorderColour = NewPassword2Valid ? Color.Green : Color.Red;
 
@@ -2203,7 +2203,7 @@ namespace Client.Scenes
                 NewPassword2Valid = NewPassword1Valid && NewPassword1TextBox.TextBox.Text == NewPassword2TextBox.TextBox.Text;
 
                 if (string.IsNullOrEmpty(NewPassword2TextBox.TextBox.Text))
-                    NewPassword2TextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    NewPassword2TextBox.BorderColour = Constants.PrimaryColour;
                 else
                     NewPassword2TextBox.BorderColour = NewPassword2Valid ? Color.Green : Color.Red;
 
@@ -2446,7 +2446,7 @@ namespace Client.Scenes
                     Text = CEnvir.Language.RequestResetPasswordHaveKeyLabel,
                 };
                 HaveKeyLabel.MouseEnter += (o, e) => HaveKeyLabel.ForeColour = Color.White;
-                HaveKeyLabel.MouseLeave += (o, e) => HaveKeyLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                HaveKeyLabel.MouseLeave += (o, e) => HaveKeyLabel.ForeColour = Constants.PrimaryColour;
                 HaveKeyLabel.MouseClick += HaveKeyLabel_MouseClick;
                 HaveKeyLabel.Location = new Point(EMailTextBox.Location.X + (EMailTextBox.Size.Width - HaveKeyLabel.Size.Width) / 2, 70);
             }
@@ -2502,7 +2502,7 @@ namespace Client.Scenes
                 EMailValid = Globals.EMailRegex.IsMatch(EMailTextBox.TextBox.Text) && EMailTextBox.TextBox.Text.Length <= Globals.MaxEMailLength;
 
                 if (string.IsNullOrEmpty(EMailTextBox.TextBox.Text))
-                    EMailTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    EMailTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     EMailTextBox.BorderColour = EMailValid ? Color.Green : Color.Red;
 
@@ -2880,7 +2880,7 @@ namespace Client.Scenes
                 ResetKeyValid = !string.IsNullOrEmpty(ResetKeyTextBox.TextBox.Text);
 
                 if (string.IsNullOrEmpty(ResetKeyTextBox.TextBox.Text))
-                    ResetKeyTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    ResetKeyTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     ResetKeyTextBox.BorderColour = ResetKeyValid ? Color.Green : Color.Red;
 
@@ -2891,7 +2891,7 @@ namespace Client.Scenes
                 NewPassword2Valid = NewPassword1Valid && NewPassword1TextBox.TextBox.Text == NewPassword2TextBox.TextBox.Text;
 
                 if (string.IsNullOrEmpty(NewPassword1TextBox.TextBox.Text))
-                    NewPassword1TextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    NewPassword1TextBox.BorderColour = Constants.PrimaryColour;
                 else
                     NewPassword1TextBox.BorderColour = NewPassword1Valid ? Color.Green : Color.Red;
 
@@ -2901,7 +2901,7 @@ namespace Client.Scenes
                 NewPassword2Valid = NewPassword1Valid && NewPassword1TextBox.TextBox.Text == NewPassword2TextBox.TextBox.Text;
 
                 if (string.IsNullOrEmpty(NewPassword2TextBox.TextBox.Text))
-                    NewPassword2TextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    NewPassword2TextBox.BorderColour = Constants.PrimaryColour;
                 else
                     NewPassword2TextBox.BorderColour = NewPassword2Valid ? Color.Green : Color.Red;
 
@@ -3127,7 +3127,7 @@ namespace Client.Scenes
                     Text = CEnvir.Language.ActivationResendLabel,
                 };
                 ResendLabel.MouseEnter += (o, e) => ResendLabel.ForeColour = Color.White;
-                ResendLabel.MouseLeave += (o, e) => ResendLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                ResendLabel.MouseLeave += (o, e) => ResendLabel.ForeColour = Constants.PrimaryColour;
                 ResendLabel.MouseClick += ResendLabel_MouseClick;
                 ResendLabel.Location = new Point(ActivationKeyTextBox.Location.X + (ActivationKeyTextBox.Size.Width - ResendLabel.Size.Width) / 2, 70);
             }
@@ -3180,7 +3180,7 @@ namespace Client.Scenes
                 ActivationKeyValid = !string.IsNullOrEmpty(ActivationKeyTextBox.TextBox.Text);
 
                 if (string.IsNullOrEmpty(ActivationKeyTextBox.TextBox.Text))
-                    ActivationKeyTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    ActivationKeyTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     ActivationKeyTextBox.BorderColour = ActivationKeyValid ? Color.Green : Color.Red;
 
@@ -3437,7 +3437,7 @@ namespace Client.Scenes
                 EMailValid = Globals.EMailRegex.IsMatch(EMailTextBox.TextBox.Text) && EMailTextBox.TextBox.Text.Length <= Globals.MaxEMailLength;
 
                 if (string.IsNullOrEmpty(EMailTextBox.TextBox.Text))
-                    EMailTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    EMailTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     EMailTextBox.BorderColour = EMailValid ? Color.Green : Color.Red;
 

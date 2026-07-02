@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -63,7 +63,7 @@ namespace Client.Controls
         {
             Border = true;
             DrawTexture = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
             ScrollBar = new DXVScrollBar
             {
@@ -307,12 +307,12 @@ namespace Client.Controls
             }
             else if (MouseControl == this)
             {
-                Label.ForeColour = Color.FromArgb(198, 166, 99);
+                Label.ForeColour = Constants.PrimaryColour;
                 BackColour = Color.FromArgb(64, 32, 32);
             }
             else
             {
-                Label.ForeColour = Color.FromArgb(198, 166, 99);
+                Label.ForeColour = Constants.PrimaryColour;
                 BackColour = Color.Empty;
             }
         }

@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -317,7 +317,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.CommunicationDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -1232,7 +1232,7 @@ namespace Client.Scenes.Views
             GoldValid = SendGoldBox.Value >= 0 && SendGoldBox.Value <= MapObject.User.Gold.Amount;
 
             if (SendGoldBox.Value == 0)
-                SendGoldBox.ValueTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                SendGoldBox.ValueTextBox.BorderColour = Constants.PrimaryColour;
             else
                 SendGoldBox.ValueTextBox.BorderColour = GoldValid ? Color.Green : Color.Red;
         }
@@ -1242,7 +1242,7 @@ namespace Client.Scenes.Views
             RecipientValid = Globals.CharacterReg.IsMatch(SendRecipientBox.TextBox.Text);
 
             if (string.IsNullOrEmpty(SendRecipientBox.TextBox.Text))
-                SendRecipientBox.BorderColour = Color.FromArgb(198, 166, 99);
+                SendRecipientBox.BorderColour = Constants.PrimaryColour;
             else
                 SendRecipientBox.BorderColour = RecipientValid ? Color.Green : Color.Red;
         }
@@ -1766,12 +1766,12 @@ namespace Client.Scenes.Views
             }
             else if (MouseControl == this)
             {
-                Label.ForeColour = Color.FromArgb(198, 166, 99);
+                Label.ForeColour = Constants.PrimaryColour;
                 BackColour = Color.FromArgb(64, 32, 32);
             }
             else
             {
-                Label.ForeColour = Color.FromArgb(198, 166, 99);
+                Label.ForeColour = Constants.PrimaryColour;
                 BackColour = Color.Empty;
             }
         }

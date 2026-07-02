@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -109,7 +109,7 @@ namespace Client.Scenes.Views
                 Size = new Size(31, 20),
                 Location = new Point(5, 5),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 BackColour = Color.Black,
                 Parent = this,
                 Opacity = 0.6F,
@@ -134,7 +134,7 @@ namespace Client.Scenes.Views
                 Size = new Size(140, 20),
                 Location = new Point(41, 5),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 BackColour = Color.Black,
                 Parent = this,
                 Opacity = 0.6F,
@@ -159,7 +159,7 @@ namespace Client.Scenes.Views
                 Size = new Size(121, 16),
                 Location = new Point(41, 32),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 BackColour = Color.Black,
                 Parent = this,
                 Opacity = 0.6F,
@@ -210,7 +210,7 @@ namespace Client.Scenes.Views
                 Size = new Size(31, 20),
                 Location = new Point(5, 30),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 BackColour = Color.Black,
                 Parent = this,
                 Opacity = 0.6F,
@@ -242,7 +242,7 @@ namespace Client.Scenes.Views
                 Size = new Size(Size.Width - 10, 110),
                 Location = new Point(5, 60),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 BackColour = Color.Black,
                 Parent = this,
                 Opacity = 0.6F,

@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Client.Models;
 using Shared.Rendering;
 using Client.Scenes;
@@ -618,7 +618,7 @@ namespace Client.Controls
             ShowCountLabel = true;
             AllowLink = true;
 
-            BorderColour = Color.FromArgb(99, 83, 50);
+            BorderColour = Constants.InactiveBorderColour;
             Size = new Size(CellWidth, CellHeight);
 
             CountLabel = new DXLabel
@@ -786,7 +786,7 @@ namespace Client.Controls
             else
             {
                 if (!FixedBorderColour)
-                    BorderColour = Color.FromArgb(99, 83, 50);
+                    BorderColour = Constants.InactiveBorderColour;
                 Border = FixedBorder;
             }
         }

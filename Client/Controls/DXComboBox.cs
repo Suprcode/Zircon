@@ -1,4 +1,4 @@
-﻿using Library;
+using Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -157,7 +157,7 @@ namespace Client.Controls
             NormalHeight = DefaultNormalHeight;
             DropDownHeight = 123;
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
             Background = new DXImageControl
             {

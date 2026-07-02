@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Extensions;
 using Client.Models;
@@ -1077,8 +1077,8 @@ namespace Client.Scenes.Views
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
             Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
-            ItemCell.BorderColour = Selected ? Color.FromArgb(198, 166, 99) : Color.FromArgb(99, 83, 50);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
+            ItemCell.BorderColour = Selected ? Constants.PrimaryColour : Constants.InactiveBorderColour;
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -1132,8 +1132,8 @@ namespace Client.Scenes.Views
         public NPCGoodsCell()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BackColour = Constants.RowBackColour;
+            BorderColour = Constants.PrimaryColour;
             Size = new Size(219, 40);
 
             ItemCell = new DXItemCell
@@ -1357,7 +1357,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -1370,7 +1370,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Parent = this,
@@ -2486,8 +2486,8 @@ namespace Client.Scenes.Views
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
             Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
-            ItemCell.BorderColour = Selected ? Color.FromArgb(198, 166, 99) : Color.FromArgb(99, 83, 50);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
+            ItemCell.BorderColour = Selected ? Constants.PrimaryColour : Constants.InactiveBorderColour;
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -2502,9 +2502,9 @@ namespace Client.Scenes.Views
         public NPCRefineCell()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            BackColour = Constants.RowBackColour;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             Size = new Size(483, 40);
 
 
@@ -2793,7 +2793,7 @@ namespace Client.Scenes.Views
                 Text = "Quest List",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3237,7 +3237,7 @@ namespace Client.Scenes.Views
                 Text = "Quest",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3270,7 +3270,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabDetailsLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3357,7 +3357,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabChoiceLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3383,7 +3383,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabStartLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3411,7 +3411,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabEndLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -3734,7 +3734,7 @@ namespace Client.Scenes.Views
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
             Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -3749,9 +3749,9 @@ namespace Client.Scenes.Views
         public NPCQuestRow()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            BackColour = Constants.RowBackColour;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             Size = new Size(280, 20);
 
             QuestIcon = new DXAnimatedControl
@@ -3962,7 +3962,7 @@ namespace Client.Scenes.Views
                 Text = "Adopt Companion",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -4406,7 +4406,7 @@ namespace Client.Scenes.Views
                 Text = "Companion Storage",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -4862,7 +4862,7 @@ namespace Client.Scenes.Views
                 Text = "Ring",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -5234,7 +5234,7 @@ namespace Client.Scenes.Views
                 GoldBox.BorderColour = Color.Red;
                 return;
             }
-            GoldBox.BorderColour = Color.FromArgb(198, 166, 99);
+            GoldBox.BorderColour = Constants.PrimaryColour;
 
             foreach (DXItemCell cell in IronOreGrid.Grid)
             {
@@ -5382,7 +5382,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -5396,7 +5396,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Parent = this,
@@ -6797,7 +6797,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -6811,7 +6811,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Parent = this,
@@ -6959,7 +6959,7 @@ namespace Client.Scenes.Views
                 Text = "Accessory",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -6994,7 +6994,7 @@ namespace Client.Scenes.Views
             {
                 Text = $"Cost: {Globals.AccessoryResetCost:#,##0}",
                 Parent = this,
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -7996,7 +7996,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -8010,7 +8010,7 @@ namespace Client.Scenes.Views
             {
                 AutoSize = false,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 ForeColour = Color.White,
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
                 Parent = this,

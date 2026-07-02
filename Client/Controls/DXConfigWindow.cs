@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Shared.Rendering;
 using Client.Scenes;
 using Client.UserModels;
@@ -258,7 +258,7 @@ namespace Client.Controls
                 Text = CEnvir.Language.CommonControlConfigWindowTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,

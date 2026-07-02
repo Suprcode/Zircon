@@ -104,7 +104,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Text = CEnvir.Language.GameStoreDialogTitle,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -124,7 +124,7 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 Text = CEnvir.Language.GameStoreDialogSortByLabel,
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 IsControl = false,
             };
             SortLabel.Location = new Point(260 - SortLabel.Size.Width, 42);
@@ -195,7 +195,7 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Text = CEnvir.Language.GameStoreDialogCurrencyLabel,
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 IsControl = false,
             };
 
@@ -239,7 +239,7 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Text = CEnvir.Language.GameStoreDialogTopFiveLabel,
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 IsControl = false,
             };
             TopItems.ItemSelected += info =>

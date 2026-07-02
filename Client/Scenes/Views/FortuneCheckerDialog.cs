@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -44,7 +44,7 @@ namespace Client.Scenes.Views
                 Size = new Size(ClientArea.Width, 26),
                 Location = new Point(ClientArea.Left, ClientArea.Top),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99)
+                BorderColour = Constants.PrimaryColour
             };
 
             DXLabel label = new DXLabel
@@ -291,8 +291,8 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> SelectedChanged;
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
-            ItemCell.BorderColour = Selected ? Color.FromArgb(198, 166, 99) : Color.FromArgb(99, 83, 50);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
+            ItemCell.BorderColour = Selected ? Constants.PrimaryColour : Constants.InactiveBorderColour;
 
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -331,7 +331,7 @@ namespace Client.Scenes.Views
 
             NameLabel.Text = ItemInfo.ItemName;
 
-            NameLabel.ForeColour = Color.FromArgb(198, 166, 99);
+            NameLabel.ForeColour = Constants.PrimaryColour;
 
             GameScene.Game.FortuneDictionary.TryGetValue(ItemInfo, out Fortune);
 
@@ -378,7 +378,7 @@ namespace Client.Scenes.Views
             Size = new Size(465, 55);
 
             DrawTexture = true;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
             Visible = false;
 

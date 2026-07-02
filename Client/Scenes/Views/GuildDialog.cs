@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -358,7 +358,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.GuildDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -636,7 +636,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.GuildDialogCreateTabStep1Label,
                 Parent = CreateTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -670,7 +670,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.GuildDialogCreateTabStep2Label,
                 Parent = CreateTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -715,7 +715,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.GuildDialogCreateTabStep3Label,
                 Parent = CreateTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -795,7 +795,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.GuildDialogCreateTabStep4Label,
                 Parent = CreateTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -864,7 +864,7 @@ namespace Client.Scenes.Views
             GuildNameValid = Globals.GuildNameRegex.IsMatch(GuildNameBox.TextBox.Text);
 
             if (string.IsNullOrEmpty(GuildNameBox.TextBox.Text))
-                GuildNameBox.BorderColour = Color.FromArgb(198, 166, 99);
+                GuildNameBox.BorderColour = Constants.PrimaryColour;
             else if (GuildNameValid)
                 GuildNameBox.BorderColour = Color.Green;
             else
@@ -878,7 +878,7 @@ namespace Client.Scenes.Views
 
         private void TotalCostBox_ValueChanged(object sender, EventArgs e)
         {
-            TotalCostBox.BorderColour = TotalCostBox.Value > GameScene.Game.User.Gold.Amount ? Color.Red : Color.FromArgb(198, 166, 99);
+            TotalCostBox.BorderColour = TotalCostBox.Value > GameScene.Game.User.Gold.Amount ? Color.Red : Constants.PrimaryColour;
         }
 
         private void MemberTextBox_ValueChanged(object sender, EventArgs e)
@@ -915,7 +915,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.GuildDialogHomeTabNoticeLabel,
                 Parent = HomeTab,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -1030,7 +1030,7 @@ namespace Client.Scenes.Views
                 Location = new Point(0, NoticeTextBox.Size.Height + 5 + NoticeTextBox.Location.Y),
                 Size = new Size(HomeTab.Size.Width, 140),
                 Border = false,
-                BorderColour = Color.FromArgb(198, 166, 99)
+                BorderColour = Constants.PrimaryColour
             };
 
             new DXLabel
@@ -1038,7 +1038,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.GuildDialogHomeTabNoticeStatsLabel,
                 Parent = panel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -1654,7 +1654,7 @@ namespace Client.Scenes.Views
                 Text = "Desert Conquest",
                 Parent = panel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -1704,7 +1704,7 @@ namespace Client.Scenes.Views
                 Text = "Colour",
                 Parent = StyleColourPanel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -1745,7 +1745,7 @@ namespace Client.Scenes.Views
                 Text = "Flag",
                 Parent = StyleFlagPanel,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -2486,19 +2486,19 @@ namespace Client.Scenes.Views
         public void OnIsHeaderChanged(bool oValue, bool nValue)
         {
             NameLabel.Text = CEnvir.Language.GuildMemberRowNameLabel;
-            NameLabel.ForeColour = Color.FromArgb(198, 166, 99);
+            NameLabel.ForeColour = Constants.PrimaryColour;
 
             RankLabel.Text = CEnvir.Language.GuildMemberRowRankLabel;
-            RankLabel.ForeColour = Color.FromArgb(198, 166, 99);
+            RankLabel.ForeColour = Constants.PrimaryColour;
 
             TotalLabel.Text = CEnvir.Language.GuildMemberRowTotalLabel;
-            TotalLabel.ForeColour = Color.FromArgb(198, 166, 99);
+            TotalLabel.ForeColour = Constants.PrimaryColour;
 
             DailyLabel.Text = CEnvir.Language.GuildMemberRowDailyLabel;
-            DailyLabel.ForeColour = Color.FromArgb(198, 166, 99);
+            DailyLabel.ForeColour = Constants.PrimaryColour;
 
             OnlineLabel.Text = CEnvir.Language.GuildMemberRowOnlineLabel;
-            OnlineLabel.ForeColour = Color.FromArgb(198, 166, 99);
+            OnlineLabel.ForeColour = Constants.PrimaryColour;
 
             DrawTexture = false;
 
@@ -2548,7 +2548,7 @@ namespace Client.Scenes.Views
             Size = new Size(402, 20);
 
             DrawTexture = true;
-            BackColour = /*Selected ? Color.FromArgb(80, 80, 125) :*/ Color.FromArgb(25, 20, 0);
+            BackColour = /*Selected ? Constants.SelectedRowBackColour :*/ Constants.RowBackColour;
 
             NameLabel = new DXLabel
             {
@@ -3140,7 +3140,7 @@ namespace Client.Scenes.Views
                 AutoSize = false,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,

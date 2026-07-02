@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Shared.Rendering;
 using System;
 using System.Drawing;
@@ -260,7 +260,7 @@ namespace Client.Controls
             DrawFormat = TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix;
 
             Outline = true;
-            ForeColour = Color.FromArgb(198, 166, 99);
+            ForeColour = Constants.PrimaryColour;
             OutlineColour = Color.Black;
         }
 

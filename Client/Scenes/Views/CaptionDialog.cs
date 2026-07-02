@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -106,7 +106,7 @@ namespace Client.Scenes.Views
             CaptionValid = Globals.CharacterReg.IsMatch(CaptionText.TextBox.Text);
 
             if (string.IsNullOrEmpty(CaptionText.TextBox.Text))
-                CaptionText.BorderColour = Color.FromArgb(198, 166, 99);
+                CaptionText.BorderColour = Constants.PrimaryColour;
             else
                 CaptionText.BorderColour = CaptionValid ? Color.Green : Color.Red;
 

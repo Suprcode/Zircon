@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -35,7 +35,7 @@ namespace Client.Scenes.Views
                 {
                     Parent = this,
                     Border = true,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Location = new Point(90, filterLabel.Location.Y),
                     Size = new Size(150, 18)
                 };

@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -133,7 +133,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.StorageDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -167,7 +167,7 @@ namespace Client.Scenes.Views
                 Size = new Size(250, 26),
                 Location = new Point(0, 0),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 Visible = false
             };
 

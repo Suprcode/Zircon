@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -231,7 +231,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.GroupDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -412,7 +412,7 @@ namespace Client.Scenes.Views
                 Size = new Size(101, 20),
                 Location = new Point(12, 272),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                ForeColour = Color.FromArgb(198, 166, 99)
+                ForeColour = Constants.PrimaryColour
             };
 
             LFGStatusLabel = new DXLabel
@@ -423,7 +423,7 @@ namespace Client.Scenes.Views
                 Size = new Size(95, 20),
                 Location = new Point(114, 272),
                 DrawFormat = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
-                ForeColour = Color.FromArgb(198, 166, 99)
+                ForeColour = Constants.PrimaryColour
             };
 
             LFGScrollBar = new DXVScrollBar

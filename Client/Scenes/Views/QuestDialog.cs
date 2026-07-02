@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -123,7 +123,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -636,7 +636,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabDetailsLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -694,7 +694,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabTasksLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -737,7 +737,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabChoiceLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -759,7 +759,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabStartLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -787,7 +787,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.QuestTabEndLabel,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                //ForeColour = Color.FromArgb(198, 166, 99),
+                //ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -1376,7 +1376,7 @@ namespace Client.Scenes.Views
         {
             SelectedChanged?.Invoke(this, EventArgs.Empty);
             Border = Selected;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
         }
 
@@ -1503,9 +1503,9 @@ namespace Client.Scenes.Views
         public QuestTreeEntry()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            BackColour = Constants.RowBackColour;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             QuestIcon = new DXAnimatedControl
             {
                 Parent = this,

@@ -1,4 +1,4 @@
-﻿using Shared.Rendering;
+using Shared.Rendering;
 using Library;
 using System;
 using System.Drawing;
@@ -274,7 +274,7 @@ namespace Client.Controls
             DrawTexture = true;
             BackColour = Color.FromArgb(24, 12, 12);
             Border = true;
-            BorderColour = Color.FromArgb(99, 83, 50);
+            BorderColour = Constants.InactiveBorderColour;
             Size = new Size(DXItemCell.CellWidth, DXItemCell.CellHeight);
 
             AllowLink = true;

@@ -1,4 +1,4 @@
-﻿using Shared.Rendering;
+using Shared.Rendering;
 using Library;
 using System;
 using System.Drawing;
@@ -173,7 +173,7 @@ namespace Client.Controls
         public DXHScrollBar()
         {
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             DrawTexture = true;
             BackColour = Color.Black;
 

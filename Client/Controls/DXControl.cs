@@ -9,12 +9,15 @@ using System.Windows.Forms;
 //Cleaned
 namespace Client.Controls
 {
-    public class Constants
+    public static class Constants
     {
-        public static Color ActiveTabColour = Color.White;
-        public static Color InactiveTabColour = Color.FromArgb(123, 105, 66);
-
-        //TODO - Add more colour constants here
+        public static readonly Color ActiveTabColour = Color.White;
+        public static readonly Color InactiveTabColour = Color.FromArgb(123, 105, 66);
+        public static readonly Color PrimaryColour = Color.FromArgb(198, 166, 99);
+        public static readonly Color RowBackColour = Color.FromArgb(25, 20, 0);
+        public static readonly Color SelectedRowBackColour = Color.FromArgb(80, 80, 125);
+        public static readonly Color InactiveBorderColour = Color.FromArgb(99, 83, 50);
+        public static readonly Color WindowBackColour = Color.FromArgb(16, 8, 8);
     }
 
     public class DXControl : IDisposable, ITextureCacheItem

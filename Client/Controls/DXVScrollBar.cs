@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Shared.Rendering;
 using Library;
 using System;
@@ -177,7 +177,7 @@ namespace Client.Controls
         public DXVScrollBar()
         {
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             DrawTexture = true;
             BackColour = Color.Black;
 

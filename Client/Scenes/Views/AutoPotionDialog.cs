@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -207,7 +207,7 @@ namespace Client.Scenes.Views
             Size = new Size(260, 46);
 
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
             UpButton = new DXButton
             {

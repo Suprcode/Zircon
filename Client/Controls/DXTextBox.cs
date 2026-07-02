@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Shared.Rendering;
 using System;
 using System.Drawing;
@@ -280,7 +280,7 @@ namespace Client.Controls
 
 
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
 
             Font = new Font(Config.FontName, CEnvir.FontSize(10F));

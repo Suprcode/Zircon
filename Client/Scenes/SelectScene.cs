@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Shared.Rendering;
 using Client.UserModels;
@@ -990,7 +990,7 @@ namespace Client.Scenes
                     DrawTexture = true,
                     Size = new Size(200, 85),
                     Location = new Point(30, 40),
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
 
                 DXLabel label = new DXLabel
@@ -1050,9 +1050,9 @@ namespace Client.Scenes
                     Size = new Size(80, 15),
                     Parent = panel,
                     Text = CEnvir.Language.NewCharacterSelectedClassLabel,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     Border = true,
-                    BorderColour = Color.FromArgb(198, 166, 99)
+                    BorderColour = Constants.PrimaryColour
 
                 };
                 SelectedClassLabel.Location = new Point((panel.Size.Width - SelectedClassLabel.Size.Width) / 2, panel.Size.Height - SelectedClassLabel.Size.Height - 5);
@@ -1069,7 +1069,7 @@ namespace Client.Scenes
                     DrawTexture = true,
                     Size = new Size(200, 85),
                     Location = new Point(30, 135),
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
 
                 label = new DXLabel
@@ -1108,9 +1108,9 @@ namespace Client.Scenes
                     Size = new Size(80, 15),
                     Parent = panel,
                     Text = CEnvir.Language.NewCharacterSelectedGenderLabel,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     Border = true,
-                    BorderColour = Color.FromArgb(198, 166, 99)
+                    BorderColour = Constants.PrimaryColour
 
                 };
                 SelectedGenderLabel.Location = new Point((panel.Size.Width - SelectedGenderLabel.Size.Width) / 2, panel.Size.Height - SelectedGenderLabel.Size.Height - 5);
@@ -1128,7 +1128,7 @@ namespace Client.Scenes
                     DrawTexture = true,
                     Size = new Size(200, 330),
                     Location = new Point(30, 230),
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
                 label = new DXLabel
                 {
@@ -1195,7 +1195,7 @@ namespace Client.Scenes
                     DrawTexture = true,
                     Size = new Size(190, panel.Size.Height - 5 - 100),
                     Location = new Point(5, 100),
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                 };
                 previewPanel.AfterDraw += PreviewPanel_AfterDraw;
 
@@ -1213,7 +1213,7 @@ namespace Client.Scenes
                 {
                     Location = new Point(75, 570),
                     Parent = this,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Size = new Size(155, 20),
                 };
                 CharacterNameTextBox.TextBox.TextChanged += CharacterNameTextBox_TextChanged;
@@ -1295,7 +1295,7 @@ namespace Client.Scenes
                 CharacterNameValid = Globals.CharacterReg.IsMatch(CharacterNameTextBox.TextBox.Text);
 
                 if (string.IsNullOrEmpty(CharacterNameTextBox.TextBox.Text))
-                    CharacterNameTextBox.BorderColour = Color.FromArgb(198, 166, 99);
+                    CharacterNameTextBox.BorderColour = Constants.PrimaryColour;
                 else
                     CharacterNameTextBox.BorderColour = CharacterNameValid ? Color.Green : Color.Red;
 
@@ -1647,7 +1647,7 @@ namespace Client.Scenes
                 Border = true;
                 BackColour = Color.FromArgb(24, 12, 12);
                 DrawTexture = true;
-                BorderColour = Color.FromArgb(198, 166, 99);
+                BorderColour = Constants.PrimaryColour;
 
                 Size = new Size(280, 75);
 
@@ -1666,11 +1666,11 @@ namespace Client.Scenes
                     AutoSize = false,
                     Size = new Size(130, 15),
                     ForeColour = Color.White,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Parent = this,
                     Location = new Point(135, 8),
                     Border = true,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     IsControl = false,
                 };
 
@@ -1688,11 +1688,11 @@ namespace Client.Scenes
                     AutoSize = false,
                     Size = new Size(53, 15),
                     ForeColour = Color.White,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Parent = this,
                     Location = new Point(135, 28),
                     Border = true,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     IsControl = false,
                 };
 
@@ -1709,11 +1709,11 @@ namespace Client.Scenes
                     AutoSize = false,
                     Size = new Size(30, 15),
                     ForeColour = Color.White,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Parent = this,
                     Location = new Point(235, 28),
                     Border = true,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     IsControl = false,
                 };
 
@@ -1730,11 +1730,11 @@ namespace Client.Scenes
                     AutoSize = false,
                     Size = new Size(130, 15),
                     ForeColour = Color.White,
-                    BorderColour = Color.FromArgb(198, 166, 99),
+                    BorderColour = Constants.PrimaryColour,
                     Parent = this,
                     Location = new Point(135, 48),
                     Border = true,
-                    BackColour = Color.FromArgb(16, 8, 8),
+                    BackColour = Constants.WindowBackColour,
                     IsControl = false,
                 };
 

@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Shared.Rendering;
 using Client.UserModels;
 using System;
@@ -17,7 +17,7 @@ namespace Client.Controls
         {
             Size = new Size(40, 16);
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
             ForeColourControl = new DXColourControl
             {
@@ -112,7 +112,7 @@ namespace Client.Controls
         {
             DrawTexture = true;
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             Size = new Size(40, 15);
             BackColour = Color.Black;
 
@@ -295,7 +295,7 @@ namespace Client.Controls
                 Location = new Point(20, 40),
                 Parent = this,
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 Size = new Size(200, 149)
             };
             AfterDraw += (o, e) =>
@@ -364,7 +364,7 @@ namespace Client.Controls
                 BackColour = SelectedColour,
                 Border = true,
                 DrawTexture = true,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 Parent = this,
                 Visible = SelectedColour != Color.FromArgb(0, 0, 0, 0)
             };

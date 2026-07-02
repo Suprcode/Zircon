@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Shared.Rendering;
 using Client.UserModels;
 using Library;
@@ -259,7 +259,7 @@ namespace Client.Controls
             Windows.Add(this);
 
             DrawTexture = true;
-            BackColour = Color.FromArgb(16, 8, 8);
+            BackColour = Constants.WindowBackColour;
             HasTitle = true;
             Movable = true;
             HasTopBorder = true;
@@ -280,7 +280,7 @@ namespace Client.Controls
                 Text = "Window",
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 Visible = HasTitle,

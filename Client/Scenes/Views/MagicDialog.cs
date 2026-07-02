@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -115,7 +115,7 @@ namespace Client.Scenes.Views
                 Text = CEnvir.Language.MagicDialogTitle,
                 Parent = this,
                 Font = new Font(Config.FontName, CEnvir.FontSize(10F), FontStyle.Bold),
-                ForeColour = Color.FromArgb(198, 166, 99),
+                ForeColour = Constants.PrimaryColour,
                 Outline = true,
                 OutlineColour = Color.Black,
                 IsControl = false,
@@ -851,7 +851,7 @@ namespace Client.Scenes.Views
 
                 Image.IsEnabled = true;
                 LevelLabel.Text = $"Level: {magic.Level}";
-                LevelLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                LevelLabel.ForeColour = Constants.PrimaryColour;
                 LevelLabel.Location = new Point(57, 30);
 
                 SpellKey key = SpellKey.None;
@@ -910,7 +910,7 @@ namespace Client.Scenes.Views
                     {
                         ExperienceLabel.Text = $"Experience: Max Level";
                     }
-                    ExperienceLabel.ForeColour = Color.FromArgb(198, 166, 99);
+                    ExperienceLabel.ForeColour = Constants.PrimaryColour;
                 }
             }
             else

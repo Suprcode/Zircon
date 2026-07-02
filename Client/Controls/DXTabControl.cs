@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Shared.Rendering;
 using Library;
 using System;
@@ -804,9 +804,9 @@ namespace Client.Controls
         public DXTab()
         {
             Location = new Point(0, TabHeight - 1);
-            BackColour = BackColour = Color.FromArgb(16, 8, 8);
+            BackColour = BackColour = Constants.WindowBackColour;
             DrawTexture = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             PassThrough = true;
             Visible = false;
 

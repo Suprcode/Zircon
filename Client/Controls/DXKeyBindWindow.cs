@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Client.UserModels;
 using Library;
 using System;
@@ -477,7 +477,7 @@ namespace Client.Controls
         public KeyBindTree()
         {
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
             ScrollBar = new DXVScrollBar
             {
@@ -764,7 +764,7 @@ namespace Client.Controls
                 RefreshKeyLabel();
             }
 
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
         }
 
@@ -811,9 +811,9 @@ namespace Client.Controls
         {
             DrawTexture = true;
             HideWhenClipped = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            BackColour = Constants.RowBackColour;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
 
             Actionlabel = new DXLabel
@@ -833,7 +833,7 @@ namespace Client.Controls
                 AutoSize = false,
                 Border = true,
                 BackColour = Color.Black,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 Size = new Size(125, 16),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 ForeColour = Color.White
@@ -856,7 +856,7 @@ namespace Client.Controls
                 AutoSize = false,
                 Border = true,
                 BackColour = Color.Black,
-                BorderColour = Color.FromArgb(198, 166, 99),
+                BorderColour = Constants.PrimaryColour,
                 Size = new Size(125, 16),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 ForeColour = Color.White

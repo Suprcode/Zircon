@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Client.UserModels;
@@ -111,7 +111,7 @@ namespace Client.Scenes.Views
                 Size = new Size(DungeonTab.Size.Width - 20, 26),
                 Location = new Point(10, 10),
                 Border = true,
-                BorderColour = Color.FromArgb(198, 166, 99)
+                BorderColour = Constants.PrimaryColour
             };
 
             DXLabel label = new DXLabel
@@ -551,7 +551,7 @@ namespace Client.Scenes.Views
         public event EventHandler<EventArgs> SelectedChanged;
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -629,7 +629,7 @@ namespace Client.Scenes.Views
             Size = new Size(515, 40);
 
             DrawTexture = true;
-            BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
+            BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
 
             NameLabel = new DXLabel
             {

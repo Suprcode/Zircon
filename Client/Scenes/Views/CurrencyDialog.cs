@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -156,7 +156,7 @@ namespace Client.Scenes.Views
         public CurrencyTree()
         {
             Border = true;
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
 
             ScrollBar = new DXVScrollBar
             {
@@ -479,8 +479,8 @@ namespace Client.Scenes.Views
         public void OnSelectedChanged(bool oValue, bool nValue)
         {
             Border = Selected;
-            //BackColour = Selected ? Color.FromArgb(80, 80, 125) : Color.FromArgb(25, 20, 0);
-            DropItemCell.BorderColour = Selected ? Color.FromArgb(198, 166, 99) : Color.FromArgb(99, 83, 50);
+            //BackColour = Selected ? Constants.SelectedRowBackColour : Constants.RowBackColour;
+            DropItemCell.BorderColour = Selected ? Constants.PrimaryColour : Constants.InactiveBorderColour;
             SelectedChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -497,9 +497,9 @@ namespace Client.Scenes.Views
         public CurrencyItem()
         {
             DrawTexture = true;
-            BackColour = Color.FromArgb(25, 20, 0);
+            BackColour = Constants.RowBackColour;
 
-            BorderColour = Color.FromArgb(198, 166, 99);
+            BorderColour = Constants.PrimaryColour;
             Size = new Size(219, 40);
 
             DropItemCell = new DXItemCell
