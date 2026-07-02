@@ -20,6 +20,12 @@ namespace Client.Scenes.Views
         public DXControl Panel;
 
         public DXImageControl TimeOfDayImage;
+        public DXButton SizeButton, TransparencyButton, BigMapButton;
+
+        private static readonly Size DefaultMiniMapSize = new Size(200, 200);
+        private static readonly Size LargeMiniMapSize = new Size(300, 300);
+        private const float TransparentOpacity = 0.5F;
+        private bool IsLarge, IsTransparent;
 
         public Dictionary<object, DXControl> MapInfoObjects = new Dictionary<object, DXControl>();
 
@@ -40,6 +46,14 @@ namespace Client.Scenes.Views
                 Image.Opacity = Opacity;
                 Image.ImageOpacity = Opacity;
             }
+
+            IsTransparent = nValue < 1F;
+
+            if (TransparencyButton != null)
+                TransparencyButton.Index = IsTransparent ? 131 : 130;
+
+            if (Settings != null)
+                Settings.Extra = IsTransparent ? 1 : 0;
         }
         public override void OnClientAreaChanged(Rectangle oValue, Rectangle nValue)
         {
@@ -58,12 +72,32 @@ namespace Client.Scenes.Views
                 Size = new Size(Size.Width, HeaderSize);
             }
 
+            UpdateButtonLocations();
             UpdateMapPosition();
         }
 
         public override WindowType Type => WindowType.MiniMapBox;
         public override bool CustomSize => true;
         public override bool AutomaticVisibility => true;
+
+        public override void ApplySettings()
+        {
+            if (Settings == null) return;
+
+            base.ApplySettings();
+
+            IsLarge = Size == LargeMiniMapSize;
+            IsTransparent = Settings.Extra == 1;
+            Opacity = IsTransparent ? TransparentOpacity : 1F;
+            TransparencyButton.Index = IsTransparent ? 131 : 130;
+        }
+
+        public override void OnSizeChanged(Size oValue, Size nValue)
+        {
+            base.OnSizeChanged(oValue, nValue);
+
+            IsLarge = nValue == LargeMiniMapSize;
+        }
 
         #endregion
 
@@ -75,7 +109,7 @@ namespace Client.Scenes.Views
             AllowResize = true;
             CloseButton.Visible = false;
 
-            Size = new Size(200, 200);
+            Size = DefaultMiniMapSize;
 
             Panel = new DXControl
             {
@@ -100,11 +134,75 @@ namespace Client.Scenes.Views
                 HintPosition = HintPosition.Fluid
             };
 
+            SizeButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 132,
+                Hint = CEnvir.Language.CommonControlMiniMapSizeHint,
+                HintPosition = HintPosition.TopLeft,
+            };
+            SizeButton.MouseClick += (o, e) => ToggleSize();
+
+            TransparencyButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 130,
+                Hint = CEnvir.Language.CommonControlMiniMapTransparencyHint,
+                HintPosition = HintPosition.TopLeft,
+            };
+            TransparencyButton.MouseClick += (o, e) => ToggleTransparency();
+
+            BigMapButton = new DXButton
+            {
+                Parent = this,
+                LibraryFile = LibraryFile.GameInter,
+                Index = 137,
+                Hint = CEnvir.Language.CommonControlMiniMapBigMapHint,
+                HintPosition = HintPosition.TopLeft,
+            };
+            BigMapButton.MouseClick += (o, e) => GameScene.Game.BigMapBox.ToggleOpen(!GameScene.Game.BigMapBox.Visible);
+
+            UpdateButtonLocations();
+
             GameScene.Game.MapControl.MapInfoChanged += MapControl_MapInfoChanged;
             Image.Moving += Image_Moving;
         }
 
         #region Methods
+
+        private void ToggleSize()
+        {
+            int right = Location.X + Size.Width;
+
+            IsLarge = !IsLarge;
+            Size = IsLarge ? LargeMiniMapSize : DefaultMiniMapSize;
+            Location = new Point(right - Size.Width, Location.Y);
+
+            if (Settings != null)
+            {
+                Settings.Size = Size;
+                Settings.Location = Location;
+            }
+        }
+
+        private void ToggleTransparency()
+        {
+            Opacity = IsTransparent ? 1F : TransparentOpacity;
+        }
+
+        private void UpdateButtonLocations()
+        {
+            if (SizeButton == null || TransparencyButton == null || BigMapButton == null) return;
+
+            const int rightPadding = 3;
+            const int spacing = 0;
+
+            SizeButton.Location = new Point(Size.Width - SizeButton.Size.Width - rightPadding, Area.Top);
+            TransparencyButton.Location = new Point(Size.Width - TransparencyButton.Size.Width - rightPadding, SizeButton.Location.Y + SizeButton.Size.Height + spacing);
+            BigMapButton.Location = new Point(Size.Width - BigMapButton.Size.Width - rightPadding, TransparencyButton.Location.Y + TransparencyButton.Size.Height + spacing);
+        }
 
         private void Image_Moving(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -504,6 +602,9 @@ namespace Client.Scenes.Views
             DrawChildControls();
             DrawWindow();
             TitleLabel.Draw();
+            SizeButton.Draw();
+            TransparencyButton.Draw();
+            BigMapButton.Draw();
             DrawTimeOfDay();
             DrawBorder();
             OnAfterDraw();
@@ -550,6 +651,8 @@ namespace Client.Scenes.Views
                 Area = Rectangle.Empty;
                 ScaleX = 0;
                 ScaleY = 0;
+                IsLarge = false;
+                IsTransparent = false;
 
                 foreach (KeyValuePair<object, DXControl> pair in MapInfoObjects)
                 {
@@ -577,6 +680,30 @@ namespace Client.Scenes.Views
                         Panel.Dispose();
 
                     Panel = null;
+                }
+
+                if (SizeButton != null)
+                {
+                    if (!SizeButton.IsDisposed)
+                        SizeButton.Dispose();
+
+                    SizeButton = null;
+                }
+
+                if (TransparencyButton != null)
+                {
+                    if (!TransparencyButton.IsDisposed)
+                        TransparencyButton.Dispose();
+
+                    TransparencyButton = null;
+                }
+
+                if (BigMapButton != null)
+                {
+                    if (!BigMapButton.IsDisposed)
+                        BigMapButton.Dispose();
+
+                    BigMapButton = null;
                 }
             }
         }

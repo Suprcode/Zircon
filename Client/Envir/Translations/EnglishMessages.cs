@@ -122,6 +122,9 @@ namespace Client.Envir.Translations
         public override string CommonControlApply { get; set; } = "Apply";
         public override string CommonControlCancel { get; set; } = "Cancel";
         public override string CommonControlClose { get; set; } = "Close";
+        public override string CommonControlMiniMapSizeHint { get; set; } = "Toggle Size";
+        public override string CommonControlMiniMapTransparencyHint { get; set; } = "Toggle Transparency";
+        public override string CommonControlMiniMapBigMapHint { get; set; } = "Toggle Big Map";
         public override string CommonControlConfirm { get; set; } = "Confirm";
         public override string CommonControlExit { get; set; } = "Exit";
         public override string CommonControlNo { get; set; } = "No";

@@ -122,6 +122,9 @@ namespace Client.Envir.Translations
         public abstract string CommonControlApply { get; set; }
         public abstract string CommonControlCancel { get; set; }
         public abstract string CommonControlClose { get; set; }
+        public abstract string CommonControlMiniMapSizeHint { get; set; }
+        public abstract string CommonControlMiniMapTransparencyHint { get; set; }
+        public abstract string CommonControlMiniMapBigMapHint { get; set; }
         public abstract string CommonControlConfirm { get; set; }
         public abstract string CommonControlExit { get; set; }
         public abstract string CommonControlNo { get; set; }
