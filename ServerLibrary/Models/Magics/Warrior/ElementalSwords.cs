@@ -18,8 +18,6 @@ namespace Server.Models.Magics
 
         public ElementalSwords(PlayerObject player, UserMagic magic) : base(player, magic)
         {
-            //TODO - Redo anim
-            //Magic Ex10 - 0
             //Swords appear over head, throws at enemy if they attack
             //https://www.youtube.com/watch?v=l8m9JipWIaA&t=1836s
         }

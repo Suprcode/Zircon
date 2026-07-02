@@ -181,6 +181,8 @@ namespace Server.Models
         public Point FishingLocation;
         public MirDirection FishingDirection;
 
+        #region Initialization
+
         public PlayerObject(CharacterInfo info, SConnection con)
         {
             Character = info;
@@ -288,6 +290,8 @@ namespace Server.Models
                 }
             }
         }
+
+        #endregion
 
         #region Process
 
@@ -763,6 +767,8 @@ namespace Server.Models
 
         #endregion
 
+        #region Game Session
+
         private StartInformation GetStartInformation(bool observer = false)
         {
             List<ClientBeltLink> blinks = new List<ClientBeltLink>();
@@ -1135,6 +1141,11 @@ namespace Server.Models
 
             Enqueue(new S.FortuneUpdate { Fortunes = Character.Account.Fortunes.Select(x => x.ToClientInfo()).ToList() });
         }
+
+        #endregion
+
+        #region Observation
+
         public void SetUpObserver(SConnection con)
         {
             con.Stage = GameStage.Observer;
@@ -1268,6 +1279,10 @@ namespace Server.Models
 
             ApplyObserverBuff();
         }
+
+        #endregion
+
+        #region Character Lifecycle
 
         private void NewCharacter()
         {
@@ -1484,13 +1499,9 @@ namespace Server.Models
             AutoPotions?.Clear();
         }
 
-        public void RemoveMount()
-        {
-            if (Horse == HorseType.None) return;
+        #endregion
 
-            Horse = HorseType.None;
-            Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
-        }
+        #region Communication
 
         public void Chat(string text)
         {
@@ -1907,17 +1918,10 @@ namespace Server.Models
             con.Enqueue(packet);
         }
 
-        //TODO - Move to MagicObject
-        public override void CelestialLightActivate()
-        {
-            base.CelestialLightActivate();
+        #endregion
 
-            if (GetMagic(MagicType.CelestialLight, out CelestialLight celestialLight))
-            {
-                celestialLight.MagicCooldown(null, 6000);
-            }
-        }
-        
+        #region Progression and Revival
+
         public override void ItemRevive()
         {
             base.ItemRevive();
@@ -2030,6 +2034,10 @@ namespace Server.Models
 
             ApplyGuildBuff();
         }
+
+        #endregion
+
+        #region Character Stats
 
         public void RefreshWeight()
         {
@@ -2490,6 +2498,48 @@ namespace Server.Models
             return;
         }
 
+        public override void SetHP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentHP = Stats[Stat.Health];
+                return;
+            }
+            base.SetHP(amount);
+        }
+
+        public override void ChangeHP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentHP = Stats[Stat.Health];
+                return;
+            }
+            base.ChangeHP(amount);
+        }
+
+        public override void SetMP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentMP = Stats[Stat.Mana];
+                return;
+            }
+            base.SetMP(amount);
+        }
+
+        public override void ChangeMP(int amount)
+        {
+            if (Superman)
+            {
+                CurrentMP = Stats[Stat.Mana];
+                return;
+            }
+            base.ChangeMP(amount);
+        }
+
+        #endregion
+
         #region Objects View
         public override void AddAllObjects()
         {
@@ -2644,6 +2694,8 @@ namespace Server.Models
         }
         #endregion
 
+        #region Teleportation
+
         public override bool Teleport(Map map, Point location, bool leaveEffect = true, bool enterEffect = true)
         {
             bool res = base.Teleport(map, location, leaveEffect, enterEffect);
@@ -2692,13 +2744,7 @@ namespace Server.Models
             TeleportTime = SEnvir.Now.AddMinutes(5);
         }
 
-        public override void Dodged()
-        {
-            base.Dodged();
-
-            if (GetMagic(MagicType.WillowDance, out WillowDance willowDance))
-                LevelMagic(willowDance.Magic);
-        }
+        #endregion
 
         #region Marriage
 
@@ -13556,6 +13602,15 @@ namespace Server.Models
 
             Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
         }
+
+        public void RemoveMount()
+        {
+            if (Horse == HorseType.None) return;
+
+            Horse = HorseType.None;
+            Broadcast(new S.ObjectMount { ObjectID = ObjectID, Horse = Horse });
+        }
+
         public void FishingCast(FishingState state, MirDirection castDirection, Point floatLocation, bool caught = false)
         {
             if (SEnvir.Now < ActionTime || SEnvir.Now < AttackTime)
@@ -14300,6 +14355,14 @@ namespace Server.Models
         #endregion
 
         #region Combat
+
+        public override void Dodged()
+        {
+            base.Dodged();
+
+            if (GetMagic(MagicType.WillowDance, out WillowDance willowDance))
+                LevelMagic(willowDance.Magic);
+        }
 
         public bool AttackLocation(Point location, List<MagicType> types, bool primary)
         {
@@ -15300,6 +15363,17 @@ namespace Server.Models
             }
         }
 
+        public override void CelestialLightActivate()
+        {
+            if (GetMagic(MagicType.CelestialLight, out CelestialLight celestialLight))
+            {
+                celestialLight.Activate();
+                return;
+            }
+
+            base.CelestialLightActivate();
+        }
+
         public bool GetMagic<T>(MagicType type, out T magic) where T : MagicObject
         {
             var hasMagic = MagicObjects.TryGetValue(type, out var retrievedMagic);
@@ -15906,6 +15980,8 @@ namespace Server.Models
         }
         #endregion
 
+        #region Network State
+
         public void Enqueue(Packet p) => Connection.Enqueue(p);
         public override Packet GetInfoPacket(PlayerObject ob)
         {
@@ -16032,45 +16108,7 @@ namespace Server.Models
             Broadcast(p);
         }
 
-        public override void SetHP(int amount)
-        {
-            if (Superman)
-            {
-                CurrentHP = Stats[Stat.Health];
-                return;
-            }
-            base.SetHP(amount);
-        }
-
-        public override void ChangeHP(int amount)
-        {
-            if (Superman)
-            {
-                CurrentHP = Stats[Stat.Health];
-                return;
-            }
-            base.ChangeHP(amount);
-        }
-
-        public override void SetMP(int amount)
-        {
-            if (Superman)
-            {
-                CurrentMP = Stats[Stat.Mana];
-                return;
-            }
-            base.SetMP(amount);
-        }
-
-        public override void ChangeMP(int amount)
-        {
-            if (Superman)
-            {
-                CurrentMP = Stats[Stat.Mana];
-                return;
-            }
-            base.ChangeMP(amount);
-        }
+        #endregion
 
         #region Instance / Dungeon Finder
 

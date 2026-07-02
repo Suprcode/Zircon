@@ -908,7 +908,6 @@ namespace Client.Scenes.Views
         #endregion
     }
 
-    //TODO - Dispose
     public sealed class GroupLFGRow : DXControl
     {
         public DXLabel NameLabel;
@@ -1056,9 +1055,37 @@ namespace Client.Scenes.Views
                 }
             }
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            _Selected = false;
+            SelectedChanged = null;
+
+            _Info = null;
+            InfoChanged = null;
+
+            if (NameLabel != null && !NameLabel.IsDisposed)
+                NameLabel.Dispose();
+            NameLabel = null;
+
+            if (StatusLabel != null && !StatusLabel.IsDisposed)
+                StatusLabel.Dispose();
+            StatusLabel = null;
+
+            if (TypeLabel != null && !TypeLabel.IsDisposed)
+                TypeLabel.Dispose();
+            TypeLabel = null;
+        }
+
+        #endregion
     }
 
-    //TODO - Dispose
     public sealed class GroupLFGInputWindow : DXWindow
     {
         #region Properites
@@ -1235,15 +1262,37 @@ namespace Client.Scenes.Views
         {
             base.Dispose(disposing);
 
-            if (disposing)
-            {
-                if (Label != null)
-                {
-                    if (!Label.IsDisposed)
-                        Label.Dispose();
-                    Label = null;
-                }
-            }
+            if (!disposing) return;
+
+            if (Label != null && !Label.IsDisposed)
+                Label.Dispose();
+            Label = null;
+
+            if (EnableButton != null && !EnableButton.IsDisposed)
+                EnableButton.Dispose();
+            EnableButton = null;
+
+            if (DisableButton != null && !DisableButton.IsDisposed)
+                DisableButton.Dispose();
+            DisableButton = null;
+
+            if (CancelButton != null && !CancelButton.IsDisposed)
+                CancelButton.Dispose();
+            CancelButton = null;
+
+            if (NameTextBox != null && !NameTextBox.IsDisposed)
+                NameTextBox.Dispose();
+            NameTextBox = null;
+
+            if (CountNumberBox != null && !CountNumberBox.IsDisposed)
+                CountNumberBox.Dispose();
+            CountNumberBox = null;
+
+            if (TypeComboBox != null && !TypeComboBox.IsDisposed)
+                TypeComboBox.Dispose();
+            TypeComboBox = null;
+
+            MessageBoxList.Remove(this);
         }
 
         #endregion
