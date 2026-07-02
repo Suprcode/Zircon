@@ -16,15 +16,14 @@ namespace Client.Models
         #region Stats
         public override Stats Stats
         {
-            get { return _Stats; }
+            get { return base.Stats; }
             set
             {
-                _Stats = value;
+                base.Stats = value;
 
                 GameScene.Game.StatsChanged();
             }
         }
-        private Stats _Stats = new Stats();
         #endregion
 
         #region Hermit Stats

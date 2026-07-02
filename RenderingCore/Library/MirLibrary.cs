@@ -708,6 +708,40 @@ namespace Shared.Rendering
             image.ExpireTime = GetNow() + GetCacheDuration();
         }
 
+        public void DrawShadow(int index, float x, float y, Color colour, bool useOffSet, float opacity, float scale, float originX, float originY)
+        {
+            if (!CheckImage(index)) return;
+
+            MirImage image = Images[index];
+            RenderTexture texture = GetRenderTexture(image, ImageType.Shadow, out Rectangle? sourceRectangle);
+
+            if (!texture.IsValid)
+            {
+                Draw(index, x, y, colour, useOffSet, opacity, ImageType.Shadow, scale);
+                return;
+            }
+
+            if (useOffSet)
+            {
+                x += image.ShadowOffSetX;
+                y += image.ShadowOffSetY;
+            }
+
+            RectangleF destination = new RectangleF(
+                originX + (x - originX) * scale,
+                originY + (y - originY) * scale,
+                image.ShadowWidth * scale,
+                image.ShadowHeight * scale);
+
+            float oldOpacity = RenderingPipelineManager.GetOpacity();
+            RenderingPipelineManager.SetOpacity(opacity);
+            RenderingPipelineManager.DrawTexture(texture, sourceRectangle.Value, destination, colour);
+            DrawCounted?.Invoke();
+            RenderingPipelineManager.SetOpacity(oldOpacity);
+
+            image.ExpireTime = GetNow() + GetCacheDuration();
+        }
+
         public void DrawBlendScaled(int index, float scaleX, float scaleY, Color colour, float x, float y, float angle, float opacity, ImageType type, bool useOffSet = false, byte shadow = 0)
         {
             if (!CheckImage(index)) return;

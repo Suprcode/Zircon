@@ -17,6 +17,11 @@ namespace Client.Models
     {
         public override ObjectType Race => ObjectType.Player;
 
+        protected override void OnStatsChanged()
+        {
+            SetScale(Stats?[Stat.SizePercent] ?? 0);
+        }
+
         public const int FemaleOffSet = 5000, AssassinOffSet = 50000, RightHandOffSet = 50;
 
         #region Shield Librarys
@@ -1201,11 +1206,11 @@ namespace Client.Models
                         switch (HorseShape)
                         {
                             default:
-                                HorseLibrary?.Draw(HorseFrame, DrawX, DrawY, Color.Black, true, 0.5F, ImageType.Shadow);
+                                DrawHorseShadow(HorseLibrary, HorseFrame);
                                 break;
                             case 6:
                             case 7:
-                                HorseShapeLibrary?.Draw(DrawFrame, DrawX, DrawY, Color.Black, true, 0.5F, ImageType.Shadow);
+                                DrawHorseShadow(HorseShapeLibrary, DrawFrame);
                                 break;
                         }
                         break;
@@ -1232,7 +1237,7 @@ namespace Client.Models
                         case 5://dark
                         case 6://royal
                             if (shadow)
-                                HorseShapeLibrary2?.DrawBlend(DrawFrame, DrawX, DrawY, Color.White, true, Opacity, ImageType.Image);
+                                DrawHorseOverlay(HorseShapeLibrary2, DrawFrame);
                             break;
                         case 7://bluedragon
                             //if (shadow)
@@ -1253,7 +1258,7 @@ namespace Client.Models
             }
 
             Rectangle scratchSource = Rectangle.FromLTRB(l, t, r, b);
-            RectangleF scratchDestination = new RectangleF(l, t, r - l, b - t);
+            RectangleF scratchDestination = GetScaledRectangle(new RectangleF(l, t, r - l, b - t));
             RenderTexture scratchTexture = RenderingPipelineManager.GetScratchTexture();
 
             RenderingPipelineManager.DrawTexture(scratchTexture, scratchSource, scratchDestination, DrawColour);
@@ -1282,9 +1287,9 @@ namespace Client.Models
             float translateX = DrawX + image.ShadowOffSetX - w + image.Height / 2F + h / 2F;
             float translateY = DrawY + image.ShadowOffSetY - h / 2F;
 
-            Matrix3x2 transform = new Matrix3x2(1F, 0F, -0.5F, 0.5F, translateX, translateY);
-            RenderTexture scratchTexture = RenderingPipelineManager.GetScratchTexture();
             Rectangle scratchSource = Rectangle.FromLTRB(l, t, r, b);
+            Matrix3x2 transform = GetScaledTransform(new Matrix3x2(1F, 0F, -0.5F, 0.5F, translateX, translateY));
+            RenderTexture scratchTexture = RenderingPipelineManager.GetScratchTexture();
 
             RenderingPipelineManager.SetTextureFilter(TextureFilterMode.None);
 
@@ -1302,6 +1307,23 @@ namespace Client.Models
             {
                 RenderingPipelineManager.SetOpacity(oldOpacity);
             }
+        }
+
+        private void DrawHorseOverlay(MirLibrary library, int frame)
+        {
+            MirImage image = library?.GetImage(frame);
+            if (image == null) return;
+
+            PointF location = GetScaledLibraryDrawLocation(image, ImageType.Image);
+            library.DrawBlend(frame, Scale, Color.White, location.X, location.Y, 0F, Opacity, ImageType.Image, true);
+        }
+
+        private void DrawHorseShadow(MirLibrary library, int frame)
+        {
+            if (library == null) return;
+
+            library.DrawShadow(frame, DrawX, DrawY, Color.Black, true, 0.5F, Scale,
+                DrawX + CellWidth / 2F, DrawY + CellHeight / 2F);
         }
 
         public override void DrawHealth()

@@ -23,8 +23,6 @@ namespace Client.Models
         public int BodyOffSet = 1000;
         public int BodyShape;
 
-        public float Scale = 1F;
-
         public int GrowthLevel;
 
         public int BodyFrame => DrawFrame + (BodyShape % 10) * BodyOffSet;
@@ -2443,7 +2441,7 @@ namespace Client.Models
             if (GrowthLevel > 0)
                 sizePercent = GrowthLevel * 5;
 
-            Scale = (float)(100 + Math.Min(20, Math.Max(-20, sizePercent))) / 100;
+            SetScale(sizePercent);
         }
 
         public override void SetAnimation(ObjectAction action)
