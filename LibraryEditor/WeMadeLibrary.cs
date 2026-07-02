@@ -290,8 +290,11 @@ namespace LibraryEditor
             public bool HasMask;
             public Bitmap MaskImage;
 
-            private int convert16bitTo32bit(int color)
+            private int convert16bitTo32bit(int color, bool useBlackKeyTransparency = false)
             {
+                if (useBlackKeyTransparency && color == 0)
+                    return 0;
+
                 byte red = (byte)((color & 0xf800) >> 8);
                 byte green = (byte)((color & 0x07e0) >> 3);
                 byte blue = (byte)((color & 0x001f) << 3);
@@ -308,7 +311,8 @@ namespace LibraryEditor
                 byte[][] Pixels = new byte[2][];
                 Pixels[0] = new byte[OutputWidth * OutputHeight * 2];
                 Pixels[1] = new byte[OutputWidth * OutputHeight * 2];
-                byte[] FileBytes = BReader.ReadBytes(InputLength * 2);
+                // InputLength is already stored in bytes for Mir 3 images.
+                byte[] FileBytes = BReader.ReadBytes(InputLength);
 
                 int End = 0, OffSet = 0, Start = 0, Count;
 
@@ -317,7 +321,10 @@ namespace LibraryEditor
                 for (int Y = OutputHeight - 1; Y >= 0; Y--)
                 {
                     OffSet = Start * 2;
-                    End += FileBytes[OffSet];
+                    // Scanline lengths are stored as little-endian 16-bit word counts.
+                    // Reading only the low byte desynchronises images whose encoded
+                    // scanline is larger than 255 words (for example, wide monsters).
+                    End += FileBytes[OffSet] | FileBytes[OffSet + 1] << 8;
                     Start++;
                     nX = Start;
                     OffSet += 2;
@@ -365,6 +372,9 @@ namespace LibraryEditor
                                 }
                                 nX += Count;
                                 break;
+
+                            default:
+                                throw new InvalidDataException($"Unsupported Mir 3 WIL opcode 0x{(FileBytes[OffSet + 1] << 8 | FileBytes[OffSet]):X4} at compressed byte offset {OffSet}.");
                         }
                     }
                     End++;
@@ -507,7 +517,7 @@ namespace LibraryEditor
                         for (int x = 0; x < Width; x++)
                         {
                             if (bo16bit)
-                                scan0[y * Width + x] = convert16bitTo32bit(bytes[index++] + (bytes[index++] << 8));
+                                  scan0[y * Width + x] = convert16bitTo32bit(bytes[index++] + (bytes[index++] << 8), nType == 3);
                             else
                                 scan0[y * Width + x] = palette[bytes[index++]];
                         }
@@ -525,7 +535,7 @@ namespace LibraryEditor
                         for (int y = Height - 1; y >= 0; y--)
                         {
                             for (int x = 0; x < Width; x++)
-                                maskscan0[y * Width + x] = convert16bitTo32bit(maskbytes[index++] + (maskbytes[index++] << 8));
+                                  maskscan0[y * Width + x] = convert16bitTo32bit(maskbytes[index++] + (maskbytes[index++] << 8), nType == 3);
                         }
                     }
                     MaskImage.UnlockBits(Maskdata);
