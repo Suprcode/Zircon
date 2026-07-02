@@ -1,7 +1,6 @@
 ﻿using Client.Controls;
 using Client.Envir;
 using Client.Models.Particles;
-using Shared.Rendering;
 using Client.Scenes;
 using Client.Scenes.Views;
 using Library;
@@ -299,59 +298,6 @@ namespace Client.Models
         private Stats _Stats = new Stats();
 
         protected virtual void OnStatsChanged() { }
-
-        public float Scale
-        {
-            get { return _Scale; }
-            set { _Scale = value; }
-        }
-        private float _Scale = 1F;
-
-        protected void SetScale(int sizePercent)
-        {
-            Scale = (100F + Math.Min(50, Math.Max(-50, sizePercent))) / 100F;
-        }
-
-        protected RectangleF GetScaledRectangle(RectangleF rectangle)
-        {
-            float centreX = DrawX + CellWidth / 2F;
-            float centreY = DrawY + CellHeight / 2F;
-
-            return new RectangleF(
-                centreX + (rectangle.X - centreX) * Scale,
-                centreY + (rectangle.Y - centreY) * Scale,
-                rectangle.Width * Scale,
-                rectangle.Height * Scale);
-        }
-
-        protected System.Numerics.Matrix3x2 GetScaledTransform(System.Numerics.Matrix3x2 transform)
-        {
-            float centreX = DrawX + CellWidth / 2F;
-            float centreY = DrawY + CellHeight / 2F;
-
-            transform.M11 *= Scale;
-            transform.M12 *= Scale;
-            transform.M21 *= Scale;
-            transform.M22 *= Scale;
-            transform.M31 = centreX + (transform.M31 - centreX) * Scale;
-            transform.M32 = centreY + (transform.M32 - centreY) * Scale;
-
-            return transform;
-        }
-
-        protected PointF GetScaledLibraryDrawLocation(MirImage image, ImageType imageType)
-        {
-            float offsetX = imageType == ImageType.Shadow ? image.ShadowOffSetX : image.OffSetX;
-            float offsetY = imageType == ImageType.Shadow ? image.ShadowOffSetY : image.OffSetY;
-            float pivotX = DrawX + CellWidth / 2F;
-            float pivotY = DrawY + CellHeight / 2F;
-            float imageCentreX = DrawX + offsetX + image.Width / 2F;
-            float imageCentreY = DrawY + offsetY + image.Height / 2F;
-
-            return new PointF(
-                DrawX + (Scale - 1F) * (imageCentreX - pivotX),
-                DrawY + (Scale - 1F) * (imageCentreY - pivotY));
-        }
 
         public bool Interupt;
         public MirAction CurrentAction;
@@ -5343,6 +5289,63 @@ namespace Client.Models
                     break;
             }
         }
+
+        #region Scaling
+
+        public float Scale
+        {
+            get { return _Scale; }
+            set { _Scale = value; }
+        }
+        private float _Scale = 1F;
+
+        protected void SetScale(int sizePercent)
+        {
+            Scale = (100F + Math.Min(50, Math.Max(-50, sizePercent))) / 100F;
+        }
+
+        protected RectangleF GetScaledRectangle(RectangleF rectangle)
+        {
+            float centreX = DrawX + CellWidth / 2F;
+            float centreY = DrawY + CellHeight / 2F;
+
+            return new RectangleF(
+                centreX + (rectangle.X - centreX) * Scale,
+                centreY + (rectangle.Y - centreY) * Scale,
+                rectangle.Width * Scale,
+                rectangle.Height * Scale);
+        }
+
+        protected System.Numerics.Matrix3x2 GetScaledTransform(System.Numerics.Matrix3x2 transform)
+        {
+            float centreX = DrawX + CellWidth / 2F;
+            float centreY = DrawY + CellHeight / 2F;
+
+            transform.M11 *= Scale;
+            transform.M12 *= Scale;
+            transform.M21 *= Scale;
+            transform.M22 *= Scale;
+            transform.M31 = centreX + (transform.M31 - centreX) * Scale;
+            transform.M32 = centreY + (transform.M32 - centreY) * Scale;
+
+            return transform;
+        }
+
+        protected PointF GetScaledLibraryDrawLocation(MirImage image, ImageType imageType)
+        {
+            float offsetX = imageType == ImageType.Shadow ? image.ShadowOffSetX : image.OffSetX;
+            float offsetY = imageType == ImageType.Shadow ? image.ShadowOffSetY : image.OffSetY;
+            float pivotX = DrawX + CellWidth / 2F;
+            float pivotY = DrawY + CellHeight / 2F;
+            float imageCentreX = DrawX + offsetX + image.Width / 2F;
+            float imageCentreY = DrawY + offsetY + image.Height / 2F;
+
+            return new PointF(
+                DrawX + (Scale - 1F) * (imageCentreX - pivotX),
+                DrawY + (Scale - 1F) * (imageCentreY - pivotY));
+        }
+
+        #endregion
 
         public virtual void Draw()
         {
