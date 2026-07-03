@@ -2550,6 +2550,10 @@ namespace Shared.Rendering.SilkVulkan
         {
             FlushSpriteBatch();
 
+            // Native block-compressed payloads contain straight-alpha colour data.
+            // Other sampled textures are premultiplied during upload or rendering.
+            push.Colour.X = IsNativeCompressedTexture(resource.Format) ? 1F : 0F;
+
             if (!HasFrameSpace((ulong)sizeof(SpriteInstance), 16))
                 throw new InvalidOperationException("The Vulkan dynamic sprite instance buffer is full for this frame.");
 
@@ -2588,7 +2592,7 @@ namespace Shared.Rendering.SilkVulkan
             PushConstants push = new PushConstants
             {
                 Viewport = new Vector2(_spriteBatchTarget.Size.Width, _spriteBatchTarget.Size.Height),
-                Colour = Vector4.One,
+                Colour = new Vector4(IsNativeCompressedTexture(_spriteBatchTexture.Format) ? 1F : 0F, 0F, 0F, 0F),
                 SourceUv = new Vector4(0F, 0F, 1F, 1F),
                 OutlineColour = Vector4.Zero,
                 Effect = Vector4.Zero

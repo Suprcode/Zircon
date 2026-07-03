@@ -672,7 +672,7 @@ namespace Client.Controls
         {
             MirLibrary Library;
 
-            CEnvir.LibraryList.TryGetValue(LibraryFile.StoreItems, out Library);
+            CEnvir.LibraryList.TryGetValue(LibraryFile.StoreItem, out Library);
 
             if (LootBoxLocked)
             {

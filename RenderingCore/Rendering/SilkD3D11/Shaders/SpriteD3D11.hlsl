@@ -78,5 +78,5 @@ float4 PS(PS_INPUT input) : SV_Target
     uint textureIndex = (uint)round(input.TexIndex);
     float4 texel = SampleTexture(textureIndex, input.Tex);
     float alpha = texel.a * input.Col.a;
-    return float4(texel.rgb * input.Col.rgb * input.Col.a, alpha);
+    return float4(texel.rgb * input.Col.rgb * alpha, alpha);
 }

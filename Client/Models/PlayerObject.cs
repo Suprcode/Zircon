@@ -202,9 +202,9 @@ namespace Client.Models
             [0 + AssassinOffSet + FemaleOffSet] = LibraryFile.WM_CostumeA,
         };
 
-        public static readonly List<int> CostumeShapeHideBody = new()
+        public static readonly List<int> CostumeShapeHideWeapon = new()
         {
-            6, 7, 8, 9, 10, 11, 12, 13
+            6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18
         };
 
         #endregion
@@ -405,6 +405,7 @@ namespace Client.Models
                                 file = LibraryFile.M_Hum;
                                 ArmourShape = 0;
                             }
+
                             if (CostumeShape >= 0)
                             {
                                 if (!CostumeList.TryGetValue(CostumeShape / 10, out file))
@@ -1042,9 +1043,9 @@ namespace Client.Models
                     break;
             }
 
-            bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
+            bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
 
-            if (!hideBody)
+            if (!hideWeapon)
             {
                 switch (Direction)
                 {
@@ -1138,7 +1139,7 @@ namespace Client.Models
                 }
             }
 
-            if (!hideBody)
+            if (!hideWeapon)
             {
                 switch (Direction)
                 {
@@ -1395,7 +1396,7 @@ namespace Client.Models
 
         private bool MouseOverVisiblePixel(Point local)
         {
-            bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
+            bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
 
             if (IsHorseAnimation())
             {
@@ -1418,13 +1419,13 @@ namespace Client.Models
                 }
             }
 
-            if (!hideBody && DrawWeapon && WeaponLibrary1 != null && WeaponLibrary1.VisiblePixel(WeaponFrame, local, false, true))
+            if (!hideWeapon && DrawWeapon && WeaponLibrary1 != null && WeaponLibrary1.VisiblePixel(WeaponFrame, local, false, true))
                 return true;
 
-            if (!hideBody && DrawWeapon && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, local, false, true))
+            if (!hideWeapon && DrawWeapon && WeaponLibrary2 != null && WeaponLibrary2.VisiblePixel(WeaponFrame, local, false, true))
                 return true;
 
-            if (!hideBody && ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, local, false, true))
+            if (!hideWeapon && ShieldShape >= 0 && ShieldLibrary != null && ShieldLibrary.VisiblePixel(ShieldFrame, local, false, true))
                 return true;
 
             if (BodyLibrary != null && BodyLibrary.VisiblePixel(ArmourFrame, local, false, true))
@@ -1448,7 +1449,7 @@ namespace Client.Models
 
         private bool MouseOverVisibleBounds(Point local)
         {
-            bool hideBody = CostumeShapeHideBody.Contains(CostumeShape);
+            bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
 
             if (IsHorseAnimation())
             {
@@ -1471,13 +1472,13 @@ namespace Client.Models
                 }
             }
 
-            if (!hideBody && DrawWeapon && PointOverImageBounds(WeaponLibrary1, WeaponFrame, local))
+            if (!hideWeapon && DrawWeapon && PointOverImageBounds(WeaponLibrary1, WeaponFrame, local))
                 return true;
 
-            if (!hideBody && DrawWeapon && PointOverImageBounds(WeaponLibrary2, WeaponFrame, local))
+            if (!hideWeapon && DrawWeapon && PointOverImageBounds(WeaponLibrary2, WeaponFrame, local))
                 return true;
 
-            if (!hideBody && ShieldShape >= 0 && PointOverImageBounds(ShieldLibrary, ShieldFrame, local))
+            if (!hideWeapon && ShieldShape >= 0 && PointOverImageBounds(ShieldLibrary, ShieldFrame, local))
                 return true;
 
             if (PointOverImageBounds(BodyLibrary, ArmourFrame, local))

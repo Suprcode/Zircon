@@ -938,8 +938,8 @@ namespace Library
         ZumaGuardian = 94,
         ZumaKing = 95,
         ArcherGuard = 96,
-        //NF_DemonGuardMace = 97,
-        //NF_DemonGuardSword = 98,
+        //NF_Blank97 = 97,
+        //NF_Blank98 = 98,
         Shinsu = 99, //Small
 
         Shinsu1 = 100, //Large
@@ -1126,7 +1126,7 @@ namespace Library
         EnshrinementBox = 275,
         //NF_AssassinMale = 276,
         //NF_AssassinFemale = 277,
-        //NF_UmaMaceSoldier = 278,
+        //NF_UmaMaceInfidel = 278,
         //NF_Blank279 = 279,
 
         Salamander = 280,

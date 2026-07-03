@@ -38,7 +38,7 @@ namespace Client.Models.Player
 
             DrawExteriorEffect(player, player.EmblemEffect, behind);
 
-            if (!PlayerObject.CostumeShapeHideBody.Contains(player.CostumeShape))
+            if (!PlayerObject.CostumeShapeHideWeapon.Contains(player.CostumeShape))
             {
                 DrawExteriorEffect(player, player.WeaponEffect, behind);
                 DrawExteriorEffect(player, player.ShieldEffect, behind);

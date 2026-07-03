@@ -141,6 +141,7 @@ namespace Client.Scenes.Views
                 Index = 132,
                 Hint = CEnvir.Language.CommonControlMiniMapSizeHint,
                 HintPosition = HintPosition.TopLeft,
+                Visible = false,
             };
             SizeButton.MouseClick += (o, e) => ToggleSize();
 
@@ -151,6 +152,7 @@ namespace Client.Scenes.Views
                 Index = 130,
                 Hint = CEnvir.Language.CommonControlMiniMapTransparencyHint,
                 HintPosition = HintPosition.TopLeft,
+                Visible = false,
             };
             TransparencyButton.MouseClick += (o, e) => ToggleTransparency();
 
@@ -161,6 +163,7 @@ namespace Client.Scenes.Views
                 Index = 137,
                 Hint = CEnvir.Language.CommonControlMiniMapBigMapHint,
                 HintPosition = HintPosition.TopLeft,
+                Visible = false,
             };
             BigMapButton.MouseClick += (o, e) => GameScene.Game.BigMapBox.ToggleOpen(!GameScene.Game.BigMapBox.Visible);
 
@@ -171,6 +174,17 @@ namespace Client.Scenes.Views
         }
 
         #region Methods
+
+        public override void Process()
+        {
+            base.Process();
+
+            bool visible = IsVisible && DisplayArea.Contains(CEnvir.MouseLocation);
+
+            SizeButton.Visible = visible;
+            TransparencyButton.Visible = visible;
+            BigMapButton.Visible = visible;
+        }
 
         private void ToggleSize()
         {

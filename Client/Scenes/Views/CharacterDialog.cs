@@ -156,7 +156,15 @@ namespace Client.Scenes.Views
         {
             get
             {
-                return PlayerObject.CostumeShapeHideBody.Contains(Grid[(int)EquipmentSlot.Costume]?.Item?.Info.Shape ?? -1);
+                return Grid[(int)EquipmentSlot.Costume]?.Item?.Info != null;
+            }
+        }
+
+        private bool HideWeapon
+        {
+            get
+            {
+                return PlayerObject.CostumeShapeHideWeapon.Contains(Grid[(int)EquipmentSlot.Costume]?.Item?.Info.Shape ?? -1);
             }
         }
 
@@ -2596,7 +2604,7 @@ namespace Client.Scenes.Views
                     library.Draw(armourIndex, DisplayArea.X + x, DisplayArea.Y + y, armour.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (!HideBody)
+                if (!HideWeapon)
                 {
                     if (weapon != null)
                     {

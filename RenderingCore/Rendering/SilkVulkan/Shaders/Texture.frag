@@ -95,15 +95,16 @@ void main()
     }
 
     vec4 texel = texture(uTexture, vTexCoord);
+    float sourceAlpha = pushConstants.uTint.x > 0.5 ? texel.a : 1.0;
 
     if (effectMode == 1)
     {
         float gray = dot(texel.rgb, vec3(0.299, 0.587, 0.114));
-        outColour = vec4(vec3(gray) * vColour.rgb * vColour.a,
+        outColour = vec4(vec3(gray) * vColour.rgb * vColour.a * sourceAlpha,
                          texel.a * vColour.a);
         return;
     }
 
-    outColour = vec4(texel.rgb * vColour.rgb * vColour.a,
+    outColour = vec4(texel.rgb * vColour.rgb * vColour.a * sourceAlpha,
                      texel.a * vColour.a);
 }

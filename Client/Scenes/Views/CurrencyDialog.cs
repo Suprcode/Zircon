@@ -520,7 +520,7 @@ namespace Client.Scenes.Views
                 Parent = this,
                 Location = new Point((Size.Height - DXItemCell.CellHeight) / 2 + 1, (Size.Height - DXItemCell.CellHeight) / 2 + 1),
                 Visible = false,
-                LibraryFile = LibraryFile.StoreItems
+                LibraryFile = LibraryFile.StoreItem
             };
 
             CurrencyNameLabel = new DXLabel
