@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Client.Scenes;
 using Library;
 using System.Drawing;
@@ -233,19 +233,19 @@ namespace Client.Models.Player
                 switch (effect)
                 {
                     case ExteriorEffect.E_RedEyeRing:
-                        library.DrawBlend(90 + GameScene.Game.MapControl.Animation / 2 % 24, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(140 + GameScene.Game.MapControl.Animation / 2 % 28, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 90 + GameScene.Game.MapControl.Animation / 2 % 24, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 140 + GameScene.Game.MapControl.Animation / 2 % 28, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.E_BlueEyeRing:
-                        library.DrawBlend(220 + GameScene.Game.MapControl.Animation / 2 % 25, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(180 + GameScene.Game.MapControl.Animation / 2 % 28, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 220 + GameScene.Game.MapControl.Animation / 2 % 25, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 180 + GameScene.Game.MapControl.Animation / 2 % 28, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.E_GreenSpiralRing:
-                        library.DrawBlend(330 + GameScene.Game.MapControl.Animation / 2 % 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                        library.DrawBlend(270 + GameScene.Game.MapControl.Animation / 2 % 28, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 330 + GameScene.Game.MapControl.Animation / 2 % 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 270 + GameScene.Game.MapControl.Animation / 2 % 28, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.E_Fireworks:
-                        library.DrawBlend(360 + GameScene.Game.MapControl.Animation / 2 % 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 360 + GameScene.Game.MapControl.Animation / 2 % 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                 }
             }
@@ -255,7 +255,7 @@ namespace Client.Models.Player
                 switch (effect)
                 {
                     case ExteriorEffect.A_RedWings2:
-                        library.DrawBlend(DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                 }
             }
@@ -265,7 +265,7 @@ namespace Client.Models.Player
                 switch (effect)
                 {
                     case ExteriorEffect.A_BlueDragonWings:
-                        library.DrawBlend(DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                 }
             }
@@ -275,10 +275,10 @@ namespace Client.Models.Player
                 switch (effect)
                 {
                     case ExteriorEffect.A_LionWings:
-                        library.DrawBlend(DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_AngelicWings:
-                        library.DrawBlend(DetermineIndex(10000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(10000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                 }
             }
@@ -288,35 +288,35 @@ namespace Client.Models.Player
                 switch (effect)
                 {
                     case ExteriorEffect.A_FireDragonWings:
-                        library.DrawBlend(DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(0, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_SmallYellowWings:
-                        library.DrawBlend(DetermineIndex(10000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(10000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_GreenFeatherWings:
-                        library.DrawBlend(DetermineIndex(50000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(50000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_RedFeatherWings:
-                        library.DrawBlend(DetermineIndex(60000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(60000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_BlueFeatherWings:
-                        library.DrawBlend(DetermineIndex(70000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(70000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_WhiteFeatherWings:
-                        library.DrawBlend(DetermineIndex(80000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(80000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_PurpleTentacles:
-                        library.DrawBlend(DetermineIndex(90000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, DetermineIndex(90000, player), drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
 
                     case ExteriorEffect.W_ChaoticHeavenBlade:
-                        library.DrawBlend(40000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 40000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.W_JanitorsScimitar:
-                        library.DrawBlend(20000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 20000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.W_JanitorsDualBlade: //TODO - cannot find correct images
-                        library.DrawBlend(20000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 20000 + 5000 * (byte)player.Gender + player.DrawFrame, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                 }
             }
@@ -327,64 +327,85 @@ namespace Client.Models.Player
                 switch (effect)
                 {
                     case ExteriorEffect.A_WhiteAura:
-                        library.DrawBlend(800 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
+                        DrawBlend(player, library, 800 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_FlameAura:
-                        library.DrawBlend(820 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
+                        DrawBlend(player, library, 820 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_BlueAura:
-                        library.DrawBlend(840 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
+                        DrawBlend(player, library, 840 + GameScene.Game.MapControl.Animation / 2 % 13, drawX, drawY, Color.White, useOffSet: true, 0.7f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_GreenWings:
-                        library.DrawBlend(400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 400 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_FlameWings:
-                        library.DrawBlend(200 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 200 + GameScene.Game.MapControl.Animation / 2 % 15 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_BlueWings:
-                        library.DrawBlend(GameScene.Game.MapControl.Animation / 2 % 15 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, GameScene.Game.MapControl.Animation / 2 % 15 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_RedSinWings:
-                        library.DrawBlend(600 + GameScene.Game.MapControl.Animation / 2 % 13 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 600 + GameScene.Game.MapControl.Animation / 2 % 13 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     //case 9177 or 9178: //??? i'm missing something from EquipEffect-Part.Zl?
-                    //    library.DrawBlend(4874 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
-                    //    library.DrawBlend(4898 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    //    DrawBlend(player, library, 4874 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                    //    DrawBlend(player, library, 4898 + GameScene.Game.MapControl.Animation / 2 % 20, DrawX, DrawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                     //    break;
                     case ExteriorEffect.A_PurpleTentacles2:
-                        library.DrawBlend(4454 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)direction * 9, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 4454 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)direction * 9, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_DiamondFireWings:
-                        library.DrawBlend(4566 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)direction * 9, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 4566 + GameScene.Game.MapControl.Animation / 2 % 4 + (int)direction * 9, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_PhoenixWings:
-                        library.DrawBlend(4062 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 4062 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_IceKingWings:
-                        library.DrawBlend(4258 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 4258 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.A_BlueButterflyWings:
-                        library.DrawBlend(4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        DrawBlend(player, library, 4678 + GameScene.Game.MapControl.Animation / 2 % 8 + (int)direction * 20, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
 
                     case ExteriorEffect.S_WarThurible:
-                        library.Draw(900 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
-                        library.DrawBlend(1000 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        Draw(player, library, 900 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
+                        DrawBlend(player, library, 1000 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.S_PenanceThurible:
-                        library.Draw(1100 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
-                        library.DrawBlend(1200 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        Draw(player, library, 1100 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
+                        DrawBlend(player, library, 1200 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.S_CensorshipThurible:
-                        library.Draw(1300 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
-                        library.DrawBlend(1400 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        Draw(player, library, 1300 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
+                        DrawBlend(player, library, 1400 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                     case ExteriorEffect.S_PetrichorThurible:
-                        library.Draw(1500 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
-                        library.DrawBlend(1600 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
+                        Draw(player, library, 1500 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image);
+                        DrawBlend(player, library, 1600 + GameScene.Game.MapControl.Animation % 4 + (int)direction * 10, drawX, drawY, Color.White, useOffSet: true, 1f, ImageType.Image, 0);
                         break;
                 }
             }
+        }
+
+        private static void DrawBlend(PlayerObject player, MirLibrary library, int index, float drawX, float drawY, Color colour,
+            bool useOffSet, float opacity, ImageType imageType, byte shadow)
+        {
+            MirImage image = library.GetImage(index);
+            if (image == null) return;
+
+            PointF location = player.GetScaledLibraryDrawLocation(image, imageType, drawX, drawY);
+            library.DrawBlendScaled(index, player.Scale, player.Scale, colour, location.X, location.Y, 0F, opacity,
+                imageType, useOffSet, shadow);
+        }
+
+        private static void Draw(PlayerObject player, MirLibrary library, int index, float drawX, float drawY, Color colour,
+            bool useOffSet, float opacity, ImageType imageType)
+        {
+            MirImage image = library.GetImage(index);
+            if (image == null) return;
+
+            PointF location = player.GetScaledLibraryDrawLocation(image, imageType, drawX, drawY);
+            library.Draw(index, location.X, location.Y, colour, useOffSet, opacity, imageType, player.Scale);
         }
 
         private static int DetermineIndex(int indexStart, PlayerObject player)

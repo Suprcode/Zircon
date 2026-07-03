@@ -5331,18 +5331,18 @@ namespace Client.Models
             return transform;
         }
 
-        protected PointF GetScaledLibraryDrawLocation(MirImage image, ImageType imageType)
+        internal PointF GetScaledLibraryDrawLocation(MirImage image, ImageType imageType, float drawX, float drawY)
         {
             float offsetX = imageType == ImageType.Shadow ? image.ShadowOffSetX : image.OffSetX;
             float offsetY = imageType == ImageType.Shadow ? image.ShadowOffSetY : image.OffSetY;
             float pivotX = DrawX + CellWidth / 2F;
             float pivotY = DrawY + CellHeight / 2F;
-            float imageCentreX = DrawX + offsetX + image.Width / 2F;
-            float imageCentreY = DrawY + offsetY + image.Height / 2F;
+            float imageCentreX = drawX + offsetX + image.Width / 2F;
+            float imageCentreY = drawY + offsetY + image.Height / 2F;
 
             return new PointF(
-                DrawX + (Scale - 1F) * (imageCentreX - pivotX),
-                DrawY + (Scale - 1F) * (imageCentreY - pivotY));
+                drawX + (Scale - 1F) * (imageCentreX - pivotX),
+                drawY + (Scale - 1F) * (imageCentreY - pivotY));
         }
 
         #endregion

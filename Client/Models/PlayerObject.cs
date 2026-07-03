@@ -1315,7 +1315,7 @@ namespace Client.Models
             MirImage image = library?.GetImage(frame);
             if (image == null) return;
 
-            PointF location = GetScaledLibraryDrawLocation(image, ImageType.Image);
+            PointF location = GetScaledLibraryDrawLocation(image, ImageType.Image, DrawX, DrawY);
             library.DrawBlend(frame, Scale, Color.White, location.X, location.Y, 0F, Opacity, ImageType.Image, true);
         }
 
