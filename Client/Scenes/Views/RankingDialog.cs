@@ -1,6 +1,6 @@
 using Client.Controls;
 using Client.Envir;
-using Shared.Rendering;
+using Client.Models;
 using Client.Scenes.Views.Character;
 using Client.UserModels;
 using Library;
@@ -239,6 +239,35 @@ namespace Client.Scenes.Views
 
         public DXLabel InspectLabel, CharacterNameLabel, GuildNameLabel, GuildRankLabel;
         public DXItemCell[] Grid;
+
+        private bool HideHead
+        {
+            get
+            {
+                return Grid[(int)EquipmentSlot.Costume]?.Item?.Info != null || HasFishingRobe;
+            }
+        }
+
+        private bool HideBody
+        {
+            get
+            {
+                return Grid[(int)EquipmentSlot.Costume]?.Item?.Info != null;
+            }
+        }
+
+        private bool HideWeapon
+        {
+            get
+            {
+                return PlayerObject.CostumeShapeHideWeapon.Contains(Grid[(int)EquipmentSlot.Costume]?.Item?.Info.Shape ?? -1);
+            }
+        }
+
+        private bool HasFishingRobe
+        {
+            get { return Grid != null && Grid[(int)EquipmentSlot.Armour]?.Item?.Info.ItemEffect == ItemEffect.FishingRobe; }
+        }
 
         private ClientUserItem[] _inspectEquipment = new ClientUserItem[Globals.EquipmentSize];
         public MirClass _inspectClass;
@@ -932,17 +961,23 @@ namespace Client.Scenes.Views
 
             if (!CEnvir.LibraryList.TryGetValue(LibraryFile.ProgUse, out library)) return;
 
-            if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && helmet == null)
-                library.Draw(1160, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
-
-            switch (Gender)
+            if (!HideHead)
             {
-                case MirGender.Male:
-                    library.Draw(0, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    break;
-                case MirGender.Female:
-                    library.Draw(1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
-                    break;
+                if (Class == MirClass.Assassin && Gender == MirGender.Female && HairType == 1 && helmet == null)
+                    library.Draw(1160, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, HairColour, true, 1F, ImageType.Image);
+            }
+
+            if (!HideBody)
+            {
+                switch (Gender)
+                {
+                    case MirGender.Male:
+                        library.Draw(0, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        break;
+                    case MirGender.Female:
+                        library.Draw(1, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
+                        break;
+                }
             }
 
             if (CEnvir.LibraryList.TryGetValue(LibraryFile.Equip, out library))
@@ -959,7 +994,7 @@ namespace Client.Scenes.Views
                     library.Draw(armourIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, armour.Colour, true, 1F, ImageType.Overlay);
                 }
 
-                if (weapon != null)
+                if (weapon != null && !HideWeapon)
                 {
                     int weaponIndex = weapon.Info.Image;
                     library.Draw(weaponIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
@@ -980,7 +1015,7 @@ namespace Client.Scenes.Views
                     }
                 }
 
-                if (shield != null)
+                if (shield != null && !HideWeapon)
                 {
                     int shieldIndex = shield.Info.Image;
                     library.Draw(shieldIndex, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
@@ -1005,14 +1040,14 @@ namespace Client.Scenes.Views
             var hasFishingRobe = armour?.Info.ItemEffect == ItemEffect.FishingRobe;
             if (hasFishingRobe) return;
 
-            if (helmet != null && library != null)
+            if (helmet != null && library != null && !HideHead)
             {
                 int index = helmet.Info.Image;
 
                 library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, Color.White, true, 1F, ImageType.Image);
                 library.Draw(index, InspectPanel.DisplayArea.X + x, InspectPanel.DisplayArea.Y + y, helmet.Colour, true, 1F, ImageType.Overlay);
             }
-            else if (HairType > 0)
+            else if (HairType > 0 && !HideHead)
             {
                 library = CEnvir.LibraryList[LibraryFile.ProgUse];
 
@@ -1788,5 +1823,4 @@ namespace Client.Scenes.Views
 
         #endregion
     }
-
 }

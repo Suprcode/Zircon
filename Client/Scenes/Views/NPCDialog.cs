@@ -752,9 +752,15 @@ namespace Client.Scenes.Views
             ScrollBar = new DXVScrollBar
             {
                 Parent = this,
-                Size = new Size(14, ClientArea.Height - 1),
+                Size = new Size(19, ClientArea.Height - 1),
+                BackColour = Color.Empty,
+                Border = false,
+                UpButton = { Index = 61, LibraryFile = LibraryFile.Interface },
+                DownButton = { Index = 62, LibraryFile = LibraryFile.Interface },
+                PositionBar = { Index = 60, LibraryFile = LibraryFile.Interface },
+                ShowBackgroundSlider = true,
             };
-            ScrollBar.Location = new Point(ClientArea.Right - ScrollBar.Size.Width - 2, ClientArea.Y + 1);
+            ScrollBar.Location = new Point(ClientArea.Right - ScrollBar.Size.Width, ClientArea.Y + 1);
             ScrollBar.ValueChanged += (o, e) => UpdateLocations();
 
             MouseWheel += ScrollBar.DoMouseWheel;
@@ -1134,7 +1140,7 @@ namespace Client.Scenes.Views
             DrawTexture = true;
             BackColour = Constants.RowBackColour;
             BorderColour = Constants.PrimaryColour;
-            Size = new Size(219, 40);
+            Size = new Size(204, 40);
 
             ItemCell = new DXItemCell
             {
