@@ -105,7 +105,7 @@ namespace Client.Scenes
 
         #endregion
 
-        public LoginScene(Size size) : base(size)
+        public LoginScene(Size size) : base(size, false)
         {
             if (Config.ExtendedLogin)
             {

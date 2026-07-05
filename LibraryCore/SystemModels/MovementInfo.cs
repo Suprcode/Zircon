@@ -168,5 +168,10 @@ namespace Library.SystemModels
 
             RequiredClass = RequiredClass.All;
         }
+
+        public override string ToString()
+        {
+            return SourceRegion?.ToString() ?? "[Source Region is null]";
+        }
     }
 }

@@ -166,9 +166,19 @@ namespace Shared.Rendering.SilkVulkan
             void ApplyStartupPlacement(object sender, EventArgs args)
             {
                 form.Shown -= ApplyStartupPlacement;
-                ApplyWindowStyle();
-                ApplyWindowBounds(true);
-                ResizeBackBufferIfNeeded(true);
+                Size configuredGameSize = HostSettings.GameSize;
+
+                try
+                {
+                    RenderingPipelineManager.HostSettings.GameSize = RenderingPipelineManager.HostSettings.ActiveSceneSize;
+                    ApplyWindowStyle();
+                    ApplyWindowBounds(true);
+                    ResizeBackBufferIfNeeded(true);
+                }
+                finally
+                {
+                    RenderingPipelineManager.HostSettings.GameSize = configuredGameSize;
+                }
             }
 
             Application.Idle += Tick;

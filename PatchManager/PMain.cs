@@ -19,6 +19,8 @@ namespace PatchManager
 
         public const string TempDownloadDirectory = "In";
 
+        public const string ReportDirectory = "Report";
+
         public long TotalUpload, TotalProgress, CurrentProgress, TotalProgressPercent;
         public long Speed;
         public bool Error;
@@ -109,7 +111,10 @@ namespace PatchManager
             InterfaceLock(true);
 
             if (!Error)
+            {
                 SaveVersion(currentVersion);
+                CreateReport(patch);
+            }
 
             if (Directory.Exists(".\\Patch\\"))
                 Directory.Delete(".\\Patch\\", true);
@@ -390,6 +395,30 @@ namespace PatchManager
 
                 var result = session.PutFileToDirectory(tempFilePath, rootPath, options: transferOptions);
             }
+        }
+
+        private static void CreateReport(IEnumerable<PatchInformation> patch)
+        {
+            DateTime created = DateTime.Now;
+
+            Directory.CreateDirectory(ReportDirectory);
+
+            List<string> updatedFiles = patch
+                .Select(info => info.FileName)
+                .OrderBy(fileName => fileName, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            List<string> report = new List<string>
+            {
+                $"Patch update report - {created:yyyy-MM-dd HH:mm:ss}",
+                $"Files updated: {updatedFiles.Count}",
+                string.Empty
+            };
+
+            report.AddRange(updatedFiles);
+
+            string reportPath = Path.Combine(ReportDirectory, $"PatchReport_{created:yyyy-MM-dd_HH-mm-ss}.log");
+            File.WriteAllLines(reportPath, report, Encoding.UTF8);
         }
 
 

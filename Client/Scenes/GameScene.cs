@@ -1707,6 +1707,9 @@ namespace Client.Scenes
                     case ItemType.Weapon:
                     case ItemType.Shield:
                     case ItemType.Torch:
+                    case ItemType.Hook:
+                    case ItemType.Float:
+                    case ItemType.Reel:
                         if (User.HandWeight - (Equipment[(int)EquipmentSlot.Weapon]?.Info.Weight ?? 0) + MouseItem.Info.Weight > User.Stats[Stat.HandWeight])
                             label.ForeColour = Color.Red;
                         break;
@@ -1718,6 +1721,8 @@ namespace Client.Scenes
                     case ItemType.Shoes:
                     case ItemType.Poison:
                     case ItemType.Amulet:
+                    case ItemType.Bait:
+                    case ItemType.Finder:
                         if (User.WearWeight - (Equipment[(int)EquipmentSlot.Armour]?.Info.Weight ?? 0) + MouseItem.Info.Weight > User.Stats[Stat.WearWeight])
                             label.ForeColour = Color.Red;
                         break;

@@ -1951,6 +1951,7 @@ namespace Library
         FishingCast = 130,
         FishingCatch = 131, //Tracked by Item
         FishingFail = 132,
+        FishingPerfect = 134,
 
         //Tracked by Instance
         InstanceJoin = 140,

@@ -43,16 +43,29 @@ namespace Client.Controls
         }
         #endregion
 
-        protected DXScene(Size size)
+        protected DXScene(Size size, bool updateGameSize = true)
         {
             DrawTexture = false;
 
             Size = size;
 
-            RenderingPipelineManager.SetResolution(size);
+            if (!updateGameSize && !Config.FullScreen && CEnvir.Target.ClientSize == Size)
+                return;
 
-            if (!Config.FullScreen)
-                RenderingPipelineManager.CenterOnSelectedMonitor();
+            Size configuredGameSize = Config.GameSize;
+
+            try
+            {
+                RenderingPipelineManager.SetResolution(size);
+
+                if (!Config.FullScreen)
+                    RenderingPipelineManager.CenterOnSelectedMonitor();
+            }
+            finally
+            {
+                if (!updateGameSize)
+                    Config.GameSize = configuredGameSize;
+            }
         }
 
         #region Methods

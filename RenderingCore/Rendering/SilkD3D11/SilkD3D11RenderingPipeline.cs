@@ -98,6 +98,8 @@ namespace Shared.Rendering.SilkD3D11
         private float _lineWidth = 1F;
         private TextureFilterMode _textureFilter = TextureFilterMode.Point;
         private bool _resetRequested;
+        private Size _pendingResetSize;
+        private readonly DisplayModeManager _displayMode = new DisplayModeManager();
 
         private ComPtr<ID3D11VertexShader> _vertexShader;
         private ComPtr<ID3D11PixelShader> _pixelShader;
@@ -153,9 +155,19 @@ namespace Shared.Rendering.SilkD3D11
             void ApplyStartupPlacement(object sender, EventArgs args)
             {
                 form.Shown -= ApplyStartupPlacement;
-                ApplyWindowStyle();
-                ApplyWindowBounds(true);
-                RequestReset();
+                Size configuredGameSize = RenderingPipelineManager.HostSettings.GameSize;
+
+                try
+                {
+                    RenderingPipelineManager.HostSettings.GameSize = RenderingPipelineManager.HostSettings.ActiveSceneSize;
+                    ApplyWindowStyle();
+                    ApplyWindowBounds(true);
+                    RequestReset(RenderingPipelineManager.HostSettings.ActiveSceneSize);
+                }
+                finally
+                {
+                    RenderingPipelineManager.HostSettings.GameSize = configuredGameSize;
+                }
             }
 
             Application.Idle += Tick;
@@ -219,7 +231,7 @@ namespace Shared.Rendering.SilkD3D11
 
             ApplyWindowStyle();
             ApplyWindowBounds(false);
-            RequestReset();
+            RequestReset(size);
         }
 
         public void SetTargetMonitor(int monitorIndex)
@@ -634,6 +646,8 @@ namespace Shared.Rendering.SilkD3D11
 
         public void Shutdown()
         {
+            _displayMode.Restore();
+
             EndSpriteBatch();
             FlushLines();
             UnbindBackBufferReferences();
@@ -977,8 +991,9 @@ namespace Shared.Rendering.SilkD3D11
             RecreateSwapChain(size);
         }
 
-        private void RequestReset()
+        private void RequestReset(Size? requestedSize = null)
         {
+            _pendingResetSize = requestedSize ?? RenderingPipelineManager.HostSettings.GameSize;
             _resetRequested = true;
         }
 
@@ -988,7 +1003,17 @@ namespace Shared.Rendering.SilkD3D11
                 return;
 
             _resetRequested = false;
-            RecreateSwapChain(RenderingPipelineManager.HostSettings.GameSize);
+            Size configuredGameSize = RenderingPipelineManager.HostSettings.GameSize;
+
+            try
+            {
+                RenderingPipelineManager.HostSettings.GameSize = _pendingResetSize;
+                RecreateSwapChain(_pendingResetSize);
+            }
+            finally
+            {
+                RenderingPipelineManager.HostSettings.GameSize = configuredGameSize;
+            }
         }
 
         private void RecreateSwapChain(Size size)
@@ -1549,8 +1574,11 @@ namespace Shared.Rendering.SilkD3D11
         private Size GetTargetSize()
         {
             Size size = _context.RenderTarget.ClientSize;
-            if (RenderingPipelineManager.HostSettings.FullScreen || RenderingPipelineManager.HostSettings.Borderless)
-                size = RenderingPipelineManager.GetSelectedScreen().Bounds.Size;
+            if (RenderingPipelineManager.HostSettings.FullScreen)
+            {
+                Screen screen = RenderingPipelineManager.GetSelectedScreen();
+                size = RenderingPipelineManager.GetMonitorDisplayBounds(screen.DeviceName, screen.Bounds).Size;
+            }
 
             if (size.Width <= 0 || size.Height <= 0)
                 size = RenderingPipelineManager.HostSettings.GameSize;
@@ -1574,11 +1602,21 @@ namespace Shared.Rendering.SilkD3D11
             if (_context?.RenderTarget is not Form form)
                 return;
 
-            if (RenderingPipelineManager.HostSettings.FullScreen || RenderingPipelineManager.HostSettings.Borderless)
+            if (RenderingPipelineManager.HostSettings.FullScreen)
             {
-                form.Bounds = RenderingPipelineManager.GetSelectedScreen().Bounds;
+                Screen screen = RenderingPipelineManager.GetSelectedScreen();
+                string deviceName = screen.DeviceName;
+
+                if (!_displayMode.Apply(screen, RenderingPipelineManager.HostSettings.GameSize))
+                    return;
+
+                screen = DisplayModeManager.GetScreenByDeviceName(deviceName, RenderingPipelineManager.GetSelectedScreen());
+                form.StartPosition = FormStartPosition.Manual;
+                form.Bounds = RenderingPipelineManager.GetMonitorDisplayBounds(deviceName, screen.Bounds);
                 return;
             }
+
+            _displayMode.Restore();
 
             form.ClientSize = RenderingPipelineManager.HostSettings.GameSize;
             CenterOnSelectedMonitor(forceCenter);

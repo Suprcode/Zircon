@@ -65,7 +65,7 @@ namespace Client
                 Config.RenderingPipeline = activePipelineId;
             DXSoundManager.Create();
 
-            DXControl.ActiveScene = new LoginScene(Config.GameSize);
+            DXControl.ActiveScene = new LoginScene(Config.ExtendedLogin ? Config.GameSize : Config.IntroSceneSize);
 
             RenderingPipelineManager.RunMessageLoop(CEnvir.Target, CEnvir.GameLoop);
 

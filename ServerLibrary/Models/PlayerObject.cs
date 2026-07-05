@@ -2061,7 +2061,19 @@ namespace Server.Models
                 {
                     case ItemType.Weapon:
                     case ItemType.Torch:
+                    case ItemType.Shield:
                         HandWeight += item.Weight;
+                        break;
+                    case ItemType.Hook:
+                    case ItemType.Float:
+                    case ItemType.Reel:
+                        if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod) continue;
+                        HandWeight += item.Weight;
+                        break;
+                    case ItemType.Bait:
+                    case ItemType.Finder:
+                        if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod) continue;
+                        WearWeight += item.Weight;
                         break;
                     default:
                         WearWeight += item.Weight;
@@ -13698,8 +13710,6 @@ namespace Server.Models
                     FishingDirection = castDirection;
                     FishingLocation = floatLocation;
 
-                    LogMilestone(MilestoneType.FishingCast, 1);
-
                     PauseBuffs();
 
                     DamageItem(GridType.Equipment, (int)EquipmentSlot.Hook, 4);
@@ -13712,6 +13722,10 @@ namespace Server.Models
                         state = FishingState.Reel;
 
                         Connection.ReceiveChat("Not enough bait.", MessageType.System);
+                    }
+                    else
+                    {
+                        LogMilestone(MilestoneType.FishingCast, 1);
                     }
                 }
 
@@ -13730,8 +13744,6 @@ namespace Server.Models
 
                     if (caught)
                     {
-                        LogMilestone(MilestoneType.FishingCatch, 1);
-
                         #region Calculate Success Point Increase (Reel, ReelBonus Stat)
 
                         FishPointsCurrent += Math.Max(Config.FishPointSuccessRewardMin, Math.Min(Config.FishPointSuccessRewardMax, Config.FishPointSuccessRewardMin + Stats[Stat.ReelBonus]));
@@ -13740,8 +13752,6 @@ namespace Server.Models
                     }
                     else
                     {
-                        LogMilestone(MilestoneType.FishingFail, 1);
-
                         #region Calculate Failure Point Deduction (Float, FloatStrength Stat)
 
                         FishPointsCurrent -= Math.Max(Config.FishPointFailureRewardMin, Math.Min(Config.FishPointFailureRewardMax, Config.FishPointFailureRewardMax - Stats[Stat.FloatStrength]));
@@ -13763,7 +13773,10 @@ namespace Server.Models
                             perfectCatch = true;
 
                             Connection.ReceiveChat("Perfect Catch!", MessageType.System);
+
+                            LogMilestone(MilestoneType.FishingPerfect, 1);
                         }
+
 
                         var zone = Functions.FishingZone(SEnvir.FishingInfoList, CurrentMap.Info, CurrentMap.Width, CurrentMap.Height, floatLocation);
 
@@ -13783,6 +13796,9 @@ namespace Server.Models
 
                             UserItem item = SEnvir.CreateDropItem(check);
                             GainItem(item);
+
+                            LogMilestone(MilestoneType.FishingCatch, 1, item: info.Item);
+
                             break; //One item gained, so stop rewarding any more
 
                             //TODO - Limit drops by bait type used?
@@ -13794,6 +13810,8 @@ namespace Server.Models
                     {
                         //fail
                         state = FishingState.Reel;
+
+                        LogMilestone(MilestoneType.FishingFail, 1);
                     }
                 }
 

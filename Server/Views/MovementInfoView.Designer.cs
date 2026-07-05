@@ -33,14 +33,20 @@
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
             ExportButton = new DevExpress.XtraBars.BarButtonItem();
+            HideUsedSourcesButton = new DevExpress.XtraBars.BarCheckItem();
+            HideUsedDestinationsButton = new DevExpress.XtraBars.BarCheckItem();
+            InsertRowButton = new DevExpress.XtraBars.BarButtonItem();
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            FilteringGroup = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            EditGroup = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             MovementGridControl = new DevExpress.XtraGrid.GridControl();
             MovementGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             MapLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
+            DestinationMapLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             ItemLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
@@ -57,6 +63,7 @@
             ((System.ComponentModel.ISupportInitialize)MovementGridControl).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MovementGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MapLookUpEdit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)DestinationMapLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SpawnLookUpEdit).BeginInit();
             ((System.ComponentModel.ISupportInitialize)InstanceLookUpEdit).BeginInit();
@@ -66,12 +73,12 @@
             // ribbon
             // 
             ribbon.ExpandCollapseItem.Id = 0;
-            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ImportButton, ExportButton });
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, SaveButton, ImportButton, ExportButton, HideUsedSourcesButton, HideUsedDestinationsButton, InsertRowButton });
             ribbon.Location = new System.Drawing.Point(0, 0);
-            ribbon.MaxItemId = 4;
+            ribbon.MaxItemId = 7;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(663, 144);
+            ribbon.Size = new System.Drawing.Size(663, 158);
             // 
             // SaveButton
             // 
@@ -101,9 +108,37 @@
             ExportButton.Name = "ExportButton";
             ExportButton.ItemClick += ExportButton_ItemClick;
             // 
+            // HideUsedSourcesButton
+            // 
+            HideUsedSourcesButton.Caption = "Hide Used Sources";
+            HideUsedSourcesButton.Id = 4;
+            HideUsedSourcesButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("HideUsedSourcesButton.ImageOptions.Image");
+            HideUsedSourcesButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("HideUsedSourcesButton.ImageOptions.LargeImage");
+            HideUsedSourcesButton.Name = "HideUsedSourcesButton";
+            HideUsedSourcesButton.CheckedChanged += UsedRegionFilter_CheckedChanged;
+            // 
+            // HideUsedDestinationsButton
+            // 
+            HideUsedDestinationsButton.Caption = "Hide Used Destinations";
+            HideUsedDestinationsButton.Id = 5;
+            HideUsedDestinationsButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("HideUsedDestinationsButton.ImageOptions.Image");
+            HideUsedDestinationsButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("HideUsedDestinationsButton.ImageOptions.LargeImage");
+            HideUsedDestinationsButton.Name = "HideUsedDestinationsButton";
+            HideUsedDestinationsButton.CheckedChanged += UsedRegionFilter_CheckedChanged;
+            // 
+            // InsertRowButton
+            // 
+            InsertRowButton.Caption = "Insert Row";
+            InsertRowButton.Id = 6;
+            InsertRowButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.Image");
+            InsertRowButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.LargeImage");
+            InsertRowButton.Name = "InsertRowButton";
+            InsertRowButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            InsertRowButton.ItemClick += InsertRowButton_ItemClick;
+            // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport });
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport, FilteringGroup, EditGroup });
             ribbonPage1.Name = "ribbonPage1";
             ribbonPage1.Text = "Home";
             // 
@@ -122,16 +157,29 @@
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
             // 
+            // FilteringGroup
+            // 
+            FilteringGroup.ItemLinks.Add(HideUsedSourcesButton);
+            FilteringGroup.ItemLinks.Add(HideUsedDestinationsButton);
+            FilteringGroup.Name = "FilteringGroup";
+            FilteringGroup.Text = "Filtering";
+            // 
+            // EditGroup
+            // 
+            EditGroup.ItemLinks.Add(InsertRowButton);
+            EditGroup.Name = "EditGroup";
+            EditGroup.Text = "Edit";
+            // 
             // MovementGridControl
             // 
             MovementGridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            MovementGridControl.Location = new System.Drawing.Point(0, 144);
+            MovementGridControl.Location = new System.Drawing.Point(0, 158);
             MovementGridControl.MainView = MovementGridView;
             MovementGridControl.MenuManager = ribbon;
             MovementGridControl.Name = "MovementGridControl";
-            MovementGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MapLookUpEdit, MapIconImageComboBox, ItemLookUpEdit, SpawnLookUpEdit, InstanceLookUpEdit });
+            MovementGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MapLookUpEdit, DestinationMapLookUpEdit, MapIconImageComboBox, ItemLookUpEdit, SpawnLookUpEdit, InstanceLookUpEdit });
             MovementGridControl.ShowOnlyPredefinedDetails = true;
-            MovementGridControl.Size = new System.Drawing.Size(663, 356);
+            MovementGridControl.Size = new System.Drawing.Size(663, 342);
             MovementGridControl.TabIndex = 2;
             MovementGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { MovementGridView });
             // 
@@ -145,11 +193,13 @@
             MovementGridView.OptionsView.NewItemRowPosition = DevExpress.XtraGrid.Views.Grid.NewItemRowPosition.Top;
             MovementGridView.OptionsView.ShowButtonMode = DevExpress.XtraGrid.Views.Base.ShowButtonModeEnum.ShowAlways;
             MovementGridView.OptionsView.ShowGroupPanel = false;
+            MovementGridView.ShowingEditor += MovementGridView_ShowingEditor;
             // 
             // gridColumn1
             // 
             gridColumn1.ColumnEdit = MapLookUpEdit;
             gridColumn1.FieldName = "SourceRegion";
+            gridColumn1.FilterMode = DevExpress.XtraGrid.ColumnFilterMode.DisplayText;
             gridColumn1.Name = "gridColumn1";
             gridColumn1.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             gridColumn1.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
@@ -161,20 +211,43 @@
             MapLookUpEdit.AutoHeight = false;
             MapLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
             MapLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            MapLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("ServerDescription", "Description"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Size", "Size") });
-            MapLookUpEdit.DisplayMember = "ServerDescription";
+            MapLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Text", "Description"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Size", "Size") });
+            MapLookUpEdit.DisplayMember = "Text";
             MapLookUpEdit.Name = "MapLookUpEdit";
             MapLookUpEdit.NullText = "[Region is null]";
+            MapLookUpEdit.PopupFilterMode = DevExpress.XtraEditors.PopupFilterMode.Contains;
+            MapLookUpEdit.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
+            MapLookUpEdit.ValueMember = "Region";
+            MapLookUpEdit.CloseUp += RegionLookUpEdit_CloseUp;
+            MapLookUpEdit.Popup += RegionLookUpEdit_Popup;
+            MapLookUpEdit.CustomDisplayText += RegionLookUpEdit_CustomDisplayText;
             // 
             // gridColumn2
             // 
-            gridColumn2.ColumnEdit = MapLookUpEdit;
+            gridColumn2.ColumnEdit = DestinationMapLookUpEdit;
             gridColumn2.FieldName = "DestinationRegion";
+            gridColumn2.FilterMode = DevExpress.XtraGrid.ColumnFilterMode.DisplayText;
             gridColumn2.Name = "gridColumn2";
             gridColumn2.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             gridColumn2.SortMode = DevExpress.XtraGrid.ColumnSortMode.DisplayText;
             gridColumn2.Visible = true;
             gridColumn2.VisibleIndex = 1;
+            // 
+            // DestinationMapLookUpEdit
+            // 
+            DestinationMapLookUpEdit.AutoHeight = false;
+            DestinationMapLookUpEdit.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
+            DestinationMapLookUpEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            DestinationMapLookUpEdit.Columns.AddRange(new DevExpress.XtraEditors.Controls.LookUpColumnInfo[] { new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Text", "Description"), new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Size", "Size") });
+            DestinationMapLookUpEdit.DisplayMember = "Text";
+            DestinationMapLookUpEdit.Name = "DestinationMapLookUpEdit";
+            DestinationMapLookUpEdit.NullText = "[Region is null]";
+            DestinationMapLookUpEdit.PopupFilterMode = DevExpress.XtraEditors.PopupFilterMode.Contains;
+            DestinationMapLookUpEdit.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
+            DestinationMapLookUpEdit.ValueMember = "Region";
+            DestinationMapLookUpEdit.CloseUp += RegionLookUpEdit_CloseUp;
+            DestinationMapLookUpEdit.Popup += RegionLookUpEdit_Popup;
+            DestinationMapLookUpEdit.CustomDisplayText += RegionLookUpEdit_CustomDisplayText;
             // 
             // gridColumn3
             // 
@@ -290,6 +363,7 @@
             ((System.ComponentModel.ISupportInitialize)MovementGridControl).EndInit();
             ((System.ComponentModel.ISupportInitialize)MovementGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)MapLookUpEdit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DestinationMapLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)SpawnLookUpEdit).EndInit();
             ((System.ComponentModel.ISupportInitialize)InstanceLookUpEdit).EndInit();
@@ -308,6 +382,7 @@
         private DevExpress.XtraGrid.GridControl MovementGridControl;
         private DevExpress.XtraGrid.Views.Grid.GridView MovementGridView;
         private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit MapLookUpEdit;
+        private DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit DestinationMapLookUpEdit;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox MapIconImageComboBox;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
@@ -325,5 +400,10 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn10;
+        private DevExpress.XtraBars.BarCheckItem HideUsedSourcesButton;
+        private DevExpress.XtraBars.BarCheckItem HideUsedDestinationsButton;
+        private DevExpress.XtraBars.BarButtonItem InsertRowButton;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup EditGroup;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup FilteringGroup;
     }
 }

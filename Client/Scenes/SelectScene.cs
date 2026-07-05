@@ -27,7 +27,7 @@ namespace Client.Scenes
 
         #endregion
 
-        public SelectScene(Size size) : base(size)
+        public SelectScene(Size size) : base(size, false)
         {
             if (Config.ExtendedLogin)
             {
