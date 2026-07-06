@@ -157,17 +157,13 @@ namespace Shared.Rendering.SilkD3D11
                 form.Shown -= ApplyStartupPlacement;
                 Size configuredGameSize = RenderingPipelineManager.HostSettings.GameSize;
 
-                try
-                {
-                    RenderingPipelineManager.HostSettings.GameSize = RenderingPipelineManager.HostSettings.ActiveSceneSize;
-                    ApplyWindowStyle();
-                    ApplyWindowBounds(true);
-                    RequestReset(RenderingPipelineManager.HostSettings.ActiveSceneSize);
-                }
-                finally
-                {
-                    RenderingPipelineManager.HostSettings.GameSize = configuredGameSize;
-                }
+                RenderingPipelineManager.HostSettings.GameSize = RenderingPipelineManager.HostSettings.ActiveSceneSize;
+
+                ApplyWindowStyle();
+                ApplyWindowBounds(true);
+                RequestReset(RenderingPipelineManager.HostSettings.ActiveSceneSize);
+
+                RenderingPipelineManager.HostSettings.GameSize = configuredGameSize;
             }
 
             Application.Idle += Tick;

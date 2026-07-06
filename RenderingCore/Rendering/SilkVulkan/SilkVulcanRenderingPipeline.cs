@@ -168,17 +168,13 @@ namespace Shared.Rendering.SilkVulkan
                 form.Shown -= ApplyStartupPlacement;
                 Size configuredGameSize = HostSettings.GameSize;
 
-                try
-                {
-                    RenderingPipelineManager.HostSettings.GameSize = RenderingPipelineManager.HostSettings.ActiveSceneSize;
-                    ApplyWindowStyle();
-                    ApplyWindowBounds(true);
-                    ResizeBackBufferIfNeeded(true);
-                }
-                finally
-                {
-                    RenderingPipelineManager.HostSettings.GameSize = configuredGameSize;
-                }
+                RenderingPipelineManager.HostSettings.GameSize = RenderingPipelineManager.HostSettings.ActiveSceneSize;
+
+                ApplyWindowStyle();
+                ApplyWindowBounds(true);
+                ResizeBackBufferIfNeeded(true);
+
+                RenderingPipelineManager.HostSettings.GameSize = configuredGameSize;
             }
 
             Application.Idle += Tick;

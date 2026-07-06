@@ -2480,7 +2480,7 @@ namespace Client.Scenes.Views
             #endregion
         }
 
-        private void Cell_MouseLeave(object sender, EventArgs e)
+        internal void Cell_MouseLeave(object sender, EventArgs e)
         {
             foreach (var stat in DisplayStats.Keys)
                 DisplayStats[stat].ForeColour = Color.White;
@@ -2499,7 +2499,7 @@ namespace Client.Scenes.Views
             HandWeightLabel.ForeColour = Color.White;
         }
 
-        private void Cell_MouseEnter(object sender, EventArgs e)
+        internal void Cell_MouseEnter(object sender, EventArgs e)
         {
             DXItemCell cell = sender as DXItemCell;
 
@@ -2517,9 +2517,33 @@ namespace Client.Scenes.Views
                 foreach (var stat in DisadvantageStats.Keys)
                     DisadvantageStats[stat].ForeColour = HasStat(cell.Item, stat) ? Color.Orange : Color.White;
 
-                WearWeightLabel.ForeColour = cell.Item.Weight > 0 && (cell.Item.Info.ItemType != ItemType.Weapon && cell.Item.Info.ItemType != ItemType.Torch) ? Color.Orange : Color.White;
+                bool wearWeight = false, handWeight = false;
 
-                HandWeightLabel.ForeColour = cell.Item.Weight > 0 && (cell.Item.Info.ItemType == ItemType.Weapon || cell.Item.Info.ItemType == ItemType.Torch) ? Color.Orange : Color.White;
+                switch(cell.Item.Info.ItemType)
+                {
+                    case ItemType.Weapon:
+                    case ItemType.Torch:
+                    case ItemType.Shield:
+                        handWeight = true;
+                        break;
+                    case ItemType.Hook:
+                    case ItemType.Float:
+                    case ItemType.Reel:
+                        if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod) break;
+                        handWeight = true;
+                        break;
+                    case ItemType.Bait:
+                    case ItemType.Finder:
+                        if (Equipment[(int)EquipmentSlot.Weapon]?.Info.ItemEffect != ItemEffect.FishingRod) break;
+                        wearWeight = true;
+                        break;
+                    default:
+                        wearWeight = true;
+                        break;
+                }
+
+                WearWeightLabel.ForeColour = wearWeight ? Color.Orange : Color.White;
+                HandWeightLabel.ForeColour = handWeight ? Color.Orange : Color.White;
             }
         }
 

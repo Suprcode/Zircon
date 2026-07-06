@@ -107,6 +107,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 221);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
 
             CharacterBox.Grid[(int)EquipmentSlot.Float] = cell = new DXItemCell
             {
@@ -118,6 +120,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 222);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
 
             CharacterBox.Grid[(int)EquipmentSlot.Bait] = cell = new DXItemCell
             {
@@ -129,6 +133,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 224);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
 
             CharacterBox.Grid[(int)EquipmentSlot.Finder] = cell = new DXItemCell
             {
@@ -140,6 +146,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 223);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
 
             CharacterBox.Grid[(int)EquipmentSlot.Reel] = cell = new DXItemCell
             {
@@ -151,6 +159,8 @@ namespace Client.Scenes.Views
                 GridType = GridType.Equipment,
             };
             cell.BeforeDraw += (o, e) => Draw((DXItemCell)o, 225);
+            cell.MouseEnter += CharacterBox.Cell_MouseEnter;
+            cell.MouseLeave += CharacterBox.Cell_MouseLeave;
         }
 
         #region Methods

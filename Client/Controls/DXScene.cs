@@ -54,18 +54,13 @@ namespace Client.Controls
 
             Size configuredGameSize = Config.GameSize;
 
-            try
-            {
-                RenderingPipelineManager.SetResolution(size);
+            RenderingPipelineManager.SetResolution(size);
 
-                if (!Config.FullScreen)
-                    RenderingPipelineManager.CenterOnSelectedMonitor();
-            }
-            finally
-            {
-                if (!updateGameSize)
-                    Config.GameSize = configuredGameSize;
-            }
+            if (!Config.FullScreen)
+                RenderingPipelineManager.CenterOnSelectedMonitor();
+
+            if (!updateGameSize)
+                Config.GameSize = configuredGameSize;
         }
 
         #region Methods
