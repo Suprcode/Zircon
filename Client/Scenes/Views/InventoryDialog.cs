@@ -361,7 +361,6 @@ namespace Client.Scenes.Views
 
             if (cell == null || cell.Item == null) return;
             if ((cell.Item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
-            if ((cell.Item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
             if ((cell.Item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
 
             if (cell.GridType != GridType.Inventory) return;

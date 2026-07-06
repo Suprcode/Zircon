@@ -50,6 +50,7 @@
             RegionLookUpEdit = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             colFaceImage = new DevExpress.XtraGrid.Columns.GridColumn();
             colMapIcon = new DevExpress.XtraGrid.Columns.GridColumn();
+            colGoodsIndex = new DevExpress.XtraGrid.Columns.GridColumn();
             MapIconImageComboBox = new DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox();
             ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
@@ -176,7 +177,7 @@
             // 
             // NPCInfoGridView
             // 
-            NPCInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNPCName, colImage, colEntryPage, gridColumn1, colFaceImage, colMapIcon });
+            NPCInfoGridView.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNPCName, colImage, colEntryPage, gridColumn1, colFaceImage, colMapIcon, colGoodsIndex });
             NPCInfoGridView.GridControl = NPCInfoGridControl;
             NPCInfoGridView.Name = "NPCInfoGridView";
             NPCInfoGridView.OptionsDetail.AllowExpandEmptyDetails = true;
@@ -251,6 +252,13 @@
             colMapIcon.Name = "colMapIcon";
             colMapIcon.Visible = true;
             colMapIcon.VisibleIndex = 5;
+            // 
+            // colGoodsIndex
+            // 
+            colGoodsIndex.FieldName = "GoodsIndex";
+            colGoodsIndex.Name = "colGoodsIndex";
+            colGoodsIndex.Visible = true;
+            colGoodsIndex.VisibleIndex = 6;
             // 
             // MapIconImageComboBox
             // 
@@ -403,6 +411,7 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
         private DevExpress.XtraEditors.Repository.RepositoryItemImageComboBox MapIconImageComboBox;
         private DevExpress.XtraGrid.Columns.GridColumn colMapIcon;
+        private DevExpress.XtraGrid.Columns.GridColumn colGoodsIndex;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
         private DevExpress.XtraBars.BarButtonItem InsertRowButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup EditGroup;

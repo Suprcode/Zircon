@@ -69,6 +69,21 @@ namespace Library.SystemModels
         }
         private int _FaceImage;
 
+        public int GoodsIndex
+        {
+            get { return _GoodsIndex; }
+            set
+            {
+                if (_GoodsIndex == value) return;
+
+                var oldValue = _GoodsIndex;
+                _GoodsIndex = value;
+
+                OnChanged(oldValue, value, "GoodsIndex");
+            }
+        }
+        private int _GoodsIndex;
+
         public MapIcon MapIcon
         {
             get { return _MapIcon; }
@@ -300,6 +315,21 @@ namespace Library.SystemModels
             }
         }
         private decimal _Rate;
+
+        public int GoodsIndex
+        {
+            get { return _GoodsIndex; }
+            set
+            {
+                if (_GoodsIndex == value) return;
+
+                var oldValue = _GoodsIndex;
+                _GoodsIndex = value;
+
+                OnChanged(oldValue, value, "GoodsIndex");
+            }
+        }
+        private int _GoodsIndex;
 
 
         protected internal override void OnCreated()

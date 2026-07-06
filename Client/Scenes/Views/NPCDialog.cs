@@ -379,9 +379,21 @@ namespace Client.Scenes.Views
                     }
                     break;
                 case NPCDialogType.BuySell:
+                    var goodsIndex = 0;
+
+                    foreach (MapObject ob in GameScene.Game.MapControl.Objects)
+                    {
+                        if (ob.Race != ObjectType.NPC || ob.ObjectID != info.ObjectID) continue;
+
+                        goodsIndex = ((NPCObject)ob).NPCInfo.GoodsIndex;
+                        break;
+                    }
+
+                    var goods = Page.Goods.Where(x => x.GoodsIndex == goodsIndex).ToList();
+
                     GameScene.Game.NPCGoodsBox.Location = new Point(0, Size.Height);
-                    GameScene.Game.NPCGoodsBox.Visible = Page.Goods.Count > 0;
-                    GameScene.Game.NPCGoodsBox.NewGoods(Page.Goods, Page.Currency);
+                    GameScene.Game.NPCGoodsBox.Visible = goods.Count > 0;
+                    GameScene.Game.NPCGoodsBox.NewGoods(goods, Page.Currency);
 
                     if (Page.Types.Count > 0)
                     {

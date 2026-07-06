@@ -7946,7 +7946,6 @@ namespace Server.Models
 
             if (item == null) return;
             if ((item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
-            if ((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound) return;
             if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
 
             RemoveItem(item);
@@ -10032,7 +10031,7 @@ namespace Server.Models
 
             foreach (NPCGood good in NPCPage.Goods)
             {
-                if (good.Index != p.Index || good.Item == null) continue;
+                if (good.Index != p.Index || good.Item == null || good.GoodsIndex != NPC.NPCInfo.GoodsIndex) continue;
 
                 if (p.Amount > good.Item.StackSize) return;
 

@@ -508,7 +508,7 @@ namespace Library
     public enum Stat
     {
         [StatDescription(Title = "Base Health", Format = "{0:+#0;-#0;#0}", Mode = StatType.None)]
-        BaseHealth,
+        BaseHealth = 0,
         [StatDescription(Title = "Base Mana", Format = "{0:+#0;-#0;#0}", Mode = StatType.None)]
         BaseMana,
 
