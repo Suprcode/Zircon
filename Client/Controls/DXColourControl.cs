@@ -299,7 +299,7 @@ namespace Client.Controls
                 Parent = this,
                 Border = true,
                 BorderColour = Constants.PrimaryColour,
-                Size = new Size(200, 149)
+                Size = new Size(ColourPaletteHelper.PaletteWidth, ColourPaletteHelper.PaletteHeight)
             };
             AfterDraw += (o, e) =>
             {
@@ -393,11 +393,11 @@ namespace Client.Controls
             int x = e.X - ColourScaleBox.DisplayArea.X;
             int y = e.Y - ColourScaleBox.DisplayArea.Y;
 
-            if (x < 0 || y < 0 || x >= 200 || y >= 149) return;
+            if (x < 0 || y < 0 || x >= ColourPaletteHelper.PaletteWidth || y >= ColourPaletteHelper.PaletteHeight) return;
 
             byte[] paletteData = RenderingPipelineManager.GetColourPaletteData();
 
-            int index = (y * 200 + x) * 4;
+            int index = (y * ColourPaletteHelper.PaletteWidth + x) * 4;
 
             if (index + 2 >= paletteData.Length)
                 return;

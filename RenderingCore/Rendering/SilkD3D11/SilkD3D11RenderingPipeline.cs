@@ -1420,15 +1420,8 @@ namespace Shared.Rendering.SilkD3D11
 
         private void LoadTextures()
         {
-            _colourPalette = CreateTextureCore(new Size(256, 1), RenderTextureFormat.A8R8G8B8, false);
-            _paletteData = new byte[256 * 4];
-            for (int i = 0; i < 256; i++)
-            {
-                _paletteData[i * 4] = (byte)i;
-                _paletteData[i * 4 + 1] = (byte)i;
-                _paletteData[i * 4 + 2] = (byte)i;
-                _paletteData[i * 4 + 3] = 255;
-            }
+            _paletteData = ColourPaletteHelper.LoadPaletteData();
+            _colourPalette = CreateTextureCore(new Size(ColourPaletteHelper.PaletteWidth, ColourPaletteHelper.PaletteHeight), RenderTextureFormat.A8R8G8B8, false);
             Buffer.BlockCopy(_paletteData, 0, _colourPalette.Data, 0, _paletteData.Length);
             UploadTexture(_colourPalette);
 

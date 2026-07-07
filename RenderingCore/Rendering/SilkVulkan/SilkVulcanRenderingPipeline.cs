@@ -2323,7 +2323,7 @@ namespace Shared.Rendering.SilkVulkan
 
         private void LoadTextures()
         {
-            _paletteData = ColourPaletteHelper.CreatePaletteData();
+            _paletteData = ColourPaletteHelper.LoadPaletteData();
             _colourPalette = CreateTextureCore(new Size(ColourPaletteHelper.PaletteWidth, ColourPaletteHelper.PaletteHeight), RenderTextureFormat.A8R8G8B8);
             System.Buffer.BlockCopy(_paletteData, 0, _colourPalette.Data, 0, _paletteData.Length);
             UploadTexture(_colourPalette);

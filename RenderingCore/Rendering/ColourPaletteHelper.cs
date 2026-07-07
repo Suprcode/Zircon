@@ -1,4 +1,7 @@
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Shared.Rendering
@@ -7,6 +10,34 @@ namespace Shared.Rendering
     {
         public const int PaletteWidth = 200;
         public const int PaletteHeight = 149;
+        public const string PalettePath = @".\Data\Pallete.png";
+
+        public static byte[] LoadPaletteData()
+        {
+            if (File.Exists(PalettePath))
+            {
+                using Bitmap palette = new Bitmap(PalettePath);
+
+                if (palette.Width == PaletteWidth && palette.Height == PaletteHeight)
+                {
+                    Rectangle bounds = new Rectangle(Point.Empty, palette.Size);
+                    BitmapData bitmapData = palette.LockBits(bounds, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+                    try
+                    {
+                        byte[] data = new byte[palette.Width * palette.Height * 4];
+                        CopyPaletteData(bitmapData.Scan0, bitmapData.Stride, data, palette.Width, palette.Height);
+                        return data;
+                    }
+                    finally
+                    {
+                        palette.UnlockBits(bitmapData);
+                    }
+                }
+            }
+
+            return CreatePaletteData();
+        }
 
         public static byte[] CreatePaletteData(int width = PaletteWidth, int height = PaletteHeight)
         {
@@ -41,6 +72,17 @@ namespace Shared.Rendering
                 int sourceIndex = y * rowLength;
                 IntPtr target = IntPtr.Add(destination, y * destinationPitch);
                 Marshal.Copy(data, sourceIndex, target, rowLength);
+            }
+        }
+
+        private static void CopyPaletteData(IntPtr source, int sourcePitch, byte[] destination, int width, int height)
+        {
+            int rowLength = width * 4;
+
+            for (int y = 0; y < height; y++)
+            {
+                IntPtr row = IntPtr.Add(source, y * sourcePitch);
+                Marshal.Copy(row, destination, y * rowLength, rowLength);
             }
         }
 
