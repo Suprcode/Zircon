@@ -393,12 +393,12 @@ namespace MirDB
             collection.Binding.Insert(insertPosition, newObject);
 
             if (shiftedObjects.Count > 0)
-                MarkReferencesModified(typeof(T), shiftedObjects);
+                MarkReferencesModified(shiftedObjects);
 
             return newObject;
         }
 
-        private void MarkReferencesModified(Type targetType, List<DBObject> updatedObjects)
+        private void MarkReferencesModified(List<DBObject> updatedObjects)
         {
             HashSet<DBObject> changedObjects = [.. updatedObjects];
 
@@ -410,7 +410,6 @@ namespace MirDB
                     {
                         if (value.Property == null) continue;
                         if (!value.Property.PropertyType.IsSubclassOf(typeof(DBObject))) continue;
-                        if (!targetType.IsAssignableFrom(value.Property.PropertyType)) continue;
 
                         if (value.Property.GetValue(ob) is DBObject link && changedObjects.Contains(link))
                             ob.OnChanged(link, link, value.Property.Name);

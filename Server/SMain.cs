@@ -318,7 +318,12 @@ namespace Server
 
             if (result != DialogResult.Yes) return;
 
+            bool shiftsExistingRows = collection.Binding.Any(x => x.Index > focusedObject.Index);
+
             T newObject = Session.InsertObjectAfter<T>(focusedObject.Index);
+
+            if (shiftsExistingRows)
+                ShiftUserDatabaseReferencesAfterInsert<T>(focusedObject.Index);
 
             view.RefreshData();
 
@@ -327,6 +332,24 @@ namespace Server
 
             view.FocusedRowHandle = rowHandle;
             view.SelectRow(rowHandle);
+        }
+
+        private static void ShiftUserDatabaseReferencesAfterInsert<T>(int insertAfterIndex) where T : DBObject, new()
+        {
+            if (typeof(T).GetCustomAttribute<UserObjectAttribute>() != null) return;
+
+            Session userSession = new Session(SessionMode.Users)
+            {
+                BackUpDelay = Session.BackUpDelay,
+            };
+
+            userSession.Initialize(
+                Assembly.GetAssembly(typeof(ItemInfo)),
+                Assembly.GetAssembly(typeof(AccountInfo))
+            );
+
+            userSession.InsertObjectAfter<T>(insertAfterIndex);
+            userSession.Save(true);
         }
 
         private static void DeleteRows_KeyDown(object sender, KeyEventArgs e)
