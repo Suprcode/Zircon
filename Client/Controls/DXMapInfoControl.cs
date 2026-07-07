@@ -38,6 +38,7 @@ namespace Client.Controls
         public DXMapInfoControl()
         {
             DrawTexture = false;
+            CacheInParent = false;
             PassThrough = false;
         }
 
