@@ -29,6 +29,7 @@ namespace Server
         public List<Control> Windows = new List<Control>();
         public static Session Session;
         private static readonly string CacheFilePath = Path.Combine(Application.StartupPath, "Server.cache.json");
+        private static HashSet<Type> UserDatabaseReferenceTypes;
 
         public SMain()
         {
@@ -337,6 +338,7 @@ namespace Server
         private static void ShiftUserDatabaseReferencesAfterInsert<T>(int insertAfterIndex) where T : DBObject, new()
         {
             if (typeof(T).GetCustomAttribute<UserObjectAttribute>() != null) return;
+            if (!UserDatabaseReferencesType(typeof(T))) return;
 
             Session userSession = new Session(SessionMode.Users)
             {
@@ -350,6 +352,46 @@ namespace Server
 
             userSession.InsertObjectAfter<T>(insertAfterIndex);
             userSession.Save(true);
+        }
+
+        private static bool UserDatabaseReferencesType(Type type)
+        {
+            if (UserDatabaseReferenceTypes == null)
+                UserDatabaseReferenceTypes = GetUserDatabaseReferenceTypes();
+
+            return UserDatabaseReferenceTypes.Contains(type);
+        }
+
+        private static HashSet<Type> GetUserDatabaseReferenceTypes()
+        {
+            HashSet<Type> referenceTypes = [];
+
+            Assembly[] assemblies =
+            [
+                Assembly.GetAssembly(typeof(ItemInfo)),
+                Assembly.GetAssembly(typeof(AccountInfo))
+            ];
+
+            IEnumerable<Type> userTypes = assemblies
+                .Where(x => x != null)
+                .SelectMany(x => x.GetTypes())
+                .Where(x => x.IsSubclassOf(typeof(DBObject)) && x.GetCustomAttribute<UserObjectAttribute>() != null);
+
+            foreach (Type userType in userTypes)
+            {
+                PropertyInfo[] properties = userType.GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty);
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.GetCustomAttribute<IgnorePropertyAttribute>() != null) continue;
+                    if (!property.PropertyType.IsSubclassOf(typeof(DBObject))) continue;
+                    if (property.PropertyType.GetCustomAttribute<UserObjectAttribute>() != null) continue;
+
+                    referenceTypes.Add(property.PropertyType);
+                }
+            }
+
+            return referenceTypes;
         }
 
         private static void DeleteRows_KeyDown(object sender, KeyEventArgs e)
