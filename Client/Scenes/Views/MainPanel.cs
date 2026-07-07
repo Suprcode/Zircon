@@ -27,7 +27,6 @@ namespace Client.Scenes.Views
         {
             LibraryFile = LibraryFile.GameInter;
             Index = 50;
-            CacheChildControls = true;
 
             CEnvir.LibraryList.TryGetValue(LibraryFile, out MirLibrary barLibrary);
 

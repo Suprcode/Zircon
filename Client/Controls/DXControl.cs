@@ -1848,7 +1848,7 @@ BorderInformation = new[]
 
         protected virtual void DrawChildControls()
         {
-            if (CacheChildControls && RenderingPipelineManager.SupportsCachedRenderTargets)
+            if (CacheChildControls && Controls.Count > 0 && RenderingPipelineManager.SupportsCachedRenderTargets)
             {
                 DrawCachedChildControls();
                 return;
@@ -1870,6 +1870,34 @@ BorderInformation = new[]
 
         protected virtual bool ShouldCacheChildControl(DXControl control)
         {
+            if (!IsControlCacheSafe(control))
+                return false;
+
+            foreach (DXControl child in control.Controls)
+            {
+                if (!IsControlTreeCacheSafe(child))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsControlTreeCacheSafe(DXControl control)
+        {
+            if (!IsControlCacheSafe(control))
+                return false;
+
+            foreach (DXControl child in control.Controls)
+            {
+                if (!IsControlTreeCacheSafe(child))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsControlCacheSafe(DXControl control)
+        {
             if (!control.CacheInParent)
                 return false;
 
@@ -1877,6 +1905,9 @@ BorderInformation = new[]
                 return false;
 
             if (control is DXAnimatedControl)
+                return false;
+
+            if (control is DXImageControl imageControl && (imageControl.Blend || imageControl.ImageOpacity < 1F))
                 return false;
 
             return true;

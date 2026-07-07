@@ -326,6 +326,14 @@ namespace Client.Controls
         }
 
         #region Methods
+        public override void OnParentChanged(DXControl oValue, DXControl nValue)
+        {
+            base.OnParentChanged(oValue, nValue);
+
+            if (nValue is DXScene)
+                CacheChildControls = true;
+        }
+
         protected override void DrawControl()
         {
             base.DrawControl();
