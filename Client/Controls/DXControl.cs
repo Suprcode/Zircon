@@ -133,6 +133,47 @@ namespace Client.Controls
 
         protected internal List<DXControl> Controls { get; private set; } = new List<DXControl>();
 
+        private sealed class CachedChildControlSegment
+        {
+            public int StartIndex;
+            public int EndIndex;
+            public RenderTargetResource RenderTarget;
+            public Size RenderTargetSize;
+            public bool TextureValid;
+        }
+
+        private readonly List<CachedChildControlSegment> _childRenderSegments = new List<CachedChildControlSegment>();
+        private bool _childRenderSegmentsValid;
+
+        public bool CacheChildControls
+        {
+            get => _CacheChildControls;
+            set
+            {
+                if (_CacheChildControls == value) return;
+
+                _CacheChildControls = value;
+                if (_CacheChildControls)
+                    InvalidateChildCache();
+                else
+                    ReleaseChildRenderTarget();
+            }
+        }
+        private bool _CacheChildControls;
+
+        public bool CacheInParent
+        {
+            get => _CacheInParent;
+            set
+            {
+                if (_CacheInParent == value) return;
+
+                _CacheInParent = value;
+                Parent?.InvalidateChildCache();
+            }
+        }
+        private bool _CacheInParent = true;
+
         #region AllowDragOut
 
         public bool AllowDragOut
@@ -202,6 +243,7 @@ namespace Client.Controls
         public virtual void OnBackColourChanged(Color oValue, Color nValue)
         {
             TextureValid = false;
+            InvalidateParentChildCache();
             BackColourChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -227,6 +269,7 @@ namespace Client.Controls
         public virtual void OnBorderChanged(bool oValue, bool nValue)
         {
             UpdateBorderInformation();
+            InvalidateParentChildCache();
             BorderChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -251,6 +294,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> BorderColourChanged;
         public virtual void OnBorderColourChanged(Color oValue, Color nValue)
         {
+            InvalidateParentChildCache();
             BorderColourChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -278,6 +322,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> BorderInformationChanged;
         public virtual void OnBorderInformationChanged(LinePoint[] oValue, LinePoint[] nValue)
         {
+            InvalidateParentChildCache();
             BorderInformationChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -302,6 +347,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> BorderSizeChanged;
         public virtual void OnBorderSizeChanged(float oValue, float nValue)
         {
+            InvalidateParentChildCache();
             BorderSizeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -375,6 +421,7 @@ namespace Client.Controls
         public virtual void OnDrawTextureChanged(bool oValue, bool nValue)
         {
             TextureValid = false;
+            InvalidateParentChildCache();
             DrawTextureChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -409,6 +456,8 @@ namespace Client.Controls
             }
 
             UpdateBorderInformation();
+            InvalidateChildCache();
+            Parent?.InvalidateChildCache();
             DisplayAreaChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -458,6 +507,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> ForeColourChanged;
         public virtual void OnForeColourChanged(Color oValue, Color nValue)
         {
+            InvalidateParentChildCache();
             ForeColourChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -588,6 +638,7 @@ namespace Client.Controls
         public virtual void OnLocationChanged(Point oValue, Point nValue)
         {
             UpdateDisplayArea();
+            Parent?.InvalidateChildCache();
             LocationChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -708,6 +759,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> OpacityChanged;
         public virtual void OnOpacityChanged(float oValue, float nValue)
         {
+            InvalidateParentChildCache();
             OpacityChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -739,6 +791,8 @@ namespace Client.Controls
             CheckIsEnabled();
 
             UpdateDisplayArea();
+            oValue?.InvalidateChildCache();
+            nValue?.InvalidateChildCache();
 
             ParentChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -791,6 +845,8 @@ namespace Client.Controls
             UpdateDisplayArea();
             UpdateBorderInformation();
             TextureValid = false;
+            InvalidateChildCache();
+            Parent?.InvalidateChildCache();
 
             SizeChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -889,6 +945,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> TextChanged;
         public virtual void OnTextChanged(string oValue, string nValue)
         {
+            InvalidateParentChildCache();
             TextChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -914,6 +971,7 @@ namespace Client.Controls
         public virtual void OnVisibleChanged(bool oValue, bool nValue)
         {
             CheckIsVisible();
+            Parent?.InvalidateChildCache();
 
             VisibleChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -980,6 +1038,7 @@ namespace Client.Controls
             foreach (DXControl control in checks)
                 control.CheckIsVisible();
 
+            Parent?.InvalidateChildCache();
             IsVisibleChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -1104,6 +1163,7 @@ namespace Client.Controls
             TextureValid = false;
 
             RenderingPipelineManager.UnregisterControlCache(this);
+            ReleaseChildRenderTarget();
         }
         #endregion
 
@@ -1788,6 +1848,17 @@ BorderInformation = new[]
 
         protected virtual void DrawChildControls()
         {
+            if (CacheChildControls && RenderingPipelineManager.SupportsCachedRenderTargets)
+            {
+                DrawCachedChildControls();
+                return;
+            }
+
+            DrawChildControlsUncached();
+        }
+
+        protected void DrawChildControlsUncached()
+        {
             foreach (DXControl control in Controls)
             {
                 if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
@@ -1795,6 +1866,198 @@ BorderInformation = new[]
 
                 control.Draw();
             }
+        }
+
+        protected virtual bool ShouldCacheChildControl(DXControl control)
+        {
+            if (!control.CacheInParent)
+                return false;
+
+            if (control.BeforeDraw != null || control.BeforeChildrenDraw != null || control.AfterDraw != null)
+                return false;
+
+            if (control is DXAnimatedControl)
+                return false;
+
+            return true;
+        }
+
+        public void InvalidateChildCache()
+        {
+            _childRenderSegmentsValid = false;
+
+            foreach (CachedChildControlSegment segment in _childRenderSegments)
+                segment.TextureValid = false;
+
+            Parent?.InvalidateChildCache();
+        }
+
+        protected void InvalidateParentChildCache()
+        {
+            if (CacheInParent)
+                Parent?.InvalidateChildCache();
+        }
+
+        private void DrawCachedChildControls()
+        {
+            EnsureChildRenderSegments();
+
+            for (int i = 0; i < _childRenderSegments.Count; i++)
+            {
+                CachedChildControlSegment segment = _childRenderSegments[i];
+
+                if (!segment.RenderTarget.Texture.IsValid)
+                {
+                    DrawChildControlsUncached();
+                    return;
+                }
+
+                if (!segment.TextureValid)
+                    RenderChildControlSegment(segment);
+            }
+
+            int segmentIndex = 0;
+            for (int i = 0; i < Controls.Count; i++)
+            {
+                if (segmentIndex < _childRenderSegments.Count && _childRenderSegments[segmentIndex].StartIndex == i)
+                {
+                    CachedChildControlSegment segment = _childRenderSegments[segmentIndex++];
+                    PresentTexture(segment.RenderTarget.Texture, DisplayArea, Parent, DisplayArea, Color.White, this);
+                    i = segment.EndIndex;
+                    continue;
+                }
+
+                DXControl control = Controls[i];
+
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                    continue;
+
+                if (ShouldCacheChildControl(control))
+                    continue;
+
+                control.Draw();
+            }
+        }
+
+        private void EnsureChildRenderSegments()
+        {
+            Size backBufferSize = RenderingPipelineManager.GetBackBufferSize();
+
+            if (_childRenderSegmentsValid && AllChildRenderSegmentsValid(backBufferSize))
+                return;
+
+            List<CachedChildControlSegment> oldSegments = new List<CachedChildControlSegment>(_childRenderSegments);
+            _childRenderSegments.Clear();
+
+            int cachedStart = -1;
+            for (int i = 0; i < Controls.Count; i++)
+            {
+                DXControl control = Controls[i];
+
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                    continue;
+
+                if (ShouldCacheChildControl(control))
+                {
+                    if (cachedStart == -1)
+                        cachedStart = i;
+
+                    continue;
+                }
+
+                AddChildRenderSegment(oldSegments, cachedStart, i - 1, backBufferSize);
+                cachedStart = -1;
+            }
+
+            AddChildRenderSegment(oldSegments, cachedStart, Controls.Count - 1, backBufferSize);
+
+            foreach (CachedChildControlSegment segment in oldSegments)
+            {
+                if (segment.RenderTarget.IsValid)
+                    RenderingPipelineManager.ReleaseRenderTarget(segment.RenderTarget);
+            }
+
+            _childRenderSegmentsValid = true;
+        }
+
+        private bool AllChildRenderSegmentsValid(Size backBufferSize)
+        {
+            foreach (CachedChildControlSegment segment in _childRenderSegments)
+            {
+                if (!segment.RenderTarget.IsValid || segment.RenderTargetSize != backBufferSize)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void AddChildRenderSegment(List<CachedChildControlSegment> oldSegments, int startIndex, int endIndex, Size backBufferSize)
+        {
+            if (startIndex == -1 || endIndex < startIndex)
+                return;
+
+            CachedChildControlSegment segment = null;
+
+            for (int i = 0; i < oldSegments.Count; i++)
+            {
+                CachedChildControlSegment oldSegment = oldSegments[i];
+
+                if (oldSegment.RenderTarget.IsValid && oldSegment.RenderTargetSize == backBufferSize)
+                {
+                    segment = oldSegment;
+                    oldSegments.RemoveAt(i);
+                    break;
+                }
+            }
+
+            if (segment == null)
+            {
+                segment = new CachedChildControlSegment
+                {
+                    RenderTarget = RenderingPipelineManager.CreateRenderTarget(backBufferSize),
+                    RenderTargetSize = backBufferSize,
+                };
+            }
+
+            segment.StartIndex = startIndex;
+            segment.EndIndex = endIndex;
+            segment.TextureValid = false;
+            _childRenderSegments.Add(segment);
+        }
+
+        private void RenderChildControlSegment(CachedChildControlSegment segment)
+        {
+            RenderSurface oldSurface = RenderingPipelineManager.GetCurrentSurface();
+            RenderingPipelineManager.SetSurface(segment.RenderTarget.Surface);
+            RenderingPipelineManager.Clear(RenderClearFlags.Target, Color.FromArgb(0), 0, 0);
+
+            for (int i = segment.StartIndex; i <= segment.EndIndex; i++)
+            {
+                DXControl control = Controls[i];
+
+                if (!control.IsVisible || control.DisplayArea.Width <= 0 || control.DisplayArea.Height <= 0)
+                    continue;
+
+                if (!ShouldCacheChildControl(control))
+                    continue;
+
+                control.Draw();
+            }
+
+            RenderingPipelineManager.SetSurface(oldSurface);
+            segment.TextureValid = true;
+        }
+
+        private void ReleaseChildRenderTarget()
+        {
+            foreach (CachedChildControlSegment segment in _childRenderSegments)
+            {
+                if (segment.RenderTarget.IsValid)
+                    RenderingPipelineManager.ReleaseRenderTarget(segment.RenderTarget);
+            }
+
+            _childRenderSegments.Clear();
+            _childRenderSegmentsValid = false;
         }
 
         protected virtual void DrawControl()

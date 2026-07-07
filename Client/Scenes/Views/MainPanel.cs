@@ -27,6 +27,7 @@ namespace Client.Scenes.Views
         {
             LibraryFile = LibraryFile.GameInter;
             Index = 50;
+            CacheChildControls = true;
 
             CEnvir.LibraryList.TryGetValue(LibraryFile, out MirLibrary barLibrary);
 
@@ -513,6 +514,7 @@ namespace Client.Scenes.Views
             {
                 PetModeLabel.Location = new Point(FocusBar.Location.X + FocusBar.Size.Width - PetModeLabel.Size.Width, FocusBar.Location.Y + (FocusBar.Size.Height - PetModeLabel.Size.Height) / 2 - 2);
             };
+
         }
 
         #region IDisposable

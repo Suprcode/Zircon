@@ -79,6 +79,8 @@ namespace Client.Scenes.Views
             {
                 Parent = this,
                 PassThrough = true,
+                CacheChildControls = true,
+                CacheInParent = false,
                 Location = new Point(ResizeBuffer, ResizeBuffer),
                 Size = new Size(Size.Width - ScrollBar.Size.Width - 1 - ResizeBuffer * 2, Size.Height - ResizeBuffer * 2),
             };

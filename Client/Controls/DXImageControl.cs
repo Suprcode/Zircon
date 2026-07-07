@@ -30,6 +30,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> BlendChanged;
         public virtual void OnBlendChanged(bool oValue, bool nValue)
         {
+            InvalidateParentChildCache();
             BlendChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -54,6 +55,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> BlendModeChanged;
         public virtual void OnBlendModeChanged(BlendMode oValue, BlendMode nValue)
         {
+            InvalidateParentChildCache();
             BlendModeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -78,6 +80,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> DrawImageChanged;
         public virtual void OnDrawImageChanged(bool oValue, bool nValue)
         {
+            InvalidateParentChildCache();
             DrawImageChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -104,6 +107,7 @@ namespace Client.Controls
         {
             TextureValid = false;
             UpdateDisplayArea();
+            InvalidateParentChildCache();
             FixedSizeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -133,6 +137,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> ImageOpacityChanged;
         public virtual void OnImageOpacityChanged(float oValue, float nValue)
         {
+            InvalidateParentChildCache();
             ImageOpacityChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -159,6 +164,7 @@ namespace Client.Controls
         {
             TextureValid = false;
             UpdateDisplayArea();
+            InvalidateParentChildCache();
             IndexChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -188,6 +194,7 @@ namespace Client.Controls
 
             TextureValid = false;
             UpdateDisplayArea();
+            InvalidateParentChildCache();
 
             LibraryFileChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -238,6 +245,7 @@ namespace Client.Controls
         public virtual void OnUseOffSetChanged(bool oValue, bool nValue)
         {
             UpdateDisplayArea();
+            InvalidateParentChildCache();
             UseOffSetChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -278,6 +286,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> DropShadowChanged;
         public virtual void OnDropShadowChanged(bool oValue, bool nValue)
         {
+            InvalidateParentChildCache();
             DropShadowChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -302,6 +311,7 @@ namespace Client.Controls
         public event EventHandler<EventArgs> GrayScaleChanged;
         public virtual void OnGrayScaleChanged(bool oValue, bool nValue)
         {
+            InvalidateParentChildCache();
             GrayScaleChanged?.Invoke(this, EventArgs.Empty);
         }
 

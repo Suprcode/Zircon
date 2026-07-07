@@ -259,6 +259,7 @@ namespace Client.Controls
             Windows.Add(this);
 
             DrawTexture = true;
+            CacheChildControls = true;
             BackColour = Constants.WindowBackColour;
             HasTitle = true;
             Movable = true;

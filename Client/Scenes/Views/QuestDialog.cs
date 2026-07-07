@@ -895,7 +895,7 @@ namespace Client.Scenes.Views
 
         private void UpdateAlertIconLocation()
         {
-            if (AlertIcon == null || Parent == null) return;
+            if (AlertIcon == null || Parent == null || TabButton == null) return;
 
             AlertIcon.Location = new Point(Parent.Location.X + TabButton.Location.X - 4, Parent.Location.Y + TabButton.Location.Y - 4);
         }
@@ -976,7 +976,8 @@ namespace Client.Scenes.Views
                 _NeedUpdate = false;
                 NeedUpdateChanged = null;
 
-                TabButton.LocationChanged -= TabButton_LocationChanged;
+                if (TabButton != null)
+                    TabButton.LocationChanged -= TabButton_LocationChanged;
 
                 if (ScrollBar != null)
                 {
@@ -1811,7 +1812,7 @@ namespace Client.Scenes.Views
 
         private void UpdateAlertIconLocation()
         {
-            if (AlertIcon == null || Parent == null) return;
+            if (AlertIcon == null || Parent == null || TabButton == null) return;
 
             AlertIcon.Location = new Point(Parent.Location.X + TabButton.Location.X - 4, Parent.Location.Y + TabButton.Location.Y - 4);
         }
@@ -1884,7 +1885,8 @@ namespace Client.Scenes.Views
                 _SelectedCategory = null;
                 SelectedCategoryChanged = null;
 
-                TabButton.LocationChanged -= TabButton_LocationChanged;
+                if (TabButton != null)
+                    TabButton.LocationChanged -= TabButton_LocationChanged;
 
                 if (Menu != null)
                 {
