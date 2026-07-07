@@ -193,9 +193,10 @@ namespace Client.Scenes.Views
                 Location = new Point(10, 354),
                 Size = new Size(172, 20),
                 AutoSize = false,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Text = CEnvir.Language.GameStoreDialogCurrencyLabel,
-                ForeColour = Constants.PrimaryColour,
+                LabelStyle = DXLabelStyle.Title,
                 IsControl = false,
             };
 
@@ -205,6 +206,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.Default,
                 Location = new Point(10, 410),
                 Size = new Size(172, 27),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.GameStoreDialogRechargeButtonLabel },
             };
             BuyGameGoldButton.MouseClick += BuyGameGoldButton_MouseClick;
@@ -215,6 +217,7 @@ namespace Client.Scenes.Views
                 ButtonType = ButtonType.Default,
                 Location = new Point(10, 438),
                 Size = new Size(172, 27),
+                LabelStyle = ButtonLabelStyle.Gold,
             };
             CurrencyToggleButton.MouseClick += (o, e) =>
             {
@@ -237,9 +240,10 @@ namespace Client.Scenes.Views
                 Location = new Point(614, 37),
                 Size = new Size(174, 20),
                 AutoSize = false,
+                Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Bold),
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Text = CEnvir.Language.GameStoreDialogTopFiveLabel,
-                ForeColour = Constants.PrimaryColour,
+                LabelStyle = DXLabelStyle.Title,
                 IsControl = false,
             };
             TopItems.ItemSelected += info =>
@@ -1075,7 +1079,7 @@ namespace Client.Scenes.Views
                 {
                     Parent = this,
                     Location = new Point(0, 5 + i * 87),
-                    Size = new Size(174, i == Rows.Length - 1 ? 73 : 78)
+                    Size = new Size(174, i == Rows.Length - 1 ? 73 : 78),
                 };
                 row.RankLabel.Text = rankLabels[i];
                 row.MouseClick += (o, e) => SelectItem(row);
@@ -1152,7 +1156,7 @@ namespace Client.Scenes.Views
                 Size = new Size(174, 20),
                 AutoSize = false,
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
-                ForeColour = Color.CornflowerBlue,
+                LabelStyle = DXLabelStyle.GameStoreTopRank,
                 IsControl = false,
             };
 

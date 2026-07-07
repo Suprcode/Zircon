@@ -209,6 +209,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CompanionDialogCompanionTabBonusButtonLabel },
                 Location = new Point(10, 263),
                 Size = new Size(70, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false,
             };
             BonusButton.MouseClick += (o, e) => ChangeView("Bonus");
@@ -219,6 +220,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CompanionDialogCompanionTabFilterButtonLabel },
                 Location = new Point(90, 263),
                 Size = new Size(70, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false,
             };
             FilterButton.MouseClick += (o, e) => ChangeView("Filter");
@@ -229,6 +231,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CompanionDialogCompanionTabBagButtonLabel },
                 Location = new Point(170, 263),
                 Size = new Size(70, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false,
             };
             BagButton.MouseClick += (o, e) => ChangeView("Bag");

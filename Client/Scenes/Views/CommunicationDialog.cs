@@ -564,6 +564,7 @@ namespace Client.Scenes.Views
             {
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogFriendTabFriendAddButtonLabel },
                 Visible = true
@@ -590,6 +591,7 @@ namespace Client.Scenes.Views
             {
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogFriendTabFriendRemoveButtonLabel },
                 Visible = true,
@@ -699,6 +701,8 @@ namespace Client.Scenes.Views
             ReceivedCollectAllButton = new DXButton
             {
                 Size = new Size(80, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabCollectAllButtonLabel },
                 Visible = false
@@ -737,6 +741,8 @@ namespace Client.Scenes.Views
             ReceivedDeleteAll = new DXButton
             {
                 Size = new Size(80, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabDeleteAllButtonLabel },
                 Visible = false
@@ -758,6 +764,8 @@ namespace Client.Scenes.Views
             ReceivedNewButton = new DXButton
             {
                 Size = new Size(80, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogReceivedTabNewButtonLabel },
                 Visible = false
@@ -895,6 +903,7 @@ namespace Client.Scenes.Views
             {
                 ButtonType = ButtonType.Default,
                 Size = new Size(70, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommunicationDialogSendTabSendButtonLabel },
                 Enabled = false,
@@ -933,6 +942,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CommunicationDialogBlockedTabAddButtonLabel },
                 Parent = this,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 ButtonType = ButtonType.Default,
                 Visible = false
             };
@@ -958,6 +968,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CommunicationDialogBlockedTabRemoveButtonLabel },
                 Parent = this,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 ButtonType = ButtonType.Default,
                 Enabled = false,
                 Visible = false
@@ -1110,6 +1121,8 @@ namespace Client.Scenes.Views
             ReadReplyButton = new DXButton
             {
                 Size = new Size(100, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = "Reply Mail" },
                 Visible = false
@@ -1133,6 +1146,8 @@ namespace Client.Scenes.Views
             ReadDeleteButton = new DXButton
             {
                 Size = new Size(100, DefaultHeight),
+
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = "Delete Mail" },
                 Visible = false

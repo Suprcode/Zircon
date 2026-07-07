@@ -265,6 +265,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CommonControlConfirm },
                 Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
             };
             ChangeButton.MouseClick += (o, e) => Confirm();
 

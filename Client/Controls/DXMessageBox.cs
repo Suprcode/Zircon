@@ -1,4 +1,4 @@
-﻿using Client.Envir;
+using Client.Envir;
 using Client.UserModels;
 using System.Drawing;
 using System.Windows.Forms;
@@ -96,6 +96,7 @@ namespace Client.Controls
                     {
                         Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
+                        LabelStyle = ButtonLabelStyle.Gold,
                         Parent = this,
                         Label = { Text = CEnvir.Language.CommonControlOk }
                     };
@@ -106,6 +107,7 @@ namespace Client.Controls
                     {
                         Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
+                        LabelStyle = ButtonLabelStyle.Gold,
                         Parent = this,
                         Label = { Text = CEnvir.Language.CommonControlYes }
                     };
@@ -114,6 +116,7 @@ namespace Client.Controls
                     {
                         Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
+                        LabelStyle = ButtonLabelStyle.Gold,
                         Parent = this,
                         Label = { Text = CEnvir.Language.CommonControlNo }
                     };
@@ -124,6 +127,7 @@ namespace Client.Controls
                     {
                         Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                         Size = new Size(80, DefaultHeight),
+                        LabelStyle = ButtonLabelStyle.Gold,
                         Parent = this,
                         Label = { Text = CEnvir.Language.CommonControlCancel }
                     };

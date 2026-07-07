@@ -114,6 +114,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(26, 40),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogSettingsButtonLabel },
                 Hint = string.Format(CEnvir.Language.MenuDialogSettingsButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.ConfigWindow)),
@@ -124,6 +125,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(26, 70),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogHelpButtonLabel },
                 Hint = string.Format(CEnvir.Language.MenuDialogHelpButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.HelpWindow)),
@@ -134,6 +136,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(26, 100),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogGuildButtonLabel },
                 Hint = string.Format(CEnvir.Language.MenuDialogGuildButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.GuildWindow)),
@@ -144,6 +147,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(26, 130),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogStorageButtonLabel },
                 Hint = string.Format(CEnvir.Language.MenuDialogStorageButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.StorageWindow)),
@@ -154,6 +158,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(26, 160),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogRankingButtonLabel },
                 Hint = string.Format(CEnvir.Language.MenuDialogRankingButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.RankingWindow)),
@@ -164,6 +169,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(26, 190),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogCompanionButtonLabel },
                 Hint = string.Format(CEnvir.Language.MenuDialogCompanionButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.CompanionWindow)),
@@ -174,6 +180,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(26, 220),
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.MenuDialogLeaveButtonLabel },
                 Hint = string.Format(CEnvir.Language.MenuDialogLeaveButtonHint, CEnvir.GetKeyBindLabel(KeyBindAction.ExitGameWindow)),

@@ -1,8 +1,8 @@
 using Client.Envir;
-using Shared.Rendering;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Font = System.Drawing.Font;
 
@@ -181,6 +181,102 @@ namespace Client.Controls
 
         #endregion
 
+        #region Gradient
+
+        public bool Gradient
+        {
+            get => _Gradient;
+            set
+            {
+                if (_Gradient == value) return;
+
+                bool oldValue = _Gradient;
+                _Gradient = value;
+
+                OnGradientChanged(oldValue, value);
+            }
+        }
+        private bool _Gradient;
+        public event EventHandler<EventArgs> GradientChanged;
+        public virtual void OnGradientChanged(bool oValue, bool nValue)
+        {
+            TextureValid = false;
+
+            GradientChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public Color GradientTopColour
+        {
+            get => _GradientTopColour;
+            set
+            {
+                if (_GradientTopColour == value) return;
+
+                Color oldValue = _GradientTopColour;
+                _GradientTopColour = value;
+
+                OnGradientTopColourChanged(oldValue, value);
+            }
+        }
+        private Color _GradientTopColour;
+        public event EventHandler<EventArgs> GradientTopColourChanged;
+        public virtual void OnGradientTopColourChanged(Color oValue, Color nValue)
+        {
+            TextureValid = false;
+
+            GradientTopColourChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public Color GradientBottomColour
+        {
+            get => _GradientBottomColour;
+            set
+            {
+                if (_GradientBottomColour == value) return;
+
+                Color oldValue = _GradientBottomColour;
+                _GradientBottomColour = value;
+
+                OnGradientBottomColourChanged(oldValue, value);
+            }
+        }
+        private Color _GradientBottomColour;
+        public event EventHandler<EventArgs> GradientBottomColourChanged;
+        public virtual void OnGradientBottomColourChanged(Color oValue, Color nValue)
+        {
+            TextureValid = false;
+
+            GradientBottomColourChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region LabelStyle
+
+        public DXLabelStyle LabelStyle
+        {
+            get => _LabelStyle;
+            set
+            {
+                if (_LabelStyle == value) return;
+
+                DXLabelStyle oldValue = _LabelStyle;
+                _LabelStyle = value;
+
+                OnLabelStyleChanged(oldValue, value);
+            }
+        }
+        private DXLabelStyle _LabelStyle;
+        public event EventHandler<EventArgs> LabelStyleChanged;
+        public virtual void OnLabelStyleChanged(DXLabelStyle oValue, DXLabelStyle nValue)
+        {
+            UpdateLabelStyle();
+
+            LabelStyleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region OutlineColour
 
         public Color OutlineColour
@@ -262,6 +358,8 @@ namespace Client.Controls
             Outline = true;
             ForeColour = Constants.PrimaryColour;
             OutlineColour = Color.Black;
+            GradientTopColour = Color.Empty;
+            GradientBottomColour = Color.Empty;
         }
 
         #region Methods
@@ -270,6 +368,32 @@ namespace Client.Controls
             if (!AutoSize) return;
 
             Size = GetSize(Text, Font, Outline, PaddingBottom);
+        }
+
+        private void UpdateLabelStyle()
+        {
+            switch (LabelStyle)
+            {
+                case DXLabelStyle.Title:
+                    Outline = true;
+                    OutlineColour = Color.Black;
+                    Gradient = true;
+                    GradientTopColour = Color.FromArgb(255, 226, 113);
+                    GradientBottomColour = Color.FromArgb(226, 171, 55);
+                    break;
+                case DXLabelStyle.GameStoreTopRank:
+                    Outline = true;
+                    OutlineColour = Color.Black;
+                    Gradient = true;
+                    GradientTopColour = Color.FromArgb(245, 248, 255);
+                    GradientBottomColour = Color.FromArgb(151, 184, 255);
+                    break;
+                default:
+                    Gradient = false;
+                    GradientTopColour = Color.Empty;
+                    GradientBottomColour = Color.Empty;
+                    break;
+            }
         }
 
         private RenderTexture _labelTextureHandle;
@@ -296,7 +420,11 @@ namespace Client.Controls
                 RenderingPipelineManager.ConfigureGraphics(graphics);
                 graphics.Clear(BackColour);
 
-                if (Outline)
+                if (Gradient)
+                {
+                    DrawGradientText(graphics, width, height);
+                }
+                else if (Outline)
                 {
                     TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 0, width, height), OutlineColour, DrawFormat);
                     TextRenderer.DrawText(graphics, Text, Font, new Rectangle(0, 1, width, height), OutlineColour, DrawFormat);
@@ -312,6 +440,82 @@ namespace Client.Controls
             TextureValid = true;
             ExpireTime = CEnvir.Now + Config.CacheDuration;
         }
+
+        private void DrawGradientText(Graphics graphics, int width, int height)
+        {
+            if (string.IsNullOrEmpty(Text) || width <= 0 || height <= 0) return;
+
+            Color topColour = GradientTopColour.IsEmpty ? ForeColour : GradientTopColour;
+            Color bottomColour = GradientBottomColour.IsEmpty ? ForeColour : GradientBottomColour;
+
+            if (Outline)
+            {
+                TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 0, width, height), OutlineColour, DrawFormat);
+                TextRenderer.DrawText(graphics, Text, Font, new Rectangle(0, 1, width, height), OutlineColour, DrawFormat);
+                TextRenderer.DrawText(graphics, Text, Font, new Rectangle(2, 1, width, height), OutlineColour, DrawFormat);
+                TextRenderer.DrawText(graphics, Text, Font, new Rectangle(1, 2, width, height), OutlineColour, DrawFormat);
+            }
+
+            using (Bitmap textMask = new Bitmap(width, height, PixelFormat.Format32bppArgb))
+            using (Graphics maskGraphics = Graphics.FromImage(textMask))
+            {
+                RenderingPipelineManager.ConfigureGraphics(maskGraphics);
+                maskGraphics.Clear(Color.Transparent);
+
+                Rectangle textBounds = Outline
+                    ? new Rectangle(1, 1, width, height)
+                    : new Rectangle(1, 0, width, height);
+
+                TextRenderer.DrawText(maskGraphics, Text, Font, textBounds, Color.White, DrawFormat);
+                ApplyGradientToMask(textMask, topColour, bottomColour);
+
+                graphics.DrawImageUnscaled(textMask, 0, 0);
+            }
+        }
+
+        private static void ApplyGradientToMask(Bitmap textMask, Color topColour, Color bottomColour)
+        {
+            Rectangle bounds = new Rectangle(Point.Empty, textMask.Size);
+            BitmapData data = textMask.LockBits(bounds, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int byteCount = Math.Abs(data.Stride) * data.Height;
+                byte[] pixels = new byte[byteCount];
+                Marshal.Copy(data.Scan0, pixels, 0, byteCount);
+
+                int gradientHeight = Math.Max(1, data.Height - 1);
+
+                for (int y = 0; y < data.Height; y++)
+                {
+                    float amount = y / (float)gradientHeight;
+                    byte red = (byte)(topColour.R + (bottomColour.R - topColour.R) * amount);
+                    byte green = (byte)(topColour.G + (bottomColour.G - topColour.G) * amount);
+                    byte blue = (byte)(topColour.B + (bottomColour.B - topColour.B) * amount);
+
+                    int row = y * data.Stride;
+
+                    for (int x = 0; x < data.Width; x++)
+                    {
+                        int index = row + x * 4;
+                        byte alpha = pixels[index + 3];
+
+                        if (alpha == 0) continue;
+
+                        pixels[index] = blue;
+                        pixels[index + 1] = green;
+                        pixels[index + 2] = red;
+                    }
+                }
+
+                Marshal.Copy(pixels, 0, data.Scan0, byteCount);
+            }
+            finally
+            {
+                textMask.UnlockBits(data);
+            }
+        }
+
         public override void DisposeTexture()
         {
             if (_labelTextureHandle.IsValid)
@@ -373,15 +577,30 @@ namespace Client.Controls
                 _Font?.Dispose();
                 _Font = null;
                 _Outline = false;
+                _Gradient = false;
+                _LabelStyle = DXLabelStyle.None;
+                _GradientTopColour = Color.Empty;
+                _GradientBottomColour = Color.Empty;
                 _OutlineColour = Color.Empty;
 
                 AutoSizeChanged = null;
                 DrawFormatChanged = null;
                 FontChanged = null;
                 OutlineChanged = null;
+                GradientChanged = null;
+                LabelStyleChanged = null;
+                GradientTopColourChanged = null;
+                GradientBottomColourChanged = null;
                 OutlineColourChanged = null;
             }
         }
         #endregion
+    }
+
+    public enum DXLabelStyle
+    {
+        None,
+        Title,
+        GameStoreTopRank
     }
 }

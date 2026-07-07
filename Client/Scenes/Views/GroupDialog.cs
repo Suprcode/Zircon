@@ -1179,6 +1179,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point((Size.Width) / 3 - 80 - 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = "Enable" },
             };
@@ -1188,6 +1189,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point((Size.Width) / 3 + 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = "Disable" }
             };
@@ -1200,6 +1202,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point((Size.Width / 3) * 2 + 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.CommonControlCancel }
             };

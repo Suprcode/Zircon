@@ -63,6 +63,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(61, 45),
                 Size = new Size(130, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.ExitDialogToSelectButtonLabel },
             };
@@ -81,6 +82,7 @@ namespace Client.Scenes.Views
             {
                 Location = new Point(61, 55 + DefaultHeight),
                 Size = new Size(130, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Parent = this,
                 Label = { Text = CEnvir.Language.ExitDialogExitButtonLabel },
             };

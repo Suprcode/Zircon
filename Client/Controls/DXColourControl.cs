@@ -266,6 +266,7 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlCancel },
                 Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
             };
             CancelButton.MouseClick += CancelButton_MouseClick;
             CloseButton.MouseClick += CancelButton_MouseClick;
@@ -276,6 +277,7 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlSelect },
                 Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
             };
             SelectButton.MouseClick += (o, e) => Dispose();
 
@@ -285,6 +287,7 @@ namespace Client.Controls
                 Label = { Text = CEnvir.Language.CommonControlColourPickerEmptyLabel },
                 Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Visible = AllowNoColour
             };
             EmptyButton.Location = new Point(Size.Width - EmptyButton.Size.Width - 10, 115);

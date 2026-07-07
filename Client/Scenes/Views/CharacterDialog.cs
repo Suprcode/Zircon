@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.Models;
 using Shared.Rendering;
@@ -2463,6 +2463,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.CharacterDisciplineTabButtonGainLabel },
                 Location = new Point(182, 266),
                 Size = new Size(120, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false
             };
             DisciplineButton.MouseClick += (o, e) =>

@@ -812,6 +812,7 @@ namespace Client.Scenes
                     Parent = this,
                     Location = new Point(550, 60),
                     Size = new Size(100, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                     Label = { Text = CEnvir.Language.LoginDialogLoginButtonLabel },
                     Enabled = false,
                 };
@@ -822,6 +823,7 @@ namespace Client.Scenes
                     Parent = this,
                     Location = new Point(660, 60),
                     Size = new Size(100, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                     Label = { Text = CEnvir.Language.LoginDialogExitButtonLabel },
                     Enabled = true,
                 };
@@ -1323,6 +1325,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.CommonControlCancel },
                     Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CancelButton.MouseClick += (o, e) => Close();
                 CloseButton.MouseClick += (o, e) => Close();
@@ -1334,6 +1337,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.NewAccountDialogCreateButtonLabel },
                     Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CreateButton.MouseClick += (o, e) => Create();
 
@@ -1963,6 +1967,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.CommonControlCancel },
                     Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CancelButton.MouseClick += (o, e) => Close();
                 CloseButton.MouseClick += (o, e) => Close();
@@ -1974,6 +1979,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.ChangePasswordChangeButtonLabel },
                     Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 ChangeButton.MouseClick += (o, e) => Change();
 
@@ -2396,6 +2402,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.CommonControlCancel },
                     Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CancelButton.MouseClick += (o, e) => Close();
                 CloseButton.MouseClick += (o, e) => Close();
@@ -2407,6 +2414,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.RequestResetPasswordRequestButtonLabel },
                     Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 RequestButton.MouseClick += (o, e) => Request();
 
@@ -2712,6 +2720,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.CommonControlCancel },
                     Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CancelButton.MouseClick += (o, e) => Close();
                 CloseButton.MouseClick += (o, e) => Close();
@@ -2723,6 +2732,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.ResetPasswordResetButtonLabel },
                     Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 ResetButton.MouseClick += (o, e) => Reset();
 
@@ -3077,6 +3087,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.CommonControlCancel },
                     Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CancelButton.MouseClick += (o, e) => Close();
                 CloseButton.MouseClick += (o, e) => Close();
@@ -3088,6 +3099,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.ActivationActivateButtonLabel },
                     Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 ActivateButton.MouseClick += (o, e) => Activate();
 
@@ -3342,6 +3354,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.CommonControlCancel },
                     Location = new Point(Size.Width / 2 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CancelButton.MouseClick += (o, e) => Close();
                 CloseButton.MouseClick += (o, e) => Close();
@@ -3353,6 +3366,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.RequestActivationKeyRequestButtonLabel },
                     Location = new Point((Size.Width) / 2 - 80 - 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 RequestButton.MouseClick += (o, e) => Request();
 

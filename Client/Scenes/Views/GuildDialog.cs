@@ -627,6 +627,7 @@ namespace Client.Scenes.Views
                 Location = new Point(10, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(120, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.GuildDialogCreateTabStarterGuildButtonLabel }
             };
             StarterGuildButton.MouseClick += StarterGuildButton_MouseClick;
@@ -1170,6 +1171,7 @@ namespace Client.Scenes.Views
                 Location = new Point(10, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(120, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.GuildDialogManageTabTreasuryChangeButtonLabel },
             };
             SetTaxButton.MouseClick += (o, e) =>
@@ -1292,6 +1294,7 @@ namespace Client.Scenes.Views
                 Location = new Point(10, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(110, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipAddButtonLabel },
             };
             AddMemberButton.MouseClick += (o, e) =>
@@ -1317,6 +1320,7 @@ namespace Client.Scenes.Views
                 Location = new Point(AddMemberButton.DisplayArea.Right + 5, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(110, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipEditDefaultButtonLabel },
             };
             EditDefaultMemberButton.MouseClick += (o, e) =>
@@ -1336,6 +1340,7 @@ namespace Client.Scenes.Views
                 Location = new Point(EditDefaultMemberButton.DisplayArea.Right + 5, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(110, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.GuildDialogManageTabMembershipMembersIncreaseButtonLabel },
             };
             IncreaseMemberButton.MouseClick += (o, e) =>
@@ -1510,6 +1515,7 @@ namespace Client.Scenes.Views
                 Location = new Point(10, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(110, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = string.Format(CEnvir.Language.GuildDialogManageTabUpgradeStorageIncreaseButtonLabel, Globals.GuildStorageCost) },
             };
             IncreaseStorageButton.MouseClick += (o, e) =>
@@ -1615,6 +1621,7 @@ namespace Client.Scenes.Views
                 Location = new Point(10, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(110, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.GuildDialogWarTabGuildWarStartWarButtonLabel }
             };
             StartWarButton.MouseClick += (o, e) =>
@@ -1840,6 +1847,7 @@ namespace Client.Scenes.Views
                 Location = new Point(10, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(120, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = "Open/Close Gates" },
                 Enabled = false,
                 Visible = true
@@ -1855,6 +1863,7 @@ namespace Client.Scenes.Views
                 Location = new Point(220, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = "Repair Gates" },
                 Enabled = false,
                 Visible = true
@@ -1878,6 +1887,7 @@ namespace Client.Scenes.Views
                 Location = new Point(330, 10),
                 ButtonType = ButtonType.Default,
                 Size = new Size(100, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = "Repair Guards" },
                 Enabled = false,
                 Visible = true
@@ -3184,6 +3194,7 @@ namespace Client.Scenes.Views
                 Location = new Point(359, 85),
                 ButtonType = ButtonType.Default,
                 Size = new Size(60, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.GuildCastlePanelRequestButtonLabel },
                 Enabled = false,
             };

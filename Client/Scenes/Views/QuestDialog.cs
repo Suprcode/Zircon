@@ -864,6 +864,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.QuestAbandonButtonLabel },
                 Location = new Point(640, 398),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false
             };
             AbandonButton.MouseClick += (o, e) =>
@@ -1784,6 +1785,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.QuestDialogMilestonesResetTitleButtonLabel },
                 Location = new Point(640, 398),
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Enabled = false
             };
             ResetTitleButton.MouseClick += (o, e) =>

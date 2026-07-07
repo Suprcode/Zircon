@@ -1,4 +1,4 @@
-﻿using Client.Controls;
+using Client.Controls;
 using Client.Envir;
 using Client.UserModels;
 using Library;
@@ -62,6 +62,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.ChatOptionsDialogButtonResetAll },
                 Parent = this,
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Location = new Point(ClientArea.Right - 80 - 10, Size.Height - 43),
             };
             button.MouseClick += (o, e) =>
@@ -83,6 +84,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.ChatOptionsDialogButtonSaveAll },
                 Parent = this,
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Location = new Point(ClientArea.X, Size.Height - 43),
             };
             button.MouseClick += (o, e) =>
@@ -99,6 +101,7 @@ namespace Client.Scenes.Views
                 Label = { Text = CEnvir.Language.ChatOptionsDialogButtonReloadAll },
                 Parent = this,
                 Size = new Size(80, DefaultHeight),
+                LabelStyle = ButtonLabelStyle.Gold,
                 Location = new Point(ClientArea.X + 85, Size.Height - 43),
             };
             button.MouseClick += (o, e) =>

@@ -502,6 +502,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.SelectStartButtonLabel },
                     Location = new Point((Size.Width - 260) / 4 + 10, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                     Enabled = false,
                 };
                 StartButton.MouseClick += (o, e) => StartGame();
@@ -512,6 +513,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.SelectCreateButtonLabel },
                     Location = new Point((Size.Width - 260) / 4 * 2 + 90, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CreateButton.MouseClick += CreateButton_MouseClick;
 
@@ -521,6 +523,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.SelectDeleteButtonLabel },
                     Location = new Point((Size.Width - 260) / 4 * 3 + 170, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                     Enabled = false,
                 };
                 DeleteButton.MouseClick += DeleteButton_MouseClick;
@@ -976,6 +979,7 @@ namespace Client.Scenes
                     Label = { Text = CEnvir.Language.NewCharacterCreateButtonLabel },
                     Location = new Point((Size.Width - 80) / 2, Size.Height - 43),
                     Size = new Size(80, DefaultHeight),
+                    LabelStyle = ButtonLabelStyle.Gold,
                 };
                 CreateButton.MouseClick += (o, e) => Create();
 
