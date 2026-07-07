@@ -316,12 +316,9 @@ namespace Client.Controls
 
                 if (index > 0)
                 {
-                    MirImage image = Library.CreateImage(index, ImageType.Image);
-
-                    if (image?.Image == null || !image.Image.IsValid)
+                    if (!Library.TryGetTexture(index, ImageType.Image, out MirImage image, out texture, out sourceRectangle))
                         return;
 
-                    texture = image.Image;
                     image.ExpireTime = CEnvir.Now + Config.CacheDuration;
                 }
             }
