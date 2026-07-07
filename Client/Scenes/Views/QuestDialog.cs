@@ -269,6 +269,8 @@ namespace Client.Scenes.Views
                 CompletedTab.NeedUpdate = true;
                 CompletedTab.UpdateQuestDisplay();
             }
+
+            UpdateAlertIcons();
         }
 
         public void PopulateQuests()
@@ -333,16 +335,26 @@ namespace Client.Scenes.Views
                 CompletedTab.NeedUpdate = true;
                 CompletedTab.UpdateQuestDisplay();
             }
+
+            UpdateAlertIcons();
         }
 
         public void RefreshMilestones()
         {
+            UpdateAlertIcons();
+
             if (!Visible) return;
 
             if (TabControl.SelectedTab == MilestoneTab)
             {
                 MilestoneTab.Update();
             }
+        }
+
+        public void UpdateAlertIcons()
+        {
+            AvailableTab.AlertIcon.Visible = AvailableTab.Quests.Count > 0;
+            MilestoneTab.AlertIcon.Visible = GameScene.Game.HasUnclaimedMilestoneReward();
         }
 
         #endregion
@@ -401,6 +413,22 @@ namespace Client.Scenes.Views
                         CompletedTab.Dispose();
 
                     CompletedTab = null;
+                }
+
+                if (MilestoneTab != null)
+                {
+                    if (!MilestoneTab.IsDisposed)
+                        MilestoneTab.Dispose();
+
+                    MilestoneTab = null;
+                }
+
+                if (MissionTab != null)
+                {
+                    if (!MissionTab.IsDisposed)
+                        MissionTab.Dispose();
+
+                    MissionTab = null;
                 }
             }
 
@@ -591,6 +619,15 @@ namespace Client.Scenes.Views
 
         public QuestTree Tree;
 
+        public DXImageControl AlertIcon;
+
+        public override void OnParentChanged(DXControl oValue, DXControl nValue)
+        {
+            base.OnParentChanged(oValue, nValue);
+
+            UpdateAlertIconParent();
+        }
+
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
             base.OnIsVisibleChanged(oValue, nValue);
@@ -622,6 +659,15 @@ namespace Client.Scenes.Views
             };
 
             Tree.SelectedEntryChanged += (o, e) => SelectedQuest = Tree.SelectedEntry;
+
+            AlertIcon = new DXImageControl
+            {
+                LibraryFile = LibraryFile.GameInter,
+                Index = 240,
+                IsControl = false,
+                Visible = false,
+            };
+            TabButton.LocationChanged += TabButton_LocationChanged;
 
             QuestLabel = new DXLabel
             {
@@ -833,6 +879,26 @@ namespace Client.Scenes.Views
             };
         }
 
+        private void TabButton_LocationChanged(object sender, EventArgs e)
+        {
+            UpdateAlertIconLocation();
+        }
+
+        private void UpdateAlertIconParent()
+        {
+            if (AlertIcon == null || Parent?.Parent == null) return;
+
+            AlertIcon.Parent = Parent.Parent;
+            UpdateAlertIconLocation();
+        }
+
+        private void UpdateAlertIconLocation()
+        {
+            if (AlertIcon == null || Parent == null) return;
+
+            AlertIcon.Location = new Point(Parent.Location.X + TabButton.Location.X - 4, Parent.Location.Y + TabButton.Location.Y - 4);
+        }
+
         #region Methods
 
         private void DescriptionScrollBar_ValueChanged(object sender, EventArgs e)
@@ -908,6 +974,8 @@ namespace Client.Scenes.Views
 
                 _NeedUpdate = false;
                 NeedUpdateChanged = null;
+
+                TabButton.LocationChanged -= TabButton_LocationChanged;
 
                 if (ScrollBar != null)
                 {
@@ -1011,6 +1079,14 @@ namespace Client.Scenes.Views
                         Tree.Dispose();
 
                     Tree = null;
+                }
+
+                if (AlertIcon != null)
+                {
+                    if (!AlertIcon.IsDisposed)
+                        AlertIcon.Dispose();
+
+                    AlertIcon = null;
                 }
             }
 
@@ -1595,12 +1671,20 @@ namespace Client.Scenes.Views
 
         public DXCheckBox HideCompleteCheckBox;
         public DXButton ResetTitleButton;
+        public DXImageControl AlertIcon;
 
         public List<MilestoneContainer> Items = [];
 
         private bool Initialized;
         private bool HideComplete;
         private string SearchText;
+
+        public override void OnParentChanged(DXControl oValue, DXControl nValue)
+        {
+            base.OnParentChanged(oValue, nValue);
+
+            UpdateAlertIconParent();
+        }
 
         public override void OnIsVisibleChanged(bool oValue, bool nValue)
         {
@@ -1639,6 +1723,15 @@ namespace Client.Scenes.Views
 
         public MilestoneTab()
         {
+            AlertIcon = new DXImageControl
+            {
+                LibraryFile = LibraryFile.GameInter,
+                Index = 240,
+                IsControl = false,
+                Visible = false,
+            };
+            TabButton.LocationChanged += TabButton_LocationChanged;
+
             Menu = new MilestoneMenu
             {
                 Parent = this,
@@ -1699,6 +1792,26 @@ namespace Client.Scenes.Views
                 if (activeMilestone == null) return;
                 CEnvir.Enqueue(new C.MilestoneActive { Index = activeMilestone.Index, Active = false });
             };
+        }
+
+        private void TabButton_LocationChanged(object sender, EventArgs e)
+        {
+            UpdateAlertIconLocation();
+        }
+
+        private void UpdateAlertIconParent()
+        {
+            if (AlertIcon == null || Parent?.Parent == null) return;
+
+            AlertIcon.Parent = Parent.Parent;
+            UpdateAlertIconLocation();
+        }
+
+        private void UpdateAlertIconLocation()
+        {
+            if (AlertIcon == null || Parent == null) return;
+
+            AlertIcon.Location = new Point(Parent.Location.X + TabButton.Location.X - 4, Parent.Location.Y + TabButton.Location.Y - 4);
         }
                 
         #region Methods
@@ -1769,6 +1882,8 @@ namespace Client.Scenes.Views
                 _SelectedCategory = null;
                 SelectedCategoryChanged = null;
 
+                TabButton.LocationChanged -= TabButton_LocationChanged;
+
                 if (Menu != null)
                 {
                     if (!Menu.IsDisposed)
@@ -1807,6 +1922,14 @@ namespace Client.Scenes.Views
                         ResetTitleButton.Dispose();
 
                     ResetTitleButton = null;
+                }
+
+                if (AlertIcon != null)
+                {
+                    if (!AlertIcon.IsDisposed)
+                        AlertIcon.Dispose();
+
+                    AlertIcon = null;
                 }
             }
         }

@@ -4420,7 +4420,7 @@ namespace Client.Scenes
                 };
             }
 
-            MainPanel.AvailableQuestIcon.Visible = QuestBox.AvailableTab.Quests.Count > 0;
+            UpdateQuestAlertIcons();
             MainPanel.CompletedQuestIcon.Visible = completed;
 
             foreach (NPCInfo info in Globals.NPCInfoList.Binding)
@@ -4439,6 +4439,19 @@ namespace Client.Scenes
             }
 
         }
+
+        public void UpdateQuestAlertIcons()
+        {
+            QuestBox.UpdateAlertIcons();
+
+            MainPanel.AvailableQuestIcon.Visible = QuestBox.AvailableTab.Quests.Count > 0 || HasUnclaimedMilestoneReward();
+        }
+
+        public bool HasUnclaimedMilestoneReward()
+        {
+            return User?.Milestones?.Any(x => x.IsComplete && !x.Claimed && x.Info?.Reward != null) == true;
+        }
+
         public DXControl GetNPCControl(NPCInfo npc)
         {
             int icon = 0;
