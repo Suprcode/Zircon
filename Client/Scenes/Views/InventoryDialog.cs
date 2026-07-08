@@ -397,10 +397,12 @@ namespace Client.Scenes.Views
 
                 long sum = 0;
                 int count = 0;
+                decimal exchangeRate = PrimaryCurrency.ExchangeRate <= 0M ? 1M : PrimaryCurrency.ExchangeRate;
+
                 foreach (DXItemCell itemCell in SelectedItems)
                 {
                     count++;
-                    sum += (long)(itemCell.Item.Price(itemCell.Item.Count) * PrimaryCurrency.ExchangeRate);
+                    sum += (long)(itemCell.Item.Price(itemCell.Item.Count) / exchangeRate);
                 }
 
                 SecondaryCurrencyLabel.Text = sum.ToString("#,##0");
