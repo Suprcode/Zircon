@@ -100,7 +100,7 @@ namespace Client.Envir.Translations
         public abstract string MarketNoItemSelected { get; set; }
         public abstract string MarketInvalidPrice { get; set; }
         public abstract string BuySellOverweight { get; set; }
-        public abstract string BuySellNeedGold { get; set; }
+        public abstract string BuySellNeedCurrency { get; set; }
         public abstract string QuestSelectReward { get; set; }
         public abstract string CompanionNeedTicket { get; set; }
         public abstract string CompanionNeedItem { get; set; }

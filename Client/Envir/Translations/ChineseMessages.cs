@@ -101,7 +101,7 @@ namespace Client.Envir.Translations
         public override string MarketNoItemSelected { get; set; } = "Error: No Item selected.";
         public override string MarketInvalidPrice { get; set; } = "Error: Invalid Price.";
         public override string BuySellOverweight { get; set; } = "You do not have enough weight to buy any '{0}'.";
-        public override string BuySellNeedGold { get; set; } = "You do not have enough gold to buy a '{0}'.";
+        public override string BuySellNeedCurrency { get; set; } = "You do not have enough {1} to buy a '{0}'.";
         public override string QuestSelectReward { get; set; } = "Please select a reward.";
         public override string CompanionNeedTicket { get; set; } = "You need a Companion Ticket to unlock a new appearance";
         public override string CompanionNeedItem { get; set; } = "You need a {0} to unlock a new appearance";

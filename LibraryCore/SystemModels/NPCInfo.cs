@@ -1,5 +1,6 @@
 ﻿using MirDB;
 using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Library.SystemModels
@@ -341,7 +342,89 @@ namespace Library.SystemModels
 
         [JsonIgnore]
         [IgnoreProperty]
-        public int Cost => (int)Math.Round(Item.Price * Rate);
+        public decimal BaseCost
+        {
+            get
+            {
+                if (Item == null) return 0M;
+
+                decimal price = Item.Price;
+
+                if (price <= 0M)
+                    price = Globals.CurrencyInfoList?.Binding.FirstOrDefault(x => x.DropItem == Item)?.ExchangeRate ?? 0M;
+
+                return price * Rate;
+            }
+        }
+
+        [JsonIgnore]
+        [IgnoreProperty]
+        public int Cost => (int)Math.Round(BaseCost);
+
+        /// <summary>
+        /// Calculates how much of the selected shop currency is needed to buy the requested amount.
+        /// Item prices are stored in gold value, so the total base value is divided by the currency exchange rate.
+        /// </summary>
+        public long CostFor(CurrencyInfo currency, long amount)
+        {
+            if (amount <= 0) return 0;
+
+            decimal exchangeRate = currency?.ExchangeRate ?? 1M;
+
+            if (exchangeRate <= 0M)
+                exchangeRate = 1M;
+
+            decimal cost = BaseCost * amount / exchangeRate;
+
+            return Math.Max(1L, (long)Math.Ceiling(cost));
+        }
+
+        /// <summary>
+        /// Calculates the largest quantity the player can afford with the selected shop currency, capped by maxAmount.
+        /// This converts the player's currency balance back into base gold value before comparing it with the good's base cost.
+        /// </summary>
+        public long MaxAmountFor(CurrencyInfo currency, long currencyAmount, long maxAmount)
+        {
+            if (currencyAmount <= 0 || maxAmount <= 0) return 0;
+
+            decimal exchangeRate = currency?.ExchangeRate ?? 1M;
+
+            if (exchangeRate <= 0M)
+                exchangeRate = 1M;
+
+            if (BaseCost <= 0M)
+                return Math.Min(currencyAmount, maxAmount);
+
+            long affordableAmount = (long)Math.Floor(currencyAmount * exchangeRate / BaseCost);
+
+            return Math.Max(0L, Math.Min(affordableAmount, maxAmount));
+        }
+
+        [JsonIgnore]
+        [IgnoreProperty]
+        public bool IsCurrencyGood => Globals.CurrencyInfoList?.Binding.Any(x => x.DropItem == Item) == true;
+
+        /// <summary>
+        /// Rounds currency-item purchases up to whole exchange bundles when the shop currency is worth more than the good.
+        /// For example, buying gold with a gold bar turns a request for one gold into the full amount one bar can buy.
+        /// </summary>
+        public long NormaliseCurrencyPurchaseAmount(CurrencyInfo currency, long amount)
+        {
+            if (!IsCurrencyGood || amount <= 0) return amount;
+
+            decimal exchangeRate = currency?.ExchangeRate ?? 1M;
+
+            if (exchangeRate <= 0M || BaseCost <= 0M || BaseCost >= exchangeRate)
+                return amount;
+
+            long amountPerCurrency = (long)Math.Floor(exchangeRate / BaseCost);
+
+            if (amountPerCurrency <= 1) return amount;
+
+            decimal normalisedAmount = Math.Ceiling(amount / (decimal)amountPerCurrency) * amountPerCurrency;
+
+            return normalisedAmount > long.MaxValue ? long.MaxValue : (long)normalisedAmount;
+        }
     }
 
     public sealed class NPCType : DBObject

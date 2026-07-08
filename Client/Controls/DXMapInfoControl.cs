@@ -1,5 +1,4 @@
 ﻿using Client.Envir;
-using Shared.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

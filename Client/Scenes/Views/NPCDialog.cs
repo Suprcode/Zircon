@@ -861,14 +861,22 @@ namespace Client.Scenes.Views
             if (GuildCheckBox.Checked && GameScene.Game.GuildBox.GuildInfo != null)
                 gold = GameScene.Game.GuildBox.GuildInfo.GuildFunds;
 
-            var cost = (int)Math.Max(1, SelectedCell.Good.Cost * Currency.ExchangeRate);
+            long cost = SelectedCell.Good.CostFor(Currency, 1);
 
-            if (SelectedCell.Good.Item.StackSize > 1)
+            bool isCurrencyGood = SelectedCell.Good.IsCurrencyGood;
+
+            if (SelectedCell.Good.Item.StackSize > 1 || isCurrencyGood)
             {
-                long maxCount = SelectedCell.Good.Item.StackSize;
+                long maxCount = isCurrencyGood ? long.MaxValue : SelectedCell.Good.Item.StackSize;
 
-                maxCount = Math.Min(maxCount, gold / cost);
-                if (SelectedCell.Good.Item.Weight > 0)
+                maxCount = SelectedCell.Good.MaxAmountFor(Currency, gold, maxCount);
+                if (maxCount <= 0)
+                {
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellNeedCurrency, SelectedCell.Good.Item.ItemName, Currency.Name), MessageType.System);
+                    return;
+                }
+
+                if (!isCurrencyGood && SelectedCell.Good.Item.Weight > 0)
                 {
                     switch (SelectedCell.Good.Item.ItemType)
                     {
@@ -895,6 +903,14 @@ namespace Client.Scenes.Views
                 ClientUserItem item = new ClientUserItem(SelectedCell.Good.Item, (int)Math.Min(int.MaxValue, maxCount));
 
                 DXItemAmountWindow window = new DXItemAmountWindow("Buy Item", item);
+                if (isCurrencyGood)
+                {
+                    window.AmountBox.Change = Math.Max(1, SelectedCell.Good.NormaliseCurrencyPurchaseAmount(Currency, 1));
+                    window.AmountBox.Value = SelectedCell.Good.NormaliseCurrencyPurchaseAmount(Currency, 1);
+                }
+                else
+                    window.AmountBox.Change = 1;
+
                 window.ConfirmButton.MouseClick += (o, e) =>
                 {
                     CEnvir.Enqueue(new C.NPCBuy { Index = SelectedCell.Good.Index, Amount = window.Amount, GuildFunds = GuildCheckBox.Checked });
@@ -911,7 +927,7 @@ namespace Client.Scenes.Views
 
                 if (cost > gold)
                 {
-                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellNeedGold, SelectedCell.Good.Item.ItemName), MessageType.System);
+                    GameScene.Game.ReceiveChat(string.Format(CEnvir.Language.BuySellNeedCurrency, SelectedCell.Good.Item.ItemName, Currency.Name), MessageType.System);
                     return;
                 }
 
@@ -1144,7 +1160,7 @@ namespace Client.Scenes.Views
         public DXItemCell ItemCell;
 
         public DXImageControl CurrencyIcon;
-        public DXLabel ItemNameLabel, RequirementLabel, CostLabel;
+        public DXLabel ItemNameLabel, RequirementLabel, CostLabel, PreviewCountLabel;
 
         #endregion
 
@@ -1167,6 +1183,17 @@ namespace Client.Scenes.Views
                 FixedBorderColour = true,
                 ShowCountLabel = false,
             };
+
+            PreviewCountLabel = new DXLabel
+            {
+                Parent = this,
+                ForeColour = Color.Yellow,
+                Outline = true,
+                OutlineColour = Color.Black,
+                IsControl = false,
+                Visible = false,
+            };
+
             ItemNameLabel = new DXLabel
             {
                 Parent = this,
@@ -1208,13 +1235,34 @@ namespace Client.Scenes.Views
 
             var userCurrency = GameScene.Game.User.GetCurrency(Currency);
 
-            var totalCost = (int)Math.Max(1, Good.Cost * Currency.ExchangeRate);
+            long totalCost = Good.CostFor(Currency, 1);
+            long previewCount = Good.NormaliseCurrencyPurchaseAmount(Currency, 1);
+
+            if (ItemCell.Item != null)
+            {
+                ItemCell.Item.Count = previewCount;
+                ItemCell.RefreshItem();
+            }
+
+            PreviewCountLabel.Visible = Good.IsCurrencyGood && previewCount > 1;
+            PreviewCountLabel.Text = FormatPreviewCount(previewCount);
+            PreviewCountLabel.Location = new Point(ItemCell.Location.X + ItemCell.Size.Width - PreviewCountLabel.Size.Width, ItemCell.Location.Y + ItemCell.Size.Height - PreviewCountLabel.Size.Height);
 
             CostLabel.Text = totalCost.ToString("##,##0");
             CostLabel.ForeColour = totalCost > userCurrency.Amount ? Color.Red : Color.Yellow;
-            CostLabel.Location = new Point(Size.Width - CurrencyIcon.Size.Width - ItemCell.Location.X - 10 - CostLabel.Size.Width, ItemCell.Location.Y + ItemCell.Size.Height - RequirementLabel.Size.Height);
+            CostLabel.Location = new Point(Size.Width - CurrencyIcon.Size.Width - ItemCell.Location.X - CostLabel.Size.Width, ItemCell.Location.Y + ItemCell.Size.Height - RequirementLabel.Size.Height);
 
-            CurrencyIcon.Location = new Point(Size.Width - CurrencyIcon.Size.Width - ItemCell.Location.X - 10, Size.Height - CurrencyIcon.Size.Height - ItemCell.Location.X);
+            CurrencyIcon.Location = new Point(Size.Width - CurrencyIcon.Size.Width - ItemCell.Location.X, Size.Height - CurrencyIcon.Size.Height - ItemCell.Location.X);
+        }
+
+        private static string FormatPreviewCount(long count)
+        {
+            if (count < 1000) return count.ToString("##,##0");
+            if (count < 1000000) return $"{count / 1000M:0.#}K";
+            if (count < 1000000000) return $"{count / 1000000M:0.#}M";
+            if (count < 1000000000000) return $"{count / 1000000000M:0.#}B";
+
+            return $"{count / 1000000000000M:0.#}T";
         }
 
         public void UpdateColours()
@@ -1278,6 +1326,14 @@ namespace Client.Scenes.Views
                         ItemCell.Dispose();
 
                     ItemCell = null;
+                }
+
+                if (PreviewCountLabel != null)
+                {
+                    if (!PreviewCountLabel.IsDisposed)
+                        PreviewCountLabel.Dispose();
+
+                    PreviewCountLabel = null;
                 }
 
                 if (CurrencyIcon != null)

@@ -1,4 +1,5 @@
-﻿using Library;
+﻿using Client.Envir;
+using Library;
 using System.Drawing;
 
 //Cleaned
@@ -38,7 +39,7 @@ namespace Client.Controls
                 Size = new Size(50, 20),
                 Location = new Point(19, 1),
                 Parent = this,
-                TextBox = { Text = "0" }
+                TextBox = { Text = "0", Font = new Font(Config.FontName, CEnvir.FontSize(8F), FontStyle.Regular) }
             };
 
             ValueTextBox.TextBox.KeyPress += (o, e) =>
