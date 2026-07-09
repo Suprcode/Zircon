@@ -279,6 +279,7 @@ namespace Library.Network.ServerPackets
         public string Name { get; set; }
 
         public string Caption { get; set; }
+        public Color CaptionOutlineColour { get; set; }
         public Color NameColour { get; set; }
         public string GuildName { get; set; }
 

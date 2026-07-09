@@ -281,6 +281,7 @@ namespace Client.Models
 
             Name = info.Name;
             Caption = info.Caption;
+            CaptionOutlineColour = info.CaptionOutlineColour;
             NameColour = info.NameColour;
 
             Class = info.Class;
