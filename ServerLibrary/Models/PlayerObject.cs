@@ -16018,6 +16018,7 @@ namespace Server.Models
                 Direction = Direction,
 
                 Light = Stats[Stat.Light],
+                SizePercent = Stats[Stat.SizePercent],
                 Dead = Dead,
 
                 Class = Class,
@@ -16102,7 +16103,8 @@ namespace Server.Models
 
                 HorseArmour = Equipment[(int)EquipmentSlot.HorseArmour]?.Info.Shape ?? 0,
 
-                Light = Stats[Stat.Light]
+                Light = Stats[Stat.Light],
+                SizePercent = Stats[Stat.SizePercent]
             };
 
             Broadcast(p);

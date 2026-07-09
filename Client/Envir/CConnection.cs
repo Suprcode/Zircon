@@ -901,6 +901,7 @@ namespace Client.Envir
                 player.ShieldEffect = p.ShieldEffect;
 
                 player.Light = p.Light;
+                player.SetScale(p.SizePercent);
                 if (player == MapObject.User)
                 {
                     player.Light = Math.Max(p.Light, 3);

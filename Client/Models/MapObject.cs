@@ -5299,7 +5299,7 @@ namespace Client.Models
         }
         private float _Scale = 1F;
 
-        protected void SetScale(int sizePercent)
+        public void SetScale(int sizePercent)
         {
             Scale = (100F + Math.Min(50, Math.Max(-50, sizePercent))) / 100F;
         }
