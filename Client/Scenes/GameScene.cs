@@ -1634,1080 +1634,135 @@ namespace Client.Scenes
         private void CreateItemLabel()
         {
             if (ItemLabel != null && !ItemLabel.IsDisposed) ItemLabel.Dispose();
-
             if (MouseItem == null) return;
 
             ItemRefreshTime = CEnvir.Now.AddSeconds(1);
 
-            Stats stats = new Stats();
-            stats.Add(MouseItem.Info.Stats);
-            stats.Add(MouseItem.AddedStats);
+            ItemInfo displayInfo = GetItemLabelDisplayInfo(MouseItem);
+            Stats itemStats = new Stats();
+            itemStats.Add(MouseItem.Info.Stats);
+            itemStats.Add(MouseItem.AddedStats);
 
-            ItemLabel = new DXControl
-            {
-                BackColour = Color.FromArgb(200, 0, 24, 48),
-                Border = true,
-                BorderColour = Color.Yellow, // Color.FromArgb(144, 148, 48),
-                DrawTexture = true,
-                IsControl = false,
-                IsVisible = true,
-            };
+            ItemLabelBuilder builder = new ItemLabelBuilder(MouseItem);
 
-            ItemInfo displayInfo = MouseItem.Info;
-
+            string itemName = displayInfo.ItemName;
             if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
-                displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == MouseItem.AddedStats[Stat.ItemIndex]);
+                itemName += " - [Part]";
 
+            builder.AddHeader(itemName, Color.Yellow, displayInfo.Rarity.ToString(), GetItemLabelRarityColour(displayInfo.Rarity));
 
-            DXLabel label = new DXLabel
-            {
-                ForeColour = Color.Yellow,
-                Location = new Point(4, 4),
-                Parent = ItemLabel,
-                Text = displayInfo.ItemName
-            };
-
-            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
-                label.Text += " - [Part]";
-            ItemLabel.Size = new Size(label.DisplayArea.Right + 4, label.DisplayArea.Bottom);
-
-
-
-
-            bool needSpacer = false;
-            if (displayInfo.ItemType != ItemType.Nothing)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"{displayInfo.ItemType}",
-                };
-
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                needSpacer = true;
-
-            }
-
-            if (MouseItem.Info.Weight > 0)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.White,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Weight: {MouseItem.Info.Weight}",
-                };
-
-                switch (MouseItem.Info.ItemType)
-                {
-                    case ItemType.Weapon:
-                    case ItemType.Shield:
-                    case ItemType.Torch:
-                    case ItemType.Hook:
-                    case ItemType.Float:
-                    case ItemType.Reel:
-                        if (User.HandWeight - (Equipment[(int)EquipmentSlot.Weapon]?.Info.Weight ?? 0) + MouseItem.Info.Weight > User.Stats[Stat.HandWeight])
-                            label.ForeColour = Color.Red;
-                        break;
-                    case ItemType.Armour:
-                    case ItemType.Helmet:
-                    case ItemType.Necklace:
-                    case ItemType.Bracelet:
-                    case ItemType.Ring:
-                    case ItemType.Shoes:
-                    case ItemType.Poison:
-                    case ItemType.Amulet:
-                    case ItemType.Bait:
-                    case ItemType.Finder:
-                        if (User.WearWeight - (Equipment[(int)EquipmentSlot.Armour]?.Info.Weight ?? 0) + MouseItem.Info.Weight > User.Stats[Stat.WearWeight])
-                            label.ForeColour = Color.Red;
-                        break;
-                }
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                needSpacer = true;
-            }
-
-            if (needSpacer)
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+            builder.StartSection();
+            AddItemLabelMetadata(builder, displayInfo);
 
             if (CEnvir.IsCurrencyItem(MouseItem.Info) || MouseItem.Info.ItemEffect == ItemEffect.Experience)
             {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                    Parent = ItemLabel,
-                    Text = $"Amount: {MouseItem.Count:#,##0}"
-                };
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height + 4);
-
-                if (!string.IsNullOrEmpty(displayInfo.Description))
-                {
-                    label = new DXLabel
-                    {
-                        ForeColour = Color.Wheat,
-                        Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                        Parent = ItemLabel,
-                        Text = displayInfo.Description,
-                    };
-
-                    ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                        label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                    ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
-                }
-
+                AddItemLabelDescription(builder, displayInfo);
+                builder.Complete();
+                ItemLabel = builder.Label;
                 return;
             }
 
-
-            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.LightSeaGreen,
-                    Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                    Parent = ItemLabel,
-                    Text = $"Parts: {MouseItem.Count}/{displayInfo.PartCount}.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
-            }
-            else if (MouseItem.Info.StackSize > 1)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                    Parent = ItemLabel,
-                    Text = $"Count: {MouseItem.Count}/{MouseItem.Info.StackSize}"
-                };
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
-            }
-
+            builder.StartSection();
             switch (displayInfo.ItemType)
             {
                 case ItemType.Consumable:
                 case ItemType.Scroll:
                     if (MouseItem.Info.ItemEffect == ItemEffect.StatExtractor || MouseItem.Info.ItemEffect == ItemEffect.RefineExtractor)
-                        EquipmentItemInfo();
+                        AddEquipmentItemInfo(builder, displayInfo);
                     else
-                        CreatePotionLabel();
+                        AddPotionItemInfo(builder);
                     break;
                 case ItemType.Book:
-                    if (MouseItem.Info.Durability > 0)
-                    {
-                        label = new DXLabel
-                        {
-                            ForeColour = Color.White,
-                            Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                            Parent = ItemLabel,
-                            Text = $"Pages: {MouseItem.CurrentDurability}/{MouseItem.MaxDurability}",
-                        };
-
-                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
-                    }
-                    break;
-                case ItemType.Meat:
-                    if (MouseItem.Info.Durability > 0)
-                    {
-                        label = new DXLabel
-                        {
-                            ForeColour = MouseItem.CurrentDurability == 0 ? Color.Red : Color.White,
-                            Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                            Parent = ItemLabel,
-                            Text = $"Quality: {Math.Round(MouseItem.CurrentDurability / 1000M)}/{Math.Round(MouseItem.MaxDurability / 1000M)}",
-                        };
-
-                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
-                    }
-                    break;
-                case ItemType.Ore:
-                    if (MouseItem.Info.Durability > 0)
-                    {
-                        label = new DXLabel
-                        {
-                            ForeColour = MouseItem.CurrentDurability == 0 ? Color.Red : Color.White,
-                            Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                            Parent = ItemLabel,
-                            Text = $"Purity: {Math.Round(MouseItem.CurrentDurability / 1000M)}",
-                        };
-
-                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
-                    }
-                    break;
                 case ItemType.Bundle:
-                    break;
                 case ItemType.LootBox:
-
-                    var remainingRerolls = MouseItem.AddedStats[Stat.Counter1];
-                    var lootBoxState = MouseItem.AddedStats[Stat.Counter2];
-
-                    if (lootBoxState > 1)
-                    {
-                        var openCount = 0;
-
-                        for (int i = 0; i < LootBoxInfo.SlotSize; i++)
-                        {
-                            if ((MouseItem.CurrentDurability & (1 << i)) != 0)
-                                openCount++;
-                        }
-
-                        label = new DXLabel
-                        {
-                            ForeColour = Color.Yellow,
-                            Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                            Parent = ItemLabel,
-                            Text = $"Open Count: {openCount}/{LootBoxInfo.SlotSize}",
-                        };
-
-                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
-                    }
-                    else
-                    {
-                        label = new DXLabel
-                        {
-                            ForeColour = Color.Yellow,
-                            Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                            Parent = ItemLabel,
-                            Text = $"Reroll Count: {remainingRerolls}/{Globals.LootBoxRerollCount}",
-                        };
-
-                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
-                    }
                     break;
                 default:
-                    EquipmentItemInfo();
+                    AddEquipmentItemInfo(builder, displayInfo);
                     break;
             }
 
-            if (displayInfo.RequiredGender != RequiredGender.None)
-            {
-                Color colour = Color.White;
-                switch (User.Gender)
-                {
-                    case MirGender.Male:
-                        if (!displayInfo.RequiredGender.HasFlag(RequiredGender.Male))
-                            colour = Color.Red;
-                        break;
-                    case MirGender.Female:
-                        if (!displayInfo.RequiredGender.HasFlag(RequiredGender.Female))
-                            colour = Color.Red;
-                        break;
-                }
-
-                label = new DXLabel
-                {
-                    ForeColour = colour,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Required Gender: {MouseItem.Info.RequiredGender}",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-            }
-
-            if (displayInfo.RequiredClass != RequiredClass.All)
-            {
-                Color colour = Color.White;
-                switch (User.Class)
-                {
-                    case MirClass.Warrior:
-                        if (!MouseItem.Info.RequiredClass.HasFlag(RequiredClass.Warrior))
-                            colour = Color.Red;
-                        break;
-                    case MirClass.Wizard:
-                        if (!MouseItem.Info.RequiredClass.HasFlag(RequiredClass.Wizard))
-                            colour = Color.Red;
-                        break;
-                    case MirClass.Taoist:
-                        if (!MouseItem.Info.RequiredClass.HasFlag(RequiredClass.Taoist))
-                            colour = Color.Red;
-                        break;
-                    case MirClass.Assassin:
-                        if (!MouseItem.Info.RequiredClass.HasFlag(RequiredClass.Assassin))
-                            colour = Color.Red;
-                        break;
-                }
-
-                Type type = displayInfo.RequiredClass.GetType();
-
-                MemberInfo[] infos = type.GetMember(displayInfo.RequiredClass.ToString());
-
-                DescriptionAttribute description = infos[0].GetCustomAttribute<DescriptionAttribute>();
-
-                label = new DXLabel
-                {
-                    ForeColour = colour,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Required Class: {description?.Description ?? displayInfo.RequiredClass.ToString()}",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-            }
-
-            if (displayInfo.RequiredAmount > 0)
-            {
-                string text;
-                Color colour = displayInfo.Rarity == Rarity.Common ? Color.White : Color.FromArgb(0, 204, 0);
-                switch (displayInfo.RequiredType)
-                {
-                    case RequiredType.Level:
-                        text = $"Required Level: {MouseItem.Info.RequiredAmount}";
-                        if (User.Level < MouseItem.Info.RequiredAmount && User.Stats[Stat.Rebirth] == 0)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.MaxLevel:
-                        text = $"Max Level: {MouseItem.Info.RequiredAmount}";
-                        if (User.Level > MouseItem.Info.RequiredAmount || User.Stats[Stat.Rebirth] > 0)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.AC:
-                        text = $"Required AC: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.MaxAC] < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.MR:
-                        text = $"Required MR: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.MaxMR] < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.DC:
-                        text = $"Required DC: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.MaxDC] < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.MC:
-                        text = $"Required MC: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.MaxMC] < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.SC:
-                        text = $"Required SC: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.MaxSC] < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.Health:
-                        text = $"Required Health: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.Health] < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.Mana:
-                        text = $"Required Mana: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.Mana] < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.CompanionLevel:
-                        text = $"Companion Level: {MouseItem.Info.RequiredAmount}";
-                        if (Companion == null || Companion.Level < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.MaxCompanionLevel:
-                        text = $"Max Companion Level: {MouseItem.Info.RequiredAmount}";
-                        if (Companion == null || Companion.Level > MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.RebirthLevel:
-                        text = $"Rebirth Level: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.Rebirth] < MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    case RequiredType.MaxRebirthLevel:
-                        text = $"Rebirth Level: {MouseItem.Info.RequiredAmount}";
-                        if (User.Stats[Stat.Rebirth] > MouseItem.Info.RequiredAmount)
-                            colour = Color.Red;
-                        break;
-                    default:
-                        text = "Unknown Type Required";
-                        break;
-                }
-
-                if (displayInfo.Rarity > Rarity.Common)
-                    text += $" ({displayInfo.Rarity})";
-
-
-                label = new DXLabel
-                {
-                    ForeColour = colour,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = text,
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-            }
-            else if (displayInfo.Rarity > Rarity.Common)
-            {
-
-                label = new DXLabel
-                {
-                    ForeColour = Color.FromArgb(0, 204, 0),
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = displayInfo.Rarity.ToString(),
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-            }
-
-            bool spacer = false;
-            long sale = MouseItem.Price(Math.Max(1, MouseItem.Count));
-            if (sale > 0)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.LightGoldenrodYellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Sell Value: {sale}",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-            }
-            ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
-
-            if (MouseItem.Info.Durability > 0 && !MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Cannot be repaired.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if (!MouseItem.Info.CanSell || (MouseItem.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Cannot be sold.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if (!MouseItem.Info.CanStore)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Cannot be stored.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if (!MouseItem.Info.CanTrade || (MouseItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Cannot be traded.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if (!MouseItem.Info.CanDrop)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Cannot be dropped.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if (!MouseItem.Info.CanDeathDrop || (MouseItem.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless || (MouseItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Cannot be dropped on death.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if ((MouseItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Yellow,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Bound Item.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if ((MouseItem.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)
-            {
-                label = new DXLabel
-                {
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                };
-
-                switch (MouseItem.Info.ItemType)
-                {
-                    case ItemType.Book:
-                        label.ForeColour = Color.Red;
-                        label.Text = "Does not contain Level 4 Pages.";
-                        break;
-                    default:
-                        label.ForeColour = Color.Yellow;
-                        label.Text = "Cannot be Refined or Upgraded.";
-                        break;
-                }
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-            else if (MouseItem.Info.ItemType == ItemType.Book)
-            {
-                label = new DXLabel
-                {
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    ForeColour = Color.Green,
-                    Text = "Contains high level Pages.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if (!string.IsNullOrEmpty(displayInfo.Description))
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Wheat,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = displayInfo.Description,
-                };
-
-                if (displayInfo.ItemEffect == ItemEffect.FootBallWhistle)
-                    label.ForeColour = Color.Red;
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-                spacer = true;
-            }
-
-            if (spacer)
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+            AddItemLabelRequirements(builder, displayInfo);
+            AddItemLabelTradeState(builder, displayInfo);
 
             if (MouseItem.Info.Durability > 0 && MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1 && MouseItem.Info.ItemType != ItemType.Book)
             {
-                label = new DXLabel
-                {
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                };
+                builder.StartSection();
 
                 if (CEnvir.Now >= MouseItem.NextSpecialRepair)
-                {
-                    label.Text = "Can Special Repair";
-                    label.ForeColour = Color.LimeGreen;
-                }
+                    builder.AddLine("Can Special Repair", Color.LimeGreen);
                 else
-                {
-                    label.Text = $"Special Repair in {Functions.ToString(MouseItem.NextSpecialRepair - CEnvir.Now, true)}";
-                    label.ForeColour = Color.Red;
-                }
-
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+                    builder.AddLine($"Special Repair in {Functions.ToString(MouseItem.NextSpecialRepair - CEnvir.Now, true)}", Color.Red);
             }
 
             if ((MouseItem.Flags & UserItemFlags.Expirable) == UserItemFlags.Expirable)
             {
-                label = new DXLabel
-                {
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Expires in {Functions.ToString(MouseItem.ExpireTime, true)}",
-                    ForeColour = Color.Chocolate,
-                };
-
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+                builder.StartSection();
+                builder.AddLine($"Expires in {Functions.ToString(MouseItem.ExpireTime, true)}", Color.Chocolate);
             }
 
-            if (stats[Stat.ItemReviveTime] > 0)
+            if (itemStats[Stat.ItemReviveTime] > 0)
             {
-                label = new DXLabel
-                {
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                };
-
                 DateTime value = MouseItem.Info.ItemEffect == ItemEffect.PillOfReincarnation ? ReincarnationPillTime : ItemReviveTime;
 
+                builder.StartSection();
                 if (CEnvir.Now >= value)
-                {
-                    label.Text = "Revival ready";
-                    label.ForeColour = Color.LimeGreen;
-                }
+                    builder.AddLine("Revival ready", Color.LimeGreen);
                 else
-                {
-                    label.Text = $"Revival ready in {Functions.ToString(value - CEnvir.Now, true)}";
-                    label.ForeColour = Color.Red;
-                }
-
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+                    builder.AddLine($"Revival ready in {Functions.ToString(value - CEnvir.Now, true)}", Color.Red);
             }
 
             if (MouseItem.Info.Set != null)
-                SetItemInfo(MouseItem.Info.Set);
+            {
+                builder.StartSection();
+                AddSetItemInfo(builder, MouseItem.Info.Set);
+            }
 
             if ((MouseItem.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage)
             {
-                label = new DXLabel
-                {
-                    ForeColour = Color.MediumOrchid,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Wedding Ring.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+                builder.StartSection();
+                builder.AddLine("Wedding Ring.", Color.MediumOrchid);
             }
 
             if ((MouseItem.Flags & UserItemFlags.GameMaster) == UserItemFlags.GameMaster)
             {
-                label = new DXLabel
-                {
-                    ForeColour = Color.LightSeaGreen,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "Created by a Game Master.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+                builder.StartSection();
+                builder.AddLine("Created by a Game Master.", Color.LightSeaGreen);
             }
 
             if (NPCItemFragmentBox.IsVisible && MouseItem.CanFragment())
             {
-                label = new DXLabel
-                {
-                    ForeColour = Color.MediumAquamarine,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Fragment Cost: {MouseItem.FragmentCost():#,##0}",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
-                label = new DXLabel
-                {
-                    ForeColour = Color.MediumAquamarine,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Fragments: {(MouseItem.Info.Rarity == Rarity.Common ? "Fragment" : "Framgent (II)")} x{MouseItem.FragmentCount():#,##0}",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+                builder.StartSection();
+                builder.AddLine($"Fragment Cost: {MouseItem.FragmentCost():#,##0}", Color.MediumAquamarine);
+                builder.AddLine($"Fragments: {(MouseItem.Info.Rarity == Rarity.Common ? "Fragment" : "Fragment (II)")} x{MouseItem.FragmentCount():#,##0}", Color.MediumAquamarine);
             }
 
             if (CEnvir.Now < MouseItem.NextReset)
             {
-                label = new DXLabel
-                {
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Reset Available in {Functions.ToString(MouseItem.NextReset - CEnvir.Now, true)}",
-                    ForeColour = Color.Red,
-                };
-
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
+                builder.StartSection();
+                builder.AddLine($"Reset Available in {Functions.ToString(MouseItem.NextReset - CEnvir.Now, true)}", Color.Red);
             }
 
             if ((MouseItem.Flags & UserItemFlags.Locked) == UserItemFlags.Locked)
             {
-                label = new DXLabel
-                {
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Locked: Prevents accidentally selling or throwing away\n" +
-                           $"[Middle Mouse Button] or [Scroll Lock] to Unlock.",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height);
-
-                ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
-            }
-        }
-
-        private void EquipmentItemInfo()
-        {
-            Stats stats = new Stats();
-
-            ItemInfo displayInfo = MouseItem.Info;
-
-            if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
-                displayInfo = Globals.ItemInfoList.Binding.First(x => x.Index == MouseItem.AddedStats[Stat.ItemIndex]);
-
-            stats.Add(displayInfo.Stats, displayInfo.ItemType != ItemType.Weapon);
-            stats.Add(MouseItem.AddedStats, MouseItem.Info.ItemType != ItemType.Weapon);
-
-            if (displayInfo.ItemType == ItemType.Weapon)
-            {
-                Stat ele = MouseItem.AddedStats.GetWeaponElement();
-
-                if (ele == Stat.None)
-                    ele = displayInfo.Stats.GetWeaponElement();
-
-                if (ele != Stat.None)
-                    stats[ele] += MouseItem.AddedStats.GetWeaponElementValue() + displayInfo.Stats.GetWeaponElementValue();
+                builder.StartSection();
+                builder.AddIconLine("Locked: Prevents accidentally selling or throwing away\n[Middle Mouse Button] or [Scroll Lock] to Unlock.", Color.FromArgb(150, 135, 105), LibraryFile.GameInter, 370);
             }
 
-            DXLabel label;
-            if (MouseItem.Info.Durability > 0)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = MouseItem.CurrentDurability == 0 ? Color.Red : Color.FromArgb(132, 255, 255),
-                    Location = new Point(ItemLabel.DisplayArea.Right, 4),
-                    Parent = ItemLabel,
-                    Text = $"Durability: {Math.Round(MouseItem.CurrentDurability / 1000M)}/{Math.Round(MouseItem.MaxDurability / 1000M)}",
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4, ItemLabel.Size.Height);
-            }
-
-            ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 5);
-
-            bool firstele = stats.HasElementalWeakness();
-            foreach (KeyValuePair<Stat, int> pair in stats.Values)
-            {
-                string text = stats.GetDisplay(pair.Key);
-
-                if (text == null) continue;
-
-                string added = MouseItem.AddedStats.GetFormat(pair.Key);
-
-                label = new DXLabel
-                {
-                    ForeColour = Color.White,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = text
-                };
-
-                switch (pair.Key)
-                {
-                    case Stat.Luck:
-                        label.ForeColour = Color.Yellow;
-                        break;
-                    case Stat.Strength:
-                        label.ForeColour = Color.FromArgb(148, 255, 206);
-                        break;
-                    case Stat.DropRate:
-                    case Stat.ExperienceRate:
-                    case Stat.SkillRate:
-                    case Stat.GoldRate:
-                        label.ForeColour = Color.Yellow;
-
-                        if (added == null) break;
-                        label.Text += $" ({added})";
-                        break;
-                    case Stat.FireAttack:
-                    case Stat.IceAttack:
-                    case Stat.LightningAttack:
-                    case Stat.WindAttack:
-                    case Stat.HolyAttack:
-                    case Stat.DarkAttack:
-                    case Stat.PhantomAttack:
-                        label.ForeColour = Color.DeepSkyBlue;
-                        break;
-                    case Stat.FireResistance:
-                    case Stat.IceResistance:
-                    case Stat.LightningResistance:
-                    case Stat.WindResistance:
-                    case Stat.HolyResistance:
-                    case Stat.DarkResistance:
-                    case Stat.PhantomResistance:
-                    case Stat.PhysicalResistance:
-                        label.ForeColour = !firstele ? Color.Lime : Color.IndianRed;
-                        firstele = true;
-                        break;
-                    default:
-                        if (MouseItem.AddedStats[pair.Key] == 0) break;
-                        label.Text += $"   ({added})";
-                        label.ForeColour = Color.FromArgb(148, 255, 206);
-                        break;
-                }
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-            }
-            ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 5);
-
-            switch (displayInfo.ItemType)
-            {
-                case ItemType.Weapon:
-                    if ((MouseItem.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) break;
-
-                    label = new DXLabel
-                    {
-                        ForeColour = Color.White,
-                        Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                        Parent = ItemLabel,
-                        Text = $"{displayInfo.ItemType} Level: " + (MouseItem.Level < Globals.WeaponExperienceList.Count ? MouseItem.Level.ToString() : "Max")
-                    };
-
-                    ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                        label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
-                    if (MouseItem.Level < Globals.WeaponExperienceList.Count)
-                    {
-                        label = new DXLabel
-                        {
-                            Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                            Parent = ItemLabel,
-                        };
-
-                        if ((MouseItem.Flags & UserItemFlags.Refinable) == UserItemFlags.Refinable)
-                        {
-                            label.Text = "Ready for Refine";
-                            label.ForeColour = Color.LightGreen;
-                        }
-                        else
-                        {
-                            label.Text = $"{displayInfo.ItemType} Training Points: {MouseItem.Experience / Globals.WeaponExperienceList[MouseItem.Level]:0.##%}";
-                            label.ForeColour = Color.White;
-                        }
-
-
-
-                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                            label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                    }
-                    ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 5);
-                    break;
-                case ItemType.Necklace:
-                case ItemType.Bracelet:
-                case ItemType.Ring:
-
-                    if ((MouseItem.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) break;
-
-                    label = new DXLabel
-                    {
-                        ForeColour = Color.White,
-                        Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                        Parent = ItemLabel,
-                        Text = $"{displayInfo.ItemType} Level: " + (MouseItem.Level < Globals.AccessoryExperienceList.Count ? MouseItem.Level.ToString() : "Max")
-                    };
-
-                    ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                        label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
-                    if (MouseItem.Level < Globals.AccessoryExperienceList.Count)
-                    {
-                        label = new DXLabel
-                        {
-                            Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                            Parent = ItemLabel,
-                        };
-
-                        if ((MouseItem.Flags & UserItemFlags.Refinable) == UserItemFlags.Refinable)
-                        {
-                            label.Text = "Ready for Refine";
-                            label.ForeColour = Color.LightGreen;
-                        }
-                        else
-                        {
-                            label.Text = $"{displayInfo.ItemType} Training Points: {MouseItem.Experience / Globals.AccessoryExperienceList[MouseItem.Level]:0.##%}";
-                            label.ForeColour = Color.White;
-                        }
-
-
-
-                        ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                            label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-                    }
-                    ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 5);
-                    break;
-
-            }
-        }
-
-        private void CreatePotionLabel()
-        {
-            if (MouseItem == null) return;
-
-            Stats stats = new Stats();
-
-            stats.Add(MouseItem.Info.Stats);
-
-            DXLabel label;
-            foreach (KeyValuePair<Stat, int> pair in stats.Values)
-            {
-                string text = stats.GetDisplay(pair.Key);
-
-                if (text == null) continue;
-
-                label = new DXLabel
-                {
-                    ForeColour = Color.White,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = text
-                };
-
-                switch (pair.Key)
-                {
-                    case Stat.Luck:
-                    case Stat.DropRate:
-                    case Stat.ExperienceRate:
-                    case Stat.SkillRate:
-                    case Stat.GoldRate:
-                        label.ForeColour = Color.Yellow;
-                        break;
-                    case Stat.DeathDrops:
-                        label.ForeColour = Color.OrangeRed;
-                        break;
-                }
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-            }
-            ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 5);
-
-            if (MouseItem.Info.Durability > 0)
-            {
-                label = new DXLabel
-                {
-                    ForeColour = Color.White,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = $"Cooldown: {Functions.ToString(TimeSpan.FromMilliseconds(MouseItem.Info.Durability), true)}"
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-            }
+            builder.Complete();
+            ItemLabel = builder.Label;
         }
 
         private void CreateFameLabel()
         {
             if (MouseFame == null) return;
 
-            FameLabel = new DXControl
-            {
-                BackColour = Color.FromArgb(200, 0, 24, 48),
-                Border = true,
-                BorderColour = Color.Yellow, // Color.FromArgb(144, 148, 48),
-                DrawTexture = true,
-                IsControl = false,
-                IsVisible = true,
-            };
-
-            DXLabel label = new DXLabel
-            {
-                ForeColour = Color.Yellow,
-                Location = new Point(4, 4),
-                Parent = FameLabel,
-                Text = MouseFame.Name
-            };
-            FameLabel.Size = new Size(label.DisplayArea.Right + 4, label.DisplayArea.Bottom + 4);
+            ItemLabelBuilder builder = new ItemLabelBuilder();
+            builder.AddHeader(MouseFame.Name, Color.Yellow, null, Color.Empty);
 
             if (!string.IsNullOrEmpty(MouseFame.Description))
             {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Wheat,
-                    Location = new Point(4, FameLabel.DisplayArea.Bottom),
-                    Parent = FameLabel,
-                    Text = Functions.BreakStringIntoLines(MouseFame.Description, 45),
-                };
-
-                FameLabel.Size = new Size(label.DisplayArea.Right + 4 > FameLabel.Size.Width ? label.DisplayArea.Right + 4 : FameLabel.Size.Width,
-                    label.DisplayArea.Bottom > FameLabel.Size.Height ? label.DisplayArea.Bottom + 4 : FameLabel.Size.Height);
+                builder.StartSection();
+                builder.AddLine(Functions.BreakStringIntoLines(MouseFame.Description, 45), Color.Wheat);
             }
 
             if (MouseFame.BuffStats.Count > 0)
@@ -2729,74 +1784,32 @@ namespace Client.Scenes
 
                 if (!string.IsNullOrEmpty(statsText))
                 {
-                    label = new DXLabel
-                    {
-                        ForeColour = Color.White,
-                        Location = new Point(4, FameLabel.DisplayArea.Bottom),
-                        Parent = FameLabel,
-                        Text = statsText.Trim(),
-                    };
-
-                    FameLabel.Size = new Size(label.DisplayArea.Right + 4 > FameLabel.Size.Width ? label.DisplayArea.Right + 4 : FameLabel.Size.Width,
-                        label.DisplayArea.Bottom > FameLabel.Size.Height ? label.DisplayArea.Bottom + 4 : FameLabel.Size.Height);
+                    builder.StartSection();
+                    builder.AddLine(statsText.Trim(), Color.White);
                 }
             }
+
+            builder.Complete();
+            FameLabel = builder.Label;
         }
 
         private void CreateMagicLabel()
         {
             if (MouseMagic == null) return;
 
-            MagicLabel = new DXControl
-            {
-                BackColour = Color.FromArgb(200, 0, 24, 48),
-                Border = true,
-                BorderColour = Color.Yellow, // Color.FromArgb(144, 148, 48),
-                DrawTexture = true,
-                IsControl = false,
-                IsVisible = true,
-            };
-
-            DXLabel label = new DXLabel
-            {
-                ForeColour = Color.Yellow,
-                Location = new Point(4, 4),
-                Parent = MagicLabel,
-                Text = MouseMagic.Name
-            };
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4, label.DisplayArea.Bottom + 4);
-
-            label = new DXLabel
-            {
-                ForeColour = Color.Yellow,
-                Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = $"<{MouseMagic.Property}>"
-            };
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4, label.DisplayArea.Bottom + 4);
+            ItemLabelBuilder builder = new ItemLabelBuilder();
+            builder.AddHeader(MouseMagic.Name, Color.Yellow, null, Color.Empty);
+            builder.AddLine($"<{MouseMagic.Property}>", Color.Yellow);
 
             ClientUserMagic magic;
-
-            int width;
             bool disciplineSkill = false;
+
+            builder.StartSection();
 
             if (User.Magics.TryGetValue(MouseMagic, out magic))
             {
                 int level = magic.Level;
                 disciplineSkill = magic.Info.School == MagicSchool.Discipline;
-
-                if (disciplineSkill)
-                {
-                    MagicLabel.BorderColour = Color.LimeGreen;
-                }
-
-                label = new DXLabel
-                {
-                    ForeColour = Color.LimeGreen,
-                    Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                    Parent = MagicLabel,
-                    Text = $"Current Level: {level}",
-                };
 
                 string text;
                 if (magic.Level < Globals.MagicMaxLevel)
@@ -2814,176 +1827,867 @@ namespace Client.Scenes
                     text = $"Max Level";
                 }
 
-                width = label.DisplayArea.Right;
-                label = new DXLabel
-                {
-                    ForeColour = Color.LimeGreen,
-                    Location = new Point(width + 4, MagicLabel.DisplayArea.Bottom),
-                    Parent = MagicLabel,
-                    Text = $"Experience: {text}",
-                };
+                builder.AddLine($"Current Level: {level}    Experience: {text}", Color.LimeGreen);
             }
             else
             {
-                label = new DXLabel
-                {
-                    ForeColour = Color.Red,
-                    Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                    Parent = MagicLabel,
-                    Text = $"Not learned",
-                };
+                builder.AddLine($"Not learned", Color.Red);
             }
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
 
-            label = new DXLabel
-            {
-                ForeColour = User.Level < MouseMagic.NeedLevel1 ? Color.Red : Color.White,
-                Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = $"Rank 1 Requirement: Level {MouseMagic.NeedLevel1}",
-            };
-            width = label.DisplayArea.Right + 10;
-            label = new DXLabel
-            {
-                ForeColour = Color.White,
-                Location = new Point(width, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = $"Experience: {MouseMagic.Experience1:#,##0}",
-            };
-
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
-
-            new DXLabel
-            {
-                ForeColour = User.Level < MouseMagic.NeedLevel2 ? Color.Red : Color.White,
-                Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = $"Rank 2 Requirement: Level {MouseMagic.NeedLevel2}",
-            };
-
-            label = new DXLabel
-            {
-                ForeColour = Color.White,
-                Location = new Point(width, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = $"Experience: {MouseMagic.Experience2:#,##0}",
-            };
-
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
-
-            new DXLabel
-            {
-                ForeColour = User.Level < MouseMagic.NeedLevel3 ? Color.Red : Color.White,
-                Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = $"Rank 3 Requirement: Level {MouseMagic.NeedLevel3}",
-            };
-
-            label = new DXLabel
-            {
-                ForeColour = Color.White,
-                Location = new Point(width, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = $"Experience: {MouseMagic.Experience3:#,##0}",
-            };
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
+            builder.StartSection();
+            builder.AddLine($"Rank 1 Requirement: Level {MouseMagic.NeedLevel1}    Experience: {MouseMagic.Experience1:#,##0}", User.Level < MouseMagic.NeedLevel1 ? Color.Red : Color.White);
+            builder.AddLine($"Rank 2 Requirement: Level {MouseMagic.NeedLevel2}    Experience: {MouseMagic.Experience2:#,##0}", User.Level < MouseMagic.NeedLevel2 ? Color.Red : Color.White);
+            builder.AddLine($"Rank 3 Requirement: Level {MouseMagic.NeedLevel3}    Experience: {MouseMagic.Experience3:#,##0}", User.Level < MouseMagic.NeedLevel3 ? Color.Red : Color.White);
 
             if (!disciplineSkill)
+                builder.AddLine($"Rank 4+ Requirement: Books", magic?.Level < 3 ? Color.Red : Color.White);
+
+            if (!string.IsNullOrEmpty(MouseMagic.Description))
             {
-                label = new DXLabel
-                {
-                    ForeColour = magic?.Level < 3 ? Color.Red : Color.White,
-                    Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                    Parent = MagicLabel,
-                    Text = $"Rank 4+ Requirement: Books",
-                };
-                MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom);
+                builder.StartSection();
+                builder.AddLine(Functions.BreakStringIntoLines(MouseMagic.Description, 45), Color.Wheat);
             }
 
-            label = new DXLabel
-            {
-                AutoSize = false,
-                ForeColour = Color.Wheat,
-                Location = new Point(4, MagicLabel.DisplayArea.Bottom),
-                Parent = MagicLabel,
-                Text = MouseMagic.Description,
-            };
-            label.Size = DXLabel.GetHeight(label, MagicLabel.Size.Width);
+            builder.Complete();
+            MagicLabel = builder.Label;
 
-            MagicLabel.Size = new Size(label.DisplayArea.Right + 4 > MagicLabel.Size.Width ? label.DisplayArea.Right + 4 : MagicLabel.Size.Width, label.DisplayArea.Bottom + 4);
+            if (disciplineSkill)
+                MagicLabel.BorderColour = Color.LimeGreen;
         }
 
-        private void SetItemInfo(SetInfo set)
+        private static Size GetItemLabelImageSize(ClientUserItem item)
         {
+            if (item == null) return new Size(DXItemCell.CellWidth, DXItemCell.CellHeight);
 
-            DXLabel label = new DXLabel
+            MirLibrary library;
+            if (!CEnvir.LibraryList.TryGetValue(LibraryFile.Inventory, out library)) return new Size(DXItemCell.CellWidth, DXItemCell.CellHeight);
+
+            int image = ItemLabelImageControl.GetImageIndex(item);
+            if (image < 0) return new Size(DXItemCell.CellWidth, DXItemCell.CellHeight);
+
+            Size size = library.GetSize(image);
+
+            return size.IsEmpty ? new Size(DXItemCell.CellWidth, DXItemCell.CellHeight) : size;
+        }
+
+        private sealed class ItemLabelImageControl : DXControl
+        {
+            public ClientUserItem Item;
+
+            public static int GetImageIndex(ClientUserItem item)
             {
-                ForeColour = Color.LimeGreen,
-                Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                Parent = ItemLabel,
-                Text = $"Item Set:"
-            };
+                if (item == null) return -1;
 
-            ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
+                if (CEnvir.IsCurrencyItem(item.Info))
+                    return CEnvir.CurrencyImage(item.Info, item.Count);
 
-            label = new DXLabel
+                ItemInfo info = item.Info;
+
+                if (info.ItemEffect == ItemEffect.ItemPart && item.AddedStats[Stat.ItemIndex] > 0)
+                    info = Globals.ItemInfoList.Binding.First(x => x.Index == item.AddedStats[Stat.ItemIndex]);
+
+                return info.Image;
+            }
+
+            protected override void DrawControl()
             {
-                ForeColour = Color.LimeGreen,
-                Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                Parent = ItemLabel,
-                Text = $"    {set.SetName}"
-            };
+                base.DrawControl();
 
-            ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
+                MirLibrary library;
+                int image = GetImageIndex(Item);
 
-            label = new DXLabel
+                if (image < 0 || !CEnvir.LibraryList.TryGetValue(LibraryFile.Inventory, out library)) return;
+
+                library.Draw(image, DisplayArea.X, DisplayArea.Y, Color.White, false, 1F, ImageType.Image);
+
+                if (Item?.Colour != Color.Empty)
+                    library.Draw(image, DisplayArea.X, DisplayArea.Y, Item.Colour, false, 1F, ImageType.Overlay);
+            }
+        }
+
+        private sealed class ItemLabelBuilder
+        {
+            private const int Padding = 6;
+            private const int MinimumIconAreaWidth = 46;
+            private const int MinimumTextWidth = 180;
+            private const int DividerGap = 3;
+            private const int LabelPadding = 4;
+
+            private static readonly Color LabelBackColour = Color.FromArgb(230, 18, 15, 8);
+            private static readonly Color LabelBorderColour = Color.FromArgb(105, 95, 62);
+            private static readonly Color DividerColour = Color.FromArgb(125, 99, 83, 50);
+            private static readonly Color MutedUnavailableColour = Color.FromArgb(150, 135, 105);
+
+            private readonly Size _imageSize;
+            private readonly int _iconAreaWidth;
+            private readonly ItemLabelImageControl _imageControl;
+            private readonly List<DXControl> _sections = new List<DXControl>();
+            private readonly List<DXLabel> _rightAlignedHeaderLabels = new List<DXLabel>();
+
+            private DXControl _currentSection;
+            private int _currentSectionHeight;
+            private int _textWidth = MinimumTextWidth;
+            private bool _currentSectionHasLines;
+
+            public DXControl Label { get; }
+
+            public ItemLabelBuilder()
             {
-                ForeColour = Color.LimeGreen,
-                Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                Parent = ItemLabel,
-                Text = "Parts:"
-            };
+                _imageSize = Size.Empty;
+                _iconAreaWidth = 0;
+                Label = CreateLabel();
+            }
 
-            ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
+            public ItemLabelBuilder(ClientUserItem item)
+            {
+                _imageSize = GetItemLabelImageSize(item);
+                _iconAreaWidth = Math.Max(MinimumIconAreaWidth, _imageSize.Width + Padding * 2);
+                Label = CreateLabel();
+
+                _imageControl = new ItemLabelImageControl
+                {
+                    IsControl = false,
+                    Item = item,
+                    Parent = Label,
+                    Size = _imageSize,
+                };
+            }
+
+            public void AddHeader(string text, Color colour, string rightText, Color rightColour)
+            {
+                DXLabel title = AddLine(text, colour);
+
+                if (string.IsNullOrEmpty(rightText)) return;
+
+                DXLabel rightLabel = new DXLabel
+                {
+                    ForeColour = rightColour,
+                    Location = new Point(title.Location.X + title.Size.Width + 10, title.Location.Y),
+                    Parent = _currentSection,
+                    Text = rightText,
+                };
+
+                _rightAlignedHeaderLabels.Add(rightLabel);
+                IncludeLabel(rightLabel);
+            }
+
+            public DXLabel AddLine(string text, Color colour, int indent = 0)
+            {
+                EnsureSection();
+
+                DXLabel label = new DXLabel
+                {
+                    ForeColour = colour == Color.Gray ? MutedUnavailableColour : colour,
+                    Location = new Point(LabelPadding + indent, _currentSectionHeight),
+                    Parent = _currentSection,
+                    Text = text,
+                };
+
+                _currentSectionHasLines = true;
+                _currentSectionHeight = label.DisplayArea.Bottom;
+                _currentSection.Size = new Size(_currentSection.Size.Width, _currentSectionHeight);
+                IncludeLabel(label);
+
+                return label;
+            }
+
+            public DXLabel AddIconLine(string text, Color colour, LibraryFile iconLibrary, int iconIndex, int indent = 0)
+            {
+                EnsureSection();
+
+                DXImageControl icon = new DXImageControl
+                {
+                    IsControl = false,
+                    LibraryFile = iconLibrary,
+                    Index = iconIndex,
+                    Parent = _currentSection,
+                };
+
+                int iconGap = icon.Size.Width > 0 ? 4 : 0;
+                int labelX = LabelPadding + indent + icon.Size.Width + iconGap;
+                DXLabel label = new DXLabel
+                {
+                    ForeColour = colour == Color.Gray ? MutedUnavailableColour : colour,
+                    Location = new Point(labelX, _currentSectionHeight),
+                    Parent = _currentSection,
+                    Text = text,
+                };
+
+                int rowHeight = Math.Max(label.Size.Height, icon.Size.Height);
+
+                icon.Location = new Point(LabelPadding + indent, _currentSectionHeight + Math.Max(0, (rowHeight - icon.Size.Height) / 2));
+                label.Location = new Point(labelX, _currentSectionHeight + Math.Max(0, (rowHeight - label.Size.Height) / 2));
+
+                _currentSectionHasLines = true;
+                _currentSectionHeight += rowHeight;
+                IncludeControl(icon);
+                IncludeLabel(label);
+                _currentSection.Size = new Size(_currentSection.Size.Width, Math.Max(_currentSection.Size.Height, _currentSectionHeight));
+
+                return label;
+            }
+
+            public void StartSection()
+            {
+                if (_currentSection == null || !_currentSectionHasLines) return;
+
+                _currentSection = null;
+                _currentSectionHeight = 0;
+                _currentSectionHasLines = false;
+            }
+
+            public void Complete()
+            {
+                AlignHeaderRightLabels();
+
+                int textX = _iconAreaWidth > 0 ? _iconAreaWidth + Padding : Padding;
+                int y = Padding;
+                bool drewSection = false;
+
+                foreach (DXControl section in _sections)
+                {
+                    if (section.Size.Height == 0) continue;
+
+                    if (drewSection)
+                    {
+                        y += DividerGap;
+
+                        new DXControl
+                        {
+                            BackColour = DividerColour,
+                            DrawTexture = true,
+                            IsControl = false,
+                            Location = new Point(textX + 3, y),
+                            Parent = Label,
+                            Size = new Size(Math.Max(1, _textWidth - 6), 1),
+                        };
+
+                        y += DividerGap + 1;
+                    }
+
+                    section.Location = new Point(textX, y);
+                    section.Size = new Size(_textWidth, section.Size.Height);
+                    y += section.Size.Height;
+                    drewSection = true;
+                }
+
+                int minimumHeight = _imageControl == null ? 0 : _imageSize.Height + Padding * 2;
+
+                Label.Size = new Size(textX + _textWidth + Padding, Math.Max(y + Padding, minimumHeight));
+
+                if (_imageControl != null)
+                    _imageControl.Location = new Point(Padding + (_iconAreaWidth - _imageControl.Size.Width) / 2, Math.Max(Padding, (Label.Size.Height - _imageControl.Size.Height) / 2));
+            }
+
+            private static DXControl CreateLabel()
+            {
+                return new DXControl
+                {
+                    BackColour = LabelBackColour,
+                    Border = true,
+                    BorderColour = LabelBorderColour,
+                    DrawTexture = true,
+                    IsControl = false,
+                    IsVisible = true,
+                };
+            }
+
+            private void EnsureSection()
+            {
+                if (_currentSection != null) return;
+
+                _currentSection = new DXControl
+                {
+                    IsControl = false,
+                    Parent = Label,
+                };
+
+                _sections.Add(_currentSection);
+            }
+
+            private void IncludeLabel(DXLabel label)
+            {
+                _textWidth = Math.Max(_textWidth, label.Location.X + label.Size.Width + LabelPadding);
+                _currentSection.Size = new Size(Math.Max(_currentSection.Size.Width, label.Location.X + label.Size.Width + LabelPadding), Math.Max(_currentSection.Size.Height, label.DisplayArea.Bottom));
+            }
+
+            private void IncludeControl(DXControl control)
+            {
+                _textWidth = Math.Max(_textWidth, control.Location.X + control.Size.Width + LabelPadding);
+                _currentSection.Size = new Size(Math.Max(_currentSection.Size.Width, control.Location.X + control.Size.Width + LabelPadding), Math.Max(_currentSection.Size.Height, control.DisplayArea.Bottom));
+            }
+
+            private void AlignHeaderRightLabels()
+            {
+                foreach (DXLabel label in _rightAlignedHeaderLabels)
+                {
+                    int x = Math.Max(label.Location.X, _textWidth - label.Size.Width);
+                    label.Location = new Point(x, label.Location.Y);
+                    _textWidth = Math.Max(_textWidth, label.Location.X + label.Size.Width + LabelPadding);
+                }
+            }
+        }
+
+        private static ItemInfo GetItemLabelDisplayInfo(ClientUserItem item)
+        {
+            if (item.Info.ItemEffect == ItemEffect.ItemPart && item.AddedStats[Stat.ItemIndex] > 0)
+                return Globals.ItemInfoList.Binding.First(x => x.Index == item.AddedStats[Stat.ItemIndex]);
+
+            return item.Info;
+        }
+
+        private static Color GetItemLabelRarityColour(Rarity rarity)
+        {
+            switch (rarity)
+            {
+                case Rarity.Superior:
+                    return Color.PaleGreen;
+                case Rarity.Elite:
+                    return Color.MediumPurple;
+                default:
+                    return Color.White;
+            }
+        }
+
+        private void AddItemLabelMetadata(ItemLabelBuilder builder, ItemInfo displayInfo)
+        {
+            if (displayInfo.ItemType != ItemType.Nothing)
+                builder.AddLine($"Type: {displayInfo.ItemType}", Color.White);
+
+            if (MouseItem.Info.Durability > 0)
+            {
+                Color durabilityColour = MouseItem.CurrentDurability == 0 ? Color.Red : Color.FromArgb(132, 255, 255);
+
+                switch (displayInfo.ItemType)
+                {
+                    case ItemType.Book:
+                        builder.AddLine($"Pages: {MouseItem.CurrentDurability}/{MouseItem.MaxDurability}", durabilityColour);
+                        break;
+                    case ItemType.Meat:
+                        builder.AddLine($"Quality: {Math.Round(MouseItem.CurrentDurability / 1000M)}/{Math.Round(MouseItem.MaxDurability / 1000M)}", durabilityColour);
+                        break;
+                    case ItemType.Ore:
+                        builder.AddLine($"Purity: {Math.Round(MouseItem.CurrentDurability / 1000M)}", MouseItem.CurrentDurability == 0 ? Color.Red : Color.White);
+                        break;
+                    default:
+                        if (MouseItem.Info.StackSize == 1)
+                            builder.AddLine($"Durability: {Math.Round(MouseItem.CurrentDurability / 1000M)}/{Math.Round(MouseItem.MaxDurability / 1000M)}", durabilityColour);
+                        break;
+                }
+            }
+
+            if (CEnvir.IsCurrencyItem(MouseItem.Info) || MouseItem.Info.ItemEffect == ItemEffect.Experience)
+                builder.AddLine($"Amount: {MouseItem.Count:#,##0}", Color.White);
+            else if (MouseItem.Info.ItemEffect == ItemEffect.ItemPart)
+                builder.AddLine($"Parts: {MouseItem.Count}/{displayInfo.PartCount}.", Color.White);
+            else if (MouseItem.Info.StackSize > 1)
+                builder.AddLine($"Count: {MouseItem.Count}/{MouseItem.Info.StackSize}", Color.White);
+
+            if (displayInfo.ItemType == ItemType.LootBox)
+            {
+                int remainingRerolls = MouseItem.AddedStats[Stat.Counter1];
+                int lootBoxState = MouseItem.AddedStats[Stat.Counter2];
+
+                if (lootBoxState > 1)
+                {
+                    int openCount = 0;
+
+                    for (int i = 0; i < LootBoxInfo.SlotSize; i++)
+                    {
+                        if ((MouseItem.CurrentDurability & (1 << i)) != 0)
+                            openCount++;
+                    }
+
+                    builder.AddLine($"Open Count: {openCount}/{LootBoxInfo.SlotSize}", Color.White);
+                }
+                else
+                {
+                    builder.AddLine($"Reroll Count: {remainingRerolls}/{Globals.LootBoxRerollCount}", Color.White);
+                }
+            }
+
+            if (MouseItem.Info.Weight > 0)
+                builder.AddLine($"Weight: {MouseItem.Info.Weight}", GetItemLabelWeightColour());
+        }
+
+        private Color GetItemLabelWeightColour()
+        {
+            switch (MouseItem.Info.ItemType)
+            {
+                case ItemType.Weapon:
+                case ItemType.Shield:
+                case ItemType.Torch:
+                case ItemType.Hook:
+                case ItemType.Float:
+                case ItemType.Reel:
+                    if (User.HandWeight - (Equipment[(int)EquipmentSlot.Weapon]?.Info.Weight ?? 0) + MouseItem.Info.Weight > User.Stats[Stat.HandWeight])
+                        return Color.Red;
+                    break;
+                case ItemType.Armour:
+                case ItemType.Helmet:
+                case ItemType.Necklace:
+                case ItemType.Bracelet:
+                case ItemType.Ring:
+                case ItemType.Shoes:
+                case ItemType.Poison:
+                case ItemType.Amulet:
+                case ItemType.Bait:
+                case ItemType.Finder:
+                    if (User.WearWeight - (Equipment[(int)EquipmentSlot.Armour]?.Info.Weight ?? 0) + MouseItem.Info.Weight > User.Stats[Stat.WearWeight])
+                        return Color.Red;
+                    break;
+            }
+
+            return Color.White;
+        }
+
+        private void AddEquipmentItemInfo(ItemLabelBuilder builder, ItemInfo displayInfo)
+        {
+            Stats stats = new Stats();
+            stats.Add(displayInfo.Stats, displayInfo.ItemType != ItemType.Weapon);
+            stats.Add(MouseItem.AddedStats, MouseItem.Info.ItemType != ItemType.Weapon);
+
+            if (displayInfo.ItemType == ItemType.Weapon)
+            {
+                Stat element = MouseItem.AddedStats.GetWeaponElement();
+
+                if (element == Stat.None)
+                    element = displayInfo.Stats.GetWeaponElement();
+
+                if (element != Stat.None)
+                    stats[element] += MouseItem.AddedStats.GetWeaponElementValue() + displayInfo.Stats.GetWeaponElementValue();
+            }
+
+            bool firstElement = stats.HasElementalWeakness();
+            foreach (KeyValuePair<Stat, int> pair in stats.Values)
+            {
+                string text = stats.GetDisplay(pair.Key);
+                if (text == null) continue;
+
+                string added = MouseItem.AddedStats.GetFormat(pair.Key);
+                Color colour = Color.White;
+
+                switch (pair.Key)
+                {
+                    case Stat.Luck:
+                        colour = Color.Yellow;
+                        break;
+                    case Stat.Strength:
+                        colour = Color.FromArgb(148, 255, 206);
+                        break;
+                    case Stat.DropRate:
+                    case Stat.ExperienceRate:
+                    case Stat.SkillRate:
+                    case Stat.GoldRate:
+                        colour = Color.Yellow;
+                        if (added != null)
+                            text += $" ({added})";
+                        break;
+                    case Stat.FireAttack:
+                    case Stat.IceAttack:
+                    case Stat.LightningAttack:
+                    case Stat.WindAttack:
+                    case Stat.HolyAttack:
+                    case Stat.DarkAttack:
+                    case Stat.PhantomAttack:
+                        colour = Color.DeepSkyBlue;
+                        break;
+                    case Stat.FireResistance:
+                    case Stat.IceResistance:
+                    case Stat.LightningResistance:
+                    case Stat.WindResistance:
+                    case Stat.HolyResistance:
+                    case Stat.DarkResistance:
+                    case Stat.PhantomResistance:
+                    case Stat.PhysicalResistance:
+                        colour = !firstElement ? Color.Lime : Color.IndianRed;
+                        firstElement = true;
+                        break;
+                    default:
+                        if (MouseItem.AddedStats[pair.Key] != 0)
+                        {
+                            text += $"   ({added})";
+                            colour = Color.FromArgb(148, 255, 206);
+                        }
+                        break;
+                }
+
+                builder.AddLine(text, colour);
+            }
+
+            AddItemLabelTrainingInfo(builder, displayInfo);
+        }
+
+        private void AddItemLabelTrainingInfo(ItemLabelBuilder builder, ItemInfo displayInfo)
+        {
+            switch (displayInfo.ItemType)
+            {
+                case ItemType.Weapon:
+                    if ((MouseItem.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
+
+                    builder.StartSection();
+                    builder.AddLine($"{displayInfo.ItemType} Level: " + (MouseItem.Level < Globals.WeaponExperienceList.Count ? MouseItem.Level.ToString() : "Max"), Color.White);
+
+                    if (MouseItem.Level >= Globals.WeaponExperienceList.Count) return;
+
+                    if ((MouseItem.Flags & UserItemFlags.Refinable) == UserItemFlags.Refinable)
+                        builder.AddLine("Ready for Refine", Color.LightGreen);
+                    else
+                        builder.AddLine($"{displayInfo.ItemType} Training Points: {MouseItem.Experience / Globals.WeaponExperienceList[MouseItem.Level]:0.##%}", Color.White);
+                    break;
+                case ItemType.Necklace:
+                case ItemType.Bracelet:
+                case ItemType.Ring:
+                    if ((MouseItem.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
+
+                    builder.StartSection();
+                    builder.AddLine($"{displayInfo.ItemType} Level: " + (MouseItem.Level < Globals.AccessoryExperienceList.Count ? MouseItem.Level.ToString() : "Max"), Color.White);
+
+                    if (MouseItem.Level >= Globals.AccessoryExperienceList.Count) return;
+
+                    if ((MouseItem.Flags & UserItemFlags.Refinable) == UserItemFlags.Refinable)
+                        builder.AddLine("Ready for Refine", Color.LightGreen);
+                    else
+                        builder.AddLine($"{displayInfo.ItemType} Training Points: {MouseItem.Experience / Globals.AccessoryExperienceList[MouseItem.Level]:0.##%}", Color.White);
+                    break;
+            }
+        }
+
+        private void AddPotionItemInfo(ItemLabelBuilder builder)
+        {
+            Stats stats = new Stats();
+            stats.Add(MouseItem.Info.Stats);
+
+            foreach (KeyValuePair<Stat, int> pair in stats.Values)
+            {
+                string text = stats.GetDisplay(pair.Key);
+                if (text == null) continue;
+
+                Color colour = Color.White;
+                switch (pair.Key)
+                {
+                    case Stat.Luck:
+                    case Stat.DropRate:
+                    case Stat.ExperienceRate:
+                    case Stat.SkillRate:
+                    case Stat.GoldRate:
+                        colour = Color.Yellow;
+                        break;
+                    case Stat.DeathDrops:
+                        colour = Color.OrangeRed;
+                        break;
+                }
+
+                builder.AddLine(text, colour);
+            }
+
+            if (MouseItem.Info.Durability > 0)
+                builder.AddLine($"Cooldown: {Functions.ToString(TimeSpan.FromMilliseconds(MouseItem.Info.Durability), true)}", Color.White);
+        }
+
+        private void AddItemLabelRequirements(ItemLabelBuilder builder, ItemInfo displayInfo)
+        {
+            bool started = false;
+
+            if (displayInfo.RequiredGender != RequiredGender.None)
+            {
+                if (!started)
+                {
+                    builder.StartSection();
+                    started = true;
+                }
+
+                Color colour = Color.White;
+                switch (User.Gender)
+                {
+                    case MirGender.Male:
+                        if (!displayInfo.RequiredGender.HasFlag(RequiredGender.Male))
+                            colour = Color.Red;
+                        break;
+                    case MirGender.Female:
+                        if (!displayInfo.RequiredGender.HasFlag(RequiredGender.Female))
+                            colour = Color.Red;
+                        break;
+                }
+
+                builder.AddLine($"Required Gender: {displayInfo.RequiredGender}", colour);
+            }
+
+            if (displayInfo.RequiredClass != RequiredClass.All)
+            {
+                if (!started)
+                {
+                    builder.StartSection();
+                    started = true;
+                }
+
+                Color colour = Color.White;
+                switch (User.Class)
+                {
+                    case MirClass.Warrior:
+                        if (!displayInfo.RequiredClass.HasFlag(RequiredClass.Warrior))
+                            colour = Color.Red;
+                        break;
+                    case MirClass.Wizard:
+                        if (!displayInfo.RequiredClass.HasFlag(RequiredClass.Wizard))
+                            colour = Color.Red;
+                        break;
+                    case MirClass.Taoist:
+                        if (!displayInfo.RequiredClass.HasFlag(RequiredClass.Taoist))
+                            colour = Color.Red;
+                        break;
+                    case MirClass.Assassin:
+                        if (!displayInfo.RequiredClass.HasFlag(RequiredClass.Assassin))
+                            colour = Color.Red;
+                        break;
+                }
+
+                Type type = displayInfo.RequiredClass.GetType();
+                MemberInfo[] infos = type.GetMember(displayInfo.RequiredClass.ToString());
+                DescriptionAttribute description = infos[0].GetCustomAttribute<DescriptionAttribute>();
+
+                builder.AddLine($"Required Class: {description?.Description ?? displayInfo.RequiredClass.ToString()}", colour);
+            }
+
+            if (displayInfo.RequiredAmount <= 0) return;
+
+            if (!started)
+                builder.StartSection();
+
+            string text;
+            Color requiredColour = displayInfo.Rarity == Rarity.Common ? Color.White : Color.FromArgb(0, 204, 0);
+            switch (displayInfo.RequiredType)
+            {
+                case RequiredType.Level:
+                    text = $"Required Level: {displayInfo.RequiredAmount}";
+                    if (User.Level < displayInfo.RequiredAmount && User.Stats[Stat.Rebirth] == 0)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.MaxLevel:
+                    text = $"Max Level: {displayInfo.RequiredAmount}";
+                    if (User.Level > displayInfo.RequiredAmount || User.Stats[Stat.Rebirth] > 0)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.AC:
+                    text = $"Required AC: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.MaxAC] < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.MR:
+                    text = $"Required MR: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.MaxMR] < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.DC:
+                    text = $"Required DC: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.MaxDC] < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.MC:
+                    text = $"Required MC: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.MaxMC] < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.SC:
+                    text = $"Required SC: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.MaxSC] < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.Health:
+                    text = $"Required Health: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.Health] < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.Mana:
+                    text = $"Required Mana: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.Mana] < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.CompanionLevel:
+                    text = $"Companion Level: {displayInfo.RequiredAmount}";
+                    if (Companion == null || Companion.Level < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.MaxCompanionLevel:
+                    text = $"Max Companion Level: {displayInfo.RequiredAmount}";
+                    if (Companion == null || Companion.Level > displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.RebirthLevel:
+                    text = $"Rebirth Level: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.Rebirth] < displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                case RequiredType.MaxRebirthLevel:
+                    text = $"Rebirth Level: {displayInfo.RequiredAmount}";
+                    if (User.Stats[Stat.Rebirth] > displayInfo.RequiredAmount)
+                        requiredColour = Color.Red;
+                    break;
+                default:
+                    text = "Unknown Type Required";
+                    break;
+            }
+
+            builder.AddLine(text, requiredColour);
+        }
+
+        private void AddItemLabelTradeState(ItemLabelBuilder builder, ItemInfo displayInfo)
+        {
+            long sale = MouseItem.Price(Math.Max(1, MouseItem.Count));
+            bool hasLines = false;
+
+            if (sale > 0)
+            {
+                builder.StartSection();
+                hasLines = true;
+                builder.AddLine($"Sell Value: {sale}", Color.LightGoldenrodYellow);
+            }
+
+            if (MouseItem.Info.Durability > 0 && !MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+                builder.AddLine("Cannot be repaired.", Color.Yellow);
+            }
+
+            if (!MouseItem.Info.CanSell || (MouseItem.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+                builder.AddLine("Cannot be sold.", Color.Yellow);
+            }
+
+            if (!MouseItem.Info.CanStore)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+                builder.AddLine("Cannot be stored.", Color.Yellow);
+            }
+
+            if (!MouseItem.Info.CanTrade || (MouseItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+                builder.AddLine("Cannot be traded.", Color.Yellow);
+            }
+
+            if (!MouseItem.Info.CanDrop)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+                builder.AddLine("Cannot be dropped.", Color.Yellow);
+            }
+
+            if (!MouseItem.Info.CanDeathDrop || (MouseItem.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless || (MouseItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+                builder.AddLine("Cannot be dropped on death.", Color.Yellow);
+            }
+
+            if ((MouseItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+                builder.AddLine("Bound Item.", Color.Yellow);
+            }
+
+            if ((MouseItem.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+
+                if (MouseItem.Info.ItemType == ItemType.Book)
+                    builder.AddLine("Does not contain Level 4 Pages.", Color.Red);
+                else
+                    builder.AddLine("Cannot be Refined or Upgraded.", Color.Yellow);
+            }
+            else if (MouseItem.Info.ItemType == ItemType.Book)
+            {
+                if (!hasLines)
+                {
+                    builder.StartSection();
+                    hasLines = true;
+                }
+                builder.AddLine("Contains high level Pages.", Color.Green);
+            }
+
+            AddItemLabelDescription(builder, displayInfo, hasLines);
+        }
+
+        private void AddItemLabelDescription(ItemLabelBuilder builder, ItemInfo displayInfo, bool useCurrentSection = false)
+        {
+            if (string.IsNullOrEmpty(displayInfo.Description)) return;
+
+            if (!useCurrentSection)
+                builder.StartSection();
+
+            builder.AddLine(displayInfo.Description, displayInfo.ItemEffect == ItemEffect.FootBallWhistle ? Color.Red : Color.Wheat);
+        }
+
+        private void AddSetItemInfo(ItemLabelBuilder builder, SetInfo set)
+        {
+            builder.AddLine("Item Set:", Color.LimeGreen);
+            builder.AddLine($"    {set.SetName}", Color.LimeGreen);
+            builder.AddLine("Parts:", Color.LimeGreen);
 
             bool hasFullSet = true;
             List<int> counted = new List<int>();
-
             Stats setBonus = new Stats();
 
-            int l;
-            MirClass c;
-            ClientUserItem[] equip;
+            int level;
+            MirClass userClass;
+            ClientUserItem[] equipment;
 
             DXItemCell cell = MouseControl as DXItemCell;
             if (cell?.GridType == GridType.Inspect)
             {
-                l = InspectBox.Level;
-                c = InspectBox.Class;
-                equip = InspectBox.Equipment;
+                level = InspectBox.Level;
+                userClass = InspectBox.Class;
+                equipment = InspectBox.Equipment;
             }
             else
             {
-                l = User.Level;
-                c = User.Class;
-                equip = Equipment;
+                level = User.Level;
+                userClass = User.Class;
+                equipment = Equipment;
             }
 
             foreach (ItemInfo info in set.Items)
             {
                 bool hasPart = false;
-                for (int j = 0; j < equip.Length; j++)
+                for (int i = 0; i < equipment.Length; i++)
                 {
-                    if (counted.Contains(j)) continue;
-                    if (equip[j] == null) continue;
-                    if (equip[j].Info != info) continue;
-                    if (equip[j].CurrentDurability == 0 && equip[j].Info.Durability > 0) continue;
+                    if (counted.Contains(i)) continue;
+                    if (equipment[i] == null) continue;
+                    if (equipment[i].Info != info) continue;
+                    if (equipment[i].CurrentDurability == 0 && equipment[i].Info.Durability > 0) continue;
 
-                    counted.Add(j);
-
+                    counted.Add(i);
                     hasPart = true;
                     break;
                 }
@@ -2991,34 +2695,16 @@ namespace Client.Scenes
                 if (!hasPart)
                     hasFullSet = false;
 
-                label = new DXLabel
-                {
-                    ForeColour = hasPart ? Color.LimeGreen : Color.Gray,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "    " + info.ItemName
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                    label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
+                builder.AddLine("    " + info.ItemName, hasPart ? Color.LimeGreen : Color.Gray);
             }
-            label = new DXLabel
-            {
-                ForeColour = Color.LimeGreen,
-                Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                Parent = ItemLabel,
-                Text = $"Set Bonus:"
-            };
 
-            ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
+            builder.AddLine("Set Bonus:", Color.LimeGreen);
 
             foreach (SetInfoStat stat in set.SetStats)
             {
-                if (l < stat.Level) continue;
+                if (level < stat.Level) continue;
 
-                switch (c)
+                switch (userClass)
                 {
                     case MirClass.Warrior:
                         if ((stat.Class & RequiredClass.Warrior) != RequiredClass.Warrior) continue;
@@ -3037,29 +2723,13 @@ namespace Client.Scenes
                 setBonus[stat.Stat] += stat.Amount;
             }
 
-
-
             foreach (KeyValuePair<Stat, int> pair in setBonus.Values)
             {
                 string text = setBonus.GetDisplay(pair.Key);
-
                 if (text == null) continue;
 
-                label = new DXLabel
-                {
-                    ForeColour = hasFullSet ? Color.LimeGreen : Color.Gray,
-                    Location = new Point(4, ItemLabel.DisplayArea.Bottom),
-                    Parent = ItemLabel,
-                    Text = "    " + text
-                };
-
-                ItemLabel.Size = new Size(label.DisplayArea.Right + 4 > ItemLabel.Size.Width ? label.DisplayArea.Right + 4 : ItemLabel.Size.Width,
-                                          label.DisplayArea.Bottom > ItemLabel.Size.Height ? label.DisplayArea.Bottom : ItemLabel.Size.Height);
-
+                builder.AddLine("    " + text, hasFullSet ? Color.LimeGreen : Color.Gray);
             }
-
-
-            ItemLabel.Size = new Size(ItemLabel.Size.Width, ItemLabel.Size.Height + 4);
         }
 
         public void UseMagic(SpellKey key)
@@ -3675,6 +3345,7 @@ namespace Client.Scenes
             {
                 FameLabel.Draw();
             }
+
         }
 
         public void Displacement(MirDirection direction, Point location, bool clearQueue = false)
