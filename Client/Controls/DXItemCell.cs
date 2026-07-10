@@ -811,6 +811,9 @@ namespace Client.Controls
 
             CountLabel.Visible = ShowCountLabel && !Hidden && !LootBoxLocked && Item != null && (!CEnvir.IsCurrencyItem(Item.Info) && Item.Info.ItemEffect != ItemEffect.Experience) && (Item.Info.StackSize > 1 || Item.Count > 1);
             CountLabel.Text = Linked ? LinkedCount.ToString() : Item?.Count.ToString();
+
+            TextureValid = false;
+            InvalidateParentChildCache();
         }
         public void MoveItem()
         {
@@ -2100,7 +2103,7 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.CommunicationBox.IsVisible)
+                            if (GameScene.Game.CommunicationBox.IsVisible && GameScene.Game.CommunicationBox.IsSendTabSelected)
                             {
                                 MoveItem(GameScene.Game.CommunicationBox.SendGrid);
                                 return;
@@ -2245,7 +2248,7 @@ namespace Client.Controls
                                 return;
                             }
 
-                            if (GameScene.Game.CommunicationBox.IsVisible)
+                            if (GameScene.Game.CommunicationBox.IsVisible && GameScene.Game.CommunicationBox.IsSendTabSelected)
                             {
                                 MoveItem(GameScene.Game.CommunicationBox.SendGrid);
                                 return;

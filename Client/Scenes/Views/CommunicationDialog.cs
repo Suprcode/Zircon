@@ -180,6 +180,7 @@ namespace Client.Scenes.Views
         private DXTabControl TabControl;
         private DXImageControl BackgroundImage;
         public DXTab FriendTab, ReceivedTab, SendTab, BlockTab;
+        public bool IsSendTabSelected => TabControl.SelectedTab == SendTab;
         private DXImageControl ReadTab;
 
         //Friends
