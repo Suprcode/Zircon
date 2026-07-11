@@ -160,7 +160,7 @@ namespace Client.Models
 
             DrawShadow();
 
-            DrawBody(MouseObject == this);
+            DrawBody();
         }
 
         private void DrawShadow()
@@ -195,7 +195,7 @@ namespace Client.Models
             if (BodyLibrary == null) return;
 
             RenderingPipelineManager.SetBlend(true, 0.20F, BlendMode.HIGHLIGHT);//0.60F
-            DrawBody();
+            DrawBody(true);
             RenderingPipelineManager.SetBlend(false);
         }
 
