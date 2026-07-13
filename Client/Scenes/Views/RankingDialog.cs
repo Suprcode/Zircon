@@ -1669,6 +1669,7 @@ namespace Client.Scenes.Views
         {
             Size = new Size(288, 22);
             DrawTexture = false;
+            CacheInParent = false;
             BackColour = Color.Empty;
 
             OnlineImage = new DXImageControl

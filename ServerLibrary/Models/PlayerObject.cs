@@ -2162,7 +2162,6 @@ namespace Server.Models
 
                     Stats socketStats = new Stats(socket.Gem.Info.Stats);
                     socketStats.Add(socket.Gem.Stats);
-                    socketStats[Stat.SocketRecoveryRate] = 0;
                     Stats.Add(socketStats, item.Info.ItemType != ItemType.Weapon);
                 }
 
@@ -10954,7 +10953,7 @@ namespace Server.Models
                             .Where(x => x.Gem != null && x.Gem.Info.Shape != 3)
                             .Select(x => x.Gem)
                             .ToList();
-                        int recoveryChance = Math.Max(0, Math.Min(100, gemInfo.Stats[Stat.SocketRecoveryRate]));
+                        int recoveryChance = GetSocketRecoveryChance(gem);
                         UserItem recoveredGem = null;
 
                         if (recoverableGems.Count > 0 && SEnvir.Random.Next(100) < recoveryChance)
@@ -10997,7 +10996,7 @@ namespace Server.Models
             if (gem.MaxDurability <= 0) return 10;
 
             long durability = (long)gem.CurrentDurability * 100;
-            long maximum = gem.MaxDurability;
+            long maximum = gem.Info.Durability;
 
             if (durability >= maximum * 80) return 80;
             if (durability >= maximum * 60) return 60;
@@ -11005,6 +11004,15 @@ namespace Server.Models
             if (durability >= maximum * 20) return 20;
 
             return 10;
+        }
+
+        private static int GetSocketRecoveryChance(UserItem gem)
+        {
+            if (gem.Info.Durability <= 0) return 0;
+
+            int durabilityPercentage = (int)Math.Max(0, Math.Min(100, (long)gem.CurrentDurability * 100 / gem.Info.Durability));
+
+            return 100 - durabilityPercentage;
         }
 
         public void NPCSocketCombine(C.NPCSocketCombine p)

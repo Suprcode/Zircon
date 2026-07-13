@@ -1702,14 +1702,26 @@ namespace Client.Scenes
 
             AddItemLabelTradeState(builder, displayInfo);
 
-            if (MouseItem.Info.Durability > 0 && MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1 && MouseItem.Info.ItemType != ItemType.Book)
+            if (MouseItem.Info.Durability > 0 && MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1)
             {
-                builder.StartSection();
+                switch (MouseItem.Info.ItemType)
+                {
+                    case ItemType.Weapon:
+                    case ItemType.Armour:
+                    case ItemType.Helmet:
+                    case ItemType.Necklace:
+                    case ItemType.Bracelet:
+                    case ItemType.Ring:
+                    case ItemType.Shoes:
+                    case ItemType.Shield:
+                        builder.StartSection();
 
-                if (CEnvir.Now >= MouseItem.NextSpecialRepair)
-                    builder.AddLine("Can Special Repair", Color.LimeGreen);
-                else
-                    builder.AddLine($"Special Repair in {Functions.ToString(MouseItem.NextSpecialRepair - CEnvir.Now, true)}", Color.Red);
+                        if (CEnvir.Now >= MouseItem.NextSpecialRepair)
+                            builder.AddLine("Can Special Repair", Color.LimeGreen);
+                        else
+                            builder.AddLine($"Special Repair in {Functions.ToString(MouseItem.NextSpecialRepair - CEnvir.Now, true)}", Color.Red);
+                        break;
+                }
             }
 
             if ((MouseItem.Flags & UserItemFlags.Expirable) == UserItemFlags.Expirable)
@@ -2315,7 +2327,6 @@ namespace Client.Scenes
 
                 Stats gemStats = new Stats(gem.Stats);
                 gemStats.Add(gemItem.AddedStats);
-                gemStats[Stat.SocketRecoveryRate] = 0;
                 bool iconAdded = false;
                 int statIndent = 0;
 
@@ -2681,12 +2692,24 @@ namespace Client.Scenes
 
             if (MouseItem.Info.Durability > 0 && !MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1)
             {
-                if (!hasLines)
+                switch (MouseItem.Info.ItemType)
                 {
-                    builder.StartSection();
-                    hasLines = true;
+                    case ItemType.Weapon:
+                    case ItemType.Armour:
+                    case ItemType.Helmet:
+                    case ItemType.Necklace:
+                    case ItemType.Bracelet:
+                    case ItemType.Ring:
+                    case ItemType.Shoes:
+                    case ItemType.Shield:
+                        if (!hasLines)
+                        {
+                            builder.StartSection();
+                            hasLines = true;
+                        }
+                        builder.AddLine("Cannot be repaired.", Color.Yellow);
+                        break;
                 }
-                builder.AddLine("Cannot be repaired.", Color.Yellow);
             }
 
             if (!MouseItem.Info.CanSell || (MouseItem.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless)

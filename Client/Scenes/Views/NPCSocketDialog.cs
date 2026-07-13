@@ -259,6 +259,7 @@ namespace Client.Scenes.Views
                 Location = new Point((Size.Width - 140) / 3, 280),
                 Size = new Size(70, 24),
                 ButtonType = ButtonType.Default,
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.SocketDialogStartButtonLabel },
             };
             StartButton.MouseClick += (o, e) => Start();
@@ -269,6 +270,7 @@ namespace Client.Scenes.Views
                 Location = new Point(Size.Width - (Size.Width - 140) / 3 - 70, 280),
                 Size = new Size(70, 24),
                 ButtonType = ButtonType.Default,
+                LabelStyle = ButtonLabelStyle.Gold,
                 Label = { Text = CEnvir.Language.CommonControlClose },
             };
             CloseDialogButton.MouseClick += (o, e) => Visible = false;
