@@ -286,6 +286,15 @@ namespace Server.Envir.Translations
         public override string NPCMasterRefineChance { get; set; } = "Your chance of success is: {0}%";
         public override string AccessoryRefineSuccess { get; set; } = "Congratulations your {0} has been refined with {1} + {2}.";
         public override string AccessoryRefineFailed { get; set; } = "The refine failed and your {0}'s have been destroyed";
+        public override string NPCSocketUnlockSuccess { get; set; } = "Socket unlocked successfully.";
+        public override string NPCSocketUnlockFailed { get; set; } = "The socket unlock failed.";
+        public override string NPCSocketInsertSuccess { get; set; } = "The gem was socketed successfully.";
+        public override string NPCSocketInsertCursed { get; set; } = "The socket was cursed.";
+        public override string NPCSocketResetSuccess { get; set; } = "All socketed gems were cleared.";
+        public override string NPCSocketResetFailed { get; set; } = "The socket reset failed.";
+        public override string NPCSocketCombineNoSpace { get; set; } = "There is no inventory space for the combined gem.";
+        public override string NPCSocketCombineFailed { get; set; } = "The socket gem combination failed and one gem was destroyed.";
+        public override string NPCSocketCombineSuccess { get; set; } = "The socket gems were combined successfully.";
 
         public override string ChargeExpire { get; set; } = "The energy for {0} has left your weapon.";
         public override string ChargeFail { get; set; } = "Failed to gather the energy to charge {0}.";

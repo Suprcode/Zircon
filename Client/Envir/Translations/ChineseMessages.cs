@@ -23,6 +23,15 @@ namespace Client.Envir.Translations
         public override string UnableToRefineIncorrectItem { get; set; } = "Unable to use {0} to refine.";
         public override string UnableToRefineHasBeenLevelled { get; set; } = "Unable to refine {0} because it has been levelled.";
         public override string UnableToRefineNeedCorundumOre { get; set; } = "You cannot use {0}, you must use Corundum Ore.";
+        public override string UnableToSocketNoTarget { get; set; } = "无法使用 {0}，请先选择武器或盔甲。";
+        public override string UnableToSocketNoMoreSockets { get; set; } = "无法使用 {0}，目标物品已解锁三个镶嵌孔。";
+        public override string UnableToSocketIncorrectTarget { get; set; } = "无法在所选目标上使用 {0}。";
+        public override string UnableToSocketIncorrectRarity { get; set; } = "无法使用 {0}，其稀有度与所选目标不符。";
+        public override string UnableToSocketMissingItems { get; set; } = "请将武器或盔甲放入中央栏位，并将镶嵌宝石放入右上栏位。";
+        public override string UnableToSocketInvalidGem { get; set; } = "右上栏位必须放入镶嵌宝石。";
+        public override string UnableToSocketNoAvailableSocket { get; set; } = "没有可用的已解锁空镶嵌孔。";
+        public override string UnableToSocketMissingGems { get; set; } = "请在上方栏位放入三颗相同的镶嵌宝石。";
+        public override string UnableToSocketMismatch { get; set; } = "三颗镶嵌宝石必须是相同物品。";
         public override string UnableToStoreInGuildStorage { get; set; } = "Unable to store this item in guild storage.";
         public override string OnlyBlackIronOreCanBeUsed { get; set; } = "Only Black Iron Ore can be used.";
         public override string DoesntHaveSameStats { get; set; } = "{0} doesnt have the same stats as the main accessory.";
@@ -800,5 +809,11 @@ namespace Client.Envir.Translations
         public override string BundleConfirmRandomButtonLabel { get; set; } = "Take Random";
         public override string BundleConfirmAllButtonLabel { get; set; } = "Take All";
         public override string BundleConfirmOneButtonLabel { get; set; } = "Take Item";
+
+        public override string SocketDialogTitle { get; set; } = "Gem Item";
+        public override string SocketDialogStartButtonLabel { get; set; } = "开始";
+
+        public override string SocketCombineDialogTitle { get; set; } = "宝石合成";
+        public override string SocketCombineDialogStartButtonLabel { get; set; } = "开始";
     }
 }

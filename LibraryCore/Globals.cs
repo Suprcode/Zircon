@@ -468,6 +468,8 @@ namespace Library
 
         public Stats AddedStats { get; set; }
 
+        public List<ClientUserItemSocket> Sockets { get; set; } = new List<ClientUserItemSocket>();
+
         public UserItemFlags Flags { get; set; }
         public TimeSpan ExpireTime { get; set; }
 
@@ -492,6 +494,10 @@ namespace Library
         public void Complete()
         {
             Info = Globals.ItemInfoList.Binding.FirstOrDefault(x => x.Index == InfoIndex);
+
+            if (Sockets != null)
+                foreach (ClientUserItemSocket socket in Sockets)
+                    socket.Gem?.Complete();
 
             NextSpecialRepair = Time.Now + SpecialRepairCoolDown;
             NextReset = Time.Now + ResetCoolDown;
@@ -529,14 +535,20 @@ namespace Library
             Colour = item.Colour;
 
             SpecialRepairCoolDown = item.SpecialRepairCoolDown;
+            ResetCoolDown = item.ResetCoolDown;
 
             Flags = item.Flags;
             ExpireTime = item.ExpireTime;
 
             New = item.New;
             NextSpecialRepair = item.NextSpecialRepair;
+            NextReset = item.NextReset;
 
             AddedStats = new Stats(item.AddedStats);
+
+            Sockets = item.Sockets == null
+                ? new List<ClientUserItemSocket>()
+                : item.Sockets.Select(x => new ClientUserItemSocket(x)).ToList();
         }
 
         public long Price(long count)
@@ -765,6 +777,22 @@ namespace Library
                 default:
                     return 0;
             }
+        }
+    }
+
+    public sealed class ClientUserItemSocket
+    {
+        public int Slot { get; set; }
+        public ClientUserItem Gem { get; set; }
+
+        public ClientUserItemSocket() { }
+
+        public ClientUserItemSocket(ClientUserItemSocket socket)
+        {
+            if (socket == null) return;
+
+            Slot = socket.Slot;
+            Gem = socket.Gem == null ? null : new ClientUserItem(socket.Gem, socket.Gem.Count);
         }
     }
 

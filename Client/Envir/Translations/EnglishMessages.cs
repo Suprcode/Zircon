@@ -23,6 +23,15 @@ namespace Client.Envir.Translations
         public override string UnableToRefineIncorrectItem { get; set; } = "Unable to use {0} to refine.";
         public override string UnableToRefineHasBeenLevelled { get; set; } = "Unable to refine {0} because it has been levelled.";
         public override string UnableToRefineNeedCorundumOre { get; set; } = "You cannot use {0}, you must use Corundum Ore.";
+        public override string UnableToSocketNoTarget { get; set; } = "Unable to use {0}, select a weapon or armour first.";
+        public override string UnableToSocketNoMoreSockets { get; set; } = "Unable to use {0}, the target already has three unlocked sockets.";
+        public override string UnableToSocketIncorrectTarget { get; set; } = "Unable to use {0} on the selected target.";
+        public override string UnableToSocketIncorrectRarity { get; set; } = "Unable to use {0}, its rarity does not match the selected target.";
+        public override string UnableToSocketMissingItems { get; set; } = "Place a weapon or armour in the centre slot and a socket gem in the top-right slot.";
+        public override string UnableToSocketInvalidGem { get; set; } = "The top-right item must be a socket gem.";
+        public override string UnableToSocketNoAvailableSocket { get; set; } = "There is no unlocked empty socket available.";
+        public override string UnableToSocketMissingGems { get; set; } = "Place three matching socket gems into the upper cells.";
+        public override string UnableToSocketMismatch { get; set; } = "All three socket gems must be the same item.";
         public override string UnableToStoreInGuildStorage { get; set; } = "Unable to store this item in guild storage.";
         public override string OnlyBlackIronOreCanBeUsed { get; set; } = "Only Black Iron Ore can be used.";
         public override string DoesntHaveSameStats { get; set; } = "{0} doesnt have the same stats as the main accessory.";
@@ -801,5 +810,11 @@ namespace Client.Envir.Translations
         public override string BundleConfirmRandomButtonLabel { get; set; } = "Take Random";
         public override string BundleConfirmAllButtonLabel { get; set; } = "Take All";
         public override string BundleConfirmOneButtonLabel { get; set; } = "Take Item";
+
+        public override string SocketDialogTitle { get; set; } = "Pierce Item";
+        public override string SocketDialogStartButtonLabel { get; set; } = "Start";
+
+        public override string SocketCombineDialogTitle { get; set; } = "Combine Gems";
+        public override string SocketCombineDialogStartButtonLabel { get; set; } = "Start";
     }
 }

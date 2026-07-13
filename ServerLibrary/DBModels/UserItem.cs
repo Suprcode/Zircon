@@ -4,6 +4,7 @@ using MirDB;
 using Server.Envir;
 using System;
 using System.Drawing;
+using System.Linq;
 
 namespace Server.DBModels
 {
@@ -313,6 +314,25 @@ namespace Server.DBModels
         [Association("AddedStats", true)]
         public DBBindingList<UserItemStat> AddedStats { get; set; }
 
+        [Association("Sockets", true)]
+        public DBBindingList<UserItemSocket> Sockets { get; set; }
+
+        [Association("SocketGem")]
+        public UserItemSocket Socket
+        {
+            get => _Socket;
+            set
+            {
+                if (_Socket == value) return;
+
+                UserItemSocket oldValue = _Socket;
+                _Socket = value;
+
+                OnChanged(oldValue, value, "Socket");
+            }
+        }
+        private UserItemSocket _Socket;
+
         [IgnoreProperty]
         public int Weight
         {
@@ -346,6 +366,7 @@ namespace Server.DBModels
                         Mail = null;
                         Guild = null;
                         Companion = null;
+                        Socket = null;
                     }
                     break;
                 case "Character":
@@ -357,6 +378,7 @@ namespace Server.DBModels
                         Mail = null;
                         Guild = null;
                         Companion = null;
+                        Socket = null;
                     }
                     break;
                 case "Refine":
@@ -368,6 +390,7 @@ namespace Server.DBModels
                         Mail = null;
                         Guild = null;
                         Companion = null;
+                        Socket = null;
                     }
                     break;
                 case "Auction":
@@ -379,6 +402,7 @@ namespace Server.DBModels
                         Mail = null;
                         Guild = null;
                         Companion = null;
+                        Socket = null;
                     }
                     break;
                 case "Mail":
@@ -390,6 +414,7 @@ namespace Server.DBModels
                         Auction = null;
                         Guild = null;
                         Companion = null;
+                        Socket = null;
                     }
                     break;
                 case "Guild":
@@ -401,6 +426,7 @@ namespace Server.DBModels
                         Auction = null;
                         Mail = null;
                         Companion = null;
+                        Socket = null;
                     }
                     break;
                 case "Companion":
@@ -412,6 +438,19 @@ namespace Server.DBModels
                         Auction = null;
                         Mail = null;
                         Guild = null;
+                        Socket = null;
+                    }
+                    break;
+                case "Socket":
+                    if (Socket != null)
+                    {
+                        Character = null;
+                        Account = null;
+                        Refine = null;
+                        Auction = null;
+                        Mail = null;
+                        Guild = null;
+                        Companion = null;
                     }
                     break;
 
@@ -429,10 +468,14 @@ namespace Server.DBModels
             Refine = null;
             Auction = null;
             Mail = null;
+            Socket = null;
             UserTask = null;
 
             for (int i = AddedStats.Count - 1; i >= 0; i--)
                 AddedStats[i].Delete();
+
+            for (int i = Sockets.Count - 1; i >= 0; i--)
+                Sockets[i].Delete();
 
             UserTask = null;
 
@@ -460,6 +503,19 @@ namespace Server.DBModels
 
             foreach (UserItemStat stat in AddedStats)
                 Stats[stat.Stat] += stat.Amount;
+        }
+        public void SetTemporary(bool temporary)
+        {
+            IsTemporary = temporary;
+
+            foreach (UserItemStat stat in AddedStats)
+                stat.IsTemporary = temporary;
+
+            foreach (UserItemSocket socket in Sockets)
+            {
+                socket.IsTemporary = temporary;
+                socket.Gem?.SetTemporary(temporary);
+            }
         }
         public void AddStat(Stat stat, int amount, StatSource source)
         {
@@ -510,6 +566,12 @@ namespace Server.DBModels
                 Flags = Flags,
 
                 ExpireTime = ExpireTime,
+
+                Sockets = Sockets.OrderBy(x => x.Slot).Select(x => new ClientUserItemSocket
+                {
+                    Slot = x.Slot,
+                    Gem = x.Gem?.ToClientInfo(),
+                }).ToList(),
             };
         }
 

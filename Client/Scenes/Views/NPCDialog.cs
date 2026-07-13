@@ -106,6 +106,12 @@ namespace Client.Scenes.Views
             if (GameScene.Game.NPCAccessoryRefineBox != null && !IsVisible)
                 GameScene.Game.NPCAccessoryRefineBox.Visible = false;
 
+            if (GameScene.Game.NPCSocketBox != null && !IsVisible)
+                GameScene.Game.NPCSocketBox.Visible = false;
+
+            if (GameScene.Game.NPCSocketCombineBox != null && !IsVisible)
+                GameScene.Game.NPCSocketCombineBox.Visible = false;
+
             if (GameScene.Game.NPCRollBox != null && !IsVisible)
                 GameScene.Game.NPCRollBox.Visible = false;
 
@@ -362,6 +368,8 @@ namespace Client.Scenes.Views
             GameScene.Game.NPCMasterRefineBox.Visible = false;
             GameScene.Game.NPCAccessoryResetBox.Visible = false;
             GameScene.Game.NPCWeaponCraftBox.Visible = false;
+            GameScene.Game.NPCSocketBox.Visible = false;
+            GameScene.Game.NPCSocketCombineBox.Visible = false;
             GameScene.Game.NPCQuestListBox.Visible = false;
 
             if (Rolling)
@@ -465,6 +473,14 @@ namespace Client.Scenes.Views
                 case NPCDialogType.AccessoryRefine:
                     GameScene.Game.NPCAccessoryRefineBox.Visible = true;
                     GameScene.Game.NPCAccessoryRefineBox.Location = new Point(Size.Width - GameScene.Game.NPCAccessoryRefineBox.Size.Width, Size.Height);
+                    break;
+                case NPCDialogType.Socketing:
+                    GameScene.Game.NPCSocketBox.Visible = true;
+                    GameScene.Game.NPCSocketBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCSocketBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCSocketBox.Size.Height) / 2);
+                    break;
+                case NPCDialogType.SocketCombine:
+                    GameScene.Game.NPCSocketCombineBox.Visible = true;
+                    GameScene.Game.NPCSocketCombineBox.Location = new Point((GameScene.Game.Size.Width - GameScene.Game.NPCSocketCombineBox.Size.Width) / 2, (GameScene.Game.Size.Height - GameScene.Game.NPCSocketCombineBox.Size.Height) / 2);
                     break;
                 case NPCDialogType.RollDie:
                     Rolling = true;
@@ -1054,6 +1070,10 @@ namespace Client.Scenes.Views
                     RequirementLabel.ForeColour = Color.Wheat;
                     break;
                 case ItemType.Ore:
+                    RequirementLabel.Text = $"Purity: {Good.Item.Durability / 1000}";
+                    RequirementLabel.ForeColour = Color.Wheat;
+                    break;
+                case ItemType.SocketGem:
                     RequirementLabel.Text = $"Purity: {Good.Item.Durability / 1000}";
                     RequirementLabel.ForeColour = Color.Wheat;
                     break;
@@ -6021,45 +6041,30 @@ namespace Client.Scenes.Views
                     if (cell.Link == null) continue;
 
                     frag1.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
                 foreach (DXItemCell cell in Fragment2Grid.Grid)
                 {
                     if (cell.Link == null) continue;
 
                     frag2.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
                 foreach (DXItemCell cell in Fragment3Grid.Grid)
                 {
                     if (cell.Link == null) continue;
 
                     frag3.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
                 foreach (DXItemCell cell in RefinementStoneGrid.Grid)
                 {
                     if (cell.Link == null) continue;
 
                     stone.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
                 foreach (DXItemCell cell in SpecialGrid.Grid)
                 {
                     if (cell.Link == null) continue;
 
                     special.Add(new CellLinkInfo { Count = cell.LinkedCount, GridType = cell.Link.GridType, Slot = cell.Link.Slot });
-
-                    cell.Link.Locked = true;
-                    cell.Link = null;
                 }
 
                 if (frag1.Count < 1 || frag1[0].Count != 10)
@@ -6084,6 +6089,17 @@ namespace Client.Scenes.Views
                 {
                     GameScene.Game.ReceiveChat(CEnvir.Language.RefineNeedRefinementStone, MessageType.System);
                     return;
+                }
+
+                foreach (DXItemGrid grid in new[] { Fragment1Grid, Fragment2Grid, Fragment3Grid, RefinementStoneGrid, SpecialGrid })
+                {
+                    foreach (DXItemCell cell in grid.Grid)
+                    {
+                        if (cell.Link == null) continue;
+
+                        cell.Link.Locked = true;
+                        cell.Link = null;
+                    }
                 }
 
                 CEnvir.Enqueue(new C.NPCMasterRefine { RefineType = RefineType, Fragment1s = frag1, Fragment2s = frag2, Fragment3s = frag3, Stones = stone, Specials = special });

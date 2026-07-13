@@ -2156,6 +2156,16 @@ namespace Server.Models
                 Stats.Add(item.Info.Stats, item.Info.ItemType != ItemType.Weapon);
                 Stats.Add(item.Stats, item.Info.ItemType != ItemType.Weapon);
 
+                foreach (UserItemSocket socket in item.Sockets)
+                {
+                    if (socket.Gem == null) continue;
+
+                    Stats socketStats = new Stats(socket.Gem.Info.Stats);
+                    socketStats.Add(socket.Gem.Stats);
+                    socketStats[Stat.SocketRecoveryRate] = 0;
+                    Stats.Add(socketStats, item.Info.ItemType != ItemType.Weapon);
+                }
+
                 if (item.Info.ItemType == ItemType.Weapon)
                 {
                     Stat ele = item.Stats.GetWeaponElement();
@@ -6077,7 +6087,7 @@ namespace Server.Models
                     item.UserTask = null;
                     item.Flags &= ~UserItemFlags.QuestItem;
 
-                    item.IsTemporary = true;
+                    item.SetTemporary(true);
                     item.Delete();
 
                     LogMilestone(MilestoneType.ItemGain, item.Count, item: item.Info);
@@ -6089,7 +6099,7 @@ namespace Server.Models
                 if (currency != null)
                 {
                     currency.Amount += item.Count;
-                    item.IsTemporary = true;
+                    item.SetTemporary(true);
                     item.Delete();
 
                     LogMilestone(MilestoneType.CurrencyGain, item.Count, currency: currency.Info);
@@ -6099,7 +6109,7 @@ namespace Server.Models
                 if (item.Info.ItemEffect == ItemEffect.Experience)
                 {
                     GainExperience(item.Count, false);
-                    item.IsTemporary = true;
+                    item.SetTemporary(true);
                     item.Delete();
                     continue;
                 }
@@ -6120,7 +6130,7 @@ namespace Server.Models
                         if (oldItem.Count + item.Count <= item.Info.StackSize)
                         {
                             oldItem.Count += item.Count;
-                            item.IsTemporary = true;
+                            item.SetTemporary(true);
                             item.Delete();
                             handled = true;
                             LogMilestone(MilestoneType.ItemGain, item.Count, item: item.Info);
@@ -6140,7 +6150,7 @@ namespace Server.Models
                     Inventory[i] = item;
                     item.Slot = i;
                     item.Character = Character;
-                    item.IsTemporary = false;
+                    item.SetTemporary(false);
                     LogMilestone(MilestoneType.ItemGain, item.Count, item: item.Info);
                     break;
                 }
@@ -8284,7 +8294,7 @@ namespace Server.Models
 
             RefreshWeight();
             Companion?.RefreshWeight();
-            dropItem.IsTemporary = true;
+            dropItem.SetTemporary(true);
 
             ItemObject ob = new ItemObject
             {
@@ -8319,7 +8329,7 @@ namespace Server.Models
 
             UserItem dropItem = SEnvir.CreateFreshItem(currency.DropItem);
             dropItem.Count = p.Amount;
-            dropItem.IsTemporary = true;
+            dropItem.SetTemporary(true);
 
             ItemObject ob = new ItemObject
             {
@@ -10794,6 +10804,329 @@ namespace Server.Models
             Enqueue(new S.ItemExperience { Target = p.Cell, Experience = targetItem.Experience, Level = targetItem.Level, Flags = targetItem.Flags });
         }
 
+        public void NPCSocketItem(C.NPCSocketItem p)
+        {
+            S.NPCSocketItem result = new S.NPCSocketItem
+            {
+                GridType = p.Target?.GridType ?? GridType.None,
+                Slot = p.Target?.Slot ?? -1,
+                SocketSlot = -1,
+                GemShape = -1,
+            };
+
+            if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.Socketing)
+            {
+                Enqueue(result);
+                return;
+            }
+
+            if (p.Target == null || p.Gem == null || p.Target.GridType != GridType.Inventory || p.Gem.GridType != GridType.Inventory ||
+                p.Target.Slot < 0 || p.Target.Slot >= Inventory.Length || p.Gem.Slot < 0 || p.Gem.Slot >= Inventory.Length || p.Target.Slot == p.Gem.Slot)
+            {
+                Enqueue(result);
+                return;
+            }
+
+            UserItem target = Inventory[p.Target.Slot];
+            UserItem gem = Inventory[p.Gem.Slot];
+            if (target == null || gem == null || gem.Count < 1 || gem.Info.ItemType != ItemType.SocketGem ||
+                (target.Info.ItemType != ItemType.Weapon && target.Info.ItemType != ItemType.Armour))
+            {
+                Enqueue(result);
+                return;
+            }
+
+            UserItemSocket emptySocket = target.Sockets.OrderBy(x => x.Slot).FirstOrDefault(x => x.Gem == null);
+            UserItemSocket targetSocket = target.Sockets.OrderBy(x => x.Slot).FirstOrDefault(x => x.Gem?.Info == gem.Info) ?? emptySocket;
+            List<ItemInfo> cursed = SEnvir.ItemInfoList.Binding.Where(x => x.ItemType == ItemType.SocketGem && x.Rarity == target.Info.Rarity && x.Shape == 3).ToList();
+
+            switch (gem.Info.Shape)
+            {
+                case 0: //Unlock Gem
+                    if (gem.Info.Rarity != target.Info.Rarity || target.Sockets.Count >= 3)
+                    {
+                        Enqueue(result);
+                        return;
+                    }
+                    break;
+                case 1: //Weapon Gem
+                    if (target.Info.ItemType != ItemType.Weapon || gem.Info.Rarity != target.Info.Rarity || targetSocket == null)
+                    {
+                        Enqueue(result);
+                        return;
+                    }
+                    break;
+                case 2: //Armour Gem
+                    if (target.Info.ItemType != ItemType.Armour || gem.Info.Rarity != target.Info.Rarity || targetSocket == null)
+                    {
+                        Enqueue(result);
+                        return;
+                    }
+                    break;
+                case 3: //Cursed Gem
+                    Enqueue(result);
+                    return;
+                case 4: //Reset Gem
+                    break;
+                default:
+                    Enqueue(result);
+                    return;
+            }
+
+            if (result.Message != null)
+            {
+                Enqueue(result);
+                return;
+            }
+
+            int chance = GetSocketSuccessChance(gem);
+
+            bool success = SEnvir.Random.Next(100) < chance;
+            ItemInfo gemInfo = gem.Info;
+            result.GemShape = gemInfo.Shape;
+
+            UserItem socketGem = null;
+            bool storeSubmittedGem = success && (gemInfo.Shape == 1 || gemInfo.Shape == 2);
+
+            if (storeSubmittedGem && gem.Count > 1)
+            {
+                socketGem = SEnvir.CreateFreshItem(gem);
+                gem.Count--;
+                Enqueue(new S.ItemChanged { Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = p.Gem.Slot, Count = gem.Count }, Success = true });
+            }
+            else if (storeSubmittedGem)
+            {
+                socketGem = gem;
+                RemoveItem(gem);
+                Inventory[p.Gem.Slot] = null;
+                Enqueue(new S.ItemChanged { Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = p.Gem.Slot }, Success = true });
+            }
+            else
+            {
+                if (gem.Count > 1)
+                {
+                    gem.Count--;
+                    Enqueue(new S.ItemChanged { Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = p.Gem.Slot, Count = gem.Count }, Success = true });
+                }
+                else
+                {
+                    RemoveItem(gem);
+                    Inventory[p.Gem.Slot] = null;
+                    gem.Delete();
+                    Enqueue(new S.ItemChanged { Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = p.Gem.Slot }, Success = true });
+                }
+            }
+
+            switch (gemInfo.Shape)
+            {
+                case 0:
+                    result.SocketSlot = Enumerable.Range(0, 3).First(x => target.Sockets.All(y => y.Slot != x));
+                    if (success)
+                    {
+                        UserItemSocket socket = SEnvir.UserItemSocketsList.CreateNewObject();
+                        socket.Slot = result.SocketSlot;
+                        socket.Item = target;
+                    }
+                    result.Message = success ? Connection.Language.NPCSocketUnlockSuccess : Connection.Language.NPCSocketUnlockFailed;
+                    break;
+                case 1:
+                case 2:
+                    UserItem oldGem = targetSocket.Gem;
+                    targetSocket.Gem = success ? socketGem : cursed.Count > 0 ? SEnvir.CreateFreshItem(cursed[SEnvir.Random.Next(cursed.Count)]) : null;
+
+                    if (oldGem != null)
+                        oldGem.Delete();
+
+                    if (success)
+                        foreach (UserItemSocket duplicate in target.Sockets.Where(x => x != targetSocket && x.Gem?.Info == gemInfo))
+                        {
+                            UserItem duplicateGem = duplicate.Gem;
+                            duplicate.Gem = null;
+                            duplicateGem.Delete();
+                        }
+                    result.SocketSlot = targetSocket.Slot;
+                    result.Message = success ? Connection.Language.NPCSocketInsertSuccess : Connection.Language.NPCSocketInsertCursed;
+                    break;
+                case 4:
+                    if (success)
+                    {
+                        List<UserItem> recoverableGems = target.Sockets
+                            .Where(x => x.Gem != null && x.Gem.Info.Shape != 3)
+                            .Select(x => x.Gem)
+                            .ToList();
+                        int recoveryChance = Math.Max(0, Math.Min(100, gemInfo.Stats[Stat.SocketRecoveryRate]));
+                        UserItem recoveredGem = null;
+
+                        if (recoverableGems.Count > 0 && SEnvir.Random.Next(100) < recoveryChance)
+                        {
+                            int recoverySlot = Array.FindIndex(Inventory, x => x == null);
+                            if (recoverySlot >= 0)
+                            {
+                                recoveredGem = recoverableGems[SEnvir.Random.Next(recoverableGems.Count)];
+                                recoveredGem.Socket.Gem = null;
+                                Inventory[recoverySlot] = recoveredGem;
+                                recoveredGem.Slot = recoverySlot;
+                                recoveredGem.Character = Character;
+                                Enqueue(new S.ItemsGained { Items = new List<ClientUserItem> { recoveredGem.ToClientInfo() } });
+                            }
+                        }
+
+                        foreach (UserItemSocket socket in target.Sockets)
+                        {
+                            UserItem socketedGem = socket.Gem;
+                            socket.Gem = null;
+
+                            if (socketedGem != null && socketedGem != recoveredGem)
+                                socketedGem.Delete();
+                        }
+                    }
+                    result.Message = success ? Connection.Language.NPCSocketResetSuccess : Connection.Language.NPCSocketResetFailed;
+                    break;
+            }
+
+            result.Success = success;
+            result.Item = target.ToClientInfo();
+            Enqueue(result);
+
+            if (p.Target.GridType == GridType.Equipment)
+                RefreshStats();
+        }
+
+        private static int GetSocketSuccessChance(UserItem gem)
+        {
+            if (gem.MaxDurability <= 0) return 10;
+
+            long durability = (long)gem.CurrentDurability * 100;
+            long maximum = gem.MaxDurability;
+
+            if (durability >= maximum * 80) return 80;
+            if (durability >= maximum * 60) return 60;
+            if (durability >= maximum * 40) return 40;
+            if (durability >= maximum * 20) return 20;
+
+            return 10;
+        }
+
+        public void NPCSocketCombine(C.NPCSocketCombine p)
+        {
+            S.NPCSocketCombine result = new S.NPCSocketCombine
+            {
+                ClearedSlots = new List<int>(),
+                Items = new List<ClientUserItem>(),
+                ResultSlot = -1,
+            };
+
+            if (Dead || NPC == null || NPCPage == null || NPCPage.DialogType != NPCDialogType.SocketCombine)
+            {
+                Enqueue(result);
+                return;
+            }
+
+            CellLinkInfo[] links = { p.Gem1, p.Gem2, p.Gem3 };
+            if (links.Any(x => x == null || x.GridType != GridType.Inventory || x.Slot < 0 || x.Slot >= Inventory.Length || x.Count != 1) ||
+                links.Select(x => x.Slot).Distinct().Count() != links.Length)
+            {
+                Enqueue(result);
+                return;
+            }
+
+            UserItem[] gems = links.Select(x => Inventory[x.Slot]).ToArray();
+            if (gems.Any(x => x == null || x.Count < 1 || x.Info.ItemType != ItemType.SocketGem) ||
+                gems.Any(x => x.Info != gems[0].Info))
+            {
+                Enqueue(result);
+                return;
+            }
+
+            int resultSlot = -1;
+            for (int i = 0; i < gems.Length; i++)
+            {
+                if (gems[i].Count != 1) continue;
+
+                resultSlot = links[i].Slot;
+                break;
+            }
+
+            if (resultSlot < 0)
+                resultSlot = Array.FindIndex(Inventory, x => x == null);
+
+            if (resultSlot < 0)
+            {
+                result.Message = Connection.Language.NPCSocketCombineNoSpace;
+                Enqueue(result);
+                return;
+            }
+
+            result.Accepted = true;
+
+            int highestDurability = gems.Max(x => x.CurrentDurability);
+            int chance = gems[0].Info.Durability > 0
+                ? (int)Math.Max(0, Math.Min(100, (long)highestDurability * 100 / gems[0].Info.Durability))
+                : 0;
+
+            if (SEnvir.Random.Next(100) >= chance)
+            {
+                UserItem failedGem = gems[SEnvir.Random.Next(gems.Length)];
+                result.ClearedSlots.Add(failedGem.Slot);
+
+                if (failedGem.Count > 1)
+                {
+                    failedGem.Count--;
+                    result.Items.Add(failedGem.ToClientInfo());
+                }
+                else
+                {
+                    int slot = failedGem.Slot;
+                    RemoveItem(failedGem);
+                    Inventory[slot] = null;
+                    failedGem.Delete();
+                }
+
+                result.Message = Connection.Language.NPCSocketCombineFailed;
+
+                RefreshWeight();
+                Enqueue(result);
+                return;
+            }
+
+            long combinedDurability = gems.Sum(x => (long)x.CurrentDurability);
+            UserItem bestGem = gems.OrderByDescending(x => x.Stats.Count).First();
+            UserItem combinedGem = SEnvir.CreateFreshItem(bestGem);
+            combinedGem.Count = 1;
+            combinedGem.CurrentDurability = (int)Math.Min(combinedGem.MaxDurability, combinedDurability);
+            if (gems.Any(x => (x.Flags & UserItemFlags.Bound) == UserItemFlags.Bound))
+                combinedGem.Flags |= UserItemFlags.Bound;
+
+            foreach (UserItem gem in gems)
+            {
+                result.ClearedSlots.Add(gem.Slot);
+
+                if (gem.Count > 1)
+                {
+                    gem.Count--;
+                    result.Items.Add(gem.ToClientInfo());
+                    continue;
+                }
+
+                int slot = gem.Slot;
+                RemoveItem(gem);
+                Inventory[slot] = null;
+                gem.Delete();
+            }
+
+            Inventory[resultSlot] = combinedGem;
+            combinedGem.Slot = resultSlot;
+            combinedGem.Character = Character;
+
+            result.Items.Add(combinedGem.ToClientInfo());
+            result.ResultSlot = resultSlot;
+            result.Success = true;
+            result.Message = Connection.Language.NPCSocketCombineSuccess;
+
+            RefreshWeight();
+            Enqueue(result);
+        }
+
         public void NPCAccessoryRefine(C.NPCAccessoryRefine p)
         {
             Enqueue(new S.NPCAccessoryRefine { Target = p.Target, OreTarget = p.OreTarget, Links = p.Links });
@@ -12960,7 +13293,7 @@ namespace Server.Models
 
             int maxChance = 80 + special;
             int statValue = 0;
-            bool sucess = false;
+            bool success = false;
 
             switch (p.RefineType)
             {
@@ -12996,7 +13329,7 @@ namespace Server.Models
                     statValue = weapon.MergeRefineElements(out Stat element);
                     weapon.StatsChanged();
 
-                    sucess = SEnvir.Random.Next(100) >= Math.Min(maxChance, 80 - statValue * 4 + fragmentCount * 2);
+                    success = SEnvir.Random.Next(100) >= Math.Min(maxChance, 80 - statValue * 4 + fragmentCount * 2);
                     Connection.ReceiveChatWithObservers(con => string.Format(con.Language.NPCMasterRefineChance, Math.Min(maxChance, Math.Max(80 - statValue * 4 + fragmentCount * fragmentRate, 0))), MessageType.System);
                     break;
             }
@@ -15753,7 +16086,7 @@ namespace Server.Models
                 }
 
                 Companion?.RefreshWeight();
-                dropItem.IsTemporary = true;
+                dropItem.SetTemporary(true);
 
                 ItemObject ob = new ItemObject
                 {
@@ -15804,7 +16137,7 @@ namespace Server.Models
                     }
 
                     Companion?.RefreshWeight();
-                    dropItem.IsTemporary = true;
+                    dropItem.SetTemporary(true);
 
                     ItemObject ob = new ItemObject
                     {
@@ -15856,7 +16189,7 @@ namespace Server.Models
                         RemoveItem(item);
                         Equipment[index] = null;
 
-                        dropItem.IsTemporary = true;
+                        dropItem.SetTemporary(true);
 
                         ItemObject ob = new ItemObject
                         {

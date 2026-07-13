@@ -350,6 +350,14 @@ namespace Server
                 Assembly.GetAssembly(typeof(AccountInfo))
             );
 
+            DBCollection<T> userCollection = userSession.GetCollection<T>();
+
+            // The users database only contains system objects that are referenced by
+            // user records. If it has no references above the insertion point, there
+            // is nothing to renumber and its collection index may legitimately be
+            // lower than the system database's index.
+            if (!userCollection.Binding.Any(x => x.Index > insertAfterIndex)) return;
+
             userSession.InsertObjectAfter<T>(insertAfterIndex);
             userSession.Save(true);
         }

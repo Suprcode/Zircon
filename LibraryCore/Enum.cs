@@ -213,7 +213,13 @@ namespace Library
         AccessoryRefineCombItems,
         PartsStorage,
         Bundle,
-        LootBox
+        LootBox,
+        SocketTarget,
+        SocketGem,
+        SocketCombine1,
+        SocketCombine2,
+        SocketCombine3,
+        SocketCombineResult
     }
 
     public enum InventoryMode
@@ -432,7 +438,9 @@ namespace Library
         Currency = 34,
         Bundle = 35,
         [Description("Loot Box")]
-        LootBox = 36
+        LootBox = 36,
+        [Description("Socket Gem")]
+        SocketGem = 37
     }
 
     public enum MirAction : byte
@@ -555,6 +563,8 @@ namespace Library
         RollYut,
 
         Consignment,
+        Socketing,
+        SocketCombine,
     }
 
     public enum MagicSchool
@@ -2407,6 +2417,10 @@ namespace Library
 
         QuestTake,
         QuestComplete,
+
+
+        GemStart,
+        GemCombine,
 
         #region Magics
 

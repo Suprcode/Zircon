@@ -1436,6 +1436,20 @@ namespace Server.Envir
             Player.NPCAccessoryRefine(p);
         }
 
+        public void Process(C.NPCSocketItem p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.NPCSocketItem(p);
+        }
+
+        public void Process(C.NPCSocketCombine p)
+        {
+            if (Stage != GameStage.Game) return;
+
+            Player.NPCSocketCombine(p);
+        }
+
         public void Process(C.JoinInstance p)
         {
             if (Stage != GameStage.Game) return;

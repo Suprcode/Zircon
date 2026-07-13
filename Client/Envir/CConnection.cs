@@ -5030,6 +5030,16 @@ namespace Client.Envir
             GameScene.Game.UpdateQuestAlertIcons();
         }
 
+        public void Process(S.NPCSocketItem p)
+        {
+            GameScene.Game.NPCSocketBox.ProcessResult(p);
+        }
+
+        public void Process(S.NPCSocketCombine p)
+        {
+            GameScene.Game.NPCSocketCombineBox.ProcessResult(p);
+        }
+
         public void Process(S.MilestoneEarned p)
         {
             var info = Globals.MilestoneInfoList.Binding.FirstOrDefault(x => x.Index == p.Index);

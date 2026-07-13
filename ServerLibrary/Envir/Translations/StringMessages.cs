@@ -301,6 +301,15 @@ namespace Server.Envir
         public abstract string NPCMasterRefineChance { get; set; }
         public abstract string AccessoryRefineSuccess { get; set; }
         public abstract string AccessoryRefineFailed { get; set; }
+        public abstract string NPCSocketUnlockSuccess { get; set; }
+        public abstract string NPCSocketUnlockFailed { get; set; }
+        public abstract string NPCSocketInsertSuccess { get; set; }
+        public abstract string NPCSocketInsertCursed { get; set; }
+        public abstract string NPCSocketResetSuccess { get; set; }
+        public abstract string NPCSocketResetFailed { get; set; }
+        public abstract string NPCSocketCombineNoSpace { get; set; }
+        public abstract string NPCSocketCombineFailed { get; set; }
+        public abstract string NPCSocketCombineSuccess { get; set; }
 
         [ConfigSection("Skills")]
         public abstract string ChargeExpire { get; set; }

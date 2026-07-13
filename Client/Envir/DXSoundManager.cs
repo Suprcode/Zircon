@@ -109,12 +109,16 @@ namespace Client.Envir
 
             [SoundIndex.GoldPickUp] = new DXSound(SoundPath + @"120.wav", SoundType.System),
             [SoundIndex.GoldGained] = new DXSound(SoundPath + @"122.wav", SoundType.System),
+            //[SoundIndex.??] = new DXSound(SoundPath + @"123.wav", SoundType.System), //Refine Weapon??
 
             [SoundIndex.RollDice] = new DXSound(SoundPath + @"dice_roll.wav", SoundType.System),
             [SoundIndex.RollYut] = new DXSound(SoundPath + @"yut_sticks.wav", SoundType.System),
 
             [SoundIndex.QuestTake] = new DXSound(SoundPath + @"Qtake.wav", SoundType.System),
             [SoundIndex.QuestComplete] = new DXSound(SoundPath + @"Qcomp.wav", SoundType.System),
+
+            [SoundIndex.GemStart] = new DXSound(SoundPath + @"Sopen.wav", SoundType.System),
+            [SoundIndex.GemCombine] = new DXSound(SoundPath + @"Scombine.wav", SoundType.System),
 
             #endregion
 

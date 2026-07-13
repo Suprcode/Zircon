@@ -737,6 +737,17 @@ namespace Library.Network.ClientPackets
         public List<CellLinkInfo> Links { get; set; }
         public RefineType RefineType { get; set; }
     }
+    public sealed class NPCSocketItem : Packet
+    {
+        public CellLinkInfo Target { get; set; }
+        public CellLinkInfo Gem { get; set; }
+    }
+    public sealed class NPCSocketCombine : Packet
+    {
+        public CellLinkInfo Gem1 { get; set; }
+        public CellLinkInfo Gem2 { get; set; }
+        public CellLinkInfo Gem3 { get; set; }
+    }
     public sealed class JoinInstance : Packet
     {
         public int Index { get; set; }

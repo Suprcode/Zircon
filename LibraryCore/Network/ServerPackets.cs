@@ -1365,6 +1365,25 @@ namespace Library.Network.ServerPackets
         public RefineType RefineType { get; set; }
         public bool Success { get; set; }
     }
+    public sealed class NPCSocketItem : Packet
+    {
+        public GridType GridType { get; set; }
+        public int Slot { get; set; }
+        public int SocketSlot { get; set; }
+        public int GemShape { get; set; }
+        public ClientUserItem Item { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
+    }
+    public sealed class NPCSocketCombine : Packet
+    {
+        public List<int> ClearedSlots { get; set; }
+        public List<ClientUserItem> Items { get; set; }
+        public int ResultSlot { get; set; }
+        public bool Accepted { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
+    }
 
     public sealed class ItemAcessoryRefined : Packet
     {

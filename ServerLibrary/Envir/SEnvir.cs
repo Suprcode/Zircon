@@ -256,6 +256,7 @@ namespace Server.Envir
         public static DBCollection<UserCurrency> UserCurrencyList;
         public static DBCollection<RefineInfo> RefineInfoList;
         public static DBCollection<UserItemStat> UserItemStatsList;
+        public static DBCollection<UserItemSocket> UserItemSocketsList;
         public static DBCollection<UserMagic> UserMagicList;
         public static DBCollection<BuffInfo> BuffInfoList;
         public static DBCollection<MonsterInfo> MonsterInfoList;
@@ -465,6 +466,7 @@ namespace Server.Envir
             UserItemList = Session.GetCollection<UserItem>();
             UserCurrencyList = Session.GetCollection<UserCurrency>();
             UserItemStatsList = Session.GetCollection<UserItemStat>();
+            UserItemSocketsList = Session.GetCollection<UserItemSocket>();
             RefineInfoList = Session.GetCollection<RefineInfo>();
             UserMagicList = Session.GetCollection<UserMagic>();
             BuffInfoList = Session.GetCollection<BuffInfo>();
@@ -1281,6 +1283,7 @@ namespace Server.Envir
             UserCurrencyList = null;
             RefineInfoList = null;
             UserItemStatsList = null;
+            UserItemSocketsList = null;
             UserMagicList = null;
             BuffInfoList = null;
             SetInfoList = null;
@@ -2072,20 +2075,20 @@ namespace Server.Envir
         {
             UserItem freshItem = UserItemList.CreateNewObject();
 
-            freshItem.Colour = item.Colour;
-
             freshItem.Info = item.Info;
             freshItem.CurrentDurability = item.CurrentDurability;
             freshItem.MaxDurability = item.MaxDurability;
-
+            freshItem.Level = item.Level;
+            freshItem.Experience = item.Experience;
+            freshItem.Colour = item.Colour;
+            freshItem.SpecialRepairCoolDown = item.SpecialRepairCoolDown;
+            freshItem.ResetCoolDown = item.ResetCoolDown;
             freshItem.Flags = item.Flags;
-
             freshItem.ExpireTime = item.ExpireTime;
-
-            ItemSetup(item);
 
             foreach (UserItemStat stat in item.AddedStats)
                 freshItem.AddStat(stat.Stat, stat.Amount, stat.StatSource);
+
             freshItem.StatsChanged();
 
             return freshItem;
@@ -2182,6 +2185,9 @@ namespace Server.Envir
                     case ItemType.Shoes:
                         UpgradeShoes(item);
                         break;
+                    case ItemType.SocketGem:
+                        UpgradeSocketGem(item);
+                        break;
                 }
                 item.StatsChanged();
             }
@@ -2207,6 +2213,9 @@ namespace Server.Envir
                 case ItemType.Book:
                     item.CurrentDurability = Random.Next(96) + 5; //0~95 + 5
                     break;
+                case ItemType.SocketGem:
+                    item.CurrentDurability = Random.Next(item.MaxDurability);
+                    break;
                 default:
                     item.CurrentDurability = info.Durability;
                     break;
@@ -2224,6 +2233,20 @@ namespace Server.Envir
                     break;
                 case ItemType.LootBox:
                     UpgradeLootBox(item);
+                    break;
+                case ItemType.SocketGem:
+                    switch (item.Info.Rarity)
+                    {
+                        case Rarity.Common:
+                            item.MaxDurability = item.Info.Durability / 5 * 3;
+                            break;
+                        case Rarity.Superior:
+                            item.MaxDurability = item.Info.Durability / 5 * 4;
+                            break;
+                        case Rarity.Elite:
+                            item.MaxDurability = item.Info.Durability;
+                            break;
+                    }
                     break;
             }
         }
@@ -2313,7 +2336,6 @@ namespace Server.Envir
                     item.AddStat(Stat.MaxMC, value, StatSource.Added);
                     item.AddStat(Stat.MaxSC, value, StatSource.Added);
                 }
-
 
                 if (item.Info.Stats[Stat.MinMC] > 0 || item.Info.Stats[Stat.MaxMC] > 0)
                     item.AddStat(Stat.MaxMC, value, StatSource.Added);
@@ -3228,6 +3250,24 @@ namespace Server.Envir
             item.AddStat(Stat.Counter1, Globals.LootBoxRerollCount, StatSource.Added);
 
             item.AddStat(Stat.Counter2, lootBoxInfo.Contents.Count <= 15 ? 2 : 1, StatSource.Added); // Step 1 = Randomise, 2 = Selection
+        }
+
+        public static void UpgradeSocketGem(UserItem item)
+        {
+            foreach (KeyValuePair<Stat, int> stat in item.Info.Stats.Values)
+            {
+                if (Random.Next(5) != 0) continue;
+
+                int value = 1;
+
+                if (Random.Next(50) == 0)
+                    value += 1;
+
+                if (Random.Next(250) == 0)
+                    value += 1;
+
+                item.AddStat(stat.Key, value * Math.Sign(stat.Value), StatSource.Added);
+            }
         }
 
         public static void Login(C.Login p, SConnection con)

@@ -2739,7 +2739,7 @@ namespace Server.Models
                     item.AddStat(Stat.ItemIndex, drop.Item.Index, StatSource.Added);
                     item.StatsChanged();
 
-                    item.IsTemporary = true;
+                    item.SetTemporary(true);
 
                     if (NeedHarvest)
                     {
@@ -2796,7 +2796,7 @@ namespace Server.Models
 
                     amount -= item.Count;
 
-                    item.IsTemporary = true; //REMOVE ON Gain
+                    item.SetTemporary(true); //REMOVE ON Gain
 
                     if (NeedHarvest)
                     {
@@ -2907,7 +2907,7 @@ namespace Server.Models
                             item.UserTask = userTask;
                             item.Flags |= UserItemFlags.QuestItem;
 
-                            item.IsTemporary = true; //REMOVE ON Gain
+                            item.SetTemporary(true); //REMOVE ON Gain
 
                             if (NeedHarvest)
                             {

@@ -22,6 +22,15 @@ namespace Client.Envir.Translations
         public abstract string UnableToRefineIncorrectItem { get; set; }
         public abstract string UnableToRefineHasBeenLevelled { get; set; }
         public abstract string UnableToRefineNeedCorundumOre { get; set; }
+        public abstract string UnableToSocketNoTarget { get; set; }
+        public abstract string UnableToSocketNoMoreSockets { get; set; }
+        public abstract string UnableToSocketIncorrectTarget { get; set; }
+        public abstract string UnableToSocketIncorrectRarity { get; set; }
+        public abstract string UnableToSocketMissingItems { get; set; }
+        public abstract string UnableToSocketInvalidGem { get; set; }
+        public abstract string UnableToSocketNoAvailableSocket { get; set; }
+        public abstract string UnableToSocketMissingGems { get; set; }
+        public abstract string UnableToSocketMismatch { get; set; }
         public abstract string UnableToStoreInGuildStorage { get; set; }
         public abstract string OnlyBlackIronOreCanBeUsed { get; set; }
         public abstract string DoesntHaveSameStats { get; set; }
@@ -801,5 +810,10 @@ namespace Client.Envir.Translations
         public abstract string BundleConfirmRandomButtonLabel { get; set; }
         public abstract string BundleConfirmAllButtonLabel { get; set; }
         public abstract string BundleConfirmOneButtonLabel { get; set; }
+
+        public abstract string SocketDialogTitle { get; set; }
+        public abstract string SocketDialogStartButtonLabel { get; set; }
+        public abstract string SocketCombineDialogTitle { get; set; }
+        public abstract string SocketCombineDialogStartButtonLabel { get; set; }
     }
 }

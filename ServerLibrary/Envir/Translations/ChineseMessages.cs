@@ -301,6 +301,15 @@ namespace Server.Envir.Translations
 
         public override string AccessoryRefineSuccess { get; set; } = "Congratulations your {0} has been refined with {1} + {2}.";
         public override string AccessoryRefineFailed { get; set; } = "The refine failed and your {0}'s have been destroyed";
+        public override string NPCSocketUnlockSuccess { get; set; } = "镶嵌孔解锁成功。";
+        public override string NPCSocketUnlockFailed { get; set; } = "镶嵌孔解锁失败。";
+        public override string NPCSocketInsertSuccess { get; set; } = "宝石镶嵌成功。";
+        public override string NPCSocketInsertCursed { get; set; } = "镶嵌孔受到了诅咒。";
+        public override string NPCSocketResetSuccess { get; set; } = "所有已镶嵌宝石均已清除。";
+        public override string NPCSocketResetFailed { get; set; } = "镶嵌重置失败。";
+        public override string NPCSocketCombineNoSpace { get; set; } = "背包中没有空间存放合成后的宝石。";
+        public override string NPCSocketCombineFailed { get; set; } = "宝石合成失败，其中一颗宝石已被摧毁。";
+        public override string NPCSocketCombineSuccess { get; set; } = "宝石合成成功。";
 
         public override string ChargeExpire { get; set; } = "{0}的能量已经从你的武器上消失";
         public override string ChargeFail { get; set; } = "无法积蓄{0}的能量";

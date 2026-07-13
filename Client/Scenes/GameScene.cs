@@ -228,6 +228,8 @@ namespace Client.Scenes
         public FortuneCheckerDialog FortuneCheckerBox;
         public NPCWeaponCraftWindow NPCWeaponCraftBox;
         public NPCAccessoryRefineDialog NPCAccessoryRefineBox;
+        public NPCSocketDialog NPCSocketBox;
+        public NPCSocketCombineDialog NPCSocketCombineBox;
         public CurrencyDialog CurrencyBox;
         public TimerDialog TimerBox;
         public BundleDialog BundleBox;
@@ -764,6 +766,16 @@ namespace Client.Scenes
                 Parent = this,
                 Visible = false,
             };
+            NPCSocketBox = new NPCSocketDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
+            NPCSocketCombineBox = new NPCSocketCombineDialog
+            {
+                Parent = this,
+                Visible = false,
+            };
 
             FishingBox = new FishingDialog(CharacterBox)
             {
@@ -890,6 +902,9 @@ namespace Client.Scenes
             FortuneCheckerBox.Location = new Point((Size.Width - FortuneCheckerBox.Size.Width) / 2, (Size.Height - FortuneCheckerBox.Size.Height) / 2);
 
             NPCWeaponCraftBox.Location = new Point((Size.Width - NPCWeaponCraftBox.Size.Width) / 2, (Size.Height - NPCWeaponCraftBox.Size.Height) / 2);
+
+            NPCSocketBox.Location = new Point((Size.Width - NPCSocketBox.Size.Width) / 2, (Size.Height - NPCSocketBox.Size.Height) / 2);
+            NPCSocketCombineBox.Location = new Point((Size.Width - NPCSocketCombineBox.Size.Width) / 2, (Size.Height - NPCSocketCombineBox.Size.Height) / 2);
 
             CurrencyBox.Location = new Point((Size.Width - CurrencyBox.Size.Width) / 2, (Size.Height - CurrencyBox.Size.Height) / 2);
 
@@ -1682,6 +1697,9 @@ namespace Client.Scenes
             }
 
             AddItemLabelRequirements(builder, displayInfo);
+
+            AddItemLabelSocketInfo(builder, displayInfo);
+
             AddItemLabelTradeState(builder, displayInfo);
 
             if (MouseItem.Info.Durability > 0 && MouseItem.Info.CanRepair && MouseItem.Info.StackSize == 1 && MouseItem.Info.ItemType != ItemType.Book)
@@ -1905,6 +1923,31 @@ namespace Client.Scenes
             }
         }
 
+        private sealed class ScaledItemLabelIcon : DXImageControl
+        {
+            public float RenderScale { get; set; } = 1F;
+
+            public void SetRenderScale(float scale)
+            {
+                RenderScale = scale;
+                if (Library == null || !Library.TryGetTexture(Index, ImageType.Image, out MirImage image, out _, out _)) return;
+
+                FixedSize = true;
+                Size = new Size(
+                    Math.Max(1, (int)Math.Ceiling(image.Width * scale)),
+                    Math.Max(1, (int)Math.Ceiling(image.Height * scale)));
+            }
+
+            protected override void DrawMirTexture()
+            {
+                if (Library == null || !Library.TryGetTexture(Index, ImageType.Image, out MirImage image, out RenderTexture texture, out Rectangle? sourceRectangle)) return;
+
+                Rectangle drawArea = new Rectangle(DisplayArea.Location, new Size(image.Width, image.Height));
+                PresentTexture(texture, sourceRectangle, Parent, drawArea, IsEnabled ? ForeColour : Color.FromArgb(75, 75, 75), this, 0, 0, RenderScale, false);
+                image.ExpireTime = Time.Now + Config.CacheDuration;
+            }
+        }
+
         private sealed class ItemLabelBuilder
         {
             private const int Padding = 6;
@@ -1991,11 +2034,11 @@ namespace Client.Scenes
                 return label;
             }
 
-            public DXLabel AddIconLine(string text, Color colour, LibraryFile iconLibrary, int iconIndex, int indent = 0)
+            public DXLabel AddIconLine(string text, Color colour, LibraryFile iconLibrary, int iconIndex, int indent = 0, float iconScale = 1F, int iconAreaWidth = 0)
             {
                 EnsureSection();
 
-                DXImageControl icon = new DXImageControl
+                ScaledItemLabelIcon icon = new ScaledItemLabelIcon
                 {
                     IsControl = false,
                     LibraryFile = iconLibrary,
@@ -2003,8 +2046,12 @@ namespace Client.Scenes
                     Parent = _currentSection,
                 };
 
-                int iconGap = icon.Size.Width > 0 ? 4 : 0;
-                int labelX = LabelPadding + indent + icon.Size.Width + iconGap;
+                if (iconScale != 1F && icon.Size.Width > 0 && icon.Size.Height > 0)
+                    icon.SetRenderScale(iconScale);
+
+                int effectiveIconAreaWidth = iconAreaWidth > 0 ? iconAreaWidth : icon.Size.Width;
+                int iconGap = effectiveIconAreaWidth > 0 ? 3 : 0;
+                int labelX = LabelPadding + indent + effectiveIconAreaWidth + iconGap;
                 DXLabel label = new DXLabel
                 {
                     ForeColour = colour == Color.Gray ? MutedUnavailableColour : colour,
@@ -2015,7 +2062,7 @@ namespace Client.Scenes
 
                 int rowHeight = Math.Max(label.Size.Height, icon.Size.Height);
 
-                icon.Location = new Point(LabelPadding + indent, _currentSectionHeight + Math.Max(0, (rowHeight - icon.Size.Height) / 2));
+                icon.Location = new Point(LabelPadding + indent + Math.Max(0, (effectiveIconAreaWidth - icon.Size.Width) / 2), _currentSectionHeight + Math.Max(0, (rowHeight - icon.Size.Height) / 2));
                 label.Location = new Point(labelX, _currentSectionHeight + Math.Max(0, (rowHeight - label.Size.Height) / 2));
 
                 _currentSectionHasLines = true;
@@ -2034,6 +2081,14 @@ namespace Client.Scenes
                 _currentSection = null;
                 _currentSectionHeight = 0;
                 _currentSectionHasLines = false;
+            }
+
+            public void AddSectionBottomPadding(int padding)
+            {
+                if (_currentSection == null || !_currentSectionHasLines || padding <= 0) return;
+
+                _currentSectionHeight += padding;
+                _currentSection.Size = new Size(_currentSection.Size.Width, Math.Max(_currentSection.Size.Height, _currentSectionHeight));
             }
 
             public void Complete()
@@ -2152,7 +2207,12 @@ namespace Client.Scenes
         private void AddItemLabelMetadata(ItemLabelBuilder builder, ItemInfo displayInfo)
         {
             if (displayInfo.ItemType != ItemType.Nothing)
-                builder.AddLine($"Type: {displayInfo.ItemType}", Color.White);
+            {
+                MemberInfo member = typeof(ItemType).GetMember(displayInfo.ItemType.ToString()).FirstOrDefault();
+                DescriptionAttribute description = member?.GetCustomAttribute<DescriptionAttribute>();
+
+                builder.AddLine($"Type: {description?.Description ?? displayInfo.ItemType.ToString()}", Color.White);
+            }
 
             if (MouseItem.Info.Durability > 0)
             {
@@ -2168,6 +2228,24 @@ namespace Client.Scenes
                         break;
                     case ItemType.Ore:
                         builder.AddLine($"Purity: {Math.Round(MouseItem.CurrentDurability / 1000M)}", MouseItem.CurrentDurability == 0 ? Color.Red : Color.White);
+                        break;
+                    case ItemType.SocketGem:
+                        long socketPurity = (long)MouseItem.CurrentDurability * 100;
+                        long socketDurability = MouseItem.Info.Durability;
+                        string socketPurityText;
+
+                        if (socketPurity <= socketDurability * 20)
+                            socketPurityText = "Lowest";
+                        else if (socketPurity <= socketDurability * 40)
+                            socketPurityText = "Low";
+                        else if (socketPurity <= socketDurability * 60)
+                            socketPurityText = "Medium";
+                        else if (socketPurity <= socketDurability * 80)
+                            socketPurityText = "High";
+                        else
+                            socketPurityText = "Supreme";
+
+                        builder.AddLine($"Purity: {socketPurityText}", MouseItem.CurrentDurability == 0 ? Color.Red : Color.White);
                         break;
                     default:
                         if (MouseItem.Info.StackSize == 1)
@@ -2208,6 +2286,64 @@ namespace Client.Scenes
 
             if (MouseItem.Info.Weight > 0)
                 builder.AddLine($"Weight: {MouseItem.Info.Weight}", GetItemLabelWeightColour());
+        }
+
+        private void AddItemLabelSocketInfo(ItemLabelBuilder builder, ItemInfo displayInfo)
+        {
+            if (displayInfo.ItemType != ItemType.Weapon && displayInfo.ItemType != ItemType.Armour) return;
+
+            IEnumerable<ClientUserItemSocket> sockets = MouseItem.Sockets ?? Enumerable.Empty<ClientUserItemSocket>();
+            bool sectionStarted = false;
+
+            foreach (ClientUserItemSocket socket in sockets.OrderBy(x => x.Slot))
+            {
+                ClientUserItem gemItem = socket.Gem;
+                if (gemItem == null)
+                {
+                    if (!sectionStarted)
+                    {
+                        builder.StartSection();
+                        sectionStarted = true;
+                    }
+
+                    builder.AddLine("Empty Socket", Color.Gray);
+                    continue;
+                }
+
+                ItemInfo gem = gemItem.Info;
+                if (gem == null) continue;
+
+                Stats gemStats = new Stats(gem.Stats);
+                gemStats.Add(gemItem.AddedStats);
+                gemStats[Stat.SocketRecoveryRate] = 0;
+                bool iconAdded = false;
+                int statIndent = 0;
+
+                foreach (KeyValuePair<Stat, int> pair in gemStats.Values)
+                {
+                    string text = gemStats.GetDisplay(pair.Key);
+                    if (text == null) continue;
+
+                    if (!sectionStarted)
+                    {
+                        builder.StartSection();
+                        sectionStarted = true;
+                    }
+
+                    Color colour = Color.FromArgb(140, 220, 89);
+                    if (!iconAdded)
+                    {
+                        DXLabel firstStatLabel = builder.AddIconLine(text, colour, LibraryFile.StoreItem, gem.Image, 0, 0.5F, 16);
+                        statIndent = Math.Max(0, firstStatLabel.Location.X - 3);
+                        iconAdded = true;
+                    }
+                    else
+                        builder.AddLine(text, colour, statIndent);
+                }
+            }
+
+            if (sectionStarted)
+                builder.AddSectionBottomPadding(3);
         }
 
         private Color GetItemLabelWeightColour()
@@ -2643,10 +2779,15 @@ namespace Client.Scenes
         {
             if (string.IsNullOrEmpty(displayInfo.Description)) return;
 
+            string description = displayInfo.Description
+                .Replace("\\r\\n", "\r\n")
+                .Replace("\\n", "\n")
+                .Replace("\\r", "\r");
+
             if (!useCurrentSection)
                 builder.StartSection();
 
-            builder.AddLine(displayInfo.Description, displayInfo.ItemEffect == ItemEffect.FootBallWhistle ? Color.Red : Color.Wheat);
+            builder.AddLine(description, displayInfo.ItemEffect == ItemEffect.FootBallWhistle ? Color.Red : Color.Wheat);
         }
 
         private void AddSetItemInfo(ItemLabelBuilder builder, SetInfo set)
@@ -4725,6 +4866,22 @@ namespace Client.Scenes
                         NPCAccessoryRefineBox.Dispose();
 
                     NPCAccessoryRefineBox = null;
+                }
+
+                if (NPCSocketBox != null)
+                {
+                    if (!NPCSocketBox.IsDisposed)
+                        NPCSocketBox.Dispose();
+
+                    NPCSocketBox = null;
+                }
+
+                if (NPCSocketCombineBox != null)
+                {
+                    if (!NPCSocketCombineBox.IsDisposed)
+                        NPCSocketCombineBox.Dispose();
+
+                    NPCSocketCombineBox = null;
                 }
 
                 if (FishingBox != null)
