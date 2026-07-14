@@ -80,6 +80,7 @@ namespace Library
             MaxGuildNameLength = 15,
 
             MaxChatLength = 120,
+            MaxChatItemLinks = 10,
             MaxGuildNoticeLength = 4000,
 
             MaxBeltCount = 10,

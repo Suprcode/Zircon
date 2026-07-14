@@ -1503,7 +1503,7 @@ namespace Server.Models
 
         #region Communication
 
-        public void Chat(string text)
+        public void Chat(string text, List<int> linkedItemIndexes = null)
         {
             if (string.IsNullOrEmpty(text)) return;
             SEnvir.LogChat($"{Name}: {text}");
@@ -1513,12 +1513,9 @@ namespace Server.Models
             string[] parts;
 
             List<ClientUserItem> linkedItems = new List<ClientUserItem>();
-            MatchCollection matches = Globals.LinkedItemRegex.Matches(text);
-            foreach (Match match in matches)
+            int linkSearchIndex = 0;
+            foreach (int itemIndex in linkedItemIndexes?.Take(Globals.MaxChatItemLinks) ?? Enumerable.Empty<int>())
             {
-                if (!int.TryParse(match.Groups["ID"].Value, out int itemIndex)) continue;
-                if (string.IsNullOrWhiteSpace(match.Groups["Text"].Value)) continue;
-
                 UserItem item = Inventory.FirstOrDefault(e => e != null && e.Index == itemIndex);
 
                 if (item == null)
@@ -1530,8 +1527,14 @@ namespace Server.Models
                 if (item == null)
                     continue;
 
+                string token = $"[{item.Info.ItemName}]";
+                int tokenIndex = text.IndexOf(token, linkSearchIndex, StringComparison.Ordinal);
+                if (tokenIndex < 0) continue;
 
-                text = text.Replace(match.Groups["Text"].Value, item.Info.ItemName);
+                int closingBracketIndex = tokenIndex + token.Length - 1;
+                text = text.Insert(closingBracketIndex, $":{item.Index}");
+                linkSearchIndex = closingBracketIndex + item.Index.ToString().Length + 2;
+
                 if (!linkedItems.Any(e => e.Index == item.Index))
                     linkedItems.Add(item.ToClientInfo());
             }

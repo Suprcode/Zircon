@@ -3,6 +3,7 @@ using Client.Envir;
 using Client.UserModels;
 using Library;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using C = Library.Network.ClientPackets;
@@ -46,6 +47,7 @@ namespace Client.Scenes.Views
         public DXTextBox TextBox;
         public DXButton OptionsButton;
         public DXButton ChatModeButton;
+        private readonly List<int> LinkedItemIndexes = new List<int>();
 
         public override void OnParentChanged(DXControl oValue, DXControl nValue)
         {
@@ -148,6 +150,7 @@ namespace Client.Scenes.Views
                         CEnvir.Enqueue(new C.Chat
                         {
                             Text = TextBox.TextBox.Text,
+                            LinkedItemIndexes = new List<int>(LinkedItemIndexes),
                         });
 
                         if (TextBox.TextBox.Text[0] == '/')
@@ -160,6 +163,7 @@ namespace Client.Scenes.Views
 
                     DXTextBox.ActiveTextBox = null;
                     TextBox.TextBox.Text = string.Empty;
+                    LinkedItemIndexes.Clear();
 
                     ToggleVisibility(e, true);
                     break;
@@ -167,6 +171,7 @@ namespace Client.Scenes.Views
                     e.Handled = true;
                     DXTextBox.ActiveTextBox = null;
                     TextBox.TextBox.Text = string.Empty;
+                    LinkedItemIndexes.Clear();
 
                     ToggleVisibility(e, false);
                     break;
@@ -274,6 +279,7 @@ namespace Client.Scenes.Views
         public void StartPM(string name)
         {
             TextBox.TextBox.Text = $"/{name} ";
+            LinkedItemIndexes.Clear();
             TextBox.SetFocus();
             TextBox.TextBox.SelectionLength = 0;
             TextBox.TextBox.SelectionStart = TextBox.TextBox.Text.Length;
@@ -281,9 +287,10 @@ namespace Client.Scenes.Views
 
         public void LinkItem(ClientUserItem item)
         {
-            if (item == null) return;
+            if (item == null || LinkedItemIndexes.Count >= Globals.MaxChatItemLinks) return;
 
-            TextBox.TextBox.Text += $"[{item.Info.ItemName}:{item.Index}]";
+            TextBox.TextBox.Text += $"[{item.Info.ItemName}]";
+            LinkedItemIndexes.Add(item.Index);
             TextBox.SetFocus();
             TextBox.TextBox.SelectionLength = 0;
             TextBox.TextBox.SelectionStart = TextBox.TextBox.Text.Length;
@@ -302,6 +309,7 @@ namespace Client.Scenes.Views
                 ModeChanged = null;
 
                 LastPM = null;
+                LinkedItemIndexes.Clear();
 
                 if (TextBox != null)
                 {

@@ -551,7 +551,7 @@ namespace Server.Envir
             if (string.IsNullOrEmpty(p.Text) || p.Text.Length > Globals.MaxChatLength) return;
 
             if (Stage == GameStage.Game)
-                Player.Chat(p.Text);
+                Player.Chat(p.Text, p.LinkedItemIndexes);
 
             if (Stage == GameStage.Observer)
                 Observed.Player.ObserverChat(this, p.Text);

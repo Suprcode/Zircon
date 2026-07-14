@@ -210,6 +210,7 @@ namespace Library.Network.ClientPackets
     public sealed class Chat : Packet
     {
         public string Text { get; set; }
+        public List<int> LinkedItemIndexes { get; set; }
     }
 
     public sealed class NPCCall : Packet
