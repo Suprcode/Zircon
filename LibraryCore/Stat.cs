@@ -98,7 +98,6 @@ namespace Library
                 writer.Write((int)pair.Key);
                 writer.Write(pair.Value);
             }
-
         }
 
         public string GetTitle(Stat stat, bool groupSpellPower = true)

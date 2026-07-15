@@ -336,6 +336,8 @@ namespace Client.Models
             GameScene.Game.StruckEnabled = info.StruckEnabled;
             GameScene.Game.HermitEnabled = info.HermitEnabled;
 
+            Globals.MaxGemPurity = info.MaxGemPurity;
+
             HermitPoints = info.HermitPoints;
 
             foreach (ClientUserMagic magic in info.Magics)

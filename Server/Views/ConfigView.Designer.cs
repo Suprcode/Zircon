@@ -216,6 +216,8 @@ namespace Server.Views
             labelControl61 = new DevExpress.XtraEditors.LabelControl();
             MaxLuckEdit = new DevExpress.XtraEditors.TextEdit();
             labelControl60 = new DevExpress.XtraEditors.LabelControl();
+            MaxGemPurityEdit = new DevExpress.XtraEditors.TextEdit();
+            MaxGemPurityLabel = new DevExpress.XtraEditors.LabelControl();
             labelControl59 = new DevExpress.XtraEditors.LabelControl();
             SpecialRepairDelayEdit = new DevExpress.XtraEditors.TimeSpanEdit();
             TorchRateEdit = new DevExpress.XtraEditors.TextEdit();
@@ -340,6 +342,7 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)MaxCurseEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)LuckRateEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MaxLuckEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MaxGemPurityEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SpecialRepairDelayEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)TorchRateEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DropLayersEdit.Properties).BeginInit();
@@ -2083,6 +2086,8 @@ namespace Server.Views
             xtraTabPage8.Controls.Add(labelControl61);
             xtraTabPage8.Controls.Add(MaxLuckEdit);
             xtraTabPage8.Controls.Add(labelControl60);
+            xtraTabPage8.Controls.Add(MaxGemPurityEdit);
+            xtraTabPage8.Controls.Add(MaxGemPurityLabel);
             xtraTabPage8.Controls.Add(labelControl59);
             xtraTabPage8.Controls.Add(SpecialRepairDelayEdit);
             xtraTabPage8.Controls.Add(TorchRateEdit);
@@ -2096,6 +2101,27 @@ namespace Server.Views
             xtraTabPage8.Name = "xtraTabPage8";
             xtraTabPage8.Size = new System.Drawing.Size(749, 385);
             xtraTabPage8.Text = "Items";
+            //
+            // MaxGemPurityEdit
+            //
+            MaxGemPurityEdit.Location = new System.Drawing.Point(342, 23);
+            MaxGemPurityEdit.MenuManager = ribbon;
+            MaxGemPurityEdit.Name = "MaxGemPurityEdit";
+            MaxGemPurityEdit.Properties.Appearance.Options.UseTextOptions = true;
+            MaxGemPurityEdit.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            MaxGemPurityEdit.Properties.Mask.EditMask = "n0";
+            MaxGemPurityEdit.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
+            MaxGemPurityEdit.Properties.Mask.UseMaskAsDisplayFormat = true;
+            MaxGemPurityEdit.Size = new System.Drawing.Size(100, 20);
+            MaxGemPurityEdit.TabIndex = 102;
+            //
+            // MaxGemPurityLabel
+            //
+            MaxGemPurityLabel.Location = new System.Drawing.Point(250, 26);
+            MaxGemPurityLabel.Name = "MaxGemPurityLabel";
+            MaxGemPurityLabel.Size = new System.Drawing.Size(86, 13);
+            MaxGemPurityLabel.TabIndex = 101;
+            MaxGemPurityLabel.Text = "Max Gem Purity:";
             // 
             // StrengthLossRateEdit
             // 
@@ -2648,6 +2674,7 @@ namespace Server.Views
             ((System.ComponentModel.ISupportInitialize)MaxCurseEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)LuckRateEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)MaxLuckEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MaxGemPurityEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)SpecialRepairDelayEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)TorchRateEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)DropLayersEdit.Properties).EndInit();
@@ -2804,6 +2831,8 @@ namespace Server.Views
         private DevExpress.XtraEditors.LabelControl labelControl61;
         private DevExpress.XtraEditors.TextEdit MaxLuckEdit;
         private DevExpress.XtraEditors.LabelControl labelControl60;
+        private DevExpress.XtraEditors.TextEdit MaxGemPurityEdit;
+        private DevExpress.XtraEditors.LabelControl MaxGemPurityLabel;
         private DevExpress.XtraEditors.TextEdit StrengthLossRateEdit;
         private DevExpress.XtraEditors.LabelControl labelControl64;
         private DevExpress.XtraEditors.TextEdit StrengthAddRateEdit;

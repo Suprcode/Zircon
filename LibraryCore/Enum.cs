@@ -259,6 +259,10 @@ namespace Library
 
         Fame = 19,
 
+        RedGem = 20,
+        BlueGem = 21,
+        CursedGem = 22,
+
         //War
         Defiance = 100,
         Might = 101,
@@ -439,7 +443,7 @@ namespace Library
         Bundle = 35,
         [Description("Loot Box")]
         LootBox = 36,
-        [Description("Socket Gem")]
+        [Description("Gem")]
         SocketGem = 37
     }
 

@@ -2242,17 +2242,30 @@ namespace Client.Scenes
                         builder.AddLine($"Purity: {Math.Round(MouseItem.CurrentDurability / 1000M)}", MouseItem.CurrentDurability == 0 ? Color.Red : Color.White);
                         break;
                     case ItemType.SocketGem:
-                        long socketPurity = (long)MouseItem.CurrentDurability * 100;
-                        long socketDurability = MouseItem.Info.Durability;
+
+                        string gemType = MouseItem.Info.Shape switch
+                        {
+                            0 => "Piercing",
+                            1 => "Weapon",
+                            2 => "Armour",
+                            3 => "Curse",
+                            4 => "Reset",
+                            _ => "Unknown"
+                        };
+
+                        builder.AddLine($"Gem Type: {gemType}", Color.Aquamarine);
+
+                        decimal socketPurity = MouseItem.CurrentDurability / 1000M;
+                        decimal maximumSocketPurity = Math.Max(0, Globals.MaxGemPurity);
                         string socketPurityText;
 
-                        if (socketPurity <= socketDurability * 20)
+                        if (socketPurity <= maximumSocketPurity * 0.2M)
                             socketPurityText = "Lowest";
-                        else if (socketPurity <= socketDurability * 40)
+                        else if (socketPurity <= maximumSocketPurity * 0.4M)
                             socketPurityText = "Low";
-                        else if (socketPurity <= socketDurability * 60)
+                        else if (socketPurity <= maximumSocketPurity * 0.6M)
                             socketPurityText = "Medium";
-                        else if (socketPurity <= socketDurability * 80)
+                        else if (socketPurity <= maximumSocketPurity * 0.8M)
                             socketPurityText = "High";
                         else
                             socketPurityText = "Supreme";
