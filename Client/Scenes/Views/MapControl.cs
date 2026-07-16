@@ -1541,6 +1541,19 @@ namespace Client.Scenes.Views
                     return;
                 }
 
+                // A pipeline reset can briefly leave the shared light texture unavailable.
+                // Do not create and cache an incomplete light layer during that window.
+                try
+                {
+                    if (!RenderingPipelineManager.GetLightTexture().IsValid ||
+                        RenderingPipelineManager.GetLightTextureSize().IsEmpty)
+                        return;
+                }
+                catch (InvalidOperationException)
+                {
+                    return;
+                }
+
                 int signature = GetLightSignature();
 
                 if (TextureValid && signature == _lastLightSignature)

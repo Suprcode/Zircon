@@ -1016,6 +1016,7 @@ namespace Shared.Rendering.SilkD3D11
         {
             EndSpriteBatch();
             FlushLines();
+            InvalidateTextureCaches();
             DisposeTargets();
 
             if (IsSwapChainFullscreen())
