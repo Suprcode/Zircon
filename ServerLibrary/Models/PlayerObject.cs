@@ -13,7 +13,6 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using C = Library.Network.ClientPackets;
 using S = Library.Network.ServerPackets;
 
@@ -6144,6 +6143,32 @@ namespace Server.Models
 
                     LogMilestone(MilestoneType.ItemGain, item.Count, item: item.Info);
                     continue;
+                }
+
+                foreach (UserQuest quest in Quests)
+                {
+                    if (quest.Completed) continue;
+
+                    foreach (QuestTask task in quest.QuestInfo.Tasks)
+                    {
+                        if (task.Task != QuestTaskType.GainItem || task.ItemParameter != item.Info) continue;
+
+                        if (task.MonsterDetails.Count == 0) continue;
+
+                        UserQuestTask userTask = quest.Tasks.FirstOrDefault(x => x.Task == task);
+
+                        if (userTask == null)
+                        {
+                            userTask = SEnvir.UserQuestTaskList.CreateNewObject();
+                            userTask.Task = task;
+                            userTask.Quest = quest;
+                        }
+
+                        if (userTask.Completed) continue;
+
+                        userTask.Amount = Math.Min(task.Amount, userTask.Amount + item.Count);
+                        changedQuests.Add(quest);
+                    }
                 }
 
                 var currency = GetCurrency(item.Info);

@@ -4043,6 +4043,8 @@ namespace Client.Scenes
 
         public bool CanAccept(QuestInfo quest)
         {
+            if (quest?.StartNPC == null || quest.FinishNPC == null) return false;
+
             if (QuestLog.Any(x => x.Quest == quest)) return false;
 
             foreach (QuestRequirement requirement in quest.Requirements)
@@ -4176,7 +4178,7 @@ namespace Client.Scenes
                     builder.AppendFormat("Kill {0} ", task.Amount);
                     break;
                 case QuestTaskType.GainItem:
-                    builder.AppendFormat("Collect {0} {1} from ", task.Amount, task.ItemParameter?.ItemName);
+                    builder.AppendFormat("Collect {0} {1}", task.Amount, task.ItemParameter?.ItemName);
                     break;
                 case QuestTaskType.Region:
                     builder.AppendFormat("Goto {0} in {1}", task.RegionParameter?.Description, task.RegionParameter?.Map.PlayerDescription);
@@ -4185,6 +4187,11 @@ namespace Client.Scenes
 
             if (string.IsNullOrEmpty(task.MobDescription))
             {
+                if (task.Task == QuestTaskType.GainItem && task.MonsterDetails.Count > 0)
+                {
+                    builder.Append(" from ");
+                }
+
                 bool needComma = false;
                 for (int i = 0; i < task.MonsterDetails.Count; i++)
                 {
@@ -4208,7 +4215,14 @@ namespace Client.Scenes
                 }
             }
             else
+            {
+                if (task.Task == QuestTaskType.GainItem && task.MonsterDetails.Count > 0)
+                {
+                    builder.Append(" from ");
+                }
+
                 builder.Append(task.MobDescription);
+            }
 
             if (userQuest != null)
             {
@@ -4235,6 +4249,8 @@ namespace Client.Scenes
 
             foreach (QuestInfo quest in QuestBox.CurrentTab.Quests)
             {
+                if (quest?.FinishNPC == null) continue;
+
                 ClientUserQuest userQuest = QuestLog.First(x => x.Quest == quest);
 
                 if (quest.FinishNPC.CurrentQuest != null) continue;
@@ -4259,6 +4275,8 @@ namespace Client.Scenes
 
             foreach (QuestInfo quest in QuestBox.AvailableTab.Quests)
             {
+                if (quest?.StartNPC == null) continue;
+
                 if (quest.StartNPC.CurrentQuest != null) continue;
 
                 quest.StartNPC.CurrentQuest = new CurrentQuest
