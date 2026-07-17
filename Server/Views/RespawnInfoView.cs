@@ -39,5 +39,10 @@ namespace Server.Views
         {
             JsonExporter.Export<RespawnInfo>(RespawnInfoGridView);
         }
+
+        private void InsertRowButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SMain.InsertRowAfterFocusedObject<RespawnInfo>(RespawnInfoGridView);
+        }
     }
 }
