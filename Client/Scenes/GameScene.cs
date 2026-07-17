@@ -4216,12 +4216,18 @@ namespace Client.Scenes
             }
             else
             {
-                if (task.Task == QuestTaskType.GainItem && task.MonsterDetails.Count > 0)
+                if (task.Task == QuestTaskType.GainItem)
                 {
-                    builder.Append(" from ");
+                    if (task.MonsterDetails.Count > 0)
+                    {
+                        builder.Append(" from ");
+                        builder.Append(task.MobDescription);
+                    }
                 }
-
-                builder.Append(task.MobDescription);
+                else
+                {
+                    builder.Append(task.MobDescription);
+                }
             }
 
             if (userQuest != null)

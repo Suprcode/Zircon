@@ -40,6 +40,7 @@ namespace MirDB
 
         public byte[] UsersHeader;
         private bool SystemVersionPending;
+        private bool UsersChangesPending;
 
         //internal ConcurrentQueue<DBObject> KeyedObjects = new ConcurrentQueue<DBObject>();
         internal Dictionary<Type, DBRelationship> Relationships = new Dictionary<Type, DBRelationship>();
@@ -224,8 +225,10 @@ namespace MirDB
         public void Save(bool commit)
         {
             bool systemChanged = HasSystemChanges();
+            bool usersChanged = HasUserChanges();
             bool versionAlreadyPending = SystemVersionPending;
             SystemVersionPending |= systemChanged;
+            UsersChangesPending |= usersChanged;
 
             if ((Mode & SessionMode.System) == SessionMode.System && ((systemChanged && !versionAlreadyPending) || string.IsNullOrWhiteSpace(SystemDatabaseVersion)))
             {
@@ -233,10 +236,14 @@ namespace MirDB
                 SystemVersionPending = true;
             }
 
-            Parallel.ForEach(Collections, x => x.Value.SaveObjects());
+            Parallel.ForEach(Collections, x =>
+            {
+                if (x.Value.IsSystemData ? SystemVersionPending : UsersChangesPending)
+                    x.Value.SaveObjects();
+            });
 
             if (commit)
-                Commit(SystemVersionPending);
+                Commit(SystemVersionPending, UsersChangesPending);
         }
         public void Commit()
         {
@@ -247,18 +254,19 @@ namespace MirDB
                 SystemVersionPending = true;
             }
 
-            Commit(HasSystemChanges() || SystemVersionPending);
+            Commit(HasSystemChanges() || SystemVersionPending, HasUserChanges() || UsersChangesPending);
         }
-        private void Commit(bool systemChanged)
+        private void Commit(bool systemChanged, bool usersChanged)
         {
             SaveSystem(systemChanged);
-            SaveUsers();
+            SaveUsers(usersChanged);
             SystemVersionPending = false;
+            UsersChangesPending = false;
         }
 
         private void SaveSystem(bool systemChanged)
         {
-            if ((Mode & SessionMode.System) != SessionMode.System) return;
+            if ((Mode & SessionMode.System) != SessionMode.System || !systemChanged) return;
 
             if (!Directory.Exists(Root))
                 Directory.CreateDirectory(Root);
@@ -295,9 +303,9 @@ namespace MirDB
 
             File.Move(SystemPath + TempExtension, SystemPath);
         }
-        private void SaveUsers()
+        private void SaveUsers(bool usersChanged)
         {
-            if ((Mode & SessionMode.Users) != SessionMode.Users) return;
+            if ((Mode & SessionMode.Users) != SessionMode.Users || !usersChanged) return;
 
             if (!Directory.Exists(Root))
                 Directory.CreateDirectory(Root);
@@ -435,6 +443,19 @@ namespace MirDB
             foreach (KeyValuePair<Type, ADBCollection> pair in Collections)
             {
                 if (!pair.Value.IsSystemData) continue;
+                if (pair.Value.HasChanges()) return true;
+            }
+
+            return false;
+        }
+
+        private bool HasUserChanges()
+        {
+            if ((Mode & SessionMode.Users) != SessionMode.Users) return false;
+
+            foreach (KeyValuePair<Type, ADBCollection> pair in Collections)
+            {
+                if (pair.Value.IsSystemData) continue;
                 if (pair.Value.HasChanges()) return true;
             }
 
