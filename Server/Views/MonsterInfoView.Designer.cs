@@ -71,11 +71,11 @@
             SaveButton = new DevExpress.XtraBars.BarButtonItem();
             ImportButton = new DevExpress.XtraBars.BarButtonItem();
             ExportButton = new DevExpress.XtraBars.BarButtonItem();
-            UpdateMonsterImageButton = new DevExpress.XtraBars.BarButtonItem();
+            InsertRowButton = new DevExpress.XtraBars.BarButtonItem();
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             JsonImportExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)MonsterInfoStatsGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)StatComboBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MonsterInfoGridControl).BeginInit();
@@ -130,13 +130,13 @@
             gridLevelNode3.LevelTemplate = DropsGridView;
             gridLevelNode3.RelationName = "Drops";
             MonsterInfoGridControl.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] { gridLevelNode1, gridLevelNode2, gridLevelNode3 });
-            MonsterInfoGridControl.Location = new System.Drawing.Point(0, 144);
+            MonsterInfoGridControl.Location = new System.Drawing.Point(0, 158);
             MonsterInfoGridControl.MainView = MonsterInfoGridView;
             MonsterInfoGridControl.MenuManager = ribbon;
             MonsterInfoGridControl.Name = "MonsterInfoGridControl";
             MonsterInfoGridControl.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { MonsterImageComboBox, StatComboBox, ItemLookUpEdit, RegionLookUpEdit });
             MonsterInfoGridControl.ShowOnlyPredefinedDetails = true;
-            MonsterInfoGridControl.Size = new System.Drawing.Size(761, 366);
+            MonsterInfoGridControl.Size = new System.Drawing.Size(761, 352);
             MonsterInfoGridControl.TabIndex = 2;
             MonsterInfoGridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] { RespawnsGridView, DropsGridView, MonsterInfoGridView, MonsterInfoStatsGridView });
             // 
@@ -378,12 +378,12 @@
             // ribbon
             // 
             ribbon.ExpandCollapseItem.Id = 0;
-            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, ribbon.SearchEditItem, SaveButton, ImportButton, ExportButton, UpdateMonsterImageButton });
+            ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbon.ExpandCollapseItem, SaveButton, ImportButton, ExportButton, InsertRowButton });
             ribbon.Location = new System.Drawing.Point(0, 0);
-            ribbon.MaxItemId = 5;
+            ribbon.MaxItemId = 6;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(761, 144);
+            ribbon.Size = new System.Drawing.Size(761, 158);
             // 
             // SaveButton
             // 
@@ -413,18 +413,19 @@
             ExportButton.Name = "ExportButton";
             ExportButton.ItemClick += ExportButton_ItemClick;
             // 
-            // UpdateMonsterImageButton
+            // InsertRowButton
             // 
-            UpdateMonsterImageButton.Caption = "Convert Old to New";
-            UpdateMonsterImageButton.Id = 4;
-            UpdateMonsterImageButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("UpdateMonsterImageButton.ImageOptions.Image");
-            UpdateMonsterImageButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("UpdateMonsterImageButton.ImageOptions.LargeImage");
-            UpdateMonsterImageButton.Name = "UpdateMonsterImageButton";
-            UpdateMonsterImageButton.ItemClick += UpdateMonsterImageButton_ItemClick;
+            InsertRowButton.Caption = "Insert Row";
+            InsertRowButton.Id = 5;
+            InsertRowButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.Image");
+            InsertRowButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("InsertRowButton.ImageOptions.LargeImage");
+            InsertRowButton.Name = "InsertRowButton";
+            InsertRowButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            InsertRowButton.ItemClick += InsertRowButton_ItemClick;
             // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport, ribbonPageGroup2 });
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, JsonImportExport, ribbonPageGroup3 });
             ribbonPage1.Name = "ribbonPage1";
             ribbonPage1.Text = "Home";
             // 
@@ -443,11 +444,11 @@
             JsonImportExport.Name = "JsonImportExport";
             JsonImportExport.Text = "Json";
             // 
-            // ribbonPageGroup2
+            // ribbonPageGroup3
             // 
-            ribbonPageGroup2.ItemLinks.Add(UpdateMonsterImageButton);
-            ribbonPageGroup2.Name = "ribbonPageGroup2";
-            ribbonPageGroup2.Text = "Monster Image";
+            ribbonPageGroup3.ItemLinks.Add(InsertRowButton);
+            ribbonPageGroup3.Name = "ribbonPageGroup3";
+            ribbonPageGroup3.Text = "Edit";
             // 
             // MonsterInfoView
             // 
@@ -517,7 +518,7 @@
         private DevExpress.XtraBars.BarButtonItem ImportButton;
         private DevExpress.XtraBars.BarButtonItem ExportButton;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup JsonImportExport;
-        private DevExpress.XtraBars.BarButtonItem UpdateMonsterImageButton;
-        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
+        private DevExpress.XtraBars.BarButtonItem InsertRowButton;
     }
 }

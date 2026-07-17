@@ -1017,9 +1017,9 @@ namespace Library
         BoneBladesman = 153,
         BoneArcher = 154,
         MutantFlea = 155,
-        //NF_PurpleFlea = 156,
+        PurpleFlea = 156,
         BlasterMutantFlea = 157,
-        //NF_BlueBlasterMutantFlea = 158,
+        BlueBlasterMutantFlea = 158,
         PoisonousMutantFlea = 159,
 
         RazorTusk = 160,

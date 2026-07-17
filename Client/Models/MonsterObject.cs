@@ -477,12 +477,13 @@ namespace Client.Models
                     StruckSound = SoundIndex.MutantFleaStruck;
                     DieSound = SoundIndex.MutantFleaDie;
                     break;
-                case MonsterImage.PoisonousMutantFlea:
+                case MonsterImage.PurpleFlea:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_15, out BodyLibrary);
-                    BodyShape = 9;
-                    AttackSound = SoundIndex.PoisonousMutantFleaAttack;
-                    StruckSound = SoundIndex.PoisonousMutantFleaStruck;
-                    DieSound = SoundIndex.PoisonousMutantFleaDie;
+                    BodyShape = 6;
+                    //TODO - Need correct sounds for this monster
+                    AttackSound = SoundIndex.MutantFleaAttack;
+                    StruckSound = SoundIndex.MutantFleaStruck;
+                    DieSound = SoundIndex.MutantFleaDie;
                     break;
                 case MonsterImage.BlasterMutantFlea:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_15, out BodyLibrary);
@@ -491,7 +492,21 @@ namespace Client.Models
                     StruckSound = SoundIndex.BlasterMutantFleaStruck;
                     DieSound = SoundIndex.BlasterMutantFleaDie;
                     break;
-
+                case MonsterImage.BlueBlasterMutantFlea:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_15, out BodyLibrary);
+                    BodyShape = 8;
+                    //TODO - Need correct sounds for this monster
+                    AttackSound = SoundIndex.BlasterMutantFleaAttack;
+                    StruckSound = SoundIndex.BlasterMutantFleaStruck;
+                    DieSound = SoundIndex.BlasterMutantFleaDie;
+                    break;
+                case MonsterImage.PoisonousMutantFlea:
+                    CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_15, out BodyLibrary);
+                    BodyShape = 9;
+                    AttackSound = SoundIndex.PoisonousMutantFleaAttack;
+                    StruckSound = SoundIndex.PoisonousMutantFleaStruck;
+                    DieSound = SoundIndex.PoisonousMutantFleaDie;
+                    break;
                 case MonsterImage.WaspHatchling:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_8, out BodyLibrary);
                     BodyShape = 1;
@@ -499,7 +514,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.WasHatchlingStruck;
                     DieSound = SoundIndex.WasHatchlingDie;
                     break;
-
                 case MonsterImage.Centipede:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_7, out BodyLibrary);
                     BodyShape = 6;
@@ -507,7 +521,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.CentipedeStruck;
                     DieSound = SoundIndex.CentipedeDie;
                     break;
-
                 case MonsterImage.ButterflyWorm:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_8, out BodyLibrary);
                     BodyShape = 2;
@@ -515,7 +528,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.ButterflyWormStruck;
                     DieSound = SoundIndex.ButterflyWormDie;
                     break;
-
                 case MonsterImage.MutantMaggot:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_7, out BodyLibrary);
                     BodyShape = 8;
@@ -523,7 +535,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.MutantMaggotStruck;
                     DieSound = SoundIndex.MutantMaggotDie;
                     break;
-
                 case MonsterImage.Earwig:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_7, out BodyLibrary);
                     BodyShape = 9;
@@ -531,7 +542,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.EarwigStruck;
                     DieSound = SoundIndex.EarwigDie;
                     break;
-
                 case MonsterImage.IronLance:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_8, out BodyLibrary);
                     BodyShape = 0;
@@ -539,7 +549,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.IronLanceStruck;
                     DieSound = SoundIndex.IronLanceDie;
                     break;
-
                 case MonsterImage.LordNiJae:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_7, out BodyLibrary);
                     BodyShape = 7;
@@ -547,7 +556,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.LordNiJaeStruck;
                     DieSound = SoundIndex.LordNiJaeDie;
                     break;
-
                 case MonsterImage.RottingGhoul:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_14, out BodyLibrary);
                     BodyShape = 8;
@@ -555,7 +563,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.RottingGhoulStruck;
                     DieSound = SoundIndex.RottingGhoulDie;
                     break;
-
                 case MonsterImage.DecayingGhoul:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_14, out BodyLibrary);
                     BodyShape = 2;
@@ -563,7 +570,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.DecayingGhoulStruck;
                     DieSound = SoundIndex.DecayingGhoulDie;
                     break;
-
                 case MonsterImage.BloodThirstyGhoul:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_5, out BodyLibrary);
                     BodyShape = 2;
@@ -571,7 +577,6 @@ namespace Client.Models
                     StruckSound = SoundIndex.BloodThirstyGhoulStruck;
                     DieSound = SoundIndex.BloodThirstyGhoulDie;
                     break;
-
                 case MonsterImage.SpinedDarkLizard:
                     CEnvir.LibraryList.TryGetValue(LibraryFile.Mon_5, out BodyLibrary);
                     BodyShape = 6;

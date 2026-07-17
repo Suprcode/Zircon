@@ -49,7 +49,7 @@
             ribbon.MdiMergeStyle = DevExpress.XtraBars.Ribbon.RibbonMdiMergeStyle.Always;
             ribbon.Name = "ribbon";
             ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
-            ribbon.Size = new System.Drawing.Size(675, 144);
+            ribbon.Size = new System.Drawing.Size(675, 158);
             // 
             // ClearLogsButton
             // 
@@ -57,7 +57,6 @@
             ClearLogsButton.Id = 1;
             ClearLogsButton.ImageOptions.Image = (System.Drawing.Image)resources.GetObject("ClearLogsButton.ImageOptions.Image");
             ClearLogsButton.ImageOptions.LargeImage = (System.Drawing.Image)resources.GetObject("ClearLogsButton.ImageOptions.LargeImage");
-            ClearLogsButton.LargeWidth = 50;
             ClearLogsButton.Name = "ClearLogsButton";
             ClearLogsButton.ItemClick += ClearLogsButton_ItemClick;
             // 
@@ -79,9 +78,9 @@
             // 
             LogListBoxControl.Dock = System.Windows.Forms.DockStyle.Fill;
             LogListBoxControl.ItemAutoHeight = true;
-            LogListBoxControl.Location = new System.Drawing.Point(0, 144);
+            LogListBoxControl.Location = new System.Drawing.Point(0, 158);
             LogListBoxControl.Name = "LogListBoxControl";
-            LogListBoxControl.Size = new System.Drawing.Size(675, 318);
+            LogListBoxControl.Size = new System.Drawing.Size(675, 304);
             LogListBoxControl.TabIndex = 1;
             // 
             // InterfaceTimer
