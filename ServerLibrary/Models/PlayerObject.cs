@@ -14745,7 +14745,13 @@ namespace Server.Models
                     {
                         if (SEnvir.Random.Next(info.Chance) > 0) continue;
 
-                        if (info.Region != null && !info.Region.PointList.Contains(front)) continue;
+                        if (info.Region != null)
+                        {
+                            if (info.Region.PointList == null)
+                                info.Region.CreatePoints(CurrentMap.Width);
+
+                            if (!info.Region.PointList.Contains(front)) continue;
+                        }
 
                         if (info.Quantity == 0) continue;
 

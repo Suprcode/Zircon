@@ -15,6 +15,8 @@ namespace Client.Scenes.Views
 {
     public sealed class QuestDialog : DXImageControl
     {
+        public static readonly List<QuestType> QuestTypeOrder = [QuestType.Story, QuestType.Account, QuestType.General, QuestType.Daily, QuestType.Weekly, QuestType.Repeatable];
+
         #region Properties
 
         public DXTabControl TabControl;
@@ -917,12 +919,16 @@ namespace Client.Scenes.Views
 
             Quests.Sort((x1, x2) =>
             {
-                int res = string.Compare(x1.StartNPC.Region.Map.Description, x2.StartNPC.Region.Map.Description, StringComparison.Ordinal);
+                int res = QuestDialog.QuestTypeOrder.IndexOf(x1.QuestType).CompareTo(QuestDialog.QuestTypeOrder.IndexOf(x2.QuestType));
+                if (res == 0)
+                    res = string.Compare(x1.StartNPC.Region.Map.Description, x2.StartNPC.Region.Map.Description, StringComparison.Ordinal);
+
                 if (res == 0)
                     return string.Compare(x1.QuestName, x2.QuestName, StringComparison.Ordinal);
 
                 return res;
             });
+
             foreach (QuestInfo quest in Quests)
             {
                 MapInfo map = quest?.StartNPC?.Region?.Map;

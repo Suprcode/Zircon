@@ -4279,7 +4279,7 @@ namespace Client.Scenes
                 quest.FinishNPC.CurrentQuest = current;
             }
 
-            foreach (QuestInfo quest in QuestBox.AvailableTab.Quests)
+            foreach (QuestInfo quest in QuestBox.AvailableTab.Quests.OrderBy(q => QuestDialog.QuestTypeOrder.IndexOf(q.QuestType)))
             {
                 if (quest?.StartNPC == null) continue;
 
@@ -4352,7 +4352,7 @@ namespace Client.Scenes
                         break;
                     case QuestType.Story:
                         icon = 56;
-                        colour = Color.Green;
+                        colour = Color.LimeGreen;
                         break;
                     case QuestType.Account:
                         icon = 36;
