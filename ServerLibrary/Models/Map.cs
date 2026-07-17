@@ -553,14 +553,14 @@ namespace Server.Models
 
                         UserQuestTask userTask = userQuest.Tasks.FirstOrDefault(x => x.Task == task);
 
+                        if (userTask?.Completed == true) continue;
+
                         if (userTask == null)
                         {
                             userTask = SEnvir.UserQuestTaskList.CreateNewObject();
                             userTask.Task = task;
                             userTask.Quest = userQuest;
                         }
-
-                        if (userTask.Completed) continue;
 
                         userTask.Amount = 1;
 

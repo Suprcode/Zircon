@@ -6115,12 +6115,35 @@ namespace Server.Models
         }
         public void GainItem(params UserItem[] items)
         {
-            Enqueue(new S.ItemsGained { Items = items.Where(x => x.Info.ItemEffect != ItemEffect.Experience).Select(x => x.ToClientInfo()).ToList() });
-
             HashSet<UserQuest> changedQuests = new HashSet<UserQuest>();
+            List<ClientUserItem> gainedItems = new List<ClientUserItem>();
 
             foreach (UserItem item in items)
             {
+                foreach (UserQuest quest in Quests)
+                {
+                    if (quest.Completed) continue;
+
+                    foreach (QuestTask task in quest.QuestInfo.Tasks)
+                    {
+                        if (task.Task != QuestTaskType.GainItem || task.ItemParameter != item.Info) continue;
+
+                        if (task.MonsterDetails.Count > 0) continue;
+
+                        UserQuestTask userTask = quest.Tasks.FirstOrDefault(x => x.Task == task);
+
+                        if (userTask == null)
+                        {
+                            userTask = SEnvir.UserQuestTaskList.CreateNewObject();
+                            userTask.Task = task;
+                            userTask.Quest = quest;
+                        }
+
+                        item.UserTask = userTask;
+                        item.Flags |= UserItemFlags.QuestItem;
+                    }
+                }
+
                 if (item.UserTask != null)
                 {
                     if (item.UserTask.Completed) continue;
@@ -6145,32 +6168,6 @@ namespace Server.Models
                     continue;
                 }
 
-                foreach (UserQuest quest in Quests)
-                {
-                    if (quest.Completed) continue;
-
-                    foreach (QuestTask task in quest.QuestInfo.Tasks)
-                    {
-                        if (task.Task != QuestTaskType.GainItem || task.ItemParameter != item.Info) continue;
-
-                        if (task.MonsterDetails.Count == 0) continue;
-
-                        UserQuestTask userTask = quest.Tasks.FirstOrDefault(x => x.Task == task);
-
-                        if (userTask == null)
-                        {
-                            userTask = SEnvir.UserQuestTaskList.CreateNewObject();
-                            userTask.Task = task;
-                            userTask.Quest = quest;
-                        }
-
-                        if (userTask.Completed) continue;
-
-                        userTask.Amount = Math.Min(task.Amount, userTask.Amount + item.Count);
-                        changedQuests.Add(quest);
-                    }
-                }
-
                 var currency = GetCurrency(item.Info);
 
                 if (currency != null)
@@ -6190,6 +6187,8 @@ namespace Server.Models
                     item.Delete();
                     continue;
                 }
+
+                gainedItems.Add(item.ToClientInfo());
 
                 bool handled = false;
                 if (item.Info.StackSize > 1 && (item.Flags & UserItemFlags.Expirable) != UserItemFlags.Expirable)
@@ -6232,6 +6231,9 @@ namespace Server.Models
                     break;
                 }
             }
+
+            if (gainedItems.Count > 0)
+                Enqueue(new S.ItemsGained { Items = gainedItems });
 
             foreach (UserQuest quest in changedQuests)
                 Enqueue(new S.QuestChanged { Quest = quest.ToClientInfo() });
